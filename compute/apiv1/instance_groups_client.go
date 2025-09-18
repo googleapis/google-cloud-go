@@ -42,15 +42,16 @@ var newInstanceGroupsClientHook clientHook
 
 // InstanceGroupsCallOptions contains the retry settings for each method of InstanceGroupsClient.
 type InstanceGroupsCallOptions struct {
-	AddInstances    []gax.CallOption
-	AggregatedList  []gax.CallOption
-	Delete          []gax.CallOption
-	Get             []gax.CallOption
-	Insert          []gax.CallOption
-	List            []gax.CallOption
-	ListInstances   []gax.CallOption
-	RemoveInstances []gax.CallOption
-	SetNamedPorts   []gax.CallOption
+	AddInstances       []gax.CallOption
+	AggregatedList     []gax.CallOption
+	Delete             []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	List               []gax.CallOption
+	ListInstances      []gax.CallOption
+	RemoveInstances    []gax.CallOption
+	SetNamedPorts      []gax.CallOption
+	TestIamPermissions []gax.CallOption
 }
 
 func defaultInstanceGroupsRESTCallOptions() *InstanceGroupsCallOptions {
@@ -109,6 +110,9 @@ func defaultInstanceGroupsRESTCallOptions() *InstanceGroupsCallOptions {
 		SetNamedPorts: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -126,6 +130,7 @@ type internalInstanceGroupsClient interface {
 	ListInstances(context.Context, *computepb.ListInstancesInstanceGroupsRequest, ...gax.CallOption) *InstanceWithNamedPortsIterator
 	RemoveInstances(context.Context, *computepb.RemoveInstancesInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
 	SetNamedPorts(context.Context, *computepb.SetNamedPortsInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstanceGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
 // InstanceGroupsClient is a client for interacting with Google Compute Engine API.
@@ -206,6 +211,11 @@ func (c *InstanceGroupsClient) RemoveInstances(ctx context.Context, req *compute
 // SetNamedPorts sets the named ports for the specified instance group.
 func (c *InstanceGroupsClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetNamedPorts(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *InstanceGroupsClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsInstanceGroupRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -949,4 +959,56 @@ func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *compu
 		},
 	}
 	return op, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *instanceGroupsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsInstanceGroupRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

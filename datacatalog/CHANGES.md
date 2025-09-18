@@ -1,5 +1,12 @@
 # Changes
 
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.26.0...datacatalog/v1.26.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **datacatalog:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.25.2...datacatalog/v1.26.0) (2025-04-30)
 
 

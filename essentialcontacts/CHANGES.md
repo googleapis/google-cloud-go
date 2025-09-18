@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.7.6...essentialcontacts/v1.7.7) (2025-09-16)
+
+
+### Bug Fixes
+
+* **essentialcontacts:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.7.5...essentialcontacts/v1.7.6) (2025-04-15)
 
 

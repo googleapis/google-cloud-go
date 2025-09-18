@@ -22,12 +22,8 @@ package lifesciencespb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	code "google.golang.org/genproto/googleapis/rpc/code"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -3131,118 +3127,4 @@ func file_google_cloud_lifesciences_v2beta_workflows_proto_init() {
 	file_google_cloud_lifesciences_v2beta_workflows_proto_rawDesc = nil
 	file_google_cloud_lifesciences_v2beta_workflows_proto_goTypes = nil
 	file_google_cloud_lifesciences_v2beta_workflows_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// WorkflowsServiceV2BetaClient is the client API for WorkflowsServiceV2Beta service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type WorkflowsServiceV2BetaClient interface {
-	// Runs a pipeline.  The returned Operation's [metadata]
-	// [google.longrunning.Operation.metadata] field will contain a
-	// [google.cloud.lifesciences.v2beta.Metadata][google.cloud.lifesciences.v2beta.Metadata]
-	// object describing the status of the pipeline execution. The
-	// [response][google.longrunning.Operation.response] field will contain a
-	// [google.cloud.lifesciences.v2beta.RunPipelineResponse][google.cloud.lifesciences.v2beta.RunPipelineResponse]
-	// object if the pipeline completes successfully.
-	//
-	// **Note:** Before you can use this method, the *Life Sciences Service Agent*
-	// must have access to your project. This is done automatically when the
-	// Cloud Life Sciences API is first enabled, but if you delete this permission
-	// you must disable and re-enable the API to grant the Life Sciences
-	// Service Agent the required permissions.
-	// Authorization requires the following [Google
-	// IAM](https://cloud.google.com/iam/) permission:
-	//
-	// * `lifesciences.workflows.run`
-	RunPipeline(ctx context.Context, in *RunPipelineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type workflowsServiceV2BetaClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewWorkflowsServiceV2BetaClient(cc grpc.ClientConnInterface) WorkflowsServiceV2BetaClient {
-	return &workflowsServiceV2BetaClient{cc}
-}
-
-func (c *workflowsServiceV2BetaClient) RunPipeline(ctx context.Context, in *RunPipelineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.lifesciences.v2beta.WorkflowsServiceV2Beta/RunPipeline", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// WorkflowsServiceV2BetaServer is the server API for WorkflowsServiceV2Beta service.
-type WorkflowsServiceV2BetaServer interface {
-	// Runs a pipeline.  The returned Operation's [metadata]
-	// [google.longrunning.Operation.metadata] field will contain a
-	// [google.cloud.lifesciences.v2beta.Metadata][google.cloud.lifesciences.v2beta.Metadata]
-	// object describing the status of the pipeline execution. The
-	// [response][google.longrunning.Operation.response] field will contain a
-	// [google.cloud.lifesciences.v2beta.RunPipelineResponse][google.cloud.lifesciences.v2beta.RunPipelineResponse]
-	// object if the pipeline completes successfully.
-	//
-	// **Note:** Before you can use this method, the *Life Sciences Service Agent*
-	// must have access to your project. This is done automatically when the
-	// Cloud Life Sciences API is first enabled, but if you delete this permission
-	// you must disable and re-enable the API to grant the Life Sciences
-	// Service Agent the required permissions.
-	// Authorization requires the following [Google
-	// IAM](https://cloud.google.com/iam/) permission:
-	//
-	// * `lifesciences.workflows.run`
-	RunPipeline(context.Context, *RunPipelineRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedWorkflowsServiceV2BetaServer can be embedded to have forward compatible implementations.
-type UnimplementedWorkflowsServiceV2BetaServer struct {
-}
-
-func (*UnimplementedWorkflowsServiceV2BetaServer) RunPipeline(context.Context, *RunPipelineRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunPipeline not implemented")
-}
-
-func RegisterWorkflowsServiceV2BetaServer(s *grpc.Server, srv WorkflowsServiceV2BetaServer) {
-	s.RegisterService(&_WorkflowsServiceV2Beta_serviceDesc, srv)
-}
-
-func _WorkflowsServiceV2Beta_RunPipeline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RunPipelineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WorkflowsServiceV2BetaServer).RunPipeline(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.lifesciences.v2beta.WorkflowsServiceV2Beta/RunPipeline",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowsServiceV2BetaServer).RunPipeline(ctx, req.(*RunPipelineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _WorkflowsServiceV2Beta_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.lifesciences.v2beta.WorkflowsServiceV2Beta",
-	HandlerType: (*WorkflowsServiceV2BetaServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "RunPipeline",
-			Handler:    _WorkflowsServiceV2Beta_RunPipeline_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/lifesciences/v2beta/workflows.proto",
 }

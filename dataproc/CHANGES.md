@@ -1,5 +1,12 @@
 # Changes
 
+## [2.14.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.14.0...dataproc/v2.14.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **dataproc:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [2.14.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.13.0...dataproc/v2.14.0) (2025-07-09)
 
 

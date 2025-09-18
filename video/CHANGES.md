@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.26.0...video/v1.27.0) (2025-09-17)
+
+
+### Features
+
+* **video/livestream:** Added Auto Transcription support ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added H.265 (HEVC) codec support ([#12900](https://github.com/googleapis/google-cloud-go/issues/12900)) ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added PreviewInput method used for the low latency input monitoring ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added StartDistribution/StopDistribution methods and Distribution/DistributionStream messages used for distributing live streams to external RTMP/SRT endpoints ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added UHD (4k) resolution support ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added UpdateEncryptions event to perform key rotation without restarting a channel ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+
+
+### Documentation
+
+* **video/livestream:** Update requirements of resource ID fields to be more clear ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.25.0...video/v1.26.0) (2025-09-04)
 
 

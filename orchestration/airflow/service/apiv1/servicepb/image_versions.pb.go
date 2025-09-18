@@ -21,12 +21,8 @@
 package servicepb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -406,86 +402,4 @@ func file_google_cloud_orchestration_airflow_service_v1_image_versions_proto_ini
 	file_google_cloud_orchestration_airflow_service_v1_image_versions_proto_rawDesc = nil
 	file_google_cloud_orchestration_airflow_service_v1_image_versions_proto_goTypes = nil
 	file_google_cloud_orchestration_airflow_service_v1_image_versions_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ImageVersionsClient is the client API for ImageVersions service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ImageVersionsClient interface {
-	// List ImageVersions for provided location.
-	ListImageVersions(ctx context.Context, in *ListImageVersionsRequest, opts ...grpc.CallOption) (*ListImageVersionsResponse, error)
-}
-
-type imageVersionsClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewImageVersionsClient(cc grpc.ClientConnInterface) ImageVersionsClient {
-	return &imageVersionsClient{cc}
-}
-
-func (c *imageVersionsClient) ListImageVersions(ctx context.Context, in *ListImageVersionsRequest, opts ...grpc.CallOption) (*ListImageVersionsResponse, error) {
-	out := new(ListImageVersionsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.orchestration.airflow.service.v1.ImageVersions/ListImageVersions", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ImageVersionsServer is the server API for ImageVersions service.
-type ImageVersionsServer interface {
-	// List ImageVersions for provided location.
-	ListImageVersions(context.Context, *ListImageVersionsRequest) (*ListImageVersionsResponse, error)
-}
-
-// UnimplementedImageVersionsServer can be embedded to have forward compatible implementations.
-type UnimplementedImageVersionsServer struct {
-}
-
-func (*UnimplementedImageVersionsServer) ListImageVersions(context.Context, *ListImageVersionsRequest) (*ListImageVersionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListImageVersions not implemented")
-}
-
-func RegisterImageVersionsServer(s *grpc.Server, srv ImageVersionsServer) {
-	s.RegisterService(&_ImageVersions_serviceDesc, srv)
-}
-
-func _ImageVersions_ListImageVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListImageVersionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ImageVersionsServer).ListImageVersions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.orchestration.airflow.service.v1.ImageVersions/ListImageVersions",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ImageVersionsServer).ListImageVersions(ctx, req.(*ListImageVersionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ImageVersions_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.orchestration.airflow.service.v1.ImageVersions",
-	HandlerType: (*ImageVersionsServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListImageVersions",
-			Handler:    _ImageVersions_ListImageVersions_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/orchestration/airflow/service/v1/image_versions.proto",
 }
