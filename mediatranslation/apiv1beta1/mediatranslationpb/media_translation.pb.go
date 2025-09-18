@@ -21,12 +21,8 @@
 package mediatranslationpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -799,120 +795,4 @@ func file_google_cloud_mediatranslation_v1beta1_media_translation_proto_init() {
 	file_google_cloud_mediatranslation_v1beta1_media_translation_proto_rawDesc = nil
 	file_google_cloud_mediatranslation_v1beta1_media_translation_proto_goTypes = nil
 	file_google_cloud_mediatranslation_v1beta1_media_translation_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// SpeechTranslationServiceClient is the client API for SpeechTranslationService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type SpeechTranslationServiceClient interface {
-	// Performs bidirectional streaming speech translation: receive results while
-	// sending audio. This method is only available via the gRPC API (not REST).
-	StreamingTranslateSpeech(ctx context.Context, opts ...grpc.CallOption) (SpeechTranslationService_StreamingTranslateSpeechClient, error)
-}
-
-type speechTranslationServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSpeechTranslationServiceClient(cc grpc.ClientConnInterface) SpeechTranslationServiceClient {
-	return &speechTranslationServiceClient{cc}
-}
-
-func (c *speechTranslationServiceClient) StreamingTranslateSpeech(ctx context.Context, opts ...grpc.CallOption) (SpeechTranslationService_StreamingTranslateSpeechClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_SpeechTranslationService_serviceDesc.Streams[0], "/google.cloud.mediatranslation.v1beta1.SpeechTranslationService/StreamingTranslateSpeech", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &speechTranslationServiceStreamingTranslateSpeechClient{stream}
-	return x, nil
-}
-
-type SpeechTranslationService_StreamingTranslateSpeechClient interface {
-	Send(*StreamingTranslateSpeechRequest) error
-	Recv() (*StreamingTranslateSpeechResponse, error)
-	grpc.ClientStream
-}
-
-type speechTranslationServiceStreamingTranslateSpeechClient struct {
-	grpc.ClientStream
-}
-
-func (x *speechTranslationServiceStreamingTranslateSpeechClient) Send(m *StreamingTranslateSpeechRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *speechTranslationServiceStreamingTranslateSpeechClient) Recv() (*StreamingTranslateSpeechResponse, error) {
-	m := new(StreamingTranslateSpeechResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// SpeechTranslationServiceServer is the server API for SpeechTranslationService service.
-type SpeechTranslationServiceServer interface {
-	// Performs bidirectional streaming speech translation: receive results while
-	// sending audio. This method is only available via the gRPC API (not REST).
-	StreamingTranslateSpeech(SpeechTranslationService_StreamingTranslateSpeechServer) error
-}
-
-// UnimplementedSpeechTranslationServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedSpeechTranslationServiceServer struct {
-}
-
-func (*UnimplementedSpeechTranslationServiceServer) StreamingTranslateSpeech(SpeechTranslationService_StreamingTranslateSpeechServer) error {
-	return status1.Errorf(codes.Unimplemented, "method StreamingTranslateSpeech not implemented")
-}
-
-func RegisterSpeechTranslationServiceServer(s *grpc.Server, srv SpeechTranslationServiceServer) {
-	s.RegisterService(&_SpeechTranslationService_serviceDesc, srv)
-}
-
-func _SpeechTranslationService_StreamingTranslateSpeech_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SpeechTranslationServiceServer).StreamingTranslateSpeech(&speechTranslationServiceStreamingTranslateSpeechServer{stream})
-}
-
-type SpeechTranslationService_StreamingTranslateSpeechServer interface {
-	Send(*StreamingTranslateSpeechResponse) error
-	Recv() (*StreamingTranslateSpeechRequest, error)
-	grpc.ServerStream
-}
-
-type speechTranslationServiceStreamingTranslateSpeechServer struct {
-	grpc.ServerStream
-}
-
-func (x *speechTranslationServiceStreamingTranslateSpeechServer) Send(m *StreamingTranslateSpeechResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *speechTranslationServiceStreamingTranslateSpeechServer) Recv() (*StreamingTranslateSpeechRequest, error) {
-	m := new(StreamingTranslateSpeechRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-var _SpeechTranslationService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.mediatranslation.v1beta1.SpeechTranslationService",
-	HandlerType: (*SpeechTranslationServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "StreamingTranslateSpeech",
-			Handler:       _SpeechTranslationService_StreamingTranslateSpeech_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "google/cloud/mediatranslation/v1beta1/media_translation.proto",
 }
