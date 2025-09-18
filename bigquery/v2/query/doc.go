@@ -13,4 +13,38 @@
 // limitations under the License.
 
 // Package query provides a simplified API for running queries in BigQuery.
+//
+// This package is EXPERIMENTAL and subject to change without notice.
+//
+// The query client provides a simplified interface for running queries and
+// retrieving results. It handles the complexities of job management and result
+// pagination.
+//
+// Example usage:
+//
+//	ctx := context.Background()
+//	client, err := query.NewClient(ctx, "my-project")
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer client.Close()
+//
+//	q, err := client.StartQuery(ctx, &bigquerypb.PostQueryRequest{
+//		QueryRequest: &bigquerypb.QueryRequest{
+//			Query: "SELECT 123 as foo",
+//		},
+//	})
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	if err := q.Wait(ctx); err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	it, err := q.Read(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: iterate results.
 package query

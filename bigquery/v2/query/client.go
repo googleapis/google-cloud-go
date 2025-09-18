@@ -25,13 +25,15 @@ import (
 	"google.golang.org/api/option"
 )
 
-// Client is a client for running queries in BigQuery.
+// Client is a client for running queries in BigQuery. It is a lightweight wrapper
+// around the auto-generated BigQuery v2 client, focused on query operations.
 type Client struct {
 	c         *apiv2_client.Client
 	projectID string
 }
 
-// NewClient creates a new query client.
+// NewClient creates a new query client. A client should be reused instead of
+// created per-request. The client must be closed when it is no longer needed.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	qc := &Client{
 		projectID: projectID,
@@ -51,7 +53,9 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return qc, nil
 }
 
-// StartQuery runs a query and returns a QueryJob handle.
+// StartQuery executes a query using the stateless jobs.query RPC. It returns a
+// handle to the running query. The returned Query object can be used to wait for
+// completion and retrieve results.
 func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*Query, error) {
 	if req.QueryRequest.RequestId == "" {
 		req.QueryRequest.RequestId = uid.NewSpace("request", nil).New()
@@ -83,7 +87,9 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	return newQueryJobFromJob(ctx, c, c.projectID, job, opts...), nil
 }
 
-// AttachJob set up a query job to be read from an existing one.
+// AttachJob attaches to an existing query job. The returned Query object can be
+// used to monitor the job's status, wait for its completion, and retrieve its
+// results.
 func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
 	if jobRef == nil {
 		return nil, fmt.Errorf("bigquery: AttachJob requires a non-nil JobReference")

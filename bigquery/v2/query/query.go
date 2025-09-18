@@ -24,9 +24,11 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// Query represents a query job.
+// Query represents a handle to a query job. Its methods can be used to wait for
+// the job to complete and to iterate over the results.
 type Query struct {
-	c         *Client
+	c *Client
+
 	projectID string
 	jobID     string
 	location  string
@@ -89,9 +91,11 @@ func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, err
 	return &RowIterator{}, nil
 }
 
-// Wait waits for the query to complete.
-// The context.Context parameter is used for cancelling just this particular call to Wait.
-// It's basically a shortcut for using the exposed channel and wait for the query to be done.
+// Wait blocks until the query has completed. The provided context can be used to
+// cancel the wait. If the query completes successfully, Wait returns nil.
+// Otherwise, it returns the error that caused the query to fail.
+//
+// Wait is a convenience wrapper around Done and Err.
 func (q *Query) Wait(ctx context.Context) error {
 	select {
 	case <-q.Done():
@@ -101,17 +105,32 @@ func (q *Query) Wait(ctx context.Context) error {
 	}
 }
 
-// Done exposes the internal channel to notify for when the query is ready.
-// See Wait method for shortcut for waiting for a query to be executed and get
-// the last error.
+// Done returns a channel that is closed when the query has completed.
+// It can be used in a select statement to perform non-blocking waits.
+//
+// Example:
+//
+//		select {
+//		case <-q.Done():
+//			if err := q.Err(); err != nil {
+//				// Handle error.
+//			}
+//			// Query is complete.
+//	 case <-time.After(30*time.Second):
+//		    // Timeout logic
+//		default:
+//			// Query is still running.
+//		}
 func (q *Query) Done(opts ...gax.CallOption) <-chan struct{} {
 	return q.ready
 }
 
-// Err holds last error that happened with the given query execution.
-// See Wait method for shortcut for waiting for a query to be executed and get
-// the last error.
+// Err returns the final error state of the query. It is only valid to call Err
+// after the channel returned by Done has been closed. If the query completed
+// successfully, Err returns nil.
 func (q *Query) Err() error {
+	q.mu.RLock()
+	defer q.mu.RUnlock()
 	if q.ctx.Err() != nil {
 		return q.ctx.Err()
 	}
@@ -241,17 +260,19 @@ func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) {
 }
 
 // QueryID returns the auto-generated ID for the query.
-// Only filled for stateless queries.
+// This is only populated for stateless queries (i.e. those started via jobs.query)
+// after the query has been submitted.
 func (q *Query) QueryID() string {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+	q.mu.RLock()
+	defer q.mu.RUnlock()
 	return q.queryID
 }
 
-// JobReference returns the job reference.
+// JobReference returns a reference to the query job.
+// This will be nil until the query job has been successfully submitted.
 func (q *Query) JobReference() *bigquerypb.JobReference {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+	q.mu.RLock()
+	defer q.mu.RUnlock()
 	if q.jobID == "" {
 		return nil
 	}
@@ -263,13 +284,14 @@ func (q *Query) JobReference() *bigquerypb.JobReference {
 }
 
 // Schema returns the schema of the query results.
+// This will be nil until the query has completed and the schema is available.
 func (q *Query) Schema() *bigquerypb.TableSchema {
 	return nil // TODO: fill schema
 }
 
-// Complete to check if job finished execution
+// Complete returns true if the query job has finished execution.
 func (q *Query) Complete() bool {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+	q.mu.RLock()
+	defer q.mu.RUnlock()
 	return q.complete
 }
