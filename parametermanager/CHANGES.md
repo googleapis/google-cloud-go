@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.3.0...parametermanager/v0.3.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **parametermanager:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.2.1...parametermanager/v0.3.0) (2025-06-25)
 
 
@@ -37,4 +44,3 @@
 * **parametermanager:** New client(s) ([#11502](https://github.com/googleapis/google-cloud-go/issues/11502)) ([30de20d](https://github.com/googleapis/google-cloud-go/commit/30de20d9e3430acb7b557d77e316f2a87ec8ad0c))
 
 ## Changes
-

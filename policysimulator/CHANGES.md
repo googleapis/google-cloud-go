@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.4.0...policysimulator/v0.4.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **policysimulator:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.3.6...policysimulator/v0.4.0) (2025-07-23)
 
 
@@ -149,4 +156,3 @@
 * **policysimulator:** Start generating apiv1 ([#8340](https://github.com/googleapis/google-cloud-go/issues/8340)) ([a41e5ec](https://github.com/googleapis/google-cloud-go/commit/a41e5eca56246e83670d5c0d043d7ab78db47042))
 
 ## Changes
-

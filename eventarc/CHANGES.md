@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.16.0...eventarc/v1.16.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **eventarc:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.5...eventarc/v1.16.0) (2025-09-16)
 
 
@@ -273,4 +280,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out eventarc as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
