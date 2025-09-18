@@ -97,7 +97,7 @@ func (q *Query) Wait(ctx context.Context) error {
 	case <-q.Done():
 		return q.Err()
 	case <-ctx.Done():
-		return q.Err()
+		return ctx.Err()
 	}
 }
 
@@ -161,6 +161,11 @@ func (q *Query) runQuery(req *bigquerypb.PostQueryRequest, opts []gax.CallOption
 }
 
 func (q *Query) waitForQueryBackground(opts []gax.CallOption) {
+	backoff := gax.Backoff{
+		Initial:    50 * time.Millisecond,
+		Multiplier: 1.3,
+		Max:        60 * time.Second,
+	}
 	for !q.complete {
 		err := q.waitForQuery(q.ctx, opts)
 		if err != nil {
@@ -168,7 +173,7 @@ func (q *Query) waitForQueryBackground(opts []gax.CallOption) {
 			return
 		}
 		select {
-		case <-time.After(1 * time.Second): // TODO: exponetial backoff
+		case <-time.After(backoff.Pause()):
 		case <-q.ctx.Done():
 			q.markDone(q.ctx.Err())
 			return
@@ -179,9 +184,18 @@ func (q *Query) waitForQueryBackground(opts []gax.CallOption) {
 
 func (q *Query) markDone(err error) {
 	q.mu.Lock()
-	q.err = err
-	close(q.ready)
-	q.mu.Unlock()
+	defer q.mu.Unlock()
+
+	// Check if already done to prevent panic on closing closed channel.
+	select {
+	case <-q.ready:
+		// Already closed
+		return
+	default:
+		// Not closed yet
+		q.err = err
+		close(q.ready)
+	}
 }
 
 func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
@@ -229,11 +243,15 @@ func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) {
 // QueryID returns the auto-generated ID for the query.
 // Only filled for stateless queries.
 func (q *Query) QueryID() string {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	return q.queryID
 }
 
 // JobReference returns the job reference.
 func (q *Query) JobReference() *bigquerypb.JobReference {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	if q.jobID == "" {
 		return nil
 	}
@@ -251,5 +269,7 @@ func (q *Query) Schema() *bigquerypb.TableSchema {
 
 // Complete to check if job finished execution
 func (q *Query) Complete() bool {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	return q.complete
 }

@@ -62,9 +62,13 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 
 // StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
 func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*Query, error) {
-	qconfig := job.Configuration.Query
+	config := job.GetConfiguration()
+	if config == nil {
+		return nil, fmt.Errorf("bigquery: job is missing configuration")
+	}
+	qconfig := config.Query
 	if qconfig == nil {
-		return nil, fmt.Errorf("job is not a query")
+		return nil, fmt.Errorf("bigquery: job is not a query")
 	}
 
 	jobRef := job.GetJobReference()
@@ -74,12 +78,22 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	if jobRef.JobId == "" {
 		jobRef.JobId = uid.NewSpace("job", nil).New()
 	}
+	job.JobReference = jobRef
 
 	return newQueryJobFromJob(ctx, c, c.projectID, job, opts...), nil
 }
 
 // AttachJob set up a query job to be read from an existing one.
 func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
+	if jobRef == nil {
+		return nil, fmt.Errorf("bigquery: AttachJob requires a non-nil JobReference")
+	}
+	if jobRef.GetJobId() == "" {
+		return nil, fmt.Errorf("bigquery: AttachJob requires a non-empty JobReference.JobId")
+	}
+	if jobRef.GetProjectId() == "" {
+		jobRef.ProjectId = c.projectID
+	}
 	return newQueryJobFromJobReference(ctx, c, jobRef, opts...), nil
 }
 
