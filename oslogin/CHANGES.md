@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.14.6...oslogin/v1.14.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* **oslogin:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.14.5...oslogin/v1.14.6) (2025-04-15)
 
 
@@ -247,4 +254,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out oslogin as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

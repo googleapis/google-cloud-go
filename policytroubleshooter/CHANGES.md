@@ -2,6 +2,13 @@
 
 
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.11.6...policytroubleshooter/v1.11.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.11.5...policytroubleshooter/v1.11.6) (2025-04-15)
 
 
@@ -221,4 +228,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out policytroubleshooter as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

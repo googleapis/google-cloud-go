@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.5.0...networkservices/v0.5.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **networkservices:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.4.0...networkservices/v0.5.0) (2025-07-09)
 
 
@@ -171,4 +178,3 @@
 * **networkservices:** New client(s) ([#10314](https://github.com/googleapis/google-cloud-go/issues/10314)) ([ee4df98](https://github.com/googleapis/google-cloud-go/commit/ee4df98e7ff89c005ee345120fb53c85086a2461))
 
 ## Changes
-

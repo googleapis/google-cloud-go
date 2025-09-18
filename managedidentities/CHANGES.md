@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.7.6...managedidentities/v1.7.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* **managedidentities:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.7.5...managedidentities/v1.7.6) (2025-04-15)
 
 
@@ -198,4 +205,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out managedidentities as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

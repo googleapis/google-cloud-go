@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/geminidataanalytics/v0.2.0...geminidataanalytics/v0.2.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **geminidataanalytics:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/geminidataanalytics/v0.1.0...geminidataanalytics/v0.2.0) (2025-09-04)
 
 
@@ -36,4 +43,3 @@
 * **geminidataanalytics:** New client ([#12729](https://github.com/googleapis/google-cloud-go/issues/12729)) ([1bc6c98](https://github.com/googleapis/google-cloud-go/commit/1bc6c98c371418b05cbe13a95a601e08d1c97014))
 
 ## Changes
-

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v1.1.5...migrationcenter/v1.1.6) (2025-09-18)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v1.1.4...migrationcenter/v1.1.5) (2025-04-15)
 
 
@@ -148,4 +155,3 @@
 * **migrationcenter:** Migration Center API ([fa91b47](https://github.com/googleapis/google-cloud-go/commit/fa91b478a55d6347f5c4fd29f2490316b2f31072))
 
 ## Changes
-
