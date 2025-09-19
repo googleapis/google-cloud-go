@@ -2407,7 +2407,7 @@ func TestIntegration_Copy(t *testing.T) {
 		})
 
 		// Create new bucket
-		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
+		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "US-EAST1"}); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
 		t.Cleanup(func() {
@@ -2434,6 +2434,14 @@ func TestIntegration_Copy(t *testing.T) {
 		t.Cleanup(func() {
 			h.mustDeleteObject(obj)
 		})
+
+		// Set metadata on the source object to check if it's copied.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{
+			ContentLanguage:    "en",
+			ContentDisposition: "inline",
+		}); err != nil {
+			t.Fatalf("obj.Update: %v", err)
+		}
 
 		attrs, err := obj.Attrs(ctx)
 		if err != nil {
@@ -2518,6 +2526,16 @@ func TestIntegration_Copy(t *testing.T) {
 				if test.copierAttrs != nil {
 					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
 						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
+					}
+				}
+
+				// Check that metadata is copied when no destination attributes are provided.
+				if test.copierAttrs == nil {
+					if attrs.ContentLanguage != "en" {
+						t.Errorf("unexpected ContentLanguage; got: %s, want: en", attrs.ContentLanguage)
+					}
+					if attrs.ContentDisposition != "inline" {
+						t.Errorf("unexpected ContentDisposition; got: %s, want: inline", attrs.ContentDisposition)
 					}
 				}
 
