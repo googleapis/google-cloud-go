@@ -163,19 +163,7 @@ func (q *Query) runQuery(req *bigquerypb.PostQueryRequest, opts []gax.CallOption
 	}
 	q.queryID = res.GetQueryId()
 
-	// TODO: how to copy from QueryResponse to GetQueryResultsResponse more automatically ?
-	q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
-		Schema:              res.GetSchema(),
-		PageToken:           res.GetPageToken(),
-		TotalRows:           res.GetTotalRows(),
-		JobReference:        res.GetJobReference(),
-		Rows:                res.GetRows(),
-		JobComplete:         res.GetJobComplete(),
-		Errors:              res.GetErrors(),
-		CacheHit:            res.GetCacheHit(),
-		TotalBytesProcessed: res.GetTotalBytesProcessed(),
-		NumDmlAffectedRows:  res.GetNumDmlAffectedRows(),
-	})
+	q.consumeQueryResponse(res)
 
 	go q.waitForQueryBackground(opts)
 }
@@ -236,7 +224,15 @@ func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
 	return nil
 }
 
-func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) {
+// Common fields from jobs.query and jobs.getQueryResults
+// Needs to be updated as new fields are consumed
+type queryResponse interface {
+	GetJobComplete() *wrapperspb.BoolValue
+	GetJobReference() *bigquerypb.JobReference
+	GetTotalRows() *wrapperspb.UInt64Value
+}
+
+func (q *Query) consumeQueryResponse(res queryResponse) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
