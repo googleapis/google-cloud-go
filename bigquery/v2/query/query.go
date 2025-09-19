@@ -149,7 +149,7 @@ func (q *Query) insertQuery(job *bigquerypb.Job, opts []gax.CallOption) {
 	}
 
 	q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
-		JobReference: res.JobReference,
+		JobReference: res.GetJobReference(),
 	})
 
 	go q.waitForQueryBackground(opts)
@@ -163,17 +163,18 @@ func (q *Query) runQuery(req *bigquerypb.PostQueryRequest, opts []gax.CallOption
 	}
 	q.queryID = res.GetQueryId()
 
+	// TODO: how to copy from QueryResponse to GetQueryResultsResponse more automatically ?
 	q.consumeQueryResponse(&bigquerypb.GetQueryResultsResponse{
-		Schema:              res.Schema,
-		PageToken:           res.PageToken,
-		TotalRows:           res.TotalRows,
-		JobReference:        res.JobReference,
-		Rows:                res.Rows,
-		JobComplete:         res.JobComplete,
-		Errors:              res.Errors,
-		CacheHit:            res.CacheHit,
-		TotalBytesProcessed: res.TotalBytesProcessed,
-		NumDmlAffectedRows:  res.NumDmlAffectedRows,
+		Schema:              res.GetSchema(),
+		PageToken:           res.GetPageToken(),
+		TotalRows:           res.GetTotalRows(),
+		JobReference:        res.GetJobReference(),
+		Rows:                res.GetRows(),
+		JobComplete:         res.GetJobComplete(),
+		Errors:              res.GetErrors(),
+		CacheHit:            res.GetCacheHit(),
+		TotalBytesProcessed: res.GetTotalBytesProcessed(),
+		NumDmlAffectedRows:  res.GetNumDmlAffectedRows(),
 	})
 
 	go q.waitForQueryBackground(opts)
@@ -239,21 +240,21 @@ func (q *Query) consumeQueryResponse(res *bigquerypb.GetQueryResultsResponse) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
-	if res.JobComplete != nil {
-		q.complete = res.JobComplete.Value
+	if res.GetJobComplete() != nil {
+		q.complete = res.GetJobComplete().GetValue()
 	}
 
-	if res.JobReference != nil {
-		jobRef := res.JobReference
-		q.projectID = jobRef.ProjectId
-		q.jobID = jobRef.JobId
-		if jobRef.Location != nil {
-			q.location = jobRef.Location.GetValue()
+	jobRef := res.GetJobReference()
+	if jobRef != nil {
+		q.projectID = jobRef.GetProjectId()
+		q.jobID = jobRef.GetJobId()
+		if jobRef.GetLocation() != nil {
+			q.location = jobRef.GetLocation().GetValue()
 		}
 	}
 
-	if res.TotalRows != nil {
-		q.cachedTotalRows = res.TotalRows.Value
+	if res.GetTotalRows() != nil {
+		q.cachedTotalRows = res.GetTotalRows().GetValue()
 	}
 
 	// TODO: save schema, page token, total rows and parse rows

@@ -57,8 +57,12 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // handle to the running query. The returned Query object can be used to wait for
 // completion and retrieve results.
 func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*Query, error) {
-	if req.QueryRequest.RequestId == "" {
-		req.QueryRequest.RequestId = uid.NewSpace("request", nil).New()
+	qr := req.GetQueryRequest()
+	if qr == nil {
+		return nil, fmt.Errorf("bigquery: request is missing QueryRequest")
+	}
+	if qr.GetRequestId() == "" {
+		qr.RequestId = uid.NewSpace("request", nil).New()
 	}
 
 	return newQueryJobFromQueryRequest(ctx, c, req, opts...), nil
@@ -78,11 +82,11 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	jobRef := job.GetJobReference()
 	if jobRef == nil {
 		jobRef = &bigquerypb.JobReference{}
+		job.JobReference = jobRef
 	}
-	if jobRef.JobId == "" {
+	if jobRef.GetJobId() == "" {
 		jobRef.JobId = uid.NewSpace("job", nil).New()
 	}
-	job.JobReference = jobRef
 
 	return newQueryJobFromJob(ctx, c, c.projectID, job, opts...), nil
 }
