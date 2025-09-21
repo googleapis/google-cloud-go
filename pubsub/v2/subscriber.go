@@ -280,7 +280,6 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	// This context is for forcefully shutting down the application if ShutdownTimeout
 	// is exceeded.
 	shutdownKillCtx, shutdownKillCancel := context.WithCancel(context.Background())
-	defer shutdownKillCancel()
 
 	for i := 0; i < numGoroutines; i++ {
 		// The iterator does not use the context passed to Receive. If it did,
@@ -328,7 +327,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				}()
 
 				// Make message pulling dependent on iterator for context cancellation
-				// If the context is cancelled while pulling messages, stop calling Receive early.
+				// If the context is cancelled while pulling messages, stop reading from stream early.
 				var msgs []*Message
 				select {
 				case <-ctx.Done():
@@ -350,7 +349,6 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				}
 
 				for i, msg := range msgs {
-					msg := msg
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
@@ -429,19 +427,20 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 							}
 						}
 						defer fc.release(ctx, msgLen)
+						f(otelCtx, m)
 
-						done := make(chan struct{})
-						go func() {
-							defer close(done)
-							f(otelCtx, m)
-						}()
+						// done := make(chan struct{})
+						// go func() {
+						// 	defer close(done)
+						// 	f(otelCtx, m)
+						// }()
 
-						select {
-						case <-done:
-							// Callback finished gracefully.
-						case <-shutdownKillCtx.Done():
-							// Shutdown timeout exceeded, stop waiting for callback.
-						}
+						// select {
+						// case <-done:
+						// 	// Callback finished gracefully.
+						// case <-shutdownKillCtx.Done():
+						// 	// Shutdown timeout exceeded, stop waiting for callback.
+						// }
 					}); err != nil {
 						wg.Done()
 						// TODO(hongalex): propagate these errors to an otel span.
@@ -463,16 +462,20 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	go func() {
 		// Detected cancellation (either user initiated or permanent error).
 		<-ctx2.Done()
-		// Stop all the pullstreams as the first thing we do to prevent new messages.
-		for _, p := range pairs {
-			p.iter.ps.cancel()
-		}
 
 		shutdownOpts := s.ReceiveSettings.ShutdownOptions
 		// Once shutdown is initiated, start the timer for forceful shutdown.
 		if shutdownOpts.Timeout == 0 {
+			// Stop all the pullstreams as the first thing we do to prevent new messages.
+			for _, p := range pairs {
+				p.iter.ps.cancel()
+			}
 			shutdownKillCancel() // Immediate forceful shutdown.
 		} else if shutdownOpts.Timeout > 0 {
+			// Stop all the pullstreams as the first thing we do to prevent new messages.
+			for _, p := range pairs {
+				p.iter.ps.cancel()
+			}
 			time.AfterFunc(shutdownOpts.Timeout, shutdownKillCancel)
 			for _, p := range pairs {
 				p.iter.nackInventory(shutdownKillCtx)
@@ -491,7 +494,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				}
 				sched.Shutdown()
 			}()
-		} else if shutdownOpts.Timeout < 0 { // Graceful shutdown
+		} else { // Graceful shutdown
 			for _, p := range pairs {
 				p.iter.stop()
 				p.wg.Done()
