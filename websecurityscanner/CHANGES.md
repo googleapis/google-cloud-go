@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.7.6...websecurityscanner/v1.7.7) (2025-09-22)
+
+
+### Bug Fixes
+
+* **websecurityscanner:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.7.5...websecurityscanner/v1.7.6) (2025-04-15)
 
 
@@ -198,4 +205,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out websecurityscanner as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

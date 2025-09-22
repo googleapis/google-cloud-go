@@ -2,6 +2,13 @@
 
 
 
+## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v1.1.5...telcoautomation/v1.1.6) (2025-09-22)
+
+
+### Bug Fixes
+
+* **telcoautomation:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v1.1.4...telcoautomation/v1.1.5) (2025-04-15)
 
 
@@ -133,4 +140,3 @@
 * **telcoautomation:** Add telcoautomation API description ([#9019](https://github.com/googleapis/google-cloud-go/issues/9019)) ([03f9190](https://github.com/googleapis/google-cloud-go/commit/03f9190c36f69458e332d4f1b2e5edfd095899ad))
 
 ## Changes
-

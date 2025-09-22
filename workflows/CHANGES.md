@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.14.2...workflows/v1.14.3) (2025-09-22)
+
+
+### Bug Fixes
+
+* **workflows:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.14.1...workflows/v1.14.2) (2025-04-15)
 
 
@@ -269,4 +276,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out workflows as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

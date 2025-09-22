@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.19.1...security/v1.19.2) (2025-09-22)
+
+
+### Bug Fixes
+
+* **security:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.19.0...security/v1.19.1) (2025-09-04)
 
 
@@ -303,4 +310,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out security as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
