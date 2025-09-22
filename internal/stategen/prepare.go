@@ -25,30 +25,26 @@ import (
 	"strings"
 )
 
-// prepareModule runs a series of cleanup and formatting operations on a given
-// module's source code, equivalent to the prepare_module.sh script.
+// prepareModule runs a series of cleanup and formatting operations on the given
+// moduleRoot directory tree.
 func prepareModule(moduleRoot string) error {
 	slog.Info("preparing module", "path", moduleRoot)
 
-	// chmod -x $(find . -name '*.go')
 	if err := removeGoExecutePermissions(moduleRoot); err != nil {
 		return fmt.Errorf("removing execute permissions: %w", err)
 	}
-
-	// goimports -w .
 	if err := runGoImports(moduleRoot); err != nil {
 		return fmt.Errorf("running goimports: %w", err)
 	}
-
-	// for file in $(find . -name '*_grpc.pb.go') ...
 	if err := removeIgnoredGrpcFiles(moduleRoot); err != nil {
 		return fmt.Errorf("removing ignored gRPC files: %w", err)
 	}
-
 	return nil
 }
 
+// removeGoExecutePermissions runs equivalent of: chmod -x $(find . -name '*.go')
 func removeGoExecutePermissions(moduleRoot string) error {
+	slog.Info("removing execute permissions recursively for *.go", "dir", moduleRoot)
 	return filepath.WalkDir(moduleRoot, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -73,19 +69,33 @@ func removeGoExecutePermissions(moduleRoot string) error {
 	})
 }
 
+// runGoImports runs: goimports -w .
 func runGoImports(moduleRoot string) error {
+	slog.Info("running goimports -w .", "dir", moduleRoot)
 	cmd := exec.Command("goimports", "-w", ".")
 	cmd.Dir = moduleRoot
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
-	slog.Debug("running goimports", "dir", moduleRoot)
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("goimports failed: %w\n%s", err, stderr.String())
 	}
 	return nil
 }
 
+// removeIgnoredGrpcFiles runs the equivalent of:
+//
+// for file in $(find . -name '*_grpc.pb.go')
+// do
+//
+//	if grep -q '//go:build ignore' $file
+//	then
+//	  echo "Deleting $file"
+//	  rm $file
+//	fi
+//
+// done
 func removeIgnoredGrpcFiles(moduleRoot string) error {
+	slog.Info("deleting empty *_grpc.pb.go files", "dir", moduleRoot)
 	const buildIgnore = "//go:build ignore"
 	return filepath.WalkDir(moduleRoot, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -99,7 +109,7 @@ func removeIgnoredGrpcFiles(moduleRoot string) error {
 			return fmt.Errorf("reading %s: %w", path, err)
 		}
 		if strings.Contains(string(content), buildIgnore) {
-			slog.Info("deleting ignored gRPC file", "file", path)
+			slog.Debug("deleting empty *_grpc.pb.go file", "file", path)
 			if err := os.Remove(path); err != nil {
 				return fmt.Errorf("deleting %s: %w", path, err)
 			}

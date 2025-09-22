@@ -15,17 +15,15 @@
 package main
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
-// cleanupLegacyConfigs is the main entrypoint for removing legacy configuration
-// for a newly migrated module.
+// cleanupLegacyConfigs is the entrypoint for removing OwlBot and release-please
+// configuration for a module being migrated to Librarian.
 func cleanupLegacyConfigs(repoRoot, moduleName string) error {
 	if err := cleanupOwlBotYaml(repoRoot, moduleName); err != nil {
 		return fmt.Errorf("cleaning up .OwlBot.yaml: %w", err)
@@ -34,7 +32,7 @@ func cleanupLegacyConfigs(repoRoot, moduleName string) error {
 		return fmt.Errorf("cleaning up postprocessor config: %w", err)
 	}
 
-	// JSON files to clean up.
+	// release-please JSON files to clean up.
 	jsonFiles := []string{
 		"release-please-config-individual.json",
 		"release-please-config-yoshi-submodules.json",
@@ -49,144 +47,179 @@ func cleanupLegacyConfigs(repoRoot, moduleName string) error {
 	return nil
 }
 
-// cleanupJSONFile removes a module entry from a given JSON file. It handles
-// both manifest files (toplevel keys) and release-please config files (keys
-// under a "packages" object).
+// cleanupJSONFile removes all module entries from a given JSON file.
 func cleanupJSONFile(path, moduleName string) error {
-	bytes, err := os.ReadFile(path)
+	fileBytes, err := os.ReadFile(path)
 	if err != nil {
-		// Not all files will exist in all contexts, so skip if not found.
-		if os.IsNotExist(err) {
-			return nil
+		return err
+	}
+
+	lines := strings.Split(string(fileBytes), "\n")
+	var newLines []string
+	inPackages := false
+	inBlock := false
+	braceCount := 0
+	for _, line := range lines {
+		if strings.Contains(line, "\"packages\":") {
+			inPackages = true
 		}
-		return err
+		if inPackages && strings.Contains(line, "\""+moduleName+"\":") {
+			inBlock = true
+		}
+
+		if inBlock {
+			braceCount += strings.Count(line, "{")
+			braceCount -= strings.Count(line, "}")
+			if braceCount == 0 {
+				inBlock = false
+			}
+			continue
+		}
+
+		// Handle manifest files and non-package blocks.
+		if strings.Contains(line, "\""+moduleName+"\":") {
+			// Check if it's the last line in a block without a trailing comma.
+			trimmedLine := strings.TrimSpace(line)
+			if !strings.HasSuffix(trimmedLine, ",") {
+				if len(newLines) > 0 {
+					lastLine := strings.TrimSpace(newLines[len(newLines)-1])
+					if strings.HasSuffix(lastLine, ",") {
+						newLines[len(newLines)-1] = strings.TrimSuffix(newLines[len(newLines)-1], ",")
+					}
+				}
+			}
+			continue
+		}
+
+		newLines = append(newLines, line)
 	}
 
-	var data map[string]interface{}
-	if err := json.Unmarshal(bytes, &data); err != nil {
-		return err
+	output := strings.Join(newLines, "\n")
+	if bytes.Equal([]byte(output), fileBytes) {
+		return nil
 	}
 
-	// release-please-config files have a "packages" key.
-	if packages, ok := data["packages"].(map[string]interface{}); ok {
-		delete(packages, moduleName)
-	} else {
-		// Manifest files have the module name as a top-level key.
-		delete(data, moduleName)
-	}
-
-	outBytes, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(path, outBytes, 0644)
+	return os.WriteFile(path, []byte(output), 0644)
 }
 
 // cleanupPostProcessorConfig removes the module and service-config entries for
 // a given module from the internal/postprocessor/config.yaml file.
+// NOTE: This function does not remove modules from manual-clients.
 func cleanupPostProcessorConfig(repoRoot, moduleName string) error {
 	configPath := filepath.Join(repoRoot, "internal", "postprocessor", "config.yaml")
-	bytes, err := os.ReadFile(configPath)
+	fileBytes, err := os.ReadFile(configPath)
 	if err != nil {
 		return err
 	}
 
-	// We can't use postProcessorConfig from config.go because it's a partial
-	// view of the file. We need the full structure to write it back correctly.
-	var fullConfig map[string]interface{}
-	if err := yaml.Unmarshal(bytes, &fullConfig); err != nil {
-		return err
-	}
+	lines := strings.Split(string(fileBytes), "\n")
+	var newLines []string
 
-	// Clean up the modules list.
-	modulesKey := "modules"
-	modules, ok := fullConfig[modulesKey].([]interface{})
-	if !ok {
-		return fmt.Errorf("key %q not found or not a slice", modulesKey)
-	}
-	var newModules []string
-	for _, m := range modules {
-		mod, ok := m.(string)
-		if !ok {
+	// First pass: remove from modules list.
+	inModules := false
+	for _, line := range lines {
+		if strings.HasPrefix(line, "modules:") {
+			inModules = true
+		} else if !strings.HasPrefix(line, " ") { // top-level key
+			inModules = false
+		}
+		if inModules && strings.TrimSpace(line) == "- "+moduleName {
 			continue
 		}
-		if mod != moduleName {
-			newModules = append(newModules, mod)
-		}
+		newLines = append(newLines, line)
 	}
-	fullConfig[modulesKey] = newModules
 
-	// Clean up the service-configs list.
-	serviceConfigsKey := "service-configs"
-	serviceConfigs, ok := fullConfig[serviceConfigsKey].([]interface{})
-	if !ok {
-		return fmt.Errorf("key %q not found or not a slice", serviceConfigsKey)
-	}
-	var newServiceConfigs []interface{}
-	importPrefix := "cloud.google.com/go/" + moduleName
-	for _, sc := range serviceConfigs {
-		serviceConfig, ok := sc.(map[string]interface{})
-		if !ok {
+	// Second pass: remove from service-configs.
+	lines = newLines
+	newLines = []string{}
+	inServiceConfigs := false
+	var serviceConfigBlock []string
+	isTargetServiceConfig := false
+	for _, line := range lines {
+		if strings.HasPrefix(line, "service-configs:") {
+			inServiceConfigs = true
+			newLines = append(newLines, line)
 			continue
 		}
-		importPath, ok := serviceConfig["import-path"].(string)
-		if !ok {
+		if !strings.HasPrefix(line, " ") { // top-level key
+			if inServiceConfigs {
+				if !isTargetServiceConfig {
+					newLines = append(newLines, serviceConfigBlock...)
+				}
+				isTargetServiceConfig = false
+				serviceConfigBlock = nil
+			}
+			inServiceConfigs = false
+		}
+
+		if !inServiceConfigs {
+			newLines = append(newLines, line)
 			continue
 		}
-		if !strings.HasPrefix(importPath, importPrefix) {
-			newServiceConfigs = append(newServiceConfigs, sc)
+
+		// In service-configs section
+		if strings.HasPrefix(line, "  - input-directory:") {
+			if !isTargetServiceConfig {
+				newLines = append(newLines, serviceConfigBlock...)
+			}
+			serviceConfigBlock = []string{line}
+			isTargetServiceConfig = false
+		} else {
+			serviceConfigBlock = append(serviceConfigBlock, line)
+		}
+
+		if strings.Contains(line, "import-path:") {
+			path := strings.TrimSpace(strings.Split(line, ":")[1])
+			if strings.HasPrefix(path, "cloud.google.com/go/"+moduleName+"/") {
+				isTargetServiceConfig = true
+			}
 		}
 	}
-	fullConfig[serviceConfigsKey] = newServiceConfigs
-
-	outBytes, err := yaml.Marshal(fullConfig)
-	if err != nil {
-		return err
+	// flush last block
+	if inServiceConfigs && !isTargetServiceConfig {
+		newLines = append(newLines, serviceConfigBlock...)
 	}
 
-	return os.WriteFile(configPath, outBytes, 0644)
+	output := strings.Join(newLines, "\n")
+	if bytes.Equal([]byte(output), fileBytes) {
+		return nil
+	}
+
+	return os.WriteFile(configPath, []byte(output), 0644)
 }
 
-// cleanupOwlBotYaml removes the deep-remove-regex entries for a given module
-// from the .github/.OwlBot.yaml file.
+// cleanupOwlBotYaml removes entries for a given module from the
+// .github/.OwlBot.yaml file.
 func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 	owlBotPath := filepath.Join(repoRoot, ".github", ".OwlBot.yaml")
-	bytes, err := os.ReadFile(owlBotPath)
+	fileBytes, err := os.ReadFile(owlBotPath)
 	if err != nil {
 		return err
 	}
 
-	var owlBotConfig map[string]interface{}
-	if err := yaml.Unmarshal(bytes, &owlBotConfig); err != nil {
-		return err
-	}
-
-	key := "deep-remove-regex"
-	regexes, ok := owlBotConfig[key].([]interface{})
-	if !ok {
-		return fmt.Errorf("key %q not found or not a slice", key)
-	}
-
-	var newRegexes []string
-	prefix1 := "/" + moduleName + "/"
-	prefix2 := "/internal/generated/snippets/" + moduleName + "/"
-
-	for _, r := range regexes {
-		regex, ok := r.(string)
-		if !ok {
+	lines := strings.Split(string(fileBytes), "\n")
+	var newLines []string
+	for i := 0; i < len(lines); i++ {
+		line := lines[i]
+		if strings.Contains(line, "source:") {
+			// It's a source line, check it for the module name.
+			if strings.Contains(line, moduleName) {
+				if i+1 < len(lines) {
+					i++ // Remove both source and dest lines.
+				}
+				continue
+			}
+		}
+		if strings.Contains(line, moduleName) {
+			// Remove any non-source line containing the module name.
 			continue
 		}
-		if !strings.HasPrefix(regex, prefix1) && !strings.HasPrefix(regex, prefix2) {
-			newRegexes = append(newRegexes, regex)
-		}
+		newLines = append(newLines, line)
 	}
 
-	owlBotConfig[key] = newRegexes
-	outBytes, err := yaml.Marshal(owlBotConfig)
-	if err != nil {
-		return err
+	output := strings.Join(newLines, "\n")
+	if bytes.Equal([]byte(output), fileBytes) {
+		return nil
 	}
-
-	return os.WriteFile(owlBotPath, outBytes, 0644)
+	return os.WriteFile(owlBotPath, []byte(output), 0644)
 }
