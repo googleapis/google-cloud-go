@@ -21,11 +21,7 @@
 package visionaipb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -324,86 +320,4 @@ func file_google_cloud_visionai_v1_health_service_proto_init() {
 	file_google_cloud_visionai_v1_health_service_proto_rawDesc = nil
 	file_google_cloud_visionai_v1_health_service_proto_goTypes = nil
 	file_google_cloud_visionai_v1_health_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// HealthCheckServiceClient is the client API for HealthCheckService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type HealthCheckServiceClient interface {
-	// HealthCheck method checks the health status of the cluster.
-	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
-}
-
-type healthCheckServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewHealthCheckServiceClient(cc grpc.ClientConnInterface) HealthCheckServiceClient {
-	return &healthCheckServiceClient{cc}
-}
-
-func (c *healthCheckServiceClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
-	out := new(HealthCheckResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.visionai.v1.HealthCheckService/HealthCheck", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// HealthCheckServiceServer is the server API for HealthCheckService service.
-type HealthCheckServiceServer interface {
-	// HealthCheck method checks the health status of the cluster.
-	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
-}
-
-// UnimplementedHealthCheckServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedHealthCheckServiceServer struct {
-}
-
-func (*UnimplementedHealthCheckServiceServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
-}
-
-func RegisterHealthCheckServiceServer(s *grpc.Server, srv HealthCheckServiceServer) {
-	s.RegisterService(&_HealthCheckService_serviceDesc, srv)
-}
-
-func _HealthCheckService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HealthCheckRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(HealthCheckServiceServer).HealthCheck(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.visionai.v1.HealthCheckService/HealthCheck",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HealthCheckServiceServer).HealthCheck(ctx, req.(*HealthCheckRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _HealthCheckService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.visionai.v1.HealthCheckService",
-	HandlerType: (*HealthCheckServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "HealthCheck",
-			Handler:    _HealthCheckService_HealthCheck_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/visionai/v1/health_service.proto",
 }
