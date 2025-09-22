@@ -27,8 +27,11 @@ type ShutdownOptions struct {
 	//
 	// Set to zero to immediately shutdown (either modes)
 	// Set to a negative value to disable timeout.
+	//
 	// When ShutdownOptions is not set, the client library will
 	// assume disabled/infinite timeout, which matches the current behavior.
+	// When ShutdownOptions is set, but Timeout is unspecified, the default zero-value
+	// will result in immediate shutdown.
 	Timeout time.Duration
 
 	// Behavior defines the strategy the subscriber should use when
