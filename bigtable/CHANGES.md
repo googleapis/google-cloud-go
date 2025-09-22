@@ -1,5 +1,12 @@
 # Changes
 
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.39.0...bigtable/v1.40.0) (2025-09-22)
+
+
+### Features
+
+* **bigtable:** Expose otel native grpc metrics in Bigtable ([#12827](https://github.com/googleapis/google-cloud-go/issues/12827)) ([e9d2efd](https://github.com/googleapis/google-cloud-go/commit/e9d2efdcec738f627260845c12994c1d28dc38d7))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.38.0...bigtable/v1.39.0) (2025-08-28)
 
 
