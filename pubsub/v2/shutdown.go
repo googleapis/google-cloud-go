@@ -17,16 +17,18 @@ package pubsub
 import "time"
 
 // ShutdownOptions configures the shutdown behavior of the subscriber.
-// If not specified, the behavior will default to indefinite processing,
-// that is graceful shutdown with no timeout.
+// If not specified, the default behavior is indefinite processing,
+// aka graceful shutdown with no timeout.
 type ShutdownOptions struct {
 	// Timeout specifies the time the subscriber should wait
-	// to shutdown before killing the process.
-	// In nack mode, this specifies how long to wait
-	// for messages to be nacked after shutdown is initiated.
+	// before forcefully shutting down..
+	// In ShutdownBehaviorNackImmediately mode, this configures the timeout
+	// for message nacks before shutting down.
 	//
-	// Set to zero to immediately shutdown.
+	// Set to zero to immediately shutdown (either modes)
 	// Set to a negative value to disable timeout.
+	// When ShutdownOptions is not set, the client library will
+	// assume disabled/infinite timeout, which matches the current behavior.
 	Timeout time.Duration
 
 	// Behavior defines the strategy the subscriber should use when
@@ -39,11 +41,11 @@ type ShutdownOptions struct {
 type ShutdownBehavior int
 
 const (
-	// ShutdownBehaviorWaitForProcessing means the subscriber will wait for
-	// outstanding messages to be processed before nacking messages finally.
+	// ShutdownBehaviorWaitForProcessing means the subscriber client will wait for
+	// outstanding messages to be processed.
 	ShutdownBehaviorWaitForProcessing = iota
 
-	// ShutdownBehaviorNackImmediately means the subscriber will nack all outstanding
-	// messages before closing.
+	// ShutdownBehaviorNackImmediately means the subscriber client will nack all
+	// outstanding messages before closing.
 	ShutdownBehaviorNackImmediately
 )
