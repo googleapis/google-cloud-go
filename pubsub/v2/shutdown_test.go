@@ -59,8 +59,7 @@ func TestShutdown_NackImmediately(t *testing.T) {
 	go sub.Receive(cctx, func(ctx context.Context, m *Message) {
 		// First time receiving, cancel the context to trigger shutdown.
 		// Don't cancel away to avoid race condition with fake.
-		time.Sleep(2 * time.Second)
-		ccancel()
+		time.AfterFunc(2*time.Second, ccancel)
 	})
 
 	// Wait for the message to be redelivered.
