@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.27.0...video/v1.27.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **video:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.26.0...video/v1.27.0) (2025-09-17)
 
 
@@ -383,4 +390,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out video as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.2.0...storageinsights/v1.2.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **storageinsights:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.1.6...storageinsights/v1.2.0) (2025-05-21)
 
 
@@ -178,4 +185,3 @@
 * **storageinsights:** Start generating apiv1 ([#7862](https://github.com/googleapis/google-cloud-go/issues/7862)) ([07a5ac1](https://github.com/googleapis/google-cloud-go/commit/07a5ac1965154b471d5a45e0c566803ea9edb15f))
 
 ## Changes
-

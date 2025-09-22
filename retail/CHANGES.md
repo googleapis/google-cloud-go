@@ -1,5 +1,12 @@
 # Changes
 
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.25.0...retail/v1.25.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **retail:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.24.0...retail/v1.25.0) (2025-09-11)
 
 
@@ -371,4 +378,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out retail as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

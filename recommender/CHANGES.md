@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.13.5...recommender/v1.13.6) (2025-09-22)
+
+
+### Bug Fixes
+
+* **recommender:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.13.4...recommender/v1.13.5) (2025-04-15)
 
 
@@ -228,4 +235,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out recommender as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

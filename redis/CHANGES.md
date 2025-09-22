@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.18.2...redis/v1.18.3) (2025-09-22)
+
+
+### Bug Fixes
+
+* **redis:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.18.1...redis/v1.18.2) (2025-04-15)
 
 
@@ -307,4 +314,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out redis as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

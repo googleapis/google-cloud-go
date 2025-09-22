@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.4.5...visionai/v0.4.6) (2025-09-22)
+
+
+### Bug Fixes
+
+* **visionai:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [0.4.5](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.4.4...visionai/v0.4.5) (2025-04-15)
 
 
@@ -138,4 +145,3 @@
 * **visionai:** New clients ([#9333](https://github.com/googleapis/google-cloud-go/issues/9333)) ([4315cdf](https://github.com/googleapis/google-cloud-go/commit/4315cdf6bfdcd9ed6e9137254451eabbc5cb420b))
 
 ## Changes
-

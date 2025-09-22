@@ -2,6 +2,13 @@
 
 
 
+## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.1.5...securitycentermanagement/v1.1.6) (2025-09-22)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.1.4...securitycentermanagement/v1.1.5) (2025-04-15)
 
 
@@ -177,4 +184,3 @@
 * **securitycentermanagement:** Security Center Management API ([#9068](https://github.com/googleapis/google-cloud-go/issues/9068)) ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
 
 ## Changes
-

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.11.1...webrisk/v1.11.2) (2025-09-22)
+
+
+### Bug Fixes
+
+* **webrisk:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.11.0...webrisk/v1.11.1) (2025-04-15)
 
 
@@ -227,4 +234,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out webrisk as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
