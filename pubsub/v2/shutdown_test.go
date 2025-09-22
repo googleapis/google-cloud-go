@@ -24,6 +24,7 @@ import (
 )
 
 func TestShutdown_NackImmediately(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	client, srv := newFake(t)
@@ -39,9 +40,10 @@ func TestShutdown_NackImmediately(t *testing.T) {
 	// Part of this test: pretend to extend the min duration quite a bit so we can test
 	// if the message has been properly nacked.
 	sub.ReceiveSettings.MinDurationPerAckExtension = 10 * time.Minute
-	sub.ReceiveSettings.ShutdownOptions.Timeout = 1 * time.Minute
-	sub.ReceiveSettings.ShutdownOptions.Behavior = ShutdownBehaviorNackImmediately
-
+	sub.ReceiveSettings.ShutdownOptions = &ShutdownOptions{
+		Behavior: ShutdownBehaviorNackImmediately,
+		Timeout:  1 * time.Minute,
+	}
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
@@ -57,14 +59,13 @@ func TestShutdown_NackImmediately(t *testing.T) {
 	go sub.Receive(cctx, func(ctx context.Context, m *Message) {
 		// First time receiving, cancel the context to trigger shutdown.
 		// Don't cancel away to avoid race condition with fake.
-		time.Sleep(10 * time.Second)
+		time.Sleep(2 * time.Second)
 		ccancel()
 	})
 
 	// Wait for the message to be redelivered.
-	time.Sleep(15 * time.Second)
+	time.Sleep(5 * time.Second)
 
-	// call Receive again
 	var received int
 	var receiveLock sync.Mutex
 	ctx2, cancel := context.WithTimeout(ctx, 30*time.Second)
@@ -84,7 +85,7 @@ func TestShutdown_NackImmediately(t *testing.T) {
 }
 
 func TestShutdown_WaitForProcessing(t *testing.T) {
-	t.Skip("skip")
+	t.Parallel()
 	tests := []struct {
 		name            string
 		shutdownTimeout time.Duration
@@ -97,10 +98,10 @@ func TestShutdown_WaitForProcessing(t *testing.T) {
 			expectedTimeout: 5 * time.Second,
 		},
 		{
-			name:            "15 second timeout",
-			shutdownTimeout: 15 * time.Second,
-			expectedTimeout: 16 * time.Second,
-			minTime:         14 * time.Second,
+			name:            "WithTimeout",
+			shutdownTimeout: 5 * time.Second,
+			expectedTimeout: 6 * time.Second,
+			minTime:         4 * time.Second,
 		},
 	}
 

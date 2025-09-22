@@ -162,10 +162,6 @@ var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages:     1000,
 	MaxOutstandingBytes:        1e9, // 1G
 	NumGoroutines:              1,
-	ShutdownOptions: &ShutdownOptions{
-		Behavior: ShutdownBehaviorWaitForProcessing,
-		Timeout:  -1,
-	},
 }
 
 var errReceiveInProgress = errors.New("pubsub: Receive already in progress for this subscriber")
@@ -231,8 +227,17 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	if minExtPeriod < 0 {
 		minExtPeriod = DefaultReceiveSettings.MinDurationPerAckExtension
 	}
-	if s.ReceiveSettings.ShutdownOptions == nil {
-		s.ReceiveSettings.ShutdownOptions = DefaultReceiveSettings.ShutdownOptions
+	var shutdownOpts ShutdownOptions
+	if s.ReceiveSettings.ShutdownOptions != nil {
+		shutdownOpts = *s.ReceiveSettings.ShutdownOptions
+	} else {
+		// We can't store these in DefaultReceiveSettings because
+		// ShutdownOptions is a pointer, and editing one client's
+		/// ReceiveSettings will update the underlying ShutdownOptions value.
+		shutdownOpts = ShutdownOptions{
+			Behavior: ShutdownBehaviorWaitForProcessing,
+			Timeout:  -1,
+		}
 	}
 
 	var numGoroutines int
@@ -427,20 +432,19 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 							}
 						}
 						defer fc.release(ctx, msgLen)
-						f(otelCtx, m)
 
-						// done := make(chan struct{})
-						// go func() {
-						// 	defer close(done)
-						// 	f(otelCtx, m)
-						// }()
+						cbDone := make(chan struct{})
+						go func() {
+							defer close(cbDone)
+							f(otelCtx, m)
+						}()
 
-						// select {
-						// case <-done:
-						// 	// Callback finished gracefully.
-						// case <-shutdownKillCtx.Done():
-						// 	// Shutdown timeout exceeded, stop waiting for callback.
-						// }
+						select {
+						case <-cbDone:
+							// Callback finished gracefully.
+						case <-shutdownKillCtx.Done():
+							// Shutdown timeout exceeded, stop waiting for callback.
+						}
 					}); err != nil {
 						wg.Done()
 						// TODO(hongalex): propagate these errors to an otel span.
@@ -463,7 +467,6 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		// Detected cancellation (either user initiated or permanent error).
 		<-ctx2.Done()
 
-		shutdownOpts := s.ReceiveSettings.ShutdownOptions
 		// Once shutdown is initiated, start the timer for forceful shutdown.
 		if shutdownOpts.Timeout == 0 {
 			// Stop all the pullstreams as the first thing we do to prevent new messages.
