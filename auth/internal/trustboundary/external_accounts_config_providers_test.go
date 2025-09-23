@@ -20,7 +20,7 @@ import (
 	"testing"
 )
 
-func TestNewExternalAccountTrustBoundaryConfigProvider(t *testing.T) {
+func TestNewExternalAccountConfigProvider(t *testing.T) {
 	tests := []struct {
 		name           string
 		audience       string
@@ -88,33 +88,33 @@ func TestNewExternalAccountTrustBoundaryConfigProvider(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			provider, err := NewExternalAccountTrustBoundaryConfigProvider(tt.audience, tt.universeDomain)
+			provider, err := NewExternalAccountConfigProvider(tt.audience, tt.universeDomain)
 
 			if tt.wantErr != "" {
 				if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
-					t.Errorf("NewExternalAccountTrustBoundaryConfigProvider() error = %v, wantErr %q", err, tt.wantErr)
+					t.Errorf("NewExternalAccountConfigProvider() error = %v, wantErr %q", err, tt.wantErr)
 				}
 				return
 			}
 			if err != nil {
-				t.Fatalf("NewExternalAccountTrustBoundaryConfigProvider() unexpected error: %v", err)
+				t.Fatalf("NewExternalAccountConfigProvider() unexpected error: %v", err)
 			}
 			switch want := tt.wantProvider.(type) {
 			case *workloadIdentityPoolConfigProvider:
 				got, ok := provider.(*workloadIdentityPoolConfigProvider)
 				if !ok {
-					t.Fatalf("NewExternalAccountTrustBoundaryConfigProvider() got provider type %T, want %T", provider, want)
+					t.Fatalf("NewExternalAccountConfigProvider() got provider type %T, want %T", provider, want)
 				}
 				if *got != *want {
-					t.Errorf("NewExternalAccountTrustBoundaryConfigProvider() got = %v, want %v", got, want)
+					t.Errorf("NewExternalAccountConfigProvider() got = %v, want %v", got, want)
 				}
 			case *workforcePoolConfigProvider:
 				got, ok := provider.(*workforcePoolConfigProvider)
 				if !ok {
-					t.Fatalf("NewExternalAccountTrustBoundaryConfigProvider() got provider type %T, want %T", provider, want)
+					t.Fatalf("NewExternalAccountConfigProvider() got provider type %T, want %T", provider, want)
 				}
 				if *got != *want {
-					t.Errorf("NewExternalAccountTrustBoundaryConfigProvider() got = %v, want %v", got, want)
+					t.Errorf("NewExternalAccountConfigProvider() got = %v, want %v", got, want)
 				}
 			default:
 				t.Fatalf("unexpected provider type in test setup: %T", want)

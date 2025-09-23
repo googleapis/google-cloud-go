@@ -30,8 +30,8 @@ var (
 	workloadAudiencePattern  = regexp.MustCompile(`//iam\.([^/]+)/projects/([^/]+)/locations/global/workloadIdentityPools/([^/]+)`)
 )
 
-// NewExternalAccountTrustBoundaryConfigProvider creates a new ConfigProvider for external accounts.
-func NewExternalAccountTrustBoundaryConfigProvider(audience, inputUniverseDomain string) (ConfigProvider, error) {
+// NewExternalAccountConfigProvider creates a new ConfigProvider for external accounts.
+func NewExternalAccountConfigProvider(audience, inputUniverseDomain string) (ConfigProvider, error) {
 	var audienceDomain, projectNumber, poolID string
 	var isWorkload bool
 
