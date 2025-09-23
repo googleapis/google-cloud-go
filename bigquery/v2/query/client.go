@@ -16,6 +16,7 @@ package query
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
@@ -38,6 +39,9 @@ func NewClient(c *apiv2_client.Client, projectID string, opts ...option.ClientOp
 	qc := &Client{
 		c:         c,
 		projectID: projectID,
+	}
+	if qc.c == nil {
+		return nil, errors.New("missing bigquery client")
 	}
 	return qc, nil
 }

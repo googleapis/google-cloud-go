@@ -24,7 +24,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func TestRunQuery(t *testing.T) {
+func TestIntegration_RunQuery(t *testing.T) {
 	if len(testClients) == 0 {
 		t.Skip("integration tests skipped")
 	}
@@ -63,7 +63,7 @@ func TestRunQuery(t *testing.T) {
 	}
 }
 
-func TestQueryCancelWait(t *testing.T) {
+func TestIntegration_QueryCancelWait(t *testing.T) {
 	if len(testClients) == 0 {
 		t.Skip("integration tests skipped")
 	}
@@ -129,7 +129,7 @@ func TestQueryCancelWait(t *testing.T) {
 	}
 }
 
-func TestInsertQueryJob(t *testing.T) {
+func TestIntegration_InsertQueryJob(t *testing.T) {
 	if len(testClients) == 0 {
 		t.Skip("integration tests skipped")
 	}
