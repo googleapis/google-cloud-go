@@ -66,10 +66,7 @@ func setup(ctx context.Context) func() {
 		return nil
 	}
 
-	grpcOpts := []option.ClientOption{}
-	copy(grpcOpts, opts)
-	grpcOpts = append(opts, WithClient(grpcClient))
-	testClients["GRPC"], err = NewClient(ctx, testProjectID, grpcOpts...)
+	testClients["GRPC"], err = NewClient(grpcClient, testProjectID)
 	if err != nil {
 		testClients = nil
 		return nil
@@ -81,10 +78,7 @@ func setup(ctx context.Context) func() {
 		return nil
 	}
 
-	restOpts := []option.ClientOption{}
-	copy(restOpts, opts)
-	restOpts = append(opts, WithClient(restClient))
-	testClients["REST"], err = NewClient(ctx, testProjectID, restOpts...)
+	testClients["REST"], err = NewClient(restClient, testProjectID)
 	if err != nil {
 		testClients = nil
 		return nil
@@ -94,7 +88,7 @@ func setup(ctx context.Context) func() {
 
 func closeClients() {
 	for k, v := range testClients {
-		if err := v.Close(); err != nil {
+		if err := v.c.Close(); err != nil {
 			log.Printf("closing client %q had error: %v", k, err)
 		}
 	}

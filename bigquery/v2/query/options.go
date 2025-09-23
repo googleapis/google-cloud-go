@@ -14,28 +14,6 @@
 
 package query
 
-import (
-	"cloud.google.com/go/bigquery/v2/apiv2_client"
-	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
-)
-
-// WithClient allows to override the internal bigquery apiv2_client.Client
-func WithClient(client *apiv2_client.Client) option.ClientOption {
-	return &customClientOption{client: client}
-}
-
-type customClientOption struct {
-	internaloption.EmbeddableAdapter
-	client *apiv2_client.Client
-}
-
-func (s *customClientOption) ApplyCustomClientOpt(c *Client) {
-	if s.client != nil {
-		c.c = s.client
-	}
-}
-
 // ReadOption is an option for reading query results.
 type ReadOption func(*readState)
 

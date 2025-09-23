@@ -34,21 +34,10 @@ type Client struct {
 
 // NewClient creates a new query client. A client should be reused instead of
 // created per-request. The client must be closed when it is no longer needed.
-func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+func NewClient(c *apiv2_client.Client, projectID string, opts ...option.ClientOption) (*Client, error) {
 	qc := &Client{
+		c:         c,
 		projectID: projectID,
-	}
-	for _, opt := range opts {
-		if cOpt, ok := opt.(*customClientOption); ok {
-			cOpt.ApplyCustomClientOpt(qc)
-		}
-	}
-	if qc.c == nil {
-		c, err := apiv2_client.NewClient(ctx, opts...)
-		if err != nil {
-			return nil, fmt.Errorf("failed to setup bigquery client: %w", err)
-		}
-		qc.c = c
 	}
 	return qc, nil
 }
@@ -105,10 +94,4 @@ func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference,
 		jobRef.ProjectId = c.projectID
 	}
 	return newQueryJobFromJobReference(ctx, c, jobRef, opts...), nil
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.c.Close()
 }
