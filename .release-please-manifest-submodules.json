@@ -51,7 +51,6 @@
     "datafusion": "1.8.7",
     "datalabeling": "0.9.7",
     "dataplex": "1.27.1",
-    "dataproc": "2.14.1",
     "dataqna": "0.9.7",
     "datastream": "1.15.1",
     "deploy": "1.27.3",
