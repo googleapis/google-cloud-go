@@ -27,7 +27,7 @@ import (
 // Query represents a handle to a query job. Its methods can be used to wait for
 // the job to complete and to iterate over the results.
 type Query struct {
-	c *Client
+	h *Helper
 
 	projectID string
 	jobID     string
@@ -45,9 +45,9 @@ type Query struct {
 }
 
 // Create Query handler using jobs.query request and start background pooling job
-func newQueryJobFromQueryRequest(ctx context.Context, c *Client, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) *Query {
+func newQueryJobFromQueryRequest(ctx context.Context, h *Helper, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) *Query {
 	q := &Query{
-		c:     c,
+		h:     h,
 		ctx:   ctx,
 		ready: make(chan struct{}),
 	}
@@ -57,9 +57,9 @@ func newQueryJobFromQueryRequest(ctx context.Context, c *Client, req *bigquerypb
 }
 
 // Create Query handler using jobs.insert request and start background pooling job
-func newQueryJobFromJob(ctx context.Context, c *Client, projectID string, job *bigquerypb.Job, opts ...gax.CallOption) *Query {
+func newQueryJobFromJob(ctx context.Context, h *Helper, projectID string, job *bigquerypb.Job, opts ...gax.CallOption) *Query {
 	q := &Query{
-		c:         c,
+		h:         h,
 		ctx:       ctx,
 		ready:     make(chan struct{}),
 		projectID: projectID,
@@ -70,9 +70,9 @@ func newQueryJobFromJob(ctx context.Context, c *Client, projectID string, job *b
 }
 
 // Create Query handler from JobReference response and start background pooling job
-func newQueryJobFromJobReference(ctx context.Context, c *Client, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) *Query {
+func newQueryJobFromJobReference(ctx context.Context, h *Helper, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) *Query {
 	q := &Query{
-		c:     c,
+		h:     h,
 		ctx:   ctx,
 		ready: make(chan struct{}),
 	}
@@ -138,7 +138,7 @@ func (q *Query) Err() error {
 }
 
 func (q *Query) insertQuery(job *bigquerypb.Job, opts []gax.CallOption) {
-	res, err := q.c.c.InsertJob(q.ctx, &bigquerypb.InsertJobRequest{
+	res, err := q.h.c.InsertJob(q.ctx, &bigquerypb.InsertJobRequest{
 		ProjectId: q.projectID,
 		Job:       job,
 	}, opts...)
@@ -156,7 +156,7 @@ func (q *Query) insertQuery(job *bigquerypb.Job, opts []gax.CallOption) {
 }
 
 func (q *Query) runQuery(req *bigquerypb.PostQueryRequest, opts []gax.CallOption) {
-	res, err := q.c.c.Query(q.ctx, req, opts...)
+	res, err := q.h.c.Query(q.ctx, req, opts...)
 	if err != nil {
 		q.markDone(err)
 		return
@@ -207,7 +207,7 @@ func (q *Query) markDone(err error) {
 }
 
 func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
-	res, err := q.c.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
+	res, err := q.h.c.GetQueryResults(ctx, &bigquerypb.GetQueryResultsRequest{
 		ProjectId:  q.projectID,
 		JobId:      q.jobID,
 		Location:   q.location,
