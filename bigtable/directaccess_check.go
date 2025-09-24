@@ -34,9 +34,6 @@ const (
 	directPathIPV4Prefix = "34.126"
 )
 
-// CheckDirectConnectivitySupported verifies if DirectPath connectivity is enabled, configured,
-// and actively being used for the given Cloud Bigtable instance.
-//
 // This function attempts to establish a connection to the Bigtable instance using
 // settings that force the use of DirectPath. It then checks if the underlying
 // gRPC connection is indeed using a DirectPath IP address.
@@ -89,6 +86,8 @@ const (
 //   }
 //
 
+// CheckDirectConnectivitySupported verifies if DirectPath connectivity is enabled, configured,
+// and actively being used for the given Cloud Bigtable instance.
 func CheckDirectConnectivitySupported(ctx context.Context, project, instance, appProfile string, opts ...option.ClientOption) (bool, error) {
 	// Check if env variable is set to true
 	// Inside the function
