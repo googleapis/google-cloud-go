@@ -35,17 +35,14 @@ const (
 )
 
 // This function attempts to establish a connection to the Bigtable instance using
-// settings that force the use of DirectPath. It then checks if the underlying
+// Direct Access. It then checks if the underlying
 // gRPC connection is indeed using a DirectPath IP address.
 //
 // Prerequisites for successful DirectPath connectivity:
 // 1. The environment variable `CBT_ENABLE_DIRECTPATH` must be set to "true".
 // 2. The code must be running in a Google Cloud environment (e.g., GCE VM, GKE)
 //    that is properly configured for DirectPath. This includes:
-//    - Subnet enabled for Private Google Access with the "Direct Google Access" option.
-//    - The VM/Pod has an IPv6 address.
-//    - Appropriate network routes and firewall rules are in place.
-//    - See the Cloud Bigtable Direct Google Access User Guide for detailed setup (go/cbt-directpath-alpha-user-guide).
+//    - You must ensure that your routes and firewall rules allow egress traffic to reach 34.126.0.0/18 and 2001:4860:8040::/42
 // 3. The necessary IAM permissions must be granted to the service account.
 //
 // Parameters:
