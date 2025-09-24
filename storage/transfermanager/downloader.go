@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"io/fs"
+	"log"
 	"math"
 	"os"
 	"path/filepath"
@@ -191,8 +192,18 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(objectWithoutPrefix))
 		filePath := filepath.Join(input.LocalDirectory, objectWithoutPrefix)
 
+		// Prevent directory traversal attacks.
+		isUnder, err := isSubPath(input.LocalDirectory, filePath)
+		if err != nil {
+			cleanFiles(inputs)
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to verify path: %w", err)
+		}
+		if !isUnder {
+			log.Printf("transfermanager: skipping object with unsafe path after stripping prefix %q", objectWithoutPrefix)
+			continue
+		}
 		// Make sure all directories in the object path exist.
-		err := os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
+		err = os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
 		if err != nil {
 			cleanFiles(inputs)
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
@@ -947,4 +958,24 @@ func checksumObject(got, want uint32) error {
 		return fmt.Errorf("bad CRC on read: got %d, want %d", got, want)
 	}
 	return nil
+}
+
+func isSubPath(localDirectory, filePath string) (bool, error) {
+	absLocalDirectory, err := filepath.Abs(localDirectory)
+	if err != nil {
+		return false, fmt.Errorf("cannot convert local directory to absolute path: %v", err)
+	}
+	absFilePath, err := filepath.Abs(filePath)
+	if err != nil {
+		return false, fmt.Errorf("cannot convert file path to absolute path: %v", err)
+	}
+	rel, err := filepath.Rel(absLocalDirectory, absFilePath)
+	if err != nil {
+		return false, err
+	}
+
+	// Check if rel starts with ".."
+	isUnder := !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && rel != ".."
+
+	return isUnder, nil
 }
