@@ -26,17 +26,17 @@ import (
 	"google.golang.org/api/option"
 )
 
-// Client is a client for running queries in BigQuery. It is a lightweight wrapper
+// Helper for running queries in BigQuery. It is a lightweight wrapper
 // around the auto-generated BigQuery v2 client, focused on query operations.
-type Client struct {
+type Helper struct {
 	c         *apiv2_client.Client
 	projectID string
 }
 
-// NewClient creates a new query client. A client should be reused instead of
-// created per-request. The client must be closed when it is no longer needed.
-func NewClient(c *apiv2_client.Client, projectID string, opts ...option.ClientOption) (*Client, error) {
-	qc := &Client{
+// NewHelper creates a new query helper. This helper should be reused instead of
+// created per-request.
+func NewHelper(c *apiv2_client.Client, projectID string, opts ...option.ClientOption) (*Helper, error) {
+	qc := &Helper{
 		c:         c,
 		projectID: projectID,
 	}
@@ -49,7 +49,7 @@ func NewClient(c *apiv2_client.Client, projectID string, opts ...option.ClientOp
 // StartQuery executes a query using the stateless jobs.query RPC. It returns a
 // handle to the running query. The returned Query object can be used to wait for
 // completion and retrieve results.
-func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*Query, error) {
+func (h *Helper) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*Query, error) {
 	qr := req.GetQueryRequest()
 	if qr == nil {
 		return nil, fmt.Errorf("bigquery: request is missing QueryRequest")
@@ -58,11 +58,11 @@ func (c *Client) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 		qr.RequestId = uid.NewSpace("request", nil).New()
 	}
 
-	return newQueryJobFromQueryRequest(ctx, c, req, opts...), nil
+	return newQueryJobFromQueryRequest(ctx, h, req, opts...), nil
 }
 
 // StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
-func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*Query, error) {
+func (h *Helper) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*Query, error) {
 	config := job.GetConfiguration()
 	if config == nil {
 		return nil, fmt.Errorf("bigquery: job is missing configuration")
@@ -81,13 +81,13 @@ func (c *Client) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 		jobRef.JobId = uid.NewSpace("job", nil).New()
 	}
 
-	return newQueryJobFromJob(ctx, c, c.projectID, job, opts...), nil
+	return newQueryJobFromJob(ctx, h, h.projectID, job, opts...), nil
 }
 
 // AttachJob attaches to an existing query job. The returned Query object can be
 // used to monitor the job's status, wait for its completion, and retrieve its
 // results.
-func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
+func (h *Helper) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
 	if jobRef == nil {
 		return nil, fmt.Errorf("bigquery: AttachJob requires a non-nil JobReference")
 	}
@@ -95,7 +95,7 @@ func (c *Client) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference,
 		return nil, fmt.Errorf("bigquery: AttachJob requires a non-empty JobReference.JobId")
 	}
 	if jobRef.GetProjectId() == "" {
-		jobRef.ProjectId = c.projectID
+		jobRef.ProjectId = h.projectID
 	}
-	return newQueryJobFromJobReference(ctx, c, jobRef, opts...), nil
+	return newQueryJobFromJobReference(ctx, h, jobRef, opts...), nil
 }

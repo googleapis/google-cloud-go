@@ -28,7 +28,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-var testClients map[string]*Client
+var testQueryHelpers map[string]*Helper
 var testProjectID string
 var defaultTestTimeout = 30 * time.Second
 
@@ -57,7 +57,7 @@ func setup(ctx context.Context) func() {
 	}
 	var opts []option.ClientOption
 	opts = append(opts, option.WithTokenSource(ts))
-	testClients = make(map[string]*Client)
+	testQueryHelpers = make(map[string]*Helper)
 	var err error
 
 	grpcClient, err := apiv2_client.NewClient(ctx, opts...)
@@ -66,9 +66,9 @@ func setup(ctx context.Context) func() {
 		return nil
 	}
 
-	testClients["GRPC"], err = NewClient(grpcClient, testProjectID)
+	testQueryHelpers["GRPC"], err = NewHelper(grpcClient, testProjectID)
 	if err != nil {
-		testClients = nil
+		testQueryHelpers = nil
 		return nil
 	}
 
@@ -78,16 +78,16 @@ func setup(ctx context.Context) func() {
 		return nil
 	}
 
-	testClients["REST"], err = NewClient(restClient, testProjectID)
+	testQueryHelpers["REST"], err = NewHelper(restClient, testProjectID)
 	if err != nil {
-		testClients = nil
+		testQueryHelpers = nil
 		return nil
 	}
 	return closeClients
 }
 
 func closeClients() {
-	for k, v := range testClients {
+	for k, v := range testQueryHelpers {
 		if err := v.c.Close(); err != nil {
 			log.Printf("closing client %q had error: %v", k, err)
 		}

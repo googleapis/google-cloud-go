@@ -1,0 +1,94 @@
+import (
+  "cloud.google.com/go/bigquery/v2/query"
+  "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+  "google.golang.org/protobuf/types/known/wrapperspb"
+)
+ 
+client, err := query.NewClient(ctx, projectID)
+
+req := client.FromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
+req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
+
+q, err := client.StartQuery(ctx, req)
+
+
+q, err := client.StartQueryJob(ctx, &bigquerypb.Job{
+	Configuration: &bigquerypb.JobConfiguration{
+		Query: &bigquerypb.JobConfigurationQuery{
+			Query:        "SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar",
+			UseLegacySql: wrapperspb.Bool(false),
+		},
+	},
+})
+
+jobRef := bigquerypb.JobReference{
+	ProjectId: ProjectID,
+	JobId:     JobID,
+	Location:  Location,
+}
+q, err = client.AttachJob(ctx, jobRef)
+
+q, err := client.StartQuery(ctx, req)
+
+checkErr(err)
+
+ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+defer cancel()
+err = q.Wait(ctx) // blocks and allow cancellation 
+
+checkErr(err)
+
+if !q.Complete() {
+  // handle job not complete
+}
+
+it, err := q.Read(ctx)
+
+opts := []option.ClientOption{}
+if useStorageReadAPI {
+  rc, err := storage.NewBigQueryReadClient(ctx)
+  checkErr(err)
+  opts = append(opts, query.WithReadClient(rc))
+}
+client, err := query.NewClient(ctx, projectID, opts...)
+
+
+import (
+  "cloud.google.com/go/bigquery/v2/query"
+)
+
+req := client.FromSQL("SELECT 1")
+q, err := client.StartQuery(ctx, req)
+
+checkErr(err)
+
+ctx := context.Background()
+err = q.Wait(ctx) // blocks
+
+checkErr(err)
+
+// on in a non blocking way
+for !q.Complete(){
+    time.Sleep(1 * Second)
+}
+
+import (
+  "fmt"
+  "cloud.google.com/go/bigquery/v2/query"
+)
+
+req := client.FromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
+
+q, err := client.StartQuery(ctx, req)
+checkErr(err)
+
+err = q.Wait(ctx)
+checkErr(err)
+
+it, err := q.Read(ctx)
+checkErr(err)
+
+for row, err := range it.All() {
+  checkErr(err)
+  fmt.Println("Row:", row.AsMap())
+}

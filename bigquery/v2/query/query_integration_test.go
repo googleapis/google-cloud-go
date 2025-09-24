@@ -25,10 +25,10 @@ import (
 )
 
 func TestIntegration_RunQuery(t *testing.T) {
-	if len(testClients) == 0 {
+	if len(testQueryHelpers) == 0 {
 		t.Skip("integration tests skipped")
 	}
-	for k, client := range testClients {
+	for k, helper := range testQueryHelpers {
 		t.Run(k, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
@@ -42,9 +42,9 @@ func TestIntegration_RunQuery(t *testing.T) {
 					},
 					JobCreationMode: bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL,
 				},
-				ProjectId: client.projectID,
+				ProjectId: helper.projectID,
 			}
-			q, err := client.StartQuery(ctx, req)
+			q, err := helper.StartQuery(ctx, req)
 			if err != nil {
 				t.Fatalf("StartQuery() error: %v", err)
 			}
@@ -64,10 +64,10 @@ func TestIntegration_RunQuery(t *testing.T) {
 }
 
 func TestIntegration_QueryCancelWait(t *testing.T) {
-	if len(testClients) == 0 {
+	if len(testQueryHelpers) == 0 {
 		t.Skip("integration tests skipped")
 	}
-	for k, client := range testClients {
+	for k, helper := range testQueryHelpers {
 		t.Run(k, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
@@ -84,11 +84,11 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 					UseQueryCache:   wrapperspb.Bool(false),
 					JobCreationMode: bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL,
 				},
-				ProjectId: client.projectID,
+				ProjectId: helper.projectID,
 			}
 
 			wctx, wcancel := context.WithCancel(ctx)
-			q, err := client.StartQuery(wctx, req)
+			q, err := helper.StartQuery(wctx, req)
 			if err != nil {
 				t.Fatalf("StartQuery() error: %v", err)
 			}
@@ -110,7 +110,7 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 			}
 
 			// Re-attach and wait again
-			nq, err := client.AttachJob(ctx, q.JobReference())
+			nq, err := helper.AttachJob(ctx, q.JobReference())
 			if err != nil {
 				t.Fatalf("AttachJob() error: %v", err)
 			}
@@ -130,15 +130,15 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 }
 
 func TestIntegration_InsertQueryJob(t *testing.T) {
-	if len(testClients) == 0 {
+	if len(testQueryHelpers) == 0 {
 		t.Skip("integration tests skipped")
 	}
-	for k, client := range testClients {
+	for k, helper := range testQueryHelpers {
 		t.Run(k, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			q, err := client.StartQueryJob(ctx, &bigquerypb.Job{
+			q, err := helper.StartQueryJob(ctx, &bigquerypb.Job{
 				Configuration: &bigquerypb.JobConfiguration{
 					Query: &bigquerypb.JobConfigurationQuery{
 						Query:        "SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar",

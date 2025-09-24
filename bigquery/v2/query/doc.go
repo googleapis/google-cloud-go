@@ -23,13 +23,18 @@
 // Example usage:
 //
 //	ctx := context.Background()
-//	client, err := query.NewClient(ctx, "my-project")
+//	client, err := apiv2_client.NewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer client.Close()
 //
-//	q, err := client.StartQuery(ctx, &bigquerypb.PostQueryRequest{
+//	helper, err := query.NewHelper(client, "my-project")
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	q, err := helper.StartQuery(ctx, &bigquerypb.PostQueryRequest{
 //		QueryRequest: &bigquerypb.QueryRequest{
 //			Query: "SELECT 123 as foo",
 //		},
