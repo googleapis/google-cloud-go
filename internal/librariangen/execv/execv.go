@@ -24,11 +24,11 @@ import (
 	"strings"
 )
 
-// Run executes a command and logs its output.
-func Run(ctx context.Context, args []string, outputDir string) error {
+// Run executes a command in a specified working directory and logs its output.
+func Run(ctx context.Context, args []string, workingDir string) error {
 	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
 	cmd.Env = os.Environ()
-	cmd.Dir = outputDir // Run commands from the output directory.
+	cmd.Dir = workingDir
 	slog.Debug("librariangen: running command", "command", strings.Join(cmd.Args, " "), "dir", cmd.Dir)
 
 	output, err := cmd.Output()

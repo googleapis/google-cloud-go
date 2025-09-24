@@ -68,6 +68,11 @@
               "methods": [
                 "SetLabels"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -663,6 +668,11 @@
               "methods": [
                 "SetLabels"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -1182,6 +1192,11 @@
               "methods": [
                 "SetNamedPorts"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -1265,6 +1280,11 @@
                 "AddAccessConfig"
               ]
             },
+            "AddNetworkInterface": {
+              "methods": [
+                "AddNetworkInterface"
+              ]
+            },
             "AddResourcePolicies": {
               "methods": [
                 "AddResourcePolicies"
@@ -1293,6 +1313,11 @@
             "DeleteAccessConfig": {
               "methods": [
                 "DeleteAccessConfig"
+              ]
+            },
+            "DeleteNetworkInterface": {
+              "methods": [
+                "DeleteNetworkInterface"
               ]
             },
             "DetachDisk": {
@@ -3141,6 +3166,11 @@
               "methods": [
                 "SetNamedPorts"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -4631,6 +4661,11 @@
               "methods": [
                 "SetSecurityPolicy"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -4699,6 +4734,11 @@
             "SetSecurityPolicy": {
               "methods": [
                 "SetSecurityPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }

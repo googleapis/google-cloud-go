@@ -616,14 +616,8 @@ func (t *builtinMetricsTracer) recordGFEError() {
 }
 
 func (t *builtinMetricsTracer) recordAFEError() {
-	if !t.isAFEBuiltInMetricEnabled {
-		return
-	}
-	attrs, err := t.toOtelMetricAttrs(metricNameAFEConnectivityErrorCount)
-	if err != nil {
-		return
-	}
-	t.instrumentAFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
+	// no-op: disable afe_connectivity_error_count metric as AFE header is disabled in backend currently
+	return
 }
 
 // Convert error to grpc status error

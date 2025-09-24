@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.6.0...modelarmor/v0.6.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **modelarmor:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.5.0...modelarmor/v0.6.0) (2025-07-31)
 
 

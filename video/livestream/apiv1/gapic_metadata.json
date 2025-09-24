@@ -165,14 +165,29 @@
                 "ListOperations"
               ]
             },
+            "PreviewInput": {
+              "methods": [
+                "PreviewInput"
+              ]
+            },
             "StartChannel": {
               "methods": [
                 "StartChannel"
               ]
             },
+            "StartDistribution": {
+              "methods": [
+                "StartDistribution"
+              ]
+            },
             "StopChannel": {
               "methods": [
                 "StopChannel"
+              ]
+            },
+            "StopDistribution": {
+              "methods": [
+                "StopDistribution"
               ]
             },
             "UpdateChannel": {
@@ -355,14 +370,29 @@
                 "ListOperations"
               ]
             },
+            "PreviewInput": {
+              "methods": [
+                "PreviewInput"
+              ]
+            },
             "StartChannel": {
               "methods": [
                 "StartChannel"
               ]
             },
+            "StartDistribution": {
+              "methods": [
+                "StartDistribution"
+              ]
+            },
             "StopChannel": {
               "methods": [
                 "StopChannel"
+              ]
+            },
+            "StopDistribution": {
+              "methods": [
+                "StopDistribution"
               ]
             },
             "UpdateChannel": {

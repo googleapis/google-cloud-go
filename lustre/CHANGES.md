@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/lustre/v0.2.0...lustre/v0.2.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **lustre:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/lustre/v0.1.1...lustre/v0.2.0) (2025-07-16)
 
 

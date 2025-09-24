@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.4.0...policysimulator/v0.4.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **policysimulator:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.3.6...policysimulator/v0.4.0) (2025-07-23)
 
 

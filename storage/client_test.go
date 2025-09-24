@@ -29,6 +29,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -43,6 +44,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	expgrpc "google.golang.org/grpc/experimental"
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -3002,6 +3004,201 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 			t.Errorf("not enough attempts - the request may not have been retried; got %d instructions left, expected at most %d", got, len(manyErrs)-2)
 		}
 	})
+}
+
+// Used to test gRPC buffer pool allocs and frees.
+// See https://pkg.go.dev/google.golang.org/grpc/mem
+type testBufferPool struct {
+	allocs     int64
+	frees      int64
+	sync.Mutex // mutex needed becuase Get/Put can be called in parallel.
+}
+
+func (bp *testBufferPool) Get(length int) *[]byte {
+	bp.Lock()
+	bp.allocs += int64(length)
+	bp.Unlock()
+	return mem.DefaultBufferPool().Get(length)
+}
+
+func (bp *testBufferPool) Put(b *[]byte) {
+	if b != nil {
+		bp.Lock()
+		bp.frees += int64(len(*b))
+		bp.Unlock()
+	}
+	mem.DefaultBufferPool().Put(b)
+}
+
+func (bp *testBufferPool) getAllocsAndFrees() (int64, int64) {
+	bp.Lock()
+	defer bp.Unlock()
+	return bp.allocs, bp.frees
+}
+
+// Test that successful downloads using Reader and MultiRangeDownloader free
+// all of their allocated buffers.
+func TestReadCodecLeaksEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	ctx := context.Background()
+	var bp testBufferPool
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), experimental.WithZonalBucketAPIs())
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	var (
+		contents   = randomBytes9MiB
+		prefix     = time.Now().Nanosecond()
+		bucketName = fmt.Sprintf("bucket-%d", prefix)
+		objName    = fmt.Sprintf("%d-object", prefix)
+		bkt        = client.Bucket(bucketName)
+		obj        = bkt.Object(objName)
+	)
+
+	// Upload object.
+	if err := bkt.Create(ctx, "project", nil); err != nil {
+		t.Fatalf("creating bucket: %v", err)
+	}
+	w := obj.NewWriter(ctx)
+	if _, err := io.Copy(w, bytes.NewReader(contents)); err != nil {
+		t.Fatalf("uploading object: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("closing writer: %v", err)
+	}
+	if bp.allocs != bp.frees {
+		t.Errorf("upload: alloc'd bytes %v not equal to freed bytes %v", bp.allocs, bp.frees)
+	}
+
+	// Test multiple download paths.
+	testCases := []struct {
+		name         string
+		downloadFunc func(ctx context.Context, obj *ObjectHandle) ([]byte, error)
+	}{
+		{
+			name: "Reader.Read",
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					return nil, err
+				}
+				defer r.Close()
+				gotContents, err := io.ReadAll(r)
+				return gotContents, err
+			},
+		},
+		{
+			name: "Reader.WriteTo",
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					return nil, err
+				}
+				defer r.Close()
+				buf := bytes.NewBuffer([]byte{})
+				_, err = r.WriteTo(buf)
+				return buf.Bytes(), err
+			},
+		},
+		{
+			name: "MultiRangeDownloader 3MiB ranges",
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
+				mrd, err := obj.NewMultiRangeDownloader(ctx)
+				if err != nil {
+					return nil, err
+				}
+				var bufs []*bytes.Buffer
+				var currOff int64
+				var increment int64 = 3 * MiB
+				for range 3 {
+					buf := bytes.NewBuffer([]byte{})
+					mrd.Add(buf, currOff, increment, func(int64, int64, error) {})
+					bufs = append(bufs, buf)
+					currOff += increment
+				}
+				mrd.Wait()
+				if err := mrd.Close(); err != nil {
+					return nil, err
+				}
+				var b []byte
+				for _, buf := range bufs {
+					b = append(b, buf.Bytes()...)
+				}
+				return b, err
+			}},
+		{
+			name: "MultiRangeDownloader 256k ranges",
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
+				mrd, err := obj.NewMultiRangeDownloader(ctx)
+				if err != nil {
+					return nil, err
+				}
+				var bufs []*bytes.Buffer
+				var currOff int64
+				var increment int64 = 256 * 1024
+				for range 36 {
+					buf := bytes.NewBuffer([]byte{})
+					mrd.Add(buf, currOff, increment, func(int64, int64, error) {})
+					bufs = append(bufs, buf)
+					currOff += increment
+				}
+				mrd.Wait()
+				if err := mrd.Close(); err != nil {
+					return nil, err
+				}
+				var b []byte
+				for _, buf := range bufs {
+					b = append(b, buf.Bytes()...)
+				}
+				return b, err
+			}},
+	}
+	retryCases := []struct {
+		name         string
+		instructions map[string][]string
+	}{
+		{
+			name:         "no retry",
+			instructions: nil,
+		},
+		{
+			name:         "retry at 0 bytes",
+			instructions: map[string][]string{"storage.objects.get": {"return-503"}},
+		},
+		{
+			name:         "retry at 256k",
+			instructions: map[string][]string{"storage.objects.get": {"return-broken-stream-after-256K"}},
+		},
+		{
+			name:         "retry at 4MiB",
+			instructions: map[string][]string{"storage.objects.get": {"return-503-after-4097K"}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			for _, rc := range retryCases {
+				t.Run(rc.name, func(t *testing.T) {
+					testCtx := ctx
+					if rc.instructions != nil {
+						testID := createRetryTest(t, client.tc, rc.instructions)
+						testCtx = callctx.SetHeaders(testCtx, "x-retry-test-id", testID)
+					}
+					gotContents, err := tc.downloadFunc(testCtx, obj)
+					if err != nil {
+						t.Fatalf("downloading content: %v", err)
+					}
+					if !bytes.Equal(gotContents, contents) {
+						t.Errorf("downloaded bytes did not match; got %v bytes, want %v", len(gotContents), len(contents))
+					}
+					allocs, frees := bp.getAllocsAndFrees()
+					if allocs != frees {
+						t.Errorf("download: alloc'd bytes %v not equal to freed bytes %v", allocs, frees)
+					}
+				})
+			}
+		})
+	}
 }
 
 // createRetryTest creates a bucket in the emulator and sets up a test using the

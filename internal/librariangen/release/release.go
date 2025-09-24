@@ -23,10 +23,16 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 	"time"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/module"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
+
+var now = time.Now
 
 // Config holds the configuration for the release-init command.
 type Config struct {
@@ -49,64 +55,30 @@ func Init(ctx context.Context, cfg *Config) error {
 		return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to unmarshal request: %w", err))
 	}
 
+	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
+	if err != nil {
+		return fmt.Errorf("librariangen: failed to load repo config: %w", err)
+	}
+
 	for _, lib := range req.Libraries {
 		if !lib.ReleaseTriggered {
 			continue
 		}
-		slog.Info("librariangen: staging source directories for release", "id", lib.ID)
-		for _, root := range lib.SourceRoots {
-			src := filepath.Join(cfg.RepoDir, root)
-			dest := filepath.Join(cfg.OutputDir, root)
-			slog.Debug("librariangen: copying source root", "src", src, "dest", dest)
-			if err := cpDir(src, dest); err != nil {
-				return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to copy source root %q for %s: %w", root, lib.ID, err))
-			}
-		}
+		moduleConfig := repoConfig.GetModuleConfig(lib.ID)
 
 		moduleDir := filepath.Join(cfg.OutputDir, lib.ID)
 		slog.Info("librariangen: processing library for release", "id", lib.ID, "version", lib.Version)
-		if err := updateChangelog(cfg, lib, time.Now().UTC()); err != nil {
+		if err := updateChangelog(cfg, lib, now().UTC()); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update changelog for %s: %w", lib.ID, err))
 		}
 		if err := module.GenerateInternalVersionFile(moduleDir, lib.Version); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update version for %s: %w", lib.ID, err))
 		}
-		if err := module.UpdateSnippetsMetadata(cfg.OutputDir, lib.ID, lib.Version); err != nil {
+		if err := module.UpdateSnippetsMetadata(lib, cfg.RepoDir, cfg.OutputDir, moduleConfig); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update snippet version for %s: %w", lib.ID, err))
 		}
 	}
 	slog.Info("librariangen: release.Init: finished successfully")
-	return nil
-}
-
-func cpDir(src, dest string) error {
-	entries, err := os.ReadDir(src)
-	if err != nil {
-		return err
-	}
-	for _, entry := range entries {
-		srcPath := filepath.Join(src, entry.Name())
-		destPath := filepath.Join(dest, entry.Name())
-		if entry.IsDir() {
-			if err := os.MkdirAll(destPath, 0755); err != nil {
-				return err
-			}
-			if err := cpDir(srcPath, destPath); err != nil {
-				return err
-			}
-		} else {
-			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-				return err
-			}
-			content, err := os.ReadFile(srcPath)
-			if err != nil {
-				return err
-			}
-			if err := os.WriteFile(destPath, content, 0644); err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 
@@ -121,46 +93,65 @@ var changelogSections = []struct {
 	{Type: "docs", Section: "Documentation"},
 }
 
-func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
-	if len(lib.SourceRoots) == 0 {
-		return fmt.Errorf("librariangen: library %q has no source_roots", lib.ID)
-	}
-	changelogPath := filepath.Join(lib.SourceRoots[0], "CHANGES.md")
-	slog.Info("librariangen: updating changelog", "path", changelogPath)
+func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
+	relativeChangelogPath := filepath.Join(lib.ID, "CHANGES.md")
+	slog.Info("librariangen: updating changelog", "path", relativeChangelogPath)
 
-	destPath := filepath.Join(cfg.OutputDir, changelogPath)
-	oldContent, err := os.ReadFile(destPath)
+	srcPath := filepath.Join(cfg.RepoDir, relativeChangelogPath)
+	oldContent, err := os.ReadFile(srcPath)
 	if err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("librariangen: reading changelog: %w", err)
 	}
 
-	versionString := fmt.Sprintf("### %s", lib.Version)
+	versionString := fmt.Sprintf("## [%s]", lib.Version)
 	if bytes.Contains(oldContent, []byte(versionString)) {
-		slog.Info("librariangen: changelog already up-to-date", "path", changelogPath, "version", lib.Version)
+		slog.Info("librariangen: changelog already up-to-date", "path", relativeChangelogPath, "version", lib.Version)
 		return nil
 	}
 
 	var newEntry bytes.Buffer
 
+	tag := fmt.Sprintf("%s/v%s", lib.ID, lib.Version)
+	encodedTag := strings.ReplaceAll(tag, "/", "%2F")
+	releaseURL := "https://github.com/googleapis/google-cloud-go/releases/tag/" + encodedTag
 	date := t.Format("2006-01-02")
-	fmt.Fprintf(&newEntry, "%s (%s)\n\n", versionString, date)
+	fmt.Fprintf(&newEntry, "## [%s](%s) (%s)\n\n", lib.Version, releaseURL, date)
 
-	changesByType := make(map[string]map[string]bool)
+	changesByType := make(map[string]map[string]*request.Change)
 	for _, change := range lib.Changes {
 		if changesByType[change.Type] == nil {
-			changesByType[change.Type] = make(map[string]bool)
+			changesByType[change.Type] = make(map[string]*request.Change)
 		}
-		changesByType[change.Type][change.Subject] = true
+		changesByType[change.Type][change.Subject] = change
 	}
 
 	for _, section := range changelogSections {
-		subjects := changesByType[section.Type]
-		if len(subjects) == 0 {
+		subjectsMap := changesByType[section.Type]
+		if len(subjectsMap) == 0 {
 			continue
 		}
-		fmt.Fprintf(&newEntry, "#### %s\n\n", section.Section)
-		for subj := range subjects {
-			fmt.Fprintf(&newEntry, "* %s\n", subj)
+		fmt.Fprintf(&newEntry, "### %s\n\n", section.Section)
+
+		var subjects []string
+		for subj := range subjectsMap {
+			subjects = append(subjects, subj)
+		}
+		sort.Strings(subjects)
+
+		for _, subj := range subjects {
+			change := subjectsMap[subj]
+			var commitLink string
+			if change.SourceCommitHash != "" {
+				shortHash := change.SourceCommitHash
+				if len(shortHash) > 7 {
+					shortHash = shortHash[:7]
+				}
+				commitURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/commit/%s", change.SourceCommitHash)
+				commitLink = fmt.Sprintf("([%s](%s))", shortHash, commitURL)
+			}
+
+			fmt.Fprintf(&newEntry, "* %s %s\n", change.Subject, commitLink)
+
 		}
 		newEntry.WriteString("\n")
 	}
@@ -206,6 +197,7 @@ func updateChangelog(cfg *Config, lib *Library, t time.Time) error {
 	newContent = append(newContent, newEntry.Bytes()...)
 	newContent = append(newContent, oldContent[insertionPoint:]...)
 
+	destPath := filepath.Join(cfg.OutputDir, relativeChangelogPath)
 	if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 		return fmt.Errorf("librariangen: creating directory for changelog: %w", err)
 	}
@@ -229,31 +221,7 @@ func writeErrorResponse(dir string, err error) error {
 
 // Request is the structure of the release-init-request.json file.
 type Request struct {
-	Libraries []*Library `json:"libraries"`
-}
-
-// Library represents a single library in the release request.
-type Library struct {
-	ID               string    `json:"id"`
-	Version          string    `json:"version"`
-	Changes          []*Change `json:"changes"`
-	APIs             []*API    `json:"apis"`
-	SourceRoots      []string  `json:"source_roots"`
-	ReleaseTriggered bool      `json:"release_triggered"`
-}
-
-// Change represents a single commit change for a library.
-type Change struct {
-	Type             string `json:"type"`
-	Subject          string `json:"subject"`
-	Body             string `json:"body"`
-	PiperCLNumber    string `json:"piper_cl_number"`
-	SourceCommitHash string `json:"source_commit_hash"`
-}
-
-// API represents an API definition for a library.
-type API struct {
-	Path string `json:"path"`
+	Libraries []*request.Library `json:"libraries"`
 }
 
 // Response is the structure of the release-init-response.json file.

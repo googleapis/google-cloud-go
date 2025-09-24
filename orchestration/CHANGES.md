@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.10](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.9...orchestration/v1.11.10) (2025-09-18)
+
+
+### Bug Fixes
+
+* **orchestration:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.11.9](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.8...orchestration/v1.11.9) (2025-04-15)
 
 

@@ -1,0 +1,429 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/capacityplanner/apiv1beta",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.capacityplanner.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "capacityplanner_v1beta_generated_CapacityPlanningService_GetCapacityPlan_sync",
+      "title": "capacityplanner GetCapacityPlan Sample",
+      "description": "GetCapacityPlan returns information about the capacity plan.",
+      "file": "CapacityPlanningClient/GetCapacityPlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCapacityPlan",
+        "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningClient.GetCapacityPlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.GetCapacityPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*capacityplannerpb.CapacityPlan",
+        "client": {
+          "shortName": "CapacityPlanningClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningClient"
+        },
+        "method": {
+          "shortName": "GetCapacityPlan",
+          "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningService.GetCapacityPlan",
+          "service": {
+            "shortName": "CapacityPlanningService",
+            "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_CapacityPlanningService_QueryCapacityPlanInsights_sync",
+      "title": "capacityplanner QueryCapacityPlanInsights Sample",
+      "description": "QueryCapacityPlanInsights query capacity plan insights that are in the parent parameter and match\nyour specified filters.",
+      "file": "CapacityPlanningClient/QueryCapacityPlanInsights/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryCapacityPlanInsights",
+        "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningClient.QueryCapacityPlanInsights",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.QueryCapacityPlanInsightsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*capacityplannerpb.QueryCapacityPlanInsightsResponse",
+        "client": {
+          "shortName": "CapacityPlanningClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningClient"
+        },
+        "method": {
+          "shortName": "QueryCapacityPlanInsights",
+          "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningService.QueryCapacityPlanInsights",
+          "service": {
+            "shortName": "CapacityPlanningService",
+            "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_CapacityPlanningService_QueryCapacityPlans_sync",
+      "title": "capacityplanner QueryCapacityPlans Sample",
+      "description": "QueryCapacityPlans returns a list of the capacity plans that are in the parent parameter and\nmatch your specified filters.\n(The maximum list length is limited by the pageSize parameter.)",
+      "file": "CapacityPlanningClient/QueryCapacityPlans/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryCapacityPlans",
+        "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningClient.QueryCapacityPlans",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.QueryCapacityPlansRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CapacityPlanIterator",
+        "client": {
+          "shortName": "CapacityPlanningClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningClient"
+        },
+        "method": {
+          "shortName": "QueryCapacityPlans",
+          "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningService.QueryCapacityPlans",
+          "service": {
+            "shortName": "CapacityPlanningService",
+            "fullName": "google.cloud.capacityplanner.v1beta.CapacityPlanningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_UsageService_ExportForecasts_sync",
+      "title": "capacityplanner ExportForecasts Sample",
+      "description": "ExportForecasts exports forecasted usage data requested by user into either an existing\nCloud Storage bucket or a BigQuery table.",
+      "file": "UsageClient/ExportForecasts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportForecasts",
+        "fullName": "google.cloud.capacityplanner.v1beta.UsageClient.ExportForecasts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.ExportForecastsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportForecastsOperation",
+        "client": {
+          "shortName": "UsageClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageClient"
+        },
+        "method": {
+          "shortName": "ExportForecasts",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageService.ExportForecasts",
+          "service": {
+            "shortName": "UsageService",
+            "fullName": "google.cloud.capacityplanner.v1beta.UsageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_UsageService_ExportReservationsUsage_sync",
+      "title": "capacityplanner ExportReservationsUsage Sample",
+      "description": "ExportReservationsUsage exports reservations usage data requested by user into either an existing\nCloud Storage bucket or a new/existing BigQuery table.",
+      "file": "UsageClient/ExportReservationsUsage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportReservationsUsage",
+        "fullName": "google.cloud.capacityplanner.v1beta.UsageClient.ExportReservationsUsage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.ExportReservationsUsageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportReservationsUsageOperation",
+        "client": {
+          "shortName": "UsageClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageClient"
+        },
+        "method": {
+          "shortName": "ExportReservationsUsage",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageService.ExportReservationsUsage",
+          "service": {
+            "shortName": "UsageService",
+            "fullName": "google.cloud.capacityplanner.v1beta.UsageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_UsageService_ExportUsageHistories_sync",
+      "title": "capacityplanner ExportUsageHistories Sample",
+      "description": "ExportUsageHistories exports historical usage data requested by user into either an existing\nCloud Storage bucket or a BigQuery table.",
+      "file": "UsageClient/ExportUsageHistories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportUsageHistories",
+        "fullName": "google.cloud.capacityplanner.v1beta.UsageClient.ExportUsageHistories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.ExportUsageHistoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportUsageHistoriesOperation",
+        "client": {
+          "shortName": "UsageClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageClient"
+        },
+        "method": {
+          "shortName": "ExportUsageHistories",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageService.ExportUsageHistories",
+          "service": {
+            "shortName": "UsageService",
+            "fullName": "google.cloud.capacityplanner.v1beta.UsageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_UsageService_QueryForecasts_sync",
+      "title": "capacityplanner QueryForecasts Sample",
+      "description": "QueryForecasts returns a list of the forecasts that are in the parent parameter\nand match your specified filters.",
+      "file": "UsageClient/QueryForecasts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryForecasts",
+        "fullName": "google.cloud.capacityplanner.v1beta.UsageClient.QueryForecasts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.QueryForecastsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*capacityplannerpb.QueryForecastsResponse",
+        "client": {
+          "shortName": "UsageClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageClient"
+        },
+        "method": {
+          "shortName": "QueryForecasts",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageService.QueryForecasts",
+          "service": {
+            "shortName": "UsageService",
+            "fullName": "google.cloud.capacityplanner.v1beta.UsageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_UsageService_QueryReservations_sync",
+      "title": "capacityplanner QueryReservations Sample",
+      "description": "QueryReservations returns a list of the reservations that are in the parent parameter\nand match your specified filters.",
+      "file": "UsageClient/QueryReservations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryReservations",
+        "fullName": "google.cloud.capacityplanner.v1beta.UsageClient.QueryReservations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.QueryReservationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*capacityplannerpb.QueryReservationsResponse",
+        "client": {
+          "shortName": "UsageClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageClient"
+        },
+        "method": {
+          "shortName": "QueryReservations",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageService.QueryReservations",
+          "service": {
+            "shortName": "UsageService",
+            "fullName": "google.cloud.capacityplanner.v1beta.UsageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "capacityplanner_v1beta_generated_UsageService_QueryUsageHistories_sync",
+      "title": "capacityplanner QueryUsageHistories Sample",
+      "description": "QueryUsageHistories returns a list of the usage histories that are in the parent parameter\nand match your specified filters.",
+      "file": "UsageClient/QueryUsageHistories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryUsageHistories",
+        "fullName": "google.cloud.capacityplanner.v1beta.UsageClient.QueryUsageHistories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "capacityplannerpb.QueryUsageHistoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*capacityplannerpb.QueryUsageHistoriesResponse",
+        "client": {
+          "shortName": "UsageClient",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageClient"
+        },
+        "method": {
+          "shortName": "QueryUsageHistories",
+          "fullName": "google.cloud.capacityplanner.v1beta.UsageService.QueryUsageHistories",
+          "service": {
+            "shortName": "UsageService",
+            "fullName": "google.cloud.capacityplanner.v1beta.UsageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

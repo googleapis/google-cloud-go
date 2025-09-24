@@ -562,3 +562,7 @@ replace cloud.google.com/go/configdelivery => ../../../configdelivery
 replace cloud.google.com/go/licensemanager => ../../../licensemanager
 
 replace cloud.google.com/go/geminidataanalytics => ../../../geminidataanalytics
+
+replace cloud.google.com/go/capacityplanner => ../../../capacityplanner
+
+replace cloud.google.com/go/locationfinder => ../../../locationfinder

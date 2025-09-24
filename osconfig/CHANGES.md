@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.15.0...osconfig/v1.15.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **osconfig:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.14.6...osconfig/v1.15.0) (2025-08-12)
 
 

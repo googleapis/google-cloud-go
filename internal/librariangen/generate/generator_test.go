@@ -111,7 +111,7 @@ type postProcessRecorder struct {
 	called bool
 }
 
-func (r *postProcessRecorder) record(ctx context.Context, req *request.Request, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
+func (r *postProcessRecorder) record(ctx context.Context, req *request.Library, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
 	r.called = true
 	return nil
 }

@@ -22,11 +22,7 @@ package dataplexpb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
@@ -284,7 +280,7 @@ type CreateDataScanRequest struct {
 	// Required. The resource name of the parent location:
 	// `projects/{project}/locations/{location_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. DataScan resource.
 	DataScan *DataScan `protobuf:"bytes,2,opt,name=data_scan,json=dataScan,proto3" json:"data_scan,omitempty"`
@@ -436,7 +432,7 @@ type DeleteDataScanRequest struct {
 	// Required. The resource name of the dataScan:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. If set to true, any child resources of this data scan will also
 	// be deleted. (Otherwise, the request will only work if the data scan has no
@@ -497,7 +493,7 @@ type GetDataScanRequest struct {
 	// Required. The resource name of the dataScan:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Select the DataScan view to return. Defaults to `BASIC`.
 	View GetDataScanRequest_DataScanView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.GetDataScanRequest_DataScanView" json:"view,omitempty"`
@@ -556,7 +552,7 @@ type ListDataScansRequest struct {
 	// Required. The resource name of the parent location:
 	// `projects/{project}/locations/{location_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of dataScans to return. The service may return
 	// fewer than this value. If unspecified, at most 500 scans will be returned.
@@ -714,7 +710,7 @@ type RunDataScanRequest struct {
 	// Required. The resource name of the DataScan:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`.
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	//
 	// Only **OnDemand** data scans are allowed.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -813,7 +809,7 @@ type GetDataScanJobRequest struct {
 	// Required. The resource name of the DataScanJob:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}/jobs/{data_scan_job_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Select the DataScanJob view to return. Defaults to `BASIC`.
 	View GetDataScanJobRequest_DataScanJobView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.GetDataScanJobRequest_DataScanJobView" json:"view,omitempty"`
@@ -872,7 +868,7 @@ type ListDataScanJobsRequest struct {
 	// Required. The resource name of the parent environment:
 	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of DataScanJobs to return. The service may return
 	// fewer than this value. If unspecified, at most 10 DataScanJobs will be
@@ -1077,8 +1073,8 @@ type GenerateDataQualityRulesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The data quality rules that Dataplex generates based on the results
-	// of a data profiling scan.
+	// The data quality rules that Dataplex Universal Catalog generates based on
+	// the results of a data profiling scan.
 	Rule []*DataQualityRule `protobuf:"bytes,1,rep,name=rule,proto3" json:"rule,omitempty"`
 }
 
@@ -1143,7 +1139,7 @@ type DataScan struct {
 	// Output only. Identifier. The relative resource name of the scan, of the
 	// form: `projects/{project}/locations/{location_id}/dataScans/{datascan_id}`,
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. System generated globally unique ID for the scan. This ID will
 	// be different if the scan is deleted and re-created with the same name.
@@ -1425,7 +1421,7 @@ type DataScanJob struct {
 	// the form:
 	// `projects/{project}/locations/{location_id}/dataScans/{datascan_id}/jobs/{job_id}`,
 	// where `project` refers to a *project_id* or *project_number* and
-	// `location_id` refers to a GCP region.
+	// `location_id` refers to a Google Cloud region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. System generated globally unique ID for the DataScanJob.
 	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
@@ -2479,396 +2475,4 @@ func file_google_cloud_dataplex_v1_datascans_proto_init() {
 	file_google_cloud_dataplex_v1_datascans_proto_rawDesc = nil
 	file_google_cloud_dataplex_v1_datascans_proto_goTypes = nil
 	file_google_cloud_dataplex_v1_datascans_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// DataScanServiceClient is the client API for DataScanService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type DataScanServiceClient interface {
-	// Creates a DataScan resource.
-	CreateDataScan(ctx context.Context, in *CreateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Updates a DataScan resource.
-	UpdateDataScan(ctx context.Context, in *UpdateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Deletes a DataScan resource.
-	DeleteDataScan(ctx context.Context, in *DeleteDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Gets a DataScan resource.
-	GetDataScan(ctx context.Context, in *GetDataScanRequest, opts ...grpc.CallOption) (*DataScan, error)
-	// Lists DataScans.
-	ListDataScans(ctx context.Context, in *ListDataScansRequest, opts ...grpc.CallOption) (*ListDataScansResponse, error)
-	// Runs an on-demand execution of a DataScan
-	RunDataScan(ctx context.Context, in *RunDataScanRequest, opts ...grpc.CallOption) (*RunDataScanResponse, error)
-	// Gets a DataScanJob resource.
-	GetDataScanJob(ctx context.Context, in *GetDataScanJobRequest, opts ...grpc.CallOption) (*DataScanJob, error)
-	// Lists DataScanJobs under the given DataScan.
-	ListDataScanJobs(ctx context.Context, in *ListDataScanJobsRequest, opts ...grpc.CallOption) (*ListDataScanJobsResponse, error)
-	// Generates recommended data quality rules based on the results of a data
-	// profiling scan.
-	//
-	// Use the recommendations to build rules for a data quality scan.
-	GenerateDataQualityRules(ctx context.Context, in *GenerateDataQualityRulesRequest, opts ...grpc.CallOption) (*GenerateDataQualityRulesResponse, error)
-}
-
-type dataScanServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewDataScanServiceClient(cc grpc.ClientConnInterface) DataScanServiceClient {
-	return &dataScanServiceClient{cc}
-}
-
-func (c *dataScanServiceClient) CreateDataScan(ctx context.Context, in *CreateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/CreateDataScan", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) UpdateDataScan(ctx context.Context, in *UpdateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/UpdateDataScan", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) DeleteDataScan(ctx context.Context, in *DeleteDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/DeleteDataScan", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) GetDataScan(ctx context.Context, in *GetDataScanRequest, opts ...grpc.CallOption) (*DataScan, error) {
-	out := new(DataScan)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/GetDataScan", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) ListDataScans(ctx context.Context, in *ListDataScansRequest, opts ...grpc.CallOption) (*ListDataScansResponse, error) {
-	out := new(ListDataScansResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/ListDataScans", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) RunDataScan(ctx context.Context, in *RunDataScanRequest, opts ...grpc.CallOption) (*RunDataScanResponse, error) {
-	out := new(RunDataScanResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/RunDataScan", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) GetDataScanJob(ctx context.Context, in *GetDataScanJobRequest, opts ...grpc.CallOption) (*DataScanJob, error) {
-	out := new(DataScanJob)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/GetDataScanJob", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) ListDataScanJobs(ctx context.Context, in *ListDataScanJobsRequest, opts ...grpc.CallOption) (*ListDataScanJobsResponse, error) {
-	out := new(ListDataScanJobsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/ListDataScanJobs", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataScanServiceClient) GenerateDataQualityRules(ctx context.Context, in *GenerateDataQualityRulesRequest, opts ...grpc.CallOption) (*GenerateDataQualityRulesResponse, error) {
-	out := new(GenerateDataQualityRulesResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/GenerateDataQualityRules", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// DataScanServiceServer is the server API for DataScanService service.
-type DataScanServiceServer interface {
-	// Creates a DataScan resource.
-	CreateDataScan(context.Context, *CreateDataScanRequest) (*longrunningpb.Operation, error)
-	// Updates a DataScan resource.
-	UpdateDataScan(context.Context, *UpdateDataScanRequest) (*longrunningpb.Operation, error)
-	// Deletes a DataScan resource.
-	DeleteDataScan(context.Context, *DeleteDataScanRequest) (*longrunningpb.Operation, error)
-	// Gets a DataScan resource.
-	GetDataScan(context.Context, *GetDataScanRequest) (*DataScan, error)
-	// Lists DataScans.
-	ListDataScans(context.Context, *ListDataScansRequest) (*ListDataScansResponse, error)
-	// Runs an on-demand execution of a DataScan
-	RunDataScan(context.Context, *RunDataScanRequest) (*RunDataScanResponse, error)
-	// Gets a DataScanJob resource.
-	GetDataScanJob(context.Context, *GetDataScanJobRequest) (*DataScanJob, error)
-	// Lists DataScanJobs under the given DataScan.
-	ListDataScanJobs(context.Context, *ListDataScanJobsRequest) (*ListDataScanJobsResponse, error)
-	// Generates recommended data quality rules based on the results of a data
-	// profiling scan.
-	//
-	// Use the recommendations to build rules for a data quality scan.
-	GenerateDataQualityRules(context.Context, *GenerateDataQualityRulesRequest) (*GenerateDataQualityRulesResponse, error)
-}
-
-// UnimplementedDataScanServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedDataScanServiceServer struct {
-}
-
-func (*UnimplementedDataScanServiceServer) CreateDataScan(context.Context, *CreateDataScanRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateDataScan not implemented")
-}
-func (*UnimplementedDataScanServiceServer) UpdateDataScan(context.Context, *UpdateDataScanRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateDataScan not implemented")
-}
-func (*UnimplementedDataScanServiceServer) DeleteDataScan(context.Context, *DeleteDataScanRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataScan not implemented")
-}
-func (*UnimplementedDataScanServiceServer) GetDataScan(context.Context, *GetDataScanRequest) (*DataScan, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDataScan not implemented")
-}
-func (*UnimplementedDataScanServiceServer) ListDataScans(context.Context, *ListDataScansRequest) (*ListDataScansResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListDataScans not implemented")
-}
-func (*UnimplementedDataScanServiceServer) RunDataScan(context.Context, *RunDataScanRequest) (*RunDataScanResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunDataScan not implemented")
-}
-func (*UnimplementedDataScanServiceServer) GetDataScanJob(context.Context, *GetDataScanJobRequest) (*DataScanJob, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDataScanJob not implemented")
-}
-func (*UnimplementedDataScanServiceServer) ListDataScanJobs(context.Context, *ListDataScanJobsRequest) (*ListDataScanJobsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListDataScanJobs not implemented")
-}
-func (*UnimplementedDataScanServiceServer) GenerateDataQualityRules(context.Context, *GenerateDataQualityRulesRequest) (*GenerateDataQualityRulesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateDataQualityRules not implemented")
-}
-
-func RegisterDataScanServiceServer(s *grpc.Server, srv DataScanServiceServer) {
-	s.RegisterService(&_DataScanService_serviceDesc, srv)
-}
-
-func _DataScanService_CreateDataScan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateDataScanRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).CreateDataScan(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/CreateDataScan",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).CreateDataScan(ctx, req.(*CreateDataScanRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_UpdateDataScan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateDataScanRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).UpdateDataScan(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/UpdateDataScan",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).UpdateDataScan(ctx, req.(*UpdateDataScanRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_DeleteDataScan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteDataScanRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).DeleteDataScan(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/DeleteDataScan",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).DeleteDataScan(ctx, req.(*DeleteDataScanRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_GetDataScan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetDataScanRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).GetDataScan(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/GetDataScan",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).GetDataScan(ctx, req.(*GetDataScanRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_ListDataScans_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListDataScansRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).ListDataScans(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/ListDataScans",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).ListDataScans(ctx, req.(*ListDataScansRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_RunDataScan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RunDataScanRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).RunDataScan(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/RunDataScan",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).RunDataScan(ctx, req.(*RunDataScanRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_GetDataScanJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetDataScanJobRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).GetDataScanJob(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/GetDataScanJob",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).GetDataScanJob(ctx, req.(*GetDataScanJobRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_ListDataScanJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListDataScanJobsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).ListDataScanJobs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/ListDataScanJobs",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).ListDataScanJobs(ctx, req.(*ListDataScanJobsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataScanService_GenerateDataQualityRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateDataQualityRulesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataScanServiceServer).GenerateDataQualityRules(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataplex.v1.DataScanService/GenerateDataQualityRules",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataScanServiceServer).GenerateDataQualityRules(ctx, req.(*GenerateDataQualityRulesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _DataScanService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.dataplex.v1.DataScanService",
-	HandlerType: (*DataScanServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateDataScan",
-			Handler:    _DataScanService_CreateDataScan_Handler,
-		},
-		{
-			MethodName: "UpdateDataScan",
-			Handler:    _DataScanService_UpdateDataScan_Handler,
-		},
-		{
-			MethodName: "DeleteDataScan",
-			Handler:    _DataScanService_DeleteDataScan_Handler,
-		},
-		{
-			MethodName: "GetDataScan",
-			Handler:    _DataScanService_GetDataScan_Handler,
-		},
-		{
-			MethodName: "ListDataScans",
-			Handler:    _DataScanService_ListDataScans_Handler,
-		},
-		{
-			MethodName: "RunDataScan",
-			Handler:    _DataScanService_RunDataScan_Handler,
-		},
-		{
-			MethodName: "GetDataScanJob",
-			Handler:    _DataScanService_GetDataScanJob_Handler,
-		},
-		{
-			MethodName: "ListDataScanJobs",
-			Handler:    _DataScanService_ListDataScanJobs_Handler,
-		},
-		{
-			MethodName: "GenerateDataQualityRules",
-			Handler:    _DataScanService_GenerateDataQualityRules_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/dataplex/v1/datascans.proto",
 }

@@ -1548,6 +1548,9 @@ func (*btreeDocumentIterator) getExplainMetrics() (*ExplainMetrics, error) {
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
 func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
+	if q.readSettings == nil {
+		q.readSettings = &readSettings{}
+	}
 	for _, ro := range opts {
 		ro.apply(q.readSettings)
 	}

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.38.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.38.0...documentai/v1.38.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **documentai:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.37.0...documentai/v1.38.0) (2025-08-18)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.17.3...contactcenterinsights/v1.17.4) (2025-09-16)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.17.2...contactcenterinsights/v1.17.3) (2025-04-15)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.7](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.9.6...datalabeling/v0.9.7) (2025-09-16)
+
+
+### Bug Fixes
+
+* **datalabeling:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [0.9.6](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.9.5...datalabeling/v0.9.6) (2025-04-15)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.22.0",
+    "version": "1.23.0",
     "language": "GO",
     "apis": [
       {
@@ -1698,6 +1698,52 @@
         "method": {
           "shortName": "CreateKeyRing",
           "fullName": "google.cloud.kms.v1.KeyManagementService.CreateKeyRing",
+          "service": {
+            "shortName": "KeyManagementService",
+            "fullName": "google.cloud.kms.v1.KeyManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_Decapsulate_sync",
+      "title": "cloudkms Decapsulate Sample",
+      "description": "Decapsulate decapsulates data that was encapsulated with a public key retrieved from\n[GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey]\ncorresponding to a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]\nwith [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]\nKEY_ENCAPSULATION.",
+      "file": "KeyManagementClient/Decapsulate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Decapsulate",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.Decapsulate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.DecapsulateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.DecapsulateResponse",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "Decapsulate",
+          "fullName": "google.cloud.kms.v1.KeyManagementService.Decapsulate",
           "service": {
             "shortName": "KeyManagementService",
             "fullName": "google.cloud.kms.v1.KeyManagementService"

@@ -18,6 +18,7 @@ import (
 	"context"
 	"testing"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/build"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/generate"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/release"
 )
@@ -28,6 +29,9 @@ func TestRun(t *testing.T) {
 		return nil
 	}
 	releaseInitFunc = func(ctx context.Context, cfg *release.Config) error {
+		return nil
+	}
+	buildFunc = func(ctx context.Context, cfg *build.Config) error {
 		return nil
 	}
 
@@ -58,9 +62,19 @@ func TestRun(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "build command",
+			name:    "build command no flags",
 			args:    []string{"build"},
 			wantErr: false,
+		},
+		{
+			name:    "build command with flags",
+			args:    []string{"build", "--repo=.", "--librarian=./.librarian"},
+			wantErr: false,
+		},
+		{
+			name:    "build command with bad flag",
+			args:    []string{"build", "--output=."},
+			wantErr: true,
 		},
 		{
 			name:    "configure command",
@@ -78,6 +92,11 @@ func TestRun(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "generate command with bad flag",
+			args:    []string{"generate", "--repo=."},
+			wantErr: true,
+		},
+		{
 			name:    "release-init command no flags",
 			args:    []string{"release-init"},
 			wantErr: false,
@@ -86,6 +105,11 @@ func TestRun(t *testing.T) {
 			name:    "release-init command with flags",
 			args:    []string{"release-init", "--repo=.", "--output=./build_out"},
 			wantErr: false,
+		},
+		{
+			name:    "release-init command with bad flag",
+			args:    []string{"release-init", "--source=."},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

@@ -17,7 +17,7 @@
 // Package dataplex is an auto-generated package for the
 // Cloud Dataplex API.
 //
-// Dataplex API is used to manage the lifecycle of data lakes.
+// A unified, intelligent governance solution for data and AI assets.
 //
 // # General documentation
 //

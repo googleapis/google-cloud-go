@@ -28,21 +28,17 @@ import (
 
 func TestPostProcess(t *testing.T) {
 	tests := []struct {
-		name                string
-		mockexecvRun        func(ctx context.Context, args []string, dir string) error
-		wantGoModInitCalled bool
-		wantGoModTidyCalled bool
-		wantErr             bool
-		noVersion           bool
+		name         string
+		mockexecvRun func(ctx context.Context, args []string, dir string) error
+		wantErr      bool
+		noVersion    bool
 	}{
 		{
 			name: "success",
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
 				return nil
 			},
-			wantGoModInitCalled: true,
-			wantGoModTidyCalled: true,
-			wantErr:             false,
+			wantErr: false,
 		},
 		{
 			name: "goimports fails (fatal)",
@@ -52,40 +48,12 @@ func TestPostProcess(t *testing.T) {
 				}
 				return nil
 			},
-			wantGoModInitCalled: true,
-			wantGoModTidyCalled: false,
-			wantErr:             true,
+			wantErr: true,
 		},
 		{
-			name: "go mod init fails (fatal)",
-			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
-				if args[0] == "go" && args[1] == "mod" && args[2] == "init" {
-					return errors.New("go mod init failed")
-				}
-				return nil
-			},
-			wantGoModInitCalled: true,
-			wantGoModTidyCalled: false,
-			wantErr:             true,
-		},
-		{
-			name: "go mod tidy fails (fatal)",
-			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
-				if args[0] == "go" && args[1] == "mod" && args[2] == "tidy" {
-					return errors.New("go mod tidy failed")
-				}
-				return nil
-			},
-			wantGoModInitCalled: true,
-			wantGoModTidyCalled: true,
-			wantErr:             true,
-		},
-		{
-			name:                "fail without version",
-			noVersion:           true,
-			wantGoModInitCalled: false,
-			wantGoModTidyCalled: false,
-			wantErr:             true,
+			name:      "fail without version",
+			noVersion: true,
+			wantErr:   true,
 		},
 	}
 
@@ -131,18 +99,9 @@ func TestPostProcess(t *testing.T) {
 				return
 			}
 
-			var goModInitCalled, goModTidyCalled bool
-			execvRun = func(ctx context.Context, args []string, dir string) error {
-				if len(args) > 2 && args[0] == "go" && args[1] == "mod" && args[2] == "init" {
-					goModInitCalled = true
-				}
-				if len(args) > 2 && args[0] == "go" && args[1] == "mod" && args[2] == "tidy" {
-					goModTidyCalled = true
-				}
-				return tt.mockexecvRun(ctx, args, dir)
-			}
+			execvRun = tt.mockexecvRun
 
-			req := &request.Request{
+			req := &request.Library{
 				ID: "chronicle",
 				APIs: []request.API{
 					{Path: "google/cloud/chronicle/v1"},
@@ -165,13 +124,6 @@ func TestPostProcess(t *testing.T) {
 
 			if tt.wantErr {
 				return
-			}
-
-			if goModInitCalled != tt.wantGoModInitCalled {
-				t.Errorf("goModInitCalled = %v; want %v", goModInitCalled, tt.wantGoModInitCalled)
-			}
-			if goModTidyCalled != tt.wantGoModTidyCalled {
-				t.Errorf("goModTidyCalled = %v; want %v", goModTidyCalled, tt.wantGoModTidyCalled)
 			}
 
 			for _, snippetMetadataFile := range snippetMetadataFiles {

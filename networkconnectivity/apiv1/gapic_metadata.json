@@ -149,6 +149,120 @@
         }
       }
     },
+    "DataTransferService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataTransferClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDestination": {
+              "methods": [
+                "CreateDestination"
+              ]
+            },
+            "CreateMulticloudDataTransferConfig": {
+              "methods": [
+                "CreateMulticloudDataTransferConfig"
+              ]
+            },
+            "DeleteDestination": {
+              "methods": [
+                "DeleteDestination"
+              ]
+            },
+            "DeleteMulticloudDataTransferConfig": {
+              "methods": [
+                "DeleteMulticloudDataTransferConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDestination": {
+              "methods": [
+                "GetDestination"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMulticloudDataTransferConfig": {
+              "methods": [
+                "GetMulticloudDataTransferConfig"
+              ]
+            },
+            "GetMulticloudDataTransferSupportedService": {
+              "methods": [
+                "GetMulticloudDataTransferSupportedService"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDestinations": {
+              "methods": [
+                "ListDestinations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMulticloudDataTransferConfigs": {
+              "methods": [
+                "ListMulticloudDataTransferConfigs"
+              ]
+            },
+            "ListMulticloudDataTransferSupportedServices": {
+              "methods": [
+                "ListMulticloudDataTransferSupportedServices"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDestination": {
+              "methods": [
+                "UpdateDestination"
+              ]
+            },
+            "UpdateMulticloudDataTransferConfig": {
+              "methods": [
+                "UpdateMulticloudDataTransferConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
     "HubService": {
       "clients": {
         "grpc": {

@@ -323,6 +323,14 @@ name in the struct definition is used. To specify a field with an empty field
 name in a Cloud Spanner STRUCT type, use the `spanner:""` tag annotation against
 the corresponding field in the Go struct's type definition.
 
+The spanner tag supports the following options:
+
+| Tag | Description |
+|-----|-------------|
+| `spanner:"column_name"` | Set column name to `column_name` |
+| `spanner:"->"` | Read-only field (excluded from writes, included in reads) |
+| `spanner:"column_name;->"` | Set column name and mark as read-only |
+
 A STRUCT value can contain STRUCT-typed and Array-of-STRUCT typed fields and
 these can be specified using named struct-typed and []struct-typed fields inside
 a Go struct. However, embedded struct fields are not allowed. Unexported struct
