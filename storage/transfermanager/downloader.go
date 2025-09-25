@@ -961,21 +961,25 @@ func checksumObject(got, want uint32) error {
 }
 
 func isSubPath(localDirectory, filePath string) (bool, error) {
+	// validate paths
 	absLocalDirectory, err := filepath.Abs(localDirectory)
 	if err != nil {
-		return false, fmt.Errorf("cannot convert local directory to absolute path: %v", err)
+		return false, fmt.Errorf("cannot convert local directory to absolute path: %w", err)
 	}
 	absFilePath, err := filepath.Abs(filePath)
 	if err != nil {
-		return false, fmt.Errorf("cannot convert file path to absolute path: %v", err)
+		return false, fmt.Errorf("cannot convert file path to absolute path: %w", err)
 	}
+
+	// absLocalDirectory + rel = absFilePath
 	rel, err := filepath.Rel(absLocalDirectory, absFilePath)
 	if err != nil {
 		return false, err
 	}
 
-	// Check if rel starts with ".."
-	isUnder := !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && rel != ".."
+	// rel should not start with ".." to escape target directory
+	prevDir := ".." + string(filepath.Separator)
+	isUnder := !strings.HasPrefix(rel, prevDir) && rel != ".."
 
 	return isUnder, nil
 }
