@@ -75,13 +75,13 @@ func run(args []string) error {
 		}
 		moduleRoot := filepath.Join(repoRoot, moduleName)
 		if err := prepareModule(moduleRoot); err != nil {
-		    return fmt.Errorf("preparing module %s: %w", moduleName, err)
+			return fmt.Errorf("preparing module %s: %w", moduleName, err)
 		}
 		if err := addModule(repoRoot, ppc, state, moduleName, googleapisCommit); err != nil {
-		    return err
+			return err
 		}
 		if err := cleanupLegacyConfigs(repoRoot, moduleName); err != nil {
-		    return err
+			return err
 		}
 	}
 
