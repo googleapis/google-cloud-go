@@ -25,6 +25,8 @@ import (
 	"strings"
 )
 
+const buildIgnore = "// +build ignore"
+
 // prepareModule runs a series of cleanup and formatting operations on the given
 // moduleRoot directory tree.
 func prepareModule(moduleRoot string) error {
@@ -87,7 +89,7 @@ func runGoImports(moduleRoot string) error {
 // for file in $(find . -name '*_grpc.pb.go')
 // do
 //
-//	if grep -q '//go:build ignore' $file
+//	if grep -q '// +build ignore' $file
 //	then
 //	  echo "Deleting $file"
 //	  rm $file
@@ -96,7 +98,6 @@ func runGoImports(moduleRoot string) error {
 // done
 func removeIgnoredGrpcFiles(moduleRoot string) error {
 	slog.Info("deleting empty *_grpc.pb.go files", "dir", moduleRoot)
-	const buildIgnore = "//go:build ignore"
 	return filepath.WalkDir(moduleRoot, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
