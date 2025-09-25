@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
+// NewAPIStatus is the API.Status value used to represent "this is a new API being configured".
 const NewAPIStatus = "new"
 
 // Test substitution vars.
@@ -72,6 +73,8 @@ func (c *Config) Validate() error {
 	return nil
 }
 
+// Configure configures a new library, or a new API within an existing library.
+// This is effectively the entry point of the "configure" container command.
 func Configure(ctx context.Context, cfg *Config) error {
 	if err := cfg.Validate(); err != nil {
 		return fmt.Errorf("librariangen: invalid configuration: %w", err)
