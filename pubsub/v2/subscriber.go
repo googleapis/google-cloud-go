@@ -150,7 +150,8 @@ type ReceiveSettings struct {
 	NumGoroutines int
 
 	// ShutdownOptions configures the shutdown behavior of the subscriber.
-	// If unset, the default behavior is to graceful shutdown with no timeout.
+	// Default: if unset / nil, the client library will wait
+	// indefinitely for all in messages inflight to be acked/nacked.
 	ShutdownOptions *ShutdownOptions
 }
 

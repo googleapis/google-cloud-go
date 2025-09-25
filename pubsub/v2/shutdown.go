@@ -17,25 +17,28 @@ package pubsub
 import "time"
 
 // ShutdownOptions configures the shutdown behavior of the subscriber.
-// If not specified, the default behavior is indefinite processing,
-// aka graceful shutdown with no timeout.
+// When ShutdownOptions is nil, the client library will
+// assume disabled/infinite timeout.
+//
+// Warning: The interaction between Timeout and Behavior might be surprising.
+// Read about the interaction of these below to ensure you
+// get the desired behavior.
 type ShutdownOptions struct {
 	// Timeout specifies the time the subscriber should wait
 	// before forcefully shutting down..
 	// In ShutdownBehaviorNackImmediately mode, this configures the timeout
 	// for message nacks before shutting down.
 	//
-	// Set to zero to immediately shutdown (either modes)
+	// Set to zero to immediately shutdown.
 	// Set to a negative value to disable timeout.
-	//
-	// When ShutdownOptions is not set, the client library will
-	// assume disabled/infinite timeout, which matches the current behavior.
-	// When ShutdownOptions is set, but Timeout is unspecified, the default zero-value
-	// will result in immediate shutdown.
+	// Both zero and negative values overrides the ShutdownBehavior.
 	Timeout time.Duration
 
 	// Behavior defines the strategy the subscriber should use when
 	// shutting down (wait or nack messages).
+	// When ShutdownOptions is set, but Timeout is unspecified, the default zero-value
+	// will result in immediate shutdown. When needing a specific a behavior,
+	// always set a non-zero Timeout.
 	Behavior ShutdownBehavior
 }
 
