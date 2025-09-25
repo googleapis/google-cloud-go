@@ -34,7 +34,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// LINT: LEGACY_NAMES
 // Represents a hardware accelerator type.
 type AcceleratorType int32
 
