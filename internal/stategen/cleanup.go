@@ -103,7 +103,8 @@ func cleanupJSONFile(path, moduleName string) error {
 }
 
 // cleanupPostProcessorConfig removes the module and service-config entries for
-// a given module from the internal/postprocessor/config.yaml file.
+// a given module from the internal/postprocessor/config.yaml file. It also adds
+// the module to the skip-module-scan-paths list.
 // NOTE: This function does not remove modules from manual-clients.
 func cleanupPostProcessorConfig(repoRoot, moduleName string) error {
 	configPath := filepath.Join(repoRoot, "internal", "postprocessor", "config.yaml")
@@ -179,6 +180,30 @@ func cleanupPostProcessorConfig(repoRoot, moduleName string) error {
 	if inServiceConfigs && !isTargetServiceConfig {
 		newLines = append(newLines, serviceConfigBlock...)
 	}
+
+	// Third pass: add to skip-module-scan-paths.
+	lines = newLines
+	newLines = []string{}
+	skipScanPathsIndex := -1
+	librarianReleasedIndex := -1
+	for i, line := range lines {
+		if strings.HasPrefix(line, "skip-module-scan-paths:") {
+			skipScanPathsIndex = i
+		}
+		if skipScanPathsIndex != -1 && strings.TrimSpace(line) == "# Librarian released modules" {
+			librarianReleasedIndex = i
+			break // Found it, no need to continue.
+		}
+	}
+
+	if skipScanPathsIndex == -1 || librarianReleasedIndex == -1 {
+		return fmt.Errorf("'skip-module-scan-paths:' or '# Librarian released modules' not found in postprocessor config")
+	}
+
+	// Reconstruct the file with the new line added.
+	newLines = append(newLines, lines[:librarianReleasedIndex+1]...)
+	newLines = append(newLines, "  - "+moduleName)
+	newLines = append(newLines, lines[librarianReleasedIndex+1:]...)
 
 	output := strings.Join(newLines, "\n")
 	if bytes.Equal([]byte(output), fileBytes) {

@@ -1328,6 +1328,9 @@ service-configs:
 skip-module-scan-paths:
   # ignore the root module
   - .
+  # Librarian released modules
+  - dataproc
+  - dlp
   # individually released modules
   - auth
   - auth/oauth2adapt
@@ -1335,7 +1338,6 @@ skip-module-scan-paths:
   - bigquery/v2
   - bigtable
   - datastore
-  - dlp
   - errorreporting
   - firestore
   - logging
