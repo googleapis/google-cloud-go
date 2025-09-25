@@ -22,3 +22,27 @@ libraries:
         - ^dlp/apiv2/helpers\.go$
         - ^dlp/apiv2/dlppb/.*$
       tag_format: '{id}/v{version}'
+    - id: dataproc
+      version: 2.14.1
+      last_generated_commit: 329ace5e3712a2e37d6159d4dcd998d8c73f261e
+      apis:
+        - path: google/cloud/dataproc/v1
+          service_config: ""
+      source_roots:
+        - dataproc
+        - internal/generated/snippets/dataproc
+      preserve_regex: []
+      remove_regex:
+        - ^internal/generated/snippets/dataproc/
+        - ^dataproc/apiv1/[^/]*_client\.go$
+        - ^dataproc/apiv1/[^/]*_client_example_go123_test\.go$
+        - ^dataproc/apiv1/[^/]*_client_example_test\.go$
+        - ^dataproc/apiv1/auxiliary\.go$
+        - ^dataproc/apiv1/auxiliary_go123\.go$
+        - ^dataproc/apiv1/doc\.go$
+        - ^dataproc/apiv1/gapic_metadata\.json$
+        - ^dataproc/apiv1/helpers\.go$
+        - ^dataproc/apiv1/dataprocpb/.*$
+      release_exclude_paths:
+        - internal/generated/snippets/dataproc/
+      tag_format: '{id}/v{version}'

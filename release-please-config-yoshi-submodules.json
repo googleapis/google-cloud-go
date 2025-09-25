@@ -159,9 +159,6 @@
         "dataplex": {
             "component": "dataplex"
         },
-        "dataproc": {
-            "component": "dataproc"
-        },
         "dataqna": {
             "component": "dataqna"
         },

@@ -110,7 +110,6 @@ deep-remove-regex:
   - /datafusion/apiv1/
   - /datalabeling/apiv1beta1/
   - /dataplex/apiv1/
-  - /dataproc/apiv1/
   - /dataqna/apiv1alpha/
   - /datastore/admin/apiv1/
   - /datastore/apiv1/
@@ -261,7 +260,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datafusion/apiv1/
   - /internal/generated/snippets/datalabeling/apiv1beta1/
   - /internal/generated/snippets/dataplex/apiv1/
-  - /internal/generated/snippets/dataproc/apiv1/
   - /internal/generated/snippets/dataqna/apiv1alpha/
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets/datastream/apiv1/
@@ -692,7 +690,6 @@ deep-preserve-regex:
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
   - /storage/internal/apiv2/metadata.go
-  - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Must preserve these even though they aren't generated anymore
@@ -922,10 +919,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dataplex/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/v2/apiv1
-    dest: /dataproc/apiv1
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/internal/generated/snippets/dataproc/v2/apiv1
-    dest: /internal/generated/snippets/dataproc/apiv1
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
