@@ -19,7 +19,15 @@ ignored, even if they're listed in the command line.
 
 **NOTE:** This is a one-time migration tool to assist in moving modules from the legacy OwlBot/release-please workflow to the new Librarian workflow.
 
-In addition to adding new modules to the `.librarian/state.yaml` file, this tool will also **remove the legacy configuration** for each migrated module from the following files:
+This tool performs the following steps:
+
+1. Add the modules to the `.librarian/state.yaml` file.
+2. Prepare the modules for Librarian management:
+   1. Remove executable file permissions from Go files.
+   2. Run `goimports`.
+   3. Remove empty and ignored gRPC files.
+3. Remove the legacy configuration the modules from the following files:
+
 - `.github/.OwlBot.yaml`
 - `internal/postprocessor/config.yaml`
 - `release-please-config.json`

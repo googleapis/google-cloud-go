@@ -197,20 +197,21 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 		return err
 	}
 
+	modulePathFragment := "/" + moduleName + "/"
 	lines := strings.Split(string(fileBytes), "\n")
 	var newLines []string
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
 		if strings.Contains(line, "source:") {
 			// It's a source line, check it for the module name.
-			if strings.Contains(line, moduleName) {
+			if strings.Contains(line, modulePathFragment) {
 				if i+1 < len(lines) {
 					i++ // Remove both source and dest lines.
 				}
 				continue
 			}
 		}
-		if strings.Contains(line, moduleName) {
+		if strings.Contains(line, modulePathFragment) {
 			// Remove any non-source line containing the module name.
 			continue
 		}
