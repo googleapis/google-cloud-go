@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package css_test
-
-import (
-	css "cloud.google.com/go/shopping/css/apiv1"
-)
