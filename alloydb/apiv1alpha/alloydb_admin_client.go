@@ -84,6 +84,7 @@ type AlloyDBAdminCallOptions struct {
 	UpdateUser                 []gax.CallOption
 	DeleteUser                 []gax.CallOption
 	ListDatabases              []gax.CallOption
+	CreateDatabase             []gax.CallOption
 	GetLocation                []gax.CallOption
 	ListLocations              []gax.CallOption
 	CancelOperation            []gax.CallOption
@@ -319,6 +320,18 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 		ListDatabases: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -529,6 +542,17 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 		ListDatabases: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -601,6 +625,7 @@ type internalAlloyDBAdminClient interface {
 	UpdateUser(context.Context, *alloydbpb.UpdateUserRequest, ...gax.CallOption) (*alloydbpb.User, error)
 	DeleteUser(context.Context, *alloydbpb.DeleteUserRequest, ...gax.CallOption) error
 	ListDatabases(context.Context, *alloydbpb.ListDatabasesRequest, ...gax.CallOption) *DatabaseIterator
+	CreateDatabase(context.Context, *alloydbpb.CreateDatabaseRequest, ...gax.CallOption) (*alloydbpb.Database, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -986,6 +1011,11 @@ func (c *AlloyDBAdminClient) DeleteUser(ctx context.Context, req *alloydbpb.Dele
 // ListDatabases lists Databases in a given project and location.
 func (c *AlloyDBAdminClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	return c.internalClient.ListDatabases(ctx, req, opts...)
+}
+
+// CreateDatabase creates a new Database in a given project, location, and cluster.
+func (c *AlloyDBAdminClient) CreateDatabase(ctx context.Context, req *alloydbpb.CreateDatabaseRequest, opts ...gax.CallOption) (*alloydbpb.Database, error) {
+	return c.internalClient.CreateDatabase(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -2078,6 +2108,24 @@ func (c *alloyDBAdminGRPCClient) ListDatabases(ctx context.Context, req *alloydb
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *alloyDBAdminGRPCClient) CreateDatabase(ctx context.Context, req *alloydbpb.CreateDatabaseRequest, opts ...gax.CallOption) (*alloydbpb.Database, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
+	var resp *alloydbpb.Database
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.alloyDBAdminClient.CreateDatabase, req, settings.GRPC, c.logger, "CreateDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *alloyDBAdminGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -4655,6 +4703,64 @@ func (c *alloyDBAdminRESTClient) ListDatabases(ctx context.Context, req *alloydb
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreateDatabase creates a new Database in a given project, location, and cluster.
+func (c *alloyDBAdminRESTClient) CreateDatabase(ctx context.Context, req *alloydbpb.CreateDatabaseRequest, opts ...gax.CallOption) (*alloydbpb.Database, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDatabase()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/databases", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("databaseId", fmt.Sprintf("%v", req.GetDatabaseId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &alloydbpb.Database{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDatabase")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.
