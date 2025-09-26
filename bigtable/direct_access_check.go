@@ -38,12 +38,13 @@ const (
 // Direct Access. It then checks if the underlying
 // gRPC connection is indeed using a DirectPath IP address.
 //
-// Prerequisites for successful DirectPath connectivity:
+// Prerequisites for successful Direct Access connectivity:
 // 1. The environment variable `CBT_ENABLE_DIRECTPATH` must be set to "true".
-// 2. The code must be running in a Google Cloud environment (e.g., GCE VM, GKE)
-//    that is properly configured for DirectPath. This includes:
-//    - You must ensure that your routes and firewall rules allow egress traffic to reach 34.126.0.0/18 and 2001:4860:8040::/42
-// 3. The necessary IAM permissions must be granted to the service account.
+//  2. The code must be running in a Google Cloud environment (e.g., GCE VM, GKE)
+//     that is properly configured for Direct Access. This includes ensuring
+//     that your routes and firewall rules allow egress traffic to the
+//     Direct Access IP ranges: 34.126.0.0/18 and 2001:4860:8040::/42.
+//  3. The service account must have the necessary IAM permissions.
 //
 // Parameters:
 //   - ctx: The context for the operation.
@@ -61,31 +62,10 @@ const (
 //            - Failure to create the Bigtable client (e.g., invalid project/instance).
 //            - Failure during the PingAndWarm call (e.g., network issue, permissions).
 //
-// Example Usage:
-//
-//   ctx := context.Background()
-//   projectID := "my-project"
-//   instanceID := "my-instance"
-//   appProfileID := "default"
-//
-//   // Set the environment variable if not already set
-//   os.Setenv("CBT_ENABLE_DIRECTPATH", "true")
-//
-//   isDirectPath, err := bigtable.CheckDirectConnectivitySupported(ctx, projectID, instanceID, appProfileID)
-//   if err != nil {
-//     log.Fatalf("DirectPath check failed: %v", err)
-//   }
-//
-//   if isDirectPath {
-//     log.Printf("DirectPath connectivity is active for %s/%s", projectID, instanceID)
-//   } else {
-//     log.Printf("DirectPath connectivity is NOT active for %s/%s", projectID, instanceID)
-//   }
-//
 
-// CheckDirectConnectivitySupported verifies if DirectPath connectivity is enabled, configured,
+// CheckDirectAccessSupported verifies if Direct Access connectivity is enabled, configured,
 // and actively being used for the given Cloud Bigtable instance.
-func CheckDirectConnectivitySupported(ctx context.Context, project, instance, appProfile string, opts ...option.ClientOption) (bool, error) {
+func CheckDirectAccessSupported(ctx context.Context, project, instance, appProfile string, opts ...option.ClientOption) (bool, error) {
 	// Check if env variable is set to true
 	// Inside the function
 	envVal := os.Getenv("CBT_ENABLE_DIRECTPATH")
