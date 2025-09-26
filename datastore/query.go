@@ -945,9 +945,6 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 
 	// Parse the read options.
 	txn := aq.query.trans
-	if txn != nil {
-		defer txn.stateLockDeferUnlock()()
-	}
 
 	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn, c.readSettings)
 	if err != nil {
@@ -959,8 +956,13 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 		return ar, err
 	}
 
-	if txn != nil && txn.state == transactionStateNotStarted {
-		txn.setToInProgress(resp.Transaction)
+	if txn != nil && resp.Transaction != nil {
+		txn.stateLock.Lock()
+		if txn.state == transactionStateNotStarted {
+			txn.id = resp.Transaction
+			txn.state = transactionStateInProgress
+		}
+		txn.stateLock.Unlock()
 	}
 
 	if req.ExplainOptions == nil || req.ExplainOptions.Analyze {
@@ -1128,9 +1130,6 @@ func (t *Iterator) nextBatch() error {
 	}
 
 	txn := t.trans
-	if txn != nil {
-		defer txn.stateLockDeferUnlock()()
-	}
 
 	var err error
 	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn, t.client.readSettings)
@@ -1144,8 +1143,13 @@ func (t *Iterator) nextBatch() error {
 		return err
 	}
 
-	if txn != nil && txn.state == transactionStateNotStarted {
-		txn.setToInProgress(resp.Transaction)
+	if txn != nil && resp.Transaction != nil {
+		txn.stateLock.Lock()
+		if txn.state == transactionStateNotStarted {
+			txn.id = resp.Transaction
+			txn.state = transactionStateInProgress
+		}
+		txn.stateLock.Unlock()
 	}
 
 	if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
