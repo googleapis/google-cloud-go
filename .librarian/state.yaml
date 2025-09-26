@@ -24,7 +24,7 @@ libraries:
       tag_format: '{id}/v{version}'
     - id: dataproc
       version: 2.14.1
-      last_generated_commit: 329ace5e3712a2e37d6159d4dcd998d8c73f261e
+      last_generated_commit: 888ae95dd6125f754650d55410b8c117b618a268
       apis:
         - path: google/cloud/dataproc/v1
           service_config: ""
