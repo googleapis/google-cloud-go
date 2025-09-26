@@ -491,6 +491,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		RequestId:          uid.NewSpace("request", nil).New(),
 		Reservation:        q.Reservation,
+		MaxSlots:           int64(q.MaxSlots),
 		Labels:             q.Labels,
 		FormatOptions: &bq.DataFormatOptions{
 			UseInt64Timestamp: true,

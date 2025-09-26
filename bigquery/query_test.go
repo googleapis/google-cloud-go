@@ -476,6 +476,7 @@ func TestProbeFastPath(t *testing.T) {
 					"key": "val",
 				},
 				Reservation: "reservation/1",
+				MaxSlots:    222,
 			},
 			wantReq: &bq.QueryRequest{
 				Query:          "foo",
@@ -497,6 +498,7 @@ func TestProbeFastPath(t *testing.T) {
 					UseInt64Timestamp: true,
 				},
 				Reservation: "reservation/1",
+				MaxSlots:    222,
 			},
 		},
 		{
