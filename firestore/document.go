@@ -223,7 +223,7 @@ func extractTransforms(v reflect.Value, prefix FieldPath) ([]*pb.DocumentTransfo
 func extractTransformsFromMap(v reflect.Value, prefix FieldPath) ([]*pb.DocumentTransform_FieldTransform, error) {
 	var transforms []*pb.DocumentTransform_FieldTransform
 	for _, k := range v.MapKeys() {
-		sk := k.Interface().(string) // assume keys are strings; checked in toProtoValue
+		sk := k.String() // assume keys are strings; checked in toProtoValue
 		path := prefix.with(sk)
 		mi := v.MapIndex(k)
 		if mi.Interface() == ServerTimestamp {
