@@ -94,7 +94,7 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 			}
 
 			go func(t *testing.T) {
-				err = q.Wait(ctx)
+				err := q.Wait(ctx)
 				if err == nil {
 					t.Errorf("Wait() should throw an error: %v", err)
 				}
