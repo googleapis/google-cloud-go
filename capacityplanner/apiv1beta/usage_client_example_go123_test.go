@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package capacityplanner_test
+
+import (
+	capacityplanner "cloud.google.com/go/capacityplanner/apiv1beta"
+)
