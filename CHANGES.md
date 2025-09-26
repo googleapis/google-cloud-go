@@ -2,6 +2,18 @@
 
 
 
+## [0.124.0](https://github.com/googleapis/google-cloud-go/compare/v0.123.0...v0.124.0) (2025-09-26)
+
+
+### Features
+
+* **stategen:** Populate release_exclude_paths for snippets ([#12942](https://github.com/googleapis/google-cloud-go/issues/12942)) ([b25be45](https://github.com/googleapis/google-cloud-go/commit/b25be45eb7bf565b491586749de00ed9aa0fbdab))
+
+
+### Bug Fixes
+
+* **internal/stategen:** Write state.yaml with the same code as librarian CLI ([#12955](https://github.com/googleapis/google-cloud-go/issues/12955)) ([0464d0b](https://github.com/googleapis/google-cloud-go/commit/0464d0beed74e91c158f08672f8742d453a62320))
+
 ## [0.123.0](https://github.com/googleapis/google-cloud-go/compare/v0.122.0...v0.123.0) (2025-09-18)
 
 
