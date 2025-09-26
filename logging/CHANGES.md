@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/logging/v1.13.0...logging/v1.13.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* **logging:** Update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.12.0...logging/v1.13.0) (2025-01-02)
 
 
