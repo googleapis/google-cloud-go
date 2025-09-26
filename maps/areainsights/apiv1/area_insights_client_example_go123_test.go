@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package areainsights_test
-
-import (
-	areainsights "cloud.google.com/go/maps/areainsights/apiv1"
-)
