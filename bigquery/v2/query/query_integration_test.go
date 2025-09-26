@@ -100,7 +100,7 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 				}
 			}(t)
 
-			for q.JobReference() == nil {
+			for q.JobReference() == nil && q.Err() == nil {
 				time.Sleep(100 * time.Millisecond)
 			}
 			wcancel()

@@ -131,8 +131,9 @@ func (q *Query) Done(opts ...gax.CallOption) <-chan struct{} {
 func (q *Query) Err() error {
 	q.mu.RLock()
 	defer q.mu.RUnlock()
-	if q.ctx.Err() != nil {
-		return q.ctx.Err()
+	err := q.ctx.Err()
+	if err != nil {
+		return err
 	}
 	return q.err
 }

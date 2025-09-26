@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/protobuf/proto"
 )
 
 // Helper for running queries in BigQuery. It is a lightweight wrapper
@@ -50,6 +51,7 @@ func NewHelper(c *apiv2_client.Client, projectID string, opts ...option.ClientOp
 // handle to the running query. The returned Query object can be used to wait for
 // completion and retrieve results.
 func (h *Helper) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*Query, error) {
+	req = proto.Clone(req).(*bigquerypb.PostQueryRequest)
 	qr := req.GetQueryRequest()
 	if qr == nil {
 		return nil, fmt.Errorf("bigquery: request is missing QueryRequest")
@@ -63,6 +65,7 @@ func (h *Helper) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 
 // StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
 func (h *Helper) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*Query, error) {
+	job = proto.Clone(job).(*bigquerypb.Job)
 	config := job.GetConfiguration()
 	if config == nil {
 		return nil, fmt.Errorf("bigquery: job is missing configuration")
@@ -80,6 +83,9 @@ func (h *Helper) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	if jobRef.GetJobId() == "" {
 		jobRef.JobId = uid.NewSpace("job", nil).New()
 	}
+	if jobRef.GetProjectId() == "" {
+		jobRef.ProjectId = h.projectID
+	}
 
 	return newQueryJobFromJob(ctx, h, h.projectID, job, opts...), nil
 }
@@ -88,6 +94,7 @@ func (h *Helper) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 // used to monitor the job's status, wait for its completion, and retrieve its
 // results.
 func (h *Helper) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
+	jobRef = proto.Clone(jobRef).(*bigquerypb.JobReference)
 	if jobRef == nil {
 		return nil, fmt.Errorf("bigquery: AttachJob requires a non-nil JobReference")
 	}
