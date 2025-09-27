@@ -1388,6 +1388,9 @@ func parseKey(key []byte) (*rsa.PrivateKey, error) {
 
 // toRawObject copies the editable attributes from o to the raw library's Object type.
 func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
+	if o == nil {
+		return nil
+	}
 	var ret string
 	if !o.RetentionExpirationTime.IsZero() {
 		ret = o.RetentionExpirationTime.Format(time.RFC3339)
@@ -1417,6 +1420,9 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 
 // toProtoObject copies the editable attributes from o to the proto library's Object type.
 func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
+	if o == nil {
+		return nil
+	}
 	// For now, there are only globally unique buckets, and "_" is the alias
 	// project ID for such buckets. If the bucket is not provided, like in the
 	// destination ObjectAttrs of a Copy, do not attempt to format it.
@@ -1671,6 +1677,12 @@ type ObjectAttrs struct {
 	// ObjectHandle.Attrs will return ErrObjectNotExist if the object is soft-deleted.
 	// This field is read-only.
 	HardDeleteTime time.Time
+}
+
+// isZero reports whether the ObjectAttrs struct is empty (i.e. all the
+// fields are their zero value).
+func (o *ObjectAttrs) isZero() bool {
+	return reflect.DeepEqual(o, &ObjectAttrs{})
 }
 
 // ObjectRetention contains the retention configuration for this object.
