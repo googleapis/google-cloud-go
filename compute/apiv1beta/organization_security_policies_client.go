@@ -1145,6 +1145,9 @@ func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req 
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1212,6 +1215,9 @@ func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, 
 	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
