@@ -2987,6 +2987,20 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		if t.ConvertibleTo(typeOfPGJsonB) {
 			return spannerTypePGJsonB
 		}
+
+		pek := t.Elem().Kind()
+		switch pek {
+		case reflect.String:
+			return spannerTypeNonNullString
+		case reflect.Int64:
+			return spannerTypeNonNullInt64
+		case reflect.Bool:
+			return spannerTypeNonNullBool
+		case reflect.Float32:
+			return spannerTypeNonNullFloat32
+		case reflect.Float64:
+			return spannerTypeNonNullFloat64
+		}
 	case reflect.Struct:
 		t := val.Type()
 		if t.ConvertibleTo(typeOfNonNullNumeric) {
@@ -3583,6 +3597,9 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		return fmt.Errorf("unknown decodable type found: %v", dsc)
 	}
 	source := reflect.Indirect(reflect.ValueOf(result))
+	if reflect.Indirect(reflect.ValueOf(ptr)).Kind() == reflect.Pointer {
+		source = reflect.ValueOf(result)
+	}
 	destination := reflect.Indirect(reflect.ValueOf(ptr))
 	destination.Set(source.Convert(destination.Type()))
 	return nil
