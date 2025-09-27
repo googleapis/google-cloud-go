@@ -583,6 +583,13 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
+	params := url.Values{}
+	if req != nil && req.Views != nil {
+		params.Add("views", fmt.Sprintf("%v", req.GetViews()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "subnetwork", url.QueryEscape(req.GetSubnetwork()))}
 
@@ -775,6 +782,9 @@ func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSub
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.Views != nil {
+			params.Add("views", fmt.Sprintf("%v", req.GetViews()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
