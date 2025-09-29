@@ -222,23 +222,6 @@ func TestTransactionErrors(t *testing.T) {
 		}
 	})
 
-	t.Run("Get has a retryable error", func(t *testing.T) {
-		srv.reset()
-		srv.addRPC(beginReq, beginRes)
-		srv.addRPC(getReq, abortedErr)
-		srv.addRPC(rollbackReq, &emptypb.Empty{})
-		srv.addRPC(beginRetryReq, beginRes)
-		srv.addRPC(getReq, getRes)
-		srv.addRPC(commitReq, commitRes)
-		err := c.RunTransaction(ctx, get)
-		if err != nil {
-			t.Errorf("got <%v>, want nil", err)
-		}
-		if !srv.isEmpty() {
-			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
-		}
-	})
-
 	t.Run("Get has a permanent error", func(t *testing.T) {
 		srv.reset()
 		srv.addRPC(beginReq, beginRes)
@@ -457,6 +440,23 @@ func TestTransactionErrors(t *testing.T) {
 			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
 		}
 	})
+
+	t.Run("Get has a retryable error", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(getReq, abortedErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		srv.addRPC(beginRetryReq, beginRes)
+		srv.addRPC(getReq, getRes)
+		srv.addRPC(commitReq, commitRes)
+		err := c.RunTransaction(ctx, get)
+		if err != nil {
+			t.Errorf("got <%v>, want nil", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
+	})
 }
 
 func TestTransactionGetAll(t *testing.T) {
@@ -505,7 +505,6 @@ func TestRunTransaction_Retries(t *testing.T) {
 		&pb.BeginTransactionResponse{Transaction: tid},
 	)
 
-	// Document definitions for the write
 	aDoc := &pb.Document{
 		Name:       db + "/documents/C/a",
 		CreateTime: aTimestamp,
@@ -517,30 +516,26 @@ func TestRunTransaction_Retries(t *testing.T) {
 		Fields: map[string]*pb.Value{"count": intval(7)},
 	}
 
-	commitWrites := []*pb.Write{{
-		Operation:  &pb.Write_Update{Update: aDoc2},
-		UpdateMask: &pb.DocumentMask{FieldPaths: []string{"count"}},
-		CurrentDocument: &pb.Precondition{
-			ConditionType: &pb.Precondition_Exists{Exists: true},
-		},
-	}}
-
 	// Attempt 1: Commit (Fails)
 	srv.addRPC(
 		&pb.CommitRequest{
 			Database:    db,
 			Transaction: tid,
-			Writes:      commitWrites,
+			Writes: []*pb.Write{{
+				Operation:  &pb.Write_Update{Update: aDoc2},
+				UpdateMask: &pb.DocumentMask{FieldPaths: []string{"count"}},
+				CurrentDocument: &pb.Precondition{
+					ConditionType: &pb.Precondition_Exists{Exists: true},
+				},
+			}},
 		},
 		status.Errorf(codes.Aborted, "something failed! please retry me!"),
 	)
 
-	// FIX: Add expected Rollback after the Aborted commit
 	rollbackReq := &pb.RollbackRequest{Database: db, Transaction: tid}
 	srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 	// Attempt 2: Begin (Retry)
-	// Note: The response uses the same tid in this specific test, modeling a service that might reuse the ID.
 	srv.addRPC(
 		&pb.BeginTransactionRequest{
 			Database: db,
@@ -553,19 +548,23 @@ func TestRunTransaction_Retries(t *testing.T) {
 		&pb.BeginTransactionResponse{Transaction: tid},
 	)
 
-	// Attempt 2: Commit (Succeeds)
 	srv.addRPC(
 		&pb.CommitRequest{
 			Database:    db,
 			Transaction: tid,
-			Writes:      commitWrites,
+			Writes: []*pb.Write{{
+				Operation:  &pb.Write_Update{Update: aDoc2},
+				UpdateMask: &pb.DocumentMask{FieldPaths: []string{"count"}},
+				CurrentDocument: &pb.Precondition{
+					ConditionType: &pb.Precondition_Exists{Exists: true},
+				},
+			}},
 		},
 		&pb.CommitResponse{CommitTime: aTimestamp3},
 	)
 
 	err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		docref := c.Collection("C").Doc("a")
-		// This is the transaction body, which executes twice
 		return tx.Update(docref, []Update{{Path: "count", Value: 7}})
 	})
 	if err != nil {
