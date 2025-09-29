@@ -14,6 +14,38 @@
 
 package query
 
+import (
+	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+)
+
+// WithDefaultLocation, if set, will be used as the default location for all subsequent
+// job operations. A location specified directly in one of those operations will override this value.
+func WithDefaultLocation(location string) option.ClientOption {
+	return &customClientOption{location: location}
+}
+
+// WithDefaultJobCreationMode sets default job mode creation for all subsequent
+// job operations. A mode specified directly in one of those operations will override this value.
+func WithDefaultJobCreationMode(mode bigquerypb.QueryRequest_JobCreationMode) option.ClientOption {
+	return &customClientOption{jobCreationMode: mode}
+}
+
+type customClientOption struct {
+	internaloption.EmbeddableAdapter
+	jobCreationMode bigquerypb.QueryRequest_JobCreationMode
+	location        string
+}
+
+func (s *customClientOption) ApplyCustomClientOpt(h *Helper) {
+	if s.location != "" {
+		h.location = wrapperspb.String(s.location)
+	}
+	h.jobCreationMode = s.jobCreationMode
+}
+
 // ReadOption is an option for reading query results.
 type ReadOption func(*readState)
 
