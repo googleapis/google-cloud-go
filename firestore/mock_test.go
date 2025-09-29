@@ -83,10 +83,6 @@ func (s *mockServer) addRPC(wantReq proto.Message, resp interface{}) {
 	s.addRPCAdjust(wantReq, resp, nil)
 }
 
-func (s *mockServer) isEmpty() bool {
-	return len(s.reqItems) == 0
-}
-
 // addRPCAdjust is like addRPC, but accepts a function that can be used
 // to tweak the requests before comparison, for example to adjust for
 // randomness.
