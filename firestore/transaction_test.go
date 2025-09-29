@@ -186,7 +186,11 @@ func TestTransactionErrors(t *testing.T) {
 			Database: db,
 		}
 		beginRes = &pb.BeginTransactionResponse{Transaction: tid}
-		getReq   = &pb.BatchGetDocumentsRequest{
+		get      = func(_ context.Context, tx *Transaction) error {
+			_, err := tx.Get(c.Doc("C/a"))
+			return err
+		}
+		getReq = &pb.BatchGetDocumentsRequest{
 			Database:            c.path(),
 			Documents:           []string{db + "/documents/C/a"},
 			ConsistencySelector: &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid},

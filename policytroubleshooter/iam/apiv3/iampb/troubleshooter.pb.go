@@ -23,13 +23,9 @@ package iampb
 import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	iampb1 "cloud.google.com/go/iam/apiv2/iampb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	expr "google.golang.org/genproto/googleapis/type/expr"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -3014,90 +3010,4 @@ func file_google_cloud_policytroubleshooter_iam_v3_troubleshooter_proto_init() {
 	file_google_cloud_policytroubleshooter_iam_v3_troubleshooter_proto_rawDesc = nil
 	file_google_cloud_policytroubleshooter_iam_v3_troubleshooter_proto_goTypes = nil
 	file_google_cloud_policytroubleshooter_iam_v3_troubleshooter_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// PolicyTroubleshooterClient is the client API for PolicyTroubleshooter service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type PolicyTroubleshooterClient interface {
-	// Checks whether a principal has a specific permission for a specific
-	// resource, and explains why the principal does or doesn't have that
-	// permission.
-	TroubleshootIamPolicy(ctx context.Context, in *TroubleshootIamPolicyRequest, opts ...grpc.CallOption) (*TroubleshootIamPolicyResponse, error)
-}
-
-type policyTroubleshooterClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewPolicyTroubleshooterClient(cc grpc.ClientConnInterface) PolicyTroubleshooterClient {
-	return &policyTroubleshooterClient{cc}
-}
-
-func (c *policyTroubleshooterClient) TroubleshootIamPolicy(ctx context.Context, in *TroubleshootIamPolicyRequest, opts ...grpc.CallOption) (*TroubleshootIamPolicyResponse, error) {
-	out := new(TroubleshootIamPolicyResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooter/TroubleshootIamPolicy", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// PolicyTroubleshooterServer is the server API for PolicyTroubleshooter service.
-type PolicyTroubleshooterServer interface {
-	// Checks whether a principal has a specific permission for a specific
-	// resource, and explains why the principal does or doesn't have that
-	// permission.
-	TroubleshootIamPolicy(context.Context, *TroubleshootIamPolicyRequest) (*TroubleshootIamPolicyResponse, error)
-}
-
-// UnimplementedPolicyTroubleshooterServer can be embedded to have forward compatible implementations.
-type UnimplementedPolicyTroubleshooterServer struct {
-}
-
-func (*UnimplementedPolicyTroubleshooterServer) TroubleshootIamPolicy(context.Context, *TroubleshootIamPolicyRequest) (*TroubleshootIamPolicyResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method TroubleshootIamPolicy not implemented")
-}
-
-func RegisterPolicyTroubleshooterServer(s *grpc.Server, srv PolicyTroubleshooterServer) {
-	s.RegisterService(&_PolicyTroubleshooter_serviceDesc, srv)
-}
-
-func _PolicyTroubleshooter_TroubleshootIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TroubleshootIamPolicyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PolicyTroubleshooterServer).TroubleshootIamPolicy(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooter/TroubleshootIamPolicy",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PolicyTroubleshooterServer).TroubleshootIamPolicy(ctx, req.(*TroubleshootIamPolicyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _PolicyTroubleshooter_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooter",
-	HandlerType: (*PolicyTroubleshooterServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "TroubleshootIamPolicy",
-			Handler:    _PolicyTroubleshooter_TroubleshootIamPolicy_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/policytroubleshooter/iam/v3/troubleshooter.proto",
 }

@@ -315,17 +315,17 @@ func TestIsTrustBoundaryEnabled(t *testing.T) {
 	}
 }
 
-func TestServiceAccountTrustBoundaryConfig(t *testing.T) {
+func TestServiceAccountConfig(t *testing.T) {
 	saEmail := "test-sa@example.iam.gserviceaccount.com"
 	ud := "example.com"
 
-	cfg := NewServiceAccountTrustBoundaryConfig(saEmail, ud)
+	cfg := NewServiceAccountConfigProvider(saEmail, ud).(*serviceAccountConfig)
 
 	if cfg.ServiceAccountEmail != saEmail {
-		t.Errorf("NewServiceAccountTrustBoundaryConfig().ServiceAccountEmail = %q, want %q", cfg.ServiceAccountEmail, saEmail)
+		t.Errorf("NewServiceAccountConfigProvider().ServiceAccountEmail = %q, want %q", cfg.ServiceAccountEmail, saEmail)
 	}
 	if cfg.UniverseDomain != ud {
-		t.Errorf("NewServiceAccountTrustBoundaryConfig().UniverseDomain = %q, want %q", cfg.UniverseDomain, ud)
+		t.Errorf("NewServiceAccountConfigProvider().UniverseDomain = %q, want %q", cfg.UniverseDomain, ud)
 	}
 
 	t.Run("GetTrustBoundaryEndpoint", func(t *testing.T) {
@@ -356,7 +356,7 @@ func TestServiceAccountTrustBoundaryConfig(t *testing.T) {
 		}
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				cfg := NewServiceAccountTrustBoundaryConfig(tt.saEmail, tt.ud)
+				cfg := NewServiceAccountConfigProvider(tt.saEmail, tt.ud)
 				url, err := cfg.GetTrustBoundaryEndpoint(context.Background())
 				if (err != nil && err.Error() != tt.wantErr) || (err == nil && tt.wantErr != "") {
 					t.Errorf("GetTrustBoundaryEndpoint() error = %v, wantErr %q", err, tt.wantErr)
@@ -388,7 +388,7 @@ func TestServiceAccountTrustBoundaryConfig(t *testing.T) {
 		}
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				cfg := NewServiceAccountTrustBoundaryConfig("test-sa@example.com", tt.inputUD)
+				cfg := NewServiceAccountConfigProvider("test-sa@example.com", tt.inputUD)
 				gotUD, err := cfg.GetUniverseDomain(context.Background())
 				if err != nil {
 					t.Fatalf("GetUniverseDomain() unexpected error: %v", err)
@@ -401,7 +401,7 @@ func TestServiceAccountTrustBoundaryConfig(t *testing.T) {
 	})
 }
 
-func TestGCETrustBoundaryConfigProvider(t *testing.T) {
+func TestGCEConfigProvider(t *testing.T) {
 	defaultTestEmail := "test-sa@example.iam.gserviceaccount.com"
 	defaultTestUD := "example.com"
 	defaultExpectedEndpoint := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, defaultTestUD, defaultTestEmail)
@@ -475,8 +475,8 @@ func TestGCETrustBoundaryConfigProvider(t *testing.T) {
 		{
 			name:                    "Nil ComputeUniverseDomainProvider",
 			gceUDP:                  nil,
-			wantErrEndpoint:         "trustboundary: GCETrustBoundaryConfigProvider not properly initialized",
-			wantErrUD:               "trustboundary: GCETrustBoundaryConfigProvider not properly initialized",
+			wantErrEndpoint:         "trustboundary: GCEConfigProvider not properly initialized",
+			wantErrUD:               "trustboundary: GCEConfigProvider not properly initialized",
 			skipServerConfiguration: true,
 		},
 		{
@@ -484,8 +484,8 @@ func TestGCETrustBoundaryConfigProvider(t *testing.T) {
 			gceUDP: &internal.ComputeUniverseDomainProvider{
 				MetadataClient: nil,
 			},
-			wantErrEndpoint:         "trustboundary: GCETrustBoundaryConfigProvider not properly initialized",
-			wantErrUD:               "trustboundary: GCETrustBoundaryConfigProvider not properly initialized",
+			wantErrEndpoint:         "trustboundary: GCEConfigProvider not properly initialized",
+			wantErrUD:               "trustboundary: GCEConfigProvider not properly initialized",
 			skipServerConfiguration: true,
 		},
 		{
@@ -543,10 +543,10 @@ func TestGCETrustBoundaryConfigProvider(t *testing.T) {
 				udp := &internal.ComputeUniverseDomainProvider{
 					MetadataClient: mdClient,
 				}
-				provider = NewGCETrustBoundaryConfigProvider(udp)
+				provider = NewGCEConfigProvider(udp)
 			} else {
 				os.Unsetenv("GCE_METADATA_HOST")
-				provider = NewGCETrustBoundaryConfigProvider(tt.gceUDP)
+				provider = NewGCEConfigProvider(tt.gceUDP)
 			}
 
 			endpoint, err := provider.GetTrustBoundaryEndpoint(ctx)
@@ -578,7 +578,7 @@ func TestGCETrustBoundaryConfigProvider(t *testing.T) {
 	}
 }
 
-func TestGCETrustBoundaryConfigProvider_CachesResults(t *testing.T) {
+func TestGCEConfigProvider_CachesResults(t *testing.T) {
 	originalGCEHost := os.Getenv("GCE_METADATA_HOST")
 	defer os.Setenv("GCE_METADATA_HOST", originalGCEHost)
 
@@ -600,7 +600,7 @@ func TestGCETrustBoundaryConfigProvider_CachesResults(t *testing.T) {
 	os.Setenv("GCE_METADATA_HOST", parsedURL.Host)
 	mdClient := metadata.NewClient(server.Client())
 	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
-	provider := NewGCETrustBoundaryConfigProvider(udp)
+	provider := NewGCEConfigProvider(udp)
 
 	for i := 0; i < 5; i++ {
 		t.Run(fmt.Sprintf("call-%d", i+1), func(t *testing.T) {
@@ -614,7 +614,7 @@ func TestGCETrustBoundaryConfigProvider_CachesResults(t *testing.T) {
 	}
 }
 
-type mockTrustBoundaryConfigProvider struct {
+type mockConfigProvider struct {
 	endpointCallCount   int
 	universeCallCount   int
 	endpointToReturn    string
@@ -623,17 +623,17 @@ type mockTrustBoundaryConfigProvider struct {
 	universeErrToReturn error
 }
 
-func (m *mockTrustBoundaryConfigProvider) GetTrustBoundaryEndpoint(ctx context.Context) (string, error) {
+func (m *mockConfigProvider) GetTrustBoundaryEndpoint(ctx context.Context) (string, error) {
 	m.endpointCallCount++
 	return m.endpointToReturn, m.endpointErrToReturn
 }
 
-func (m *mockTrustBoundaryConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
+func (m *mockConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
 	m.universeCallCount++
 	return m.universeToReturn, m.universeErrToReturn
 }
 
-func (m *mockTrustBoundaryConfigProvider) Reset() {
+func (m *mockConfigProvider) Reset() {
 	m.endpointCallCount = 0
 	m.universeCallCount = 0
 }
@@ -657,7 +657,7 @@ func TestDataProvider_Token(t *testing.T) {
 
 	tests := []struct {
 		name                  string
-		mockConfig            *mockTrustBoundaryConfigProvider
+		mockConfig            *mockConfigProvider
 		serverResponse        *serverResponse // for fetchTrustBoundaryData
 		baseProvider          *mockTokenProvider
 		wantDataOnToken       *internal.TrustBoundaryData
@@ -676,7 +676,7 @@ func TestDataProvider_Token(t *testing.T) {
 	}{
 		{
 			name: "Non-default universe domain returns NoOp",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeToReturn: "example.com",
 			},
 			baseProvider: &mockTokenProvider{
@@ -688,7 +688,7 @@ func TestDataProvider_Token(t *testing.T) {
 		},
 		{
 			name: "Default universe, no cache, successful fetch",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
 			baseProvider: &mockTokenProvider{
@@ -704,7 +704,7 @@ func TestDataProvider_Token(t *testing.T) {
 		},
 		{
 			name: "Default universe, fetch fails, no cache, returns error",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
 			baseProvider: &mockTokenProvider{
@@ -721,7 +721,7 @@ func TestDataProvider_Token(t *testing.T) {
 		},
 		{
 			name: "Error from GetUniverseDomain",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeErrToReturn: errors.New("universe domain error"),
 			},
 			baseProvider: &mockTokenProvider{
@@ -734,7 +734,7 @@ func TestDataProvider_Token(t *testing.T) {
 		},
 		{
 			name: "Error from GetTrustBoundaryEndpoint",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeToReturn:    internal.DefaultUniverseDomain,
 				endpointErrToReturn: errors.New("endpoint error"),
 			},
@@ -748,7 +748,7 @@ func TestDataProvider_Token(t *testing.T) {
 		},
 		{
 			name: "Cache fallback on second call",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
 			baseProvider: &mockTokenProvider{
@@ -781,7 +781,7 @@ func TestDataProvider_Token(t *testing.T) {
 		},
 		{
 			name: "Non-default universe caches NoOp",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeToReturn: "example.com",
 			},
 			baseProvider: &mockTokenProvider{
@@ -805,7 +805,7 @@ func TestDataProvider_Token(t *testing.T) {
 		},
 		{
 			name: "API-retrieved NoOp is cached",
-			mockConfig: &mockTrustBoundaryConfigProvider{
+			mockConfig: &mockConfigProvider{
 				universeToReturn: internal.DefaultUniverseDomain,
 			},
 			baseProvider: &mockTokenProvider{

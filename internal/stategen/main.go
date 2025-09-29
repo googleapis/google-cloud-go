@@ -73,10 +73,18 @@ func run(args []string) error {
 			slog.Info("skipping existing module", "module", moduleName)
 			continue
 		}
+		moduleRoot := filepath.Join(repoRoot, moduleName)
+		if err := prepareModule(moduleRoot); err != nil {
+			return fmt.Errorf("preparing module %s: %w", moduleName, err)
+		}
 		if err := addModule(repoRoot, ppc, state, moduleName, googleapisCommit); err != nil {
 			return err
 		}
+		if err := cleanupLegacyConfigs(repoRoot, moduleName); err != nil {
+			return err
+		}
 	}
+
 	return saveLibrarianState(stateFilePath, state)
 }
 
@@ -124,10 +132,6 @@ func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState,
 		LastGeneratedCommit: googleapisCommit,
 		SourceRoots: []string{
 			moduleName,
-			"internal/generated/snippets/" + moduleName,
-		},
-		RemoveRegex: []string{
-			"^internal/generated/snippets/" + moduleName + "/",
 		},
 		TagFormat: "{id}/v{version}",
 	}
@@ -139,6 +143,15 @@ func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState,
 	library.Version = version
 
 	addAPIProtoPaths(ppc, moduleName, library)
+
+	if len(library.APIs) > 0 {
+		library.SourceRoots = append(library.SourceRoots, "internal/generated/snippets/"+moduleName)
+		library.RemoveRegex = append(library.RemoveRegex, "^internal/generated/snippets/"+moduleName+"/")
+		// Probably irrelevant after the first release, but changes within the snippets aren't release-relevant;
+		// for the first release after onboarding, we will see an OwlBot commit updating snippet metadata with the
+		// final release-please-based commit, and we don't want to use that.
+		library.ReleaseExcludePaths = append(library.ReleaseExcludePaths, "internal/generated/snippets/"+moduleName+"/")
+	}
 
 	if err := addGeneratedCodeRemovals(repoRoot, moduleRoot, library); err != nil {
 		return err

@@ -159,9 +159,6 @@
         "dataplex": {
             "component": "dataplex"
         },
-        "dataproc": {
-            "component": "dataproc"
-        },
         "dataqna": {
             "component": "dataqna"
         },
@@ -257,6 +254,9 @@
         },
         "lifesciences": {
             "component": "lifesciences"
+        },
+        "locationfinder": {
+            "component": "locationfinder"
         },
         "longrunning": {
             "component": "longrunning"

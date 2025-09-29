@@ -21,12 +21,8 @@
 package policytroubleshooterpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -304,90 +300,4 @@ func file_google_cloud_policytroubleshooter_v1_checker_proto_init() {
 	file_google_cloud_policytroubleshooter_v1_checker_proto_rawDesc = nil
 	file_google_cloud_policytroubleshooter_v1_checker_proto_goTypes = nil
 	file_google_cloud_policytroubleshooter_v1_checker_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// IamCheckerClient is the client API for IamChecker service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type IamCheckerClient interface {
-	// Checks whether a principal has a specific permission for a specific
-	// resource, and explains why the principal does or does not have that
-	// permission.
-	TroubleshootIamPolicy(ctx context.Context, in *TroubleshootIamPolicyRequest, opts ...grpc.CallOption) (*TroubleshootIamPolicyResponse, error)
-}
-
-type iamCheckerClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewIamCheckerClient(cc grpc.ClientConnInterface) IamCheckerClient {
-	return &iamCheckerClient{cc}
-}
-
-func (c *iamCheckerClient) TroubleshootIamPolicy(ctx context.Context, in *TroubleshootIamPolicyRequest, opts ...grpc.CallOption) (*TroubleshootIamPolicyResponse, error) {
-	out := new(TroubleshootIamPolicyResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.policytroubleshooter.v1.IamChecker/TroubleshootIamPolicy", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// IamCheckerServer is the server API for IamChecker service.
-type IamCheckerServer interface {
-	// Checks whether a principal has a specific permission for a specific
-	// resource, and explains why the principal does or does not have that
-	// permission.
-	TroubleshootIamPolicy(context.Context, *TroubleshootIamPolicyRequest) (*TroubleshootIamPolicyResponse, error)
-}
-
-// UnimplementedIamCheckerServer can be embedded to have forward compatible implementations.
-type UnimplementedIamCheckerServer struct {
-}
-
-func (*UnimplementedIamCheckerServer) TroubleshootIamPolicy(context.Context, *TroubleshootIamPolicyRequest) (*TroubleshootIamPolicyResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method TroubleshootIamPolicy not implemented")
-}
-
-func RegisterIamCheckerServer(s *grpc.Server, srv IamCheckerServer) {
-	s.RegisterService(&_IamChecker_serviceDesc, srv)
-}
-
-func _IamChecker_TroubleshootIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TroubleshootIamPolicyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(IamCheckerServer).TroubleshootIamPolicy(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.policytroubleshooter.v1.IamChecker/TroubleshootIamPolicy",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IamCheckerServer).TroubleshootIamPolicy(ctx, req.(*TroubleshootIamPolicyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _IamChecker_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.policytroubleshooter.v1.IamChecker",
-	HandlerType: (*IamCheckerServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "TroubleshootIamPolicy",
-			Handler:    _IamChecker_TroubleshootIamPolicy_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/policytroubleshooter/v1/checker.proto",
 }

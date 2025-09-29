@@ -22,6 +22,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
@@ -37,6 +38,7 @@ type mockServer struct {
 	pb.FirestoreServer
 
 	Addr string
+	mu   sync.Mutex
 
 	reqItems []reqItem
 	resps    []interface{}
@@ -65,6 +67,10 @@ func newMockServer() (_ *mockServer, cleanup func(), _ error) {
 	}, nil
 }
 
+func (s *mockServer) isEmpty() bool {
+	return len(s.reqItems) == 0
+}
+
 // addRPC adds a (request, response) pair to the server's list of expected
 // interactions. The server will compare the incoming request with wantReq
 // using proto.Equal. The response can be a message or an error.
@@ -85,6 +91,8 @@ func (s *mockServer) isEmpty() bool {
 // to tweak the requests before comparison, for example to adjust for
 // randomness.
 func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjust func(proto.Message)) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.reqItems = append(s.reqItems, reqItem{wantReq, adjust})
 	s.resps = append(s.resps, resp)
 }
@@ -93,6 +101,8 @@ func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjus
 // It returns the response, or an error if the request doesn't match what
 // was expected or there are no expected rpcs.
 func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if len(s.reqItems) == 0 {
 		panic(fmt.Sprintf("out of RPCs, saw %v", reflect.TypeOf(gotReq)))
 	}
@@ -137,6 +147,8 @@ func (a ByFieldPath) Less(i, j int) bool { return a[i].FieldPath < a[j].FieldPat
 type ByFieldPath []*pb.DocumentTransform_FieldTransform
 
 func (s *mockServer) reset() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.reqItems = nil
 	s.resps = nil
 }
