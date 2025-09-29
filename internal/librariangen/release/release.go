@@ -237,6 +237,24 @@ func writeErrorResponse(dir string, err error) error {
 	return err
 }
 
+// wholeRepoLibrary returns whether or not the given library is
+// intended to represent the whole repository. This is indicated by
+// a value in Library.SourcePaths of ".". In reality, this will mean
+// it's the only entry in SourcePaths - but that isn't validated.
+//
+// This is expected to be used for repos such as gapic-generator-go,
+// but does *not* apply to gax-go as the "root" for that repo is
+// the v1 code; the v2 code is under a "v2" directory so we just
+// use a library ID of "v2".
+//
+// The vast majority of modules in google-cloud-go have a single
+// source path for the production code, and another for the
+// generated snippets.
+//
+// The "main" module of google-cloud-go might be expected to use "."
+// as a source path, but that would end up getting changes from *all*
+// nested modules (which will expand over time). That module is likely
+// to have a snowflake-like configuration.
 func wholeRepoLibrary(lib *request.Library) bool {
 	return slices.Contains(lib.SourcePaths, ".")
 }
