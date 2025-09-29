@@ -93,7 +93,6 @@ modules:
   - lifesciences
   - locationfinder
   - logging
-  - longrunning
   - lustre
   - maintenance
   - managedidentities
@@ -1238,9 +1237,6 @@ service-configs:
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/longrunning
-    service-config: longrunning.yaml
-    import-path: cloud.google.com/go/longrunning/autogen
   - input-directory: google/maps/addressvalidation/v1
     service-config: addressvalidation_v1.yaml
     import-path: cloud.google.com/go/maps/addressvalidation/apiv1
@@ -1324,6 +1320,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - longrunning
   - dataproc
   - dlp
   # individually released modules

@@ -315,7 +315,6 @@ deep-remove-regex:
   - /internal/generated/snippets/lifesciences/apiv2beta/
   - /internal/generated/snippets/locationfinder/apiv1/
   - /internal/generated/snippets/logging/apiv2/
-  - /internal/generated/snippets/longrunning/autogen/
   - /internal/generated/snippets/lustre/apiv1/
   - /internal/generated/snippets/maintenance/api/apiv1beta/
   - /internal/generated/snippets/managedidentities/apiv1/
@@ -490,7 +489,6 @@ deep-remove-regex:
   - /lifesciences/apiv2beta/
   - /locationfinder/apiv1/
   - /logging/apiv2/
-  - /longrunning/autogen/
   - /lustre/apiv1/
   - /maintenance/api/apiv1beta/
   - /managedidentities/apiv1/
@@ -690,7 +688,6 @@ deep-preserve-regex:
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
   - /storage/internal/apiv2/metadata.go
-  - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Must preserve these even though they aren't generated anymore
   - /vmmigration/apiv1/iam_policy_client.go
@@ -1031,8 +1028,6 @@ deep-copy-regex:
   - source: /google/cloud/locationfinder/v1/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
-    dest: /
-  - source: /google/longrunning/cloud.google.com/go
     dest: /
   - source: /google/cloud/lustre/v1/cloud.google.com/go
     dest: /
