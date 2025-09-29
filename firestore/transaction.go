@@ -102,22 +102,15 @@ var (
 
 type transactionInProgressKey struct{}
 
-// isTransactionRetryable checks if an error from a transaction operation
+// isAborted checks if an error from a transaction operation
 // indicates that the entire transaction should be retried.
-func isTransactionRetryable(err error) bool {
+func isAborted(err error) bool {
 	s, ok := status.FromError(err)
 	if !ok {
 		return false // Not a gRPC error
 	}
 	switch s.Code() {
-	case codes.Aborted,
-		codes.Canceled,
-		codes.Unknown,
-		codes.DeadlineExceeded,
-		codes.Internal,
-		codes.Unavailable,
-		codes.Unauthenticated,
-		codes.ResourceExhausted:
+	case codes.Aborted:
 		return true
 	default:
 		return false
@@ -215,7 +208,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 
 		// If not a retryable error, or if read-only, return now.
 		// (We've already rolled back).
-		if t.readOnly || !isTransactionRetryable(err) {
+		if t.readOnly || !isAborted(err) {
 			return err
 		}
 
