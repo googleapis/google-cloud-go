@@ -33,17 +33,8 @@ func TestIntegration_RunQuery(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			req := &bigquerypb.PostQueryRequest{
-				QueryRequest: &bigquerypb.QueryRequest{
-					Query:        "SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar",
-					UseLegacySql: wrapperspb.Bool(false),
-					FormatOptions: &bigquerypb.DataFormatOptions{
-						UseInt64Timestamp: true,
-					},
-					JobCreationMode: bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL,
-				},
-				ProjectId: helper.projectID,
-			}
+			req := helper.FromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
+			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
 			q, err := helper.StartQuery(ctx, req)
 			if err != nil {
 				t.Fatalf("StartQuery() error: %v", err)
@@ -73,19 +64,10 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 			defer cancel()
 
 			numGenRows := uint64(1000000)
-			req := &bigquerypb.PostQueryRequest{
-				QueryRequest: &bigquerypb.QueryRequest{
-					Query:        fmt.Sprintf("SELECT num FROM UNNEST(GENERATE_ARRAY(1,%d)) as num", numGenRows),
-					UseLegacySql: wrapperspb.Bool(false),
-					FormatOptions: &bigquerypb.DataFormatOptions{
-						UseInt64Timestamp: true,
-					},
-					TimeoutMs:       wrapperspb.UInt32(500),
-					UseQueryCache:   wrapperspb.Bool(false),
-					JobCreationMode: bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL,
-				},
-				ProjectId: helper.projectID,
-			}
+			req := helper.FromSQL(fmt.Sprintf("SELECT num FROM UNNEST(GENERATE_ARRAY(1,%d)) as num", numGenRows))
+			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
+			req.QueryRequest.TimeoutMs = wrapperspb.UInt32(500)
+			req.QueryRequest.UseQueryCache = wrapperspb.Bool(false)
 
 			wctx, wcancel := context.WithCancel(ctx)
 			q, err := helper.StartQuery(wctx, req)
@@ -94,7 +76,7 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 			}
 
 			go func(t *testing.T) {
-				err = q.Wait(ctx)
+				err := q.Wait(ctx)
 				if err == nil {
 					t.Errorf("Wait() should throw an error: %v", err)
 				}
