@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -48,6 +49,11 @@ type reqItem struct {
 	adjust  func(gotReq proto.Message)
 }
 
+func (r reqItem) String() string {
+	bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(r.wantReq)
+	return "\n" + string(r.wantReq.ProtoReflect().Descriptor().Name()) + string(bytes)
+}
+
 func newMockServer() (_ *mockServer, cleanup func(), _ error) {
 	srv, err := testutil.NewServer()
 	if err != nil {
@@ -59,6 +65,10 @@ func newMockServer() (_ *mockServer, cleanup func(), _ error) {
 	return mock, func() {
 		srv.Close()
 	}, nil
+}
+
+func (s *mockServer) isEmpty() bool {
+	return len(s.reqItems) == 0
 }
 
 // addRPC adds a (request, response) pair to the server's list of expected
