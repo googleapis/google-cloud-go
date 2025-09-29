@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -42,6 +43,9 @@ type Query struct {
 	err      error
 
 	cachedTotalRows uint64
+	cachedPageToken string
+	cachedSchema    *schema
+	cachedRows      []*Row
 }
 
 // Create Query handler using jobs.query request and start background pooling job
@@ -87,8 +91,14 @@ func newQueryJobFromJobReference(ctx context.Context, h *Helper, jobRef *bigquer
 
 // Read returns a RowIterator for the query results.
 func (q *Query) Read(ctx context.Context, opts ...ReadOption) (*RowIterator, error) {
-	// TODO: proper setup iterator
-	return &RowIterator{}, nil
+	state := &readState{
+		pageToken: q.cachedPageToken,
+	}
+	for _, opt := range opts {
+		opt(state)
+	}
+	r := newReaderFromQuery(q.h, q)
+	return r.start(ctx, state, []gax.CallOption{}) // TODO: accept call options via ReadOption
 }
 
 // Wait blocks until the query has completed. The provided context can be used to
@@ -230,7 +240,10 @@ func (q *Query) waitForQuery(ctx context.Context, opts []gax.CallOption) error {
 type queryResponse interface {
 	GetJobComplete() *wrapperspb.BoolValue
 	GetJobReference() *bigquerypb.JobReference
+	GetSchema() *bigquerypb.TableSchema
 	GetTotalRows() *wrapperspb.UInt64Value
+	GetPageToken() string
+	GetRows() []*structpb.Struct
 }
 
 func (q *Query) consumeQueryResponse(res queryResponse) {
@@ -254,7 +267,15 @@ func (q *Query) consumeQueryResponse(res queryResponse) {
 		q.cachedTotalRows = res.GetTotalRows().GetValue()
 	}
 
-	// TODO: save schema, page token, total rows and parse rows
+	if res.GetSchema() != nil && q.cachedSchema == nil {
+		q.cachedSchema = newSchema(res.GetSchema())
+	}
+
+	if res.GetPageToken() != "" {
+		q.cachedPageToken = res.GetPageToken()
+	}
+
+	q.cachedRows = parseRows(res.GetRows())
 }
 
 // QueryID returns the auto-generated ID for the query.
@@ -284,7 +305,20 @@ func (q *Query) JobReference() *bigquerypb.JobReference {
 // Schema returns the schema of the query results.
 // This will be nil until the query has completed and the schema is available.
 func (q *Query) Schema() *bigquerypb.TableSchema {
-	return nil // TODO: fill schema
+	q.mu.RLock()
+	defer q.mu.RUnlock()
+	return q.cachedSchema.pb
+}
+
+func (q *Query) updateCachedSchema(schema *bigquerypb.TableSchema) {
+	if schema == nil {
+		return
+	}
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if q.cachedSchema == nil {
+		q.cachedSchema = newSchema(schema)
+	}
 }
 
 // Complete returns true if the query job has finished execution.
