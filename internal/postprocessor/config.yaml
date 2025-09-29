@@ -1324,10 +1324,10 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - auth
   - dataproc
   - dlp
   # individually released modules
-  - auth
   - auth/oauth2adapt
   - bigquery
   - bigquery/v2
