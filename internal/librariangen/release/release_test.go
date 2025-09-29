@@ -131,7 +131,8 @@ func TestInit(t *testing.T) {
 						{"type": "feat", "subject": "another feature", "source_commit_hash": "zxcvbn098765"},
 						{"type": "fix", "subject": "correct typo in documentation", "source_commit_hash": "123456abcdef"},
 						{"type": "feat", "subject": "add new GetSecret API", "source_commit_hash": "abcdef123456"}
-					]
+					],
+					"tag_format": "{id}/v{version}"
 				}]
 			}`,
 			initialRepoContent: map[string]string{
@@ -151,7 +152,7 @@ func TestInit(t *testing.T) {
 		},
 		{
 			name:        "changelog already up-to-date",
-			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "apis": [{"path": "google/cloud/secretmanager/v1"}], "changes": [{"type": "feat", "subject": "add new GetSecret API"}] } ] }`,
+			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "apis": [{"path": "google/cloud/secretmanager/v1"}], "changes": [{"type": "feat", "subject": "add new GetSecret API"}] } ], "tag_format": "{id}/v{version}" }`,
 			initialRepoContent: map[string]string{
 				"secretmanager/CHANGES.md": "# Changes\n\n## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0)\n- Already there.",
 				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"version": "1.15.0"}`,
@@ -171,7 +172,8 @@ func TestInit(t *testing.T) {
 						{"type": "feat", "subject": "another feature", "source_commit_hash": "zxcvbn098765"},
 						{"type": "fix", "subject": "correct typo in documentation", "source_commit_hash": "123456abcdef"},
 						{"type": "feat", "subject": "add new GetSecret API", "source_commit_hash": "abcdef123456"}
-					]
+					],
+					"tag_format": "v{version}"
 				}]
 			}`,
 			moduleRootPath: ".",

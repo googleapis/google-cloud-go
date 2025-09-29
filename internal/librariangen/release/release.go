@@ -123,7 +123,8 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 	var newEntry bytes.Buffer
 
 	var tag string
-	if wholeRepoLibrary(lib) {
+	// This is normally, but not *always*, because it's whole-repo library
+	if lib.TagFormat == "v{version}" {
 		tag = "v" + lib.Version
 	} else {
 		tag = fmt.Sprintf("%s/v%s", lib.ID, lib.Version)
