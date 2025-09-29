@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// WithDefaultLocation, if set, will be used as the default location for all subsequent
+// WithDefaultLocation if set, will be used as the default location for all subsequent
 // job operations. A location specified directly in one of those operations will override this value.
 func WithDefaultLocation(location string) option.ClientOption {
 	return &customClientOption{location: location}
