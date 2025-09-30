@@ -89,66 +89,6 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/alloydb/apiv1": {
-    "api_shortname": "alloydb",
-    "distribution_name": "cloud.google.com/go/alloydb/apiv1",
-    "description": "AlloyDB API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/apiv1alpha": {
-    "api_shortname": "alloydb",
-    "distribution_name": "cloud.google.com/go/alloydb/apiv1alpha",
-    "description": "AlloyDB API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1alpha",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/apiv1beta": {
-    "api_shortname": "alloydb",
-    "distribution_name": "cloud.google.com/go/alloydb/apiv1beta",
-    "description": "AlloyDB API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1beta",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/connectors/apiv1": {
-    "api_shortname": "connectors",
-    "distribution_name": "cloud.google.com/go/alloydb/connectors/apiv1",
-    "description": "AlloyDB connectors",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/connectors/apiv1",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/connectors/apiv1alpha": {
-    "api_shortname": "connectors",
-    "distribution_name": "cloud.google.com/go/alloydb/connectors/apiv1alpha",
-    "description": "AlloyDB connectors",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/connectors/apiv1alpha",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/connectors/apiv1beta": {
-    "api_shortname": "connectors",
-    "distribution_name": "cloud.google.com/go/alloydb/connectors/apiv1beta",
-    "description": "AlloyDB connectors",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/connectors/apiv1beta",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/analytics/admin/apiv1alpha": {
     "api_shortname": "analyticsadmin",
     "distribution_name": "cloud.google.com/go/analytics/admin/apiv1alpha",
@@ -159,26 +99,6 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/apigateway/apiv1": {
-    "api_shortname": "apigateway",
-    "distribution_name": "cloud.google.com/go/apigateway/apiv1",
-    "description": "API Gateway API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apigateway/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/apigeeconnect/apiv1": {
-    "api_shortname": "apigeeconnect",
-    "distribution_name": "cloud.google.com/go/apigeeconnect/apiv1",
-    "description": "Apigee Connect API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apigeeconnect/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/apigeeregistry/apiv1": {
     "api_shortname": "apigeeregistry",
     "distribution_name": "cloud.google.com/go/apigeeregistry/apiv1",
@@ -187,16 +107,6 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apigeeregistry/latest/apiv1",
     "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/apihub/apiv1": {
-    "api_shortname": "apihub",
-    "distribution_name": "cloud.google.com/go/apihub/apiv1",
-    "description": "API hub API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apihub/latest/apiv1",
-    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/apikeys/apiv2": {
