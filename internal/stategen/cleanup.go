@@ -181,7 +181,23 @@ func cleanupPostProcessorConfig(repoRoot, moduleName string) error {
 		newLines = append(newLines, serviceConfigBlock...)
 	}
 
-	// Third pass: add to skip-module-scan-paths.
+	// Third pass: remove from skip-module-scan-paths if present.
+	lines = newLines
+	newLines = []string{}
+	inSkipScanPaths := false
+	for _, line := range lines {
+		if strings.HasPrefix(line, "skip-module-scan-paths:") {
+			inSkipScanPaths = true
+		} else if inSkipScanPaths && !strings.HasPrefix(line, " ") { // top-level key
+			inSkipScanPaths = false
+		}
+		if inSkipScanPaths && strings.TrimSpace(line) == "- "+moduleName {
+			continue
+		}
+		newLines = append(newLines, line)
+	}
+
+	// Fourth pass: add to skip-module-scan-paths.
 	lines = newLines
 	newLines = []string{}
 	skipScanPathsIndex := -1
