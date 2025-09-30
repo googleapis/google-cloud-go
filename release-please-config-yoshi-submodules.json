@@ -18,23 +18,11 @@
         "aiplatform": {
             "component": "aiplatform"
         },
-        "alloydb": {
-            "component": "alloydb"
-        },
         "analytics": {
             "component": "analytics"
         },
-        "apigateway": {
-            "component": "apigateway"
-        },
-        "apigeeconnect": {
-            "component": "apigeeconnect"
-        },
         "apigeeregistry": {
             "component": "apigeeregistry"
-        },
-        "apihub": {
-            "component": "apihub"
         },
         "apikeys": {
             "component": "apikeys"
