@@ -98,7 +98,6 @@ modules:
   - maintenance
   - managedidentities
   - managedkafka
-  - maps
   - mediatranslation
   - memcache
   - memorystore
@@ -1241,30 +1240,6 @@ service-configs:
   - input-directory: google/longrunning
     service-config: longrunning.yaml
     import-path: cloud.google.com/go/longrunning/autogen
-  - input-directory: google/maps/addressvalidation/v1
-    service-config: addressvalidation_v1.yaml
-    import-path: cloud.google.com/go/maps/addressvalidation/apiv1
-  - input-directory: google/maps/areainsights/v1
-    service-config: areainsights_v1.yaml
-    import-path: cloud.google.com/go/maps/areainsights/apiv1
-  - input-directory: google/maps/fleetengine/v1
-    service-config: fleetengine_v1.yaml
-    import-path: cloud.google.com/go/maps/fleetengine/apiv1
-  - input-directory: google/maps/fleetengine/delivery/v1
-    service-config: fleetengine_v1.yaml
-    import-path: cloud.google.com/go/maps/fleetengine/delivery/apiv1
-  - input-directory: google/maps/places/v1
-    service-config: places_v1.yaml
-    import-path: cloud.google.com/go/maps/places/apiv1
-  - input-directory: google/maps/routeoptimization/v1
-    service-config: routeoptimization_v1.yaml
-    import-path: cloud.google.com/go/maps/routeoptimization/apiv1
-  - input-directory: google/maps/routing/v2
-    service-config: routes_v2.yaml
-    import-path: cloud.google.com/go/maps/routing/apiv2
-  - input-directory: google/maps/solar/v1
-    service-config: solar_v1.yaml
-    import-path: cloud.google.com/go/maps/solar/apiv1
   - input-directory: google/cloud/modelarmor/v1
     service-config: modelarmor_v1.yaml
     import-path: cloud.google.com/go/modelarmor/apiv1
@@ -1324,6 +1299,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - maps
   - dataproc
   - dlp
   # individually released modules

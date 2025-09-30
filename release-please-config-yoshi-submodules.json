@@ -273,9 +273,6 @@
         "managedkafka": {
             "component": "managedkafka"
         },
-        "maps": {
-            "component": "maps"
-        },
         "mediatranslation": {
             "component": "mediatranslation"
         },
