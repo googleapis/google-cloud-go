@@ -124,6 +124,13 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if err != nil {
 		return nil, err
 	}
+	// for otel metrics
+	if metricsTracerFactory.enabled {
+		if len(metricsTracerFactory.clientOpts) > 0 {
+			o = append(o, metricsTracerFactory.clientOpts...)
+		}
+	}
+
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
 	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(sharedLatencyStatsHandler)))
@@ -1019,6 +1026,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		return errNegativeRowLimit
 	}
 
+	firstResponseRecorded := false
 	err = gaxInvokeWithRecorder(ctx, mt, methodNameReadRows, func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		if rowLimitSet && numRowsRead >= intialRowLimit {
 			return nil
@@ -1071,6 +1079,10 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		for {
 			proto.Reset(res)
 			err := stream.RecvMsg(res)
+			if !firstResponseRecorded && (err == nil || err == io.EOF) {
+				firstResponseRecorded = true
+				mt.currOp.setFirstRespTime(time.Now())
+			}
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
 				break
@@ -2038,7 +2050,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 			if s.Code == int32(codes.OK) {
 				entryErrs[entry.Index].Err = nil
 			} else {
-				entryErrs[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
+				entryErrs[entry.Index].Err = status.Error(codes.Code(s.Code), s.Message)
 			}
 		}
 		after(res)

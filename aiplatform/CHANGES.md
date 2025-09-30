@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.102.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.101.0...aiplatform/v1.102.0) (2025-09-16)
+
+
+### Features
+
+* **aiplatform:** Add private_model_server_enabled to in Endpoint.proto ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
+## [1.101.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.100.0...aiplatform/v1.101.0) (2025-09-11)
+
+
+### Features
+
+* **aiplatform:** PSC support for custom weights deploy ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **aiplatform:** Tuning PreTunedModel API field ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `dedicated_endpoint_disabled` in message `.google.cloud.aiplatform.v1beta1.DeployRequest` is changed ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+## [1.100.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.99.0...aiplatform/v1.100.0) (2025-09-04)
+
+
+### Features
+
+* **aiplatform:** Add `disable_container_logging` in v1beta1 api ([#12742](https://github.com/googleapis/google-cloud-go/issues/12742)) ([904cad6](https://github.com/googleapis/google-cloud-go/commit/904cad603b67db79e843d518345d74f5351dcd26))
+* **aiplatform:** Add API response for Gen AI Evaluation in Tuning ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **aiplatform:** Add data foundry service synthetic data generation API for v1 ([#12736](https://github.com/googleapis/google-cloud-go/issues/12736)) ([59a94d6](https://github.com/googleapis/google-cloud-go/commit/59a94d606c4247adc776f852eb03b8adf2b61904))
+* **aiplatform:** Add Validation mode in FunctionCallingConfig ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
+
+### Documentation
+
+* **aiplatform:** Update the comment for ANY mode in FunctionCallingConfig. ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
 ## [1.99.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.98.0...aiplatform/v1.99.0) (2025-08-14)
 
 

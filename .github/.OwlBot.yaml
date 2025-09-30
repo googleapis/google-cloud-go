@@ -74,6 +74,7 @@ deep-remove-regex:
   - /billing/budgets/apiv1beta1/
   - /binaryauthorization/apiv1/
   - /binaryauthorization/apiv1beta1/
+  - /capacityplanner/apiv1beta/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
   - /chat/apiv1/
@@ -109,7 +110,6 @@ deep-remove-regex:
   - /datafusion/apiv1/
   - /datalabeling/apiv1beta1/
   - /dataplex/apiv1/
-  - /dataproc/apiv1/
   - /dataqna/apiv1alpha/
   - /datastore/admin/apiv1/
   - /datastore/apiv1/
@@ -125,7 +125,6 @@ deep-remove-regex:
   - /discoveryengine/apiv1/
   - /discoveryengine/apiv1beta/
   - /discoveryengine/apiv1alpha/
-  - /dlp/apiv2/
   - /documentai/apiv1/
   - /documentai/apiv1beta3/
   - /domains/apiv1beta1/
@@ -225,6 +224,7 @@ deep-remove-regex:
   - /internal/generated/snippets/billing/budgets/apiv1beta1/
   - /internal/generated/snippets/binaryauthorization/apiv1/
   - /internal/generated/snippets/binaryauthorization/apiv1beta1/
+  - /internal/generated/snippets/capacityplanner/apiv1beta/
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
   - /internal/generated/snippets/chat/apiv1/
@@ -260,7 +260,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datafusion/apiv1/
   - /internal/generated/snippets/datalabeling/apiv1beta1/
   - /internal/generated/snippets/dataplex/apiv1/
-  - /internal/generated/snippets/dataproc/apiv1/
   - /internal/generated/snippets/dataqna/apiv1alpha/
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets/datastream/apiv1/
@@ -275,7 +274,6 @@ deep-remove-regex:
   - /internal/generated/snippets/discoveryengine/apiv1/
   - /internal/generated/snippets/discoveryengine/apiv1beta/
   - /internal/generated/snippets/discoveryengine/apiv1alpha/
-  - /internal/generated/snippets/dlp/apiv2/
   - /internal/generated/snippets/documentai/apiv1/
   - /internal/generated/snippets/documentai/apiv1beta3/
   - /internal/generated/snippets/domains/apiv1beta1/
@@ -315,6 +313,7 @@ deep-remove-regex:
   - /internal/generated/snippets/language/apiv2/
   - /internal/generated/snippets/licensemanager/apiv1/
   - /internal/generated/snippets/lifesciences/apiv2beta/
+  - /internal/generated/snippets/locationfinder/apiv1/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
   - /internal/generated/snippets/lustre/apiv1/
@@ -374,8 +373,8 @@ deep-remove-regex:
   - /internal/generated/snippets/pubsub/apiv1/
   - /internal/generated/snippets/pubsublite/apiv1/
   - /internal/generated/snippets/rapidmigrationassessment/apiv1/
-  - /internal/generated/snippets/recaptchaenterprise/v2/apiv1/
-  - /internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1/
+  - /internal/generated/snippets/recaptchaenterprise/apiv1/
+  - /internal/generated/snippets/recaptchaenterprise/apiv1beta1/
   - /internal/generated/snippets/recommendationengine/apiv1beta1/
   - /internal/generated/snippets/recommender/apiv1/
   - /internal/generated/snippets/recommender/apiv1beta1/
@@ -489,6 +488,7 @@ deep-remove-regex:
   - /language/apiv2/
   - /licensemanager/apiv1/
   - /lifesciences/apiv2beta/
+  - /locationfinder/apiv1/
   - /logging/apiv2/
   - /longrunning/autogen/
   - /lustre/apiv1/
@@ -690,7 +690,6 @@ deep-preserve-regex:
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
   - /storage/internal/apiv2/metadata.go
-  - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Must preserve these even though they aren't generated anymore
@@ -852,6 +851,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/binaryauthorization/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/capacityplanner/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/cloud/certificatemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/channel/v1/cloud.google.com/go
@@ -918,10 +919,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dataplex/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/v2/apiv1
-    dest: /dataproc/apiv1
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/internal/generated/snippets/dataproc/v2/apiv1
-    dest: /internal/generated/snippets/dataproc/apiv1
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
@@ -952,8 +949,6 @@ deep-copy-regex:
   - source: /google/cloud/discoveryengine/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/discoveryengine/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/privacy/dlp/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/documentai/v1/cloud.google.com/go
     dest: /
@@ -1032,6 +1027,8 @@ deep-copy-regex:
   - source: /google/cloud/licensemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/lifesciences/v2beta/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/locationfinder/v1/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
     dest: /
@@ -1162,11 +1159,11 @@ deep-copy-regex:
   - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/recaptchaenterprise/v2/apiv1
     dest: /recaptchaenterprise/apiv1
   - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1
-    dest: /internal/generated/snippets/recaptchaenterprise/v2/apiv1
+    dest: /internal/generated/snippets/recaptchaenterprise/apiv1
   - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
     dest: /recaptchaenterprise/apiv1beta1
   - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1
-    dest: /internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1
+    dest: /internal/generated/snippets/recaptchaenterprise/apiv1beta1
   - source: /google/cloud/recommendationengine/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/recommender/v1/cloud.google.com/go

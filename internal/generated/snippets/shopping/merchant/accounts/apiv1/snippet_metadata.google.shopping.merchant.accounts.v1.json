@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "language": "GO",
     "apis": [
       {
@@ -2440,6 +2440,143 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1_generated_RegionsService_BatchCreateRegions_sync",
+      "title": "merchantapi BatchCreateRegions Sample",
+      "description": "BatchCreateRegions creates one or more regions in your Merchant Center account.\nExecuting this method requires admin access.",
+      "file": "RegionsClient/BatchCreateRegions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateRegions",
+        "fullName": "google.shopping.merchant.accounts.v1.RegionsClient.BatchCreateRegions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.BatchCreateRegionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.BatchCreateRegionsResponse",
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1.RegionsClient"
+        },
+        "method": {
+          "shortName": "BatchCreateRegions",
+          "fullName": "google.shopping.merchant.accounts.v1.RegionsService.BatchCreateRegions",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1_generated_RegionsService_BatchDeleteRegions_sync",
+      "title": "merchantapi BatchDeleteRegions Sample",
+      "description": "BatchDeleteRegions deletes multiple regions by name from your Merchant Center account.\nExecuting this method requires admin access.",
+      "file": "RegionsClient/BatchDeleteRegions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteRegions",
+        "fullName": "google.shopping.merchant.accounts.v1.RegionsClient.BatchDeleteRegions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.BatchDeleteRegionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1.RegionsClient"
+        },
+        "method": {
+          "shortName": "BatchDeleteRegions",
+          "fullName": "google.shopping.merchant.accounts.v1.RegionsService.BatchDeleteRegions",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1_generated_RegionsService_BatchUpdateRegions_sync",
+      "title": "merchantapi BatchUpdateRegions Sample",
+      "description": "BatchUpdateRegions updates one or more regions in your Merchant Center account.\nExecuting this method requires admin access.",
+      "file": "RegionsClient/BatchUpdateRegions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateRegions",
+        "fullName": "google.shopping.merchant.accounts.v1.RegionsClient.BatchUpdateRegions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.BatchUpdateRegionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.BatchUpdateRegionsResponse",
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1.RegionsClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateRegions",
+          "fullName": "google.shopping.merchant.accounts.v1.RegionsService.BatchUpdateRegions",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

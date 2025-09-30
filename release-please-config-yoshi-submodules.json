@@ -81,6 +81,9 @@
         "binaryauthorization": {
             "component": "binaryauthorization"
         },
+        "capacityplanner": {
+            "component": "capacityplanner"
+        },
         "certificatemanager": {
             "component": "certificatemanager"
         },
@@ -156,9 +159,6 @@
         "dataplex": {
             "component": "dataplex"
         },
-        "dataproc": {
-            "component": "dataproc"
-        },
         "dataqna": {
             "component": "dataqna"
         },
@@ -179,9 +179,6 @@
         },
         "discoveryengine": {
             "component": "discoveryengine"
-        },
-        "dlp": {
-            "component": "dlp"
         },
         "documentai": {
             "component": "documentai"
@@ -257,6 +254,9 @@
         },
         "lifesciences": {
             "component": "lifesciences"
+        },
+        "locationfinder": {
+            "component": "locationfinder"
         },
         "longrunning": {
             "component": "longrunning"

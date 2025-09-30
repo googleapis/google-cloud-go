@@ -1,6 +1,6 @@
 module cloud.google.com/go/storage
 
-go 1.23.0
+go 1.24.0
 
 retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-go/issues/6857
 
@@ -26,7 +26,7 @@ require (
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
 	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250818200422-3122310a409c
-	google.golang.org/grpc v1.74.2
+	google.golang.org/grpc v1.74.3
 	google.golang.org/protobuf v1.36.7
 )
 

@@ -25,6 +25,16 @@
                 "CancelCutoverJob"
               ]
             },
+            "CancelDiskMigrationJob": {
+              "methods": [
+                "CancelDiskMigrationJob"
+              ]
+            },
+            "CancelImageImportJob": {
+              "methods": [
+                "CancelImageImportJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -45,9 +55,19 @@
                 "CreateDatacenterConnector"
               ]
             },
+            "CreateDiskMigrationJob": {
+              "methods": [
+                "CreateDiskMigrationJob"
+              ]
+            },
             "CreateGroup": {
               "methods": [
                 "CreateGroup"
+              ]
+            },
+            "CreateImageImport": {
+              "methods": [
+                "CreateImageImport"
               ]
             },
             "CreateMigratingVm": {
@@ -75,9 +95,19 @@
                 "DeleteDatacenterConnector"
               ]
             },
+            "DeleteDiskMigrationJob": {
+              "methods": [
+                "DeleteDiskMigrationJob"
+              ]
+            },
             "DeleteGroup": {
               "methods": [
                 "DeleteGroup"
+              ]
+            },
+            "DeleteImageImport": {
+              "methods": [
+                "DeleteImageImport"
               ]
             },
             "DeleteMigratingVm": {
@@ -105,9 +135,19 @@
                 "DeleteUtilizationReport"
               ]
             },
+            "ExtendMigration": {
+              "methods": [
+                "ExtendMigration"
+              ]
+            },
             "FetchInventory": {
               "methods": [
                 "FetchInventory"
+              ]
+            },
+            "FetchStorageInventory": {
+              "methods": [
+                "FetchStorageInventory"
               ]
             },
             "FinalizeMigration": {
@@ -130,9 +170,24 @@
                 "GetDatacenterConnector"
               ]
             },
+            "GetDiskMigrationJob": {
+              "methods": [
+                "GetDiskMigrationJob"
+              ]
+            },
             "GetGroup": {
               "methods": [
                 "GetGroup"
+              ]
+            },
+            "GetImageImport": {
+              "methods": [
+                "GetImageImport"
+              ]
+            },
+            "GetImageImportJob": {
+              "methods": [
+                "GetImageImportJob"
               ]
             },
             "GetLocation": {
@@ -185,9 +240,24 @@
                 "ListDatacenterConnectors"
               ]
             },
+            "ListDiskMigrationJobs": {
+              "methods": [
+                "ListDiskMigrationJobs"
+              ]
+            },
             "ListGroups": {
               "methods": [
                 "ListGroups"
+              ]
+            },
+            "ListImageImportJobs": {
+              "methods": [
+                "ListImageImportJobs"
+              ]
+            },
+            "ListImageImports": {
+              "methods": [
+                "ListImageImports"
               ]
             },
             "ListLocations": {
@@ -240,9 +310,19 @@
                 "ResumeMigration"
               ]
             },
+            "RunDiskMigrationJob": {
+              "methods": [
+                "RunDiskMigrationJob"
+              ]
+            },
             "StartMigration": {
               "methods": [
                 "StartMigration"
+              ]
+            },
+            "UpdateDiskMigrationJob": {
+              "methods": [
+                "UpdateDiskMigrationJob"
               ]
             },
             "UpdateGroup": {
@@ -290,6 +370,16 @@
                 "CancelCutoverJob"
               ]
             },
+            "CancelDiskMigrationJob": {
+              "methods": [
+                "CancelDiskMigrationJob"
+              ]
+            },
+            "CancelImageImportJob": {
+              "methods": [
+                "CancelImageImportJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -310,9 +400,19 @@
                 "CreateDatacenterConnector"
               ]
             },
+            "CreateDiskMigrationJob": {
+              "methods": [
+                "CreateDiskMigrationJob"
+              ]
+            },
             "CreateGroup": {
               "methods": [
                 "CreateGroup"
+              ]
+            },
+            "CreateImageImport": {
+              "methods": [
+                "CreateImageImport"
               ]
             },
             "CreateMigratingVm": {
@@ -340,9 +440,19 @@
                 "DeleteDatacenterConnector"
               ]
             },
+            "DeleteDiskMigrationJob": {
+              "methods": [
+                "DeleteDiskMigrationJob"
+              ]
+            },
             "DeleteGroup": {
               "methods": [
                 "DeleteGroup"
+              ]
+            },
+            "DeleteImageImport": {
+              "methods": [
+                "DeleteImageImport"
               ]
             },
             "DeleteMigratingVm": {
@@ -370,9 +480,19 @@
                 "DeleteUtilizationReport"
               ]
             },
+            "ExtendMigration": {
+              "methods": [
+                "ExtendMigration"
+              ]
+            },
             "FetchInventory": {
               "methods": [
                 "FetchInventory"
+              ]
+            },
+            "FetchStorageInventory": {
+              "methods": [
+                "FetchStorageInventory"
               ]
             },
             "FinalizeMigration": {
@@ -395,9 +515,24 @@
                 "GetDatacenterConnector"
               ]
             },
+            "GetDiskMigrationJob": {
+              "methods": [
+                "GetDiskMigrationJob"
+              ]
+            },
             "GetGroup": {
               "methods": [
                 "GetGroup"
+              ]
+            },
+            "GetImageImport": {
+              "methods": [
+                "GetImageImport"
+              ]
+            },
+            "GetImageImportJob": {
+              "methods": [
+                "GetImageImportJob"
               ]
             },
             "GetLocation": {
@@ -450,9 +585,24 @@
                 "ListDatacenterConnectors"
               ]
             },
+            "ListDiskMigrationJobs": {
+              "methods": [
+                "ListDiskMigrationJobs"
+              ]
+            },
             "ListGroups": {
               "methods": [
                 "ListGroups"
+              ]
+            },
+            "ListImageImportJobs": {
+              "methods": [
+                "ListImageImportJobs"
+              ]
+            },
+            "ListImageImports": {
+              "methods": [
+                "ListImageImports"
               ]
             },
             "ListLocations": {
@@ -505,9 +655,19 @@
                 "ResumeMigration"
               ]
             },
+            "RunDiskMigrationJob": {
+              "methods": [
+                "RunDiskMigrationJob"
+              ]
+            },
             "StartMigration": {
               "methods": [
                 "StartMigration"
+              ]
+            },
+            "UpdateDiskMigrationJob": {
+              "methods": [
+                "UpdateDiskMigrationJob"
               ]
             },
             "UpdateGroup": {

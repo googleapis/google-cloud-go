@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/financialservices/v0.1.3...financialservices/v0.1.4) (2025-09-18)
+
+
+### Bug Fixes
+
+* **financialservices:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/financialservices/v0.1.2...financialservices/v0.1.3) (2025-04-15)
 
 

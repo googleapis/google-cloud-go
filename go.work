@@ -1,4 +1,4 @@
-go 1.23.0
+go 1.24.0
 
 use (
 	.
@@ -33,6 +33,7 @@ use (
 	./bigtable
 	./billing
 	./binaryauthorization
+	./capacityplanner
 	./certificatemanager
 	./channel
 	./chat
@@ -102,12 +103,13 @@ use (
 	./internal/librariangen
 	./internal/postprocessor
 	./internal/protoveneer
-	./internal/stategen	
+	./internal/stategen
 	./iot
 	./kms
 	./language
 	./licensemanager
 	./lifesciences
+	./locationfinder
 	./logging
 	./longrunning
 	./lustre

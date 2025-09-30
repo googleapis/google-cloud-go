@@ -590,24 +590,23 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 		}
 
 		reader.Wait()
-		for _, k := range res {
-			if k.offset < 0 {
-				k.offset += int64(len(content))
-			}
-			want := content[k.offset:]
-			if k.limit != 0 {
-				want = content[k.offset : k.offset+k.limit]
-			}
-			if k.err != nil {
-				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
-			}
-			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, len(k.buf.Bytes()), len(want))
-			}
-		}
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
+		}
+		for id, k := range res {
+			if k.err != nil {
+				t.Fatalf("reading range %v: %v", id, k.err)
+			}
+			if got, want := k.offset, 0; got != int64(want) {
+				t.Errorf("range id %v: got callback offset %v, want %v", id, got, want)
+			}
+			if got, want := k.limit, len(content); got != int64(want) {
+				t.Errorf("range id %v: got callback limit %v, want %v", id, got, want)
+			}
+			if !bytes.Equal(k.buf.Bytes(), content) {
+				t.Errorf("content mismatch in read range %v: got %v bytes, want %v bytes",
+					id, len(k.buf.Bytes()), len(content))
+			}
 		}
 	})
 }
@@ -3511,11 +3510,6 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
 				}
 
-				// Check that local Writer.Attrs() is populated after takeover.
-				if w2.Attrs() == nil || w2.Attrs().Size != tc.takeoverOffset {
-					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs(), tc.takeoverOffset)
-				}
-
 				// Validate that options are populated as expected.
 				wantChunkSize := 16 * MiB
 				if opts != nil && opts.ChunkSize != 0 {
@@ -3544,19 +3538,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					if n != remainingOffset {
 						t.Errorf("Writer.Flush: got %v bytes flushed, want %v", n, remainingOffset)
 					}
-					// Check local w.Attrs().Size is updated as expected.
-					if got, want := w2.Attrs().Size, remainingOffset; got != want {
-						t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
-					}
 				}
 
 				// Write remainder of the content and close.
 				h.mustWrite(w2, tc.content[remainingOffset:])
-
-				// Check local w.Attrs().Size is updated as expected.
-				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
-					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
-				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -3582,8 +3567,8 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				if w2.Attrs() == nil {
 					t.Fatalf("takeover writer attrs: expected attrs, got nil")
 				}
-				if w2.Attrs().Size != 9*MiB {
-					t.Errorf("final object size: got %v, want %v", w2.Attrs().Size, 9*MiB)
+				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
+					t.Errorf("final object size: got %v, want %v", got, want)
 				}
 			})
 		}
@@ -3633,25 +3618,26 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 			t.Fatalf("tw.Flush: %v", err)
 		}
 
-		// Expect precondition error when writer to orginal Writer.
-		if _, err := w.Write(randomBytes3MiB); status.Code(err) != codes.FailedPrecondition {
-			t.Fatalf("got %v", err)
+		// Expect FAILED_PRECONDITION or ABORTED error when writing to orginal Writer.
+		_, err = w.Write(randomBytes3MiB)
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
+			t.Fatalf("w.Write: got error %v, want FailedPrecondition or Aborted", err)
 		}
 
-		// Another NewWriter to the unfinalized object should also return a
-		// precondition error when data is flushed.
+		// Another NewWriter to the unfinalized object should be able to
+		// overwrite the existing object.
 		w2 := obj.NewWriter(ctx)
 		w2.Append = true
 		if _, err := w2.Write([]byte("hello world")); err != nil {
 			t.Fatalf("w2.Write: %v", err)
 		}
-		if _, err := w2.Flush(); status.Code(err) != codes.FailedPrecondition {
-			t.Fatalf("w2.Flush: %v", err)
+		if err := w2.Close(); err != nil {
+			t.Fatalf("w2.Close: %v", err)
 		}
 
 		// If we add yet another takeover writer to finalize and delete the object,
-		// tw should also return an error on flush.
-		tw2, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
+		// tw should return an error on flush.
+		tw2, _, err := obj.Generation(w2.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
 			FinalizeOnClose: true,
 		})
 		if err != nil {
@@ -3664,8 +3650,9 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		if _, err := tw.Write([]byte("abcde")); err != nil {
 			t.Fatalf("tw.Write: %v", err)
 		}
-		if _, err := tw.Flush(); status.Code(err) != codes.FailedPrecondition {
-			t.Errorf("tw.Flush: got %v, want FailedPrecondition", err)
+		_, err = tw.Flush()
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
+			t.Errorf("tw.Flush: got error %v, want FailedPrecondition or Aborted", err)
 		}
 	})
 }

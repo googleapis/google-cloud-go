@@ -21,6 +21,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
@@ -43,11 +44,21 @@ func newTestEnv(t *testing.T) *testEnv {
 	e.librarianDir = filepath.Join(tmpDir, "librarian")
 	e.sourceDir = filepath.Join(tmpDir, "source")
 	e.outputDir = filepath.Join(tmpDir, "output")
-	for _, dir := range []string{e.librarianDir, e.sourceDir, e.outputDir} {
+	generatorInputDir := filepath.Join(e.librarianDir, config.GeneratorInputDir)
+	for _, dir := range []string{e.librarianDir, e.sourceDir, e.outputDir, generatorInputDir} {
 		if err := os.Mkdir(dir, 0755); err != nil {
 			t.Fatalf("failed to create dir %s: %v", dir, err)
 		}
 	}
+
+	// An empty config file is valid, and any modules that are requested will
+	// just get default values.
+	configFile := filepath.Join(generatorInputDir, config.RepoConfigFile)
+	err = os.WriteFile(configFile, make([]byte, 0), 0644)
+	if err != nil {
+		t.Fatalf("failed to create file %s: %v", configFile, err)
+	}
+
 	return e
 }
 
@@ -98,12 +109,10 @@ func (e *testEnv) writeServiceYAML(t *testing.T, apiPath, title string) {
 
 type postProcessRecorder struct {
 	called bool
-	title  string
 }
 
-func (r *postProcessRecorder) record(ctx context.Context, req *request.Request, outputDir, moduleDir string, newModule bool, title string) error {
+func (r *postProcessRecorder) record(ctx context.Context, req *request.Library, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
 	r.called = true
-	r.title = title
 	return nil
 }
 
@@ -131,7 +140,6 @@ go_gapic_library(
 		protocErr          error
 		wantErr            bool
 		wantProtocRunCount int
-		wantTitle          string
 	}{
 		{
 			name: "happy path",
@@ -142,7 +150,6 @@ go_gapic_library(
 			},
 			wantErr:            false,
 			wantProtocRunCount: 1,
-			wantTitle:          "My API",
 		},
 		{
 			name: "multi-api request uses first api config",
@@ -155,7 +162,6 @@ go_gapic_library(
 			},
 			wantErr:            false,
 			wantProtocRunCount: 2,
-			wantTitle:          "First API",
 		},
 		{
 			name: "missing request file",
@@ -231,9 +237,6 @@ go_gapic_library(
 
 			if protocRunCount != tt.wantProtocRunCount {
 				t.Errorf("protocRun called = %v; want %v", protocRunCount, tt.wantProtocRunCount)
-			}
-			if !tt.wantErr && tt.wantTitle != "" && recorder.title != tt.wantTitle {
-				t.Errorf("postProcess title = %q; want %q", recorder.title, tt.wantTitle)
 			}
 		})
 	}
@@ -388,6 +391,80 @@ func TestConfig_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := tt.cfg.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Config.Validate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestApplyModuleVersion(t *testing.T) {
+	tests := []struct {
+		name        string
+		moduleName  string
+		modulePath  string
+		setupFiles  []string
+		wantErr     bool
+		wantPresent []string
+		wantAbsent  []string
+	}{
+		{
+			name:        "v1",
+			moduleName:  "functions",
+			modulePath:  "cloud.google.com/go/functions",
+			setupFiles:  []string{"functions/apiv1/client.go", "internal/generated/snippets/functions/apiv1/snippets.go"},
+			wantPresent: []string{"functions/apiv1/client.go", "internal/generated/snippets/functions/apiv1/snippets.go"},
+		},
+		{
+			name:        "v2",
+			moduleName:  "functions",
+			modulePath:  "cloud.google.com/go/functions/v2",
+			setupFiles:  []string{"functions/v2/apiv1/client.go", "internal/generated/snippets/functions/v2/apiv1/snippets.go"},
+			wantPresent: []string{"functions/apiv1/client.go", "internal/generated/snippets/functions/apiv1/snippets.go"},
+			wantAbsent:  []string{"functions/v2/apiv1/client.go", "internal/generated/snippets/functions/v2/apiv1/snippets.go"},
+		},
+		{
+			name:       "unexpected module path format",
+			moduleName: "bogus",
+			modulePath: "cloud.google.com/go/bogus/v1/v2",
+			wantErr:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tmpDir, err := os.MkdirTemp("", "apply-module-version-test")
+			if err != nil {
+				t.Fatalf("failed to create temp dir: %v", err)
+			}
+			defer os.RemoveAll(tmpDir)
+
+			for _, file := range tt.setupFiles {
+				fullFile := filepath.Join(tmpDir, file)
+				fullDir := filepath.Dir(fullFile)
+				if err := os.MkdirAll(fullDir, 0755); err != nil {
+					t.Fatalf("failed to create dir %s: %v", fullDir, err)
+				}
+				if err := os.WriteFile(fullFile, []byte("test"), 0644); err != nil {
+					t.Fatalf("failed to write file %s: %v", fullFile, err)
+				}
+			}
+
+			if err := applyModuleVersion(tmpDir, tt.modulePath); (err != nil) != tt.wantErr {
+				t.Errorf("applyModuleVersion() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr {
+				return
+			}
+
+			for _, wantPresent := range tt.wantPresent {
+				if _, err := os.Stat(filepath.Join(tmpDir, wantPresent)); err != nil {
+					t.Errorf("wanted present, was absent: %s", wantPresent)
+				}
+			}
+			for _, wantAbsent := range tt.wantAbsent {
+				if _, err := os.Stat(filepath.Join(tmpDir, wantAbsent)); !os.IsNotExist(err) {
+					t.Errorf("wanted absent, was missing: %s", wantAbsent)
+				}
 			}
 		})
 	}

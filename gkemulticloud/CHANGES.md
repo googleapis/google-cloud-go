@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.4](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.5.3...gkemulticloud/v1.5.4) (2025-09-18)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.5.3](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.5.2...gkemulticloud/v1.5.3) (2025-04-15)
 
 

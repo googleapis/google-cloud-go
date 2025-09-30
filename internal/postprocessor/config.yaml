@@ -31,6 +31,7 @@ modules:
   - bigtable
   - billing
   - binaryauthorization
+  - capacityplanner
   - certificatemanager
   - channel
   - chat
@@ -55,7 +56,6 @@ modules:
   - datafusion
   - datalabeling
   - dataplex
-  - dataproc
   - dataqna
   - datastore
   - datastream
@@ -64,7 +64,6 @@ modules:
   - devicestreaming
   - dialogflow
   - discoveryengine
-  - dlp
   - documentai
   - domains
   - edgecontainer
@@ -92,6 +91,7 @@ modules:
   - language
   - licensemanager
   - lifesciences
+  - locationfinder
   - logging
   - longrunning
   - lustre
@@ -510,6 +510,9 @@ service-configs:
   - input-directory: google/cloud/binaryauthorization/v1beta1
     service-config: binaryauthorization_v1beta1.yaml
     import-path: cloud.google.com/go/binaryauthorization/apiv1beta1
+  - input-directory: google/cloud/capacityplanner/v1beta
+    service-config: capacityplanner_v1beta.yaml
+    import-path: cloud.google.com/go/capacityplanner/apiv1beta
   - input-directory: google/cloud/certificatemanager/v1
     service-config: certificatemanager_v1.yaml
     import-path: cloud.google.com/go/certificatemanager/apiv1
@@ -585,10 +588,6 @@ service-configs:
   - input-directory: google/cloud/dataplex/v1
     service-config: dataplex_v1.yaml
     import-path: cloud.google.com/go/dataplex/apiv1
-  - input-directory: google/cloud/dataproc/v1
-    service-config: dataproc_v1.yaml
-    import-path: cloud.google.com/go/dataproc/v2/apiv1
-    rel-path: /dataproc/apiv1
   - input-directory: google/cloud/dataqna/v1alpha
     service-config: dataqna_v1alpha.yaml
     import-path: cloud.google.com/go/dataqna/apiv1alpha
@@ -721,6 +720,9 @@ service-configs:
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
+  - input-directory: google/cloud/locationfinder/v1
+    service-config: cloudlocationfinder_v1.yaml
+    import-path: cloud.google.com/go/locationfinder/apiv1
   - input-directory: google/cloud/lustre/v1
     service-config: lustre_v1.yaml
     import-path: cloud.google.com/go/lustre/apiv1
@@ -1278,9 +1280,6 @@ service-configs:
   - input-directory: google/monitoring/v3
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/apiv3/v2
-  - input-directory: google/privacy/dlp/v2
-    service-config: dlp_v2.yaml
-    import-path: cloud.google.com/go/dlp/apiv2
   - input-directory: google/pubsub/v1
     service-config: pubsub_v1.yaml
     import-path: cloud.google.com/go/pubsub/v2/apiv1
@@ -1324,6 +1323,9 @@ service-configs:
 skip-module-scan-paths:
   # ignore the root module
   - .
+  # Librarian released modules
+  - dataproc
+  - dlp
   # individually released modules
   - auth
   - auth/oauth2adapt

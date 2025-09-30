@@ -17,6 +17,8 @@ package module
 
 import (
 	_ "embed"
+	"errors"
+	"fmt"
 	"html/template"
 	"log/slog"
 	"os"
@@ -24,6 +26,9 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
 var (
@@ -47,6 +52,10 @@ func GenerateInternalVersionFile(moduleDir, version string) error {
 		Year:    time.Now().Year(),
 		Version: version,
 	}
+	if err := os.MkdirAll(filepath.Dir(versionPath), 0755); err != nil {
+		return fmt.Errorf("librariangen: creating directory for version file: %w", err)
+	}
+
 	f, err := os.Create(versionPath)
 	if err != nil {
 		return err
@@ -55,47 +64,65 @@ func GenerateInternalVersionFile(moduleDir, version string) error {
 	return t.Execute(f, internalVersionData)
 }
 
-// UpdateSnippetsMetadata updates the library version in all snippet metadata files,
-// replacing the old version or the $VERSION placeholder.
-func UpdateSnippetsMetadata(outputDir, moduleName, version string) error {
+// UpdateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder, reading them from
+// the sourceDir and writing them to the destDir. These two may be the same, but don't have to be.
+func UpdateSnippetsMetadata(lib *request.Library, sourceDir string, destDir string, moduleConfig *config.ModuleConfig) error {
+	moduleName := lib.ID
+	version := lib.Version
+
 	slog.Debug("librariangen: updating snippets metadata")
-	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)
-	err := filepath.WalkDir(snpDir, func(path string, d os.DirEntry, err error) error {
+	snpDir := filepath.Join("internal", "generated", "snippets", moduleName)
+
+	for _, api := range lib.APIs {
+		apiConfig := moduleConfig.GetAPIConfig(api.Path)
+		clientDirName, err := apiConfig.GetClientDirectory()
 		if err != nil {
 			return err
 		}
-		if d.IsDir() {
-			return nil
-		}
-		if match, _ := filepath.Match("snippet_metadata.*.json", d.Name()); match {
-			read, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			content := string(read)
-			var newContent string
-			var oldVersion string
 
-			if strings.Contains(content, "$VERSION") {
-				newContent = strings.Replace(content, "$VERSION", version, 1)
-				oldVersion = "$VERSION"
-			} else {
-				// This regex finds a version string like "1.2.3".
-				re := regexp.MustCompile(`\d+\.\d+\.\d+`)
-				if foundVersion := re.FindString(content); foundVersion != "" {
-					newContent = strings.Replace(content, foundVersion, version, 1)
-					oldVersion = foundVersion
-				}
+		snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
+		path := filepath.Join(snpDir, clientDirName, snippetFile)
+		slog.Info("librariangen: updating snippet metadata file", "path", path)
+		read, err := os.ReadFile(filepath.Join(sourceDir, path))
+		if err != nil {
+			// If the snippet metadata doesn't exist, that's probably because this API path
+			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
+			if errors.Is(err, os.ErrNotExist) {
+				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", path)
+				continue
 			}
+			return err
+		}
 
-			if newContent != "" {
-				slog.Info("librariangen: updating version in snippets metadata file", "path", path, "old", oldVersion, "new", version)
-				if err := os.WriteFile(path, []byte(newContent), 0); err != nil {
-					return err
-				}
+		content := string(read)
+		var newContent string
+		var oldVersion string
+
+		if strings.Contains(content, "$VERSION") {
+			newContent = strings.Replace(content, "$VERSION", version, 1)
+			oldVersion = "$VERSION"
+		} else {
+			// This regex finds a version string like "1.2.3".
+			re := regexp.MustCompile(`\d+\.\d+\.\d+`)
+			if foundVersion := re.FindString(content); foundVersion != "" {
+				newContent = strings.Replace(content, foundVersion, version, 1)
+				oldVersion = foundVersion
 			}
 		}
-		return nil
-	})
-	return err
+
+		if newContent == "" {
+			return fmt.Errorf("librariangen: no version number or placeholder found in '%s'", snippetFile)
+		}
+
+		destPath := filepath.Join(destDir, path)
+		slog.Info("librariangen: updating version in snippets metadata file", "destPath", path, "old", oldVersion, "new", version)
+		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+			return fmt.Errorf("librariangen: creating directory for snippet file: %w", err)
+		}
+		err = os.WriteFile(destPath, []byte(newContent), 0644)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -43,47 +43,50 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateApi         []gax.CallOption
-	GetApi            []gax.CallOption
-	ListApis          []gax.CallOption
-	UpdateApi         []gax.CallOption
-	DeleteApi         []gax.CallOption
-	CreateVersion     []gax.CallOption
-	GetVersion        []gax.CallOption
-	ListVersions      []gax.CallOption
-	UpdateVersion     []gax.CallOption
-	DeleteVersion     []gax.CallOption
-	CreateSpec        []gax.CallOption
-	GetSpec           []gax.CallOption
-	GetSpecContents   []gax.CallOption
-	ListSpecs         []gax.CallOption
-	UpdateSpec        []gax.CallOption
-	DeleteSpec        []gax.CallOption
-	GetApiOperation   []gax.CallOption
-	ListApiOperations []gax.CallOption
-	GetDefinition     []gax.CallOption
-	CreateDeployment  []gax.CallOption
-	GetDeployment     []gax.CallOption
-	ListDeployments   []gax.CallOption
-	UpdateDeployment  []gax.CallOption
-	DeleteDeployment  []gax.CallOption
-	CreateAttribute   []gax.CallOption
-	GetAttribute      []gax.CallOption
-	UpdateAttribute   []gax.CallOption
-	DeleteAttribute   []gax.CallOption
-	ListAttributes    []gax.CallOption
-	SearchResources   []gax.CallOption
-	CreateExternalApi []gax.CallOption
-	GetExternalApi    []gax.CallOption
-	UpdateExternalApi []gax.CallOption
-	DeleteExternalApi []gax.CallOption
-	ListExternalApis  []gax.CallOption
-	GetLocation       []gax.CallOption
-	ListLocations     []gax.CallOption
-	CancelOperation   []gax.CallOption
-	DeleteOperation   []gax.CallOption
-	GetOperation      []gax.CallOption
-	ListOperations    []gax.CallOption
+	CreateApi          []gax.CallOption
+	GetApi             []gax.CallOption
+	ListApis           []gax.CallOption
+	UpdateApi          []gax.CallOption
+	DeleteApi          []gax.CallOption
+	CreateVersion      []gax.CallOption
+	GetVersion         []gax.CallOption
+	ListVersions       []gax.CallOption
+	UpdateVersion      []gax.CallOption
+	DeleteVersion      []gax.CallOption
+	CreateSpec         []gax.CallOption
+	GetSpec            []gax.CallOption
+	GetSpecContents    []gax.CallOption
+	ListSpecs          []gax.CallOption
+	UpdateSpec         []gax.CallOption
+	DeleteSpec         []gax.CallOption
+	CreateApiOperation []gax.CallOption
+	GetApiOperation    []gax.CallOption
+	ListApiOperations  []gax.CallOption
+	UpdateApiOperation []gax.CallOption
+	DeleteApiOperation []gax.CallOption
+	GetDefinition      []gax.CallOption
+	CreateDeployment   []gax.CallOption
+	GetDeployment      []gax.CallOption
+	ListDeployments    []gax.CallOption
+	UpdateDeployment   []gax.CallOption
+	DeleteDeployment   []gax.CallOption
+	CreateAttribute    []gax.CallOption
+	GetAttribute       []gax.CallOption
+	UpdateAttribute    []gax.CallOption
+	DeleteAttribute    []gax.CallOption
+	ListAttributes     []gax.CallOption
+	SearchResources    []gax.CallOption
+	CreateExternalApi  []gax.CallOption
+	GetExternalApi     []gax.CallOption
+	UpdateExternalApi  []gax.CallOption
+	DeleteExternalApi  []gax.CallOption
+	ListExternalApis   []gax.CallOption
+	GetLocation        []gax.CallOption
+	ListLocations      []gax.CallOption
+	CancelOperation    []gax.CallOption
+	DeleteOperation    []gax.CallOption
+	GetOperation       []gax.CallOption
+	ListOperations     []gax.CallOption
 }
 
 func defaultRESTCallOptions() *CallOptions {
@@ -117,7 +120,7 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteApi: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithTimeout(300000 * time.Millisecond),
 		},
 		CreateVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -148,7 +151,7 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteVersion: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithTimeout(300000 * time.Millisecond),
 		},
 		CreateSpec: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -190,8 +193,9 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteSpec: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		CreateApiOperation: []gax.CallOption{},
 		GetApiOperation: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -214,6 +218,8 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateApiOperation: []gax.CallOption{},
+		DeleteApiOperation: []gax.CallOption{},
 		GetDefinition: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -359,8 +365,11 @@ type internalClient interface {
 	ListSpecs(context.Context, *apihubpb.ListSpecsRequest, ...gax.CallOption) *SpecIterator
 	UpdateSpec(context.Context, *apihubpb.UpdateSpecRequest, ...gax.CallOption) (*apihubpb.Spec, error)
 	DeleteSpec(context.Context, *apihubpb.DeleteSpecRequest, ...gax.CallOption) error
+	CreateApiOperation(context.Context, *apihubpb.CreateApiOperationRequest, ...gax.CallOption) (*apihubpb.ApiOperation, error)
 	GetApiOperation(context.Context, *apihubpb.GetApiOperationRequest, ...gax.CallOption) (*apihubpb.ApiOperation, error)
 	ListApiOperations(context.Context, *apihubpb.ListApiOperationsRequest, ...gax.CallOption) *ApiOperationIterator
+	UpdateApiOperation(context.Context, *apihubpb.UpdateApiOperationRequest, ...gax.CallOption) (*apihubpb.ApiOperation, error)
+	DeleteApiOperation(context.Context, *apihubpb.DeleteApiOperationRequest, ...gax.CallOption) error
 	GetDefinition(context.Context, *apihubpb.GetDefinitionRequest, ...gax.CallOption) (*apihubpb.Definition, error)
 	CreateDeployment(context.Context, *apihubpb.CreateDeploymentRequest, ...gax.CallOption) (*apihubpb.Deployment, error)
 	GetDeployment(context.Context, *apihubpb.GetDeploymentRequest, ...gax.CallOption) (*apihubpb.Deployment, error)
@@ -455,6 +464,8 @@ func (c *Client) ListApis(ctx context.Context, req *apihubpb.ListApisRequest, op
 //	business_unit
 //
 //	maturity_level
+//
+//	api_style
 //
 //	attributes
 //
@@ -607,6 +618,13 @@ func (c *Client) DeleteSpec(ctx context.Context, req *apihubpb.DeleteSpecRequest
 	return c.internalClient.DeleteSpec(ctx, req, opts...)
 }
 
+// CreateApiOperation create an apiOperation in an API version.
+// An apiOperation can be created only if the version has no apiOperations
+// which were created by parsing a spec.
+func (c *Client) CreateApiOperation(ctx context.Context, req *apihubpb.CreateApiOperationRequest, opts ...gax.CallOption) (*apihubpb.ApiOperation, error) {
+	return c.internalClient.CreateApiOperation(ctx, req, opts...)
+}
+
 // GetApiOperation get details about a particular operation in API version.
 func (c *Client) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOperationRequest, opts ...gax.CallOption) (*apihubpb.ApiOperation, error) {
 	return c.internalClient.GetApiOperation(ctx, req, opts...)
@@ -615,6 +633,41 @@ func (c *Client) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOperat
 // ListApiOperations list operations in an API version.
 func (c *Client) ListApiOperations(ctx context.Context, req *apihubpb.ListApiOperationsRequest, opts ...gax.CallOption) *ApiOperationIterator {
 	return c.internalClient.ListApiOperations(ctx, req, opts...)
+}
+
+// UpdateApiOperation update an operation in an API version. The following fields in the
+// [ApiOperation resource][google.cloud.apihub.v1.ApiOperation] can be
+// updated:
+//
+//	details.description
+//
+//	details.documentation
+//
+//	details.http_operation.path
+//
+//	details.http_operation.method
+//
+//	details.deprecated
+//
+//	attributes
+//
+// The
+// update_mask
+// should be used to specify the fields being updated.
+//
+// An operation can be updated only if the operation was created via
+// CreateApiOperation API.
+// If the operation was created by parsing the spec, then it can be edited by
+// updating the spec.
+func (c *Client) UpdateApiOperation(ctx context.Context, req *apihubpb.UpdateApiOperationRequest, opts ...gax.CallOption) (*apihubpb.ApiOperation, error) {
+	return c.internalClient.UpdateApiOperation(ctx, req, opts...)
+}
+
+// DeleteApiOperation delete an operation in an API version and we can delete only the
+// operations created via create API. If the operation was created by parsing
+// the spec, then it can be deleted by editing or deleting the spec.
+func (c *Client) DeleteApiOperation(ctx context.Context, req *apihubpb.DeleteApiOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteApiOperation(ctx, req, opts...)
 }
 
 // GetDefinition get details about a definition in an API version.
@@ -661,9 +714,17 @@ func (c *Client) ListDeployments(ctx context.Context, req *apihubpb.ListDeployme
 //
 //	attributes
 //
-// The
-// update_mask
-// should be used to specify the fields being updated.
+//	[source_project] [google.cloud.apihub.v1.Deployment.source_project]
+//
+//	[source_environment]
+//	[google.cloud.apihub.v1.Deployment.source_environment]
+//
+//	management_url
+//
+//	source_uri
+//	The
+//	update_mask
+//	should be used to specify the fields being updated.
 func (c *Client) UpdateDeployment(ctx context.Context, req *apihubpb.UpdateDeploymentRequest, opts ...gax.CallOption) (*apihubpb.Deployment, error) {
 	return c.internalClient.UpdateDeployment(ctx, req, opts...)
 }
@@ -1095,6 +1156,8 @@ func (c *restClient) ListApis(ctx context.Context, req *apihubpb.ListApisRequest
 //	business_unit
 //
 //	maturity_level
+//
+//	api_style
 //
 //	attributes
 //
@@ -1917,6 +1980,68 @@ func (c *restClient) DeleteSpec(ctx context.Context, req *apihubpb.DeleteSpecReq
 	}, opts...)
 }
 
+// CreateApiOperation create an apiOperation in an API version.
+// An apiOperation can be created only if the version has no apiOperations
+// which were created by parsing a spec.
+func (c *restClient) CreateApiOperation(ctx context.Context, req *apihubpb.CreateApiOperationRequest, opts ...gax.CallOption) (*apihubpb.ApiOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetApiOperation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetApiOperationId() != "" {
+		params.Add("apiOperationId", fmt.Sprintf("%v", req.GetApiOperationId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateApiOperation[0:len((*c.CallOptions).CreateApiOperation):len((*c.CallOptions).CreateApiOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &apihubpb.ApiOperation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateApiOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetApiOperation get details about a particular operation in API version.
 func (c *restClient) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOperationRequest, opts ...gax.CallOption) (*apihubpb.ApiOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2046,6 +2171,130 @@ func (c *restClient) ListApiOperations(ctx context.Context, req *apihubpb.ListAp
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// UpdateApiOperation update an operation in an API version. The following fields in the
+// [ApiOperation resource][google.cloud.apihub.v1.ApiOperation] can be
+// updated:
+//
+//	details.description
+//
+//	details.documentation
+//
+//	details.http_operation.path
+//
+//	details.http_operation.method
+//
+//	details.deprecated
+//
+//	attributes
+//
+// The
+// update_mask
+// should be used to specify the fields being updated.
+//
+// An operation can be updated only if the operation was created via
+// CreateApiOperation API.
+// If the operation was created by parsing the spec, then it can be edited by
+// updating the spec.
+func (c *restClient) UpdateApiOperation(ctx context.Context, req *apihubpb.UpdateApiOperationRequest, opts ...gax.CallOption) (*apihubpb.ApiOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetApiOperation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetApiOperation().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "api_operation.name", url.QueryEscape(req.GetApiOperation().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateApiOperation[0:len((*c.CallOptions).UpdateApiOperation):len((*c.CallOptions).UpdateApiOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &apihubpb.ApiOperation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateApiOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteApiOperation delete an operation in an API version and we can delete only the
+// operations created via create API. If the operation was created by parsing
+// the spec, then it can be deleted by editing or deleting the spec.
+func (c *restClient) DeleteApiOperation(ctx context.Context, req *apihubpb.DeleteApiOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteApiOperation")
+		return err
+	}, opts...)
 }
 
 // GetDefinition get details about a definition in an API version.
@@ -2313,9 +2562,17 @@ func (c *restClient) ListDeployments(ctx context.Context, req *apihubpb.ListDepl
 //
 //	attributes
 //
-// The
-// update_mask
-// should be used to specify the fields being updated.
+//	[source_project] [google.cloud.apihub.v1.Deployment.source_project]
+//
+//	[source_environment]
+//	[google.cloud.apihub.v1.Deployment.source_environment]
+//
+//	management_url
+//
+//	source_uri
+//	The
+//	update_mask
+//	should be used to specify the fields being updated.
 func (c *restClient) UpdateDeployment(ctx context.Context, req *apihubpb.UpdateDeploymentRequest, opts ...gax.CallOption) (*apihubpb.Deployment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDeployment()

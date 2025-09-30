@@ -22,11 +22,11 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestParse(t *testing.T) {
+func TestParseLibrary(t *testing.T) {
 	testCases := []struct {
 		name    string
 		content string
-		want    *Request
+		want    *Library
 		wantErr bool
 	}{
 		{
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 				"preserve_regex": ["asset/apiv1/foo.go"],
 				"remove_regex": ["asset/apiv1/bar.go"]
 			}`,
-			want: &Request{
+			want: &Library{
 				ID:      "asset",
 				Version: "1.15.0",
 				APIs: []API{
@@ -74,7 +74,7 @@ func TestParse(t *testing.T) {
 				t.Fatalf("failed to write test file: %v", err)
 			}
 
-			got, err := Parse(reqPath)
+			got, err := ParseLibrary(reqPath)
 
 			if (err != nil) != tc.wantErr {
 				t.Errorf("Parse() error = %v, wantErr %v", err, tc.wantErr)
@@ -90,8 +90,8 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestParse_FileNotFound(t *testing.T) {
-	_, err := Parse("non-existent-file.json")
+func TestParseLibrary_FileNotFound(t *testing.T) {
+	_, err := ParseLibrary("non-existent-file.json")
 	if err == nil {
 		t.Error("Parse() expected error for non-existent file, got nil")
 	}

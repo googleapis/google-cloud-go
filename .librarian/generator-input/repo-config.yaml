@@ -1,0 +1,81 @@
+# Configuration file for libraries where the container needs
+# more information than is readily available.
+modules:
+  - name: bigquery
+    apis:
+      - path: google/bigquery/v2
+        client_directory: v2/apiv2
+
+  - name: bigtable
+    apis:
+      - path: google/bigtable/v2
+        disable_gapic: true
+      - path: google/bigtable/admin/v2
+        disable_gapic: true
+
+  - name: cloudbuild
+    apis:
+      - path: google/devtools/cloudbuild/v1
+        client_directory: apiv1/v2
+
+  - name: cloudtasks
+    apis:
+      - path: google/cloud/tasks/v2
+        client_directory: apiv2
+      - path: google/cloud/tasks/v2beta2
+        client_directory: apiv2beta2
+      - path: google/cloud/tasks/v2beta3
+        client_directory: apiv2beta3
+
+  - name: dataproc
+    module_path_version: v2
+
+  - name: datastore
+    apis:
+      - path: google/datastore/v1
+        disable_gapic: true
+
+  - name: firestore
+    apis:
+      - path: google/firestore/admin/v1
+        client_directory: apiv1/admin
+
+  - name: longrunning
+    apis:
+      - path: google/longrunning
+        client_directory: autogen
+
+  - name: maps
+    apis:
+      - path: google/maps/fleetengine/v1
+        proto_package: maps.fleetengine.v1
+      - path: google/maps/fleetengine/delivery/v1
+        proto_package: maps.fleetengine.delivery.v1
+
+  - name: monitoring
+    apis:
+      - path: google/monitoring/v3
+        client_directory: apiv3/v2
+
+  - name: pubsub
+    apis:
+      - path: google/pubsub/v1
+        client_directory: v2/apiv1
+
+  - name: recaptchaenterprise
+    module_path_version: v2
+
+  - name: trace
+    apis:
+      - path: google/devtools/cloudtrace/v1
+        client_directory: apiv1
+      - path: google/devtools/cloudtrace/v2
+        client_directory: apiv2
+
+  - name: translate
+    apis:
+      - path: google/cloud/translate/v3
+        proto_package: google.cloud.translation.v3
+
+  - name: vision
+    module_path_version: v2

@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/generated
 
-go 1.23.0
+go 1.24.0
 
 require (
 	cloud.google.com/go v0.121.6 // indirect
@@ -562,3 +562,7 @@ replace cloud.google.com/go/configdelivery => ../../../configdelivery
 replace cloud.google.com/go/licensemanager => ../../../licensemanager
 
 replace cloud.google.com/go/geminidataanalytics => ../../../geminidataanalytics
+
+replace cloud.google.com/go/capacityplanner => ../../../capacityplanner
+
+replace cloud.google.com/go/locationfinder => ../../../locationfinder

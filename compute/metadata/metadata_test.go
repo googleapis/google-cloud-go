@@ -17,9 +17,11 @@ package metadata
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"sync"
@@ -105,7 +107,7 @@ func TestOnGCE_CancelTryHarder(t *testing.T) {
 	}
 
 	// Should have returned around 500ms, but account for some scheduling budget
-	if time.Now().Sub(start) > 510*time.Millisecond {
+	if time.Since(start) > 510*time.Millisecond {
 		t.Error("OnGCE() did not return within deadline")
 	}
 }
@@ -352,6 +354,9 @@ func TestNewClient(t *testing.T) {
 				if got.hc != tt.wantHC {
 					t.Errorf("NewClient().hc = %p, want %p", got.hc, tt.wantHC)
 				}
+				if got.subClient != tt.wantHC {
+					t.Errorf("NewClient().hc = %p, want %p", got.hc, tt.wantHC)
+				}
 			}
 		})
 	}
@@ -422,6 +427,9 @@ func TestNewWithOptions(t *testing.T) {
 				if got.hc != tt.wantHC {
 					t.Errorf("NewWithOptions().hc = %p, want %p", got.hc, tt.wantHC)
 				}
+				if got.subClient != tt.wantHC {
+					t.Errorf("NewWithOptions().hc = %p, want %p", got.hc, tt.wantHC)
+				}
 			}
 			if tt.hasCustomLogger {
 				if got.logger != customLogger {
@@ -448,4 +456,73 @@ func TestNewWithOptions(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNewWithOptions_UseDefaultClient(t *testing.T) {
+	client := NewWithOptions(&Options{UseDefaultClient: true})
+	if client.hc != defaultClient.hc {
+		t.Errorf("NewWithOptions(UseDefaultClient: true).hc = %p, want %p", client.hc, defaultClient.hc)
+	}
+	if client.subClient != defaultClient.subClient {
+		t.Errorf("NewWithOptions(UseDefaultClient: true).subClient = %p, want %p", client.subClient, defaultClient.subClient)
+	}
+}
+
+func TestSubscribeUsesSubscribeClient(t *testing.T) {
+	subscribeClientUsed := make(chan bool, 1)
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Test-Header") == "subscribe" {
+			subscribeClientUsed <- true
+		} else {
+			subscribeClientUsed <- false
+		}
+		w.Header().Set("Etag", "etag-1")
+		fmt.Fprint(w, "initial-value")
+	}))
+	defer ts.Close()
+
+	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
+
+	subTransport := &headerTransport{
+		header: "X-Test-Header",
+		value:  "subscribe",
+		base:   http.DefaultTransport,
+	}
+	subClient := &http.Client{Transport: subTransport}
+	hc := newDefaultHTTPClient(true)
+
+	c := &Client{
+		hc:        hc,
+		subClient: subClient,
+		logger:    slog.New(slog.NewTextHandler(io.Discard, nil)),
+	}
+
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+
+	c.SubscribeWithContext(ctx, "some/path", func(ctx context.Context, v string, ok bool) error {
+		cancel()
+		return nil
+	})
+
+	select {
+	case used := <-subscribeClientUsed:
+		if !used {
+			t.Error("Subscribe did not use the subscribe client")
+		}
+	case <-time.After(5 * time.Second):
+		// This can happen if the request from the client is never sent.
+		t.Fatal("Test timed out")
+	}
+}
+
+type headerTransport struct {
+	header string
+	value  string
+	base   http.RoundTripper
+}
+
+func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set(t.header, t.value)
+	return t.base.RoundTrip(req)
 }

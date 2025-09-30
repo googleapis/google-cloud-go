@@ -23,6 +23,9 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 )
 
 func setupTestDirs(t *testing.T, initialRepoContent map[string]string, requestJSON string) (librarianDir, repoDir, outputDir string) {
@@ -38,10 +41,24 @@ func setupTestDirs(t *testing.T, initialRepoContent map[string]string, requestJS
 		}
 	}
 
+	// Create the test request
 	if err := os.WriteFile(filepath.Join(librarianDir, "release-init-request.json"), []byte(requestJSON), 0644); err != nil {
 		t.Fatalf("failed to write request file: %v", err)
 	}
 
+	// Create generator-input/repo-config.yaml under the librarian directory.
+	// An empty config file is valid, and any modules that are requested will
+	// just get default values.
+	configFile := filepath.Join(librarianDir, config.GeneratorInputDir, config.RepoConfigFile)
+	if err := os.MkdirAll(filepath.Dir(configFile), 0755); err != nil {
+		t.Fatalf("failed to create generator input dir: %v", err)
+	}
+	err := os.WriteFile(configFile, make([]byte, 0), 0644)
+	if err != nil {
+		t.Fatalf("failed to create file %s: %v", configFile, err)
+	}
+
+	// Populate /repo
 	for path, content := range initialRepoContent {
 		fullPath := filepath.Join(repoDir, path)
 		if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
@@ -86,35 +103,45 @@ func assertVersion(t *testing.T, versionGoPath, wantVersion string) {
 }
 
 func TestInit(t *testing.T) {
+	oldNow := now
+	defer func() { now = oldNow }()
+	now = func() time.Time {
+		return time.Date(2025, 9, 11, 0, 0, 0, 0, time.UTC)
+	}
 	tests := []struct {
-		name                string
-		requestJSON         string
-		initialRepoContent  map[string]string
-		wantChangelogSubstr string
-		wantVersion         string
-		wantSnippetVersion  string
-		wantErr             bool
-		releaseNotTriggered bool
-		alreadyUpToDate     bool
+		name                     string
+		requestJSON              string
+		initialRepoContent       map[string]string
+		moduleRootPath           string
+		wantChangelogSubstr      string
+		wantVersion              string
+		wantSnippetVersion       string
+		wantErr                  bool
+		releaseNotTriggered      bool
+		changelogAlreadyUpToDate bool
 	}{
 		{
 			name: "success",
 			requestJSON: `{ 
 				"libraries": [{ 
 					"id": "secretmanager", "version": "1.16.0", "release_triggered": true,
-					"source_roots": ["secretmanager", "internal/generated/snippets/secretmanager"],
+					"source_roots": ["secretmanager"],
+					"apis": [{"path": "google/cloud/secretmanager/v1"}],
 					"changes": [
-						{"type": "feat", "subject": "add new GetSecret API"},
-						{"type": "fix", "subject": "correct typo in documentation"}
-					]
+						{"type": "feat", "subject": "another feature", "source_commit_hash": "zxcvbn098765"},
+						{"type": "fix", "subject": "correct typo in documentation", "source_commit_hash": "123456abcdef"},
+						{"type": "feat", "subject": "add new GetSecret API", "source_commit_hash": "abcdef123456"}
+					],
+					"tag_format": "{id}/v{version}"
 				}]
 			}`,
 			initialRepoContent: map[string]string{
-				"secretmanager/CHANGES.md":                                           "# Changes\n\n## [1.15.0]\n- Old stuff.",
-				"secretmanager/internal/version.go":                                  `package internal; const Version = "1.15.0"`,
-				"internal/generated/snippets/secretmanager/snippet_metadata.v1.json": `{"version": "1.15.0"}`,
+				"secretmanager/CHANGES.md":          "# Changes\n\n## [1.15.0]\n- Old stuff.",
+				"secretmanager/internal/version.go": `package internal; const Version = "1.15.0"`,
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"version": "1.15.0"}`,
 			},
-			wantChangelogSubstr: "### 1.16.0",
+			moduleRootPath:      "secretmanager",
+			wantChangelogSubstr: "## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0) (2025-09-11)\n\n### Features\n\n* add new GetSecret API ([abcdef1](https://github.com/googleapis/google-cloud-go/commit/abcdef123456))\n* another feature ([zxcvbn0](https://github.com/googleapis/google-cloud-go/commit/zxcvbn098765))\n\n### Bug Fixes\n\n* correct typo in documentation ([123456a](https://github.com/googleapis/google-cloud-go/commit/123456abcdef))\n\n",
 			wantVersion:         "1.16.0",
 			wantSnippetVersion:  `"version": "1.16.0"`,
 		},
@@ -125,12 +152,37 @@ func TestInit(t *testing.T) {
 		},
 		{
 			name:        "changelog already up-to-date",
-			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "source_roots": ["secretmanager", "internal/generated/snippets/secretmanager"], "changes": [{"type": "feat", "subject": "add new GetSecret API"}] } ] }`,
+			requestJSON: `{ "libraries": [ { "id": "secretmanager", "version": "1.16.0", "release_triggered": true, "apis": [{"path": "google/cloud/secretmanager/v1"}], "changes": [{"type": "feat", "subject": "add new GetSecret API"}] } ], "tag_format": "{id}/v{version}" }`,
 			initialRepoContent: map[string]string{
-				"secretmanager/CHANGES.md": "# Changes\n\n### 1.16.0\n- Already there.",
-				"internal/generated/snippets/secretmanager/snippet_metadata.v1.json": `{"version": "1.15.0"}`,
+				"secretmanager/CHANGES.md": "# Changes\n\n## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0)\n- Already there.",
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"version": "1.15.0"}`,
 			},
-			alreadyUpToDate: true,
+			moduleRootPath:           "secretmanager",
+			changelogAlreadyUpToDate: true,
+			wantVersion:              "1.16.0",
+			wantSnippetVersion:       `"version": "1.16.0"`,
+		},
+		{
+			name: "whole repo library",
+			requestJSON: `{
+				"libraries": [{
+					"id": "wholerepo", "version": "1.16.0", "release_triggered": true,
+					"source_roots": ["."],
+					"changes": [
+						{"type": "feat", "subject": "another feature", "source_commit_hash": "zxcvbn098765"},
+						{"type": "fix", "subject": "correct typo in documentation", "source_commit_hash": "123456abcdef"},
+						{"type": "feat", "subject": "add new GetSecret API", "source_commit_hash": "abcdef123456"}
+					],
+					"tag_format": "v{version}"
+				}]
+			}`,
+			moduleRootPath: ".",
+			initialRepoContent: map[string]string{
+				"CHANGES.md":          "# Changes\n\n## [1.15.0]\n- Old stuff.",
+				"internal/version.go": `package internal; const Version = "1.15.0"`,
+			},
+			wantChangelogSubstr: "## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/v1.16.0) (2025-09-11)\n\n### Features\n\n* add new GetSecret API ([abcdef1](https://github.com/googleapis/google-cloud-go/commit/abcdef123456))\n* another feature ([zxcvbn0](https://github.com/googleapis/google-cloud-go/commit/zxcvbn098765))\n\n### Bug Fixes\n\n* correct typo in documentation ([123456a](https://github.com/googleapis/google-cloud-go/commit/123456abcdef))\n\n",
+			wantVersion:         "1.16.0",
 		},
 		{
 			name:        "malformed json",
@@ -165,33 +217,31 @@ func TestInit(t *testing.T) {
 				return
 			}
 
-			if tt.alreadyUpToDate {
-				content, err := os.ReadFile(filepath.Join(outputDir, "secretmanager/CHANGES.md"))
+			if tt.changelogAlreadyUpToDate {
+				_, err := os.Stat(filepath.Join(outputDir, tt.moduleRootPath, "CHANGES.md"))
+				if !os.IsNotExist(err) {
+					t.Errorf("new changelog should not be created when already up-to-date")
+				}
+			} else {
+				changelog, err := os.ReadFile(filepath.Join(outputDir, tt.moduleRootPath, "CHANGES.md"))
 				if err != nil {
 					t.Fatalf("failed to read changelog: %v", err)
 				}
-				if !strings.Contains(string(content), "- Already there.") {
-					t.Errorf("changelog content was modified unexpectedly: got %q", string(content))
+				if !strings.Contains(string(changelog), tt.wantChangelogSubstr) {
+					t.Errorf("changelog content = %q, want contains %q", string(changelog), tt.wantChangelogSubstr)
 				}
-				return
 			}
 
-			changelog, err := os.ReadFile(filepath.Join(outputDir, "secretmanager/CHANGES.md"))
-			if err != nil {
-				t.Fatalf("failed to read changelog: %v", err)
-			}
-			if !strings.Contains(string(changelog), tt.wantChangelogSubstr) {
-				t.Errorf("changelog content = %q, want contains %q", string(changelog), tt.wantChangelogSubstr)
-			}
+			assertVersion(t, filepath.Join(outputDir, tt.moduleRootPath, "internal/version.go"), tt.wantVersion)
 
-			assertVersion(t, filepath.Join(outputDir, "secretmanager/internal/version.go"), tt.wantVersion)
-
-			snippet, err := os.ReadFile(filepath.Join(outputDir, "internal/generated/snippets/secretmanager/snippet_metadata.v1.json"))
-			if err != nil {
-				t.Fatalf("failed to read snippet: %v", err)
-			}
-			if !strings.Contains(string(snippet), tt.wantSnippetVersion) {
-				t.Errorf("snippet content = %q, want contains %q", string(snippet), tt.wantSnippetVersion)
+			if tt.wantSnippetVersion != "" {
+				snippet, err := os.ReadFile(filepath.Join(outputDir, "internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json"))
+				if err != nil {
+					t.Fatalf("failed to read snippet: %v", err)
+				}
+				if !strings.Contains(string(snippet), tt.wantSnippetVersion) {
+					t.Errorf("snippet content = %q, want contains %q", string(snippet), tt.wantSnippetVersion)
+				}
 			}
 		})
 	}

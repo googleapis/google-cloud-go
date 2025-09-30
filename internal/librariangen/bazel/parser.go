@@ -45,6 +45,22 @@ type Config struct {
 	// to go_grpc_library is complete.
 	// See https://github.com/googleapis/librarian/issues/1021.
 	hasGoGRPC bool
+
+	// Whether this library has a GAPIC rule at all.
+	hasGAPIC bool
+
+	// Whether the go_proto_library rule uses @io_bazel_rules_go//proto:go_grpc
+	hasLegacyGRPC bool
+}
+
+// HasGAPIC indicates whether the GAPIC generator should be run.
+// This is typically true. If this is false, none of the other GAPIC-related
+// fields should be used.
+func (c *Config) HasGAPIC() bool { return c.hasGAPIC }
+
+// DisableGAPIC overrides any previous configuration, disabling GAPIC generation.
+func (c *Config) DisableGAPIC() {
+	c.hasGAPIC = false
 }
 
 // GAPICImportPath is importpath in the go_gapic_library rule.
@@ -88,19 +104,20 @@ func (c *Config) HasRESTNumericEnums() bool { return c.restNumericEnums }
 // used. This is trending toward typically true.
 func (c *Config) HasGoGRPC() bool { return c.hasGoGRPC }
 
+// HasLegacyGRPC indicates whether a go_proto_library rule uses
+// @io_bazel_rules_go//proto:go_grpc to generate gRPC code. If so,
+// the "plugins=grpc" option is passed to the legacy Go plugin.
+func (c *Config) HasLegacyGRPC() bool { return c.hasLegacyGRPC }
+
 // Validate ensures that the configuration is valid.
 func (c *Config) Validate() error {
-	if c.gapicImportPath == "" {
-		return errors.New("librariangen: gapicImportPath is not set")
-	}
-	if c.serviceYAML == "" {
-		return errors.New("librariangen: serviceYAML is not set")
-	}
-	if c.grpcServiceConfig == "" {
-		return errors.New("librariangen: grpcServiceConfig is not set")
-	}
-	if c.transport == "" {
-		return errors.New("librariangen: transport is not set")
+	if c.hasGAPIC {
+		if c.gapicImportPath == "" {
+			return errors.New("librariangen: gapicImportPath is not set")
+		}
+		if c.serviceYAML == "" {
+			return errors.New("librariangen: serviceYAML is not set")
+		}
 	}
 	return nil
 }
@@ -119,24 +136,24 @@ func Parse(dir string) (*Config, error) {
 	// First, find the go_gapic_library block.
 	re := regexp.MustCompile(`go_gapic_library\((?s:.)*?\)`)
 	gapicLibraryBlock := re.FindString(content)
-	if gapicLibraryBlock == "" {
-		return nil, errors.New("librariangen: could not find go_gapic_library rule in BUILD.bazel")
-	}
-
-	// GAPIC build target
-	c.grpcServiceConfig = findString(gapicLibraryBlock, "grpc_service_config")
-	c.gapicImportPath = findString(gapicLibraryBlock, "importpath")
-	c.releaseLevel = findString(gapicLibraryBlock, "release_level")
-	c.serviceYAML = findString(gapicLibraryBlock, "service_yaml")
-	c.transport = findString(gapicLibraryBlock, "transport")
-	if c.metadata, err = findBool(gapicLibraryBlock, "metadata"); err != nil {
-		return nil, fmt.Errorf("librariangen: failed to parse BUILD.bazel file %s: %w", fp, err)
-	}
-	if c.restNumericEnums, err = findBool(gapicLibraryBlock, "rest_numeric_enums"); err != nil {
-		return nil, fmt.Errorf("librariangen: failed to parse BUILD.bazel file %s: %w", fp, err)
-	}
-	if c.diregapic, err = findBool(gapicLibraryBlock, "diregapic"); err != nil {
-		return nil, fmt.Errorf("librariangen: failed to pars BUILD.bazel file %s: %w", fp, err)
+	if gapicLibraryBlock != "" {
+		// GAPIC build target
+		c.hasGAPIC = true
+		c.grpcServiceConfig = findString(gapicLibraryBlock, "grpc_service_config")
+		c.gapicImportPath = findString(gapicLibraryBlock, "importpath")
+		c.releaseLevel = findString(gapicLibraryBlock, "release_level")
+		// If the service config is actually a bazel target instead of a file, just assume there's a file with the same name.
+		c.serviceYAML = strings.TrimPrefix(findString(gapicLibraryBlock, "service_yaml"), ":")
+		c.transport = findString(gapicLibraryBlock, "transport")
+		if c.metadata, err = findBool(gapicLibraryBlock, "metadata"); err != nil {
+			return nil, fmt.Errorf("librariangen: failed to parse BUILD.bazel file %s: %w", fp, err)
+		}
+		if c.restNumericEnums, err = findBool(gapicLibraryBlock, "rest_numeric_enums"); err != nil {
+			return nil, fmt.Errorf("librariangen: failed to parse BUILD.bazel file %s: %w", fp, err)
+		}
+		if c.diregapic, err = findBool(gapicLibraryBlock, "diregapic"); err != nil {
+			return nil, fmt.Errorf("librariangen: failed to parse BUILD.bazel file %s: %w", fp, err)
+		}
 	}
 
 	// We are currently migrating go_proto_library to go_grpc_library.
@@ -144,10 +161,13 @@ func Parse(dir string) (*Config, error) {
 	if strings.Contains(content, "go_grpc_library") {
 		c.hasGoGRPC = true
 	}
-	if strings.Contains(content, "go_proto_library") {
+	goProtoLibraryPattern := regexp.MustCompile(`go_proto_library\((?s:.)*?\)`)
+	goProtoLibraryBlock := goProtoLibraryPattern.FindString(content)
+	if goProtoLibraryBlock != "" {
 		if c.hasGoGRPC {
 			return nil, fmt.Errorf("librariangen: misconfiguration in BUILD.bazel file, only one of go_grpc_library and go_proto_library rules should be present: %s", fp)
 		}
+		c.hasLegacyGRPC = strings.Contains(goProtoLibraryBlock, "@io_bazel_rules_go//proto:go_grpc")
 	}
 	if err := c.Validate(); err != nil {
 		return nil, fmt.Errorf("librariangen: invalid bazel config in %s: %w", dir, err)

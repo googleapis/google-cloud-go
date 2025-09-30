@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apihub/apiv1",
-    "version": "0.1.5",
+    "version": "0.2.0",
     "language": "GO",
     "apis": [
       {
@@ -87,6 +87,52 @@
         "method": {
           "shortName": "CreateApi",
           "fullName": "google.cloud.apihub.v1.ApiHub.CreateApi",
+          "service": {
+            "shortName": "ApiHub",
+            "fullName": "google.cloud.apihub.v1.ApiHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHub_CreateApiOperation_sync",
+      "title": "apihub CreateApiOperation Sample",
+      "description": "CreateApiOperation create an apiOperation in an API version.\nAn apiOperation can be created only if the version has no apiOperations\nwhich were created by parsing a spec.",
+      "file": "Client/CreateApiOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateApiOperation",
+        "fullName": "google.cloud.apihub.v1.Client.CreateApiOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.CreateApiOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.ApiOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.apihub.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateApiOperation",
+          "fullName": "google.cloud.apihub.v1.ApiHub.CreateApiOperation",
           "service": {
             "shortName": "ApiHub",
             "fullName": "google.cloud.apihub.v1.ApiHub"
@@ -362,6 +408,51 @@
         "method": {
           "shortName": "DeleteApi",
           "fullName": "google.cloud.apihub.v1.ApiHub.DeleteApi",
+          "service": {
+            "shortName": "ApiHub",
+            "fullName": "google.cloud.apihub.v1.ApiHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHub_DeleteApiOperation_sync",
+      "title": "apihub DeleteApiOperation Sample",
+      "description": "DeleteApiOperation delete an operation in an API version and we can delete only the\noperations created via create API. If the operation was created by parsing\nthe spec, then it can be deleted by editing or deleting the spec.",
+      "file": "Client/DeleteApiOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApiOperation",
+        "fullName": "google.cloud.apihub.v1.Client.DeleteApiOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.DeleteApiOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.apihub.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteApiOperation",
+          "fullName": "google.cloud.apihub.v1.ApiHub.DeleteApiOperation",
           "service": {
             "shortName": "ApiHub",
             "fullName": "google.cloud.apihub.v1.ApiHub"
@@ -1616,7 +1707,7 @@
     {
       "regionTag": "apihub_v1_generated_ApiHub_UpdateApi_sync",
       "title": "apihub UpdateApi Sample",
-      "description": "UpdateApi update an API resource in the API hub. The following fields in the\n[API][] can be updated: \n\n* [display_name][google.cloud.apihub.v1.Api.display_name]\n* [description][google.cloud.apihub.v1.Api.description]\n* [owner][google.cloud.apihub.v1.Api.owner]\n* [documentation][google.cloud.apihub.v1.Api.documentation]\n* [target_user][google.cloud.apihub.v1.Api.target_user]\n* [team][google.cloud.apihub.v1.Api.team]\n* [business_unit][google.cloud.apihub.v1.Api.business_unit]\n* [maturity_level][google.cloud.apihub.v1.Api.maturity_level]\n* [attributes][google.cloud.apihub.v1.Api.attributes]\n\nThe\n[update_mask][google.cloud.apihub.v1.UpdateApiRequest.update_mask]\nshould be used to specify the fields being updated.\n\nUpdating the owner field requires complete owner message\nand updates both owner and email fields.",
+      "description": "UpdateApi update an API resource in the API hub. The following fields in the\n[API][google.cloud.apihub.v1.Api] can be updated: \n\n* [display_name][google.cloud.apihub.v1.Api.display_name]\n* [description][google.cloud.apihub.v1.Api.description]\n* [owner][google.cloud.apihub.v1.Api.owner]\n* [documentation][google.cloud.apihub.v1.Api.documentation]\n* [target_user][google.cloud.apihub.v1.Api.target_user]\n* [team][google.cloud.apihub.v1.Api.team]\n* [business_unit][google.cloud.apihub.v1.Api.business_unit]\n* [maturity_level][google.cloud.apihub.v1.Api.maturity_level]\n* [api_style][google.cloud.apihub.v1.Api.api_style]\n* [attributes][google.cloud.apihub.v1.Api.attributes]\n\nThe\n[update_mask][google.cloud.apihub.v1.UpdateApiRequest.update_mask]\nshould be used to specify the fields being updated.\n\nUpdating the owner field requires complete owner message\nand updates both owner and email fields.",
       "file": "Client/UpdateApi/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1644,6 +1735,52 @@
         "method": {
           "shortName": "UpdateApi",
           "fullName": "google.cloud.apihub.v1.ApiHub.UpdateApi",
+          "service": {
+            "shortName": "ApiHub",
+            "fullName": "google.cloud.apihub.v1.ApiHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHub_UpdateApiOperation_sync",
+      "title": "apihub UpdateApiOperation Sample",
+      "description": "UpdateApiOperation update an operation in an API version. The following fields in the\n[ApiOperation resource][google.cloud.apihub.v1.ApiOperation] can be\nupdated: \n\n* [details.description][ApiOperation.details.description]\n* [details.documentation][ApiOperation.details.documentation]\n* [details.http_operation.path][ApiOperation.details.http_operation.path.path]\n* [details.http_operation.method][ApiOperation.details.http_operation.method]\n* [details.deprecated][ApiOperation.details.deprecated]\n* [attributes][google.cloud.apihub.v1.ApiOperation.attributes]\n\nThe\n[update_mask][google.cloud.apihub.v1.UpdateApiOperationRequest.update_mask]\nshould be used to specify the fields being updated.\n\nAn operation can be updated only if the operation was created via\n[CreateApiOperation][google.cloud.apihub.v1.ApiHub.CreateApiOperation] API.\nIf the operation was created by parsing the spec, then it can be edited by\nupdating the spec.",
+      "file": "Client/UpdateApiOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateApiOperation",
+        "fullName": "google.cloud.apihub.v1.Client.UpdateApiOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.UpdateApiOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.ApiOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.apihub.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateApiOperation",
+          "fullName": "google.cloud.apihub.v1.ApiHub.UpdateApiOperation",
           "service": {
             "shortName": "ApiHub",
             "fullName": "google.cloud.apihub.v1.ApiHub"
@@ -1708,7 +1845,7 @@
     {
       "regionTag": "apihub_v1_generated_ApiHub_UpdateDeployment_sync",
       "title": "apihub UpdateDeployment Sample",
-      "description": "UpdateDeployment update a deployment resource in the API hub. The following fields in the\n[deployment resource][google.cloud.apihub.v1.Deployment] can be\nupdated: \n\n* [display_name][google.cloud.apihub.v1.Deployment.display_name]\n* [description][google.cloud.apihub.v1.Deployment.description]\n* [documentation][google.cloud.apihub.v1.Deployment.documentation]\n* [deployment_type][google.cloud.apihub.v1.Deployment.deployment_type]\n* [resource_uri][google.cloud.apihub.v1.Deployment.resource_uri]\n* [endpoints][google.cloud.apihub.v1.Deployment.endpoints]\n* [slo][google.cloud.apihub.v1.Deployment.slo]\n* [environment][google.cloud.apihub.v1.Deployment.environment]\n* [attributes][google.cloud.apihub.v1.Deployment.attributes]\n\nThe\n[update_mask][google.cloud.apihub.v1.UpdateDeploymentRequest.update_mask]\nshould be used to specify the fields being updated.",
+      "description": "UpdateDeployment update a deployment resource in the API hub. The following fields in the\n[deployment resource][google.cloud.apihub.v1.Deployment] can be\nupdated: \n\n* [display_name][google.cloud.apihub.v1.Deployment.display_name]\n* [description][google.cloud.apihub.v1.Deployment.description]\n* [documentation][google.cloud.apihub.v1.Deployment.documentation]\n* [deployment_type][google.cloud.apihub.v1.Deployment.deployment_type]\n* [resource_uri][google.cloud.apihub.v1.Deployment.resource_uri]\n* [endpoints][google.cloud.apihub.v1.Deployment.endpoints]\n* [slo][google.cloud.apihub.v1.Deployment.slo]\n* [environment][google.cloud.apihub.v1.Deployment.environment]\n* [attributes][google.cloud.apihub.v1.Deployment.attributes]\n* [source_project] [google.cloud.apihub.v1.Deployment.source_project]\n* [source_environment]\n[google.cloud.apihub.v1.Deployment.source_environment]\n* [management_url][google.cloud.apihub.v1.Deployment.management_url]\n* [source_uri][google.cloud.apihub.v1.Deployment.source_uri]\nThe\n[update_mask][google.cloud.apihub.v1.UpdateDeploymentRequest.update_mask]\nshould be used to specify the fields being updated.",
       "file": "Client/UpdateDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1877,6 +2014,829 @@
           "service": {
             "shortName": "ApiHub",
             "fullName": "google.cloud.apihub.v1.ApiHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCollect_CancelOperation_sync",
+      "title": "apihub CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCollectClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCollectClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ApiHubCollectClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollectClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCollect_CollectApiData_sync",
+      "title": "apihub CollectApiData Sample",
+      "description": "CollectApiData collect API data from a source and push it to Hub's collect layer.",
+      "file": "ApiHubCollectClient/CollectApiData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CollectApiData",
+        "fullName": "google.cloud.apihub.v1.ApiHubCollectClient.CollectApiData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.CollectApiDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CollectApiDataOperation",
+        "client": {
+          "shortName": "ApiHubCollectClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollectClient"
+        },
+        "method": {
+          "shortName": "CollectApiData",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollect.CollectApiData",
+          "service": {
+            "shortName": "ApiHubCollect",
+            "fullName": "google.cloud.apihub.v1.ApiHubCollect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCollect_DeleteOperation_sync",
+      "title": "apihub DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCollectClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCollectClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ApiHubCollectClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollectClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCollect_GetLocation_sync",
+      "title": "apihub GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ApiHubCollectClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCollectClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ApiHubCollectClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollectClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCollect_GetOperation_sync",
+      "title": "apihub GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCollectClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCollectClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ApiHubCollectClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollectClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCollect_ListLocations_sync",
+      "title": "apihub ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ApiHubCollectClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.apihub.v1.ApiHubCollectClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ApiHubCollectClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollectClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCollect_ListOperations_sync",
+      "title": "apihub ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCollectClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.apihub.v1.ApiHubCollectClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ApiHubCollectClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCollectClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_CancelOperation_sync",
+      "title": "apihub CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCurateClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_CreateCuration_sync",
+      "title": "apihub CreateCuration Sample",
+      "description": "CreateCuration create a curation resource in the API hub.\nOnce a curation resource is created, plugin instances can start using it.",
+      "file": "ApiHubCurateClient/CreateCuration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCuration",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.CreateCuration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.CreateCurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.Curation",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "CreateCuration",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurate.CreateCuration",
+          "service": {
+            "shortName": "ApiHubCurate",
+            "fullName": "google.cloud.apihub.v1.ApiHubCurate"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_DeleteCuration_sync",
+      "title": "apihub DeleteCuration Sample",
+      "description": "DeleteCuration delete a curation resource in the API hub. A curation can only be deleted\nif it's not being used by any plugin instance.",
+      "file": "ApiHubCurateClient/DeleteCuration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCuration",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.DeleteCuration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.DeleteCurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "DeleteCuration",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurate.DeleteCuration",
+          "service": {
+            "shortName": "ApiHubCurate",
+            "fullName": "google.cloud.apihub.v1.ApiHubCurate"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_DeleteOperation_sync",
+      "title": "apihub DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCurateClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_GetCuration_sync",
+      "title": "apihub GetCuration Sample",
+      "description": "GetCuration get curation resource details.",
+      "file": "ApiHubCurateClient/GetCuration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCuration",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.GetCuration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.GetCurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.Curation",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "GetCuration",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurate.GetCuration",
+          "service": {
+            "shortName": "ApiHubCurate",
+            "fullName": "google.cloud.apihub.v1.ApiHubCurate"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_GetLocation_sync",
+      "title": "apihub GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ApiHubCurateClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_GetOperation_sync",
+      "title": "apihub GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCurateClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_ListCurations_sync",
+      "title": "apihub ListCurations Sample",
+      "description": "ListCurations list curation resources in the API hub.",
+      "file": "ApiHubCurateClient/ListCurations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCurations",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.ListCurations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.ListCurationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CurationIterator",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "ListCurations",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurate.ListCurations",
+          "service": {
+            "shortName": "ApiHubCurate",
+            "fullName": "google.cloud.apihub.v1.ApiHubCurate"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_ListLocations_sync",
+      "title": "apihub ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ApiHubCurateClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_ListOperations_sync",
+      "title": "apihub ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubCurateClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubCurate_UpdateCuration_sync",
+      "title": "apihub UpdateCuration Sample",
+      "description": "UpdateCuration update a curation resource in the API hub. The following fields in the\n[curation][google.cloud.apihub.v1.Curation] can be updated: \n\n* [display_name][google.cloud.apihub.v1.Curation.display_name]\n* [description][google.cloud.apihub.v1.Curation.description]\n\nThe\n[update_mask][google.cloud.apihub.v1.UpdateApiRequest.update_mask]\nshould be used to specify the fields being updated.",
+      "file": "ApiHubCurateClient/UpdateCuration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCuration",
+        "fullName": "google.cloud.apihub.v1.ApiHubCurateClient.UpdateCuration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.UpdateCurationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.Curation",
+        "client": {
+          "shortName": "ApiHubCurateClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurateClient"
+        },
+        "method": {
+          "shortName": "UpdateCuration",
+          "fullName": "google.cloud.apihub.v1.ApiHubCurate.UpdateCuration",
+          "service": {
+            "shortName": "ApiHubCurate",
+            "fullName": "google.cloud.apihub.v1.ApiHubCurate"
           }
         }
       },
@@ -2393,6 +3353,464 @@
       ]
     },
     {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_CancelOperation_sync",
+      "title": "apihub CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubDiscoveryClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_DeleteOperation_sync",
+      "title": "apihub DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubDiscoveryClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetDiscoveredApiObservation_sync",
+      "title": "apihub GetDiscoveredApiObservation Sample",
+      "description": "GetDiscoveredApiObservation gets a DiscoveredAPIObservation in a given project, location and\nApiObservation.",
+      "file": "ApiHubDiscoveryClient/GetDiscoveredApiObservation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDiscoveredApiObservation",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.GetDiscoveredApiObservation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.GetDiscoveredApiObservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.DiscoveredApiObservation",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "GetDiscoveredApiObservation",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscovery.GetDiscoveredApiObservation",
+          "service": {
+            "shortName": "ApiHubDiscovery",
+            "fullName": "google.cloud.apihub.v1.ApiHubDiscovery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetDiscoveredApiOperation_sync",
+      "title": "apihub GetDiscoveredApiOperation Sample",
+      "description": "GetDiscoveredApiOperation gets a DiscoveredAPIOperation in a given project, location,\nApiObservation and ApiOperation.",
+      "file": "ApiHubDiscoveryClient/GetDiscoveredApiOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDiscoveredApiOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.GetDiscoveredApiOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.GetDiscoveredApiOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.DiscoveredApiOperation",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "GetDiscoveredApiOperation",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscovery.GetDiscoveredApiOperation",
+          "service": {
+            "shortName": "ApiHubDiscovery",
+            "fullName": "google.cloud.apihub.v1.ApiHubDiscovery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetLocation_sync",
+      "title": "apihub GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ApiHubDiscoveryClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetOperation_sync",
+      "title": "apihub GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubDiscoveryClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListDiscoveredApiObservations_sync",
+      "title": "apihub ListDiscoveredApiObservations Sample",
+      "description": "ListDiscoveredApiObservations lists all the DiscoveredAPIObservations in a given project and location.",
+      "file": "ApiHubDiscoveryClient/ListDiscoveredApiObservations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDiscoveredApiObservations",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.ListDiscoveredApiObservations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.ListDiscoveredApiObservationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DiscoveredApiObservationIterator",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "ListDiscoveredApiObservations",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscovery.ListDiscoveredApiObservations",
+          "service": {
+            "shortName": "ApiHubDiscovery",
+            "fullName": "google.cloud.apihub.v1.ApiHubDiscovery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListDiscoveredApiOperations_sync",
+      "title": "apihub ListDiscoveredApiOperations Sample",
+      "description": "ListDiscoveredApiOperations lists all the DiscoveredAPIOperations in a given project, location and\nApiObservation.",
+      "file": "ApiHubDiscoveryClient/ListDiscoveredApiOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDiscoveredApiOperations",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.ListDiscoveredApiOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.ListDiscoveredApiOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DiscoveredApiOperationIterator",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "ListDiscoveredApiOperations",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscovery.ListDiscoveredApiOperations",
+          "service": {
+            "shortName": "ApiHubDiscovery",
+            "fullName": "google.cloud.apihub.v1.ApiHubDiscovery"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListLocations_sync",
+      "title": "apihub ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ApiHubDiscoveryClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListOperations_sync",
+      "title": "apihub ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ApiHubDiscoveryClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ApiHubDiscoveryClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubDiscoveryClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "apihub_v1_generated_ApiHubPlugin_CancelOperation_sync",
       "title": "apihub CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -2438,6 +3856,98 @@
       ]
     },
     {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_CreatePlugin_sync",
+      "title": "apihub CreatePlugin Sample",
+      "description": "CreatePlugin create an API Hub plugin resource in the API hub.\nOnce a plugin is created, it can be used to create plugin instances.",
+      "file": "ApiHubPluginClient/CreatePlugin/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePlugin",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.CreatePlugin",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.CreatePluginRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.Plugin",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "CreatePlugin",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.CreatePlugin",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_CreatePluginInstance_sync",
+      "title": "apihub CreatePluginInstance Sample",
+      "description": "CreatePluginInstance creates a Plugin instance in the API hub.",
+      "file": "ApiHubPluginClient/CreatePluginInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePluginInstance",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.CreatePluginInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.CreatePluginInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePluginInstanceOperation",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "CreatePluginInstance",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.CreatePluginInstance",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "apihub_v1_generated_ApiHubPlugin_DeleteOperation_sync",
       "title": "apihub DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -2478,6 +3988,98 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_DeletePlugin_sync",
+      "title": "apihub DeletePlugin Sample",
+      "description": "DeletePlugin delete a Plugin in API hub.\nNote, only user owned plugins can be deleted via this method.",
+      "file": "ApiHubPluginClient/DeletePlugin/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePlugin",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.DeletePlugin",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.DeletePluginRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePluginOperation",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "DeletePlugin",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.DeletePlugin",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_DeletePluginInstance_sync",
+      "title": "apihub DeletePluginInstance Sample",
+      "description": "DeletePluginInstance deletes a plugin instance in the API hub.",
+      "file": "ApiHubPluginClient/DeletePluginInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePluginInstance",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.DeletePluginInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.DeletePluginInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePluginInstanceOperation",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "DeletePluginInstance",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.DeletePluginInstance",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -2529,6 +4131,52 @@
       ]
     },
     {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_DisablePluginInstanceAction_sync",
+      "title": "apihub DisablePluginInstanceAction Sample",
+      "description": "DisablePluginInstanceAction disables a plugin instance in the API hub.",
+      "file": "ApiHubPluginClient/DisablePluginInstanceAction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisablePluginInstanceAction",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.DisablePluginInstanceAction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.DisablePluginInstanceActionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisablePluginInstanceActionOperation",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "DisablePluginInstanceAction",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.DisablePluginInstanceAction",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "apihub_v1_generated_ApiHubPlugin_EnablePlugin_sync",
       "title": "apihub EnablePlugin Sample",
       "description": "EnablePlugin enables a plugin.\nThe `state` of the plugin after enabling is `ENABLED`",
@@ -2570,6 +4218,98 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_EnablePluginInstanceAction_sync",
+      "title": "apihub EnablePluginInstanceAction Sample",
+      "description": "EnablePluginInstanceAction enables a plugin instance in the API hub.",
+      "file": "ApiHubPluginClient/EnablePluginInstanceAction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnablePluginInstanceAction",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.EnablePluginInstanceAction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.EnablePluginInstanceActionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnablePluginInstanceActionOperation",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "EnablePluginInstanceAction",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.EnablePluginInstanceAction",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_ExecutePluginInstanceAction_sync",
+      "title": "apihub ExecutePluginInstanceAction Sample",
+      "description": "ExecutePluginInstanceAction executes a plugin instance in the API hub.",
+      "file": "ApiHubPluginClient/ExecutePluginInstanceAction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecutePluginInstanceAction",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.ExecutePluginInstanceAction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.ExecutePluginInstanceActionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExecutePluginInstanceActionOperation",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "ExecutePluginInstanceAction",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.ExecutePluginInstanceAction",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2669,7 +4409,7 @@
     {
       "regionTag": "apihub_v1_generated_ApiHubPlugin_GetPlugin_sync",
       "title": "apihub GetPlugin Sample",
-      "description": "GetPlugin get details about an API Hub plugin.",
+      "description": "GetPlugin get an API Hub plugin.",
       "file": "ApiHubPluginClient/GetPlugin/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2697,6 +4437,52 @@
         "method": {
           "shortName": "GetPlugin",
           "fullName": "google.cloud.apihub.v1.ApiHubPlugin.GetPlugin",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_GetPluginInstance_sync",
+      "title": "apihub GetPluginInstance Sample",
+      "description": "GetPluginInstance get an API Hub plugin instance.",
+      "file": "ApiHubPluginClient/GetPluginInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPluginInstance",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.GetPluginInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.GetPluginInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.PluginInstance",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "GetPluginInstance",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.GetPluginInstance",
           "service": {
             "shortName": "ApiHubPlugin",
             "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
@@ -2800,6 +4586,144 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_ListPluginInstances_sync",
+      "title": "apihub ListPluginInstances Sample",
+      "description": "ListPluginInstances list all the plugins in a given project and location.\n`-` can be used as wildcard value for {plugin_id}",
+      "file": "ApiHubPluginClient/ListPluginInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPluginInstances",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.ListPluginInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.ListPluginInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PluginInstanceIterator",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "ListPluginInstances",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.ListPluginInstances",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_ListPlugins_sync",
+      "title": "apihub ListPlugins Sample",
+      "description": "ListPlugins list all the plugins in a given project and location.",
+      "file": "ApiHubPluginClient/ListPlugins/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPlugins",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.ListPlugins",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.ListPluginsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PluginIterator",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "ListPlugins",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.ListPlugins",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_ApiHubPlugin_UpdatePluginInstance_sync",
+      "title": "apihub UpdatePluginInstance Sample",
+      "description": "UpdatePluginInstance updates a plugin instance in the API hub.\nThe following fields in the\n[plugin_instance][google.cloud.apihub.v1.PluginInstance] can be updated\ncurrently: \n\n* [display_name][google.cloud.apihub.v1.PluginInstance.display_name]\n* [schedule_cron_expression][PluginInstance.actions.schedule_cron_expression]\n\nThe\n[update_mask][google.cloud.apihub.v1.UpdatePluginInstanceRequest.update_mask]\nshould be used to specify the fields being updated.\n\nTo update the\n[auth_config][google.cloud.apihub.v1.PluginInstance.auth_config] and\n[additional_config][google.cloud.apihub.v1.PluginInstance.additional_config]\nof the plugin instance, use the\n[ApplyPluginInstanceConfig][google.cloud.apihub.v1.ApiHubPlugin.ApplyPluginInstanceConfig]\nmethod.",
+      "file": "ApiHubPluginClient/UpdatePluginInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePluginInstance",
+        "fullName": "google.cloud.apihub.v1.ApiHubPluginClient.UpdatePluginInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.UpdatePluginInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apihubpb.PluginInstance",
+        "client": {
+          "shortName": "ApiHubPluginClient",
+          "fullName": "google.cloud.apihub.v1.ApiHubPluginClient"
+        },
+        "method": {
+          "shortName": "UpdatePluginInstance",
+          "fullName": "google.cloud.apihub.v1.ApiHubPlugin.UpdatePluginInstance",
+          "service": {
+            "shortName": "ApiHubPlugin",
+            "fullName": "google.cloud.apihub.v1.ApiHubPlugin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3760,6 +5684,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apihub_v1_generated_Provisioning_DeleteApiHubInstance_sync",
+      "title": "apihub DeleteApiHubInstance Sample",
+      "description": "DeleteApiHubInstance deletes the API hub instance.",
+      "file": "ProvisioningClient/DeleteApiHubInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApiHubInstance",
+        "fullName": "google.cloud.apihub.v1.ProvisioningClient.DeleteApiHubInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apihubpb.DeleteApiHubInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteApiHubInstanceOperation",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apihub.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "DeleteApiHubInstance",
+          "fullName": "google.cloud.apihub.v1.Provisioning.DeleteApiHubInstance",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apihub.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]

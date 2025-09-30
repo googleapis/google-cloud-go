@@ -497,14 +497,14 @@ func (c *Client) Connection() *grpc.ClientConn {
 // transaction internally, and count toward the one transaction
 // limit.
 //
-// Active sessions use additional server resources, so it is a good idea to
+// Active sessions use additional server resources, so it’s a good idea to
 // delete idle and unneeded sessions.
-// Aside from explicit deletes, Cloud Spanner may delete sessions for which no
+// Aside from explicit deletes, Cloud Spanner can delete sessions when no
 // operations are sent for more than an hour. If a session is deleted,
 // requests to it return NOT_FOUND.
 //
 // Idle sessions can be kept alive by sending a trivial SQL query
-// periodically, e.g., "SELECT 1".
+// periodically, for example, "SELECT 1".
 func (c *Client) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	return c.internalClient.CreateSession(ctx, req, opts...)
 }
@@ -517,7 +517,7 @@ func (c *Client) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCr
 	return c.internalClient.BatchCreateSessions(ctx, req, opts...)
 }
 
-// GetSession gets a session. Returns NOT_FOUND if the session does not exist.
+// GetSession gets a session. Returns NOT_FOUND if the session doesn’t exist.
 // This is mainly useful for determining whether a session is still
 // alive.
 func (c *Client) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
@@ -529,15 +529,15 @@ func (c *Client) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRe
 	return c.internalClient.ListSessions(ctx, req, opts...)
 }
 
-// DeleteSession ends a session, releasing server resources associated with it. This will
-// asynchronously trigger cancellation of any operations that are running with
-// this session.
+// DeleteSession ends a session, releasing server resources associated with it. This
+// asynchronously triggers the cancellation of any operations that are running
+// with this session.
 func (c *Client) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteSession(ctx, req, opts...)
 }
 
 // ExecuteSql executes an SQL statement, returning all results in a single reply. This
-// method cannot be used to return a result set larger than 10 MiB;
+// method can’t be used to return a result set larger than 10 MiB;
 // if the query yields more data than that, the query fails with
 // a FAILED_PRECONDITION error.
 //
@@ -549,6 +549,9 @@ func (c *Client) DeleteSession(ctx context.Context, req *spannerpb.DeleteSession
 // Larger result sets can be fetched in streaming fashion by calling
 // ExecuteStreamingSql
 // instead.
+//
+// The query string can be SQL or Graph Query Language
+// (GQL) (at https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro).
 func (c *Client) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	return c.internalClient.ExecuteSql(ctx, req, opts...)
 }
@@ -558,6 +561,9 @@ func (c *Client) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 // ExecuteSql, there is no limit on
 // the size of the returned result set. However, no individual row in the
 // result set can exceed 100 MiB, and no column value can exceed 10 MiB.
+//
+// The query string can be SQL or Graph Query Language
+// (GQL) (at https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro).
 func (c *Client) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	return c.internalClient.ExecuteStreamingSql(ctx, req, opts...)
 }
@@ -580,7 +586,7 @@ func (c *Client) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatc
 
 // Read reads rows from the database using key lookups and scans, as a
 // simple key/value style alternative to
-// ExecuteSql.  This method cannot be
+// ExecuteSql. This method can’t be
 // used to return a result set larger than 10 MiB; if the read matches more
 // data than that, the read fails with a FAILED_PRECONDITION
 // error.
@@ -620,8 +626,8 @@ func (c *Client) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 // Commit might return an ABORTED error. This can occur at any time;
 // commonly, the cause is conflicts with concurrent
 // transactions. However, it can also happen for a variety of other
-// reasons. If Commit returns ABORTED, the caller should re-attempt
-// the transaction from the beginning, re-using the same session.
+// reasons. If Commit returns ABORTED, the caller should retry
+// the transaction from the beginning, reusing the same session.
 //
 // On very rare occasions, Commit might return UNKNOWN. This can happen,
 // for example, if the client job experiences a 1+ hour networking failure.
@@ -632,48 +638,48 @@ func (c *Client) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts 
 	return c.internalClient.Commit(ctx, req, opts...)
 }
 
-// Rollback rolls back a transaction, releasing any locks it holds. It is a good
+// Rollback rolls back a transaction, releasing any locks it holds. It’s a good
 // idea to call this for any transaction that includes one or more
 // Read or
 // ExecuteSql requests and ultimately
 // decides not to commit.
 //
 // Rollback returns OK if it successfully aborts the transaction, the
-// transaction was already aborted, or the transaction is not
+// transaction was already aborted, or the transaction isn’t
 // found. Rollback never returns ABORTED.
 func (c *Client) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
 	return c.internalClient.Rollback(ctx, req, opts...)
 }
 
 // PartitionQuery creates a set of partition tokens that can be used to execute a query
-// operation in parallel.  Each of the returned partition tokens can be used
+// operation in parallel. Each of the returned partition tokens can be used
 // by ExecuteStreamingSql to
-// specify a subset of the query result to read.  The same session and
+// specify a subset of the query result to read. The same session and
 // read-only transaction must be used by the PartitionQueryRequest used to
 // create the partition tokens and the ExecuteSqlRequests that use the
 // partition tokens.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
-// old.  When any of these happen, it is not possible to resume the query, and
+// old. When any of these happen, it isn’t possible to resume the query, and
 // the whole operation must be restarted from the beginning.
 func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	return c.internalClient.PartitionQuery(ctx, req, opts...)
 }
 
 // PartitionRead creates a set of partition tokens that can be used to execute a read
-// operation in parallel.  Each of the returned partition tokens can be used
+// operation in parallel. Each of the returned partition tokens can be used
 // by StreamingRead to specify a
-// subset of the read result to read.  The same session and read-only
+// subset of the read result to read. The same session and read-only
 // transaction must be used by the PartitionReadRequest used to create the
-// partition tokens and the ReadRequests that use the partition tokens.  There
-// are no ordering guarantees on rows returned among the returned partition
-// tokens, or even within each individual StreamingRead call issued with a
-// partition_token.
+// partition tokens and the ReadRequests that use the partition tokens.
+// There are no ordering guarantees on rows returned among the returned
+// partition tokens, or even within each individual StreamingRead call
+// issued with a partition_token.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
-// old.  When any of these happen, it is not possible to resume the read, and
+// old. When any of these happen, it isn’t possible to resume the read, and
 // the whole operation must be restarted from the beginning.
 func (c *Client) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	return c.internalClient.PartitionRead(ctx, req, opts...)
@@ -683,15 +689,15 @@ func (c *Client) PartitionRead(ctx context.Context, req *spannerpb.PartitionRead
 // transactions. All mutations in a group are committed atomically. However,
 // mutations across groups can be committed non-atomically in an unspecified
 // order and thus, they must be independent of each other. Partial failure is
-// possible, i.e., some groups may have been committed successfully, while
-// some may have failed. The results of individual batches are streamed into
-// the response as the batches are applied.
+// possible, that is, some groups might have been committed successfully,
+// while some might have failed. The results of individual batches are
+// streamed into the response as the batches are applied.
 //
 // BatchWrite requests are not replay protected, meaning that each mutation
-// group may be applied more than once. Replays of non-idempotent mutations
-// may have undesirable effects. For example, replays of an insert mutation
-// may produce an already exists error or if you use generated or commit
-// timestamp-based keys, it may result in additional rows being added to the
+// group can be applied more than once. Replays of non-idempotent mutations
+// can have undesirable effects. For example, replays of an insert mutation
+// can produce an already exists error or if you use generated or commit
+// timestamp-based keys, it can result in additional rows being added to the
 // mutation’s table. We recommend structuring your mutation groups to be
 // idempotent to avoid this issue.
 func (c *Client) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
@@ -1182,14 +1188,14 @@ func (c *gRPCClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 // transaction internally, and count toward the one transaction
 // limit.
 //
-// Active sessions use additional server resources, so it is a good idea to
+// Active sessions use additional server resources, so it’s a good idea to
 // delete idle and unneeded sessions.
-// Aside from explicit deletes, Cloud Spanner may delete sessions for which no
+// Aside from explicit deletes, Cloud Spanner can delete sessions when no
 // operations are sent for more than an hour. If a session is deleted,
 // requests to it return NOT_FOUND.
 //
 // Idle sessions can be kept alive by sending a trivial SQL query
-// periodically, e.g., "SELECT 1".
+// periodically, for example, "SELECT 1".
 func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1304,7 +1310,7 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 	return resp, nil
 }
 
-// GetSession gets a session. Returns NOT_FOUND if the session does not exist.
+// GetSession gets a session. Returns NOT_FOUND if the session doesn’t exist.
 // This is mainly useful for determining whether a session is still
 // alive.
 func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
@@ -1437,9 +1443,9 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 	return it
 }
 
-// DeleteSession ends a session, releasing server resources associated with it. This will
-// asynchronously trigger cancellation of any operations that are running with
-// this session.
+// DeleteSession ends a session, releasing server resources associated with it. This
+// asynchronously triggers the cancellation of any operations that are running
+// with this session.
 func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1475,7 +1481,7 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 }
 
 // ExecuteSql executes an SQL statement, returning all results in a single reply. This
-// method cannot be used to return a result set larger than 10 MiB;
+// method can’t be used to return a result set larger than 10 MiB;
 // if the query yields more data than that, the query fails with
 // a FAILED_PRECONDITION error.
 //
@@ -1487,6 +1493,9 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 // Larger result sets can be fetched in streaming fashion by calling
 // ExecuteStreamingSql
 // instead.
+//
+// The query string can be SQL or Graph Query Language
+// (GQL) (at https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro).
 func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1547,6 +1556,9 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 // ExecuteSql, there is no limit on
 // the size of the returned result set. However, no individual row in the
 // result set can exceed 100 MiB, and no column value can exceed 10 MiB.
+//
+// The query string can be SQL or Graph Query Language
+// (GQL) (at https://cloud.google.com/spanner/docs/reference/standard-sql/graph-intro).
 func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1717,7 +1729,7 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 
 // Read reads rows from the database using key lookups and scans, as a
 // simple key/value style alternative to
-// ExecuteSql.  This method cannot be
+// ExecuteSql. This method can’t be
 // used to return a result set larger than 10 MiB; if the read matches more
 // data than that, the read fails with a FAILED_PRECONDITION
 // error.
@@ -1956,8 +1968,8 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 // Commit might return an ABORTED error. This can occur at any time;
 // commonly, the cause is conflicts with concurrent
 // transactions. However, it can also happen for a variety of other
-// reasons. If Commit returns ABORTED, the caller should re-attempt
-// the transaction from the beginning, re-using the same session.
+// reasons. If Commit returns ABORTED, the caller should retry
+// the transaction from the beginning, reusing the same session.
 //
 // On very rare occasions, Commit might return UNKNOWN. This can happen,
 // for example, if the client job experiences a 1+ hour networking failure.
@@ -2019,14 +2031,14 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 	return resp, nil
 }
 
-// Rollback rolls back a transaction, releasing any locks it holds. It is a good
+// Rollback rolls back a transaction, releasing any locks it holds. It’s a good
 // idea to call this for any transaction that includes one or more
 // Read or
 // ExecuteSql requests and ultimately
 // decides not to commit.
 //
 // Rollback returns OK if it successfully aborts the transaction, the
-// transaction was already aborted, or the transaction is not
+// transaction was already aborted, or the transaction isn’t
 // found. Rollback never returns ABORTED.
 func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2069,16 +2081,16 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 }
 
 // PartitionQuery creates a set of partition tokens that can be used to execute a query
-// operation in parallel.  Each of the returned partition tokens can be used
+// operation in parallel. Each of the returned partition tokens can be used
 // by ExecuteStreamingSql to
-// specify a subset of the query result to read.  The same session and
+// specify a subset of the query result to read. The same session and
 // read-only transaction must be used by the PartitionQueryRequest used to
 // create the partition tokens and the ExecuteSqlRequests that use the
 // partition tokens.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
-// old.  When any of these happen, it is not possible to resume the query, and
+// old. When any of these happen, it isn’t possible to resume the query, and
 // the whole operation must be restarted from the beginning.
 func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2136,18 +2148,18 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 }
 
 // PartitionRead creates a set of partition tokens that can be used to execute a read
-// operation in parallel.  Each of the returned partition tokens can be used
+// operation in parallel. Each of the returned partition tokens can be used
 // by StreamingRead to specify a
-// subset of the read result to read.  The same session and read-only
+// subset of the read result to read. The same session and read-only
 // transaction must be used by the PartitionReadRequest used to create the
-// partition tokens and the ReadRequests that use the partition tokens.  There
-// are no ordering guarantees on rows returned among the returned partition
-// tokens, or even within each individual StreamingRead call issued with a
-// partition_token.
+// partition tokens and the ReadRequests that use the partition tokens.
+// There are no ordering guarantees on rows returned among the returned
+// partition tokens, or even within each individual StreamingRead call
+// issued with a partition_token.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
-// old.  When any of these happen, it is not possible to resume the read, and
+// old. When any of these happen, it isn’t possible to resume the read, and
 // the whole operation must be restarted from the beginning.
 func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2208,15 +2220,15 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 // transactions. All mutations in a group are committed atomically. However,
 // mutations across groups can be committed non-atomically in an unspecified
 // order and thus, they must be independent of each other. Partial failure is
-// possible, i.e., some groups may have been committed successfully, while
-// some may have failed. The results of individual batches are streamed into
-// the response as the batches are applied.
+// possible, that is, some groups might have been committed successfully,
+// while some might have failed. The results of individual batches are
+// streamed into the response as the batches are applied.
 //
 // BatchWrite requests are not replay protected, meaning that each mutation
-// group may be applied more than once. Replays of non-idempotent mutations
-// may have undesirable effects. For example, replays of an insert mutation
-// may produce an already exists error or if you use generated or commit
-// timestamp-based keys, it may result in additional rows being added to the
+// group can be applied more than once. Replays of non-idempotent mutations
+// can have undesirable effects. For example, replays of an insert mutation
+// can produce an already exists error or if you use generated or commit
+// timestamp-based keys, it can result in additional rows being added to the
 // mutation’s table. We recommend structuring your mutation groups to be
 // idempotent to avoid this issue.
 func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {

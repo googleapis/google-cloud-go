@@ -15,6 +15,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 
@@ -97,11 +98,14 @@ type Change struct {
 // Copied from https://github.com/googleapis/librarian/blob/main/internal/librarian/state.go
 // with minimal modification
 func saveLibrarianState(path string, state *LibrarianState) error {
-	bytes, err := yaml.Marshal(state)
+	var buffer bytes.Buffer
+	encoder := yaml.NewEncoder(&buffer)
+	encoder.SetIndent(2)
+	err := encoder.Encode(state)
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, bytes, 0644)
+	return os.WriteFile(path, buffer.Bytes(), 0644)
 }
 
 func parseLibrarianState(path string) (*LibrarianState, error) {

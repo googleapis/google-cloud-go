@@ -1527,7 +1527,7 @@ type errorInjectionReactor struct {
 
 // React simply returns an error with defined error message and status code.
 func (e *errorInjectionReactor) React(_ interface{}) (handled bool, ret interface{}, err error) {
-	return true, nil, status.Errorf(e.code, e.msg)
+	return true, nil, status.Error(e.code, e.msg)
 }
 
 // WithErrorInjection creates a ServerReactorOption that injects error with defined status code and

@@ -58,8 +58,6 @@ import (
 )
 
 const (
-	directPathIPV6Prefix      = "[2001:4860:8040"
-	directPathIPV4Prefix      = "34.126"
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
 	prefixOfClusterResources  = "bt-c-"
@@ -1008,6 +1006,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		metricNameOperationLatencies,
 		metricNameAttemptLatencies,
 		metricNameServerLatencies,
+		metricNameFirstRespLatencies,
 	}
 
 	// Try for 5m with 10s sleep between retries

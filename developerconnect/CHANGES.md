@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.4.0...developerconnect/v0.4.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **developerconnect:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.3.3...developerconnect/v0.4.0) (2025-06-25)
 
 

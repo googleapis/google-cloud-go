@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/eventarc/apiv1",
-    "version": "1.15.5",
+    "version": "1.16.1",
     "language": "GO",
     "apis": [
       {
@@ -932,7 +932,7 @@
     {
       "regionTag": "eventarc_v1_generated_Eventarc_GetGoogleChannelConfig_sync",
       "title": "eventarc GetGoogleChannelConfig Sample",
-      "description": "GetGoogleChannelConfig get a GoogleChannelConfig",
+      "description": "GetGoogleChannelConfig get a GoogleChannelConfig.\nThe name of the GoogleChannelConfig in the response is ALWAYS coded with\nprojectID.",
       "file": "Client/GetGoogleChannelConfig/main.go",
       "language": "GO",
       "clientMethod": {

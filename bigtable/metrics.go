@@ -186,6 +186,8 @@ type metricInfo struct {
 type builtinMetricsTracerFactory struct {
 	enabled bool
 
+	clientOpts []option.ClientOption
+
 	// To be called on client close
 	shutdown func()
 
@@ -241,7 +243,30 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		return disabledMetricsTracerFactory, nil
 	}
 	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
-	tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
+	// Enable Otel metrics collection
+	otelContext, err := newOtelMetricsContext(ctx, metricsConfig{
+		project:         project,
+		instance:        instance,
+		appProfile:      appProfile,
+		clientName:      clientName,
+		clientUID:       clientUID,
+		interval:        defaultSamplePeriod,
+		customExporter:  nil,
+		manualReader:    nil,
+		disableExporter: false,
+		resourceOpts:    nil,
+	})
+
+	// the error from newOtelMetricsContext is silently ignored since metrics are not critical to client creation.
+	if err == nil {
+		tracerFactory.clientOpts = otelContext.clientOpts
+	}
+	tracerFactory.shutdown = func() {
+		if otelContext != nil {
+			otelContext.close()
+		}
+		meterProvider.Shutdown(ctx)
+	}
 
 	// Create meter and instruments
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
@@ -423,6 +448,9 @@ type opTracer struct {
 
 	startTime time.Time
 
+	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
+	firstRespTime time.Time
+
 	// gRPC status code of last completed attempt
 	status string
 
@@ -433,6 +461,10 @@ type opTracer struct {
 
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
+}
+
+func (o *opTracer) setFirstRespTime(t time.Time) {
+	o.firstRespTime = t
 }
 
 func (o *opTracer) setStatus(status string) {
@@ -665,6 +697,13 @@ func (mt *builtinMetricsTracer) recordOperationCompletion() {
 	// Record operation_latencies
 	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(opLatAttrs))
+
+	// Record first_reponse_latencies
+	firstRespLatAttrs, _ := mt.toOtelMetricAttrs(metricNameFirstRespLatencies)
+	if mt.method == metricMethodPrefix+methodNameReadRows {
+		elapsedTimeMs = convertToMs(mt.currOp.firstRespTime.Sub(mt.currOp.startTime))
+		mt.instrumentFirstRespLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributeSet(firstRespLatAttrs))
+	}
 
 	// Record retry_count
 	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)

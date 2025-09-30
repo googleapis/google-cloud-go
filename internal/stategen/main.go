@@ -15,9 +15,12 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -47,21 +50,67 @@ func run(args []string) error {
 		return errors.New("stategen: expected a root directory and at least one module")
 	}
 	repoRoot := args[0]
+
+	postProcessorConfigPath := filepath.Join(repoRoot, "internal/postprocessor/config.yaml")
+	ppc, err := loadPostProcessorConfig(postProcessorConfigPath)
+	if err != nil {
+		return err
+	}
+
+	googleapisCommit, err := findLatestGoogleapisCommit()
+	if err != nil {
+		return err
+	}
+
 	stateFilePath := filepath.Join(repoRoot, ".librarian/state.yaml")
 	state, err := parseLibrarianState(stateFilePath)
 	if err != nil {
 		return err
 	}
+
 	for _, moduleName := range args[1:] {
 		if stateContainsModule(state, moduleName) {
 			slog.Info("skipping existing module", "module", moduleName)
 			continue
 		}
-		if err := addModule(repoRoot, state, moduleName); err != nil {
+		moduleRoot := filepath.Join(repoRoot, moduleName)
+		if err := prepareModule(moduleRoot); err != nil {
+			return fmt.Errorf("preparing module %s: %w", moduleName, err)
+		}
+		if err := addModule(repoRoot, ppc, state, moduleName, googleapisCommit); err != nil {
+			return err
+		}
+		if err := cleanupLegacyConfigs(repoRoot, moduleName); err != nil {
 			return err
 		}
 	}
+
 	return saveLibrarianState(stateFilePath, state)
+}
+
+func findLatestGoogleapisCommit() (string, error) {
+	// We don't need authentication for this API call, fortunately.
+	resp, err := http.Get("https://api.github.com/repos/googleapis/googleapis/branches/master")
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("failed to fetch branch metadata for googleapis: %d", resp.StatusCode)
+	}
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var branch GitHubBranch
+	if err := json.Unmarshal(respBody, &branch); err != nil {
+		return "", err
+	}
+	hash := branch.Commit.Hash
+	if hash == "" {
+		return "", errors.New("failed to fetch hash from GitHub API response")
+	}
+	slog.Info("Fetched googleapis head commit", "hash", hash)
+	return hash, nil
 }
 
 func stateContainsModule(state *LibrarianState, moduleName string) bool {
@@ -73,24 +122,18 @@ func stateContainsModule(state *LibrarianState, moduleName string) bool {
 	return false
 }
 
-func addModule(repoRoot string, state *LibrarianState, moduleName string) error {
+func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState, moduleName, googleapisCommit string) error {
 	slog.Info("adding module", "module", moduleName)
 	moduleRoot := filepath.Join(repoRoot, moduleName)
 
 	// Start off with the basics which need
 	library := &LibraryState{
-		ID: moduleName,
+		ID:                  moduleName,
+		LastGeneratedCommit: googleapisCommit,
 		SourceRoots: []string{
 			moduleName,
-			"internal/generated/snippets/" + moduleName,
 		},
-		RemoveRegex: []string{
-			moduleName + "/README\\.md",
-			moduleName + "/go\\.mod",
-			moduleName + "/go\\.sum",
-			moduleName + "/internal/version\\.go",
-			"internal/generated/snippets/" + moduleName,
-		},
+		TagFormat: "{id}/v{version}",
 	}
 
 	version, err := loadVersion(moduleRoot)
@@ -99,8 +142,15 @@ func addModule(repoRoot string, state *LibrarianState, moduleName string) error 
 	}
 	library.Version = version
 
-	if err := addAPIProtoPaths(repoRoot, moduleName, library); err != nil {
-		return err
+	addAPIProtoPaths(ppc, moduleName, library)
+
+	if len(library.APIs) > 0 {
+		library.SourceRoots = append(library.SourceRoots, "internal/generated/snippets/"+moduleName)
+		library.RemoveRegex = append(library.RemoveRegex, "^internal/generated/snippets/"+moduleName+"/")
+		// Probably irrelevant after the first release, but changes within the snippets aren't release-relevant;
+		// for the first release after onboarding, we will see an OwlBot commit updating snippet metadata with the
+		// final release-please-based commit, and we don't want to use that.
+		library.ReleaseExcludePaths = append(library.ReleaseExcludePaths, "internal/generated/snippets/"+moduleName+"/")
 	}
 
 	if err := addGeneratedCodeRemovals(repoRoot, moduleRoot, library); err != nil {
@@ -111,25 +161,19 @@ func addModule(repoRoot string, state *LibrarianState, moduleName string) error 
 	return nil
 }
 
-// addAPIProtoPaths walks the generates snippets directory to find the API proto paths for the library.
-func addAPIProtoPaths(repoRoot, moduleName string, library *LibraryState) error {
-	return filepath.WalkDir(filepath.Join(repoRoot, "internal/generated/snippets/"+moduleName), func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-		if match, _ := filepath.Match("snippet_metadata.*.json", d.Name()); match {
-			parts := strings.Split(d.Name(), ".")
-			parts = parts[1 : len(parts)-1]
+// addAPIProtoPaths uses the legacy post-processor config to determine which API paths contribute
+// to the specified module.
+func addAPIProtoPaths(ppc *postProcessorConfig, moduleName string, library *LibraryState) {
+	importPrefix := "cloud.google.com/go/" + moduleName + "/"
+
+	for _, serviceConfig := range ppc.ServiceConfigs {
+		if strings.HasPrefix(serviceConfig.ImportPath, importPrefix) {
 			api := &API{
-				Path: strings.Join(parts, "/"),
+				Path: serviceConfig.InputDirectory,
 			}
 			library.APIs = append(library.APIs, api)
 		}
-		return nil
-	})
+	}
 }
 
 // addApiPaths walk the module source directory to find the files to remove.
@@ -149,7 +193,7 @@ func addGeneratedCodeRemovals(repoRoot, moduleRoot string, library *LibraryState
 			return err
 		}
 		apiParts := strings.Split(path, "/")
-		protobufDir := apiParts[len(apiParts)-2] + "pb"
+		protobufDir := apiParts[len(apiParts)-2] + "pb/.*"
 		generatedPaths := []string{
 			"[^/]*_client\\.go",
 			"[^/]*_client_example_go123_test\\.go",
@@ -159,11 +203,10 @@ func addGeneratedCodeRemovals(repoRoot, moduleRoot string, library *LibraryState
 			"doc\\.go",
 			"gapic_metadata\\.json",
 			"helpers\\.go",
-			"version\\.go",
 			protobufDir,
 		}
 		for _, generatedPath := range generatedPaths {
-			library.RemoveRegex = append(library.RemoveRegex, repoRelativePath+"/"+generatedPath)
+			library.RemoveRegex = append(library.RemoveRegex, "^"+repoRelativePath+"/"+generatedPath+"$")
 		}
 		return nil
 	})
@@ -191,4 +234,18 @@ func loadVersion(moduleRoot string) (string, error) {
 		return "", fmt.Errorf("stategen: last line of version file not in expected format for module: %s", versionPath)
 	}
 	return versionParts[1], nil
+}
+
+// GitHubBranch is the representation of a repository branch as returned by the GitHub
+// API. We only need the commit.
+type GitHubBranch struct {
+	// Commit is the commit at the head of the branch
+	Commit GitHubCommit `json:"commit"`
+}
+
+// GitHubCommit is the representation of a commit as returned by the GitHub
+// API. We only need the SHA.
+type GitHubCommit struct {
+	// Hash is the SHA-256 hash of the commit
+	Hash string `json:"sha"`
 }

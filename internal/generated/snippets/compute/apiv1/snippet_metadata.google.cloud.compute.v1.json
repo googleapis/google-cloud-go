@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.44.0",
+    "version": "1.47.0",
     "language": "GO",
     "apis": [
       {
@@ -467,6 +467,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Addresses_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "AddressesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.AddressesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "AddressesClient",
+          "fullName": "google.cloud.compute.v1.AddressesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.Addresses.TestIamPermissions",
+          "service": {
+            "shortName": "Addresses",
+            "fullName": "google.cloud.compute.v1.Addresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5118,6 +5164,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_GlobalAddresses_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "GlobalAddressesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.GlobalAddressesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsGlobalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "GlobalAddressesClient",
+          "fullName": "google.cloud.compute.v1.GlobalAddressesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.GlobalAddresses.TestIamPermissions",
+          "service": {
+            "shortName": "GlobalAddresses",
+            "fullName": "google.cloud.compute.v1.GlobalAddresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_GlobalForwardingRules_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified GlobalForwardingRule resource.",
@@ -8982,6 +9074,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceGroups_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "InstanceGroupsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.InstanceGroupsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsInstanceGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "InstanceGroupsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.InstanceGroups.TestIamPermissions",
+          "service": {
+            "shortName": "InstanceGroups",
+            "fullName": "google.cloud.compute.v1.InstanceGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceSettingsService_Get_sync",
       "title": "compute Get Sample",
       "description": "Get get Instance settings.",
@@ -9488,6 +9626,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Instances_AddNetworkInterface_sync",
+      "title": "compute AddNetworkInterface Sample",
+      "description": "AddNetworkInterface adds one dynamic network interface to an active instance.",
+      "file": "InstancesClient/AddNetworkInterface/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddNetworkInterface",
+        "fullName": "google.cloud.compute.v1.InstancesClient.AddNetworkInterface",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddNetworkInterfaceInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "AddNetworkInterface",
+          "fullName": "google.cloud.compute.v1.Instances.AddNetworkInterface",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Instances_AddResourcePolicies_sync",
       "title": "compute AddResourcePolicies Sample",
       "description": "AddResourcePolicies adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.",
@@ -9748,6 +9932,52 @@
         "method": {
           "shortName": "DeleteAccessConfig",
           "fullName": "google.cloud.compute.v1.Instances.DeleteAccessConfig",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Instances_DeleteNetworkInterface_sync",
+      "title": "compute DeleteNetworkInterface Sample",
+      "description": "DeleteNetworkInterface deletes one dynamic network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - dynamic network interface to be deleted, using network_interface_name field;",
+      "file": "InstancesClient/DeleteNetworkInterface/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNetworkInterface",
+        "fullName": "google.cloud.compute.v1.InstancesClient.DeleteNetworkInterface",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteNetworkInterfaceInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "DeleteNetworkInterface",
+          "fullName": "google.cloud.compute.v1.Instances.DeleteNetworkInterface",
           "service": {
             "shortName": "Instances",
             "fullName": "google.cloud.compute.v1.Instances"
@@ -19380,7 +19610,7 @@
     {
       "regionTag": "compute_v1_generated_Projects_MoveDisk_sync",
       "title": "compute MoveDisk Sample",
-      "description": "MoveDisk moves a persistent disk from one zone to another.",
+      "description": "MoveDisk starting September 29, 2025, you can't use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in [Change the location of a disk](https: //{$universe.dns_names.final_documentation_domain}/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.",
       "file": "ProjectsClient/MoveDisk/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24019,6 +24249,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceGroups_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionInstanceGroupsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionInstanceGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionInstanceGroupsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroups.TestIamPermissions",
+          "service": {
+            "shortName": "RegionInstanceGroups",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -34834,6 +35110,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_TargetInstances_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "TargetInstancesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.TargetInstancesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsTargetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "TargetInstancesClient",
+          "fullName": "google.cloud.compute.v1.TargetInstancesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.TargetInstances.TestIamPermissions",
+          "service": {
+            "shortName": "TargetInstances",
+            "fullName": "google.cloud.compute.v1.TargetInstances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_TargetPools_AddHealthCheck_sync",
       "title": "compute AddHealthCheck Sample",
       "description": "AddHealthCheck adds health check URLs to a target pool.",
@@ -35381,6 +35703,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_TargetPools_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "TargetPoolsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.TargetPoolsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsTargetPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "TargetPoolsClient",
+          "fullName": "google.cloud.compute.v1.TargetPoolsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.TargetPools.TestIamPermissions",
+          "service": {
+            "shortName": "TargetPools",
+            "fullName": "google.cloud.compute.v1.TargetPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

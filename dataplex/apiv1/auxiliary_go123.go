@@ -119,6 +119,24 @@ func (it *EnvironmentIterator) All() iter.Seq2[*dataplexpb.Environment, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *GlossaryCategoryIterator) All() iter.Seq2[*dataplexpb.GlossaryCategory, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlossaryIterator) All() iter.Seq2[*dataplexpb.Glossary, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlossaryTermIterator) All() iter.Seq2[*dataplexpb.GlossaryTerm, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *JobIterator) All() iter.Seq2[*dataplexpb.Job, error] {
 	return iterator.RangeAdapter(it.Next)
 }

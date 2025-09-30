@@ -553,26 +553,35 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		md.Append(afeMetricHeader, "true")
 	}
 
-	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" && !config.enableMultiplexSession {
-		config.enableMultiplexSession, err = strconv.ParseBool(isMultiplexed)
+	if isMultiplexed, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"); found {
+		config.enableMultiplexSession, err = strconv.ParseBool(strings.ToLower(isMultiplexed))
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
 		}
+	} else {
+		config.enableMultiplexSession = true
 	}
-	if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" && !config.enableMultiplexedSessionForRW {
-		config.enableMultiplexedSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
+
+	if isMultiplexForRW, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); found {
+		config.enableMultiplexedSessionForRW, err = strconv.ParseBool(strings.ToLower(isMultiplexForRW))
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
 		}
-		config.enableMultiplexedSessionForRW = config.enableMultiplexedSessionForRW && config.SessionPoolConfig.enableMultiplexSession
+	} else {
+		config.enableMultiplexedSessionForRW = true
 	}
-	if isMultiplexForPartitionOps := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); isMultiplexForPartitionOps != "" && !config.enableMultiplexedSessionForPartitionedOps {
-		config.enableMultiplexedSessionForPartitionedOps, err = strconv.ParseBool(isMultiplexForPartitionOps)
+
+	if isMultiplexForPartitionOps, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); found {
+		config.enableMultiplexedSessionForPartitionedOps, err = strconv.ParseBool(strings.ToLower(isMultiplexForPartitionOps))
 		if err != nil {
 			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS must be either true or false")
 		}
-		config.enableMultiplexedSessionForPartitionedOps = config.enableMultiplexedSessionForPartitionedOps && config.SessionPoolConfig.enableMultiplexSession
+	} else {
+		config.enableMultiplexedSessionForPartitionedOps = true
 	}
+
+	config.enableMultiplexedSessionForRW = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForRW
+	config.enableMultiplexedSessionForPartitionedOps = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForPartitionedOps
 
 	if config.IsExperimentalHost {
 		config.SessionPoolConfig.enableMultiplexSession = true

@@ -2,6 +2,25 @@
 
 
 
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.21.0...discoveryengine/v1.21.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.20.0...discoveryengine/v1.21.0) (2025-09-11)
+
+
+### Features
+
+* **discoveryengine:** Added `ranking_expression_backed` and `rank_signals` fields related to the Custom Ranking feature ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+
+### Documentation
+
+* **discoveryengine:** A comment for field `ranking_expression` in messages `.google.cloud.discoveryengine.v1alpha.SearchRequest` and `.google.cloud.discoveryengine.v1beta.SearchRequest` is changed to support the Custom Ranking use case ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.19.0...discoveryengine/v1.20.0) (2025-07-31)
 
 

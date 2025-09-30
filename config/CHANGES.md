@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.5.0...config/v1.5.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **config:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.4.0...config/v1.5.0) (2025-09-04)
+
+
+### Features
+
+* **config:** Added support for service maintained provider ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.2...config/v1.4.0) (2025-07-09)
 
 

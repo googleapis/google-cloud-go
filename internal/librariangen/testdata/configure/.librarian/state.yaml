@@ -1,4 +1,4 @@
-image: image=gcr.io/cloud-go-infra/librariangen:latest
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
 libraries:
     - id: secretmanager
       apis:
