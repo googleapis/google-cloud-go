@@ -36,7 +36,12 @@ var (
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
 	typeOfVector64       = reflect.TypeOf(Vector64{})
 	typeOfVector32       = reflect.TypeOf(Vector32{})
+	isZeroerType         = reflect.TypeOf((*isZeroer)(nil)).Elem()
 )
+
+type isZeroer interface {
+	IsZero() bool
+}
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
 // Some corner cases:
@@ -233,60 +238,12 @@ func structToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 			sawTransform = true
 			continue
 		}
-
-		// Standard omitempty check
 		if opts.omitEmpty && isEmptyValue(fv) {
 			continue
 		}
-
-		// New omitzero check, only if not already omitted by omitempty
-		if opts.omitZero {
-			isFieldConsideredZero := false
-
-			// Attempt to use user-defined IsZero() bool method first.
-			// Ensure fv is a valid value and not a nil pointer or nil interface
-			// before attempting a method call.
-			canCallUserIsZeroMethod := fv.IsValid()
-			if canCallUserIsZeroMethod {
-				kind := fv.Kind()
-				if kind == reflect.Ptr || kind == reflect.Interface {
-					if fv.IsNil() {
-						canCallUserIsZeroMethod = false // Cannot call methods on nil pointers/interfaces
-					}
-				}
-			}
-
-			if canCallUserIsZeroMethod {
-				method := fv.MethodByName("IsZero")
-				if method.IsValid() &&
-					method.Type().NumIn() == 0 &&
-					method.Type().NumOut() == 1 &&
-					method.Type().Out(0).Kind() == reflect.Bool {
-					results := method.Call(nil)
-					isFieldConsideredZero = results[0].Bool()
-				} else {
-					// No valid user-defined IsZero() method, fall back to reflect.Value.IsZero().
-					// fv.IsZero() is safe to call on a valid reflect.Value;
-					// it handles nil pointers/interfaces correctly (returns true).
-					isFieldConsideredZero = fv.IsZero()
-				}
-			} else {
-				// fv is a nil pointer/interface or an invalid reflect.Value.
-				// For nil pointers/interfaces, fv.IsZero() returns true.
-				// An invalid reflect.Value (should not happen for struct fields from fieldCache)
-				// would also be considered zero.
-				if fv.IsValid() { // fv.IsZero() panics on a zero reflect.Value itself
-					isFieldConsideredZero = fv.IsZero()
-				} else {
-					isFieldConsideredZero = true // Treat invalid reflect.Value as zero for omission
-				}
-			}
-
-			if isFieldConsideredZero {
-				continue
-			}
+		if opts.omitZero && isZeroValue(fv) {
+			continue
 		}
-
 		val, sst, err := toProtoValue(fv)
 		if err != nil {
 			return nil, false, err
@@ -326,7 +283,7 @@ func parseTag(t reflect.StructTag) (name string, keep bool, other interface{}, e
 		switch opt {
 		case "omitempty":
 			tagOpts.omitEmpty = true
-		case "omitZero":
+		case "omitzero":
 			tagOpts.omitZero = true
 		case "serverTimestamp":
 			tagOpts.serverTimestamp = true
@@ -367,4 +324,30 @@ func isEmptyValue(v reflect.Value) bool {
 		return v.Interface().(time.Time).IsZero()
 	}
 	return false
+}
+
+func isZeroValue(v reflect.Value) bool {
+	if !v.IsValid() {
+		return true
+	}
+	if v.Type().Implements(isZeroerType) {
+		if v.Kind() == reflect.Interface || v.Kind() == reflect.Pointer {
+			if v.IsNil() {
+				return true
+			}
+			if v.Kind() == reflect.Interface && v.Elem().Kind() == reflect.Pointer && v.Elem().IsNil() {
+				return true
+			}
+		}
+		return v.Interface().(isZeroer).IsZero()
+	}
+	if reflect.PointerTo(v.Type()).Implements(isZeroerType) {
+		if v.CanAddr() {
+			return v.Addr().Interface().(isZeroer).IsZero()
+		}
+		v2 := reflect.New(v.Type()).Elem()
+		v2.Set(v)
+		return v2.Addr().Interface().(isZeroer).IsZero()
+	}
+	return v.IsZero()
 }
