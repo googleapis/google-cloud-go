@@ -197,3 +197,12 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/apihub/
     tag_format: '{id}/v{version}'
+  - id: auth/oauth2adapt
+    version: 0.2.8
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    apis: []
+    source_roots:
+      - auth/oauth2adapt
+    preserve_regex: []
+    remove_regex: []
+    tag_format: '{id}/v{version}'

@@ -1,0 +1,8 @@
+# Hand-maintained configuration for libraries.
+#
+# All libraries with handwritten code (core, hybrid and handwritten)
+# libraries have "release_blocked: true" so that releases are
+# explicitly initiated
+libraries:
+  - id: "auth/oauth2adapt"
+    release_blocked: true

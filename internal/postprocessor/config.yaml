@@ -1292,6 +1292,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - auth/oauth2adapt
   - apihub
   - apigeeconnect
   - apigateway
@@ -1300,7 +1301,6 @@ skip-module-scan-paths:
   - dlp
   # individually released modules
   - auth
-  - auth/oauth2adapt
   - bigquery
   - bigquery/v2
   - bigtable
