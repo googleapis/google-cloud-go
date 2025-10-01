@@ -197,3 +197,52 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/apihub/
     tag_format: '{id}/v{version}'
+  - id: pubsub
+    version: 1.50.1
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    apis:
+      - path: google/pubsub/v1
+        service_config: ""
+    source_roots:
+      - pubsub
+      - internal/generated/snippets/pubsub
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/pubsub/
+      - ^pubsub/apiv1/[^/]*_client\.go$
+      - ^pubsub/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^pubsub/apiv1/[^/]*_client_example_test\.go$
+      - ^pubsub/apiv1/auxiliary\.go$
+      - ^pubsub/apiv1/auxiliary_go123\.go$
+      - ^pubsub/apiv1/doc\.go$
+      - ^pubsub/apiv1/gapic_metadata\.json$
+      - ^pubsub/apiv1/helpers\.go$
+      - ^pubsub/apiv1/pubsubpb/.*$
+    release_exclude_paths:
+      - pubsub/v2
+      - internal/generated/snippets/pubsub/
+    tag_format: '{id}/v{version}'
+  - id: pubsub/v2
+    version: 2.1.0
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    apis:
+      - path: google/pubsub/v1
+        service_config: ""
+    source_roots:
+      - pubsub/v2
+      - internal/generated/snippets/pubsub/v2
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/pubsub/v2/
+      - ^pubsub/v2/apiv1/[^/]*_client\.go$
+      - ^pubsub/v2/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^pubsub/v2/apiv1/[^/]*_client_example_test\.go$
+      - ^pubsub/v2/apiv1/auxiliary\.go$
+      - ^pubsub/v2/apiv1/auxiliary_go123\.go$
+      - ^pubsub/v2/apiv1/doc\.go$
+      - ^pubsub/v2/apiv1/gapic_metadata\.json$
+      - ^pubsub/v2/apiv1/helpers\.go$
+      - ^pubsub/v2/apiv1/v2pb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/pubsub/v2/
+    tag_format: 'pubsub/v{version}'

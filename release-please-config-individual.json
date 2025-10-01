@@ -33,13 +33,6 @@
     "profiler": {
       "component": "profiler"
     },
-    "pubsub": {
-      "component": "pubsub",
-      "exclude-paths": ["pubsub/v2"]
-    },
-    "pubsub/v2": {
-      "component": "pubsub/v2"
-    },
     "pubsublite": {
       "component": "pubsublite"
     },
