@@ -23,6 +23,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -66,7 +67,12 @@ func Init(ctx context.Context, cfg *Config) error {
 		}
 		moduleConfig := repoConfig.GetModuleConfig(lib.ID)
 
-		moduleDir := filepath.Join(cfg.OutputDir, lib.ID)
+		var moduleDir string
+		if wholeRepoLibrary(lib) {
+			moduleDir = cfg.OutputDir
+		} else {
+			moduleDir = filepath.Join(cfg.OutputDir, lib.ID)
+		}
 		slog.Info("librariangen: processing library for release", "id", lib.ID, "version", lib.Version)
 		if err := updateChangelog(cfg, lib, now().UTC()); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update changelog for %s: %w", lib.ID, err))
@@ -94,7 +100,12 @@ var changelogSections = []struct {
 }
 
 func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
-	relativeChangelogPath := filepath.Join(lib.ID, "CHANGES.md")
+	var relativeChangelogPath string
+	if wholeRepoLibrary(lib) {
+		relativeChangelogPath = "CHANGES.md"
+	} else {
+		relativeChangelogPath = filepath.Join(lib.ID, "CHANGES.md")
+	}
 	slog.Info("librariangen: updating changelog", "path", relativeChangelogPath)
 
 	srcPath := filepath.Join(cfg.RepoDir, relativeChangelogPath)
@@ -111,7 +122,14 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 
 	var newEntry bytes.Buffer
 
-	tag := fmt.Sprintf("%s/v%s", lib.ID, lib.Version)
+	var tag string
+	// This is normally, but not *always*, because it's whole-repo library
+	if lib.TagFormat == "v{version}" {
+		tag = "v" + lib.Version
+	} else {
+		tag = fmt.Sprintf("%s/v%s", lib.ID, lib.Version)
+	}
+
 	encodedTag := strings.ReplaceAll(tag, "/", "%2F")
 	releaseURL := "https://github.com/googleapis/google-cloud-go/releases/tag/" + encodedTag
 	date := t.Format("2006-01-02")
@@ -217,6 +235,28 @@ func writeErrorResponse(dir string, err error) error {
 		slog.Error("failed to write error response", "error", writeErr)
 	}
 	return err
+}
+
+// wholeRepoLibrary returns whether or not the given library is
+// intended to represent the whole repository. This is indicated by
+// a value in Library.SourcePaths of ".". In reality, this will mean
+// it's the only entry in SourcePaths - but that isn't validated.
+//
+// This is expected to be used for repos such as gapic-generator-go,
+// but does *not* apply to gax-go as the "root" for that repo is
+// the v1 code; the v2 code is under a "v2" directory so we just
+// use a library ID of "v2".
+//
+// The vast majority of modules in google-cloud-go have a single
+// source path for the production code, and another for the
+// generated snippets.
+//
+// The "main" module of google-cloud-go might be expected to use "."
+// as a source path, but that would end up getting changes from *all*
+// nested modules (which will expand over time). That module is likely
+// to have a snowflake-like configuration.
+func wholeRepoLibrary(lib *request.Library) bool {
+	return slices.Contains(lib.SourcePaths, ".")
 }
 
 // Request is the structure of the release-init-request.json file.

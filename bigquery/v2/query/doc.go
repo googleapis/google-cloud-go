@@ -34,11 +34,8 @@
 //		// TODO: Handle error.
 //	}
 //
-//	q, err := helper.StartQuery(ctx, &bigquerypb.PostQueryRequest{
-//		QueryRequest: &bigquerypb.QueryRequest{
-//			Query: "SELECT 123 as foo",
-//		},
-//	})
+//	req := helper.FromSQL("SELECT 1 as foo")
+//	q, err := helper.StartQuery(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

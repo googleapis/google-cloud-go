@@ -11,17 +11,8 @@ deep-remove-regex:
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
   - /advisorynotifications/apiv1/
-  - /alloydb/apiv1/
-  - /alloydb/apiv1alpha/
-  - /alloydb/apiv1beta/
-  - /alloydb/connectors/apiv1/
-  - /alloydb/connectors/apiv1alpha/
-  - /alloydb/connectors/apiv1beta/
   - /analytics/admin/apiv1alpha/
-  - /apigateway/apiv1/
-  - /apigeeconnect/apiv1/
   - /apigeeregistry/apiv1/
-  - /apihub/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
   - /apphub/apiv1/
@@ -166,14 +157,8 @@ deep-remove-regex:
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/advisorynotifications/apiv1/
-  - /internal/generated/snippets/alloydb/apiv1/
-  - /internal/generated/snippets/alloydb/apiv1alpha/
-  - /internal/generated/snippets/alloydb/apiv1beta/
   - /internal/generated/snippets/analytics/admin/apiv1alpha/
-  - /internal/generated/snippets/apigateway/apiv1/
-  - /internal/generated/snippets/apigeeconnect/apiv1/
   - /internal/generated/snippets/apigeeregistry/apiv1/
-  - /internal/generated/snippets/apihub/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
   - /internal/generated/snippets/apphub/apiv1/
@@ -717,23 +702,7 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/advisorynotifications/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/alloydb/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/connectors/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/connectors/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/connectors/v1beta/cloud.google.com/go
-    dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apigateway/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apigeeconnect/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/apigeeregistry/v1/cloud.google.com/go
     dest: /
@@ -742,8 +711,6 @@ deep-copy-regex:
   - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apihub/v1/cloud.google.com/go
     dest: /
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
