@@ -15,6 +15,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,56 +23,59 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-const (
-	// Test using `ai` because it is a substring of `aiplatform`.
-	testModuleName = "ai"
-)
-
 func TestCleanupLegacyConfigs(t *testing.T) {
 	t.Parallel()
-	// Create a temporary directory for the test repo.
-	repoRoot := t.TempDir()
-
-	// Set up the initial directory structure and copy testdata files.
-	files := []string{
-		".github/.OwlBot.yaml",
-		"internal/postprocessor/config.yaml",
-		"release-please-config-individual.json",
-		"release-please-config-yoshi-submodules.json",
-		".release-please-manifest-individual.json",
-		".release-please-manifest-submodules.json",
+	testModuleNames := []string{
+		// Test using `ai` because it is a substring of `aiplatform`.
+		"ai",
+		// Test an individually-released module in release-please-config-individual.json, etc.
+		"auth",
 	}
+	for _, testModuleName := range testModuleNames {
+		// Create a temporary directory for the test repo.
+		repoRoot := t.TempDir()
 
-	for _, f := range files {
-		content, err := os.ReadFile("testdata/source/" + f)
-		if err != nil {
-			t.Fatalf("Failed to read testdata file %s: %v", f, err)
+		// Set up the initial directory structure and copy testdata files.
+		files := []string{
+			".github/.OwlBot.yaml",
+			"internal/postprocessor/config.yaml",
+			"release-please-config-individual.json",
+			"release-please-config-yoshi-submodules.json",
+			".release-please-manifest-individual.json",
+			".release-please-manifest-submodules.json",
 		}
-		destPath := filepath.Join(repoRoot, f)
-		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-			t.Fatalf("Failed to create directory for %s: %v", f, err)
-		}
-		if err := os.WriteFile(destPath, content, 0644); err != nil {
-			t.Fatalf("Failed to write initial file %s: %v", f, err)
-		}
-	}
 
-	if err := cleanupLegacyConfigs(repoRoot, testModuleName); err != nil {
-		t.Fatalf("cleanupLegacyConfigs failed: %v", err)
-	}
+		for _, f := range files {
+			content, err := os.ReadFile("testdata/source/" + f)
+			if err != nil {
+				t.Fatalf("Failed to read testdata file %s: %v", f, err)
+			}
+			destPath := filepath.Join(repoRoot, f)
+			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+				t.Fatalf("Failed to create directory for %s: %v", f, err)
+			}
+			if err := os.WriteFile(destPath, content, 0644); err != nil {
+				t.Fatalf("Failed to write initial file %s: %v", f, err)
+			}
+		}
 
-	for _, f := range files {
-		got, err := os.ReadFile(filepath.Join(repoRoot, f))
-		if err != nil {
-			t.Fatalf("Failed to read modified file %s: %v", f, err)
+		if err := cleanupLegacyConfigs(repoRoot, testModuleName); err != nil {
+			t.Fatalf("cleanupLegacyConfigs failed: %v", err)
 		}
-		gf := "testdata/golden/" + f
-		want, err := os.ReadFile(gf)
-		if err != nil {
-			t.Fatalf("Failed to read golden file %s: %v", gf, err)
-		}
-		if diff := cmp.Diff(string(want), string(got)); diff != "" {
-			t.Errorf("File %s mismatch (-want +got):\n%s", f, diff)
+
+		for _, f := range files {
+			got, err := os.ReadFile(filepath.Join(repoRoot, f))
+			if err != nil {
+				t.Fatalf("Failed to read modified file %s: %v", f, err)
+			}
+			gf := fmt.Sprintf("testdata/golden/%s/%s", testModuleName, f)
+			want, err := os.ReadFile(gf)
+			if err != nil {
+				t.Fatalf("Failed to read golden file %s: %v", gf, err)
+			}
+			if diff := cmp.Diff(string(want), string(got)); diff != "" {
+				t.Errorf("File %s mismatch for %q (-want +got):\n%s", f, testModuleName, diff)
+			}
 		}
 	}
 }
