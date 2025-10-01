@@ -34,7 +34,6 @@
     "cloudtasks": "1.13.7",
     "commerce": "1.2.6",
     "compute": "1.48.0",
-    "compute/metadata": "0.9.0",
     "confidentialcomputing": "1.10.1",
     "config": "1.5.1",
     "configdelivery": "0.1.1",
