@@ -40,7 +40,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/internal/optional"
-	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -1248,7 +1247,7 @@ type MoveObjectDestination struct {
 // It is the caller's responsibility to call Close when writing is done. To
 // stop writing without saving the data, cancel the context.
 func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Writer")
+	ctx, _ = startSpan(ctx, "Object.Writer")
 	return &Writer{
 		ctx:         ctx,
 		o:           o,
@@ -1284,7 +1283,7 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 // objects which were created append semantics and not finalized.
 // This feature is in preview and is not yet available for general use.
 func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *AppendableWriterOpts) (*Writer, int64, error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Writer")
+	ctx, _ = startSpan(ctx, "Object.WriterFromAppendableObject")
 	if o.gen < 0 {
 		return nil, 0, errors.New("storage: ObjectHandle.Generation must be set to use NewWriterFromAppendableObject")
 	}
