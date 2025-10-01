@@ -200,9 +200,7 @@ libraries:
   - id: pubsub
     version: 1.50.1
     last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
-    apis:
-      - path: google/pubsub/v1
-        service_config: ""
+    apis: []
     source_roots:
       - pubsub
       - internal/generated/snippets/pubsub
