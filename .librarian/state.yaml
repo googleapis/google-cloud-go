@@ -338,3 +338,104 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/eventarc/
     tag_format: '{id}/v{version}'
+  - id: maps
+    version: 1.23.0
+    last_generated_commit: 3990e05b25dcaf7ba8d6baa4255d9b012a3a6a4f
+    apis:
+      - path: google/maps/addressvalidation/v1
+        service_config: ""
+      - path: google/maps/areainsights/v1
+        service_config: ""
+      - path: google/maps/fleetengine/v1
+        service_config: ""
+      - path: google/maps/fleetengine/delivery/v1
+        service_config: ""
+      - path: google/maps/places/v1
+        service_config: ""
+      - path: google/maps/routeoptimization/v1
+        service_config: ""
+      - path: google/maps/routing/v2
+        service_config: ""
+      - path: google/maps/solar/v1
+        service_config: ""
+    source_roots:
+      - maps
+      - internal/generated/snippets/maps
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/maps/
+      - ^maps/addressvalidation/apiv1/[^/]*_client\.go$
+      - ^maps/addressvalidation/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maps/addressvalidation/apiv1/[^/]*_client_example_test\.go$
+      - ^maps/addressvalidation/apiv1/auxiliary\.go$
+      - ^maps/addressvalidation/apiv1/auxiliary_go123\.go$
+      - ^maps/addressvalidation/apiv1/doc\.go$
+      - ^maps/addressvalidation/apiv1/gapic_metadata\.json$
+      - ^maps/addressvalidation/apiv1/helpers\.go$
+      - ^maps/addressvalidation/apiv1/addressvalidationpb/.*$
+      - ^maps/areainsights/apiv1/[^/]*_client\.go$
+      - ^maps/areainsights/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maps/areainsights/apiv1/[^/]*_client_example_test\.go$
+      - ^maps/areainsights/apiv1/auxiliary\.go$
+      - ^maps/areainsights/apiv1/auxiliary_go123\.go$
+      - ^maps/areainsights/apiv1/doc\.go$
+      - ^maps/areainsights/apiv1/gapic_metadata\.json$
+      - ^maps/areainsights/apiv1/helpers\.go$
+      - ^maps/areainsights/apiv1/areainsightspb/.*$
+      - ^maps/fleetengine/apiv1/[^/]*_client\.go$
+      - ^maps/fleetengine/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maps/fleetengine/apiv1/[^/]*_client_example_test\.go$
+      - ^maps/fleetengine/apiv1/auxiliary\.go$
+      - ^maps/fleetengine/apiv1/auxiliary_go123\.go$
+      - ^maps/fleetengine/apiv1/doc\.go$
+      - ^maps/fleetengine/apiv1/gapic_metadata\.json$
+      - ^maps/fleetengine/apiv1/helpers\.go$
+      - ^maps/fleetengine/apiv1/fleetenginepb/.*$
+      - ^maps/fleetengine/delivery/apiv1/[^/]*_client\.go$
+      - ^maps/fleetengine/delivery/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maps/fleetengine/delivery/apiv1/[^/]*_client_example_test\.go$
+      - ^maps/fleetengine/delivery/apiv1/auxiliary\.go$
+      - ^maps/fleetengine/delivery/apiv1/auxiliary_go123\.go$
+      - ^maps/fleetengine/delivery/apiv1/doc\.go$
+      - ^maps/fleetengine/delivery/apiv1/gapic_metadata\.json$
+      - ^maps/fleetengine/delivery/apiv1/helpers\.go$
+      - ^maps/fleetengine/delivery/apiv1/deliverypb/.*$
+      - ^maps/places/apiv1/[^/]*_client\.go$
+      - ^maps/places/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maps/places/apiv1/[^/]*_client_example_test\.go$
+      - ^maps/places/apiv1/auxiliary\.go$
+      - ^maps/places/apiv1/auxiliary_go123\.go$
+      - ^maps/places/apiv1/doc\.go$
+      - ^maps/places/apiv1/gapic_metadata\.json$
+      - ^maps/places/apiv1/helpers\.go$
+      - ^maps/places/apiv1/placespb/.*$
+      - ^maps/routeoptimization/apiv1/[^/]*_client\.go$
+      - ^maps/routeoptimization/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maps/routeoptimization/apiv1/[^/]*_client_example_test\.go$
+      - ^maps/routeoptimization/apiv1/auxiliary\.go$
+      - ^maps/routeoptimization/apiv1/auxiliary_go123\.go$
+      - ^maps/routeoptimization/apiv1/doc\.go$
+      - ^maps/routeoptimization/apiv1/gapic_metadata\.json$
+      - ^maps/routeoptimization/apiv1/helpers\.go$
+      - ^maps/routeoptimization/apiv1/routeoptimizationpb/.*$
+      - ^maps/routing/apiv2/[^/]*_client\.go$
+      - ^maps/routing/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^maps/routing/apiv2/[^/]*_client_example_test\.go$
+      - ^maps/routing/apiv2/auxiliary\.go$
+      - ^maps/routing/apiv2/auxiliary_go123\.go$
+      - ^maps/routing/apiv2/doc\.go$
+      - ^maps/routing/apiv2/gapic_metadata\.json$
+      - ^maps/routing/apiv2/helpers\.go$
+      - ^maps/routing/apiv2/routingpb/.*$
+      - ^maps/solar/apiv1/[^/]*_client\.go$
+      - ^maps/solar/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maps/solar/apiv1/[^/]*_client_example_test\.go$
+      - ^maps/solar/apiv1/auxiliary\.go$
+      - ^maps/solar/apiv1/auxiliary_go123\.go$
+      - ^maps/solar/apiv1/doc\.go$
+      - ^maps/solar/apiv1/gapic_metadata\.json$
+      - ^maps/solar/apiv1/helpers\.go$
+      - ^maps/solar/apiv1/solarpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/maps/
+    tag_format: '{id}/v{version}'

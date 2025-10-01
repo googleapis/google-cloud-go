@@ -294,14 +294,6 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/managedkafka/schemaregistry/apiv1/
-  - /internal/generated/snippets/maps/addressvalidation/apiv1/
-  - /internal/generated/snippets/maps/areainsights/apiv1/
-  - /internal/generated/snippets/maps/fleetengine/apiv1/
-  - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
-  - /internal/generated/snippets/maps/places/apiv1/
-  - /internal/generated/snippets/maps/routeoptimization/apiv1/
-  - /internal/generated/snippets/maps/routing/apiv2/
-  - /internal/generated/snippets/maps/solar/apiv1/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
@@ -469,14 +461,6 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /managedkafka/schemaregistry/apiv1/
-  - /maps/addressvalidation/apiv1/
-  - /maps/areainsights/apiv1/
-  - /maps/fleetengine/apiv1/
-  - /maps/fleetengine/delivery/apiv1/
-  - /maps/places/apiv1/
-  - /maps/routeoptimization/apiv1/
-  - /maps/routing/apiv2/
-  - /maps/solar/apiv1/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
@@ -986,22 +970,6 @@ deep-copy-regex:
   - source: /google/cloud/managedkafka/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/managedkafka/schemaregistry/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/addressvalidation/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/areainsights/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/fleetengine/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/fleetengine/delivery/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/places/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/routeoptimization/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/routing/v2/cloud.google.com/go
-    dest: /
-  - source: /google/maps/solar/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go
     dest: /
