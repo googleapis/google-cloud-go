@@ -2,7 +2,7 @@ image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian
 libraries:
   - id: dlp
     version: 1.25.0
-    last_generated_commit: f8776fec04e336527ba7279d960105533a1c4e21
+    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
     apis:
       - path: google/privacy/dlp/v2
         service_config: dlp_v2.yaml
@@ -24,10 +24,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataproc
     version: 2.14.1
-    last_generated_commit: 888ae95dd6125f754650d55410b8c117b618a268
+    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
     apis:
       - path: google/cloud/dataproc/v1
-        service_config: ""
+        service_config: dataproc_v1.yaml
     source_roots:
       - dataproc
       - internal/generated/snippets/dataproc
@@ -46,6 +46,157 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
+  - id: alloydb
+    version: 1.18.0
+    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    apis:
+      - path: google/cloud/alloydb/v1
+        service_config: ""
+      - path: google/cloud/alloydb/v1alpha
+        service_config: ""
+      - path: google/cloud/alloydb/v1beta
+        service_config: ""
+      - path: google/cloud/alloydb/connectors/v1
+        service_config: ""
+      - path: google/cloud/alloydb/connectors/v1alpha
+        service_config: ""
+      - path: google/cloud/alloydb/connectors/v1beta
+        service_config: ""
+    source_roots:
+      - alloydb
+      - internal/generated/snippets/alloydb
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/alloydb/
+      - ^alloydb/apiv1/[^/]*_client\.go$
+      - ^alloydb/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^alloydb/apiv1/[^/]*_client_example_test\.go$
+      - ^alloydb/apiv1/auxiliary\.go$
+      - ^alloydb/apiv1/auxiliary_go123\.go$
+      - ^alloydb/apiv1/doc\.go$
+      - ^alloydb/apiv1/gapic_metadata\.json$
+      - ^alloydb/apiv1/helpers\.go$
+      - ^alloydb/apiv1/alloydbpb/.*$
+      - ^alloydb/apiv1alpha/[^/]*_client\.go$
+      - ^alloydb/apiv1alpha/[^/]*_client_example_go123_test\.go$
+      - ^alloydb/apiv1alpha/[^/]*_client_example_test\.go$
+      - ^alloydb/apiv1alpha/auxiliary\.go$
+      - ^alloydb/apiv1alpha/auxiliary_go123\.go$
+      - ^alloydb/apiv1alpha/doc\.go$
+      - ^alloydb/apiv1alpha/gapic_metadata\.json$
+      - ^alloydb/apiv1alpha/helpers\.go$
+      - ^alloydb/apiv1alpha/alloydbpb/.*$
+      - ^alloydb/apiv1beta/[^/]*_client\.go$
+      - ^alloydb/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^alloydb/apiv1beta/[^/]*_client_example_test\.go$
+      - ^alloydb/apiv1beta/auxiliary\.go$
+      - ^alloydb/apiv1beta/auxiliary_go123\.go$
+      - ^alloydb/apiv1beta/doc\.go$
+      - ^alloydb/apiv1beta/gapic_metadata\.json$
+      - ^alloydb/apiv1beta/helpers\.go$
+      - ^alloydb/apiv1beta/alloydbpb/.*$
+      - ^alloydb/connectors/apiv1/[^/]*_client\.go$
+      - ^alloydb/connectors/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^alloydb/connectors/apiv1/[^/]*_client_example_test\.go$
+      - ^alloydb/connectors/apiv1/auxiliary\.go$
+      - ^alloydb/connectors/apiv1/auxiliary_go123\.go$
+      - ^alloydb/connectors/apiv1/doc\.go$
+      - ^alloydb/connectors/apiv1/gapic_metadata\.json$
+      - ^alloydb/connectors/apiv1/helpers\.go$
+      - ^alloydb/connectors/apiv1/connectorspb/.*$
+      - ^alloydb/connectors/apiv1alpha/[^/]*_client\.go$
+      - ^alloydb/connectors/apiv1alpha/[^/]*_client_example_go123_test\.go$
+      - ^alloydb/connectors/apiv1alpha/[^/]*_client_example_test\.go$
+      - ^alloydb/connectors/apiv1alpha/auxiliary\.go$
+      - ^alloydb/connectors/apiv1alpha/auxiliary_go123\.go$
+      - ^alloydb/connectors/apiv1alpha/doc\.go$
+      - ^alloydb/connectors/apiv1alpha/gapic_metadata\.json$
+      - ^alloydb/connectors/apiv1alpha/helpers\.go$
+      - ^alloydb/connectors/apiv1alpha/connectorspb/.*$
+      - ^alloydb/connectors/apiv1beta/[^/]*_client\.go$
+      - ^alloydb/connectors/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^alloydb/connectors/apiv1beta/[^/]*_client_example_test\.go$
+      - ^alloydb/connectors/apiv1beta/auxiliary\.go$
+      - ^alloydb/connectors/apiv1beta/auxiliary_go123\.go$
+      - ^alloydb/connectors/apiv1beta/doc\.go$
+      - ^alloydb/connectors/apiv1beta/gapic_metadata\.json$
+      - ^alloydb/connectors/apiv1beta/helpers\.go$
+      - ^alloydb/connectors/apiv1beta/connectorspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/alloydb/
+    tag_format: '{id}/v{version}'
+  - id: apigateway
+    version: 1.7.7
+    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    apis:
+      - path: google/cloud/apigateway/v1
+        service_config: ""
+    source_roots:
+      - apigateway
+      - internal/generated/snippets/apigateway
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/apigateway/
+      - ^apigateway/apiv1/[^/]*_client\.go$
+      - ^apigateway/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^apigateway/apiv1/[^/]*_client_example_test\.go$
+      - ^apigateway/apiv1/auxiliary\.go$
+      - ^apigateway/apiv1/auxiliary_go123\.go$
+      - ^apigateway/apiv1/doc\.go$
+      - ^apigateway/apiv1/gapic_metadata\.json$
+      - ^apigateway/apiv1/helpers\.go$
+      - ^apigateway/apiv1/apigatewaypb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/apigateway/
+    tag_format: '{id}/v{version}'
+  - id: apigeeconnect
+    version: 1.7.7
+    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    apis:
+      - path: google/cloud/apigeeconnect/v1
+        service_config: ""
+    source_roots:
+      - apigeeconnect
+      - internal/generated/snippets/apigeeconnect
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/apigeeconnect/
+      - ^apigeeconnect/apiv1/[^/]*_client\.go$
+      - ^apigeeconnect/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^apigeeconnect/apiv1/[^/]*_client_example_test\.go$
+      - ^apigeeconnect/apiv1/auxiliary\.go$
+      - ^apigeeconnect/apiv1/auxiliary_go123\.go$
+      - ^apigeeconnect/apiv1/doc\.go$
+      - ^apigeeconnect/apiv1/gapic_metadata\.json$
+      - ^apigeeconnect/apiv1/helpers\.go$
+      - ^apigeeconnect/apiv1/apigeeconnectpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/apigeeconnect/
+    tag_format: '{id}/v{version}'
+  - id: apihub
+    version: 0.2.0
+    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    apis:
+      - path: google/cloud/apihub/v1
+        service_config: ""
+    source_roots:
+      - apihub
+      - internal/generated/snippets/apihub
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/apihub/
+      - ^apihub/apiv1/[^/]*_client\.go$
+      - ^apihub/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^apihub/apiv1/[^/]*_client_example_test\.go$
+      - ^apihub/apiv1/auxiliary\.go$
+      - ^apihub/apiv1/auxiliary_go123\.go$
+      - ^apihub/apiv1/doc\.go$
+      - ^apihub/apiv1/gapic_metadata\.json$
+      - ^apihub/apiv1/helpers\.go$
+      - ^apihub/apiv1/apihubpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/apihub/
+    tag_format: '{id}/v{version}'
   - id: auth
     version: 0.16.5
     last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
@@ -56,4 +207,3 @@ libraries:
     remove_regex: []
     release_exclude_paths:
       - auth/oauth2adapt
-    tag_format: '{id}/v{version}'

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.1.0...shopping/v1.1.1) (2025-09-30)
+
+
+### Documentation
+
+* **shopping/merchant/products:** Remove stale beta annotation ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.0.0...shopping/v1.1.0) (2025-09-04)
 
 

@@ -36,6 +36,11 @@ type Library struct {
 	RemoveRegex []string `json:"remove_regex,omitempty"`
 	// Changes are the changes being released (in a release request)
 	Changes []*Change `json:"changes,omitempty"`
+	// Specifying a tag format allows librarian to honor this format when creating
+	// a tag for the release of the library. The replacement values of {id} and {version}
+	// permitted to reference the values configured in the library. If not specified
+	// the assumed format is {id}-{version}. e.g., {id}/v{version}.
+	TagFormat string `yaml:"tag_format,omitempty" json:"tag_format,omitempty"`
 	// ReleaseTriggered indicates whether this library is being released (in a release request)
 	ReleaseTriggered bool `json:"release_triggered,omitempty"`
 }
