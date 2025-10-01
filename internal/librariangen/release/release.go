@@ -122,14 +122,7 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 
 	var newEntry bytes.Buffer
 
-	var tag string
-	// This is normally, but not *always*, because it's whole-repo library
-	if lib.TagFormat == "v{version}" {
-		tag = "v" + lib.Version
-	} else {
-		tag = fmt.Sprintf("%s/v%s", lib.ID, lib.Version)
-	}
-
+	tag := strings.NewReplacer("{id}", lib.ID, "{version}", lib.Version).Replace(lib.TagFormat)
 	encodedTag := strings.ReplaceAll(tag, "/", "%2F")
 	releaseURL := "https://github.com/googleapis/google-cloud-go/releases/tag/" + encodedTag
 	date := t.Format("2006-01-02")
