@@ -118,7 +118,7 @@ func Generate(ctx context.Context, cfg *Config) error {
 		return fmt.Errorf("librariangen: failed to flatten output: %w", err)
 	}
 
-	if err := applyModuleVersion(cfg.OutputDir, moduleConfig.GetModulePath()); err != nil {
+	if err := applyModuleVersion(cfg.OutputDir, generateReq.ID, moduleConfig.GetModulePath()); err != nil {
 		return fmt.Errorf("librariangen: failed to apply module version to output directories: %w", err)
 	}
 
@@ -217,8 +217,10 @@ func flattenOutput(outputDir string) error {
 // appropriately for versioned modules. For a module path of the form cloud.google.com/go/{id}/{version},
 // we expect to find /output/{id}/{version} and /output/internal/generated/snippets/{id}/{version}.
 // The content of these directories are be moved into /output/{id} and
-// /output/internal/generated/snippets/{id}
-func applyModuleVersion(outputDir, modulePath string) error {
+// /output/internal/generated/snippets/{id}. If the library ID already includes the version,
+// then we assume it's because we're handling multiple versions, and the code is already at
+// {module}/{version}.
+func applyModuleVersion(outputDir, libraryID, modulePath string) error {
 	parts := strings.Split(modulePath, "/")
 	// Just cloud.google.com/go/xyz
 	if len(parts) == 3 {
@@ -231,6 +233,10 @@ func applyModuleVersion(outputDir, modulePath string) error {
 	id := parts[2]
 	// e.g. v2
 	version := parts[3]
+
+	if libraryID == id+"/"+version {
+		return nil
+	}
 
 	srcDir := filepath.Join(outputDir, id)
 	srcVersionDir := filepath.Join(srcDir, version)
