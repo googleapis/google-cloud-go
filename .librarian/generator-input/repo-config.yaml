@@ -57,11 +57,6 @@ modules:
       - path: google/monitoring/v3
         client_directory: apiv3/v2
 
-  - name: pubsub/v2
-    apis:
-      - path: google/pubsub/v1
-        client_directory: v2/apiv1
-
   - name: recaptchaenterprise
     module_path_version: v2
 
