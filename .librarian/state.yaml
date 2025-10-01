@@ -2,7 +2,7 @@ image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian
 libraries:
   - id: dlp
     version: 1.25.0
-    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
     apis:
       - path: google/privacy/dlp/v2
         service_config: dlp_v2.yaml
@@ -24,7 +24,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataproc
     version: 2.14.1
-    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
     apis:
       - path: google/cloud/dataproc/v1
         service_config: dataproc_v1.yaml
@@ -48,20 +48,20 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.18.0
-    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
     apis:
       - path: google/cloud/alloydb/v1
-        service_config: ""
+        service_config: alloydb_v1.yaml
       - path: google/cloud/alloydb/v1alpha
-        service_config: ""
+        service_config: alloydb_v1alpha.yaml
       - path: google/cloud/alloydb/v1beta
-        service_config: ""
+        service_config: alloydb_v1beta.yaml
       - path: google/cloud/alloydb/connectors/v1
-        service_config: ""
+        service_config: connectors_v1.yaml
       - path: google/cloud/alloydb/connectors/v1alpha
-        service_config: ""
+        service_config: connectors_v1alpha.yaml
       - path: google/cloud/alloydb/connectors/v1beta
-        service_config: ""
+        service_config: connectors_v1beta.yaml
     source_roots:
       - alloydb
       - internal/generated/snippets/alloydb
@@ -127,10 +127,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigateway
     version: 1.7.7
-    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
     apis:
       - path: google/cloud/apigateway/v1
-        service_config: ""
+        service_config: apigateway_v1.yaml
     source_roots:
       - apigateway
       - internal/generated/snippets/apigateway
@@ -151,10 +151,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeconnect
     version: 1.7.7
-    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
     apis:
       - path: google/cloud/apigeeconnect/v1
-        service_config: ""
+        service_config: apigeeconnect_v1.yaml
     source_roots:
       - apigeeconnect
       - internal/generated/snippets/apigeeconnect
@@ -175,10 +175,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apihub
     version: 0.2.0
-    last_generated_commit: e78280f4648373caffb79fe532866728625db2fe
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
     apis:
       - path: google/cloud/apihub/v1
-        service_config: ""
+        service_config: apihub_v1.yaml
     source_roots:
       - apihub
       - internal/generated/snippets/apihub
