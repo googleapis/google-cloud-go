@@ -243,4 +243,4 @@ libraries:
       - ^pubsub/v2/apiv1/v2pb/.*$
     release_exclude_paths:
       - internal/generated/snippets/pubsub/v2/
-    tag_format: 'pubsub/v{version}'
+    tag_format: pubsub/v{version}
