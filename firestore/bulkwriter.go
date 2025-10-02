@@ -27,6 +27,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -186,8 +187,7 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJo
 		return nil, fmt.Errorf("firestore: too many document writes sent to bulkwriter")
 	}
 
-	j := bw.write(w[0])
-	return j, nil
+	return bw.write(w[0])
 }
 
 // Delete adds a document deletion write to the queue of writes to send.
@@ -209,8 +209,7 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkW
 		return nil, fmt.Errorf("firestore: too many document writes sent to bulkwriter")
 	}
 
-	j := bw.write(w[0])
-	return j, nil
+	return bw.write(w[0])
 }
 
 // Set adds a document set write to the queue of writes to send.
@@ -232,8 +231,7 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 		return nil, fmt.Errorf("firestore: too many writes sent to bulkwriter")
 	}
 
-	j := bw.write(w[0])
-	return j, nil
+	return bw.write(w[0])
 }
 
 // Update adds a document update write to the queue of writes to send.
@@ -255,8 +253,7 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 		return nil, fmt.Errorf("firestore: too many writes sent to bulkwriter")
 	}
 
-	j := bw.write(w[0])
-	return j, nil
+	return bw.write(w[0])
 }
 
 // checkConditions determines whether this write attempt is valid. It returns
@@ -284,20 +281,25 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 }
 
 // write packages up write requests into bulkWriterJob objects.
-func (bw *BulkWriter) write(w *pb.Write) *BulkWriterJob {
-
+func (bw *BulkWriter) write(w *pb.Write) (*BulkWriterJob, error) {
 	j := &BulkWriterJob{
 		resultChan: make(chan bulkWriterResult, 1),
 		write:      w,
 		ctx:        bw.ctx,
 	}
 
-	bw.limiter.Wait(bw.ctx)
-	// ignore operation size constraints and related errors; can't be inferred at compile time
-	// Bundler is set to accept an unlimited amount of bytes
-	_ = bw.bundler.Add(j, 0)
+	if err := bw.limiter.Wait(bw.ctx); err != nil {
+		j.setError(err)
+		return j, err
+	}
 
-	return j
+	estimatedSize := proto.Size(w)
+	if err := bw.bundler.AddWait(bw.ctx, j, estimatedSize); err != nil {
+		j.setError(err)
+		return j, err
+	}
+
+	return j, nil
 }
 
 // send transmits writes to the service and matches response results to job channels.
