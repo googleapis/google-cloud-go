@@ -198,7 +198,7 @@ libraries:
       - internal/generated/snippets/apihub/
     tag_format: '{id}/v{version}'
   - id: auth
-    version: 0.16.5
+    version: 0.17.0
     last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
     apis: []
     source_roots:
