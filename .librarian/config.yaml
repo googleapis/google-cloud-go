@@ -4,6 +4,8 @@
 # libraries have "release_blocked: true" so that releases are
 # explicitly initiated
 libraries:
+  - id: "auth"
+    release_blocked: true
   - id: "pubsub"
     release_blocked: true
   - id: "pubsub/v2"

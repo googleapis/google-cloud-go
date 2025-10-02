@@ -21,18 +21,6 @@
         "analytics": {
             "component": "analytics"
         },
-        "apigeeregistry": {
-            "component": "apigeeregistry"
-        },
-        "apikeys": {
-            "component": "apikeys"
-        },
-        "appengine": {
-            "component": "appengine"
-        },
-        "apphub": {
-            "component": "apphub"
-        },
         "apps": {
             "component": "apps"
         },
@@ -183,9 +171,6 @@
         "essentialcontacts": {
             "component": "essentialcontacts"
         },
-        "eventarc": {
-            "component": "eventarc"
-        },
         "filestore": {
             "component": "filestore"
         },
@@ -260,9 +245,6 @@
         },
         "managedkafka": {
             "component": "managedkafka"
-        },
-        "maps": {
-            "component": "maps"
         },
         "mediatranslation": {
             "component": "mediatranslation"
