@@ -207,6 +207,7 @@ libraries:
     remove_regex: []
     release_exclude_paths:
       - auth/oauth2adapt
+    tag_format: '{id}/v{version}'
   - id: apigeeregistry
     version: 0.9.6
     last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
