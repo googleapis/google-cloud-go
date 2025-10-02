@@ -25,30 +25,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestLoadVersion(t *testing.T) {
-	tmpDir := t.TempDir()
-	internalDir := filepath.Join(tmpDir, "internal")
-	if err := os.Mkdir(internalDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-	versionFile := filepath.Join(internalDir, "version.go")
-	versionContents := `
-package internal
-
-const Version = "1.2.3"
-`
-	if err := os.WriteFile(versionFile, []byte(versionContents), 0644); err != nil {
-		t.Fatal(err)
-	}
-	version, err := loadVersion(tmpDir)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if version != "1.2.3" {
-		t.Errorf("got %q, want %q", version, "1.2.3")
-	}
-}
-
 func TestFindLatestGoogleapisCommit(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, `{"commit": {"sha": "my-sha"}}`)
@@ -65,88 +41,58 @@ func TestFindLatestGoogleapisCommit(t *testing.T) {
 }
 
 func TestAddModule(t *testing.T) {
+	// 1. Setup initial state from source file
+	state, err := parseLibrarianState("testdata/source/.librarian/state.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// 2. Setup dummy module dir and files for "apihub"
 	tmpDir := t.TempDir()
-	if err := os.MkdirAll(filepath.Join(tmpDir, "foo", "apiv1"), 0755); err != nil {
+	apihubRoot := filepath.Join(tmpDir, "apihub")
+	if err := os.MkdirAll(filepath.Join(apihubRoot, "apiv1"), 0755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.MkdirAll(filepath.Join(tmpDir, "foo", "internal"), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(apihubRoot, "internal"), 0755); err != nil {
 		t.Fatal(err)
 	}
-	versionFile := filepath.Join(tmpDir, "foo", "internal", "version.go")
+	versionFile := filepath.Join(apihubRoot, "internal", "version.go")
 	versionContents := `
 package internal
 
-const Version = "1.2.3"
+const Version = "0.2.0"
 `
 	if err := os.WriteFile(versionFile, []byte(versionContents), 0644); err != nil {
 		t.Fatal(err)
 	}
+
+	// 3. Setup post-processor config for apihub
 	ppc := &postProcessorConfig{
 		ServiceConfigs: []*serviceConfigEntry{
 			{
-				ImportPath:     "cloud.google.com/go/foo/apiv1",
-				InputDirectory: "google/cloud/foo/v1",
+				ImportPath:     "cloud.google.com/go/apihub/apiv1",
+				InputDirectory: "google/cloud/apihub/v1",
+				ServiceConfig:  "apihub_v1.yaml",
 			},
 		},
 	}
-	state := &LibrarianState{}
-	if err := addModule(tmpDir, ppc, state, "foo", "my-commit"); err != nil {
+
+	// 4. Add the module
+	if err := addModule(tmpDir, ppc, state, "apihub", "063f9e19c5890182920980ced75828fd7c0588a5"); err != nil {
 		t.Fatal(err)
 	}
-	if len(state.Libraries) != 1 {
-		t.Fatalf("got %d libraries, want 1", len(state.Libraries))
+
+	// 5. The save function sorts, so we sort here to compare.
+	sortStateLibraries(state)
+
+	// 6. Load golden file as "want"
+	wantState, err := parseLibrarianState("testdata/golden/apihub/.librarian/state.yaml")
+	if err != nil {
+		t.Fatal(err)
 	}
-	lib := state.Libraries[0]
-	want := &LibraryState{
-		ID:                  "foo",
-		Version:             "1.2.3",
-		LastGeneratedCommit: "my-commit",
-		APIs: []*API{
-			{
-				Path: "google/cloud/foo/v1",
-			},
-		},
-		SourceRoots: []string{
-			"foo",
-			"internal/generated/snippets/foo",
-		},
-		RemoveRegex: []string{
-			"^internal/generated/snippets/foo/",
-			"^foo/apiv1/[^/]*_client\\.go$",
-			"^foo/apiv1/[^/]*_client_example_go123_test\\.go$",
-			"^foo/apiv1/[^/]*_client_example_test\\.go$",
-			"^foo/apiv1/auxiliary\\.go$",
-			"^foo/apiv1/auxiliary_go123\\.go$",
-			"^foo/apiv1/doc\\.go$",
-			"^foo/apiv1/gapic_metadata\\.json$",
-			"^foo/apiv1/helpers\\.go$",
-			"^foo/apiv1/foopb/.*$",
-		},
-		ReleaseExcludePaths: []string{
-			"internal/generated/snippets/foo/",
-		},
-		TagFormat: "{id}/v{version}",
-	}
-	// Don't compare RemoveRegex because the order is not guaranteed.
-	removeRegex := lib.RemoveRegex
-	lib.RemoveRegex = nil
-	want.RemoveRegex = nil
-	if diff := cmp.Diff(want, lib); diff != "" {
-		t.Errorf("mismatch (-want +got):\n%s", diff)
-	}
-	wantRemoveRegex := []string{
-		"^internal/generated/snippets/foo/",
-		"^foo/apiv1/[^/]*_client\\.go$",
-		"^foo/apiv1/[^/]*_client_example_go123_test\\.go$",
-		"^foo/apiv1/[^/]*_client_example_test\\.go$",
-		"^foo/apiv1/auxiliary\\.go$",
-		"^foo/apiv1/auxiliary_go123\\.go$",
-		"^foo/apiv1/doc\\.go$",
-		"^foo/apiv1/gapic_metadata\\.json$",
-		"^foo/apiv1/helpers\\.go$",
-		"^foo/apiv1/foopb/.*$",
-	}
-	if diff := cmp.Diff(wantRemoveRegex, removeRegex); diff != "" {
+
+	// 7. Compare
+	if diff := cmp.Diff(wantState.Libraries, state.Libraries); diff != "" {
 		t.Errorf("mismatch (-want +got):\n%s", diff)
 	}
 }

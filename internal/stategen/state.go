@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -163,7 +164,8 @@ func addModule(repoRoot string, ppc *postProcessorConfig, state *LibrarianState,
 		SourceRoots: []string{
 			moduleName,
 		},
-		TagFormat: "{id}/v{version}",
+		PreserveRegex: []string{},
+		TagFormat:     "{id}/v{version}",
 	}
 
 	version, err := loadVersion(moduleRoot)
@@ -199,7 +201,8 @@ func addAPIProtoPaths(ppc *postProcessorConfig, moduleName string, library *Libr
 	for _, serviceConfig := range ppc.ServiceConfigs {
 		if strings.HasPrefix(serviceConfig.ImportPath, importPrefix) {
 			api := &API{
-				Path: serviceConfig.InputDirectory,
+				Path:          serviceConfig.InputDirectory,
+				ServiceConfig: serviceConfig.ServiceConfig,
 			}
 			library.APIs = append(library.APIs, api)
 		}
@@ -269,6 +272,7 @@ func loadVersion(moduleRoot string) (string, error) {
 // Copied from https://github.com/googleapis/librarian/blob/main/internal/librarian/state.go
 // with minimal modification
 func saveLibrarianState(path string, state *LibrarianState) error {
+	sortStateLibraries(state)
 	var buffer bytes.Buffer
 	encoder := yaml.NewEncoder(&buffer)
 	encoder.SetIndent(2)
@@ -277,6 +281,12 @@ func saveLibrarianState(path string, state *LibrarianState) error {
 		return err
 	}
 	return os.WriteFile(path, buffer.Bytes(), 0644)
+}
+
+func sortStateLibraries(state *LibrarianState) {
+	sort.Slice(state.Libraries, func(i, j int) bool {
+		return state.Libraries[i].ID < state.Libraries[j].ID
+	})
 }
 
 func parseLibrarianState(path string) (*LibrarianState, error) {
