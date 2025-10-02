@@ -443,6 +443,7 @@ libraries:
     version: 0.123.0
     last_generated_commit: 3990e05b25dcaf7ba8d6baa4255d9b012a3a6a4f
     apis: []
+    source_roots:
       - civil
       - httpreplay
       - rpcreplay
