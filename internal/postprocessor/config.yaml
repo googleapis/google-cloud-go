@@ -1244,8 +1244,6 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
-  - auth
-  - auth/oauth2adapt
   - maps
   - eventarc
   - apphub
@@ -1253,6 +1251,7 @@ skip-module-scan-paths:
   - apikeys
   - apigeeregistry
   - auth
+  - auth/oauth2adapt
   - apihub
   - apigeeconnect
   - apigateway
