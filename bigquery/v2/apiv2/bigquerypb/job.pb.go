@@ -1438,12 +1438,13 @@ type QueryRequest struct {
 	// that takes 10 seconds to complete. This timeout applies to the query even
 	// if a job does not need to be created.
 	JobTimeoutMs *int64 `protobuf:"varint,26,opt,name=job_timeout_ms,json=jobTimeoutMs,proto3,oneof" json:"job_timeout_ms,omitempty"`
-	// Optional. INTERNAL: DO NOT USE. The maximum rate of slot consumption to
-	// allow for this job.
+	// Optional. A target limit on the rate of slot consumption by this query. If
+	// set to a value > 0, BigQuery will attempt to limit the rate of slot
+	// consumption by this query to keep it below the configured limit, even if
+	// the query is eligible for more slots based on fair scheduling. The unused
+	// slots will be available for other jobs and queries to use.
 	//
-	// If set, the number of slots used to execute the job will be throttled
-	// to try and keep its slot consumption below the requested rate. This limit
-	// is best effort.
+	// Note: This feature is not yet generally available.
 	MaxSlots *int32 `protobuf:"varint,28,opt,name=max_slots,json=maxSlots,proto3,oneof" json:"max_slots,omitempty"`
 	// Optional. Custom encryption configuration (e.g., Cloud KMS keys)
 	DestinationEncryptionConfiguration *EncryptionConfiguration `protobuf:"bytes,27,opt,name=destination_encryption_configuration,json=destinationEncryptionConfiguration,proto3" json:"destination_encryption_configuration,omitempty"`

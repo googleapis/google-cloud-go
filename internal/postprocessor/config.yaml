@@ -5,10 +5,6 @@ modules:
   - aiplatform
   - advisorynotifications
   - analytics
-  - apigeeregistry
-  - apikeys
-  - appengine
-  - apphub
   - apps
   - area120
   - artifactregistry
@@ -66,7 +62,6 @@ modules:
   - edgenetwork
   - errorreporting
   - essentialcontacts
-  - eventarc
   - filestore
   - financialservices
   - firestore
@@ -93,7 +88,6 @@ modules:
   - maintenance
   - managedidentities
   - managedkafka
-  - maps
   - mediatranslation
   - memcache
   - memorystore
@@ -310,12 +304,6 @@ service-configs:
   - input-directory: google/analytics/admin/v1alpha
     service-config: analyticsadmin_v1alpha.yaml
     import-path: cloud.google.com/go/analytics/admin/apiv1alpha
-  - input-directory: google/api/apikeys/v2
-    service-config: apikeys_v2.yaml
-    import-path: cloud.google.com/go/apikeys/apiv2
-  - input-directory: google/appengine/v1
-    service-config: appengine_v1.yaml
-    import-path: cloud.google.com/go/appengine/apiv1
   - input-directory: google/apps/events/subscriptions/v1
     service-config: workspaceevents_v1.yaml
     import-path: cloud.google.com/go/apps/events/subscriptions/apiv1
@@ -343,12 +331,6 @@ service-configs:
   - input-directory: google/cloud/advisorynotifications/v1
     service-config: advisorynotifications_v1.yaml
     import-path: cloud.google.com/go/advisorynotifications/apiv1
-  - input-directory: google/cloud/apigeeregistry/v1
-    service-config: apigeeregistry_v1.yaml
-    import-path: cloud.google.com/go/apigeeregistry/apiv1
-  - input-directory: google/cloud/apphub/v1
-    service-config: apphub_v1.yaml
-    import-path: cloud.google.com/go/apphub/apiv1
   - input-directory: google/cloud/asset/v1
     service-config: cloudasset_v1.yaml
     import-path: cloud.google.com/go/asset/apiv1
@@ -612,12 +594,6 @@ service-configs:
   - input-directory: google/cloud/essentialcontacts/v1
     service-config: essentialcontacts_v1.yaml
     import-path: cloud.google.com/go/essentialcontacts/apiv1
-  - input-directory: google/cloud/eventarc/v1
-    service-config: eventarc_v1.yaml
-    import-path: cloud.google.com/go/eventarc/apiv1
-  - input-directory: google/cloud/eventarc/publishing/v1
-    service-config: eventarcpublishing_v1.yaml
-    import-path: cloud.google.com/go/eventarc/publishing/apiv1
   - input-directory: google/cloud/filestore/v1
     service-config: file_v1.yaml
     import-path: cloud.google.com/go/filestore/apiv1
@@ -1288,6 +1264,13 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - maps
+  - eventarc
+  - apphub
+  - appengine
+  - apikeys
+  - apigeeregistry
+  - auth
   - apihub
   - apigeeconnect
   - apigateway
@@ -1296,7 +1279,6 @@ skip-module-scan-paths:
   - dlp
   - longrunning
   # individually released modules
-  - auth
   - auth/oauth2adapt
   - bigquery
   - bigquery/v2

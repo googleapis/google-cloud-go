@@ -12,10 +12,6 @@ deep-remove-regex:
   - /aiplatform/apiv1beta1/
   - /advisorynotifications/apiv1/
   - /analytics/admin/apiv1alpha/
-  - /apigeeregistry/apiv1/
-  - /apikeys/apiv2/
-  - /appengine/apiv1/
-  - /apphub/apiv1/
   - /apps/events/subscriptions/apiv1/
   - /apps/events/subscriptions/apiv1beta/
   - /apps/meet/apiv2/
@@ -123,8 +119,6 @@ deep-remove-regex:
   - /edgenetwork/apiv1/
   # - /errorreporting/apiv1beta1/
   - /essentialcontacts/apiv1/
-  - /eventarc/apiv1/
-  - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
   - /financialservices/apiv1/
   - /firestore/apiv1/
@@ -158,10 +152,6 @@ deep-remove-regex:
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/advisorynotifications/apiv1/
   - /internal/generated/snippets/analytics/admin/apiv1alpha/
-  - /internal/generated/snippets/apigeeregistry/apiv1/
-  - /internal/generated/snippets/apikeys/apiv2/
-  - /internal/generated/snippets/appengine/apiv1/
-  - /internal/generated/snippets/apphub/apiv1/
   - /internal/generated/snippets/apps/events/subscriptions/apiv1/
   - /internal/generated/snippets/apps/events/subscriptions/apiv1beta/
   - /internal/generated/snippets/apps/meet/apiv2/
@@ -266,8 +256,6 @@ deep-remove-regex:
   - /internal/generated/snippets/edgenetwork/apiv1/
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/essentialcontacts/apiv1/
-  - /internal/generated/snippets/eventarc/apiv1/
-  - /internal/generated/snippets/eventarc/publishing/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
   - /internal/generated/snippets/financialservices/apiv1/
   - /internal/generated/snippets/firestore/apiv1/
@@ -305,14 +293,6 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/managedkafka/schemaregistry/apiv1/
-  - /internal/generated/snippets/maps/addressvalidation/apiv1/
-  - /internal/generated/snippets/maps/areainsights/apiv1/
-  - /internal/generated/snippets/maps/fleetengine/apiv1/
-  - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
-  - /internal/generated/snippets/maps/places/apiv1/
-  - /internal/generated/snippets/maps/routeoptimization/apiv1/
-  - /internal/generated/snippets/maps/routing/apiv2/
-  - /internal/generated/snippets/maps/solar/apiv1/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
@@ -479,14 +459,6 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /managedkafka/schemaregistry/apiv1/
-  - /maps/addressvalidation/apiv1/
-  - /maps/areainsights/apiv1/
-  - /maps/fleetengine/apiv1/
-  - /maps/fleetengine/delivery/apiv1/
-  - /maps/places/apiv1/
-  - /maps/routeoptimization/apiv1/
-  - /maps/routing/apiv2/
-  - /maps/solar/apiv1/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
@@ -704,23 +676,15 @@ deep-copy-regex:
     dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
     dest: /
-  - source: /google/cloud/apigeeregistry/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/asset/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go
     dest: /
-  - source: /google/api/apikeys/v2/cloud.google.com/go
-    dest: /
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
     dest: /
   - source: /google/api/cloudquotas/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/appengine/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apphub/v1/cloud.google.com/go
     dest: /
   - source: /google/apps/events/subscriptions/v1/cloud.google.com/go
     dest: /
@@ -928,10 +892,6 @@ deep-copy-regex:
   #   dest: /
   - source: /google/cloud/essentialcontacts/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/eventarc/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/eventarc/publishing/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/filestore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/financialservices/v1/cloud.google.com/go
@@ -1005,22 +965,6 @@ deep-copy-regex:
   - source: /google/cloud/managedkafka/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/managedkafka/schemaregistry/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/addressvalidation/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/areainsights/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/fleetengine/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/fleetengine/delivery/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/places/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/routeoptimization/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/routing/v2/cloud.google.com/go
-    dest: /
-  - source: /google/maps/solar/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go
     dest: /

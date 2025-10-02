@@ -185,6 +185,26 @@ func TestInit(t *testing.T) {
 			wantVersion:         "1.16.0",
 		},
 		{
+			name: "custom tag format",
+			requestJSON: `{
+				"libraries": [{
+					"id": "xyz", "version": "1.16.0", "release_triggered": true,
+					"source_roots": ["xyz"],
+					"changes": [
+						{"type": "feat", "subject": "another feature", "source_commit_hash": "zxcvbn098765"}
+					],
+					"tag_format": "custom-{id}-v{version}"
+				}]
+			}`,
+			moduleRootPath: "xyz",
+			initialRepoContent: map[string]string{
+				"xyz/CHANGES.md":          "# Changes\n\n## [1.15.0]\n- Old stuff.",
+				"xyz/internal/version.go": `package internal; const Version = "1.15.0"`,
+			},
+			wantChangelogSubstr: "## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/custom-xyz-v1.16.0) (2025-09-11)\n\n### Features\n\n* another feature ([zxcvbn0](https://github.com/googleapis/google-cloud-go/commit/zxcvbn098765))\n\n",
+			wantVersion:         "1.16.0",
+		},
+		{
 			name:        "malformed json",
 			requestJSON: `{"libraries": [}`,
 			wantErr:     true,
