@@ -251,6 +251,10 @@ func writeErrorResponse(dir string, err error) error {
 // google-cloud-go containing "civil", "rpcreplay" etc is slightly
 // hacky, but avoids creating special-purpose configuration which
 // is realistically only ever going to be used by a single module.
+// For example, we could add a "module-root" field in repo-config.yaml
+// and set that to an empty string for whole-repo libraries and the
+// google-cloud-go main module. The single line of code below seems
+// simpler.
 func isRootRepoModule(lib *request.Library) bool {
 	return slices.Contains(lib.SourcePaths, ".") || lib.ID == "root-module"
 }

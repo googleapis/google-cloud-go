@@ -214,12 +214,17 @@ func flattenOutput(outputDir string) error {
 }
 
 // applyModuleVersion reorganizes the (already flattened) output directory
-// appropriately for versioned modules. For a module path of the form cloud.google.com/go/{id}/{version},
-// we expect to find /output/{id}/{version} and /output/internal/generated/snippets/{id}/{version}.
-// The content of these directories are be moved into /output/{id} and
-// /output/internal/generated/snippets/{id}. If the library ID already includes the version,
-// then we assume it's because we're handling multiple versions, and the code is already at
-// {module}/{version}.
+// appropriately for versioned modules. For a module path of the form
+// cloud.google.com/go/{module-id}/{version}, we expect to find
+// /output/{id}/{version} and /output/internal/generated/snippets/{module-id}/{version}.
+// In most cases, we only support a single major version of the module, rooted at
+// /{module-id} in the repository, so the content of these directories are moved into
+// /output/{module-id} and /output/internal/generated/snippets/{id}.
+//
+// However, when we need to support multiple major versions, we use {module-id}/{version}
+// as the *library* ID (in the state file etc). That indicates that the module is rooted
+// in that versioned directory (e.g. "pubsub/v2"). In that case, the flattened code is
+// already in the right place, so this function doesn't need to do anything.
 func applyModuleVersion(outputDir, libraryID, modulePath string) error {
 	parts := strings.Split(modulePath, "/")
 	// Just cloud.google.com/go/xyz
