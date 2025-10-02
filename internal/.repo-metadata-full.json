@@ -99,46 +99,6 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/apigeeregistry/apiv1": {
-    "api_shortname": "apigeeregistry",
-    "distribution_name": "cloud.google.com/go/apigeeregistry/apiv1",
-    "description": "Apigee Registry API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apigeeregistry/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/apikeys/apiv2": {
-    "api_shortname": "apikeys",
-    "distribution_name": "cloud.google.com/go/apikeys/apiv2",
-    "description": "API Keys API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apikeys/latest/apiv2",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/appengine/apiv1": {
-    "api_shortname": "appengine",
-    "distribution_name": "cloud.google.com/go/appengine/apiv1",
-    "description": "App Engine Admin API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/appengine/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/apphub/apiv1": {
-    "api_shortname": "apphub",
-    "distribution_name": "cloud.google.com/go/apphub/apiv1",
-    "description": "App Hub API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apphub/latest/apiv1",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/apps/events/subscriptions/apiv1": {
     "api_shortname": "workspaceevents",
     "distribution_name": "cloud.google.com/go/apps/events/subscriptions/apiv1",
@@ -1256,26 +1216,6 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/essentialcontacts/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/eventarc/apiv1": {
-    "api_shortname": "eventarc",
-    "distribution_name": "cloud.google.com/go/eventarc/apiv1",
-    "description": "Eventarc API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/eventarc/publishing/apiv1": {
-    "api_shortname": "eventarcpublishing",
-    "distribution_name": "cloud.google.com/go/eventarc/publishing/apiv1",
-    "description": "Eventarc Publishing API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/publishing/apiv1",
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
