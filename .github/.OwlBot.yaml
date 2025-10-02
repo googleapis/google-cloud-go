@@ -630,7 +630,6 @@ deep-preserve-regex:
   - /networkconnectivity/apiv1/policy_based_routing_client.go
   - /networkconnectivity/apiv1/policy_based_routing_client_example_test.go
   - /networkconnectivity/apiv1/networkconnectivitypb/policy_based_routing.pb.go
-  # Preserve pubsub apiv1 until deprecation date in a year even though it's not generated.
   - /secretmanager/apiv1/iam.go
   - /secretmanager/apiv1/iam_example_test.go
   - /spanner/admin/database/apiv1/backup.go
