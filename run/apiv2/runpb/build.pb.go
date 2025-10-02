@@ -22,11 +22,7 @@ package runpb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -692,86 +688,4 @@ func file_google_cloud_run_v2_build_proto_init() {
 	file_google_cloud_run_v2_build_proto_rawDesc = nil
 	file_google_cloud_run_v2_build_proto_goTypes = nil
 	file_google_cloud_run_v2_build_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// BuildsClient is the client API for Builds service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type BuildsClient interface {
-	// Submits a build in a given project.
-	SubmitBuild(ctx context.Context, in *SubmitBuildRequest, opts ...grpc.CallOption) (*SubmitBuildResponse, error)
-}
-
-type buildsClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewBuildsClient(cc grpc.ClientConnInterface) BuildsClient {
-	return &buildsClient{cc}
-}
-
-func (c *buildsClient) SubmitBuild(ctx context.Context, in *SubmitBuildRequest, opts ...grpc.CallOption) (*SubmitBuildResponse, error) {
-	out := new(SubmitBuildResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Builds/SubmitBuild", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// BuildsServer is the server API for Builds service.
-type BuildsServer interface {
-	// Submits a build in a given project.
-	SubmitBuild(context.Context, *SubmitBuildRequest) (*SubmitBuildResponse, error)
-}
-
-// UnimplementedBuildsServer can be embedded to have forward compatible implementations.
-type UnimplementedBuildsServer struct {
-}
-
-func (*UnimplementedBuildsServer) SubmitBuild(context.Context, *SubmitBuildRequest) (*SubmitBuildResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitBuild not implemented")
-}
-
-func RegisterBuildsServer(s *grpc.Server, srv BuildsServer) {
-	s.RegisterService(&_Builds_serviceDesc, srv)
-}
-
-func _Builds_SubmitBuild_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitBuildRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BuildsServer).SubmitBuild(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.run.v2.Builds/SubmitBuild",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BuildsServer).SubmitBuild(ctx, req.(*SubmitBuildRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Builds_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.run.v2.Builds",
-	HandlerType: (*BuildsServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SubmitBuild",
-			Handler:    _Builds_SubmitBuild_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/run/v2/build.proto",
 }
