@@ -4,5 +4,7 @@
 # libraries have "release_blocked: true" so that releases are
 # explicitly initiated
 libraries:
+  - id: "auth"
+    release_blocked: true
   - id: "compute/metadata"
     release_blocked: true
