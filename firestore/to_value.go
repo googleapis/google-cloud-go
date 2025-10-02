@@ -330,12 +330,15 @@ func isZeroValue(v reflect.Value) bool {
 	if !v.IsValid() {
 		return true
 	}
+
 	if v.Type().Implements(isZeroerType) {
-		if v.Kind() == reflect.Interface || v.Kind() == reflect.Pointer {
+		isInterface := v.Kind() == reflect.Interface
+		isPointer := v.Kind() == reflect.Pointer
+		if isInterface || isPointer {
 			if v.IsNil() {
 				return true
 			}
-			if v.Kind() == reflect.Interface && v.Elem().Kind() == reflect.Pointer && v.Elem().IsNil() {
+			if isInterface && v.Elem().Kind() == reflect.Pointer && v.Elem().IsNil() {
 				return true
 			}
 		}
