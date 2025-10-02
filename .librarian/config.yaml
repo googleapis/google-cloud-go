@@ -6,3 +6,16 @@
 libraries:
   - id: "auth"
     release_blocked: true
+  - id: "root-module"
+    release_blocked: true
+# The "global" files here are really only for the root module.
+# The code for that module is all under civil, httpreplay and
+# rpcreplay but releasing the module requires these files to
+# be updated. We don't want to add source paths of "." or
+# "internal" to the state file, as those would include everything
+# that's *not* in the module.
+global_files_allowlist:
+  - path: "internal/version.go"
+    permissions: "read-write"
+  - path: "CHANGES.md"
+    permissions: "read-write"
