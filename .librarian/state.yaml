@@ -305,7 +305,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: eventarc
     version: 1.16.1
-    last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
+    last_generated_commit: b7e013ac0b9896cf89de48706221ec22212d8d0e
     apis:
       - path: google/cloud/eventarc/v1
         service_config: ""
