@@ -22,11 +22,7 @@
 package phishingprotectionpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -253,98 +249,4 @@ func file_google_cloud_phishingprotection_v1beta1_phishingprotection_proto_init(
 	file_google_cloud_phishingprotection_v1beta1_phishingprotection_proto_rawDesc = nil
 	file_google_cloud_phishingprotection_v1beta1_phishingprotection_proto_goTypes = nil
 	file_google_cloud_phishingprotection_v1beta1_phishingprotection_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// PhishingProtectionServiceV1Beta1Client is the client API for PhishingProtectionServiceV1Beta1 service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type PhishingProtectionServiceV1Beta1Client interface {
-	// Reports a URI suspected of containing phishing content to be reviewed. Once
-	// the report review is complete, its result can be found in the Cloud
-	// Security Command Center findings dashboard for Phishing Protection. If the
-	// result verifies the existence of malicious phishing content, the site will
-	// be added the to [Google's Social Engineering
-	// lists](https://support.google.com/webmasters/answer/6350487/) in order to
-	// protect users that could get exposed to this threat in the future.
-	ReportPhishing(ctx context.Context, in *ReportPhishingRequest, opts ...grpc.CallOption) (*ReportPhishingResponse, error)
-}
-
-type phishingProtectionServiceV1Beta1Client struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewPhishingProtectionServiceV1Beta1Client(cc grpc.ClientConnInterface) PhishingProtectionServiceV1Beta1Client {
-	return &phishingProtectionServiceV1Beta1Client{cc}
-}
-
-func (c *phishingProtectionServiceV1Beta1Client) ReportPhishing(ctx context.Context, in *ReportPhishingRequest, opts ...grpc.CallOption) (*ReportPhishingResponse, error) {
-	out := new(ReportPhishingResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1/ReportPhishing", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// PhishingProtectionServiceV1Beta1Server is the server API for PhishingProtectionServiceV1Beta1 service.
-type PhishingProtectionServiceV1Beta1Server interface {
-	// Reports a URI suspected of containing phishing content to be reviewed. Once
-	// the report review is complete, its result can be found in the Cloud
-	// Security Command Center findings dashboard for Phishing Protection. If the
-	// result verifies the existence of malicious phishing content, the site will
-	// be added the to [Google's Social Engineering
-	// lists](https://support.google.com/webmasters/answer/6350487/) in order to
-	// protect users that could get exposed to this threat in the future.
-	ReportPhishing(context.Context, *ReportPhishingRequest) (*ReportPhishingResponse, error)
-}
-
-// UnimplementedPhishingProtectionServiceV1Beta1Server can be embedded to have forward compatible implementations.
-type UnimplementedPhishingProtectionServiceV1Beta1Server struct {
-}
-
-func (*UnimplementedPhishingProtectionServiceV1Beta1Server) ReportPhishing(context.Context, *ReportPhishingRequest) (*ReportPhishingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReportPhishing not implemented")
-}
-
-func RegisterPhishingProtectionServiceV1Beta1Server(s *grpc.Server, srv PhishingProtectionServiceV1Beta1Server) {
-	s.RegisterService(&_PhishingProtectionServiceV1Beta1_serviceDesc, srv)
-}
-
-func _PhishingProtectionServiceV1Beta1_ReportPhishing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReportPhishingRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhishingProtectionServiceV1Beta1Server).ReportPhishing(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1/ReportPhishing",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhishingProtectionServiceV1Beta1Server).ReportPhishing(ctx, req.(*ReportPhishingRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _PhishingProtectionServiceV1Beta1_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1",
-	HandlerType: (*PhishingProtectionServiceV1Beta1Server)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ReportPhishing",
-			Handler:    _PhishingProtectionServiceV1Beta1_ReportPhishing_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/phishingprotection/v1beta1/phishingprotection.proto",
 }

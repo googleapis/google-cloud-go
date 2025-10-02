@@ -68,20 +68,21 @@ var defaultClient = &Client{
 	logger:    slog.New(noOpHandler{}),
 }
 
-func newDefaultHTTPClient(enableIdleTimeout bool) *http.Client {
+func newDefaultHTTPClient(enableTimeouts bool) *http.Client {
 	transport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout:   2 * time.Second,
 			KeepAlive: 30 * time.Second,
 		}).Dial,
 	}
-	if enableIdleTimeout {
-		transport.IdleConnTimeout = 60 * time.Second
-	}
-	return &http.Client{
+	c := &http.Client{
 		Transport: transport,
-		Timeout:   5 * time.Second,
 	}
+	if enableTimeouts {
+		transport.IdleConnTimeout = 60 * time.Second
+		c.Timeout = 5 * time.Second
+	}
+	return c
 }
 
 // NotDefinedError is returned when requested metadata is not defined.
@@ -392,7 +393,7 @@ func NewClient(c *http.Client) *Client {
 		return defaultClient
 	}
 	// Return a new client with a no-op logger for backward compatibility.
-	return &Client{hc: c, logger: slog.New(noOpHandler{})}
+	return &Client{hc: c, subClient: c, logger: slog.New(noOpHandler{})}
 }
 
 // NewWithOptions returns a Client that is configured with the provided Options.
@@ -408,7 +409,7 @@ func NewWithOptions(opts *Options) *Client {
 		if logger == nil {
 			logger = slog.New(noOpHandler{})
 		}
-		return &Client{hc: defaultClient.hc, logger: logger}
+		return &Client{hc: defaultClient.hc, subClient: defaultClient.subClient, logger: logger}
 	}
 
 	// Handle isolated client creation.

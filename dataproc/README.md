@@ -7,7 +7,7 @@ Go Client Library for Cloud Dataproc API.
 ## Install
 
 ```bash
-go get cloud.google.com/go/dataproc
+go get cloud.google.com/go/dataproc/v2
 ```
 
 ## Stability

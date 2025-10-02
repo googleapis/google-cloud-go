@@ -227,7 +227,7 @@ func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXp
 	return c.internalClient.ListXpnHosts(ctx, req, opts...)
 }
 
-// MoveDisk moves a persistent disk from one zone to another.
+// MoveDisk starting September 29, 2025, you can’t use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in Change the location of a disk (at https://%7B$universe.dns_names.final_documentation_domain%7D/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
 func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
@@ -868,7 +868,7 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// MoveDisk moves a persistent disk from one zone to another.
+// MoveDisk starting September 29, 2025, you can’t use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in Change the location of a disk (at https://%7B$universe.dns_names.final_documentation_domain%7D/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
 func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskMoveRequestResource()

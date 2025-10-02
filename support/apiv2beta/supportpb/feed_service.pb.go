@@ -21,11 +21,7 @@
 package supportpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -305,88 +301,4 @@ func file_google_cloud_support_v2beta_feed_service_proto_init() {
 	file_google_cloud_support_v2beta_feed_service_proto_rawDesc = nil
 	file_google_cloud_support_v2beta_feed_service_proto_goTypes = nil
 	file_google_cloud_support_v2beta_feed_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// FeedServiceClient is the client API for FeedService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type FeedServiceClient interface {
-	// Show items in the feed of this case, including case emails,
-	// attachments, and comments.
-	ShowFeed(ctx context.Context, in *ShowFeedRequest, opts ...grpc.CallOption) (*ShowFeedResponse, error)
-}
-
-type feedServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewFeedServiceClient(cc grpc.ClientConnInterface) FeedServiceClient {
-	return &feedServiceClient{cc}
-}
-
-func (c *feedServiceClient) ShowFeed(ctx context.Context, in *ShowFeedRequest, opts ...grpc.CallOption) (*ShowFeedResponse, error) {
-	out := new(ShowFeedResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.support.v2beta.FeedService/ShowFeed", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FeedServiceServer is the server API for FeedService service.
-type FeedServiceServer interface {
-	// Show items in the feed of this case, including case emails,
-	// attachments, and comments.
-	ShowFeed(context.Context, *ShowFeedRequest) (*ShowFeedResponse, error)
-}
-
-// UnimplementedFeedServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedFeedServiceServer struct {
-}
-
-func (*UnimplementedFeedServiceServer) ShowFeed(context.Context, *ShowFeedRequest) (*ShowFeedResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ShowFeed not implemented")
-}
-
-func RegisterFeedServiceServer(s *grpc.Server, srv FeedServiceServer) {
-	s.RegisterService(&_FeedService_serviceDesc, srv)
-}
-
-func _FeedService_ShowFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ShowFeedRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FeedServiceServer).ShowFeed(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.support.v2beta.FeedService/ShowFeed",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FeedServiceServer).ShowFeed(ctx, req.(*ShowFeedRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _FeedService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.support.v2beta.FeedService",
-	HandlerType: (*FeedServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ShowFeed",
-			Handler:    _FeedService_ShowFeed_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/support/v2beta/feed_service.proto",
 }

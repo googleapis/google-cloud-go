@@ -18,32 +18,8 @@
         "aiplatform": {
             "component": "aiplatform"
         },
-        "alloydb": {
-            "component": "alloydb"
-        },
         "analytics": {
             "component": "analytics"
-        },
-        "apigateway": {
-            "component": "apigateway"
-        },
-        "apigeeconnect": {
-            "component": "apigeeconnect"
-        },
-        "apigeeregistry": {
-            "component": "apigeeregistry"
-        },
-        "apihub": {
-            "component": "apihub"
-        },
-        "apikeys": {
-            "component": "apikeys"
-        },
-        "appengine": {
-            "component": "appengine"
-        },
-        "apphub": {
-            "component": "apphub"
         },
         "apps": {
             "component": "apps"
@@ -159,9 +135,6 @@
         "dataplex": {
             "component": "dataplex"
         },
-        "dataproc": {
-            "component": "dataproc"
-        },
         "dataqna": {
             "component": "dataqna"
         },
@@ -197,9 +170,6 @@
         },
         "essentialcontacts": {
             "component": "essentialcontacts"
-        },
-        "eventarc": {
-            "component": "eventarc"
         },
         "filestore": {
             "component": "filestore"
@@ -258,6 +228,9 @@
         "lifesciences": {
             "component": "lifesciences"
         },
+        "locationfinder": {
+            "component": "locationfinder"
+        },
         "longrunning": {
             "component": "longrunning"
         },
@@ -272,9 +245,6 @@
         },
         "managedkafka": {
             "component": "managedkafka"
-        },
-        "maps": {
-            "component": "maps"
         },
         "mediatranslation": {
             "component": "mediatranslation"

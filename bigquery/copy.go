@@ -80,6 +80,15 @@ type CopyConfig struct {
 	// format is
 	// `projects/{project}/locations/{location}/reservations/{reservation}`.
 	Reservation string
+
+	// A target limit on the rate of slot consumption by this query. If set to a
+	// value > 0, BigQuery will attempt to limit the rate of slot consumption by
+	// this query to keep it below the configured limit, even if the query is
+	// eligible for more slots based on fair scheduling. The unused slots will be
+	// available for other jobs and queries to use.
+	//
+	// Note: This feature is not yet generally available.
+	MaxSlots int32
 }
 
 func (c *CopyConfig) toBQ() *bq.JobConfiguration {
@@ -99,6 +108,7 @@ func (c *CopyConfig) toBQ() *bq.JobConfiguration {
 		},
 		JobTimeoutMs: c.JobTimeout.Milliseconds(),
 		Reservation:  c.Reservation,
+		MaxSlots:     int64(c.MaxSlots),
 	}
 }
 
@@ -112,6 +122,7 @@ func bqToCopyConfig(q *bq.JobConfiguration, c *Client) *CopyConfig {
 		OperationType:               TableCopyOperationType(q.Copy.OperationType),
 		JobTimeout:                  time.Duration(q.JobTimeoutMs) * time.Millisecond,
 		Reservation:                 q.Reservation,
+		MaxSlots:                    int32(q.MaxSlots),
 	}
 	for _, t := range q.Copy.SourceTables {
 		cc.Srcs = append(cc.Srcs, bqToTable(t, c))

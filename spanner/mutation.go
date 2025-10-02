@@ -198,6 +198,11 @@ func structToMutationParams(in interface{}) ([]string, []interface{}, error) {
 	var cols []string
 	var vals []interface{}
 	for _, f := range fields {
+		if f.ParsedTag != nil {
+			if tag, ok := f.ParsedTag.(spannerTag); ok && tag.ReadOnly {
+				continue
+			}
+		}
 		cols = append(cols, f.Name)
 		vals = append(vals, v.FieldByIndex(f.Index).Interface())
 	}

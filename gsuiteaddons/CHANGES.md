@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.8](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.7...gsuiteaddons/v1.7.8) (2025-09-18)
+
+
+### Bug Fixes
+
+* **gsuiteaddons:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.6...gsuiteaddons/v1.7.7) (2025-04-15)
 
 

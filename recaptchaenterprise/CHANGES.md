@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.20.5](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.4...recaptchaenterprise/v2.20.5) (2025-09-22)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [2.20.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.3...recaptchaenterprise/v2.20.4) (2025-04-15)
 
 

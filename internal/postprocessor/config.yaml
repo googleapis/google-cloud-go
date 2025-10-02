@@ -4,15 +4,7 @@ modules:
   - ai
   - aiplatform
   - advisorynotifications
-  - alloydb
   - analytics
-  - apigateway
-  - apigeeconnect
-  - apigeeregistry
-  - apihub
-  - apikeys
-  - appengine
-  - apphub
   - apps
   - area120
   - artifactregistry
@@ -56,7 +48,6 @@ modules:
   - datafusion
   - datalabeling
   - dataplex
-  - dataproc
   - dataqna
   - datastore
   - datastream
@@ -71,7 +62,6 @@ modules:
   - edgenetwork
   - errorreporting
   - essentialcontacts
-  - eventarc
   - filestore
   - financialservices
   - firestore
@@ -99,7 +89,6 @@ modules:
   - maintenance
   - managedidentities
   - managedkafka
-  - maps
   - mediatranslation
   - memcache
   - memorystore
@@ -316,12 +305,6 @@ service-configs:
   - input-directory: google/analytics/admin/v1alpha
     service-config: analyticsadmin_v1alpha.yaml
     import-path: cloud.google.com/go/analytics/admin/apiv1alpha
-  - input-directory: google/api/apikeys/v2
-    service-config: apikeys_v2.yaml
-    import-path: cloud.google.com/go/apikeys/apiv2
-  - input-directory: google/appengine/v1
-    service-config: appengine_v1.yaml
-    import-path: cloud.google.com/go/appengine/apiv1
   - input-directory: google/apps/events/subscriptions/v1
     service-config: workspaceevents_v1.yaml
     import-path: cloud.google.com/go/apps/events/subscriptions/apiv1
@@ -349,40 +332,6 @@ service-configs:
   - input-directory: google/cloud/advisorynotifications/v1
     service-config: advisorynotifications_v1.yaml
     import-path: cloud.google.com/go/advisorynotifications/apiv1
-  - input-directory: google/cloud/alloydb/v1
-    service-config: alloydb_v1.yaml
-    import-path: cloud.google.com/go/alloydb/apiv1
-  - input-directory: google/cloud/alloydb/v1alpha
-    service-config: alloydb_v1alpha.yaml
-    import-path: cloud.google.com/go/alloydb/apiv1alpha
-  - input-directory: google/cloud/alloydb/v1beta
-    service-config: alloydb_v1beta.yaml
-    import-path: cloud.google.com/go/alloydb/apiv1beta
-  - input-directory: google/cloud/alloydb/connectors/v1
-    service-config: connectors_v1.yaml
-    import-path: cloud.google.com/go/alloydb/connectors/apiv1
-    release-level-override: preview
-  - input-directory: google/cloud/alloydb/connectors/v1alpha
-    service-config: connectors_v1alpha.yaml
-    import-path: cloud.google.com/go/alloydb/connectors/apiv1alpha
-  - input-directory: google/cloud/alloydb/connectors/v1beta
-    service-config: connectors_v1beta.yaml
-    import-path: cloud.google.com/go/alloydb/connectors/apiv1beta
-  - input-directory: google/cloud/apigateway/v1
-    service-config: apigateway_v1.yaml
-    import-path: cloud.google.com/go/apigateway/apiv1
-  - input-directory: google/cloud/apigeeconnect/v1
-    service-config: apigeeconnect_v1.yaml
-    import-path: cloud.google.com/go/apigeeconnect/apiv1
-  - input-directory: google/cloud/apigeeregistry/v1
-    service-config: apigeeregistry_v1.yaml
-    import-path: cloud.google.com/go/apigeeregistry/apiv1
-  - input-directory: google/cloud/apihub/v1
-    service-config: apihub_v1.yaml
-    import-path: cloud.google.com/go/apihub/apiv1
-  - input-directory: google/cloud/apphub/v1
-    service-config: apphub_v1.yaml
-    import-path: cloud.google.com/go/apphub/apiv1
   - input-directory: google/cloud/asset/v1
     service-config: cloudasset_v1.yaml
     import-path: cloud.google.com/go/asset/apiv1
@@ -589,10 +538,6 @@ service-configs:
   - input-directory: google/cloud/dataplex/v1
     service-config: dataplex_v1.yaml
     import-path: cloud.google.com/go/dataplex/apiv1
-  - input-directory: google/cloud/dataproc/v1
-    service-config: dataproc_v1.yaml
-    import-path: cloud.google.com/go/dataproc/v2/apiv1
-    rel-path: /dataproc/apiv1
   - input-directory: google/cloud/dataqna/v1alpha
     service-config: dataqna_v1alpha.yaml
     import-path: cloud.google.com/go/dataqna/apiv1alpha
@@ -650,12 +595,6 @@ service-configs:
   - input-directory: google/cloud/essentialcontacts/v1
     service-config: essentialcontacts_v1.yaml
     import-path: cloud.google.com/go/essentialcontacts/apiv1
-  - input-directory: google/cloud/eventarc/v1
-    service-config: eventarc_v1.yaml
-    import-path: cloud.google.com/go/eventarc/apiv1
-  - input-directory: google/cloud/eventarc/publishing/v1
-    service-config: eventarcpublishing_v1.yaml
-    import-path: cloud.google.com/go/eventarc/publishing/apiv1
   - input-directory: google/cloud/filestore/v1
     service-config: file_v1.yaml
     import-path: cloud.google.com/go/filestore/apiv1
@@ -1246,30 +1185,6 @@ service-configs:
   - input-directory: google/longrunning
     service-config: longrunning.yaml
     import-path: cloud.google.com/go/longrunning/autogen
-  - input-directory: google/maps/addressvalidation/v1
-    service-config: addressvalidation_v1.yaml
-    import-path: cloud.google.com/go/maps/addressvalidation/apiv1
-  - input-directory: google/maps/areainsights/v1
-    service-config: areainsights_v1.yaml
-    import-path: cloud.google.com/go/maps/areainsights/apiv1
-  - input-directory: google/maps/fleetengine/v1
-    service-config: fleetengine_v1.yaml
-    import-path: cloud.google.com/go/maps/fleetengine/apiv1
-  - input-directory: google/maps/fleetengine/delivery/v1
-    service-config: fleetengine_v1.yaml
-    import-path: cloud.google.com/go/maps/fleetengine/delivery/apiv1
-  - input-directory: google/maps/places/v1
-    service-config: places_v1.yaml
-    import-path: cloud.google.com/go/maps/places/apiv1
-  - input-directory: google/maps/routeoptimization/v1
-    service-config: routeoptimization_v1.yaml
-    import-path: cloud.google.com/go/maps/routeoptimization/apiv1
-  - input-directory: google/maps/routing/v2
-    service-config: routes_v2.yaml
-    import-path: cloud.google.com/go/maps/routing/apiv2
-  - input-directory: google/maps/solar/v1
-    service-config: solar_v1.yaml
-    import-path: cloud.google.com/go/maps/solar/apiv1
   - input-directory: google/cloud/modelarmor/v1
     service-config: modelarmor_v1.yaml
     import-path: cloud.google.com/go/modelarmor/apiv1
@@ -1328,14 +1243,26 @@ service-configs:
 skip-module-scan-paths:
   # ignore the root module
   - .
-  # individually released modules
+  # Librarian released modules
+  - maps
+  - eventarc
+  - apphub
+  - appengine
+  - apikeys
+  - apigeeregistry
   - auth
+  - apihub
+  - apigeeconnect
+  - apigateway
+  - alloydb
+  - dataproc
+  - dlp
+  # individually released modules
   - auth/oauth2adapt
   - bigquery
   - bigquery/v2
   - bigtable
   - datastore
-  - dlp
   - errorreporting
   - firestore
   - logging

@@ -2179,6 +2179,49 @@ func TestLastStatement_StmtBasedTx_BatchUpdate(t *testing.T) {
 	}
 }
 
+func TestReadWriteTransactionUsesNewContextForRollback(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 10,
+			MaxOpened: 10,
+		},
+	})
+	defer teardown()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		// Execute a statement that actually starts the transaction and returns a transaction ID.
+		if _, err := transaction.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+			return err
+		}
+		// Make the next statement slow. This should now fail with a DEADLINE_EXCEEDED error.
+		server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{MinimumExecutionTime: 100 * time.Millisecond})
+		if _, err := transaction.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+			return err
+		}
+		return nil
+	})
+	if g, w := ErrCode(err), codes.DeadlineExceeded; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 2; g != w {
+		t.Fatalf("execute count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	// Make sure a Rollback request is actually sent to Spanner to release the locks of the transaction.
+	rollbackRequests := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbackRequests), 1; g != w {
+		t.Fatalf("rollback count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 // shouldHaveReceived asserts that exactly expectedRequests were present in
 // the server's ReceivedRequests channel. It only looks at type, not contents.
 //

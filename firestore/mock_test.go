@@ -22,11 +22,13 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -36,6 +38,7 @@ type mockServer struct {
 	pb.FirestoreServer
 
 	Addr string
+	mu   sync.Mutex
 
 	reqItems []reqItem
 	resps    []interface{}
@@ -44,6 +47,11 @@ type mockServer struct {
 type reqItem struct {
 	wantReq proto.Message
 	adjust  func(gotReq proto.Message)
+}
+
+func (r reqItem) String() string {
+	bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(r.wantReq)
+	return "\n" + string(r.wantReq.ProtoReflect().Descriptor().Name()) + string(bytes)
 }
 
 func newMockServer() (_ *mockServer, cleanup func(), _ error) {
@@ -57,6 +65,10 @@ func newMockServer() (_ *mockServer, cleanup func(), _ error) {
 	return mock, func() {
 		srv.Close()
 	}, nil
+}
+
+func (s *mockServer) isEmpty() bool {
+	return len(s.reqItems) == 0
 }
 
 // addRPC adds a (request, response) pair to the server's list of expected
@@ -75,6 +87,8 @@ func (s *mockServer) addRPC(wantReq proto.Message, resp interface{}) {
 // to tweak the requests before comparison, for example to adjust for
 // randomness.
 func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjust func(proto.Message)) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.reqItems = append(s.reqItems, reqItem{wantReq, adjust})
 	s.resps = append(s.resps, resp)
 }
@@ -83,6 +97,8 @@ func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjus
 // It returns the response, or an error if the request doesn't match what
 // was expected or there are no expected rpcs.
 func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if len(s.reqItems) == 0 {
 		panic(fmt.Sprintf("out of RPCs, saw %v", reflect.TypeOf(gotReq)))
 	}
@@ -127,6 +143,8 @@ func (a ByFieldPath) Less(i, j int) bool { return a[i].FieldPath < a[j].FieldPat
 type ByFieldPath []*pb.DocumentTransform_FieldTransform
 
 func (s *mockServer) reset() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.reqItems = nil
 	s.resps = nil
 }

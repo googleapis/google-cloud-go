@@ -16,6 +16,8 @@ package firestore
 
 import (
 	"context"
+	"fmt"
+	"sync"
 	"testing"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -398,5 +400,82 @@ func TestBulkWriterRetries(t *testing.T) {
 				t.Errorf("bulkwriter err: want %v, got %v", tc.wantErrorCode, err)
 			}
 		})
+	}
+}
+
+// TestBulkWriterConcurrent checks for race conditions when adding writes
+// from multiple goroutines.
+func TestBulkWriterConcurrent(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const numWrites = 100
+	const batchSize = 20
+	const numBatches = numWrites / batchSize
+
+	// 1. Setup the mock server to accept 5 batches (100 / 20 = 5).
+	// We use `nil` for the request to avoid flaky order-dependent checks.
+	// We are testing for a client-side race, not server-side request generation.
+	for i := 0; i < numBatches; i++ {
+		resp := &pb.BatchWriteResponse{}
+		// Create a full batch of 20 successful responses
+		for j := 0; j < batchSize; j++ {
+			resp.WriteResults = append(resp.WriteResults, &pb.WriteResult{UpdateTime: aTimestamp})
+			resp.Status = append(resp.Status, &status.Status{Code: int32(codes.OK)})
+		}
+		srv.addRPC(nil, resp)
+	}
+
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+
+	var wg sync.WaitGroup
+	jobs := make([]*BulkWriterJob, numWrites)
+	// Use a channel to safely report errors from goroutines
+	errChan := make(chan error, numWrites)
+
+	// 2. Launch 100 goroutines to add writes concurrently.
+	for i := 0; i < numWrites; i++ {
+		wg.Add(1)
+		go func(docNum int) {
+			defer wg.Done()
+
+			docID := fmt.Sprintf("C/doc%d", docNum)
+
+			docRef := c.Doc(docID)
+			job, err := bw.Create(docRef, testData)
+			if err != nil {
+				errChan <- fmt.Errorf("bw.Create failed for doc %s: %v", docID, err)
+				return
+			}
+			jobs[docNum] = job
+		}(i)
+	}
+
+	// 3. Wait for all goroutines to finish adding their writes
+	wg.Wait()
+	close(errChan)
+
+	// Check for any errors during the "add" phase
+	for err := range errChan {
+		t.Error(err)
+	}
+
+	// 4. Flush all writes to the server
+	bw.Flush()
+
+	// 5. Check all results
+	for i, job := range jobs {
+		if job == nil {
+			t.Errorf("job %d is nil", i)
+			continue
+		}
+		wr, err := job.Results()
+		if err != nil {
+			t.Errorf("job %d returned error: %v", i, err)
+		}
+		if wr == nil && err == nil {
+			t.Errorf("job %d returned nil WriteResult and nil error", i)
+		}
 	}
 }

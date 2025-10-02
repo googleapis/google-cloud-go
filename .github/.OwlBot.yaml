@@ -11,20 +11,7 @@ deep-remove-regex:
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
   - /advisorynotifications/apiv1/
-  - /alloydb/apiv1/
-  - /alloydb/apiv1alpha/
-  - /alloydb/apiv1beta/
-  - /alloydb/connectors/apiv1/
-  - /alloydb/connectors/apiv1alpha/
-  - /alloydb/connectors/apiv1beta/
   - /analytics/admin/apiv1alpha/
-  - /apigateway/apiv1/
-  - /apigeeconnect/apiv1/
-  - /apigeeregistry/apiv1/
-  - /apihub/apiv1/
-  - /apikeys/apiv2/
-  - /appengine/apiv1/
-  - /apphub/apiv1/
   - /apps/events/subscriptions/apiv1/
   - /apps/events/subscriptions/apiv1beta/
   - /apps/meet/apiv2/
@@ -110,7 +97,6 @@ deep-remove-regex:
   - /datafusion/apiv1/
   - /datalabeling/apiv1beta1/
   - /dataplex/apiv1/
-  - /dataproc/apiv1/
   - /dataqna/apiv1alpha/
   - /datastore/admin/apiv1/
   - /datastore/apiv1/
@@ -133,8 +119,6 @@ deep-remove-regex:
   - /edgenetwork/apiv1/
   # - /errorreporting/apiv1beta1/
   - /essentialcontacts/apiv1/
-  - /eventarc/apiv1/
-  - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
   - /financialservices/apiv1/
   - /firestore/apiv1/
@@ -167,17 +151,7 @@ deep-remove-regex:
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/advisorynotifications/apiv1/
-  - /internal/generated/snippets/alloydb/apiv1/
-  - /internal/generated/snippets/alloydb/apiv1alpha/
-  - /internal/generated/snippets/alloydb/apiv1beta/
   - /internal/generated/snippets/analytics/admin/apiv1alpha/
-  - /internal/generated/snippets/apigateway/apiv1/
-  - /internal/generated/snippets/apigeeconnect/apiv1/
-  - /internal/generated/snippets/apigeeregistry/apiv1/
-  - /internal/generated/snippets/apihub/apiv1/
-  - /internal/generated/snippets/apikeys/apiv2/
-  - /internal/generated/snippets/appengine/apiv1/
-  - /internal/generated/snippets/apphub/apiv1/
   - /internal/generated/snippets/apps/events/subscriptions/apiv1/
   - /internal/generated/snippets/apps/events/subscriptions/apiv1beta/
   - /internal/generated/snippets/apps/meet/apiv2/
@@ -261,7 +235,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datafusion/apiv1/
   - /internal/generated/snippets/datalabeling/apiv1beta1/
   - /internal/generated/snippets/dataplex/apiv1/
-  - /internal/generated/snippets/dataproc/apiv1/
   - /internal/generated/snippets/dataqna/apiv1alpha/
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets/datastream/apiv1/
@@ -283,8 +256,6 @@ deep-remove-regex:
   - /internal/generated/snippets/edgenetwork/apiv1/
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/essentialcontacts/apiv1/
-  - /internal/generated/snippets/eventarc/apiv1/
-  - /internal/generated/snippets/eventarc/publishing/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
   - /internal/generated/snippets/financialservices/apiv1/
   - /internal/generated/snippets/firestore/apiv1/
@@ -323,14 +294,6 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/managedkafka/schemaregistry/apiv1/
-  - /internal/generated/snippets/maps/addressvalidation/apiv1/
-  - /internal/generated/snippets/maps/areainsights/apiv1/
-  - /internal/generated/snippets/maps/fleetengine/apiv1/
-  - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
-  - /internal/generated/snippets/maps/places/apiv1/
-  - /internal/generated/snippets/maps/routeoptimization/apiv1/
-  - /internal/generated/snippets/maps/routing/apiv2/
-  - /internal/generated/snippets/maps/solar/apiv1/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
@@ -498,14 +461,6 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /managedkafka/schemaregistry/apiv1/
-  - /maps/addressvalidation/apiv1/
-  - /maps/areainsights/apiv1/
-  - /maps/fleetengine/apiv1/
-  - /maps/fleetengine/delivery/apiv1/
-  - /maps/places/apiv1/
-  - /maps/routeoptimization/apiv1/
-  - /maps/routing/apiv2/
-  - /maps/solar/apiv1/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
@@ -692,7 +647,6 @@ deep-preserve-regex:
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
   - /storage/internal/apiv2/metadata.go
-  - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Must preserve these even though they aren't generated anymore
@@ -723,25 +677,7 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/advisorynotifications/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/alloydb/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/connectors/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/connectors/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/alloydb/connectors/v1beta/cloud.google.com/go
-    dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apigateway/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apigeeconnect/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apigeeregistry/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/asset/v1/cloud.google.com/go
     dest: /
@@ -749,17 +685,9 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/apihub/v1/cloud.google.com/go
-    dest: /
-  - source: /google/api/apikeys/v2/cloud.google.com/go
-    dest: /
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
     dest: /
   - source: /google/api/cloudquotas/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/appengine/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/apphub/v1/cloud.google.com/go
     dest: /
   - source: /google/apps/events/subscriptions/v1/cloud.google.com/go
     dest: /
@@ -922,10 +850,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dataplex/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/v2/apiv1
-    dest: /dataproc/apiv1
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/internal/generated/snippets/dataproc/v2/apiv1
-    dest: /internal/generated/snippets/dataproc/apiv1
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
@@ -970,10 +894,6 @@ deep-copy-regex:
   # - source: /google/devtools/clouderrorreporting/v1beta1/cloud.google.com/go
   #   dest: /
   - source: /google/cloud/essentialcontacts/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/eventarc/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/eventarc/publishing/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/filestore/v1/cloud.google.com/go
     dest: /
@@ -1050,22 +970,6 @@ deep-copy-regex:
   - source: /google/cloud/managedkafka/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/managedkafka/schemaregistry/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/addressvalidation/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/areainsights/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/fleetengine/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/fleetengine/delivery/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/places/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/routeoptimization/v1/cloud.google.com/go
-    dest: /
-  - source: /google/maps/routing/v2/cloud.google.com/go
-    dest: /
-  - source: /google/maps/solar/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go
     dest: /
