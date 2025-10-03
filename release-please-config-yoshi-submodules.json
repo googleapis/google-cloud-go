@@ -96,9 +96,6 @@
         "compute": {
             "component": "compute"
         },
-        "compute/metadata": {
-            "component": "compute/metadata"
-        },
         "confidentialcomputing": {
             "component": "confidentialcomputing"
         },

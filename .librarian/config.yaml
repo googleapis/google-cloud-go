@@ -6,3 +6,5 @@
 libraries:
   - id: "auth"
     release_blocked: true
+  - id: "compute/metadata"
+    release_blocked: true
