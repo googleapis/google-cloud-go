@@ -6,3 +6,7 @@
 libraries:
   - id: "auth"
     release_blocked: true
+  - id: "pubsub"
+    release_blocked: true
+  - id: "pubsub/v2"
+    release_blocked: true
