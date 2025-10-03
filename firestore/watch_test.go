@@ -121,7 +121,7 @@ func TestComputeSnapshot(t *testing.T) {
 			dmap{ds1.Ref.Path: nil, ds2.Ref.Path: ds2},
 			[]*DocumentSnapshot{ds2},
 			[]DocumentChange{
-				{Kind: DocumentRemoved, Doc: ds1, OldIndex: 0, NewIndex: -1},
+				{Kind: DocumentRemoved, Doc: ds1, OldDoc: ds1, OldIndex: 0, NewIndex: -1},
 				{Kind: DocumentAdded, Doc: ds2, OldIndex: -1, NewIndex: 0},
 			},
 		},
@@ -131,7 +131,7 @@ func TestComputeSnapshot(t *testing.T) {
 			[]*DocumentSnapshot{ds1, ds2c},
 			[]DocumentChange{
 				{Kind: DocumentAdded, Doc: ds1, OldIndex: -1, NewIndex: 0},
-				{Kind: DocumentModified, Doc: ds2c, OldIndex: 1, NewIndex: 1},
+				{Kind: DocumentModified, Doc: ds2c, OldDoc: ds2, OldIndex: 1, NewIndex: 1},
 			},
 		},
 	} {
