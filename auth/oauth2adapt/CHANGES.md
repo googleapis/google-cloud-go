@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.2.8](https://github.com/googleapis/google-cloud-go/compare/auth/oauth2adapt/v0.2.7...auth/oauth2adapt/v0.2.8) (2025-03-17)
 

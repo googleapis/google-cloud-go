@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.3.0...parametermanager/v0.3.1) (2025-09-18)
 

@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.4.4](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.4.3...edgecontainer/v1.4.4) (2025-09-16)

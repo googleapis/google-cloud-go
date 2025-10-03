@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.5.6](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.5.5...advisorynotifications/v1.5.6) (2025-06-04)

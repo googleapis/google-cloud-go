@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/memorystore/v0.3.0...memorystore/v0.3.1) (2025-09-18)

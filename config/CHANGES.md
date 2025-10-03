@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.5.0...config/v1.5.1) (2025-09-16)
