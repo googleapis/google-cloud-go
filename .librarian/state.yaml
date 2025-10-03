@@ -198,7 +198,7 @@ libraries:
       - internal/generated/snippets/apihub/
     tag_format: '{id}/v{version}'
   - id: auth
-    version: 0.16.5
+    version: 0.17.0
     last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
     apis: []
     source_roots:
@@ -207,6 +207,7 @@ libraries:
     remove_regex: []
     release_exclude_paths:
       - auth/oauth2adapt
+    tag_format: '{id}/v{version}'
   - id: apigeeregistry
     version: 0.9.6
     last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
@@ -305,7 +306,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: eventarc
     version: 1.16.1
-    last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
+    last_generated_commit: b7e013ac0b9896cf89de48706221ec22212d8d0e
     apis:
       - path: google/cloud/eventarc/v1
         service_config: ""
