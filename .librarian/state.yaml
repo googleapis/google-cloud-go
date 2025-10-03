@@ -448,3 +448,4 @@ libraries:
       - compute/metadata
     preserve_regex: []
     remove_regex: []
+    tag_format: '{id}/v{version}'
