@@ -463,3 +463,4 @@ libraries:
       - ^longrunning/autogen/longrunningpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/longrunning/
+    tag_format: '{id}/v{version}'
