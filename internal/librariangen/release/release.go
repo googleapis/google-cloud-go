@@ -68,7 +68,7 @@ func Init(ctx context.Context, cfg *Config) error {
 		moduleConfig := repoConfig.GetModuleConfig(lib.ID)
 
 		var moduleDir string
-		if wholeRepoLibrary(lib) {
+		if isRootRepoModule(lib) {
 			moduleDir = cfg.OutputDir
 		} else {
 			moduleDir = filepath.Join(cfg.OutputDir, lib.ID)
@@ -101,7 +101,7 @@ var changelogSections = []struct {
 
 func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 	var relativeChangelogPath string
-	if wholeRepoLibrary(lib) {
+	if isRootRepoModule(lib) {
 		relativeChangelogPath = "CHANGES.md"
 	} else {
 		relativeChangelogPath = filepath.Join(lib.ID, "CHANGES.md")
@@ -230,10 +230,13 @@ func writeErrorResponse(dir string, err error) error {
 	return err
 }
 
-// wholeRepoLibrary returns whether or not the given library is
-// intended to represent the whole repository. This is indicated by
-// a value in Library.SourcePaths of ".". In reality, this will mean
-// it's the only entry in SourcePaths - but that isn't validated.
+// isRootRepoModule returns whether or not the given library is
+// effectively stored in the root of the repository. This is the case
+// for repositories which only have a single module, indicated by
+// a value in Library.SourcePaths of ".", and also by the ID
+// "root-module" in google-cloud-code. Libraries which contain
+// a source path of "." will usually have that as the only entry, but
+// that isn't validated.
 //
 // This is expected to be used for repos such as gapic-generator-go,
 // but does *not* apply to gax-go as the "root" for that repo is
@@ -244,12 +247,16 @@ func writeErrorResponse(dir string, err error) error {
 // source path for the production code, and another for the
 // generated snippets.
 //
-// The "main" module of google-cloud-go might be expected to use "."
-// as a source path, but that would end up getting changes from *all*
-// nested modules (which will expand over time). That module is likely
-// to have a snowflake-like configuration.
-func wholeRepoLibrary(lib *request.Library) bool {
-	return slices.Contains(lib.SourcePaths, ".")
+// The use of a special ID of "root-module" for the module of
+// google-cloud-go containing "civil", "rpcreplay" etc is slightly
+// hacky, but avoids creating special-purpose configuration which
+// is realistically only ever going to be used by a single module.
+// For example, we could add a "module-root" field in repo-config.yaml
+// and set that to an empty string for whole-repo libraries and the
+// google-cloud-go main module. The single line of code below seems
+// simpler.
+func isRootRepoModule(lib *request.Library) bool {
+	return slices.Contains(lib.SourcePaths, ".") || lib.ID == "root-module"
 }
 
 // Request is the structure of the release-init-request.json file.
