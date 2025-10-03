@@ -143,7 +143,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
-	s.gax = append(s.gax, gax.WithRetry(nil))
+	s.gax = append(s.gax, gax.WithRetry(nil), gax.WithTimeout(0))
 
 	config := newStorageConfig(s.clientOption...)
 	if config.readAPIWasSet {
