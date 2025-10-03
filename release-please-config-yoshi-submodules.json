@@ -231,9 +231,6 @@
         "locationfinder": {
             "component": "locationfinder"
         },
-        "longrunning": {
-            "component": "longrunning"
-        },
         "lustre": {
             "component": "lustre"
         },
