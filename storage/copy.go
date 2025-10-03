@@ -121,12 +121,6 @@ func (c *Copier) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 		token:                    c.RewriteToken,
 		maxBytesRewrittenPerCall: c.maxBytesRewrittenPerCall,
 	}
-	// If the destination object attributes are not set, do not include them
-	// in the request. This indicates that the object attributes should be
-	// copied from the source object.
-	if c.ObjectAttrs.isZero() {
-		req.dstObject.attrs = nil
-	}
 
 	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
 	var userProject string
