@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.1.0...shopping/v1.1.1) (2025-09-30)

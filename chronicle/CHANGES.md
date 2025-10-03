@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/chronicle/v0.1.0...chronicle/v0.1.1) (2025-05-21)
 

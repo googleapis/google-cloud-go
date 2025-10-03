@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.2.3...servicehealth/v1.2.4) (2025-09-22)

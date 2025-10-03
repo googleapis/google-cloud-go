@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.10.0...confidentialcomputing/v1.10.1) (2025-09-16)

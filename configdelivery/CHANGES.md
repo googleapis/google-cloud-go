@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/configdelivery/v0.1.0...configdelivery/v0.1.1) (2025-09-16)
 

@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.3.6](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.3.5...baremetalsolution/v1.3.6) (2025-04-15)

@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/licensemanager/v0.1.0...licensemanager/v0.1.1) (2025-09-18)
 

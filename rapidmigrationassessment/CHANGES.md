@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.1.8](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.1.7...rapidmigrationassessment/v1.1.8) (2025-09-22)

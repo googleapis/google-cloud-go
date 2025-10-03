@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2/v2.0.1...pubsub/v2/v2.1.0) (2025-09-25)
 

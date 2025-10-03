@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.12.1...batch/v1.12.2) (2025-04-15)
