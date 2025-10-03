@@ -150,6 +150,52 @@
       ]
     },
     {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_CreateReservationGroup_sync",
+      "title": "bigqueryreservation CreateReservationGroup Sample",
+      "description": "CreateReservationGroup creates a new reservation group.",
+      "file": "Client/CreateReservationGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReservationGroup",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.CreateReservationGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reservationpb.CreateReservationGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*reservationpb.ReservationGroup",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateReservationGroup",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_DeleteAssignment_sync",
       "title": "bigqueryreservation DeleteAssignment Sample",
       "description": "DeleteAssignment deletes a assignment. No expansion will happen.\n\nExample: \n\n* Organization `organizationA` contains two projects, `project1` and\n`project2`.\n* Reservation `res1` exists and was created previously.\n* CreateAssignment was used previously to define the following\nassociations between entities and reservations: `<organizationA, res1>`\nand `<project1, res1>`\n\nIn this example, deletion of the `<organizationA, res1>` assignment won't\naffect the other assignment `<project1, res1>`. After said deletion,\nqueries from `project1` will still use `res1` while queries from\n`project2` will switch to use on-demand mode.",
@@ -269,6 +315,51 @@
         "method": {
           "shortName": "DeleteReservation",
           "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_DeleteReservationGroup_sync",
+      "title": "bigqueryreservation DeleteReservationGroup Sample",
+      "description": "DeleteReservationGroup deletes a reservation.\nReturns `google.rpc.Code.FAILED_PRECONDITION` when reservation has\nassignments.",
+      "file": "Client/DeleteReservationGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteReservationGroup",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.DeleteReservationGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reservationpb.DeleteReservationGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteReservationGroup",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup",
           "service": {
             "shortName": "ReservationService",
             "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
@@ -423,6 +514,52 @@
       ]
     },
     {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_GetIamPolicy_sync",
+      "title": "bigqueryreservation GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource.\nMay return: \n\n* A`NOT_FOUND` error if the resource doesn't exist or you don't have the\npermission to view it.\n* An empty policy if the resource exists but doesn't have a set policy.\n\nSupported resources are: \n- Reservations\n- ReservationAssignments\n\nTo call this method, you must have the following Google IAM permissions: \n\n- `bigqueryreservation.reservations.getIamPolicy` to get policies on\nreservations.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_GetReservation_sync",
       "title": "bigqueryreservation GetReservation Sample",
       "description": "GetReservation returns information about the reservation.",
@@ -453,6 +590,52 @@
         "method": {
           "shortName": "GetReservation",
           "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.GetReservation",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_GetReservationGroup_sync",
+      "title": "bigqueryreservation GetReservationGroup Sample",
+      "description": "GetReservationGroup returns information about the reservation group.",
+      "file": "Client/GetReservationGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetReservationGroup",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.GetReservationGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reservationpb.GetReservationGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*reservationpb.ReservationGroup",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "GetReservationGroup",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup",
           "service": {
             "shortName": "ReservationService",
             "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
@@ -545,6 +728,52 @@
         "method": {
           "shortName": "ListCapacityCommitments",
           "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_ListReservationGroups_sync",
+      "title": "bigqueryreservation ListReservationGroups Sample",
+      "description": "ListReservationGroups lists all the reservation groups for the project in the specified location.",
+      "file": "Client/ListReservationGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReservationGroups",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.ListReservationGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reservationpb.ListReservationGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReservationGroupIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "ListReservationGroups",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups",
           "service": {
             "shortName": "ReservationService",
             "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
@@ -791,6 +1020,52 @@
       ]
     },
     {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_SetIamPolicy_sync",
+      "title": "bigqueryreservation SetIamPolicy Sample",
+      "description": "SetIamPolicy sets an access control policy for a resource. Replaces any existing\npolicy.\n\nSupported resources are: \n- Reservations\n\nTo call this method, you must have the following Google IAM permissions: \n\n- `bigqueryreservation.reservations.setIamPolicy` to set policies on\nreservations.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_SplitCapacityCommitment_sync",
       "title": "bigqueryreservation SplitCapacityCommitment Sample",
       "description": "SplitCapacityCommitment splits capacity commitment to two commitments of the same plan and\n`commitment_end_time`.\n\nA common use case is to enable downgrading commitments.\n\nFor example, in order to downgrade from 10000 slots to 8000, you might\nsplit a 10000 capacity commitment into commitments of 2000 and 8000. Then,\nyou delete the first one after the commitment end time passes.",
@@ -821,6 +1096,52 @@
         "method": {
           "shortName": "SplitCapacityCommitment",
           "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_TestIamPermissions_sync",
+      "title": "bigqueryreservation TestIamPermissions Sample",
+      "description": "TestIamPermissions gets your permissions on a resource. Returns an empty set of permissions if\nthe resource doesn't exist.\n\nSupported resources are: \n- Reservations\n\nNo Google IAM permissions are required to call this method.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions",
           "service": {
             "shortName": "ReservationService",
             "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"

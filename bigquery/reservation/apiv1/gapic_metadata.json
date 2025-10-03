@@ -25,6 +25,11 @@
                 "CreateReservation"
               ]
             },
+            "CreateReservationGroup": {
+              "methods": [
+                "CreateReservationGroup"
+              ]
+            },
             "DeleteAssignment": {
               "methods": [
                 "DeleteAssignment"
@@ -38,6 +43,11 @@
             "DeleteReservation": {
               "methods": [
                 "DeleteReservation"
+              ]
+            },
+            "DeleteReservationGroup": {
+              "methods": [
+                "DeleteReservationGroup"
               ]
             },
             "FailoverReservation": {
@@ -55,9 +65,19 @@
                 "GetCapacityCommitment"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetReservation": {
               "methods": [
                 "GetReservation"
+              ]
+            },
+            "GetReservationGroup": {
+              "methods": [
+                "GetReservationGroup"
               ]
             },
             "ListAssignments": {
@@ -68,6 +88,11 @@
             "ListCapacityCommitments": {
               "methods": [
                 "ListCapacityCommitments"
+              ]
+            },
+            "ListReservationGroups": {
+              "methods": [
+                "ListReservationGroups"
               ]
             },
             "ListReservations": {
@@ -95,9 +120,19 @@
                 "SearchAssignments"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "SplitCapacityCommitment": {
               "methods": [
                 "SplitCapacityCommitment"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAssignment": {
@@ -140,6 +175,11 @@
                 "CreateReservation"
               ]
             },
+            "CreateReservationGroup": {
+              "methods": [
+                "CreateReservationGroup"
+              ]
+            },
             "DeleteAssignment": {
               "methods": [
                 "DeleteAssignment"
@@ -153,6 +193,11 @@
             "DeleteReservation": {
               "methods": [
                 "DeleteReservation"
+              ]
+            },
+            "DeleteReservationGroup": {
+              "methods": [
+                "DeleteReservationGroup"
               ]
             },
             "FailoverReservation": {
@@ -170,9 +215,19 @@
                 "GetCapacityCommitment"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetReservation": {
               "methods": [
                 "GetReservation"
+              ]
+            },
+            "GetReservationGroup": {
+              "methods": [
+                "GetReservationGroup"
               ]
             },
             "ListAssignments": {
@@ -183,6 +238,11 @@
             "ListCapacityCommitments": {
               "methods": [
                 "ListCapacityCommitments"
+              ]
+            },
+            "ListReservationGroups": {
+              "methods": [
+                "ListReservationGroups"
               ]
             },
             "ListReservations": {
@@ -210,9 +270,19 @@
                 "SearchAssignments"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "SplitCapacityCommitment": {
               "methods": [
                 "SplitCapacityCommitment"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAssignment": {
