@@ -1048,15 +1048,15 @@ func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
 }
 
 type omitZeroStruct struct {
-	I int              `firestore:"i,omitzero"`
-	S string           `firestore:"s,omitzero"`
-	B bool             `firestore:"b,omitzero"`
-	F float64          `firestore:"f,omitzero"`
-	P *int             `firestore:"p,omitzero"`
-	L []string         `firestore:"l,omitzero"`
-	M map[string]int   `firestore:"m,omitzero"`
-	Z isZeroerStruct   `firestore:"z,omitzero"`
-	A int              // no omitzero tag
+	I int            `firestore:"i,omitzero"`
+	S string         `firestore:"s,omitzero"`
+	B bool           `firestore:"b,omitzero"`
+	F float64        `firestore:"f,omitzero"`
+	P *int           `firestore:"p,omitzero"`
+	L []string       `firestore:"l,omitzero"`
+	M map[string]int `firestore:"m,omitzero"`
+	Z isZeroerStruct `firestore:"z,omitzero"`
+	A int            // no omitzero tag
 }
 
 type isZeroerStruct struct {
@@ -1142,8 +1142,8 @@ func TestIntegration_OmitZero(t *testing.T) {
 		B: false,
 		F: 0.0,
 		P: nil,
-		L: []string{},         // not zero
-		M: map[string]int{},   // not zero
+		L: []string{},       // not zero
+		M: map[string]int{}, // not zero
 		Z: isZeroerStruct{X: 0},
 		A: 0,
 	}
