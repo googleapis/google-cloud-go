@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v1.1.5...migrationcenter/v1.1.6) (2025-09-18)

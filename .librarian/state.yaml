@@ -440,6 +440,15 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/maps/
     tag_format: '{id}/v{version}'
+  - id: auth/oauth2adapt
+    version: 0.2.8
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    apis: []
+    source_roots:
+      - auth/oauth2adapt
+    preserve_regex: []
+    remove_regex: []
+    tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.6.7
     last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa

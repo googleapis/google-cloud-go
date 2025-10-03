@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.6.0...modelarmor/v0.6.1) (2025-09-18)
 

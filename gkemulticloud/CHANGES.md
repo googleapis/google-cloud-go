@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.5.4](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.5.3...gkemulticloud/v1.5.4) (2025-09-18)

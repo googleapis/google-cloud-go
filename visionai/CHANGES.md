@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.4.6](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.4.5...visionai/v0.4.6) (2025-09-22)
 

@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.9.6](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.9.5...apigeeregistry/v0.9.6) (2025-04-15)
 

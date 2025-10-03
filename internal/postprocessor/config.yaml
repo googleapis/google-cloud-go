@@ -1247,6 +1247,7 @@ skip-module-scan-paths:
   - apikeys
   - apigeeregistry
   - auth
+  - auth/oauth2adapt
   - apihub
   - apigeeconnect
   - apigateway
@@ -1255,7 +1256,6 @@ skip-module-scan-paths:
   - dlp
   - longrunning
   # individually released modules
-  - auth/oauth2adapt
   - bigquery
   - bigquery/v2
   - bigtable

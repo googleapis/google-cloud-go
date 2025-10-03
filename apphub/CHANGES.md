@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/apphub/v0.3.0...apphub/v0.3.1) (2025-04-15)
 
