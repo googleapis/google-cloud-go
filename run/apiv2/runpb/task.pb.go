@@ -21,12 +21,8 @@
 package runpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -990,124 +986,4 @@ func file_google_cloud_run_v2_task_proto_init() {
 	file_google_cloud_run_v2_task_proto_rawDesc = nil
 	file_google_cloud_run_v2_task_proto_goTypes = nil
 	file_google_cloud_run_v2_task_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// TasksClient is the client API for Tasks service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type TasksClient interface {
-	// Gets information about a Task.
-	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error)
-	// Lists Tasks from an Execution of a Job.
-	ListTasks(ctx context.Context, in *ListTasksRequest, opts ...grpc.CallOption) (*ListTasksResponse, error)
-}
-
-type tasksClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewTasksClient(cc grpc.ClientConnInterface) TasksClient {
-	return &tasksClient{cc}
-}
-
-func (c *tasksClient) GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error) {
-	out := new(Task)
-	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Tasks/GetTask", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *tasksClient) ListTasks(ctx context.Context, in *ListTasksRequest, opts ...grpc.CallOption) (*ListTasksResponse, error) {
-	out := new(ListTasksResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Tasks/ListTasks", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// TasksServer is the server API for Tasks service.
-type TasksServer interface {
-	// Gets information about a Task.
-	GetTask(context.Context, *GetTaskRequest) (*Task, error)
-	// Lists Tasks from an Execution of a Job.
-	ListTasks(context.Context, *ListTasksRequest) (*ListTasksResponse, error)
-}
-
-// UnimplementedTasksServer can be embedded to have forward compatible implementations.
-type UnimplementedTasksServer struct {
-}
-
-func (*UnimplementedTasksServer) GetTask(context.Context, *GetTaskRequest) (*Task, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method GetTask not implemented")
-}
-func (*UnimplementedTasksServer) ListTasks(context.Context, *ListTasksRequest) (*ListTasksResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListTasks not implemented")
-}
-
-func RegisterTasksServer(s *grpc.Server, srv TasksServer) {
-	s.RegisterService(&_Tasks_serviceDesc, srv)
-}
-
-func _Tasks_GetTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TasksServer).GetTask(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.run.v2.Tasks/GetTask",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TasksServer).GetTask(ctx, req.(*GetTaskRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Tasks_ListTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListTasksRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TasksServer).ListTasks(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.run.v2.Tasks/ListTasks",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TasksServer).ListTasks(ctx, req.(*ListTasksRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Tasks_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.run.v2.Tasks",
-	HandlerType: (*TasksServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetTask",
-			Handler:    _Tasks_GetTask_Handler,
-		},
-		{
-			MethodName: "ListTasks",
-			Handler:    _Tasks_ListTasks_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/run/v2/task.proto",
 }
