@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.104.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.103.0...aiplatform/v1.104.0) (2025-10-03)
+
+
+### Features
+
+* **aiplatform:** Add DeploymentTier enum to DeployedIndex ([#13005](https://github.com/googleapis/google-cloud-go/issues/13005)) ([2c33123](https://github.com/googleapis/google-cloud-go/commit/2c331233a91df4b7ab0532dd6d6945c9d0a72228))
+
 ## [1.103.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.102.0...aiplatform/v1.103.0) (2025-09-30)
 
 
