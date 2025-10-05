@@ -2,7 +2,7 @@ image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian
 libraries:
   - id: dlp
     version: 1.25.0
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/privacy/dlp/v2
         service_config: dlp_v2.yaml
@@ -24,7 +24,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataproc
     version: 2.14.1
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/dataproc/v1
         service_config: dataproc_v1.yaml
@@ -48,7 +48,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.18.0
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -127,7 +127,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigateway
     version: 1.7.7
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/apigateway/v1
         service_config: apigateway_v1.yaml
@@ -151,7 +151,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeconnect
     version: 1.7.7
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/apigeeconnect/v1
         service_config: apigeeconnect_v1.yaml
@@ -175,7 +175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apihub
     version: 0.2.0
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/apihub/v1
         service_config: apihub_v1.yaml
@@ -210,7 +210,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
     version: 0.9.6
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/apigeeregistry/v1
         service_config: apigeeregistry_v1.yaml
@@ -234,7 +234,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apikeys
     version: 1.2.7
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/api/apikeys/v2
         service_config: apikeys_v2.yaml
@@ -258,7 +258,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.9.7
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/appengine/v1
         service_config: appengine_v1.yaml
@@ -282,7 +282,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apphub
     version: 0.3.1
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/apphub/v1
         service_config: apphub_v1.yaml
@@ -306,7 +306,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: eventarc
     version: 1.16.1
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/cloud/eventarc/v1
         service_config: eventarc_v1.yaml
@@ -341,7 +341,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maps
     version: 1.23.0
-    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
+    last_generated_commit: 2193a2bfcecb92b92aad7a4d81baa428cafd7dfd
     apis:
       - path: google/maps/addressvalidation/v1
         service_config: addressvalidation_v1.yaml
