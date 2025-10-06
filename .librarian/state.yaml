@@ -456,7 +456,27 @@ libraries:
     source_roots:
       - civil
       - httpreplay
+      - internal
       - rpcreplay
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/actions
+      - internal/aliasfix
+      - internal/aliasgen
+      - internal/carver
+      - internal/examples
+      - internal/gapicgen
+      - internal/generated
+      - internal/godocfx
+      - internal/kokoro
+      - internal/leakcheck
+      - internal/librariangen
+      - internal/postprocessor
+      - internal/pretty
+      - internal/protoveneer
+      - internal/stategen
+      - internal/testutil
+      - internal/tracecontext
+      - internal/version
     tag_format: 'v{version}'
