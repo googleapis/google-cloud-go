@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
-    "version": "1.1.1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
