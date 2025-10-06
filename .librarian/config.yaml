@@ -8,3 +8,5 @@ libraries:
     release_blocked: true
   - id: "auth/oauth2adapt"
     release_blocked: true
+  - id: "longrunning"
+    release_blocked: true

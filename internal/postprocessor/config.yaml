@@ -84,7 +84,6 @@ modules:
   - lifesciences
   - locationfinder
   - logging
-  - longrunning
   - lustre
   - maintenance
   - managedidentities
@@ -1182,9 +1181,6 @@ service-configs:
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/longrunning
-    service-config: longrunning.yaml
-    import-path: cloud.google.com/go/longrunning/autogen
   - input-directory: google/cloud/modelarmor/v1
     service-config: modelarmor_v1.yaml
     import-path: cloud.google.com/go/modelarmor/apiv1
@@ -1258,6 +1254,7 @@ skip-module-scan-paths:
   - alloydb
   - dataproc
   - dlp
+  - longrunning
   # individually released modules
   - bigquery
   - bigquery/v2

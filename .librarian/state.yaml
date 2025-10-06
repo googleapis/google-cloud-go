@@ -449,3 +449,27 @@ libraries:
     preserve_regex: []
     remove_regex: []
     tag_format: '{id}/v{version}'
+  - id: longrunning
+    version: 0.6.7
+    last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
+    apis:
+      - path: google/longrunning
+        service_config: ""
+    source_roots:
+      - longrunning
+      - internal/generated/snippets/longrunning
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/longrunning/
+      - ^longrunning/autogen/[^/]*_client\.go$
+      - ^longrunning/autogen/[^/]*_client_example_go123_test\.go$
+      - ^longrunning/autogen/[^/]*_client_example_test\.go$
+      - ^longrunning/autogen/auxiliary\.go$
+      - ^longrunning/autogen/auxiliary_go123\.go$
+      - ^longrunning/autogen/doc\.go$
+      - ^longrunning/autogen/gapic_metadata\.json$
+      - ^longrunning/autogen/helpers\.go$
+      - ^longrunning/autogen/longrunningpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/longrunning/
+    tag_format: '{id}/v{version}'
