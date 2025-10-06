@@ -1,5 +1,24 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.18.0...firestore/v1.19.0) (2025-10-06)
+
+
+### Features
+
+* **firestore/apiv1:** Add Firestore CloneDatabase support ([#12629](https://github.com/googleapis/google-cloud-go/issues/12629)) ([0b74f43](https://github.com/googleapis/google-cloud-go/commit/0b74f43c6639e0e85c828145e867b0e98f4fdc96))
+* **firestore/apiv1:** Expose tags field in Database and RestoreDatabaseRequest public protos ([f3c3c1a](https://github.com/googleapis/google-cloud-go/commit/f3c3c1ace2e36aa5e5c4c73e39a42cf3fbe2dbcb))
+* **firestore:** Add FieldNotFoundError for missing fields ([#12899](https://github.com/googleapis/google-cloud-go/issues/12899)) ([4df2b74](https://github.com/googleapis/google-cloud-go/commit/4df2b74208a851db0e0aeeef8f7e86c2d450e102))
+* **firestore:** Allow creating REST clients ([#12575](https://github.com/googleapis/google-cloud-go/issues/12575)) ([bfd138a](https://github.com/googleapis/google-cloud-go/commit/bfd138a71ffb4f230f5f9bd28f97379b36c143a9))
+* **firestore:** Expose previous state of document ([#12894](https://github.com/googleapis/google-cloud-go/issues/12894)) ([5c4524a](https://github.com/googleapis/google-cloud-go/commit/5c4524a209f78d82c3a1b3fe8beec247a67bceb0))
+* **firestore:** Introduce DocFromResourceName for full resource paths ([#12307](https://github.com/googleapis/google-cloud-go/issues/12307)) ([f7ee0b2](https://github.com/googleapis/google-cloud-go/commit/f7ee0b25a69336b290d47c19657c2abdbfec711f))
+
+
+### Bug Fixes
+
+* **firestore:** Add dedicated lock to BulkWriter to prevent race ([#12896](https://github.com/googleapis/google-cloud-go/issues/12896)) ([beb7d97](https://github.com/googleapis/google-cloud-go/commit/beb7d97545c6a55b873f0232f4d0710ee4c9d030))
+* **firestore:** Correct ReadWrite transaction retries ([#12893](https://github.com/googleapis/google-cloud-go/issues/12893)) ([b7124db](https://github.com/googleapis/google-cloud-go/commit/b7124db194505c4fc124491c7f8194bb526806f2))
+* **firestore:** Initialize readSettings in queries to prevent panic ([#12898](https://github.com/googleapis/google-cloud-go/issues/12898)) ([18bce36](https://github.com/googleapis/google-cloud-go/commit/18bce369f352554f450b44f13deb8c15b236f02f)), refs [#12448](https://github.com/googleapis/google-cloud-go/issues/12448)
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.17.0...firestore/v1.18.0) (2025-01-02)
 
 
