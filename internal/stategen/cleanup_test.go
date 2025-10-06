@@ -30,6 +30,7 @@ func TestCleanupLegacyConfigs(t *testing.T) {
 		"ai",
 		// Test an individually-released module in release-please-config-individual.json, etc.
 		"auth",
+		"cloudtasks",
 	}
 	for _, testModuleName := range testModuleNames {
 		// Create a temporary directory for the test repo.
