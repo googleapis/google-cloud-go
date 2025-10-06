@@ -209,7 +209,13 @@ func addAPIProtoPaths(ppc *postProcessorConfig, moduleName string, library *Libr
 	}
 }
 
-// addApiPaths walk the module source directory to find the files to remove.
+// addGeneratedCodeRemovals walks the module root directory to find directories containing
+// GAPIC-generated files. These files are registered in state file to be removed on generation,
+// as part of the clean operation (before newly-generated files are copied).
+// We use removals rather than preservation as this is safer in the face of handwritten code.
+// Even "pure GAPIC libraries" can (very occasionally) contain handwritten code, and
+// having two different ways of expressing what should be cleaned up is likely to result
+// in something being misconfigured and code being deleted accidentally.
 func addGeneratedCodeRemovals(repoRoot, moduleRoot string, library *LibraryState) error {
 	return filepath.WalkDir(moduleRoot, func(path string, d os.DirEntry, err error) error {
 		if err != nil {

@@ -2,7 +2,7 @@ image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian
 libraries:
   - id: dlp
     version: 1.25.0
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/privacy/dlp/v2
         service_config: dlp_v2.yaml
@@ -24,7 +24,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataproc
     version: 2.14.1
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/dataproc/v1
         service_config: dataproc_v1.yaml
@@ -48,7 +48,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.18.0
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -127,7 +127,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigateway
     version: 1.7.7
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/apigateway/v1
         service_config: apigateway_v1.yaml
@@ -151,7 +151,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeconnect
     version: 1.7.7
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/apigeeconnect/v1
         service_config: apigeeconnect_v1.yaml
@@ -175,7 +175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apihub
     version: 0.2.0
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/apihub/v1
         service_config: apihub_v1.yaml
@@ -210,10 +210,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
     version: 0.9.6
-    last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/apigeeregistry/v1
-        service_config: ""
+        service_config: apigeeregistry_v1.yaml
     source_roots:
       - apigeeregistry
       - internal/generated/snippets/apigeeregistry
@@ -234,10 +234,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apikeys
     version: 1.2.7
-    last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/api/apikeys/v2
-        service_config: ""
+        service_config: apikeys_v2.yaml
     source_roots:
       - apikeys
       - internal/generated/snippets/apikeys
@@ -258,10 +258,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.9.7
-    last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/appengine/v1
-        service_config: ""
+        service_config: appengine_v1.yaml
     source_roots:
       - appengine
       - internal/generated/snippets/appengine
@@ -282,10 +282,10 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apphub
     version: 0.3.1
-    last_generated_commit: c61d80baacfd85e9b3746516d319e733d0c4b163
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/apphub/v1
-        service_config: ""
+        service_config: apphub_v1.yaml
     source_roots:
       - apphub
       - internal/generated/snippets/apphub
@@ -306,12 +306,12 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: eventarc
     version: 1.16.1
-    last_generated_commit: b7e013ac0b9896cf89de48706221ec22212d8d0e
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/cloud/eventarc/v1
-        service_config: ""
+        service_config: eventarc_v1.yaml
       - path: google/cloud/eventarc/publishing/v1
-        service_config: ""
+        service_config: eventarcpublishing_v1.yaml
     source_roots:
       - eventarc
       - internal/generated/snippets/eventarc
@@ -341,24 +341,24 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maps
     version: 1.23.0
-    last_generated_commit: 3990e05b25dcaf7ba8d6baa4255d9b012a3a6a4f
+    last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
     apis:
       - path: google/maps/addressvalidation/v1
-        service_config: ""
+        service_config: addressvalidation_v1.yaml
       - path: google/maps/areainsights/v1
-        service_config: ""
+        service_config: areainsights_v1.yaml
       - path: google/maps/fleetengine/v1
-        service_config: ""
+        service_config: fleetengine_v1.yaml
       - path: google/maps/fleetengine/delivery/v1
-        service_config: ""
+        service_config: fleetengine_v1.yaml
       - path: google/maps/places/v1
-        service_config: ""
+        service_config: places_v1.yaml
       - path: google/maps/routeoptimization/v1
-        service_config: ""
+        service_config: routeoptimization_v1.yaml
       - path: google/maps/routing/v2
-        service_config: ""
+        service_config: routes_v2.yaml
       - path: google/maps/solar/v1
-        service_config: ""
+        service_config: solar_v1.yaml
     source_roots:
       - maps
       - internal/generated/snippets/maps
@@ -439,6 +439,15 @@ libraries:
       - ^maps/solar/apiv1/solarpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/maps/
+    tag_format: '{id}/v{version}'
+  - id: auth/oauth2adapt
+    version: 0.2.8
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    apis: []
+    source_roots:
+      - auth/oauth2adapt
+    preserve_regex: []
+    remove_regex: []
     tag_format: '{id}/v{version}'
   - id: root-module
     version: 0.123.0

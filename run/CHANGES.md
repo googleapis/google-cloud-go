@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.11.0...run/v1.12.0) (2025-08-12)
