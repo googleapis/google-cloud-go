@@ -481,8 +481,10 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				p.iter.ps.cancel()
 			}
 			time.AfterFunc(shutdownOpts.Timeout, shutdownKillCancel)
-			for _, p := range pairs {
-				p.iter.nackInventory(shutdownKillCtx)
+			if shutdownOpts.Behavior == ShutdownBehaviorNackImmediately {
+				for _, p := range pairs {
+					p.iter.nackInventory(shutdownKillCtx)
+				}
 			}
 		}
 

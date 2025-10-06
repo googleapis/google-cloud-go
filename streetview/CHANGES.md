@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/streetview/v0.2.4...streetview/v0.2.5) (2025-04-15)
 

@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.4.0...developerconnect/v0.4.1) (2025-09-16)
 

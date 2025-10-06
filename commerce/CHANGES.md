@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.2.6](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.2.5...commerce/v1.2.6) (2025-09-16)

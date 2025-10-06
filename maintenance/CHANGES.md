@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/maintenance/v0.1.1...maintenance/v0.1.2) (2025-09-18)
 
