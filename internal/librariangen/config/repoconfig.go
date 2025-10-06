@@ -73,10 +73,11 @@ type APIConfig struct {
 
 // LoadRepoConfig loads the repository configuration with module-specific overrides,
 // from a file derived from the .librarian directory (specified as librarianDir).
+// The absence of the file is not an error; it's equivalent to an empty file being present.
 func LoadRepoConfig(librarianDir string) (*RepoConfig, error) {
 	var config RepoConfig
 	b, err := os.ReadFile(filepath.Join(librarianDir, GeneratorInputDir, RepoConfigFile))
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
 	if err := yaml.Unmarshal(b, &config); err != nil {
