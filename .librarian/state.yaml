@@ -980,6 +980,41 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
+  - id: datastore
+    version: 1.20.0
+    last_generated_commit: 6e79e73204aed17b11e724beebb9cf11f36ea57d
+    apis:
+      - path: google/datastore/admin/v1
+        service_config: datastore_v1.yaml
+      - path: google/datastore/v1
+        service_config: datastore_v1.yaml
+    source_roots:
+      - datastore
+      - internal/generated/snippets/datastore
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/datastore/
+      - ^datastore/admin/apiv1/[^/]*_client\.go$
+      - ^datastore/admin/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^datastore/admin/apiv1/[^/]*_client_example_test\.go$
+      - ^datastore/admin/apiv1/auxiliary\.go$
+      - ^datastore/admin/apiv1/auxiliary_go123\.go$
+      - ^datastore/admin/apiv1/doc\.go$
+      - ^datastore/admin/apiv1/gapic_metadata\.json$
+      - ^datastore/admin/apiv1/helpers\.go$
+      - ^datastore/admin/apiv1/adminpb/.*$
+      - ^datastore/apiv1/[^/]*_client\.go$
+      - ^datastore/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^datastore/apiv1/[^/]*_client_example_test\.go$
+      - ^datastore/apiv1/auxiliary\.go$
+      - ^datastore/apiv1/auxiliary_go123\.go$
+      - ^datastore/apiv1/doc\.go$
+      - ^datastore/apiv1/gapic_metadata\.json$
+      - ^datastore/apiv1/helpers\.go$
+      - ^datastore/apiv1/datastorepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/datastore/
+    tag_format: '{id}/v{version}'
   - id: dlp
     version: 1.25.0
     last_generated_commit: 9070e63a1f574261c153ef6e94afc55677200337
@@ -1036,6 +1071,41 @@ libraries:
       - ^eventarc/publishing/apiv1/publishingpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/eventarc/
+    tag_format: '{id}/v{version}'
+  - id: firestore
+    version: 1.19.0
+    last_generated_commit: 6e79e73204aed17b11e724beebb9cf11f36ea57d
+    apis:
+      - path: google/firestore/admin/v1
+        service_config: firestore_v1.yaml
+      - path: google/firestore/v1
+        service_config: firestore_v1.yaml
+    source_roots:
+      - firestore
+      - internal/generated/snippets/firestore
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/firestore/
+      - ^firestore/apiv1/[^/]*_client\.go$
+      - ^firestore/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^firestore/apiv1/[^/]*_client_example_test\.go$
+      - ^firestore/apiv1/auxiliary\.go$
+      - ^firestore/apiv1/auxiliary_go123\.go$
+      - ^firestore/apiv1/doc\.go$
+      - ^firestore/apiv1/gapic_metadata\.json$
+      - ^firestore/apiv1/helpers\.go$
+      - ^firestore/apiv1/firestorepb/.*$
+      - ^firestore/apiv1/admin/[^/]*_client\.go$
+      - ^firestore/apiv1/admin/[^/]*_client_example_go123_test\.go$
+      - ^firestore/apiv1/admin/[^/]*_client_example_test\.go$
+      - ^firestore/apiv1/admin/auxiliary\.go$
+      - ^firestore/apiv1/admin/auxiliary_go123\.go$
+      - ^firestore/apiv1/admin/doc\.go$
+      - ^firestore/apiv1/admin/gapic_metadata\.json$
+      - ^firestore/apiv1/admin/helpers\.go$
+      - ^firestore/apiv1/admin/adminpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/firestore/
     tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.6.7
