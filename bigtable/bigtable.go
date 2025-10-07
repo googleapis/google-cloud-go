@@ -57,8 +57,7 @@ const (
 	methodNameReadRows               = "ReadRows"
 
 	// For routing cookie
-	cookiePrefix  = "x-goog-cbt-cookie-"
-	attemptHeader = "x-goog-cbt-attempt"
+	cookiePrefix = "x-goog-cbt-cookie-"
 )
 
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
@@ -2292,8 +2291,6 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 		for k, v := range op.cookies {
 			md.Append(k, v)
 		}
-		md.Set(attemptHeader, strconv.Itoa(op.routingAttempt))
-		op.routingAttempt++
 
 		existingMD, _ := metadata.FromOutgoingContext(ctx)
 		finalMD := metadata.Join(existingMD, md)
@@ -2309,10 +2306,6 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 
 		extractCookies(attemptHeaderMD, op)
 		extractCookies(attempTrailerMD, op)
-		// Reset attempt number if we receive any metadata.
-		if len(attemptHeaderMD) > 0 || len(attempTrailerMD) > 0 {
-			op.routingAttempt = 0
-		}
 		return err
 	}
 

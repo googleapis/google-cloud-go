@@ -459,8 +459,7 @@ type opTracer struct {
 	appBlockingLatency float64
 
 	// For routing cookie and gRPC attempt number
-	cookies        map[string]string
-	routingAttempt int
+	cookies map[string]string
 }
 
 func (o *opTracer) setStartTime(t time.Time) {
@@ -531,8 +530,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
 	currOpTracer := opTracer{
-		cookies:        make(map[string]string),
-		routingAttempt: 0,
+		cookies: make(map[string]string),
 	}
 	currOpTracer.setStartTime(time.Now())
 
