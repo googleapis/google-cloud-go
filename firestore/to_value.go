@@ -36,7 +36,12 @@ var (
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
 	typeOfVector64       = reflect.TypeOf(Vector64{})
 	typeOfVector32       = reflect.TypeOf(Vector32{})
+	isZeroerType         = reflect.TypeOf((*isZeroer)(nil)).Elem()
 )
+
+type isZeroer interface {
+	IsZero() bool
+}
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
 // Some corner cases:
@@ -236,6 +241,9 @@ func structToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 		if opts.omitEmpty && isEmptyValue(fv) {
 			continue
 		}
+		if opts.omitZero && isZeroValue(fv) {
+			continue
+		}
 		val, sst, err := toProtoValue(fv)
 		if err != nil {
 			return nil, false, err
@@ -260,6 +268,7 @@ func structToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 
 type tagOptions struct {
 	omitEmpty       bool // do not marshal value if empty
+	omitZero        bool // do not marshal value if zero
 	serverTimestamp bool // set time.Time to server timestamp on write
 }
 
@@ -274,6 +283,8 @@ func parseTag(t reflect.StructTag) (name string, keep bool, other interface{}, e
 		switch opt {
 		case "omitempty":
 			tagOpts.omitEmpty = true
+		case "omitzero":
+			tagOpts.omitZero = true
 		case "serverTimestamp":
 			tagOpts.serverTimestamp = true
 		default:
@@ -313,4 +324,33 @@ func isEmptyValue(v reflect.Value) bool {
 		return v.Interface().(time.Time).IsZero()
 	}
 	return false
+}
+
+func isZeroValue(v reflect.Value) bool {
+	if !v.IsValid() {
+		return true
+	}
+
+	if v.Type().Implements(isZeroerType) {
+		isInterface := v.Kind() == reflect.Interface
+		isPointer := v.Kind() == reflect.Pointer
+		if isInterface || isPointer {
+			if v.IsNil() {
+				return true
+			}
+			if isInterface && v.Elem().Kind() == reflect.Pointer && v.Elem().IsNil() {
+				return true
+			}
+		}
+		return v.Interface().(isZeroer).IsZero()
+	}
+	if reflect.PointerTo(v.Type()).Implements(isZeroerType) {
+		if v.CanAddr() {
+			return v.Addr().Interface().(isZeroer).IsZero()
+		}
+		v2 := reflect.New(v.Type()).Elem()
+		v2.Set(v)
+		return v2.Addr().Interface().(isZeroer).IsZero()
+	}
+	return v.IsZero()
 }

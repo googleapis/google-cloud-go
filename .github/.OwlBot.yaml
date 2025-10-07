@@ -12,28 +12,8 @@ deep-remove-regex:
   - /aiplatform/apiv1beta1/
   - /advisorynotifications/apiv1/
   - /analytics/admin/apiv1alpha/
-  - /apps/events/subscriptions/apiv1/
-  - /apps/events/subscriptions/apiv1beta/
-  - /apps/meet/apiv2/
-  - /apps/meet/apiv2beta/
-  - /area120/tables/apiv1alpha1/
   - /artifactregistry/apiv1/
   - /artifactregistry/apiv1beta2/
-  - /asset/apiv1/
-  - /asset/apiv1p2beta1/
-  - /asset/apiv1p5beta1/
-  - /assuredworkloads/apiv1/
-  - /assuredworkloads/apiv1beta1/
-  - /automl/apiv1/
-  - /automl/apiv1beta1/
-  - /backupdr/apiv1/
-  - /baremetalsolution/apiv2/
-  - /batch/apiv1/
-  - /beyondcorp/appconnections/apiv1/
-  - /beyondcorp/appconnectors/apiv1/
-  - /beyondcorp/appgateways/apiv1/
-  - /beyondcorp/clientconnectorservices/apiv1/
-  - /beyondcorp/clientgateways/apiv1/
   - /bigquery/analyticshub/apiv1/
   - /bigquery/biglake/apiv1/
   - /bigquery/biglake/apiv1alpha1/
@@ -56,32 +36,13 @@ deep-remove-regex:
   - /bigquery/v2/apiv2/
   - /bigtable/admin/apiv2/
   - /bigtable/apiv2/
-  - /billing/apiv1/
-  - /billing/budgets/apiv1/
-  - /billing/budgets/apiv1beta1/
-  - /binaryauthorization/apiv1/
-  - /binaryauthorization/apiv1beta1/
-  - /capacityplanner/apiv1beta/
   - /certificatemanager/apiv1/
-  - /channel/apiv1/
-  - /chat/apiv1/
-  - /chronicle/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
-  - /cloudcontrolspartner/apiv1/
-  - /cloudcontrolspartner/apiv1beta/
-  - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
-  - /cloudquotas/apiv1/
-  - /cloudquotas/apiv1beta/
-  - /cloudtasks/apiv2/
-  - /cloudtasks/apiv2beta2/
-  - /cloudtasks/apiv2beta3/
   - /commerce/consumer/procurement/apiv1
   - /compute/apiv1
   - /compute/apiv1beta
-  - /confidentialcomputing/apiv1
-  - /confidentialcomputing/apiv1alpha1
   - /config/apiv1/
   - /configdelivery/apiv1/
   - /configdelivery/apiv1beta/
@@ -152,28 +113,8 @@ deep-remove-regex:
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/advisorynotifications/apiv1/
   - /internal/generated/snippets/analytics/admin/apiv1alpha/
-  - /internal/generated/snippets/apps/events/subscriptions/apiv1/
-  - /internal/generated/snippets/apps/events/subscriptions/apiv1beta/
-  - /internal/generated/snippets/apps/meet/apiv2/
-  - /internal/generated/snippets/apps/meet/apiv2beta/
-  - /internal/generated/snippets/area120/tables/apiv1alpha1/
   - /internal/generated/snippets/artifactregistry/apiv1/
   - /internal/generated/snippets/artifactregistry/apiv1beta2/
-  - /internal/generated/snippets/asset/apiv1/
-  - /internal/generated/snippets/asset/apiv1p2beta1/
-  - /internal/generated/snippets/asset/apiv1p5beta1/
-  - /internal/generated/snippets/assuredworkloads/apiv1/
-  - /internal/generated/snippets/assuredworkloads/apiv1beta1/
-  - /internal/generated/snippets/automl/apiv1/
-  - /internal/generated/snippets/automl/apiv1beta1/
-  - /internal/generated/snippets/backupdr/apiv1/
-  - /internal/generated/snippets/baremetalsolution/apiv2/
-  - /internal/generated/snippets/batch/apiv1/
-  - /internal/generated/snippets/beyondcorp/appconnections/apiv1/
-  - /internal/generated/snippets/beyondcorp/appconnectors/apiv1/
-  - /internal/generated/snippets/beyondcorp/appgateways/apiv1/
-  - /internal/generated/snippets/beyondcorp/clientconnectorservices/apiv1/
-  - /internal/generated/snippets/beyondcorp/clientgateways/apiv1/
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1alpha1/
@@ -194,32 +135,13 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/storage/apiv1beta1/
   - /internal/generated/snippets/bigquery/storage/apiv1beta2/
   - /internal/generated/snippets/bigquery/v2/apiv2/
-  - /internal/generated/snippets/billing/apiv1/
-  - /internal/generated/snippets/billing/budgets/apiv1/
-  - /internal/generated/snippets/billing/budgets/apiv1beta1/
-  - /internal/generated/snippets/binaryauthorization/apiv1/
-  - /internal/generated/snippets/binaryauthorization/apiv1beta1/
-  - /internal/generated/snippets/capacityplanner/apiv1beta/
   - /internal/generated/snippets/certificatemanager/apiv1/
-  - /internal/generated/snippets/channel/apiv1/
-  - /internal/generated/snippets/chat/apiv1/
-  - /internal/generated/snippets/chronicle/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
-  - /internal/generated/snippets/cloudcontrolspartner/apiv1/
-  - /internal/generated/snippets/cloudcontrolspartner/apiv1beta/
-  - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
-  - /internal/generated/snippets/cloudquotas/apiv1/
-  - /internal/generated/snippets/cloudquotas/apiv1beta/
-  - /internal/generated/snippets/cloudtasks/apiv2/
-  - /internal/generated/snippets/cloudtasks/apiv2beta2/
-  - /internal/generated/snippets/cloudtasks/apiv2beta3/
   - /internal/generated/snippets/commerce/consumer/procurement/apiv1
   - /internal/generated/snippets/compute/apiv1
   - /internal/generated/snippets/compute/apiv1beta
-  - /internal/generated/snippets/confidentialcomputing/apiv1
-  - /internal/generated/snippets/confidentialcomputing/apiv1alpha1
   - /internal/generated/snippets/config/apiv1/
   - /internal/generated/snippets/configdelivery/apiv1/
   - /internal/generated/snippets/configdelivery/apiv1beta/
@@ -288,7 +210,6 @@ deep-remove-regex:
   - /internal/generated/snippets/lifesciences/apiv2beta/
   - /internal/generated/snippets/locationfinder/apiv1/
   - /internal/generated/snippets/logging/apiv2/
-  - /internal/generated/snippets/longrunning/autogen/
   - /internal/generated/snippets/lustre/apiv1/
   - /internal/generated/snippets/maintenance/api/apiv1beta/
   - /internal/generated/snippets/managedidentities/apiv1/
@@ -455,7 +376,6 @@ deep-remove-regex:
   - /lifesciences/apiv2beta/
   - /locationfinder/apiv1/
   - /logging/apiv2/
-  - /longrunning/autogen/
   - /lustre/apiv1/
   - /maintenance/api/apiv1beta/
   - /managedidentities/apiv1/
@@ -647,104 +567,38 @@ deep-preserve-regex:
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
   - /storage/internal/apiv2/metadata.go
-  - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Must preserve these even though they aren't generated anymore
   - /vmmigration/apiv1/iam_policy_client.go
   - /datastream/apiv1/iam_policy_client.go
-  - /batch/apiv1/iam_policy_client.go
   - /datacatalog/apiv1/iam_policy_client.go
   - /run/apiv2/locations_client.go
   - /datacatalog/apiv1/iam_policy_client.go
   - /compute/apiv1/smoke_test.go
 
 deep-copy-regex:
-  - source: /google/cloud/accessapproval/v1/cloud.google.com/go
-    dest: /
-  - source: /google/identity/accesscontextmanager/v1/cloud.google.com/go
-    dest: /
-  - source: /google/ai/generativelanguage/v1/cloud.google.com/go
-    dest: /
   - source: /google/ai/generativelanguage/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/ai/generativelanguage/v1beta/cloud.google.com/go
     dest: /
   - source: /google/ai/generativelanguage/v1beta2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/aiplatform/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/advisorynotifications/v1/cloud.google.com/go
-    dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/asset/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go
-    dest: /
-  - source: /google/api/cloudquotas/v1/cloud.google.com/go
-    dest: /
-  - source: /google/api/cloudquotas/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/apps/events/subscriptions/v1/cloud.google.com/go
-    dest: /
-  - source: /google/apps/events/subscriptions/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/apps/meet/v2/cloud.google.com/go
-    dest: /
-  - source: /google/apps/meet/v2beta/cloud.google.com/go
-    dest: /
-  - source: /google/area120/tables/v1alpha1/cloud.google.com/go
     dest: /
   # Just copy the bigtable protos for now
   - source: /google/bigtable/admin/v2/cloud.google.com/go/bigtable/admin/apiv2/adminpb
     dest: /bigtable/admin/apiv2/adminpb
   - source: /google/bigtable/v2/cloud.google.com/go/bigtable/apiv2/bigtablepb
     dest: /bigtable/apiv2/bigtablepb
-  - source: /google/devtools/artifactregistry/v1/cloud.google.com/go
-    dest: /
   - source: /google/devtools/artifactregistry/v1beta2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/assuredworkloads/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/assuredworkloads/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/automl/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/automl/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/backupdr/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/baremetalsolution/v2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/batch/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/beyondcorp/appconnections/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/beyondcorp/appconnectors/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/beyondcorp/appgateways/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/beyondcorp/clientconnectorservices/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/beyondcorp/clientgateways/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/bigquery/analyticshub/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/bigquery/biglake/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/bigquery/biglake/v1alpha1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/bigquery/connection/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/connection/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/dataexchange/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/bigquery/datapolicies/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/datapolicies/v1beta1/cloud.google.com/go
     dest: /
@@ -752,15 +606,9 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/datapolicies/v2beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/bigquery/datatransfer/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/bigquery/migration/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/migration/v2alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/bigquery/reservation/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/bigquery/storage/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/storage/v1alpha/cloud.google.com/go
     dest: /
@@ -772,100 +620,28 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/v2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/billing/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/billing/budgets/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/billing/budgets/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/binaryauthorization/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/binaryauthorization/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/capacityplanner/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/certificatemanager/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/channel/v1/cloud.google.com/go
-    dest: /
-  - source: /google/chat/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/chronicle/v1/cloud.google.com/go
-    dest: /
-  - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
-    dest: /
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/cloudcontrolspartner/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/cloudcontrolspartner/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/clouddms/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudprofiler/v2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/tasks/v2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/tasks/v2beta2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/tasks/v2beta3/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/commerce/consumer/procurement/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/compute/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/compute/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/confidentialcomputing/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/config/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/configdelivery/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/configdelivery/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go
-    dest: /
-  - source: /google/container/v1/cloud.google.com/go
-    dest: /
   - source: /google/devtools/containeranalysis/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/datacatalog/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/datacatalog/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/datacatalog/lineage/v1/cloud.google.com/go
-    dest: /
   - source: /google/dataflow/v1beta3/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/dataform/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/dataform/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/datafusion/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/datalabeling/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/dataplex/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
-  - source: /google/datastore/admin/v1/cloud.google.com/go
-    dest: /
   # Just copy the datastore protos for now
-  - source: /google/datastore/v1/cloud.google.com/go/datastore/apiv1/datastorepb
-    dest: /datastore/apiv1/datastorepb
-  - source: /google/cloud/datastream/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/deploy/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/developerconnect/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/devicestreaming/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go
     dest: /
@@ -875,55 +651,25 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dialogflow/cx/v3beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/discoveryengine/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/discoveryengine/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/discoveryengine/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/documentai/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/documentai/v1beta3/cloud.google.com/go
     dest: /
   - source: /google/cloud/domains/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/edgecontainer/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/edgenetwork/v1/cloud.google.com/go
-    dest: /
   # - source: /google/devtools/clouderrorreporting/v1beta1/cloud.google.com/go
   #   dest: /
-  - source: /google/cloud/essentialcontacts/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/filestore/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/financialservices/v1/cloud.google.com/go
-    dest: /
-  - source: /google/firestore/v1/cloud.google.com/go
-    dest: /
-  - source: /google/firestore/admin/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/functions/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/functions/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/functions/v2beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/geminidataanalytics/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/gkebackup/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/gkeconnect/gateway/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/gkeconnect/gateway/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/gkehub/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/gkemulticloud/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/gsuiteaddons/v1/cloud.google.com/go
-    dest: /
-  - source: /google/iam/v1/cloud.google.com/go
     dest: /
   - source: /google/iam/v2/cloud.google.com/go
     dest: /
@@ -931,161 +677,69 @@ deep-copy-regex:
     dest: /
   - source: /google/iam/v3beta/cloud.google.com/go
     dest: /
-  - source: /google/iam/credentials/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/iap/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/identitytoolkit/v2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/ids/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/iot/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/kms/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/kms/inventory/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/language/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/language/v1beta2/cloud.google.com/go
     dest: /
   - source: /google/cloud/language/v2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/licensemanager/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/lifesciences/v2beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/locationfinder/v1/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
     dest: /
-  - source: /google/longrunning/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/lustre/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/maintenance/api/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/managedidentities/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/managedkafka/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/managedkafka/schemaregistry/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/memcache/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/memcache/v1beta2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/memorystore/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/memorystore/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/metastore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/metastore/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/cloud/metastore/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/migrationcenter/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/modelarmor/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/modelarmor/v1beta/cloud.google.com/go
     dest: /
   - source: /google/monitoring/v3/cloud.google.com/go
     dest: /
-  - source: /google/monitoring/dashboard/v1/cloud.google.com/go
-    dest: /
-  - source: /google/monitoring/metricsscope/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/netapp/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/networkconnectivity/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/networkconnectivity/v1alpha1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/networkmanagement/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/networksecurity/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/networkservices/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/notebooks/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/notebooks/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/notebooks/v2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/optimization/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/oracledatabase/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/orgpolicy/v2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/osconfig/agentendpoint/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/osconfig/agentendpoint/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/osconfig/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/osconfig/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/cloud/osconfig/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/oslogin/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/oslogin/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/oslogin/common/cloud.google.com/go
     dest: /
-  - source: /google/cloud/parallelstore/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/parallelstore/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/parametermanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/policysimulator/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/policytroubleshooter/iam/v3/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/privatecatalog/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/privilegedaccessmanager/v1/cloud.google.com/go
-    dest: /
-  - source: /google/pubsub/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/pubsublite/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/rapidmigrationassessment/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/recaptchaenterprise/v2/apiv1
-    dest: /recaptchaenterprise/apiv1
-  - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1
-    dest: /internal/generated/snippets/recaptchaenterprise/apiv1
   - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
     dest: /recaptchaenterprise/apiv1beta1
   - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1
     dest: /internal/generated/snippets/recaptchaenterprise/apiv1beta1
   - source: /google/cloud/recommendationengine/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/recommender/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/recommender/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/redis/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/redis/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/redis/cluster/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/resourcemanager/v2/cloud.google.com/go
     dest: /
@@ -1099,23 +753,11 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/run/v2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/scheduler/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/scheduler/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/secretmanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/secretmanager/v1beta2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/securesourcemanager/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/security/privateca/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/security/publicca/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/security/publicca/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/securitycenter/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycenter/v1beta1/cloud.google.com/go
     dest: /
@@ -1125,91 +767,37 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/securitycenter/settings/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/securitycentermanagement/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/securityposture/v1/cloud.google.com/go
-    dest: /
-  - source: /google/api/servicecontrol/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/servicedirectory/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/servicedirectory/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/servicehealth/v1/cloud.google.com/go
-    dest: /
-  - source: /google/api/servicemanagement/v1/cloud.google.com/go
-    dest: /
-  - source: /google/api/serviceusage/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/shell/v1/cloud.google.com/go
-    dest: /
-  - source: /google/shopping/css/v1/cloud.google.com/go
-    dest: /
-  - source: /google/shopping/merchant/accounts/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/accounts/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/shopping/merchant/conversions/v1/cloud.google.com/go
-    dest: /
   - source: /google/shopping/merchant/conversions/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/shopping/merchant/datasources/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/datasources/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/shopping/merchant/notifications/v1/cloud.google.com/go
-    dest: /
   - source: /google/shopping/merchant/notifications/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/shopping/merchant/ordertracking/v1/cloud.google.com/go
-    dest: /
   - source: /google/shopping/merchant/ordertracking/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/shopping/merchant/products/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/products/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/productstudio/v1alpha/cloud.google.com/go
     dest: /
-  - source: /google/shopping/merchant/promotions/v1/cloud.google.com/go
-    dest: /
   - source: /google/shopping/merchant/promotions/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/shopping/merchant/quota/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/quota/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/shopping/merchant/inventories/v1/cloud.google.com/go
-    dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/shopping/merchant/issueresolution/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/issueresolution/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/shopping/merchant/lfp/v1/cloud.google.com/go
-    dest: /
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/shopping/merchant/reports/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/reports/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/reviews/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/type/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/adapter/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/admin/database/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/admin/instance/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/executor/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/speech/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/speech/v1p1beta1/cloud.google.com/go
     dest: /
@@ -1219,14 +807,6 @@ deep-copy-regex:
     dest: /
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
-  - source: /google/cloud/storagebatchoperations/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/storageinsights/v1/cloud.google.com/go
-    dest: /
-  - source: /google/storagetransfer/v1/cloud.google.com/go
-    dest: /
-  - source: /google/streetview/publish/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/support/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/support/v2beta/cloud.google.com/go
@@ -1235,61 +815,23 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/talent/v4beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/telcoautomation/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/texttospeech/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/tpu/v1/cloud.google.com/go
-    dest: /
-  - source: /google/devtools/cloudtrace/v1/cloud.google.com/go
-    dest: /
   - source: /google/devtools/cloudtrace/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/translate/v3/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/video/livestream/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/video/stitcher/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/video/transcoder/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/videointelligence/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/videointelligence/v1beta2/cloud.google.com/go
     dest: /
   - source: /google/cloud/videointelligence/v1p3beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/vision/v1/cloud.google.com/go/vision/v2/apiv1
-    dest: /vision/apiv1
-  - source: /google/cloud/vision/v1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1
-    dest: /internal/generated/snippets/vision/apiv1
   - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/vision/v2/apiv1p1beta1
     dest: /vision/apiv1p1beta1
   - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1p1beta1
     dest: /internal/generated/snippets/vision/apiv1p1beta1
-  - source: /google/cloud/visionai/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/vmmigration/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/vmwareengine/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/vpcaccess/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/webrisk/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/webrisk/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/websecurityscanner/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/workflows/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/workflows/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/workflows/executions/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/workflows/executions/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/workstations/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/workstations/v1beta/cloud.google.com/go
     dest: /

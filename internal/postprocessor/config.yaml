@@ -5,38 +5,18 @@ modules:
   - aiplatform
   - advisorynotifications
   - analytics
-  - apps
-  - area120
   - artifactregistry
-  - asset
-  - assuredworkloads
-  - automl
-  - backupdr
-  - baremetalsolution
-  - batch
-  - beyondcorp
   # List the bigquery/v2 module before the bigquery module so that the contents
   # are processed using the correct inner module boundary.
   # More info: https://github.com/googleapis/google-cloud-go/issues/12452
   - bigquery/v2
   - bigquery
   - bigtable
-  - billing
-  - binaryauthorization
-  - capacityplanner
   - certificatemanager
-  - channel
-  - chat
-  - chronicle
   - cloudbuild
-  - cloudcontrolspartner
-  - clouddms
   - cloudprofiler
-  - cloudquotas
-  - cloudtasks
   - commerce
   - compute
-  - confidentialcomputing
   - config
   - configdelivery
   - contactcenterinsights
@@ -84,7 +64,6 @@ modules:
   - lifesciences
   - locationfinder
   - logging
-  - longrunning
   - lustre
   - maintenance
   - managedidentities
@@ -305,21 +284,6 @@ service-configs:
   - input-directory: google/analytics/admin/v1alpha
     service-config: analyticsadmin_v1alpha.yaml
     import-path: cloud.google.com/go/analytics/admin/apiv1alpha
-  - input-directory: google/apps/events/subscriptions/v1
-    service-config: workspaceevents_v1.yaml
-    import-path: cloud.google.com/go/apps/events/subscriptions/apiv1
-  - input-directory: google/apps/events/subscriptions/v1beta
-    service-config: workspaceevents_v1beta.yaml
-    import-path: cloud.google.com/go/apps/events/subscriptions/apiv1beta
-  - input-directory: google/apps/meet/v2
-    service-config: meet_v2.yaml
-    import-path: cloud.google.com/go/apps/meet/apiv2
-  - input-directory: google/apps/meet/v2beta
-    service-config: meet_v2beta.yaml
-    import-path: cloud.google.com/go/apps/meet/apiv2beta
-  - input-directory: google/area120/tables/v1alpha1
-    service-config: area120tables_v1alpha1.yaml
-    import-path: cloud.google.com/go/area120/tables/apiv1alpha1
   - input-directory: google/cloud/accessapproval/v1
     service-config: accessapproval_v1.yaml
     import-path: cloud.google.com/go/accessapproval/apiv1
@@ -332,51 +296,6 @@ service-configs:
   - input-directory: google/cloud/advisorynotifications/v1
     service-config: advisorynotifications_v1.yaml
     import-path: cloud.google.com/go/advisorynotifications/apiv1
-  - input-directory: google/cloud/asset/v1
-    service-config: cloudasset_v1.yaml
-    import-path: cloud.google.com/go/asset/apiv1
-  - input-directory: google/cloud/asset/v1p2beta1
-    service-config: cloudasset_v1p2beta1.yaml
-    import-path: cloud.google.com/go/asset/apiv1p2beta1
-  - input-directory: google/cloud/asset/v1p5beta1
-    service-config: cloudasset_v1p5beta1.yaml
-    import-path: cloud.google.com/go/asset/apiv1p5beta1
-  - input-directory: google/cloud/assuredworkloads/v1
-    service-config: assuredworkloads_v1.yaml
-    import-path: cloud.google.com/go/assuredworkloads/apiv1
-  - input-directory: google/cloud/assuredworkloads/v1beta1
-    service-config: assuredworkloads_v1beta1.yaml
-    import-path: cloud.google.com/go/assuredworkloads/apiv1beta1
-  - input-directory: google/cloud/automl/v1
-    service-config: automl_v1.yaml
-    import-path: cloud.google.com/go/automl/apiv1
-  - input-directory: google/cloud/automl/v1beta1
-    service-config: automl_v1beta1.yaml
-    import-path: cloud.google.com/go/automl/apiv1beta1
-  - input-directory: google/cloud/backupdr/v1
-    service-config: backupdr_v1.yaml
-    import-path: cloud.google.com/go/backupdr/apiv1
-  - input-directory: google/cloud/baremetalsolution/v2
-    service-config: baremetalsolution_v2.yaml
-    import-path: cloud.google.com/go/baremetalsolution/apiv2
-  - input-directory: google/cloud/batch/v1
-    service-config: batch_v1.yaml
-    import-path: cloud.google.com/go/batch/apiv1
-  - input-directory: google/cloud/beyondcorp/appconnections/v1
-    service-config: beyondcorp_v1.yaml
-    import-path: cloud.google.com/go/beyondcorp/appconnections/apiv1
-  - input-directory: google/cloud/beyondcorp/appconnectors/v1
-    service-config: beyondcorp_v1.yaml
-    import-path: cloud.google.com/go/beyondcorp/appconnectors/apiv1
-  - input-directory: google/cloud/beyondcorp/appgateways/v1
-    service-config: beyondcorp_v1.yaml
-    import-path: cloud.google.com/go/beyondcorp/appgateways/apiv1
-  - input-directory: google/cloud/beyondcorp/clientconnectorservices/v1
-    service-config: beyondcorp_v1.yaml
-    import-path: cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1
-  - input-directory: google/cloud/beyondcorp/clientgateways/v1
-    service-config: beyondcorp_v1.yaml
-    import-path: cloud.google.com/go/beyondcorp/clientgateways/apiv1
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
@@ -445,54 +364,12 @@ service-configs:
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
     release-level-override: stable
-  - input-directory: google/cloud/billing/budgets/v1
-    service-config: billingbudgets.yaml
-    import-path: cloud.google.com/go/billing/budgets/apiv1
-  - input-directory: google/cloud/billing/budgets/v1beta1
-    service-config: billingbudgets.yaml
-    import-path: cloud.google.com/go/billing/budgets/apiv1beta1
-  - input-directory: google/cloud/billing/v1
-    service-config: cloudbilling_v1.yaml
-    import-path: cloud.google.com/go/billing/apiv1
-  - input-directory: google/cloud/binaryauthorization/v1
-    service-config: binaryauthorization_v1.yaml
-    import-path: cloud.google.com/go/binaryauthorization/apiv1
-  - input-directory: google/cloud/binaryauthorization/v1beta1
-    service-config: binaryauthorization_v1beta1.yaml
-    import-path: cloud.google.com/go/binaryauthorization/apiv1beta1
-  - input-directory: google/cloud/capacityplanner/v1beta
-    service-config: capacityplanner_v1beta.yaml
-    import-path: cloud.google.com/go/capacityplanner/apiv1beta
   - input-directory: google/cloud/certificatemanager/v1
     service-config: certificatemanager_v1.yaml
     import-path: cloud.google.com/go/certificatemanager/apiv1
-  - input-directory: google/cloud/channel/v1
-    service-config: cloudchannel_v1.yaml
-    import-path: cloud.google.com/go/channel/apiv1
-  - input-directory: google/chat/v1
-    service-config: chat_v1.yaml
-    import-path: cloud.google.com/go/chat/apiv1
-  - input-directory: google/cloud/chronicle/v1
-    service-config: chronicle_v1.yaml
-    import-path: cloud.google.com/go/chronicle/apiv1
-  - input-directory: google/cloud/cloudcontrolspartner/v1
-    service-config: cloudcontrolspartner_v1.yaml
-    import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
-  - input-directory: google/cloud/cloudcontrolspartner/v1beta
-    service-config: cloudcontrolspartner_v1beta.yaml
-    import-path: cloud.google.com/go/cloudcontrolspartner/apiv1beta
-  - input-directory: google/cloud/clouddms/v1
-    service-config: datamigration_v1.yaml
-    import-path: cloud.google.com/go/clouddms/apiv1
   - input-directory: google/devtools/cloudprofiler/v2
     service-config: cloudprofiler_v2.yaml
     import-path: cloud.google.com/go/cloudprofiler/apiv2
-  - input-directory: google/api/cloudquotas/v1
-    service-config: cloudquotas_v1.yaml
-    import-path: cloud.google.com/go/cloudquotas/apiv1
-  - input-directory: google/api/cloudquotas/v1beta
-    service-config: cloudquotas_v1beta.yaml
-    import-path: cloud.google.com/go/cloudquotas/apiv1beta
   - input-directory: google/cloud/commerce/consumer/procurement/v1
     service-config: cloudcommerceconsumerprocurement_v1.yaml
     import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
@@ -1029,15 +906,6 @@ service-configs:
   - input-directory: google/cloud/talent/v4beta1
     service-config: jobs_v4beta1.yaml
     import-path: cloud.google.com/go/talent/apiv4beta1
-  - input-directory: google/cloud/tasks/v2
-    service-config: cloudtasks_v2.yaml
-    import-path: cloud.google.com/go/cloudtasks/apiv2
-  - input-directory: google/cloud/tasks/v2beta2
-    service-config: cloudtasks_v2beta2.yaml
-    import-path: cloud.google.com/go/cloudtasks/apiv2beta2
-  - input-directory: google/cloud/tasks/v2beta3
-    service-config: cloudtasks_v2beta3.yaml
-    import-path: cloud.google.com/go/cloudtasks/apiv2beta3
   - input-directory: google/cloud/telcoautomation/v1
     service-config: telcoautomation_v1.yaml
     import-path: cloud.google.com/go/telcoautomation/apiv1
@@ -1146,12 +1014,6 @@ service-configs:
   - input-directory: google/devtools/cloudbuild/v2
     service-config: cloudbuild_v2.yaml
     import-path: cloud.google.com/go/cloudbuild/apiv2
-  - input-directory: google/cloud/confidentialcomputing/v1
-    service-config: confidentialcomputing_v1.yaml
-    import-path: cloud.google.com/go/confidentialcomputing/apiv1
-  - input-directory: google/cloud/confidentialcomputing/v1alpha1
-    service-config: confidentialcomputing_v1alpha1.yaml
-    import-path: cloud.google.com/go/confidentialcomputing/apiv1alpha1
   - input-directory: google/devtools/containeranalysis/v1beta1
     service-config: containeranalysis_v1beta1.yaml
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
@@ -1182,9 +1044,6 @@ service-configs:
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/longrunning
-    service-config: longrunning.yaml
-    import-path: cloud.google.com/go/longrunning/autogen
   - input-directory: google/cloud/modelarmor/v1
     service-config: modelarmor_v1.yaml
     import-path: cloud.google.com/go/modelarmor/apiv1
@@ -1244,6 +1103,26 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - confidentialcomputing
+  - cloudtasks
+  - cloudquotas
+  - clouddms
+  - cloudcontrolspartner
+  - chronicle
+  - chat
+  - channel
+  - capacityplanner
+  - binaryauthorization
+  - billing
+  - beyondcorp
+  - batch
+  - baremetalsolution
+  - backupdr
+  - automl
+  - assuredworkloads
+  - asset
+  - area120
+  - apps
   - maps
   - eventarc
   - apphub
@@ -1258,6 +1137,7 @@ skip-module-scan-paths:
   - alloydb
   - dataproc
   - dlp
+  - longrunning
   # individually released modules
   - bigquery
   - bigquery/v2
