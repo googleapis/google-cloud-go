@@ -131,6 +131,9 @@ type PredictRequest struct {
 	// [PredictSchemata's][google.cloud.aiplatform.v1.Model.predict_schemata]
 	// [parameters_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.parameters_schema_uri].
 	Parameters *structpb.Value `protobuf:"bytes,3,opt,name=parameters,proto3" json:"parameters,omitempty"`
+	// Optional. The user labels for Imagen billing usage only. Only Imagen
+	// supports labels. For other use cases, it will be ignored.
+	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (x *PredictRequest) Reset() {
@@ -180,6 +183,13 @@ func (x *PredictRequest) GetInstances() []*structpb.Value {
 func (x *PredictRequest) GetParameters() *structpb.Value {
 	if x != nil {
 		return x.Parameters
+	}
+	return nil
+}
+
+func (x *PredictRequest) GetLabels() map[string]string {
+	if x != nil {
+		return x.Labels
 	}
 	return nil
 }
@@ -1820,7 +1830,7 @@ type GenerateContentResponse_PromptFeedback struct {
 
 func (x *GenerateContentResponse_PromptFeedback) Reset() {
 	*x = GenerateContentResponse_PromptFeedback{}
-	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1832,7 +1842,7 @@ func (x *GenerateContentResponse_PromptFeedback) String() string {
 func (*GenerateContentResponse_PromptFeedback) ProtoMessage() {}
 
 func (x *GenerateContentResponse_PromptFeedback) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1899,7 +1909,7 @@ type GenerateContentResponse_UsageMetadata struct {
 
 func (x *GenerateContentResponse_UsageMetadata) Reset() {
 	*x = GenerateContentResponse_UsageMetadata{}
-	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1911,7 +1921,7 @@ func (x *GenerateContentResponse_UsageMetadata) String() string {
 func (*GenerateContentResponse_UsageMetadata) ProtoMessage() {}
 
 func (x *GenerateContentResponse_UsageMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2014,7 +2024,7 @@ var file_google_cloud_aiplatform_v1_prediction_service_proto_rawDesc = []byte{
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xcb, 0x01, 0x0a, 0x0e, 0x50, 0x72, 0x65, 0x64, 0x69, 0x63,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xdb, 0x02, 0x0a, 0x0e, 0x50, 0x72, 0x65, 0x64, 0x69, 0x63,
 	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x70,
 	0x6f, 0x69, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2a, 0xe0, 0x41, 0x02, 0xfa,
 	0x41, 0x24, 0x0a, 0x22, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x67,
@@ -2027,7 +2037,16 @@ var file_google_cloud_aiplatform_v1_prediction_service_proto_rawDesc = []byte{
 	0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
 	0x66, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74,
-	0x65, 0x72, 0x73, 0x22, 0xd1, 0x02, 0x0a, 0x0f, 0x50, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x52,
+	0x65, 0x72, 0x73, 0x12, 0x53, 0x0a, 0x06, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x18, 0x04, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x36, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31,
+	0x2e, 0x50, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e,
+	0x4c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x03, 0xe0, 0x41, 0x01,
+	0x52, 0x06, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x1a, 0x39, 0x0a, 0x0b, 0x4c, 0x61, 0x62, 0x65,
+	0x6c, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a,
+	0x02, 0x38, 0x01, 0x22, 0xd1, 0x02, 0x0a, 0x0f, 0x50, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x52,
 	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x38, 0x0a, 0x0b, 0x70, 0x72, 0x65, 0x64, 0x69,
 	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x56,
@@ -2650,7 +2669,7 @@ func file_google_cloud_aiplatform_v1_prediction_service_proto_rawDescGZIP() []by
 }
 
 var file_google_cloud_aiplatform_v1_prediction_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_google_cloud_aiplatform_v1_prediction_service_proto_goTypes = []any{
 	(GenerateContentResponse_PromptFeedback_BlockedReason)(0), // 0: google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback.BlockedReason
 	(*PredictRequest)(nil),                         // 1: google.cloud.aiplatform.v1.PredictRequest
@@ -2675,103 +2694,105 @@ var file_google_cloud_aiplatform_v1_prediction_service_proto_goTypes = []any{
 	(*CountTokensResponse)(nil),                    // 20: google.cloud.aiplatform.v1.CountTokensResponse
 	(*GenerateContentRequest)(nil),                 // 21: google.cloud.aiplatform.v1.GenerateContentRequest
 	(*GenerateContentResponse)(nil),                // 22: google.cloud.aiplatform.v1.GenerateContentResponse
-	nil,                                            // 23: google.cloud.aiplatform.v1.GenerateContentRequest.LabelsEntry
-	(*GenerateContentResponse_PromptFeedback)(nil), // 24: google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback
-	(*GenerateContentResponse_UsageMetadata)(nil),  // 25: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata
-	(*structpb.Value)(nil),                         // 26: google.protobuf.Value
-	(*httpbody.HttpBody)(nil),                      // 27: google.api.HttpBody
-	(*Tensor)(nil),                                 // 28: google.cloud.aiplatform.v1.Tensor
-	(*ExplanationSpecOverride)(nil),                // 29: google.cloud.aiplatform.v1.ExplanationSpecOverride
-	(*Explanation)(nil),                            // 30: google.cloud.aiplatform.v1.Explanation
-	(*Content)(nil),                                // 31: google.cloud.aiplatform.v1.Content
-	(*Tool)(nil),                                   // 32: google.cloud.aiplatform.v1.Tool
-	(*GenerationConfig)(nil),                       // 33: google.cloud.aiplatform.v1.GenerationConfig
-	(*ModalityTokenCount)(nil),                     // 34: google.cloud.aiplatform.v1.ModalityTokenCount
-	(*ToolConfig)(nil),                             // 35: google.cloud.aiplatform.v1.ToolConfig
-	(*SafetySetting)(nil),                          // 36: google.cloud.aiplatform.v1.SafetySetting
-	(*ModelArmorConfig)(nil),                       // 37: google.cloud.aiplatform.v1.ModelArmorConfig
-	(*Candidate)(nil),                              // 38: google.cloud.aiplatform.v1.Candidate
-	(*timestamppb.Timestamp)(nil),                  // 39: google.protobuf.Timestamp
-	(*SafetyRating)(nil),                           // 40: google.cloud.aiplatform.v1.SafetyRating
+	nil,                                            // 23: google.cloud.aiplatform.v1.PredictRequest.LabelsEntry
+	nil,                                            // 24: google.cloud.aiplatform.v1.GenerateContentRequest.LabelsEntry
+	(*GenerateContentResponse_PromptFeedback)(nil), // 25: google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback
+	(*GenerateContentResponse_UsageMetadata)(nil),  // 26: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata
+	(*structpb.Value)(nil),                         // 27: google.protobuf.Value
+	(*httpbody.HttpBody)(nil),                      // 28: google.api.HttpBody
+	(*Tensor)(nil),                                 // 29: google.cloud.aiplatform.v1.Tensor
+	(*ExplanationSpecOverride)(nil),                // 30: google.cloud.aiplatform.v1.ExplanationSpecOverride
+	(*Explanation)(nil),                            // 31: google.cloud.aiplatform.v1.Explanation
+	(*Content)(nil),                                // 32: google.cloud.aiplatform.v1.Content
+	(*Tool)(nil),                                   // 33: google.cloud.aiplatform.v1.Tool
+	(*GenerationConfig)(nil),                       // 34: google.cloud.aiplatform.v1.GenerationConfig
+	(*ModalityTokenCount)(nil),                     // 35: google.cloud.aiplatform.v1.ModalityTokenCount
+	(*ToolConfig)(nil),                             // 36: google.cloud.aiplatform.v1.ToolConfig
+	(*SafetySetting)(nil),                          // 37: google.cloud.aiplatform.v1.SafetySetting
+	(*ModelArmorConfig)(nil),                       // 38: google.cloud.aiplatform.v1.ModelArmorConfig
+	(*Candidate)(nil),                              // 39: google.cloud.aiplatform.v1.Candidate
+	(*timestamppb.Timestamp)(nil),                  // 40: google.protobuf.Timestamp
+	(*SafetyRating)(nil),                           // 41: google.cloud.aiplatform.v1.SafetyRating
 }
 var file_google_cloud_aiplatform_v1_prediction_service_proto_depIdxs = []int32{
-	26, // 0: google.cloud.aiplatform.v1.PredictRequest.instances:type_name -> google.protobuf.Value
-	26, // 1: google.cloud.aiplatform.v1.PredictRequest.parameters:type_name -> google.protobuf.Value
-	26, // 2: google.cloud.aiplatform.v1.PredictResponse.predictions:type_name -> google.protobuf.Value
-	26, // 3: google.cloud.aiplatform.v1.PredictResponse.metadata:type_name -> google.protobuf.Value
-	27, // 4: google.cloud.aiplatform.v1.RawPredictRequest.http_body:type_name -> google.api.HttpBody
-	27, // 5: google.cloud.aiplatform.v1.StreamRawPredictRequest.http_body:type_name -> google.api.HttpBody
-	28, // 6: google.cloud.aiplatform.v1.DirectPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 7: google.cloud.aiplatform.v1.DirectPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 8: google.cloud.aiplatform.v1.DirectPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 9: google.cloud.aiplatform.v1.DirectPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 10: google.cloud.aiplatform.v1.StreamDirectPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 11: google.cloud.aiplatform.v1.StreamDirectPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 12: google.cloud.aiplatform.v1.StreamDirectPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 13: google.cloud.aiplatform.v1.StreamDirectPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 14: google.cloud.aiplatform.v1.StreamingPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 15: google.cloud.aiplatform.v1.StreamingPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 16: google.cloud.aiplatform.v1.StreamingPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	28, // 17: google.cloud.aiplatform.v1.StreamingPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	26, // 18: google.cloud.aiplatform.v1.ExplainRequest.instances:type_name -> google.protobuf.Value
-	26, // 19: google.cloud.aiplatform.v1.ExplainRequest.parameters:type_name -> google.protobuf.Value
-	29, // 20: google.cloud.aiplatform.v1.ExplainRequest.explanation_spec_override:type_name -> google.cloud.aiplatform.v1.ExplanationSpecOverride
-	30, // 21: google.cloud.aiplatform.v1.ExplainResponse.explanations:type_name -> google.cloud.aiplatform.v1.Explanation
-	26, // 22: google.cloud.aiplatform.v1.ExplainResponse.predictions:type_name -> google.protobuf.Value
-	26, // 23: google.cloud.aiplatform.v1.CountTokensRequest.instances:type_name -> google.protobuf.Value
-	31, // 24: google.cloud.aiplatform.v1.CountTokensRequest.contents:type_name -> google.cloud.aiplatform.v1.Content
-	31, // 25: google.cloud.aiplatform.v1.CountTokensRequest.system_instruction:type_name -> google.cloud.aiplatform.v1.Content
-	32, // 26: google.cloud.aiplatform.v1.CountTokensRequest.tools:type_name -> google.cloud.aiplatform.v1.Tool
-	33, // 27: google.cloud.aiplatform.v1.CountTokensRequest.generation_config:type_name -> google.cloud.aiplatform.v1.GenerationConfig
-	34, // 28: google.cloud.aiplatform.v1.CountTokensResponse.prompt_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
-	31, // 29: google.cloud.aiplatform.v1.GenerateContentRequest.contents:type_name -> google.cloud.aiplatform.v1.Content
-	31, // 30: google.cloud.aiplatform.v1.GenerateContentRequest.system_instruction:type_name -> google.cloud.aiplatform.v1.Content
-	32, // 31: google.cloud.aiplatform.v1.GenerateContentRequest.tools:type_name -> google.cloud.aiplatform.v1.Tool
-	35, // 32: google.cloud.aiplatform.v1.GenerateContentRequest.tool_config:type_name -> google.cloud.aiplatform.v1.ToolConfig
-	23, // 33: google.cloud.aiplatform.v1.GenerateContentRequest.labels:type_name -> google.cloud.aiplatform.v1.GenerateContentRequest.LabelsEntry
-	36, // 34: google.cloud.aiplatform.v1.GenerateContentRequest.safety_settings:type_name -> google.cloud.aiplatform.v1.SafetySetting
-	37, // 35: google.cloud.aiplatform.v1.GenerateContentRequest.model_armor_config:type_name -> google.cloud.aiplatform.v1.ModelArmorConfig
-	33, // 36: google.cloud.aiplatform.v1.GenerateContentRequest.generation_config:type_name -> google.cloud.aiplatform.v1.GenerationConfig
-	38, // 37: google.cloud.aiplatform.v1.GenerateContentResponse.candidates:type_name -> google.cloud.aiplatform.v1.Candidate
-	39, // 38: google.cloud.aiplatform.v1.GenerateContentResponse.create_time:type_name -> google.protobuf.Timestamp
-	24, // 39: google.cloud.aiplatform.v1.GenerateContentResponse.prompt_feedback:type_name -> google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback
-	25, // 40: google.cloud.aiplatform.v1.GenerateContentResponse.usage_metadata:type_name -> google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata
-	0,  // 41: google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback.block_reason:type_name -> google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback.BlockedReason
-	40, // 42: google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback.safety_ratings:type_name -> google.cloud.aiplatform.v1.SafetyRating
-	34, // 43: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata.prompt_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
-	34, // 44: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata.cache_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
-	34, // 45: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata.candidates_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
-	1,  // 46: google.cloud.aiplatform.v1.PredictionService.Predict:input_type -> google.cloud.aiplatform.v1.PredictRequest
-	3,  // 47: google.cloud.aiplatform.v1.PredictionService.RawPredict:input_type -> google.cloud.aiplatform.v1.RawPredictRequest
-	4,  // 48: google.cloud.aiplatform.v1.PredictionService.StreamRawPredict:input_type -> google.cloud.aiplatform.v1.StreamRawPredictRequest
-	5,  // 49: google.cloud.aiplatform.v1.PredictionService.DirectPredict:input_type -> google.cloud.aiplatform.v1.DirectPredictRequest
-	7,  // 50: google.cloud.aiplatform.v1.PredictionService.DirectRawPredict:input_type -> google.cloud.aiplatform.v1.DirectRawPredictRequest
-	9,  // 51: google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict:input_type -> google.cloud.aiplatform.v1.StreamDirectPredictRequest
-	11, // 52: google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict:input_type -> google.cloud.aiplatform.v1.StreamDirectRawPredictRequest
-	13, // 53: google.cloud.aiplatform.v1.PredictionService.StreamingPredict:input_type -> google.cloud.aiplatform.v1.StreamingPredictRequest
-	13, // 54: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:input_type -> google.cloud.aiplatform.v1.StreamingPredictRequest
-	15, // 55: google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict:input_type -> google.cloud.aiplatform.v1.StreamingRawPredictRequest
-	17, // 56: google.cloud.aiplatform.v1.PredictionService.Explain:input_type -> google.cloud.aiplatform.v1.ExplainRequest
-	21, // 57: google.cloud.aiplatform.v1.PredictionService.GenerateContent:input_type -> google.cloud.aiplatform.v1.GenerateContentRequest
-	21, // 58: google.cloud.aiplatform.v1.PredictionService.StreamGenerateContent:input_type -> google.cloud.aiplatform.v1.GenerateContentRequest
-	2,  // 59: google.cloud.aiplatform.v1.PredictionService.Predict:output_type -> google.cloud.aiplatform.v1.PredictResponse
-	27, // 60: google.cloud.aiplatform.v1.PredictionService.RawPredict:output_type -> google.api.HttpBody
-	27, // 61: google.cloud.aiplatform.v1.PredictionService.StreamRawPredict:output_type -> google.api.HttpBody
-	6,  // 62: google.cloud.aiplatform.v1.PredictionService.DirectPredict:output_type -> google.cloud.aiplatform.v1.DirectPredictResponse
-	8,  // 63: google.cloud.aiplatform.v1.PredictionService.DirectRawPredict:output_type -> google.cloud.aiplatform.v1.DirectRawPredictResponse
-	10, // 64: google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict:output_type -> google.cloud.aiplatform.v1.StreamDirectPredictResponse
-	12, // 65: google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict:output_type -> google.cloud.aiplatform.v1.StreamDirectRawPredictResponse
-	14, // 66: google.cloud.aiplatform.v1.PredictionService.StreamingPredict:output_type -> google.cloud.aiplatform.v1.StreamingPredictResponse
-	14, // 67: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:output_type -> google.cloud.aiplatform.v1.StreamingPredictResponse
-	16, // 68: google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict:output_type -> google.cloud.aiplatform.v1.StreamingRawPredictResponse
-	18, // 69: google.cloud.aiplatform.v1.PredictionService.Explain:output_type -> google.cloud.aiplatform.v1.ExplainResponse
-	22, // 70: google.cloud.aiplatform.v1.PredictionService.GenerateContent:output_type -> google.cloud.aiplatform.v1.GenerateContentResponse
-	22, // 71: google.cloud.aiplatform.v1.PredictionService.StreamGenerateContent:output_type -> google.cloud.aiplatform.v1.GenerateContentResponse
-	59, // [59:72] is the sub-list for method output_type
-	46, // [46:59] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	27, // 0: google.cloud.aiplatform.v1.PredictRequest.instances:type_name -> google.protobuf.Value
+	27, // 1: google.cloud.aiplatform.v1.PredictRequest.parameters:type_name -> google.protobuf.Value
+	23, // 2: google.cloud.aiplatform.v1.PredictRequest.labels:type_name -> google.cloud.aiplatform.v1.PredictRequest.LabelsEntry
+	27, // 3: google.cloud.aiplatform.v1.PredictResponse.predictions:type_name -> google.protobuf.Value
+	27, // 4: google.cloud.aiplatform.v1.PredictResponse.metadata:type_name -> google.protobuf.Value
+	28, // 5: google.cloud.aiplatform.v1.RawPredictRequest.http_body:type_name -> google.api.HttpBody
+	28, // 6: google.cloud.aiplatform.v1.StreamRawPredictRequest.http_body:type_name -> google.api.HttpBody
+	29, // 7: google.cloud.aiplatform.v1.DirectPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 8: google.cloud.aiplatform.v1.DirectPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 9: google.cloud.aiplatform.v1.DirectPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 10: google.cloud.aiplatform.v1.DirectPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 11: google.cloud.aiplatform.v1.StreamDirectPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 12: google.cloud.aiplatform.v1.StreamDirectPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 13: google.cloud.aiplatform.v1.StreamDirectPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 14: google.cloud.aiplatform.v1.StreamDirectPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 15: google.cloud.aiplatform.v1.StreamingPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 16: google.cloud.aiplatform.v1.StreamingPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 17: google.cloud.aiplatform.v1.StreamingPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	29, // 18: google.cloud.aiplatform.v1.StreamingPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	27, // 19: google.cloud.aiplatform.v1.ExplainRequest.instances:type_name -> google.protobuf.Value
+	27, // 20: google.cloud.aiplatform.v1.ExplainRequest.parameters:type_name -> google.protobuf.Value
+	30, // 21: google.cloud.aiplatform.v1.ExplainRequest.explanation_spec_override:type_name -> google.cloud.aiplatform.v1.ExplanationSpecOverride
+	31, // 22: google.cloud.aiplatform.v1.ExplainResponse.explanations:type_name -> google.cloud.aiplatform.v1.Explanation
+	27, // 23: google.cloud.aiplatform.v1.ExplainResponse.predictions:type_name -> google.protobuf.Value
+	27, // 24: google.cloud.aiplatform.v1.CountTokensRequest.instances:type_name -> google.protobuf.Value
+	32, // 25: google.cloud.aiplatform.v1.CountTokensRequest.contents:type_name -> google.cloud.aiplatform.v1.Content
+	32, // 26: google.cloud.aiplatform.v1.CountTokensRequest.system_instruction:type_name -> google.cloud.aiplatform.v1.Content
+	33, // 27: google.cloud.aiplatform.v1.CountTokensRequest.tools:type_name -> google.cloud.aiplatform.v1.Tool
+	34, // 28: google.cloud.aiplatform.v1.CountTokensRequest.generation_config:type_name -> google.cloud.aiplatform.v1.GenerationConfig
+	35, // 29: google.cloud.aiplatform.v1.CountTokensResponse.prompt_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
+	32, // 30: google.cloud.aiplatform.v1.GenerateContentRequest.contents:type_name -> google.cloud.aiplatform.v1.Content
+	32, // 31: google.cloud.aiplatform.v1.GenerateContentRequest.system_instruction:type_name -> google.cloud.aiplatform.v1.Content
+	33, // 32: google.cloud.aiplatform.v1.GenerateContentRequest.tools:type_name -> google.cloud.aiplatform.v1.Tool
+	36, // 33: google.cloud.aiplatform.v1.GenerateContentRequest.tool_config:type_name -> google.cloud.aiplatform.v1.ToolConfig
+	24, // 34: google.cloud.aiplatform.v1.GenerateContentRequest.labels:type_name -> google.cloud.aiplatform.v1.GenerateContentRequest.LabelsEntry
+	37, // 35: google.cloud.aiplatform.v1.GenerateContentRequest.safety_settings:type_name -> google.cloud.aiplatform.v1.SafetySetting
+	38, // 36: google.cloud.aiplatform.v1.GenerateContentRequest.model_armor_config:type_name -> google.cloud.aiplatform.v1.ModelArmorConfig
+	34, // 37: google.cloud.aiplatform.v1.GenerateContentRequest.generation_config:type_name -> google.cloud.aiplatform.v1.GenerationConfig
+	39, // 38: google.cloud.aiplatform.v1.GenerateContentResponse.candidates:type_name -> google.cloud.aiplatform.v1.Candidate
+	40, // 39: google.cloud.aiplatform.v1.GenerateContentResponse.create_time:type_name -> google.protobuf.Timestamp
+	25, // 40: google.cloud.aiplatform.v1.GenerateContentResponse.prompt_feedback:type_name -> google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback
+	26, // 41: google.cloud.aiplatform.v1.GenerateContentResponse.usage_metadata:type_name -> google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata
+	0,  // 42: google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback.block_reason:type_name -> google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback.BlockedReason
+	41, // 43: google.cloud.aiplatform.v1.GenerateContentResponse.PromptFeedback.safety_ratings:type_name -> google.cloud.aiplatform.v1.SafetyRating
+	35, // 44: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata.prompt_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
+	35, // 45: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata.cache_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
+	35, // 46: google.cloud.aiplatform.v1.GenerateContentResponse.UsageMetadata.candidates_tokens_details:type_name -> google.cloud.aiplatform.v1.ModalityTokenCount
+	1,  // 47: google.cloud.aiplatform.v1.PredictionService.Predict:input_type -> google.cloud.aiplatform.v1.PredictRequest
+	3,  // 48: google.cloud.aiplatform.v1.PredictionService.RawPredict:input_type -> google.cloud.aiplatform.v1.RawPredictRequest
+	4,  // 49: google.cloud.aiplatform.v1.PredictionService.StreamRawPredict:input_type -> google.cloud.aiplatform.v1.StreamRawPredictRequest
+	5,  // 50: google.cloud.aiplatform.v1.PredictionService.DirectPredict:input_type -> google.cloud.aiplatform.v1.DirectPredictRequest
+	7,  // 51: google.cloud.aiplatform.v1.PredictionService.DirectRawPredict:input_type -> google.cloud.aiplatform.v1.DirectRawPredictRequest
+	9,  // 52: google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict:input_type -> google.cloud.aiplatform.v1.StreamDirectPredictRequest
+	11, // 53: google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict:input_type -> google.cloud.aiplatform.v1.StreamDirectRawPredictRequest
+	13, // 54: google.cloud.aiplatform.v1.PredictionService.StreamingPredict:input_type -> google.cloud.aiplatform.v1.StreamingPredictRequest
+	13, // 55: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:input_type -> google.cloud.aiplatform.v1.StreamingPredictRequest
+	15, // 56: google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict:input_type -> google.cloud.aiplatform.v1.StreamingRawPredictRequest
+	17, // 57: google.cloud.aiplatform.v1.PredictionService.Explain:input_type -> google.cloud.aiplatform.v1.ExplainRequest
+	21, // 58: google.cloud.aiplatform.v1.PredictionService.GenerateContent:input_type -> google.cloud.aiplatform.v1.GenerateContentRequest
+	21, // 59: google.cloud.aiplatform.v1.PredictionService.StreamGenerateContent:input_type -> google.cloud.aiplatform.v1.GenerateContentRequest
+	2,  // 60: google.cloud.aiplatform.v1.PredictionService.Predict:output_type -> google.cloud.aiplatform.v1.PredictResponse
+	28, // 61: google.cloud.aiplatform.v1.PredictionService.RawPredict:output_type -> google.api.HttpBody
+	28, // 62: google.cloud.aiplatform.v1.PredictionService.StreamRawPredict:output_type -> google.api.HttpBody
+	6,  // 63: google.cloud.aiplatform.v1.PredictionService.DirectPredict:output_type -> google.cloud.aiplatform.v1.DirectPredictResponse
+	8,  // 64: google.cloud.aiplatform.v1.PredictionService.DirectRawPredict:output_type -> google.cloud.aiplatform.v1.DirectRawPredictResponse
+	10, // 65: google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict:output_type -> google.cloud.aiplatform.v1.StreamDirectPredictResponse
+	12, // 66: google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict:output_type -> google.cloud.aiplatform.v1.StreamDirectRawPredictResponse
+	14, // 67: google.cloud.aiplatform.v1.PredictionService.StreamingPredict:output_type -> google.cloud.aiplatform.v1.StreamingPredictResponse
+	14, // 68: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:output_type -> google.cloud.aiplatform.v1.StreamingPredictResponse
+	16, // 69: google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict:output_type -> google.cloud.aiplatform.v1.StreamingRawPredictResponse
+	18, // 70: google.cloud.aiplatform.v1.PredictionService.Explain:output_type -> google.cloud.aiplatform.v1.ExplainResponse
+	22, // 71: google.cloud.aiplatform.v1.PredictionService.GenerateContent:output_type -> google.cloud.aiplatform.v1.GenerateContentResponse
+	22, // 72: google.cloud.aiplatform.v1.PredictionService.StreamGenerateContent:output_type -> google.cloud.aiplatform.v1.GenerateContentResponse
+	60, // [60:73] is the sub-list for method output_type
+	47, // [47:60] is the sub-list for method input_type
+	47, // [47:47] is the sub-list for extension type_name
+	47, // [47:47] is the sub-list for extension extendee
+	0,  // [0:47] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_prediction_service_proto_init() }
@@ -2791,7 +2812,7 @@ func file_google_cloud_aiplatform_v1_prediction_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1_prediction_service_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   25,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
