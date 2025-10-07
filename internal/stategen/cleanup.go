@@ -245,41 +245,31 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 	if err != nil {
 		return fmt.Errorf("loading postprocessor config: %w", err)
 	}
-	cleanupName := moduleName // Default to the module name.
 	importPrefix := "cloud.google.com/go/" + moduleName + "/"
-	for _, sc := range ppc.ServiceConfigs {
-		if strings.HasPrefix(sc.ImportPath, importPrefix) {
-			// The InputDirectory is the path to the API protos, relative to the
-			// googleapis root. It has a structure like:
-			// "google/cloud/service/v1" or "google/identity/accesscontextmanager/v1".
-			// The third component of this path is the service name as it appears
-			// in the `source:` lines of .OwlBot.yaml.
-			parts := strings.Split(sc.InputDirectory, "/")
-			if len(parts) > 2 {
-				cleanupName = parts[2]
-			}
-			// Assume the first service config for a module is sufficient to
-			// determine the cleanup name.
-			break
-		}
-	}
-
 	modulePathFragment := "/" + moduleName + "/"
-	cleanupPathFragment := "/" + cleanupName + "/"
+
 	lines := strings.Split(string(fileBytes), "\n")
 	var newLines []string
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
+		// If it's a source line, compare it with all of the import paths for service configs for this module.
 		if strings.Contains(line, "source:") {
-			// It's a source line, check it for the module name.
-			if strings.Contains(line, modulePathFragment) || strings.Contains(line, cleanupPathFragment) {
-				if i+1 < len(lines) {
-					i++ // Remove both source and dest lines.
+			foundSource := false
+			for _, sc := range ppc.ServiceConfigs {
+				if strings.HasPrefix(sc.ImportPath, importPrefix) && strings.Contains(line, "/"+sc.InputDirectory+"/") {
+					if i+1 < len(lines) {
+						i++ // Remove both source and dest lines.
+					}
+					foundSource = true
+					break
 				}
+			}
+			if foundSource {
 				continue
 			}
 		}
-		if strings.Contains(line, modulePathFragment) || strings.Contains(line, cleanupPathFragment) {
+
+		if strings.Contains(line, modulePathFragment) {
 			// Remove any non-source line containing the module name.
 			continue
 		}
