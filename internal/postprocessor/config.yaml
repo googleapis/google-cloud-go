@@ -185,14 +185,6 @@ manual-clients:
     client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
     release-level: preview
     library-type: GAPIC_MANUAL
-  - api-shortname: firestore
-    distribution-name: cloud.google.com/go/firestore
-    description: Cloud Firestore API
-    language: go
-    client-library-type: manual
-    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
-    release-level: stable
-    library-type: GAPIC_MANUAL
   - api-shortname: firestore-metadata
     distribution-name: cloud.google.com/go/functions/metadata
     description: Cloud Functions
