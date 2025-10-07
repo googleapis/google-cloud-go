@@ -21,11 +21,7 @@
 package dataflowpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -912,98 +908,4 @@ func file_google_dataflow_v1beta3_messages_proto_init() {
 	file_google_dataflow_v1beta3_messages_proto_rawDesc = nil
 	file_google_dataflow_v1beta3_messages_proto_goTypes = nil
 	file_google_dataflow_v1beta3_messages_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// MessagesV1Beta3Client is the client API for MessagesV1Beta3 service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MessagesV1Beta3Client interface {
-	// Request the job status.
-	//
-	// To request the status of a job, we recommend using
-	// `projects.locations.jobs.messages.list` with a [regional endpoint]
-	// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using
-	// `projects.jobs.messages.list` is not recommended, as you can only request
-	// the status of jobs that are running in `us-central1`.
-	ListJobMessages(ctx context.Context, in *ListJobMessagesRequest, opts ...grpc.CallOption) (*ListJobMessagesResponse, error)
-}
-
-type messagesV1Beta3Client struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewMessagesV1Beta3Client(cc grpc.ClientConnInterface) MessagesV1Beta3Client {
-	return &messagesV1Beta3Client{cc}
-}
-
-func (c *messagesV1Beta3Client) ListJobMessages(ctx context.Context, in *ListJobMessagesRequest, opts ...grpc.CallOption) (*ListJobMessagesResponse, error) {
-	out := new(ListJobMessagesResponse)
-	err := c.cc.Invoke(ctx, "/google.dataflow.v1beta3.MessagesV1Beta3/ListJobMessages", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// MessagesV1Beta3Server is the server API for MessagesV1Beta3 service.
-type MessagesV1Beta3Server interface {
-	// Request the job status.
-	//
-	// To request the status of a job, we recommend using
-	// `projects.locations.jobs.messages.list` with a [regional endpoint]
-	// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using
-	// `projects.jobs.messages.list` is not recommended, as you can only request
-	// the status of jobs that are running in `us-central1`.
-	ListJobMessages(context.Context, *ListJobMessagesRequest) (*ListJobMessagesResponse, error)
-}
-
-// UnimplementedMessagesV1Beta3Server can be embedded to have forward compatible implementations.
-type UnimplementedMessagesV1Beta3Server struct {
-}
-
-func (*UnimplementedMessagesV1Beta3Server) ListJobMessages(context.Context, *ListJobMessagesRequest) (*ListJobMessagesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListJobMessages not implemented")
-}
-
-func RegisterMessagesV1Beta3Server(s *grpc.Server, srv MessagesV1Beta3Server) {
-	s.RegisterService(&_MessagesV1Beta3_serviceDesc, srv)
-}
-
-func _MessagesV1Beta3_ListJobMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListJobMessagesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MessagesV1Beta3Server).ListJobMessages(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.dataflow.v1beta3.MessagesV1Beta3/ListJobMessages",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MessagesV1Beta3Server).ListJobMessages(ctx, req.(*ListJobMessagesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _MessagesV1Beta3_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.dataflow.v1beta3.MessagesV1Beta3",
-	HandlerType: (*MessagesV1Beta3Server)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListJobMessages",
-			Handler:    _MessagesV1Beta3_ListJobMessages_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/dataflow/v1beta3/messages.proto",
 }
