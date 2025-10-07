@@ -256,7 +256,7 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 		if strings.Contains(line, "source:") {
 			foundSource := false
 			for _, sc := range ppc.ServiceConfigs {
-				if strings.HasPrefix(sc.ImportPath, importPrefix) && strings.Contains(line, sc.InputDirectory) {
+				if strings.HasPrefix(sc.ImportPath, importPrefix) && strings.Contains(line, "/"+sc.InputDirectory+"/") {
 					if i+1 < len(lines) {
 						i++ // Remove both source and dest lines.
 					}
