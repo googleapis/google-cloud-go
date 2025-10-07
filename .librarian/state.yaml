@@ -524,6 +524,7 @@ libraries:
     preserve_regex: []
     remove_regex:
       - ^internal/generated/snippets/batch/
+      - ^batch/apiv1/iam_policy_client\.go$
       - ^batch/apiv1/[^/]*_client\.go$
       - ^batch/apiv1/[^/]*_client_example_go123_test\.go$
       - ^batch/apiv1/[^/]*_client_example_test\.go$
@@ -1039,7 +1040,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.6.7
-    last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
+    last_generated_commit: 6e79e73204aed17b11e724beebb9cf11f36ea57d
     apis:
       - path: google/longrunning
         service_config: ""
