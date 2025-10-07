@@ -169,14 +169,6 @@ manual-clients:
     client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
     release-level: stable
     library-type: CORE
-  - api-shortname: datastore
-    distribution-name: cloud.google.com/go/datastore
-    description: Cloud Datastore
-    language: go
-    client-library-type: manual
-    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
-    release-level: stable
-    library-type: GAPIC_MANUAL
   - api-shortname: clouderrorreporting
     distribution-name: cloud.google.com/go/errorreporting
     description: Cloud Error Reporting API

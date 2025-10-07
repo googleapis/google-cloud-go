@@ -80,8 +80,6 @@ deep-remove-regex:
   - /essentialcontacts/apiv1/
   - /filestore/apiv1/
   - /financialservices/apiv1/
-  - /firestore/apiv1/
-  - /firestore/apiv1/admin/
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
@@ -177,8 +175,6 @@ deep-remove-regex:
   - /internal/generated/snippets/essentialcontacts/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
   - /internal/generated/snippets/financialservices/apiv1/
-  - /internal/generated/snippets/firestore/apiv1/
-  - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/functions/apiv1/
   - /internal/generated/snippets/functions/apiv2/
   - /internal/generated/snippets/functions/apiv2beta/
