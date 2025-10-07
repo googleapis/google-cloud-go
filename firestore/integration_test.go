@@ -2326,15 +2326,17 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	h.mustCreate(doc2, imap{"e": int64(1)})
 
 	// Update the first doc. We should see the change. We won't see doc2.
+	oldWDS := wds
 	h.mustUpdate(doc1, []Update{{Path: "e", Value: int64(3)}})
 	wds = h.mustGet(doc1)
 	check("update",
 		[]*DocumentSnapshot{wds},
-		[]DocumentChange{{Kind: DocumentModified, Doc: wds, OldIndex: 0, NewIndex: 0}})
+		[]DocumentChange{{Kind: DocumentModified, Doc: wds, OldDoc: oldWDS, OldIndex: 0, NewIndex: 0}})
 
 	// Now update doc so that it is not in the query. We should see a snapshot with no docs.
+	oldWDS = wds
 	h.mustUpdate(doc1, []Update{{Path: "e", Value: int64(0)}})
-	check("update2", nil, []DocumentChange{{Kind: DocumentRemoved, Doc: wds, OldIndex: 0, NewIndex: -1}})
+	check("update2", nil, []DocumentChange{{Kind: DocumentRemoved, Doc: oldWDS, OldDoc: oldWDS, OldIndex: 0, NewIndex: -1}})
 
 	// Add two docs out of order. We should see them in order.
 	doc3 := coll.NewDoc()
@@ -2353,7 +2355,7 @@ func TestIntegration_WatchQuery(t *testing.T) {
 		[]DocumentChange{{Kind: DocumentAdded, Doc: wds4, OldIndex: -1, NewIndex: 0}})
 	// Delete a doc.
 	h.mustDelete(doc4)
-	check("after del", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentRemoved, Doc: wds4, OldIndex: 0, NewIndex: -1}})
+	check("after del", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentRemoved, Doc: wds4, OldDoc: wds4, OldIndex: 0, NewIndex: -1}})
 
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc1, doc2, doc3})
