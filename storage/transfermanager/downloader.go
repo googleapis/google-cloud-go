@@ -182,6 +182,7 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 
 	outs := make(chan DownloadOutput, len(objectsToQueue))
 	inputs := make([]DownloadObjectInput, 0, len(objectsToQueue))
+	illegalPathObjects := make([]DownloadObjectInput, 0, len(objectsToQueue))
 
 	for _, object := range objectsToQueue {
 		objectWithoutPrefix := object
@@ -200,6 +201,15 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		}
 		if !isUnder {
 			log.Printf("transfermanager: skipping object with unsafe path after stripping prefix %q", objectWithoutPrefix)
+			// skipped files will later be added in the results
+			illegalPathObjects = append(illegalPathObjects, DownloadObjectInput{
+				Bucket:                 input.Bucket,
+				Object:                 object,
+				Callback:               input.OnObjectDownload,
+				ctx:                    ctx,
+				directoryObjectOutputs: outs,
+				directory:              true,
+			})
 			continue
 		}
 		// Make sure all directories in the object path exist.
@@ -229,9 +239,21 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 
 	if d.config.asynchronous {
 		d.downloadsInProgress.Add(1)
-		go d.gatherObjectOutputs(input, outs, len(inputs))
+		allObjectsCount := len(inputs) + len(illegalPathObjects)
+		go d.gatherObjectOutputs(input, outs, allObjectsCount)
 	}
 	d.addNewInputs(inputs)
+
+	for _, file := range illegalPathObjects {
+		// the waitgroup is further decremented in addResult method
+		d.downloadsInProgress.Add(1)
+		d.addResult(&file, &DownloadOutput{
+			Bucket:  file.Bucket,
+			Object:  file.Object,
+			Err:     fmt.Errorf("skipping download of object with unsafe path %q", file.Object),
+			skipped: true,
+		})
+	}
 	return nil
 }
 
@@ -322,7 +344,7 @@ func (d *Downloader) addNewInputs(inputs []DownloadObjectInput) {
 func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutput) {
 	copiedResult := *result // make a copy so that callbacks do not affect the result
 
-	if input.directory {
+	if input.directory && !result.skipped {
 		f := input.Destination.(*os.File)
 		if err := f.Close(); err != nil && result.Err == nil {
 			result.Err = fmt.Errorf("closing file(%q): %w", f.Name(), err)
@@ -332,10 +354,9 @@ func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutpu
 		if result.Err != nil {
 			os.Remove(f.Name())
 		}
-
-		if d.config.asynchronous {
-			input.directoryObjectOutputs <- copiedResult
-		}
+	}
+	if input.directory && d.config.asynchronous {
+		input.directoryObjectOutputs <- copiedResult
 	}
 
 	if d.config.asynchronous || input.directory {
@@ -821,6 +842,7 @@ type DownloadOutput struct {
 	Err    error                      // error occurring during download
 	Attrs  *storage.ReaderObjectAttrs // attributes of downloaded object, if successful
 
+	skipped     bool
 	shard       int
 	shardLength int64
 	crc32c      uint32
@@ -961,7 +983,7 @@ func checksumObject(got, want uint32) error {
 }
 
 func isSubPath(localDirectory, filePath string) (bool, error) {
-	// validate paths
+	// validate if paths can be converted to absolute paths
 	absLocalDirectory, err := filepath.Abs(localDirectory)
 	if err != nil {
 		return false, fmt.Errorf("cannot convert local directory to absolute path: %w", err)
@@ -971,7 +993,8 @@ func isSubPath(localDirectory, filePath string) (bool, error) {
 		return false, fmt.Errorf("cannot convert file path to absolute path: %w", err)
 	}
 
-	// absLocalDirectory + rel = absFilePath
+	// The relative path from the local directory to the file path.
+	// ex: if localDirectory is /tmp/foo and filePath is /tmp/foo/bar, rel will be "bar".
 	rel, err := filepath.Rel(absLocalDirectory, absFilePath)
 	if err != nil {
 		return false, err

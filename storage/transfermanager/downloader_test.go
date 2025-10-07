@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -307,10 +308,26 @@ func TestIsSubPath(t *testing.T) {
 			filePath:       "foo" + sep + ".." + sep + "..",
 			wantIsSub:      false,
 		},
+		{
+			name:           "IsSubPath returns error when base dir is changed",
+			localDirectory: "foo",
+			filePath:       "bar",
+			wantErr:        true,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			origWd, _ := os.Getwd()
+			t.Cleanup(func() {
+				os.Chdir(origWd)
+			})
+			// induce filepath.Abs() error
+			if tc.wantErr {
+				dir, _ := os.MkdirTemp("", "")
+				os.Chdir(dir)
+				os.RemoveAll(dir)
+			}
 			isSub, err := isSubPath(tc.localDirectory, tc.filePath)
 
 			if (err != nil) != tc.wantErr {
