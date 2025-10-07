@@ -1,5 +1,12 @@
 # Changes
 
+## [1.44.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.44.0...container/v1.44.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **container:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.43.0...container/v1.44.0) (2025-07-16)
 
 
@@ -641,4 +648,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out container as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
