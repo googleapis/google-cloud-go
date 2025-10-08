@@ -25,8 +25,10 @@ import (
 	"testing"
 	"time"
 
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
 	testgrpc "google.golang.org/grpc/interop/grpc_testing"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
 	"google.golang.org/grpc/status"
@@ -112,6 +114,120 @@ func setupTestServer(t *testing.T, service *fakeService) string {
 	return lis.Addr().String()
 }
 
+func TestSelectRoundRobin(t *testing.T) {
+	pool := &BigtableChannelPool{}
+
+	// Test empty pool
+	idx, err := pool.selectRoundRobin()
+	if idx != -1 {
+		t.Errorf("selectRoundRobin on empty pool got index %d, want -1", idx)
+	}
+	if err == nil {
+		t.Errorf("selectRoundRobin on empty pool got nil error, want non-nil")
+	}
+	if err != errNoConnections {
+		t.Errorf("selectRoundRobin on empty pool got error %v, want %v", err, errNoConnections)
+	}
+
+	// Test single connection pool
+	pool.conns = make([]*grpc.ClientConn, 1)
+	pool.load = make([]int64, 1)
+	idx, err = pool.selectRoundRobin()
+	if idx != 0 {
+		t.Errorf("selectRoundRobin on single conn pool got index %d, want 0", idx)
+	}
+	if err != nil {
+		t.Errorf("selectRoundRobin on single conn pool got error %v, want nil", err)
+	}
+
+	// Test multiple connections
+	poolSize := 3
+	pool.conns = make([]*grpc.ClientConn, poolSize)
+	pool.load = make([]int64, poolSize)
+	pool.rrIndex = 0
+
+	// Test wrapping around
+	for i := 0; i < poolSize*2; i++ {
+		expectedIdx := i % poolSize
+		idx, err = pool.selectRoundRobin()
+		if idx != expectedIdx {
+			t.Errorf("selectRoundRobin call %d got index %d, want %d", i+1, idx, expectedIdx)
+		}
+		if err != nil {
+			t.Errorf("selectRoundRobin call %d got error %v, want nil", i+1, err)
+		}
+	}
+}
+
+func TestSelectLeastLoadedRandomOfTwo(t *testing.T) {
+	pool := &BigtableChannelPool{}
+
+	// Test empty pool
+	idx, err := pool.selectLeastLoadedRandomOfTwo()
+	if idx != -1 {
+		t.Errorf("selectLeastLoadedRandomOfTwo on empty pool got index %d, want -1", idx)
+	}
+	if err == nil {
+		t.Errorf("selectLeastLoadedRandomOfTwo on empty pool got nil error, want non-nil")
+	}
+	if err != errNoConnections {
+		t.Errorf("selectLeastLoadedRandomOfTwo on empty pool got error %v, want %v", err, errNoConnections)
+	}
+
+	// Test single connection pool
+	pool.conns = make([]*grpc.ClientConn, 1)
+	pool.load = make([]int64, 1)
+	idx, err = pool.selectLeastLoadedRandomOfTwo()
+	if idx != 0 {
+		t.Errorf("selectLeastLoadedRandomOfTwo on single conn pool got index %d, want 0", idx)
+	}
+	if err != nil {
+		t.Errorf("selectLeastLoadedRandomOfTwo on single conn pool got error %v, want nil", err)
+	}
+
+	// Test multiple connections
+	pool.conns = make([]*grpc.ClientConn, 5)
+	pool.load = []int64{10, 2, 30, 4, 50} // Loads for indices 0, 1, 2, 3, 4
+
+	for i := 0; i < 100; i++ { // Run multiple times due to randomness
+		idx, err = pool.selectLeastLoadedRandomOfTwo()
+		if err != nil {
+			t.Fatalf("selectLeastLoadedRandomOfTwo got unexpected error: %v", err)
+		}
+		if idx < 0 || idx >= len(pool.conns) {
+			t.Fatalf("Selected index %d is out of bounds", idx)
+		}
+	}
+
+	// Test case where loads are distinct
+	pool.load = []int64{5, 1, 10}
+	pool.conns = make([]*grpc.ClientConn, 3)
+	for i := 0; i < 100; i++ {
+		idx, err = pool.selectLeastLoadedRandomOfTwo()
+		if err != nil {
+			t.Errorf("selectLeastLoadedRandomOfTwo got unexpected error: %v", err)
+			continue
+		}
+		if idx < 0 || idx >= 3 {
+			t.Errorf("selectLeastLoadedRandomOfTwo got index %d, want index in [0, 2]", idx)
+			continue
+		}
+	}
+
+	// Test with all equal loads
+	pool.load = []int64{5, 5, 5}
+	for i := 0; i < 100; i++ {
+		idx, err = pool.selectLeastLoadedRandomOfTwo()
+		if err != nil {
+			t.Errorf("selectLeastLoadedRandomOfTwo got unexpected error: %v", err)
+			continue
+		}
+		if idx < 0 || idx >= 3 {
+			t.Errorf("Index %d out of bounds", idx)
+		}
+	}
+}
+
 func TestNewLeastLoadedChannelPool(t *testing.T) {
 	t.Run("SuccessfulCreation", func(t *testing.T) {
 		poolSize := 5
@@ -122,9 +238,9 @@ func TestNewLeastLoadedChannelPool(t *testing.T) {
 			return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		}
 
-		pool, err := NewLeastLoadedChannelPool(poolSize, dialFunc)
+		pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
 		if err != nil {
-			t.Fatalf("NewLeastLoadedChannelPool failed: %v", err)
+			t.Fatalf("NewBigtableChannelPool failed: %v", err)
 		}
 		defer pool.Close()
 
@@ -151,124 +267,162 @@ func TestNewLeastLoadedChannelPool(t *testing.T) {
 			return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		}
 
-		_, err := NewLeastLoadedChannelPool(poolSize, dialFunc)
+		_, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
 		if err == nil {
-			t.Errorf("NewLeastLoadedChannelPool should have failed due to dial error, but got no error")
+			t.Errorf("NewBigtableChannelPool should have failed due to dial error, but got no error")
 		}
 	})
 }
 
 func TestPoolInvoke(t *testing.T) {
-	poolSize := 3
-	fake := &fakeService{}
-	addr := setupTestServer(t, fake)
-	dialFunc := func() (*grpc.ClientConn, error) {
-		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	strategies := []btopt.LoadBalancingStrategy{
+		btopt.LeastInFlight,
+		btopt.RoundRobin,
+		btopt.PowerOfTwoLeastInFlight,
 	}
 
-	pool, err := NewLeastLoadedChannelPool(poolSize, dialFunc)
-	if err != nil {
-		t.Fatalf("Failed to create pool: %v", err)
-	}
-	defer pool.Close()
+	for _, strategy := range strategies {
+		t.Run(fmt.Sprintf("Strategy_%s", strategy), func(t *testing.T) {
+			poolSize := 3
+			fake := &fakeService{}
+			addr := setupTestServer(t, fake)
+			dialFunc := func() (*grpc.ClientConn, error) {
+				return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			}
 
-	req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("hello")}}
-	res := &testpb.SimpleResponse{}
-	if err := pool.Invoke(context.Background(), "/grpc.testing.BenchmarkService/UnaryCall", req, res); err != nil {
-		t.Errorf("Invoke failed: %v", err)
-	}
-	if string(res.GetPayload().GetBody()) != "hello" {
-		t.Errorf("Invoke response got %q, want %q", string(res.GetPayload().GetBody()), "hello")
-	}
-	if fake.getCallCount() != 1 {
-		t.Errorf("Server call count got %d, want 1", fake.getCallCount())
-	}
+			pool, err := NewBigtableChannelPool(poolSize, strategy, dialFunc)
+			if err != nil {
+				t.Fatalf("Failed to create pool: %v", err)
+			}
+			defer pool.Close()
 
-	for i, load := range pool.load {
-		if load != 0 {
-			t.Errorf("Load at index %d is non-zero after Invoke: %d", i, load)
-		}
+			req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("hello")}}
+			res := &testpb.SimpleResponse{}
+			if err := pool.Invoke(context.Background(), "/grpc.testing.BenchmarkService/UnaryCall", req, res); err != nil {
+				t.Errorf("Invoke failed: %v", err)
+			}
+			if string(res.GetPayload().GetBody()) != "hello" {
+				t.Errorf("Invoke response got %q, want %q", string(res.GetPayload().GetBody()), "hello")
+			}
+			if fake.getCallCount() != 1 {
+				t.Errorf("Server call count got %d, want 1", fake.getCallCount())
+			}
+
+			for i, load := range pool.load {
+				if load != 0 {
+					t.Errorf("Load at index %d is non-zero after Invoke: %d", i, load)
+				}
+			}
+		})
 	}
 }
 
 func TestPoolNewStream(t *testing.T) {
-	poolSize := 2
-	fake := &fakeService{}
-	addr := setupTestServer(t, fake)
-	dialFunc := func() (*grpc.ClientConn, error) {
-		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	strategies := []btopt.LoadBalancingStrategy{
+		btopt.LeastInFlight,
+		btopt.RoundRobin,
+		btopt.PowerOfTwoLeastInFlight,
 	}
 
-	pool, err := NewLeastLoadedChannelPool(poolSize, dialFunc)
-	if err != nil {
-		t.Fatalf("Failed to create pool: %v", err)
-	}
-	defer pool.Close()
+	for _, strategy := range strategies {
+		t.Run(fmt.Sprintf("Strategy_%s", strategy), func(t *testing.T) {
+			poolSize := 2
+			fake := &fakeService{}
+			addr := setupTestServer(t, fake)
+			dialFunc := func() (*grpc.ClientConn, error) {
+				return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			}
 
-	ctx := context.Background()
-	stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
-	if err != nil {
-		t.Fatalf("NewStream failed: %v", err)
-	}
+			pool, err := NewBigtableChannelPool(poolSize, strategy, dialFunc)
+			if err != nil {
+				t.Fatalf("Failed to create pool: %v", err)
+			}
+			defer pool.Close()
 
-	loadSum := int64(0)
-	for _, l := range pool.load {
-		loadSum += l
-	}
-	if loadSum != 1 {
-		t.Errorf("Total load after NewStream got %d, want 1. Loads: %v", loadSum, pool.load)
-	}
+			ctx := context.Background()
+			stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+			if err != nil {
+				t.Fatalf("NewStream failed: %v", err)
+			}
 
-	req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("msg1")}}
-	if err := stream.SendMsg(req); err != nil {
-		t.Fatalf("SendMsg failed: %v", err)
-	}
-	res := &testpb.SimpleResponse{}
-	if err := stream.RecvMsg(res); err != nil {
-		t.Fatalf("RecvMsg failed: %v", err)
-	}
-	if string(res.GetPayload().GetBody()) != "msg1" {
-		t.Errorf("RecvMsg got %q, want %q", string(res.GetPayload().GetBody()), "msg1")
-	}
+			loadSum := int64(0)
+			for _, l := range pool.load {
+				loadSum += l
+			}
+			if loadSum != 1 {
+				t.Errorf("Total load after NewStream got %d, want 1. Loads: %v", loadSum, pool.load)
+			}
 
-	if err := stream.CloseSend(); err != nil {
-		t.Fatalf("CloseSend failed: %v", err)
-	}
+			req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("msg1")}}
+			if err := stream.SendMsg(req); err != nil {
+				t.Fatalf("SendMsg failed: %v", err)
+			}
+			res := &testpb.SimpleResponse{}
+			if err := stream.RecvMsg(res); err != nil {
+				t.Fatalf("RecvMsg failed: %v", err)
+			}
+			if string(res.GetPayload().GetBody()) != "msg1" {
+				t.Errorf("RecvMsg got %q, want %q", string(res.GetPayload().GetBody()), "msg1")
+			}
 
-	if err := stream.RecvMsg(res); err != io.EOF {
-		t.Errorf("Expected io.EOF after CloseSend, got %v", err)
-	}
+			if err := stream.CloseSend(); err != nil {
+				t.Fatalf("CloseSend failed: %v", err)
+			}
 
-	time.Sleep(10 * time.Millisecond)
-	loadSum = int64(0)
-	for i, l := range pool.load {
-		if l < 0 {
-			t.Errorf("Load at index %d went negative: %d", i, l)
-		}
-		loadSum += l
-	}
-	if loadSum != 0 {
-		t.Errorf("Total load after stream completion got %d, want 0. Loads: %v", loadSum, pool.load)
+			if err := stream.RecvMsg(res); err != io.EOF {
+				t.Errorf("Expected io.EOF after CloseSend, got %v", err)
+			}
+
+			time.Sleep(10 * time.Millisecond)
+			loadSum = int64(0)
+			for i, l := range pool.load {
+				if l < 0 {
+					t.Errorf("Load at index %d went negative: %d", i, l)
+				}
+				loadSum += l
+			}
+			if loadSum != 0 {
+				t.Errorf("Total load after stream completion got %d, want 0. Loads: %v", loadSum, pool.load)
+			}
+		})
 	}
 }
 
 func TestSelectLeastLoaded(t *testing.T) {
-	pool := &LeastLoadedChannelPool{}
+	pool := &BigtableChannelPool{}
 
-	if idx := pool.selectLeastLoaded(); idx != -1 {
-		t.Errorf("selectLeastLoaded on empty pool got %d, want -1", idx)
+	// Test empty pool
+	idx, err := pool.selectLeastLoaded()
+	if idx != -1 {
+		t.Errorf("selectLeastLoaded on empty pool got index %d, want -1", idx)
+	}
+	if err == nil {
+		t.Errorf("selectLeastLoaded on empty pool got nil error, want non-nil")
+	}
+	if err != errNoConnections {
+		t.Errorf("selectLeastLoaded on empty pool got error %v, want %v", err, errNoConnections)
 	}
 
+	// Test single connection pool
 	pool.conns = make([]*grpc.ClientConn, 1)
 	pool.load = make([]int64, 1)
-	if idx := pool.selectLeastLoaded(); idx != 0 {
-		t.Errorf("selectLeastLoaded on single conn pool got %d, want 0", idx)
+	idx, err = pool.selectLeastLoaded()
+	if idx != 0 {
+		t.Errorf("selectLeastLoaded on single conn pool got index %d, want 0", idx)
+	}
+	if err != nil {
+		t.Errorf("selectLeastLoaded on single conn pool got error %v, want nil", err)
 	}
 
+	// Test multiple connections
 	pool.conns = make([]*grpc.ClientConn, 5)
 	pool.load = []int64{3, 1, 4, 1, 5}
-	if idx := pool.selectLeastLoadedIterative(); idx != 1 {
-		t.Errorf("selectLeastLoadedIterative got %d, want 1 for loads %v", idx, pool.load)
+	idx, err = pool.selectLeastLoaded()
+	if idx != 1 {
+		t.Errorf("selectLeastLoadedIterative got index %d, want 1 for loads %v", idx, pool.load)
+	}
+	if err != nil {
+		t.Errorf("selectLeastLoadedIterative got error %v, want nil for loads %v", err, pool.load)
 	}
 }
 
@@ -280,7 +434,7 @@ func TestPoolClose(t *testing.T) {
 		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 
-	pool, err := NewLeastLoadedChannelPool(poolSize, dialFunc)
+	pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -298,7 +452,7 @@ func TestMultipleStreamsSingleConn(t *testing.T) {
 		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 
-	pool, err := NewLeastLoadedChannelPool(poolSize, dialFunc)
+	pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -376,7 +530,7 @@ func TestCachingStreamDecrement(t *testing.T) {
 		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 
-	pool, err := NewLeastLoadedChannelPool(poolSize, dialFunc)
+	pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}

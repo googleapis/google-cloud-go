@@ -21,33 +21,66 @@ import (
 	"sync"
 	"sync/atomic"
 
+	gtransport "google.golang.org/api/transport/grpc"
+
+	btopt "cloud.google.com/go/bigtable/internal/option"
+
 	"google.golang.org/grpc"
 )
 
-const connThreshold = 10
+var errNoConnections = fmt.Errorf("bigtable_connpool: no connections available in the pool")
+var _ gtransport.ConnPool = &BigtableChannelPool{}
 
-var _ grpc.ClientConnInterface = &LeastLoadedChannelPool{}
-
-// LeastLoadedChannelPool implements ConnPool and routes requests to the connection
+// BigtableChannelPool implements ConnPool and routes requests to the connection
 // with the least number of active requests.
 //
 // To benefit from automatic load tracking, use the Invoke and NewStream methods
-// directly on the leastLoadedConnPool instance.
-type LeastLoadedChannelPool struct {
+// directly on the BigtableChannelPool instance.
+type BigtableChannelPool struct {
 	conns []*grpc.ClientConn
 	load  []int64 // Tracks active requests per connection
 
 	// Mutex is only used for selecting the least loaded connection.
 	// The load array itself is manipulated using atomic operations.
-	mu   sync.Mutex
-	dial func() (*grpc.ClientConn, error)
+	mu         sync.Mutex
+	dial       func() (*grpc.ClientConn, error)
+	strategy   btopt.LoadBalancingStrategy
+	rrIndex    uint64              // For round-robin selection
+	selectFunc func() (int, error) // Stored function for connection selection
+
 }
 
-// NewLeastLoadedChannelPool creates a pool of connPoolSize and takes the dial func()
-func NewLeastLoadedChannelPool(connPoolSize int, dial func() (*grpc.ClientConn, error)) (*LeastLoadedChannelPool, error) {
-	pool := &LeastLoadedChannelPool{
-		dial: dial,
+// NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
+func NewBigtableChannelPool(connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*grpc.ClientConn, error)) (*BigtableChannelPool, error) {
+	if connPoolSize < 0 {
+		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
+
+	// consistent
+	if connPoolSize == 0 {
+		// this should never happen, but add this as fail-safe dialSettings hack to  extract d.GRPCConnPoolSize
+		connPoolSize = 4
+	}
+
+	if dial == nil {
+		return nil, fmt.Errorf("bigtable_connpool: dial function cannot be nil")
+	}
+	pool := &BigtableChannelPool{
+		dial:     dial,
+		strategy: strategy,
+		rrIndex:  0,
+	}
+
+	// Set the selection function based on the strategy
+	switch strategy {
+	case btopt.LeastInFlight:
+		pool.selectFunc = pool.selectLeastLoaded
+	case btopt.PowerOfTwoLeastInFlight:
+		pool.selectFunc = pool.selectLeastLoadedRandomOfTwo
+	default: // RoundRobin is the default
+		pool.selectFunc = pool.selectRoundRobin
+	}
+
 	for i := 0; i < connPoolSize; i++ {
 		conn, err := dial()
 		if err != nil {
@@ -63,25 +96,12 @@ func NewLeastLoadedChannelPool(connPoolSize int, dial func() (*grpc.ClientConn, 
 }
 
 // Num returns the number of connections in the pool.
-func (p *LeastLoadedChannelPool) Num() int {
+func (p *BigtableChannelPool) Num() int {
 	return len(p.conns)
 }
 
-// Conn returns the connection currently `estimated“ to have the least load.
-// Note: Using the returned *grpc.ClientConn directly will NOT automatically
-// update the load counters in the pool. Use the pool's Invoke/NewStream
-// methods for automatic load tracking.
-func (p *LeastLoadedChannelPool) Conn() *grpc.ClientConn {
-	index := p.selectLeastLoaded()
-	if index < 0 || index >= len(p.conns) {
-		// Should not happen with proper initialization
-		return nil
-	}
-	return p.conns[index]
-}
-
 // Close closes all connections in the pool.
-func (p *LeastLoadedChannelPool) Close() error {
+func (p *BigtableChannelPool) Close() error {
 	var errs multiError
 	for _, conn := range p.conns {
 		if err := conn.Close(); err != nil {
@@ -96,10 +116,10 @@ func (p *LeastLoadedChannelPool) Close() error {
 
 // Invoke selects the least loaded connection and calls Invoke on it.
 // This method provides automatic load tracking.
-func (p *LeastLoadedChannelPool) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	index := p.selectLeastLoaded()
-	if index < 0 || index >= len(p.conns) {
-		return fmt.Errorf("grpc: no connections available in the pool")
+func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
+	index, err := p.selectFunc()
+	if err != nil {
+		return err
 	}
 	conn := p.conns[index]
 
@@ -109,12 +129,21 @@ func (p *LeastLoadedChannelPool) Invoke(ctx context.Context, method string, args
 	return conn.Invoke(ctx, method, args, reply, opts...)
 }
 
+func (p *BigtableChannelPool) Conn() *grpc.ClientConn {
+	index, err := p.selectFunc()
+	if err != nil {
+		// no conn available
+		return nil
+	}
+	return p.conns[index]
+}
+
 // NewStream selects the least loaded connection and calls NewStream on it.
 // This method provides automatic load tracking via a wrapped stream.
-func (p *LeastLoadedChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	index := p.selectLeastLoaded()
-	if index < 0 || index >= len(p.conns) {
-		return nil, fmt.Errorf("grpc: no connections available in the pool")
+func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	index, err := p.selectFunc()
+	if err != nil {
+		return nil, err
 	}
 	conn := p.conns[index]
 
@@ -128,7 +157,7 @@ func (p *LeastLoadedChannelPool) NewStream(ctx context.Context, desc *grpc.Strea
 	}
 
 	// Wrap the stream to decrement load when the stream finishes.
-	return &cachingStream{
+	return &refCountedStream{
 		ClientStream: stream,
 		pool:         p,
 		connIndex:    index,
@@ -136,14 +165,14 @@ func (p *LeastLoadedChannelPool) NewStream(ctx context.Context, desc *grpc.Strea
 	}, nil
 }
 
-// selectLeastLoaded() returns the index of the connection via random of two
-func (p *LeastLoadedChannelPool) selectLeastLoadedRandomofTwo() int {
-	numConns := len(p.conns)
+// selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two
+func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (int, error) {
+	numConns := p.Num()
 	if numConns == 0 {
-		return -1
+		return -1, errNoConnections
 	}
 	if numConns == 1 {
-		return 0
+		return 0, nil
 	}
 
 	// Pick two distinct random indices
@@ -160,25 +189,31 @@ func (p *LeastLoadedChannelPool) selectLeastLoadedRandomofTwo() int {
 	load2 := atomic.LoadInt64(&p.load[idx2])
 
 	if load1 <= load2 {
-		return idx1
+		return idx1, nil
 	}
-	return idx2
+	return idx2, nil
 }
 
-func (p *LeastLoadedChannelPool) selectLeastLoaded() int {
-	// if the conn num < connThreshold, iterates over conn map
-	if p.Num() < connThreshold {
-		return p.selectLeastLoadedIterative()
+func (p *BigtableChannelPool) selectRoundRobin() (int, error) {
+	numConns := p.Num()
+	if numConns == 0 {
+		return -1, errNoConnections
 	}
-	// otherwise, pick random two and select the one
-	// No need for mutex
-	return p.selectLeastLoadedRandomofTwo()
+	if numConns == 1 {
+		return 0, nil
+	}
+
+	// Atomically increment and get the next index
+	nextIndex := atomic.AddUint64(&p.rrIndex, 1) - 1
+	return int(nextIndex % uint64(numConns)), nil
 }
 
 // selectLeastLoaded returns the index of the connection with the minimum load.
-func (p *LeastLoadedChannelPool) selectLeastLoadedIterative() int {
-	if len(p.conns) == 0 {
-		return -1
+func (p *BigtableChannelPool) selectLeastLoaded() (int, error) {
+	numConns := p.Num()
+
+	if numConns == 0 {
+		return -1, errNoConnections
 	}
 
 	p.mu.Lock()
@@ -187,32 +222,32 @@ func (p *LeastLoadedChannelPool) selectLeastLoadedIterative() int {
 	minIndex := 0
 	minLoad := atomic.LoadInt64(&p.load[0])
 
-	for i := 1; i < len(p.conns); i++ {
+	for i := 1; i < p.Num(); i++ {
 		currentLoad := atomic.LoadInt64(&p.load[i])
 		if currentLoad < minLoad {
 			minLoad = currentLoad
 			minIndex = i
 		}
 	}
-	return minIndex
+	return minIndex, nil
 }
 
-// cachingStream wraps a grpc.ClientStream to decrement the load count when the stream is done.
-// cachingStream in this LeastLoadedChannelPool is to hook into the stream's lifecycle
+// refCountedStream wraps a grpc.ClientStream to decrement the load count when the stream is done.
+// refCountedStream in this BigtableConnectionPool is to hook into the stream's lifecycle
 // to decrement the load counter (s.pool.load[s.connIndex]) when the stream is no longer usable.
 // This is primarily detected by errors occurring during SendMsg or RecvMsg (including io.EOF on RecvMsg).
 
 // Another option would have been to use grpc.OnFinish for streams is about the timing of when the load should be considered "finished".
 // The grpc.OnFinish callback is executed only when the entire stream is fully closed and the final status is determined.
-type cachingStream struct {
+type refCountedStream struct {
 	grpc.ClientStream
-	pool      *LeastLoadedChannelPool
+	pool      *BigtableChannelPool
 	connIndex int
 	once      sync.Once
 }
 
 // SendMsg calls the embedded stream's SendMsg method.
-func (s *cachingStream) SendMsg(m interface{}) error {
+func (s *refCountedStream) SendMsg(m interface{}) error {
 	err := s.ClientStream.SendMsg(m)
 	if err != nil {
 		s.decrementLoad()
@@ -221,7 +256,7 @@ func (s *cachingStream) SendMsg(m interface{}) error {
 }
 
 // RecvMsg calls the embedded stream's RecvMsg method and decrements load on error.
-func (s *cachingStream) RecvMsg(m interface{}) error {
+func (s *refCountedStream) RecvMsg(m interface{}) error {
 	err := s.ClientStream.RecvMsg(m)
 	if err != nil { // io.EOF is also an error, indicating stream end.
 		s.decrementLoad()
@@ -230,7 +265,7 @@ func (s *cachingStream) RecvMsg(m interface{}) error {
 }
 
 // decrementLoad ensures the load count is decremented exactly once.
-func (s *cachingStream) decrementLoad() {
+func (s *refCountedStream) decrementLoad() {
 	s.once.Do(func() {
 		atomic.AddInt64(&s.pool.load[s.connIndex], -1)
 	})
