@@ -2527,10 +2527,8 @@ func TestIntegration_Copy(t *testing.T) {
 					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
 						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
 					}
-				}
-
-				// Check that metadata is copied when no destination attributes are provided.
-				if test.copierAttrs == nil {
+				} else {
+					// Check that metadata is copied when no destination attributes are provided.
 					if attrs.ContentLanguage != "en" {
 						t.Errorf("unexpected ContentLanguage; got: %s, want: en", attrs.ContentLanguage)
 					}
