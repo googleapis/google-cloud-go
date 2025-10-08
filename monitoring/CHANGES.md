@@ -1,5 +1,12 @@
 # Changes
 
+## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.24.2...monitoring/v1.24.3) (2025-10-08)
+
+
+### Bug Fixes
+
+* **monitoring:** Upgrade gRPC service registration func ([9dd3adf](https://github.com/googleapis/google-cloud-go/commit/9dd3adf2bb0d57dff8d85f89a29e8cea03274c29))
+
 ## [1.24.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.24.1...monitoring/v1.24.2) (2025-04-15)
 
 
@@ -337,4 +344,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out monitoring as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
