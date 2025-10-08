@@ -242,11 +242,12 @@ func TestIsSubPath(t *testing.T) {
 	tempDir := t.TempDir()
 
 	testCases := []struct {
-		name           string
-		localDirectory string
-		filePath       string
-		wantIsSub      bool
-		wantErr        bool
+		name             string
+		localDirectory   string
+		filePath         string
+		wantIsSub        bool
+		wantErr          bool
+		wantErrorMessage string
 	}{
 		{
 			name:           "filePath is a child",
@@ -309,10 +310,11 @@ func TestIsSubPath(t *testing.T) {
 			wantIsSub:      false,
 		},
 		{
-			name:           "IsSubPath returns error when base dir is changed",
-			localDirectory: "foo",
-			filePath:       "bar",
-			wantErr:        true,
+			name:             "IsSubPath returns error when base dir is changed",
+			localDirectory:   "foo",
+			filePath:         "bar",
+			wantErr:          true,
+			wantErrorMessage: "no such file or directory",
 		},
 	}
 
@@ -331,7 +333,10 @@ func TestIsSubPath(t *testing.T) {
 			isSub, err := isSubPath(tc.localDirectory, tc.filePath)
 
 			if (err != nil) != tc.wantErr {
-				t.Errorf("isSubPath() error = %v, wantErr %v", err, tc.wantErr)
+				t.Fatalf("isSubPath() error = %v, wantErr %v", err, tc.wantErr)
+			}
+			if tc.wantErr && !strings.Contains(err.Error(), tc.wantErrorMessage) {
+				t.Errorf("isSubPath() error = %s, want err containing %s", err.Error(), tc.wantErrorMessage)
 				return
 			}
 			if isSub != tc.wantIsSub {

@@ -22,7 +22,6 @@ import (
 	"hash/crc32"
 	"io"
 	"io/fs"
-	"log"
 	"math"
 	"os"
 	"path/filepath"
@@ -200,7 +199,6 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to verify path: %w", err)
 		}
 		if !isUnder {
-			log.Printf("transfermanager: skipping object with unsafe path after stripping prefix %q", objectWithoutPrefix)
 			// skipped files will later be added in the results
 			illegalPathObjects = append(illegalPathObjects, DownloadObjectInput{
 				Bucket:                 input.Bucket,
