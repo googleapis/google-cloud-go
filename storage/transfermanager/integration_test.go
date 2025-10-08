@@ -506,7 +506,7 @@ func TestIntegration_DownloadDirectoryWithSkippedFiles(t *testing.T) {
 						t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
 					}
 				} else if got.Err != nil {
-					t.Errorf("result.Err: %v", got.Err)
+					t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
 				}
 			},
 		}); err != nil {
@@ -613,7 +613,7 @@ func TestIntegration_DownloadDirectoryWithSkippedFilesAsync(t *testing.T) {
 						t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
 					}
 				} else if got.Err != nil {
-					t.Errorf("result.Err: %v", got.Err)
+					t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
 				}
 			},
 			Callback: func(outs []DownloadOutput) {
