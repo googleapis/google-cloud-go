@@ -981,7 +981,7 @@ func checksumObject(got, want uint32) error {
 }
 
 func isSubPath(localDirectory, filePath string) (bool, error) {
-	// validate if paths can be converted to absolute paths
+	// Validate if paths can be converted to absolute paths.
 	absLocalDirectory, err := filepath.Abs(localDirectory)
 	if err != nil {
 		return false, fmt.Errorf("cannot convert local directory to absolute path: %w", err)

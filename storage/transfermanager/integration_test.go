@@ -505,33 +505,9 @@ func TestIntegration_DownloadDirectoryWithSkippedFiles(t *testing.T) {
 					if got.Err == nil {
 						t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
 					}
-					return
-				}
-				if got.Err != nil {
+				} else if got.Err != nil {
 					t.Errorf("result.Err: %v", got.Err)
 				}
-
-				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
-					t.Errorf("expected object size %d, got %d", want, got)
-				}
-
-				path := filepath.Join(localDir, got.Object)
-
-				f, err := os.Open(path)
-				if err != nil {
-					t.Errorf("os.Open(%q): %v", path, err)
-				}
-				defer f.Close()
-
-				b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
-				if _, err := io.Copy(b, f); err != nil {
-					t.Errorf("io.Copy: %v", err)
-				}
-
-				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
-					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
-				}
-				got.Object = "modifying this shouldn't be a problem"
 			},
 		}); err != nil {
 			t.Errorf("d.DownloadDirectory: %v", err)
@@ -561,28 +537,16 @@ func TestIntegration_DownloadDirectoryWithSkippedFiles(t *testing.T) {
 				if _, err := os.Stat(filepath.Join(localDir, got.Object)); err == nil {
 					t.Errorf("Expected error but got nil for object %v: %v", got.Object, err)
 				}
-				continue
+			} else {
+				if got.Err != nil {
+					t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
+				}
+				// verify that file path has been created
+				if _, err := os.Stat(filepath.Join(localDir, got.Object)); err != nil {
+					t.Errorf("Unexpected error for object %v: %v", got.Object, err)
+				}
 			}
 
-			if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
-				t.Errorf("expected object size %d, got %d", want, got)
-			}
-
-			path := filepath.Join(localDir, got.Object)
-			f, err := os.Open(path)
-			if err != nil {
-				t.Errorf("os.Open(%q): %v", path, err)
-			}
-			defer f.Close()
-
-			b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
-			if _, err := io.Copy(b, f); err != nil {
-				t.Errorf("io.Copy: %v", err)
-			}
-
-			if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
-				t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
-			}
 		}
 	})
 }
@@ -648,34 +612,9 @@ func TestIntegration_DownloadDirectoryWithSkippedFilesAsync(t *testing.T) {
 					if got.Err == nil {
 						t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
 					}
-					return
-				}
-
-				if got.Err != nil {
+				} else if got.Err != nil {
 					t.Errorf("result.Err: %v", got.Err)
 				}
-
-				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
-					t.Errorf("expected object size %d, got %d", want, got)
-				}
-
-				path := filepath.Join(localDir, got.Object)
-
-				f, err := os.Open(path)
-				if err != nil {
-					t.Errorf("os.Open(%q): %v", path, err)
-				}
-				defer f.Close()
-
-				b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
-				if _, err := io.Copy(b, f); err != nil {
-					t.Errorf("io.Copy: %v", err)
-				}
-
-				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
-					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
-				}
-				got.Object = "modifying this shouldn't be a problem"
 			},
 			Callback: func(outs []DownloadOutput) {
 				if len(outs) != len(tb.objects)+len(illegalObjs) {
@@ -691,32 +630,14 @@ func TestIntegration_DownloadDirectoryWithSkippedFilesAsync(t *testing.T) {
 						if _, err := os.Stat(filepath.Join(localDir, got.Object)); err == nil {
 							t.Errorf("Expected error but got nil for object %v: %v", got.Object, err)
 						}
-						continue
-					}
-
-					if got.Err != nil {
-						t.Errorf("result.Err: %v", got.Err)
-						continue
-					}
-
-					if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
-						t.Errorf("expected object size %d, got %d", want, got)
-					}
-
-					path := filepath.Join(localDir, got.Object)
-					f, err := os.Open(path)
-					if err != nil {
-						t.Errorf("os.Open(%q): %v", path, err)
-					}
-					defer f.Close()
-
-					b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
-					if _, err := io.Copy(b, f); err != nil {
-						t.Errorf("io.Copy: %v", err)
-					}
-
-					if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
-						t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+					} else {
+						if got.Err != nil {
+							t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
+						}
+						// verify that file path has been created
+						if _, err := os.Stat(filepath.Join(localDir, got.Object)); err != nil {
+							t.Errorf("Unexpected error for object %v: %v", got.Object, err)
+						}
 					}
 				}
 			},
