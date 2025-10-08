@@ -23,7 +23,6 @@ import (
 	capacityplannerpb "cloud.google.com/go/capacityplanner/apiv1beta/capacityplannerpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/iterator"
 )
 
 // ExportForecastsOperation manages a long-running operation from ExportForecasts.
@@ -216,51 +215,4 @@ func (op *ExportUsageHistoriesOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportUsageHistoriesOperation) Name() string {
 	return op.lro.Name()
-}
-
-// CapacityPlanIterator manages a stream of *capacityplannerpb.CapacityPlan.
-type CapacityPlanIterator struct {
-	items    []*capacityplannerpb.CapacityPlan
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*capacityplannerpb.CapacityPlan, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
-func (it *CapacityPlanIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CapacityPlanIterator) Next() (*capacityplannerpb.CapacityPlan, error) {
-	var item *capacityplannerpb.CapacityPlan
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CapacityPlanIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CapacityPlanIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }
