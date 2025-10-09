@@ -1,5 +1,11 @@
 # Changes
 
+### 1.17.0 (2025-10-09)
+
+#### Documentation
+
+* [eventarc] Update comment in Eventarc Publishing API
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.16.0...eventarc/v1.16.1) (2025-09-18)
 
 

@@ -2,6 +2,33 @@
 
 
 
+### 1.24.0 (2025-10-09)
+
+#### Features
+
+* expose ReservationAffinityType
+* expose IndexPruningStats
+* expose metadata PruningStats
+* expose reservation_group_path
+* expose additional additional model training options
+* expose timestamp_target_precision
+* expose max_slots
+* expose incremental result stats
+* expose HOURLY in SeasonalPeriod
+
+#### Bug Fixes
+
+* upgrade gRPC service registration func
+* add ReturnPartialSuccess
+* upgrade gRPC service registration func (#13014)
+
+#### Documentation
+
+* updates to write disposition
+* updates to job timeout
+* data_policies comment updates
+* Update comment in Eventarc Publishing API
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.22.0...maps/v1.23.0) (2025-08-18)
 
 

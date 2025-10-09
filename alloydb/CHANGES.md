@@ -3,6 +3,34 @@
 
 
 
+### 1.19.0 (2025-10-09)
+
+#### Features
+
+* add PG 17 as a Database version
+* update `Database.charset` to be immutable
+* add fields on the estimated/actual start/end times for an Upgrade Cluster operation
+* Add enable_widget option in Google Maps and additional grounding information
+* Added support for JUPYTER_KERNEL_GATEWAY component
+* Update Compute Engine v1 API to revision 20250909 (#12936)
+* Update Compute Engine v1beta API to revision 20250909 Source-Link: https://togithub.com/googleapis/googleapis/commit/69a56771aaa3aae63463ae5bd66824f62856fc97
+* add CRUD APIs on Databases
+* add configuration for Managed Connection Pool
+* add additional fields to Database object to specify the collation type, character type, if it is a template database, and the template to use for the database
+* add field to ExecuteSQL request to just validate the sql statement
+* A new value `NVIDIA_RTX_PRO_6000` is added to enum `AcceleratorType`
+
+#### Bug Fixes
+
+* An existing enum `PoolMode` is removed from the `ConnectionPoolConfig`
+
+#### Documentation
+
+* remove stale beta annotation
+* remove legacy internal lint directives
+* specify that the STOPPED state is not used for clusters anymore
+* remove beta warnings from shopping/merchant GA APIs
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.17.0...alloydb/v1.18.0) (2025-06-25)
 
 

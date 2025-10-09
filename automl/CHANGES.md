@@ -1,5 +1,229 @@
 # Changes
 
+### 1.15.0 (2025-10-09)
+
+#### Features
+
+* A new field `passed` is added to message `.google.cloud.dataplex.v1.DataQualityColumnResult`
+* introduce DataTransfer APIs
+* A new resource_definition `dataplex.googleapis.com/GlossaryTerm` is added
+* A new message `CreateGlossaryCategoryRequest` is added
+* release the conversational search public SDK
+* CMEK support
+* A new field 'enforced_retention_end_time' in message 'google.cloud.netapp.v1.Backup' is added
+* A new message `CreateEntryLinkRequest` is added
+* A new field `catalog_publishing_status` is added to message `.google.cloud.dataplex.v1.DataQualityResult`
+* A new message `ListGlossariesResponse` is added
+* A new message `GlossaryTerm` is added
+* Tuning PreTunedModel API field
+* Add new fields to support observability configurations, machine types and PSC related configs
+* A new message `GetGlossaryCategoryRequest` is added
+* A new message `DeleteGlossaryTermRequest` is added
+* A new field `unchanged_entry_links` is added to message `.google.cloud.dataplex.v1.MetadataJob`
+* Update Compute Engine v1 API to revision 20250511 (#1047) (#12396)
+* add new change_stream.proto PiperOrigin-RevId: 766241102
+* Sync AlloyDB API changes from HEAD to stable
+* Add full lifecycle management for API Operations within API Versions (Create, Update, Delete)
+* A new message `ListGlossaryCategoriesRequest` is added
+* A new message `CreateGlossaryTermRequest` is added
+* Image Import
+* Update Compute Engine v1beta API to revision 20250511 (#1041) (#12298)
+* add encryption_spec to Model Monitoring public preview API PiperOrigin-RevId: 759653857
+* Adding eTag field to AutokeyConfig
+* Support KEY_ENCAPSULATION purpose and quantum-safe algorithms ML_KEM_768, ML_KEM_1024 and KEM_XWING
+* Cutover forecast
+* Add OmnichannelSetingsService, LfpProvidersService and GbpAccountsService PiperOrigin-RevId: 759329567
+* Tuning Checkpoints API
+* Make CMEK configuration optional for ApiHub Instances, defaulting to GMEK
+* A new message `GlossaryCategory` is added
+* A new message `UpdateGlossaryTermRequest` is added
+* A new message `GetGlossaryTermRequest` is added
+* A new method `DeleteEntryLink` is added to service `CatalogService`
+* Add new GetIamPolicy, SetIamPolicy, and TestIamPermissions RPCs
+* Multiple additional supported target details
+* Support adding a workflow action to execute a Data Preparation node
+* A new message `Glossary` is added
+* A new message `ListGlossaryCategoriesResponse` is added
+* A new field `glossaries` is added to message `.google.cloud.dataplex.v1.MetadataJob`
+* A new method_signature `parent,online_return_policy` is added to method `CreateOnlineReturnPolicy` in service `OnlineReturnPolicyService`
+* new field `additional_properties` is added to message `.google.cloud.aiplatform.v1beta1.Schema` PiperOrigin-RevId: 757839731
+* add ANN feature for RagManagedDb PiperOrigin-RevId: 757834804
+* add GCE to DeploymentPlatform enum PiperOrigin-RevId: 805463393
+* A new message `ListGlossariesRequest` is added
+* A new method `CreateEntryLink` is added to service `CatalogService`
+* add throughput_mode to UpdateDatabaseDdlRequest to be used by Spanner Migration Tool. See https (#12287)
+* A new message `DeleteEntryLinkRequest` is added
+* A new field `project` is added to message `.google.cloud.dataplex.v1.DataDiscoverySpec`
+* Update Compute Engine v1beta API to revision 20250902 Source-Link: https://togithub.com/googleapis/googleapis/commit/efa74ff3562449aa87877fc7ce63fdb05fec6917
+* A new message `UpdateGlossaryCategoryRequest` is added
+* A new message `DeleteGlossaryCategoryRequest` is added
+* A new message `ListGlossaryTermsRequest` is added
+* A new method `GetEntryLink` is added to service `CatalogService`
+* A new field `entry_link` is added to message `.google.cloud.dataplex.v1.ImportItem`
+* A new resource_definition `dataplex.googleapis.com/GlossaryCategory` is added
+* Significantly expand Plugin and Plugin Instance management capabilities, including creation, execution, and lifecycle control
+* A new message `DeleteGlossaryRequest` is added
+* A new field `deleted_entry_links` is added to message `.google.cloud.dataplex.v1.MetadataJob`
+* A new field `created_entry_links` is added to message `.google.cloud.dataplex.v1.MetadataJob`
+* A new field `referenced_entry_scopes` is added to message `.google.cloud.dataplex.v1.MetadataJob`
+* Azure as a source
+* adding thoughts_token_count to v1beta1 client library PiperOrigin-RevId: 759721742
+* A new message `EntryLink` is added
+* A new message `GetEntryLinkRequest` is added
+* A new field `dimensions` is added to message `.google.cloud.dataplex.v1.DataQualityColumnResult`
+* Migration warnings in addition to errors
+* add scenarios AUTO/NONE to autotuning config PiperOrigin-RevId: 766437023
+* A new message 'google.cloud.netapp.v1.BackupRetentionPolicy' is added in 'google.cloud.netapp.v1.BackupVault'
+* New fields 'custom_performance_enabled', 'total_throughput_mibps', 'total_iops' in message 'google.cloud.netapp.v1.StoragePool' are added
+* Tuning Checkpoints API PiperOrigin-RevId: 757844206
+* A new field `entry_link_types` is added to message `.google.cloud.dataplex.v1.MetadataJob`
+* A new field `catalog_publishing_enabled` is added to message `.google.cloud.dataplex.v1.DataQualitySpec`
+* Added client library for capacity planner services
+* VM disk migration
+* adding thoughts_token_count to prediction service PiperOrigin-RevId: 759720969
+* Add new methods for exporting, importing and upgrade Cluster operations
+* A new message `DataScanCatalogPublishingStatus` is added
+* OS capabilities detection
+* Enable Deletion of ApiHub Instances via the Provisioning service
+* Add new fields and enums to resources to support richer metadata, including source tracking (SourceMetadata), plugin configurations (AuthConfig, ConfigVariable), new attributes, and additional deployment details
+* Added `ranking_expression_backed` and `rank_signals` fields related to the Custom Ranking feature
+* add LocationSupport,Domain,DocumentFallbackLocation
+* PSC support for custom weights deploy
+* Add new CSQL API for supporting Cluster creation from Cloud SQL
+* new field `additional_properties` is added to message `.google.cloud.aiplatform.v1.Schema` PiperOrigin-RevId: 757829708
+* Enhance list filtering options across various resources (APIs, Versions, Specs, Operations, Deployments) with support for user-defined attributes
+* A new service `BusinessGlossaryService` is added
+* A new message `UpdateGlossaryRequest` is added
+* A new message `ListGlossaryTermsResponse` is added
+* Add PublicKeyFormat enums XWING_RAW_BYTES (used for KEM_XWING) and DER
+* release the latest conversational search public SDK
+* Machine Image Import
+* API for extending the time to live (TTL) of a Migrating VM
+* A new field `catalog_publishing_status` is added to message `.google.cloud.dataplex.v1.DataScanEvent`
+* Introduce new services for data collection (ApiHubCollect) and curation (ApiHubCurate)
+* A new resource_definition `dataplex.googleapis.com/Glossary` is added
+* A new message `CreateGlossaryRequest` is added
+* A new message `GetGlossaryRequest` is added
+* A new resource_definition `dataplex.googleapis.com/EntryLink` is added
+
+#### Bug Fixes
+
+* upgrade gRPC service registration func An update to Go gRPC Protobuf generation will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go service files. This change should affect very few client library users. See release notes advisories in https://togithub.com/googleapis/google-cloud-go/pull/11025.
+* Changed field behavior for an existing field `key` in message `.google.cloud.vmmigration.v1.AwsSourceDetails` to `required` to protect from incorrect input
+* Changed field behavior for an existing field `value` in message `.google.cloud.vmmigration.v1.AwsSourceDetails` to `required` to protect from incorrect input
+* Changed field behavior for an existing field `project` in message `.google.cloud.vmmigration.v1.TargetProject` to `required` to protect from incorrect input
+
+#### Documentation
+
+* A comment for field `end` in message `.google.cloud.dataplex.v1.ScannedData` is changed
+* A comment for field `update_mask` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed
+* A comment for field `process_refund_days` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* A comment for field `rule` in message `.google.cloud.dataplex.v1.GenerateDataQualityRulesResponse` is changed
+* A comment for method `CreateMetadataJob` in service `CatalogService` is changed
+* A comment for field `row_filter` in message `.google.cloud.dataplex.v1.DataProfileSpec` is changed
+* A comment for field `standard_deviation` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `min` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `ratio` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `type` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `results_table` in message `.google.cloud.dataplex.v1.DataProfileSpec` is changed
+* A comment for field `parent` in message `.google.cloud.dataplex.v1.ListDataTaxonomiesRequest` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.GetDataScanRequest` is changed
+* A comment for field `parent` in message `.google.cloud.dataplex.v1.ListDataScanJobsRequest` is changed
+* A comment for field `resource` in message `.google.cloud.dataplex.v1.DataSource` is changed
+* A comment for enum value `ENABLED` in enum `Mode` is changed
+* A comment for field `accept_defective_only` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* Use backticks around `username` in documentation for `Actor.email`
+* A comment for field `aspect_keys` in message `.google.cloud.dataplex.v1.ImportItem` is changed
+* A comment for field `average_length` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `scanned_data` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* minor doc revision
+* A comment for enum `Mode` is changed
+* A comment for method `DeleteOnlineReturnPolicy` in service `OnlineReturnPolicyService` is changed
+* A comment for field `transfer_bytes` in message `.google.cloud.netapp.v1.TransferStats` is changed
+* A comment for field `encryption_config` in message `.google.cloud.alloydb.v1.AutomatedBackupPolicy` is changed
+* A comment for service `ContentService` is changed
+* A comment for field `mode` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `row_count` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* Annotate all names with IDENTIFIER
+* A comment for field `ip` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `update_time` in message `.google.cloud.dataplex.v1.Entry` is changed
+* A comment for field `update_mask` in message `.google.cloud.dataplex.v1.ImportItem` is changed
+* A comment for enum value `FULL` in enum `SyncMode` is changed
+* A comment for field `max` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.DeleteDataScanRequest` is changed
+* A comment for field `entity` in message `.google.cloud.dataplex.v1.DataSource` is changed
+* A comment for enum value `TASK_CONFIG` in enum `Trigger` is changed
+* Updated comments and descriptions to improve clarity
+* A comment for field `order_by` in message `.google.cloud.dataplex.v1.SearchEntriesRequest` is changed
+* A comment for field `min_length` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `quartiles` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `top_n_values` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `parent` in message `.google.cloud.dataplex.v1.CreateDataScanRequest` is changed
+* A comment for enum value `DISABLED` in enum `Mode` is changed
+* A comment for field `parent` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed
+* Updating docs for total_size field in KMS List APIs
+* A comment for message `AspectType` is changed
+* A comment for message `DeleteAspectTypeRequest` is changed
+* A comment for field `max_length` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `value` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `distinct_ratio` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for enum value `CREATED` in enum `State` is changed
+* A comment for field `field` in message `.google.cloud.dataplex.v1.ScannedData` is changed
+* A comment for field `parent` in message `.google.cloud.dataplex.v1.ListLakesRequest` is changed
+* Update field descriptions, comments, and links in existing services
+* A comment for field `null_ratio` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.DataScanJob` is changed
+* A comment for message `UpdateOnlineReturnPolicyRequest` is changed
+* A comment for field `encryption_config` in message `.google.cloud.alloydb.v1.ContinuousBackupConfig` is changed
+* A comment for field `id` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `user` in message `.google.cloud.alloydb.v1.ExecuteSqlRequest` is changed
+* fix links and typos
+* A comment for field `type` in message `.google.cloud.dataplex.v1.AspectType` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.RunDataScanRequest` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.GetDataScanJobRequest` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.DataScan` is changed
+* A comment for field `user_query_types` in message `.google.cloud.retail.v2alpha.ConversationalSearchResponse` is changed
+* Updated the formatting in some comments in multiple services
+* A comment for field `state` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `requested_cancellation` in message `.google.cloud.alloydb.v1.OperationMetadata` is changed
+* A comment for field `parent` in message `.google.cloud.dataplex.v1.CreateEntryGroupRequest` is changed
+* A comment for message `DeleteEntryTypeRequest` is changed
+* A comment for service `CmekService` is changed
+* A comment for field `dimension` in message `.google.cloud.dataplex.v1.DataQualityRule` is changed
+* A comment for enum value `ABORTED` in enum `State` is changed
+* A comment for field `ranking_expression` in messages `.google.cloud.discoveryengine.v1alpha.SearchRequest` and `.google.cloud.discoveryengine.v1beta.SearchRequest` is changed to support the Custom Ranking use case
+* A comment for field `return_label_source` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* A comment for message `Instance` is changed
+* A comment for field `alternate_use_permission` in message `.google.cloud.dataplex.v1.EntryType` is changed
+* A comment for field `fields` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.DataQualityDimension` is changed
+* A comment for field `parent` in message `.google.cloud.dataplex.v1.ListDataScansRequest` is changed
+* A comment for field `use_metadata_exchange` in message `.google.cloud.alloydb.v1.GenerateClientCertificateRequest` is changed
+* A comment for service `CatalogService` is changed
+* A comment for field `create_time` in message `.google.cloud.dataplex.v1.Entry` is changed
+* A comment for field `profile` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for field `dedicated_endpoint_disabled` in message `.google.cloud.aiplatform.v1beta1.DeployRequest` is changed
+* A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed
+* A comment for field `zone_id` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `image_version` in message `.google.cloud.dataplex.v1.Environment` is changed
+* A comment for field `alternate_use_permission` in message `.google.cloud.dataplex.v1.AspectType` is changed
+* A comment for field `name` in message `.google.cloud.dataplex.v1.SearchEntriesRequest` is changed
+* A comment for field `average` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for enum value `CONVERSATIONAL_FILTER_ONLY` in enum `Mode` is changed
+* A comment for enum value `DESTROYED` in enum `CryptoKeyVersionState` is changed PiperOrigin-RevId: 759163334
+* A comment for field `parent` in message `.google.cloud.dataplex.v1.CreateLakeRequest` is changed
+* A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed
+* A comment for field `database_flags` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `user_managed` in message `.google.cloud.dataplex.v1.Schema` is changed
+* A comment for field `accept_exchange` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* Remove comments for a non public feature (#12243)
+* A comment for field `query` in message `.google.cloud.dataplex.v1.SearchEntriesRequest` is changed
+* A comment for field `output_path` in message `.google.cloud.dataplex.v1.MetadataJob` is changed
+* A comment for field `count` in message `.google.cloud.dataplex.v1.DataProfileResult` is changed
+* A comment for enum value `TASK_CONFIG` in enum `ExecutionTrigger` is changed
+* A comment for field `start` in message `.google.cloud.dataplex.v1.ScannedData` is changed
+
 ## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/automl/v1.14.6...automl/v1.14.7) (2025-04-15)
 
 

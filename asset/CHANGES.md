@@ -1,5 +1,48 @@
 # Changes
 
+### 1.22.0 (2025-10-09)
+
+#### Features
+
+* add new change_stream.proto PiperOrigin-RevId: 766241102
+* A new method_signature `parent,online_return_policy` is added to method `CreateOnlineReturnPolicy` in service `OnlineReturnPolicyService`
+* adding thoughts_token_count to prediction service PiperOrigin-RevId: 759720969
+* A new message 'google.cloud.netapp.v1.BackupRetentionPolicy' is added in 'google.cloud.netapp.v1.BackupVault'
+* Adding eTag field to AutokeyConfig
+* add scenarios AUTO/NONE to autotuning config PiperOrigin-RevId: 766437023
+* Update Compute Engine v1beta API to revision 20250511 (#1041) (#12298)
+* Support adding a workflow action to execute a Data Preparation node
+* A new field 'enforced_retention_end_time' in message 'google.cloud.netapp.v1.Backup' is added
+* Add OmnichannelSetingsService, LfpProvidersService and GbpAccountsService PiperOrigin-RevId: 759329567
+* Update Compute Engine v1 API to revision 20250511 (#1047) (#12396)
+* add throughput_mode to UpdateDatabaseDdlRequest to be used by Spanner Migration Tool. See https (#12287)
+* adding thoughts_token_count to v1beta1 client library PiperOrigin-RevId: 759721742
+* add encryption_spec to Model Monitoring public preview API PiperOrigin-RevId: 759653857
+* New fields 'custom_performance_enabled', 'total_throughput_mibps', 'total_iops' in message 'google.cloud.netapp.v1.StoragePool' are added
+
+#### Bug Fixes
+
+* upgrade gRPC service registration func An update to Go gRPC Protobuf generation will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go service files. This change should affect very few client library users. See release notes advisories in https://togithub.com/googleapis/google-cloud-go/pull/11025.
+
+#### Documentation
+
+* A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed
+* A comment for field `update_mask` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed
+* A comment for message `UpdateOnlineReturnPolicyRequest` is changed
+* Annotate all names with IDENTIFIER
+* Use backticks around `username` in documentation for `Actor.email`
+* A comment for enum value `DESTROYED` in enum `CryptoKeyVersionState` is changed PiperOrigin-RevId: 759163334
+* Updating docs for total_size field in KMS List APIs
+* A comment for method `DeleteOnlineReturnPolicy` in service `OnlineReturnPolicyService` is changed
+* A comment for field `accept_defective_only` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* A comment for field `accept_exchange` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* A comment for field `return_label_source` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* A comment for field `transfer_bytes` in message `.google.cloud.netapp.v1.TransferStats` is changed
+* A comment for field `parent` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed
+* A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed
+* A comment for field `process_refund_days` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* Updated the formatting in some comments in multiple services
+
 ## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.21.0...asset/v1.21.1) (2025-05-13)
 
 

@@ -3,6 +3,71 @@
 
 
 
+### 1.5.0 (2025-10-09)
+
+#### Features
+
+* add new change_stream.proto PiperOrigin-RevId: 766241102
+* Update Compute Engine v1beta API to revision 20250511 (#1041) (#12298)
+* A new method_signature `parent,online_return_policy` is added to method `CreateOnlineReturnPolicy` in service `OnlineReturnPolicyService`
+* New fields 'custom_performance_enabled', 'total_throughput_mibps', 'total_iops' in message 'google.cloud.netapp.v1.StoragePool' are added
+* Adding eTag field to AutokeyConfig
+* Add new methods for exporting, importing and upgrade Cluster operations
+* adding thoughts_token_count to prediction service PiperOrigin-RevId: 759720969
+* add encryption_spec to Model Monitoring public preview API PiperOrigin-RevId: 759653857
+* Update Compute Engine v1 API to revision 20250511 (#1047) (#12396)
+* add throughput_mode to UpdateDatabaseDdlRequest to be used by Spanner Migration Tool. See https (#12287)
+* adding thoughts_token_count to v1beta1 client library PiperOrigin-RevId: 759721742
+* Add OmnichannelSetingsService, LfpProvidersService and GbpAccountsService PiperOrigin-RevId: 759329567
+* Add new CSQL API for supporting Cluster creation from Cloud SQL
+* Tuning Checkpoints API
+* new field `additional_properties` is added to message `.google.cloud.aiplatform.v1.Schema` PiperOrigin-RevId: 757829708
+* Support adding a workflow action to execute a Data Preparation node
+* A new message 'google.cloud.netapp.v1.BackupRetentionPolicy' is added in 'google.cloud.netapp.v1.BackupVault'
+* A new field 'enforced_retention_end_time' in message 'google.cloud.netapp.v1.Backup' is added
+* Sync AlloyDB API changes from HEAD to stable
+* Add new fields to support observability configurations, machine types and PSC related configs
+* Tuning Checkpoints API PiperOrigin-RevId: 757844206
+* new field `additional_properties` is added to message `.google.cloud.aiplatform.v1beta1.Schema` PiperOrigin-RevId: 757839731
+* add ANN feature for RagManagedDb PiperOrigin-RevId: 757834804
+* add scenarios AUTO/NONE to autotuning config PiperOrigin-RevId: 766437023
+
+#### Bug Fixes
+
+* upgrade gRPC service registration func An update to Go gRPC Protobuf generation will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go service files. This change should affect very few client library users. See release notes advisories in https://togithub.com/googleapis/google-cloud-go/pull/11025.
+
+#### Documentation
+
+* A comment for field `database_flags` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `transfer_bytes` in message `.google.cloud.netapp.v1.TransferStats` is changed
+* A comment for method `DeleteOnlineReturnPolicy` in service `OnlineReturnPolicyService` is changed
+* A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed
+* A comment for field `accept_exchange` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* Annotate all names with IDENTIFIER
+* A comment for field `ip` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `online_return_policy` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed
+* A comment for field `use_metadata_exchange` in message `.google.cloud.alloydb.v1.GenerateClientCertificateRequest` is changed
+* Use backticks around `username` in documentation for `Actor.email`
+* A comment for field `user` in message `.google.cloud.alloydb.v1.ExecuteSqlRequest` is changed
+* A comment for field `parent` in message `.google.shopping.merchant.accounts.v1beta.CreateOnlineReturnPolicyRequest` is changed
+* A comment for field `state` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `accept_defective_only` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* A comment for enum value `DESTROYED` in enum `CryptoKeyVersionState` is changed PiperOrigin-RevId: 759163334
+* Updating docs for total_size field in KMS List APIs
+* A comment for field `encryption_config` in message `.google.cloud.alloydb.v1.AutomatedBackupPolicy` is changed
+* A comment for field `encryption_config` in message `.google.cloud.alloydb.v1.ContinuousBackupConfig` is changed
+* A comment for field `id` in message `.google.cloud.alloydb.v1.Instance` is changed
+* fix links and typos
+* Updated the formatting in some comments in multiple services
+* A comment for message `UpdateOnlineReturnPolicyRequest` is changed
+* A comment for field `update_mask` in message `.google.shopping.merchant.accounts.v1beta.UpdateOnlineReturnPolicyRequest` is changed
+* A comment for field `process_refund_days` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* A comment for message `Instance` is changed
+* A comment for field `zone_id` in message `.google.cloud.alloydb.v1.Instance` is changed
+* A comment for field `return_label_source` in message `.google.shopping.merchant.accounts.v1beta.OnlineReturnPolicy` is changed
+* Remove comments for a non public feature (#12243)
+* A comment for field `requested_cancellation` in message `.google.cloud.alloydb.v1.OperationMetadata` is changed
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudcontrolspartner/v1.3.2...cloudcontrolspartner/v1.4.0) (2025-05-06)
 
 
