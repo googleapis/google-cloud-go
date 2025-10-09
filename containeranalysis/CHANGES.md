@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.2](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.14.1...containeranalysis/v0.14.2) (2025-10-09)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Upgrade gRPC service registration func ([9157a71](https://github.com/googleapis/google-cloud-go/commit/9157a715e39b0b15074ba34187ff70c820d8834a))
+
 ## [0.14.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.14.0...containeranalysis/v0.14.1) (2025-04-15)
 
 
@@ -241,4 +248,3 @@
 
 This is the first tag to carve out containeranalysis as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

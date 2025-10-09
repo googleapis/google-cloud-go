@@ -1,6 +1,40 @@
 # Changes
 
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.38.1...documentai/v1.39.0) (2025-10-09)
+
+
+### Features
+
+* **documentai:** A new enum `Method` is added ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new enum `Method` is added ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `annotations` is added to message `.google.cloud.documentai.v1beta3.Document` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `annotations` is added to message `.google.cloud.documentai.v1beta3.Document` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `entities_revision_id` is added to message `.google.cloud.documentai.v1beta3.Document` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `entities_revisions` is added to message `.google.cloud.documentai.v1beta3.Document` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `entity_validation_output` is added to message `.google.cloud.documentai.v1beta3.Document` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `method` is added to message `.google.cloud.documentai.v1beta3.Document` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `method` is added to message `.google.cloud.documentai.v1beta3.DocumentSchema` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new field `signature_value` is added to message `.google.cloud.documentai.v1beta3.Document` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new message `EntitiesRevision` is added ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A new message `EntityValidationOutput` is added ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** Added new fields `entity_validation_output`, `entities_revisions`, and `entities_revision_id` to the `Document` message ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** Added new messages `EntityValidationOutput` and `EntitiesRevision` ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+
+
+### Documentation
+
+* **documentai:** A comment for field `create_time` in message `.google.cloud.documentai.v1beta3.Processor` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `create_time` in message `.google.cloud.documentai.v1beta3.ProcessorVersion` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `deprecation_info` in message `.google.cloud.documentai.v1beta3.ProcessorVersion` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `document_schema` in message `.google.cloud.documentai.v1beta3.ProcessorVersion` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `kms_key_name` in message `.google.cloud.documentai.v1beta3.ProcessorVersion` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `kms_key_version_name` in message `.google.cloud.documentai.v1beta3.ProcessorVersion` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `latest_evaluation` in message `.google.cloud.documentai.v1beta3.ProcessorVersion` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `processor_version_source` in message `.google.cloud.documentai.v1beta3.ImportProcessorVersionRequest` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** A comment for field `training_method` in message `.google.cloud.documentai.v1beta3.TrainProcessorVersionRequest` is changed ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+* **documentai:** The field `training_method` in `TrainProcessorVersionRequest` is now marked as optional ([a93d961](https://github.com/googleapis/google-cloud-go/commit/a93d961e664165f065c29c0654f56d7b5b6a234c))
+
 ## [1.38.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.38.0...documentai/v1.38.1) (2025-09-16)
 
 
