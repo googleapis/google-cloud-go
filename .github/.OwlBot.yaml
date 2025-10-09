@@ -257,7 +257,6 @@ deep-remove-regex:
   - /internal/generated/snippets/privatecatalog/apiv1beta1/
   - /internal/generated/snippets/privilegedaccessmanager/apiv1/
   - /internal/generated/snippets/pubsub/apiv1/
-  - /internal/generated/snippets/pubsublite/apiv1/
   - /internal/generated/snippets/rapidmigrationassessment/apiv1/
   - /internal/generated/snippets/recaptchaenterprise/apiv1/
   - /internal/generated/snippets/recaptchaenterprise/apiv1beta1/
@@ -427,7 +426,6 @@ deep-remove-regex:
   - /privatecatalog/apiv1beta1/
   - /privilegedaccessmanager/apiv1/
   - /pubsub/v2/apiv1/
-  - /pubsublite/apiv1/
   - /rapidmigrationassessment/apiv1/
   - /recaptchaenterprise/apiv1/
   - /recaptchaenterprise/apiv1beta1/
@@ -900,8 +898,6 @@ deep-copy-regex:
   - source: /google/cloud/privilegedaccessmanager/v1/cloud.google.com/go
     dest: /
   - source: /google/pubsub/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/pubsublite/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/rapidmigrationassessment/v1/cloud.google.com/go
     dest: /
