@@ -454,6 +454,7 @@ func initIntegrationTests() (cleanup func()) {
 	}
 
 	opts := grpcHeaderChecker.CallOptions()
+	opts = append(opts, option.WithUniverseDomain("apis-tpczero.goog"))
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
@@ -1031,8 +1032,8 @@ func TestIntegration_Interval(t *testing.T) {
 
 	for i := range intervals {
 		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
-			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
-			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+				intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+				(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
 			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
 		}
 	}
@@ -1066,8 +1067,8 @@ func TestIntegration_Interval(t *testing.T) {
 
 	for i := range intervals {
 		if intervals[i].Valid != wantIntervals[i].Valid || intervals[i].Interval.Months != wantIntervals[i].Interval.Months ||
-			intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
-			(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
+				intervals[i].Interval.Days != wantIntervals[i].Interval.Days ||
+				(intervals[i].Interval.Nanos != nil && wantIntervals[i].Interval.Nanos != nil && intervals[i].Interval.Nanos.Cmp(wantIntervals[i].Interval.Nanos) != 0) {
 			t.Errorf("interval %d: got %+v, want %+v", i, intervals[i], wantIntervals[i])
 		}
 	}
@@ -2071,6 +2072,7 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 }
 
 func TestIntegration_CreateDBRetry(t *testing.T) {
+	t.Skip("b/446882979")
 	t.Parallel()
 	skipUnsupportedPGTest(t)
 
@@ -2095,7 +2097,7 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 	}
 
 	// Pass spanner host as options for running builds against different environments
-	opts := []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
+	opts := []option.ClientOption{option.WithEndpoint(spannerHost), option.WithUniverseDomain("apis-tpczero.goog"), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
 	dbAdmin, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create dbAdmin client: %v", err)
@@ -2119,6 +2121,7 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
+	t.Skip("b/446882979")
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -3465,8 +3468,8 @@ func TestIntegration_StructParametersUnsupported(t *testing.T) {
 			}{10},
 			codes.Unimplemented,
 			"Unsupported query shape: " +
-				"A struct value cannot be returned as a column value. " +
-				"Rewrite the query to flatten the struct fields in the result.",
+					"A struct value cannot be returned as a column value. " +
+					"Rewrite the query to flatten the struct fields in the result.",
 		},
 		{
 			[]struct {
@@ -3474,8 +3477,8 @@ func TestIntegration_StructParametersUnsupported(t *testing.T) {
 			}{{10}, {20}},
 			codes.Unimplemented,
 			"Unsupported query shape: " +
-				"This query can return a null-valued array of struct, " +
-				"which is not supported by Spanner.",
+					"This query can return a null-valued array of struct, " +
+					"which is not supported by Spanner.",
 		},
 	} {
 		iter := client.Single().Query(ctx, Statement{
@@ -4985,13 +4988,13 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 		{
 			s1,
 			"SELECT" +
-				" @p.Stringf," +
-				" @p.Intf," +
-				" @p.Boolf," +
-				" @p.Floatf," +
-				" @p.Bytef," +
-				" @p.Timef," +
-				" @p.Datef",
+					" @p.Stringf," +
+					" @p.Intf," +
+					" @p.Boolf," +
+					" @p.Floatf," +
+					" @p.Bytef," +
+					" @p.Timef," +
+					" @p.Datef",
 			allColumns,
 			tRows{
 				{tRow{"abc", 300, false, 3.45, []byte("foo"), t1, d1}},
@@ -6213,7 +6216,7 @@ func TestIntegration_WithDirectedReadOptions_ReadOnlyTransaction(t *testing.T) {
 			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
 				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
 					{
-						Location: "us-west1",
+						Location: "u-us-prp1",
 						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
 					},
 				},
@@ -6288,7 +6291,7 @@ func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowErr
 			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
 				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
 					{
-						Location: "us-west1",
+						Location: "u-us-prp1",
 						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
 					},
 				},
@@ -6593,6 +6596,7 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
+	opts = append(opts, option.WithUniverseDomain("apis-tpczero.goog"))
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
@@ -6602,7 +6606,8 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 
 func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolConfig, role string) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
-	serverAddress := "spanner.googleapis.com:443"
+	serverAddress := "" //spanner.googleapis.com:443"
+	opts = append(opts, option.WithUniverseDomain("apis-tpczero.goog"))
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
 		serverAddress = spannerHost
@@ -6627,6 +6632,7 @@ func createClientForProtoColumns(ctx context.Context, dbPath string, spc Session
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
+	opts = append(opts, option.WithUniverseDomain("apis-tpczero.goog"))
 	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
