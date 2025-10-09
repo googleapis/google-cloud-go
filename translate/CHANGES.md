@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.7](https://github.com/googleapis/google-cloud-go/compare/translate/v1.12.6...translate/v1.12.7) (2025-10-07)
+
+
+### Bug Fixes
+
+* **translate:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [1.12.6](https://github.com/googleapis/google-cloud-go/compare/translate/v1.12.5...translate/v1.12.6) (2025-06-25)
 
 

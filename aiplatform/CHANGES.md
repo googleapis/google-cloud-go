@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.104.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.103.0...aiplatform/v1.104.0) (2025-10-07)
+
+
+### Features
+
+* **aiplatform:** Add DeploymentTier enum to DeployedIndex ([#13005](https://github.com/googleapis/google-cloud-go/issues/13005)) ([2c33123](https://github.com/googleapis/google-cloud-go/commit/2c331233a91df4b7ab0532dd6d6945c9d0a72228))
+* **aiplatform:** Add labels field for Predict API for Imagen use case (v1beta) ([182df61](https://github.com/googleapis/google-cloud-go/commit/182df616184794be315edc7299aff021052c4f46))
+
 ## [1.103.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.102.0...aiplatform/v1.103.0) (2025-09-30)
 
 
