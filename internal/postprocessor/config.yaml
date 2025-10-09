@@ -234,14 +234,6 @@ manual-clients:
     client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
     release-level: stable
     library-type: GAPIC_MANUAL
-  - api-shortname: pubsublite
-    distribution-name: cloud.google.com/go/pubsublite
-    description: Cloud PubSub Lite
-    language: go
-    client-library-type: manual
-    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
-    release-level: stable
-    library-type: GAPIC_MANUAL
   - api-shortname: rpcreplay
     distribution-name: cloud.google.com/go/rpcreplay
     description: RPC Replay
