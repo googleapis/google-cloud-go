@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.15.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.15.0...chat/v0.15.1) (2025-09-04)
 

@@ -27,6 +27,7 @@ import (
 	"time"
 
 	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -65,6 +66,13 @@ type CallOptions struct {
 	UpdateAssignment         []gax.CallOption
 	GetBiReservation         []gax.CallOption
 	UpdateBiReservation      []gax.CallOption
+	GetIamPolicy             []gax.CallOption
+	SetIamPolicy             []gax.CallOption
+	TestIamPermissions       []gax.CallOption
+	CreateReservationGroup   []gax.CallOption
+	GetReservationGroup      []gax.CallOption
+	DeleteReservationGroup   []gax.CallOption
+	ListReservationGroups    []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -246,6 +254,13 @@ func defaultCallOptions() *CallOptions {
 		UpdateBiReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		GetIamPolicy:           []gax.CallOption{},
+		SetIamPolicy:           []gax.CallOption{},
+		TestIamPermissions:     []gax.CallOption{},
+		CreateReservationGroup: []gax.CallOption{},
+		GetReservationGroup:    []gax.CallOption{},
+		DeleteReservationGroup: []gax.CallOption{},
+		ListReservationGroups:  []gax.CallOption{},
 	}
 }
 
@@ -403,6 +418,13 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateBiReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		GetIamPolicy:           []gax.CallOption{},
+		SetIamPolicy:           []gax.CallOption{},
+		TestIamPermissions:     []gax.CallOption{},
+		CreateReservationGroup: []gax.CallOption{},
+		GetReservationGroup:    []gax.CallOption{},
+		DeleteReservationGroup: []gax.CallOption{},
+		ListReservationGroups:  []gax.CallOption{},
 	}
 }
 
@@ -433,6 +455,13 @@ type internalClient interface {
 	UpdateAssignment(context.Context, *reservationpb.UpdateAssignmentRequest, ...gax.CallOption) (*reservationpb.Assignment, error)
 	GetBiReservation(context.Context, *reservationpb.GetBiReservationRequest, ...gax.CallOption) (*reservationpb.BiReservation, error)
 	UpdateBiReservation(context.Context, *reservationpb.UpdateBiReservationRequest, ...gax.CallOption) (*reservationpb.BiReservation, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CreateReservationGroup(context.Context, *reservationpb.CreateReservationGroupRequest, ...gax.CallOption) (*reservationpb.ReservationGroup, error)
+	GetReservationGroup(context.Context, *reservationpb.GetReservationGroupRequest, ...gax.CallOption) (*reservationpb.ReservationGroup, error)
+	DeleteReservationGroup(context.Context, *reservationpb.DeleteReservationGroupRequest, ...gax.CallOption) error
+	ListReservationGroups(context.Context, *reservationpb.ListReservationGroupsRequest, ...gax.CallOption) *ReservationGroupIterator
 }
 
 // Client is a client for interacting with BigQuery Reservation API.
@@ -756,6 +785,77 @@ func (c *Client) GetBiReservation(ctx context.Context, req *reservationpb.GetBiR
 // must be set to 0.
 func (c *Client) UpdateBiReservation(ctx context.Context, req *reservationpb.UpdateBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
 	return c.internalClient.UpdateBiReservation(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource.
+// May return:
+//
+//	ANOT_FOUND error if the resource doesn’t exist or you don’t have the
+//	permission to view it.
+//
+//	An empty policy if the resource exists but doesn’t have a set policy.
+//
+// Supported resources are:
+//
+//	Reservations
+//
+//	ReservationAssignments
+//
+// To call this method, you must have the following Google IAM permissions:
+//
+//	bigqueryreservation.reservations.getIamPolicy to get policies on
+//	reservations.
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets an access control policy for a resource. Replaces any existing
+// policy.
+//
+// Supported resources are:
+//
+//	Reservations
+//
+// To call this method, you must have the following Google IAM permissions:
+//
+//	bigqueryreservation.reservations.setIamPolicy to set policies on
+//	reservations.
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions gets your permissions on a resource. Returns an empty set of permissions if
+// the resource doesn’t exist.
+//
+// Supported resources are:
+//
+//	Reservations
+//
+// No Google IAM permissions are required to call this method.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CreateReservationGroup creates a new reservation group.
+func (c *Client) CreateReservationGroup(ctx context.Context, req *reservationpb.CreateReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	return c.internalClient.CreateReservationGroup(ctx, req, opts...)
+}
+
+// GetReservationGroup returns information about the reservation group.
+func (c *Client) GetReservationGroup(ctx context.Context, req *reservationpb.GetReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	return c.internalClient.GetReservationGroup(ctx, req, opts...)
+}
+
+// DeleteReservationGroup deletes a reservation.
+// Returns google.rpc.Code.FAILED_PRECONDITION when reservation has
+// assignments.
+func (c *Client) DeleteReservationGroup(ctx context.Context, req *reservationpb.DeleteReservationGroupRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteReservationGroup(ctx, req, opts...)
+}
+
+// ListReservationGroups lists all the reservation groups for the project in the specified location.
+func (c *Client) ListReservationGroups(ctx context.Context, req *reservationpb.ListReservationGroupsRequest, opts ...gax.CallOption) *ReservationGroupIterator {
+	return c.internalClient.ListReservationGroups(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with BigQuery Reservation API over gRPC transport.
@@ -1461,6 +1561,156 @@ func (c *gRPCClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateReservationGroup(ctx context.Context, req *reservationpb.CreateReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateReservationGroup[0:len((*c.CallOptions).CreateReservationGroup):len((*c.CallOptions).CreateReservationGroup)], opts...)
+	var resp *reservationpb.ReservationGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateReservationGroup, req, settings.GRPC, c.logger, "CreateReservationGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetReservationGroup(ctx context.Context, req *reservationpb.GetReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetReservationGroup[0:len((*c.CallOptions).GetReservationGroup):len((*c.CallOptions).GetReservationGroup)], opts...)
+	var resp *reservationpb.ReservationGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetReservationGroup, req, settings.GRPC, c.logger, "GetReservationGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteReservationGroup(ctx context.Context, req *reservationpb.DeleteReservationGroupRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteReservationGroup[0:len((*c.CallOptions).DeleteReservationGroup):len((*c.CallOptions).DeleteReservationGroup)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteReservationGroup, req, settings.GRPC, c.logger, "DeleteReservationGroup")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListReservationGroups(ctx context.Context, req *reservationpb.ListReservationGroupsRequest, opts ...gax.CallOption) *ReservationGroupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListReservationGroups[0:len((*c.CallOptions).ListReservationGroups):len((*c.CallOptions).ListReservationGroups)], opts...)
+	it := &ReservationGroupIterator{}
+	req = proto.Clone(req).(*reservationpb.ListReservationGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.ReservationGroup, string, error) {
+		resp := &reservationpb.ListReservationGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListReservationGroups, req, settings.GRPC, c.logger, "ListReservationGroups")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetReservationGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateReservation creates a new reservation resource.
@@ -2942,4 +3192,426 @@ func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetIamPolicy gets the access control policy for a resource.
+// May return:
+//
+//	ANOT_FOUND error if the resource doesn’t exist or you don’t have the
+//	permission to view it.
+//
+//	An empty policy if the resource exists but doesn’t have a set policy.
+//
+// Supported resources are:
+//
+//	Reservations
+//
+//	ReservationAssignments
+//
+// To call this method, you must have the following Google IAM permissions:
+//
+//	bigqueryreservation.reservations.getIamPolicy to get policies on
+//	reservations.
+func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets an access control policy for a resource. Replaces any existing
+// policy.
+//
+// Supported resources are:
+//
+//	Reservations
+//
+// To call this method, you must have the following Google IAM permissions:
+//
+//	bigqueryreservation.reservations.setIamPolicy to set policies on
+//	reservations.
+func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions gets your permissions on a resource. Returns an empty set of permissions if
+// the resource doesn’t exist.
+//
+// Supported resources are:
+//
+//	Reservations
+//
+// No Google IAM permissions are required to call this method.
+func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateReservationGroup creates a new reservation group.
+func (c *restClient) CreateReservationGroup(ctx context.Context, req *reservationpb.CreateReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReservationGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/reservationGroups", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("reservationGroupId", fmt.Sprintf("%v", req.GetReservationGroupId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateReservationGroup[0:len((*c.CallOptions).CreateReservationGroup):len((*c.CallOptions).CreateReservationGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.ReservationGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReservationGroup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetReservationGroup returns information about the reservation group.
+func (c *restClient) GetReservationGroup(ctx context.Context, req *reservationpb.GetReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetReservationGroup[0:len((*c.CallOptions).GetReservationGroup):len((*c.CallOptions).GetReservationGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.ReservationGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReservationGroup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteReservationGroup deletes a reservation.
+// Returns google.rpc.Code.FAILED_PRECONDITION when reservation has
+// assignments.
+func (c *restClient) DeleteReservationGroup(ctx context.Context, req *reservationpb.DeleteReservationGroupRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReservationGroup")
+		return err
+	}, opts...)
+}
+
+// ListReservationGroups lists all the reservation groups for the project in the specified location.
+func (c *restClient) ListReservationGroups(ctx context.Context, req *reservationpb.ListReservationGroupsRequest, opts ...gax.CallOption) *ReservationGroupIterator {
+	it := &ReservationGroupIterator{}
+	req = proto.Clone(req).(*reservationpb.ListReservationGroupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.ReservationGroup, string, error) {
+		resp := &reservationpb.ListReservationGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/reservationGroups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReservationGroups")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetReservationGroups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

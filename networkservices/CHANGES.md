@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.5.0...networkservices/v0.5.1) (2025-09-18)
 

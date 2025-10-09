@@ -114,6 +114,8 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 		}
 	}
 	server.wait()
+	server.mu.Lock()
+	defer server.mu.Unlock()
 	for i := 0; i < len(msgs); i++ {
 		id := msgs[i].AckId
 		if i%2 == 0 {
@@ -183,8 +185,8 @@ func TestStreamingPullCancel(t *testing.T) {
 }
 
 func TestStreamingPullRetry(t *testing.T) {
-	// Check that we retry on io.EOF or Unavailable.
 	t.Parallel()
+	// Check that we retry on io.EOF or Unavailable.
 	client, server := newMock(t)
 	defer server.srv.Close()
 	defer client.Close()

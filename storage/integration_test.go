@@ -590,24 +590,23 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 		}
 
 		reader.Wait()
-		for _, k := range res {
-			if k.offset < 0 {
-				k.offset += int64(len(content))
-			}
-			want := content[k.offset:]
-			if k.limit != 0 {
-				want = content[k.offset : k.offset+k.limit]
-			}
-			if k.err != nil {
-				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
-			}
-			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, len(k.buf.Bytes()), len(want))
-			}
-		}
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
+		}
+		for id, k := range res {
+			if k.err != nil {
+				t.Fatalf("reading range %v: %v", id, k.err)
+			}
+			if got, want := k.offset, 0; got != int64(want) {
+				t.Errorf("range id %v: got callback offset %v, want %v", id, got, want)
+			}
+			if got, want := k.limit, len(content); got != int64(want) {
+				t.Errorf("range id %v: got callback limit %v, want %v", id, got, want)
+			}
+			if !bytes.Equal(k.buf.Bytes(), content) {
+				t.Errorf("content mismatch in read range %v: got %v bytes, want %v bytes",
+					id, len(k.buf.Bytes()), len(content))
+			}
 		}
 	})
 }
@@ -3625,21 +3624,20 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 			t.Fatalf("w.Write: got error %v, want FailedPrecondition or Aborted", err)
 		}
 
-		// Another NewWriter to the unfinalized object should also return an
-		// error when data is flushed.
+		// Another NewWriter to the unfinalized object should be able to
+		// overwrite the existing object.
 		w2 := obj.NewWriter(ctx)
 		w2.Append = true
 		if _, err := w2.Write([]byte("hello world")); err != nil {
 			t.Fatalf("w2.Write: %v", err)
 		}
-		_, err = w2.Flush()
-		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
-			t.Fatalf("w2.Flush: got error %v, want FailedPrecondition or Aborted", err)
+		if err := w2.Close(); err != nil {
+			t.Fatalf("w2.Close: %v", err)
 		}
 
 		// If we add yet another takeover writer to finalize and delete the object,
-		// tw should also return an error on flush.
-		tw2, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
+		// tw should return an error on flush.
+		tw2, _, err := obj.Generation(w2.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
 			FinalizeOnClose: true,
 		})
 		if err != nil {

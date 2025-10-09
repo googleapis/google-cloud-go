@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.104.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.103.0...aiplatform/v1.104.0) (2025-10-07)
+
+
+### Features
+
+* **aiplatform:** Add DeploymentTier enum to DeployedIndex ([#13005](https://github.com/googleapis/google-cloud-go/issues/13005)) ([2c33123](https://github.com/googleapis/google-cloud-go/commit/2c331233a91df4b7ab0532dd6d6945c9d0a72228))
+* **aiplatform:** Add labels field for Predict API for Imagen use case (v1beta) ([182df61](https://github.com/googleapis/google-cloud-go/commit/182df616184794be315edc7299aff021052c4f46))
+
+## [1.103.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.102.0...aiplatform/v1.103.0) (2025-09-30)
+
+
+### Features
+
+* **aiplatform:** A new value `NVIDIA_RTX_PRO_6000` is added to enum `AcceleratorType` ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* **aiplatform:** A new value `NVIDIA_RTX_PRO_6000` is added to enum `AcceleratorType` ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* **aiplatform:** Add enable_widget option in Google Maps and additional grounding information ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* **aiplatform:** Auto-generated CL for //google/cloud/aiplatform ([a367b33](https://github.com/googleapis/google-cloud-go/commit/a367b3345ee034ac49f9a81f322fbf374469ffc0))
+* **aiplatform:** Auto-generated CL for //google/cloud/aiplatform ([#12991](https://github.com/googleapis/google-cloud-go/issues/12991)) ([a367b33](https://github.com/googleapis/google-cloud-go/commit/a367b3345ee034ac49f9a81f322fbf374469ffc0))
+
 ## [1.102.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.101.0...aiplatform/v1.102.0) (2025-09-16)
 
 

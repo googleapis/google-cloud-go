@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.3...parallelstore/v0.11.4) (2025-09-18)

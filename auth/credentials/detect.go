@@ -130,9 +130,9 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 
 		tp := computeTokenProvider(opts, metadataClient)
 		if trustBoundaryEnabled {
-			gceTBConfigProvider := trustboundary.NewGCETrustBoundaryConfigProvider(gceUniverseDomainProvider)
+			gceConfigProvider := trustboundary.NewGCEConfigProvider(gceUniverseDomainProvider)
 			var err error
-			tp, err = trustboundary.NewProvider(opts.client(), gceTBConfigProvider, opts.logger(), tp)
+			tp, err = trustboundary.NewProvider(opts.client(), gceConfigProvider, opts.logger(), tp)
 			if err != nil {
 				return nil, fmt.Errorf("credentials: failed to initialize GCE trust boundary provider: %w", err)
 			}

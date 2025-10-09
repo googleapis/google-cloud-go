@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.7.4...apps/v0.8.0) (2025-07-09)
 

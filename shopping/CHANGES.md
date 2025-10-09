@@ -1,5 +1,24 @@
-# Changelog
+# Changes
 
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.1.1...shopping/v1.2.0) (2025-10-07)
+
+
+### Features
+
+* **shopping/merchant/products:** Include CarrierShipping field inside the Products attribute ([182df61](https://github.com/googleapis/google-cloud-go/commit/182df616184794be315edc7299aff021052c4f46))
+
+
+### Bug Fixes
+
+* **shopping/merchant/products:** Upgrade gRPC service registration func ([#13041](https://github.com/googleapis/google-cloud-go/issues/13041)) ([182df61](https://github.com/googleapis/google-cloud-go/commit/182df616184794be315edc7299aff021052c4f46))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.1.0...shopping/v1.1.1) (2025-09-30)
+
+
+### Documentation
+
+* **shopping/merchant/products:** Remove stale beta annotation ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
 
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.0.0...shopping/v1.1.0) (2025-09-04)
 

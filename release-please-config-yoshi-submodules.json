@@ -18,101 +18,20 @@
         "aiplatform": {
             "component": "aiplatform"
         },
-        "alloydb": {
-            "component": "alloydb"
-        },
         "analytics": {
             "component": "analytics"
-        },
-        "apigateway": {
-            "component": "apigateway"
-        },
-        "apigeeconnect": {
-            "component": "apigeeconnect"
-        },
-        "apigeeregistry": {
-            "component": "apigeeregistry"
-        },
-        "apihub": {
-            "component": "apihub"
-        },
-        "apikeys": {
-            "component": "apikeys"
-        },
-        "appengine": {
-            "component": "appengine"
-        },
-        "apphub": {
-            "component": "apphub"
-        },
-        "apps": {
-            "component": "apps"
-        },
-        "area120": {
-            "component": "area120"
         },
         "artifactregistry": {
             "component": "artifactregistry"
         },
-        "asset": {
-            "component": "asset"
-        },
-        "assuredworkloads": {
-            "component": "assuredworkloads"
-        },
-        "automl": {
-            "component": "automl"
-        },
-        "backupdr": {
-            "component": "backupdr"
-        },
-        "baremetalsolution": {
-            "component": "baremetalsolution"
-        },
-        "batch": {
-            "component": "batch"
-        },
-        "beyondcorp": {
-            "component": "beyondcorp"
-        },
-        "billing": {
-            "component": "billing"
-        },
-        "binaryauthorization": {
-            "component": "binaryauthorization"
-        },
-        "capacityplanner": {
-            "component": "capacityplanner"
-        },
         "certificatemanager": {
             "component": "certificatemanager"
-        },
-        "channel": {
-            "component": "channel"
-        },
-        "chat": {
-            "component": "chat"
-        },
-        "chronicle": {
-            "component": "chronicle"
         },
         "cloudbuild": {
             "component": "cloudbuild"
         },
-        "cloudcontrolspartner": {
-            "component": "cloudcontrolspartner"
-        },
-        "clouddms": {
-            "component": "clouddms"
-        },
         "cloudprofiler": {
             "component": "cloudprofiler"
-        },
-        "cloudquotas": {
-            "component": "cloudquotas"
-        },
-        "cloudtasks": {
-            "component": "cloudtasks"
         },
         "commerce": {
             "component": "commerce"
@@ -122,9 +41,6 @@
         },
         "compute/metadata": {
             "component": "compute/metadata"
-        },
-        "confidentialcomputing": {
-            "component": "confidentialcomputing"
         },
         "config": {
             "component": "config"
@@ -158,9 +74,6 @@
         },
         "dataplex": {
             "component": "dataplex"
-        },
-        "dataproc": {
-            "component": "dataproc"
         },
         "dataqna": {
             "component": "dataqna"
@@ -197,9 +110,6 @@
         },
         "essentialcontacts": {
             "component": "essentialcontacts"
-        },
-        "eventarc": {
-            "component": "eventarc"
         },
         "filestore": {
             "component": "filestore"
@@ -261,9 +171,6 @@
         "locationfinder": {
             "component": "locationfinder"
         },
-        "longrunning": {
-            "component": "longrunning"
-        },
         "lustre": {
             "component": "lustre"
         },
@@ -275,9 +182,6 @@
         },
         "managedkafka": {
             "component": "managedkafka"
-        },
-        "maps": {
-            "component": "maps"
         },
         "mediatranslation": {
             "component": "mediatranslation"

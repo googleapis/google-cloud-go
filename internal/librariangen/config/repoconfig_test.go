@@ -86,15 +86,19 @@ modules:
 		t.Fatalf("LoadRepoConfig() failed: %v", err)
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("Transform() mismatch (-want +got):\n%s", diff)
+		t.Errorf("LoadRepoConfig() mismatch (-want +got):\n%s", diff)
 	}
 }
 
 func TestLoadRepoConfig_NotFound(t *testing.T) {
 	tempDir := t.TempDir()
-	_, err := LoadRepoConfig(tempDir)
-	if err == nil {
-		t.Error("LoadRepoConfig() succeeded, want error")
+	got, err := LoadRepoConfig(tempDir)
+	if err != nil {
+		t.Fatalf("LoadRepoConfig() failed: %v", err)
+	}
+	want := &RepoConfig{}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("LoadRepoConfig() mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -133,7 +137,7 @@ func TestGetModuleConfig(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			got := config.GetModuleConfig(test.moduleName)
 			if diff := cmp.Diff(test.want, got); diff != "" {
-				t.Errorf("Transform() mismatch (-want +got):\n%s", diff)
+				t.Errorf("GetModuleConfig() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
