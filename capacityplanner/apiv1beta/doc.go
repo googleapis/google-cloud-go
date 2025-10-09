@@ -44,7 +44,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := capacityplanner.NewCapacityPlanningClient(ctx)
+//	c, err := capacityplanner.NewUsageClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -58,11 +58,16 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &capacityplannerpb.GetCapacityPlanRequest{
+//	req := &capacityplannerpb.ExportForecastsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/capacityplanner/apiv1beta/capacityplannerpb#GetCapacityPlanRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/capacityplanner/apiv1beta/capacityplannerpb#ExportForecastsRequest.
 //	}
-//	resp, err := c.GetCapacityPlan(ctx, req)
+//	op, err := c.ExportForecasts(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -71,7 +76,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewCapacityPlanningClient is used for authentication requests and
+// The ctx passed to NewUsageClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
