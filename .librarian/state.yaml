@@ -1,7 +1,7 @@
 image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
 libraries:
   - id: alloydb
-    version: 1.18.0
+    version: 1.19.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/alloydb/v1

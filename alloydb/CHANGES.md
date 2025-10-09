@@ -3,6 +3,25 @@
 
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.19.0) (2025-10-09)
+
+### Features
+
+* add CRUD APIs on Databases ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* add PG 17 as a Database version ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* add additional fields to Database object to specify the collation type, character type, if it is a template database, and the template to use for the database ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* add configuration for Managed Connection Pool ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* add field to ExecuteSQL request to just validate the sql statement ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* update `Database.charset` to be immutable ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+
+### Bug Fixes
+
+* An existing enum `PoolMode` is removed from the `ConnectionPoolConfig` ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+
+### Documentation
+
+* specify that the STOPPED state is not used for clusters anymore ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.17.0...alloydb/v1.18.0) (2025-06-25)
 
 
