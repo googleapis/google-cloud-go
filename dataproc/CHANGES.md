@@ -1,5 +1,11 @@
 # Changes
 
+### 2.15.0 (2025-10-09)
+
+#### Features
+
+* [dataproc] Added support for JUPYTER_KERNEL_GATEWAY component
+
 ## [2.14.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.14.0...dataproc/v2.14.1) (2025-09-16)
 
 
