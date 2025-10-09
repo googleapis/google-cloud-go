@@ -238,20 +238,37 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 		return err
 	}
 
+	// Also check for a cleanup name, which may be different from the module name.
+	// For example, the cloudtasks module has the proto path .../cloud/tasks.
+	// We can derive this name from the postprocessor config.
+	ppc, err := loadPostProcessorConfig(filepath.Join(repoRoot, "internal/postprocessor/config.yaml"))
+	if err != nil {
+		return fmt.Errorf("loading postprocessor config: %w", err)
+	}
+	importPrefix := "cloud.google.com/go/" + moduleName + "/"
 	modulePathFragment := "/" + moduleName + "/"
+
 	lines := strings.Split(string(fileBytes), "\n")
 	var newLines []string
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
+		// If it's a source line, compare it with all of the import paths for service configs for this module.
 		if strings.Contains(line, "source:") {
-			// It's a source line, check it for the module name.
-			if strings.Contains(line, modulePathFragment) {
-				if i+1 < len(lines) {
-					i++ // Remove both source and dest lines.
+			foundSource := false
+			for _, sc := range ppc.ServiceConfigs {
+				if strings.HasPrefix(sc.ImportPath, importPrefix) && strings.Contains(line, "/"+sc.InputDirectory+"/") {
+					if i+1 < len(lines) {
+						i++ // Remove both source and dest lines.
+					}
+					foundSource = true
+					break
 				}
+			}
+			if foundSource {
 				continue
 			}
 		}
+
 		if strings.Contains(line, modulePathFragment) {
 			// Remove any non-source line containing the module name.
 			continue

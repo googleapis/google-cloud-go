@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.7](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.9.6...accesscontextmanager/v1.9.7) (2025-10-07)
+
+
+### Bug Fixes
+
+* **accesscontextmanager:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.9.5...accesscontextmanager/v1.9.6) (2025-04-15)
 
 
