@@ -3,6 +3,15 @@
 
 
 
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.71.0...bigquery/v1.72.0) (2025-10-10)
+
+
+### Features
+
+* **bigquery/reservation:** Add new `BACKGROUND_CHANGE_DATA_CAPTURE`, `BACKGROUND_COLUMN_METADATA_INDEX`, and `BACKGROUND_SEARCH_INDEX_REFRESH` reservation assignment types ([182df61](https://github.com/googleapis/google-cloud-go/commit/182df616184794be315edc7299aff021052c4f46))
+* **bigquery/reservation:** Add new reservation IAM policy get/set/test methods ([182df61](https://github.com/googleapis/google-cloud-go/commit/182df616184794be315edc7299aff021052c4f46))
+* **bigquery/reservation:** Add support for creation and modification of new reservation groups ([182df61](https://github.com/googleapis/google-cloud-go/commit/182df616184794be315edc7299aff021052c4f46))
+
 ## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.70.0...bigquery/v1.71.0) (2025-09-30)
 
 
