@@ -3,9 +3,6 @@
   "separate-pull-requests": true,
   "include-component-in-tag": false,
   "packages": {
-    ".": {
-      "component": "main"
-    }
   },
   "plugins": ["sentence-case"]
 }
