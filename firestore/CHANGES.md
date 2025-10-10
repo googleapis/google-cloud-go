@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.19.0...firestore/v1.20.0) (2025-10-10)
+
+
+### Features
+
+* **firestore:** Add omitzero struct tag option ([#12992](https://github.com/googleapis/google-cloud-go/issues/12992)) ([c2f9c74](https://github.com/googleapis/google-cloud-go/commit/c2f9c7408f0a1c003da19db5520da8a745474f38))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.18.0...firestore/v1.19.0) (2025-10-06)
 
 
