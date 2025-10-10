@@ -1,5 +1,12 @@
 # Changes
 
+## [1.40.2](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.40.1...bigtable/v1.40.2) (2025-10-10)
+
+
+### Performance Improvements
+
+* **bigtable:** Parallelize the exportTimeSeries function ([#13004](https://github.com/googleapis/google-cloud-go/issues/13004)) ([bafd691](https://github.com/googleapis/google-cloud-go/commit/bafd691de181bf19f39e55d15e1782156524b6ae)), refs [#12920](https://github.com/googleapis/google-cloud-go/issues/12920)
+
 ## [1.40.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.40.0...bigtable/v1.40.1) (2025-09-26)
 
 
