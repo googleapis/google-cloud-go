@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.57.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.57.0...storage/v1.57.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* **storage:** Remove default timeout for gRPC operations ([#13022](https://github.com/googleapis/google-cloud-go/issues/13022)) ([b94c3ba](https://github.com/googleapis/google-cloud-go/commit/b94c3ba69994d9c56ae8f302449dd8df6f287296))
+* **storage:** Skip download of file outside of target dir ([#12945](https://github.com/googleapis/google-cloud-go/issues/12945)) ([6259aee](https://github.com/googleapis/google-cloud-go/commit/6259aeec393d0d996961cac38396daa57ad1a290))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.56.1...storage/v1.57.0) (2025-09-23)
 
 
