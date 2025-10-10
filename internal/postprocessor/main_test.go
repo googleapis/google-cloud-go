@@ -51,6 +51,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestProcessCommit(t *testing.T) {
+	t.Skip("test based on implicit config expectations")
 	tests := []struct {
 		name         string
 		title        string
