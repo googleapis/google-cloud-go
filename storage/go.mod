@@ -5,12 +5,12 @@ go 1.24.0
 retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-go/issues/6857
 
 require (
-	cloud.google.com/go v0.121.6
-	cloud.google.com/go/auth v0.16.5
-	cloud.google.com/go/compute/metadata v0.8.0
-	cloud.google.com/go/iam v1.5.2
+	cloud.google.com/go v0.123.0
+	cloud.google.com/go/auth v0.17.0
+	cloud.google.com/go/compute/metadata v0.9.0
+	cloud.google.com/go/iam v1.5.3
 	cloud.google.com/go/longrunning v0.6.7
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.53.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.54.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.15.0
@@ -20,14 +20,14 @@ require (
 	go.opentelemetry.io/otel/sdk v1.36.0
 	go.opentelemetry.io/otel/sdk/metric v1.36.0
 	go.opentelemetry.io/otel/trace v1.36.0
-	golang.org/x/oauth2 v0.30.0
-	golang.org/x/sync v0.16.0
-	google.golang.org/api v0.247.0
+	golang.org/x/oauth2 v0.32.0
+	golang.org/x/sync v0.17.0
+	google.golang.org/api v0.252.0
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
-	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250818200422-3122310a409c
-	google.golang.org/grpc v1.74.3
-	google.golang.org/protobuf v1.36.7
+	google.golang.org/genproto/googleapis/api 49b9836ed3ff
+	google.golang.org/genproto/googleapis/rpc 49b9836ed3ff
+	google.golang.org/grpc v1.76.0
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
