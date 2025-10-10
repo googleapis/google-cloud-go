@@ -1,5 +1,12 @@
 # Changes
 
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/streetview/v0.2.5...streetview/v0.2.6) (2025-10-09)
+
+
+### Bug Fixes
+
+* **streetview:** Upgrade gRPC service registration func ([9157a71](https://github.com/googleapis/google-cloud-go/commit/9157a715e39b0b15074ba34187ff70c820d8834a))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/streetview/v0.2.4...streetview/v0.2.5) (2025-04-15)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [2.9.6](https://github.com/googleapis/google-cloud-go/compare/vision/v2.9.5...vision/v2.9.6) (2025-10-07)
+
+
+### Bug Fixes
+
+* **vision:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [2.9.5](https://github.com/googleapis/google-cloud-go/compare/vision/v2.9.4...vision/v2.9.5) (2025-04-15)
 
 
