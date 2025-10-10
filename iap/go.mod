@@ -3,13 +3,13 @@ module cloud.google.com/go/iap
 go 1.24.0
 
 require (
-	cloud.google.com/go/iam v1.5.2
+	cloud.google.com/go/iam v1.5.3
 	github.com/googleapis/gax-go/v2 v2.15.0
-	google.golang.org/api v0.247.0
+	google.golang.org/api v0.252.0
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
-	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
-	google.golang.org/grpc v1.74.2
-	google.golang.org/protobuf v1.36.7
+	google.golang.org/genproto/googleapis/api 49b9836ed3ff
+	google.golang.org/grpc v1.76.0
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
