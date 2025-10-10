@@ -59,8 +59,6 @@ deep-remove-regex:
   - /datalabeling/apiv1beta1/
   - /dataplex/apiv1/
   - /dataqna/apiv1alpha/
-  - /datastore/admin/apiv1/
-  - /datastore/apiv1/
   - /datastream/apiv1/
   - /datastream/apiv1alpha1/
   - /deploy/apiv1/
@@ -82,8 +80,6 @@ deep-remove-regex:
   - /essentialcontacts/apiv1/
   - /filestore/apiv1/
   - /financialservices/apiv1/
-  - /firestore/apiv1/
-  - /firestore/apiv1/admin/
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
@@ -158,7 +154,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datalabeling/apiv1beta1/
   - /internal/generated/snippets/dataplex/apiv1/
   - /internal/generated/snippets/dataqna/apiv1alpha/
-  - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets/datastream/apiv1/
   - /internal/generated/snippets/datastream/apiv1alpha1/
   - /internal/generated/snippets/deploy/apiv1/
@@ -180,8 +175,6 @@ deep-remove-regex:
   - /internal/generated/snippets/essentialcontacts/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
   - /internal/generated/snippets/financialservices/apiv1/
-  - /internal/generated/snippets/firestore/apiv1/
-  - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/functions/apiv1/
   - /internal/generated/snippets/functions/apiv2/
   - /internal/generated/snippets/functions/apiv2beta/
@@ -692,11 +685,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
-  - source: /google/datastore/admin/v1/cloud.google.com/go
-    dest: /
-  # Just copy the datastore protos for now
-  - source: /google/datastore/v1/cloud.google.com/go/datastore/apiv1/datastorepb
-    dest: /datastore/apiv1/datastorepb
   - source: /google/cloud/datastream/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go
@@ -738,10 +726,6 @@ deep-copy-regex:
   - source: /google/cloud/filestore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/financialservices/v1/cloud.google.com/go
-    dest: /
-  - source: /google/firestore/v1/cloud.google.com/go
-    dest: /
-  - source: /google/firestore/admin/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/functions/v1/cloud.google.com/go
     dest: /

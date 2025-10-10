@@ -8,5 +8,9 @@ libraries:
     release_blocked: true
   - id: "auth/oauth2adapt"
     release_blocked: true
+  - id: "datastore"
+    release_blocked: true
+  - id: "firestore"
+    release_blocked: true
   - id: "longrunning"
     release_blocked: true
