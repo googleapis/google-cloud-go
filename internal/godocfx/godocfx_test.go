@@ -175,7 +175,7 @@ func TestGoldens(t *testing.T) {
 		}
 
 		if diff := cmp.Diff(goldenContent, gotContent); diff != "" {
-			t.Errorf("diff with golden (-want +got):\n\n%s", diff)
+			t.Errorf("diff with golden (%q,%q) (-want +got):\n\n%s", goldenPath, gotPath, diff)
 		}
 
 		return nil
