@@ -10,6 +10,6 @@
   "pubsub/v2": "2.2.0",
   "pubsublite": "1.8.2",
   "spanner": "1.86.0",
-  "storage": "1.57.0",
+  "storage": "1.57.1",
   "vertexai": "0.15.0"
 }
