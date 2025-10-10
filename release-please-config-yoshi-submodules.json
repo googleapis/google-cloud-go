@@ -39,9 +39,6 @@
         "compute": {
             "component": "compute"
         },
-        "compute/metadata": {
-            "component": "compute/metadata"
-        },
         "config": {
             "component": "config"
         },
