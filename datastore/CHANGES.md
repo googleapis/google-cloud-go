@@ -1,5 +1,17 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.20.0...datastore/v1.21.0) (2025-10-10)
+
+
+### Features
+
+* **datastore:** Support field transforms ([#12400](https://github.com/googleapis/google-cloud-go/issues/12400)) ([7defdd0](https://github.com/googleapis/google-cloud-go/commit/7defdd0a9817c8dfcc17d1e739e9e96680fc79ac))
+
+
+### Bug Fixes
+
+* **datastore:** Resolve data race on transaction state ([#12912](https://github.com/googleapis/google-cloud-go/issues/12912)) ([011b148](https://github.com/googleapis/google-cloud-go/commit/011b148ca07ff0464f8d9e46742211622a1a45a9)), refs [#11038](https://github.com/googleapis/google-cloud-go/issues/11038)
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.19.0...datastore/v1.20.0) (2024-10-29)
 
 
