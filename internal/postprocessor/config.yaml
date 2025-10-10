@@ -97,7 +97,6 @@ modules:
   - profiler
   - pubsub/v2
   - pubsub
-  - pubsublite
   - rapidmigrationassessment
   - recaptchaenterprise
   - recommendationengine
@@ -233,14 +232,6 @@ manual-clients:
     language: go
     client-library-type: manual
     client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
-    release-level: stable
-    library-type: GAPIC_MANUAL
-  - api-shortname: pubsublite
-    distribution-name: cloud.google.com/go/pubsublite
-    description: Cloud PubSub Lite
-    language: go
-    client-library-type: manual
-    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: rpcreplay
@@ -679,9 +670,6 @@ service-configs:
   - input-directory: google/cloud/privilegedaccessmanager/v1
     service-config: privilegedaccessmanager_v1.yaml
     import-path: cloud.google.com/go/privilegedaccessmanager/apiv1
-  - input-directory: google/cloud/pubsublite/v1
-    service-config: pubsublite_v1.yaml
-    import-path: cloud.google.com/go/pubsublite/apiv1
   - input-directory: google/cloud/rapidmigrationassessment/v1
     service-config: rapidmigrationassessment_v1.yaml
     import-path: cloud.google.com/go/rapidmigrationassessment/apiv1
@@ -1103,6 +1091,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - pubsublite
   - confidentialcomputing
   - cloudtasks
   - cloudquotas
@@ -1149,7 +1138,6 @@ skip-module-scan-paths:
   - profiler
   - pubsub/v2
   - pubsub
-  - pubsublite
   - spanner
   - storage
   - vertexai
