@@ -4,7 +4,8 @@
 
 ### Features
 
-* [dataproc] Added support for JUPYTER_KERNEL_GATEWAY component ([1b8adbf](https://github.com/googleapis/google-cloud-go/commit/1b8adbf438328a3419aa524eed76340afe79ee6c))
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+* Added support for JUPYTER_KERNEL_GATEWAY component ([1b8adbf](https://github.com/googleapis/google-cloud-go/commit/1b8adbf438328a3419aa524eed76340afe79ee6c))
 
 ## [2.14.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.14.0...dataproc/v2.14.1) (2025-09-16)
 

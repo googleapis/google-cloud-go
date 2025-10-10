@@ -6,28 +6,11 @@
 
 ### Features
 
-* expose HOURLY in SeasonalPeriod ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose IndexPruningStats ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose ReservationAffinityType ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose additional additional model training options ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose incremental result stats ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose max_slots ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose metadata PruningStats ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose reservation_group_path ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* expose timestamp_target_precision ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
 
 ### Bug Fixes
 
-* add ReturnPartialSuccess ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
-* upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
 * upgrade gRPC service registration func (#13014) ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-
-### Documentation
-
-* Update comment in Eventarc Publishing API ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* data_policies comment updates ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* updates to job timeout ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
-* updates to write disposition ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
 
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.22.0...maps/v1.23.0) (2025-08-18)
 

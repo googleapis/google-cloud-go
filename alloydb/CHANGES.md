@@ -7,29 +7,21 @@
 
 ### Features
 
-* A new value `NVIDIA_RTX_PRO_6000` is added to enum `AcceleratorType` ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* Add enable_widget option in Google Maps and additional grounding information ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* Added support for JUPYTER_KERNEL_GATEWAY component ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* Update Compute Engine v1 API to revision 20250909 (#12936) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* Update Compute Engine v1beta API to revision 20250909 Source-Link: https://togithub.com/googleapis/googleapis/commit/69a56771aaa3aae63463ae5bd66824f62856fc97 ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* add CRUD APIs on Databases ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* add PG 17 as a Database version ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* add additional fields to Database object to specify the collation type, character type, if it is a template database, and the template to use for the database ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* add configuration for Managed Connection Pool ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* add field to ExecuteSQL request to just validate the sql statement ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* add fields on the estimated/actual start/end times for an Upgrade Cluster operation ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* update `Database.charset` to be immutable ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+* add CRUD APIs on Databases (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add PG 17 as a Database version (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add configuration for Managed Connection Pool (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* update `Database.charset` to be immutable (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add additional fields to Database object to specify the collation type, character type, if it is a template database, and the template to use for the database (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add field to ExecuteSQL request to just validate the sql statement (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
 
 ### Bug Fixes
 
-* An existing enum `PoolMode` is removed from the `ConnectionPoolConfig` ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* An existing enum `PoolMode` is removed from the `ConnectionPoolConfig` (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
 
 ### Documentation
 
-* remove beta warnings from shopping/merchant GA APIs ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* remove legacy internal lint directives ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* remove stale beta annotation ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
-* specify that the STOPPED state is not used for clusters anymore ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* specify that the STOPPED state is not used for clusters anymore (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
 
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.17.0...alloydb/v1.18.0) (2025-06-25)
 

@@ -4,7 +4,13 @@
 
 ### Documentation
 
-* [eventarc] Update comment in Eventarc Publishing API ([16a694c](https://github.com/googleapis/google-cloud-go/commit/16a694cb1ef37b01f7b798dbe754f1fc9d26d643))
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
+### Documentation
+
+* Update comment in Eventarc Publishing API ([16a694c](https://github.com/googleapis/google-cloud-go/commit/16a694cb1ef37b01f7b798dbe754f1fc9d26d643))
 
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.16.0...eventarc/v1.16.1) (2025-09-18)
 
