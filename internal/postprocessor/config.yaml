@@ -1103,6 +1103,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - compute/metadata
   - confidentialcomputing
   - cloudtasks
   - cloudquotas

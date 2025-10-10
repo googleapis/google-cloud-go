@@ -922,6 +922,15 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/cloudtasks/
     tag_format: '{id}/v{version}'
+  - id: compute/metadata
+    version: 0.9.0
+    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    apis: []
+    source_roots:
+      - compute/metadata
+    preserve_regex: []
+    remove_regex: []
+    tag_format: '{id}/v{version}'
   - id: confidentialcomputing
     version: 1.10.1
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
