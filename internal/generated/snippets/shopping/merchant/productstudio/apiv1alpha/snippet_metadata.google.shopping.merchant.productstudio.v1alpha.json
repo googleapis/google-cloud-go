@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
-    "version": "$VERSION",
+    "version": "1.2.1",
     "language": "GO",
     "apis": [
       {
