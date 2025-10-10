@@ -2,6 +2,16 @@
 
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.24.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
+### Bug Fixes
+
+* upgrade gRPC service registration func (#13014) ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.22.0...maps/v1.23.0) (2025-08-18)
 
 

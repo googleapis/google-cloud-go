@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/beyondcorp%2Fv1.2.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.1.5...beyondcorp/v1.1.6) (2025-04-15)
 
 
