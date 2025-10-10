@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.12.0...dataform/v0.12.1) (2025-09-16)
 

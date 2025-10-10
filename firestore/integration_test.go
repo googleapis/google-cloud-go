@@ -1047,6 +1047,119 @@ func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
 	})
 }
 
+type omitZeroStruct struct {
+	I int            `firestore:"i,omitzero"`
+	S string         `firestore:"s,omitzero"`
+	B bool           `firestore:"b,omitzero"`
+	F float64        `firestore:"f,omitzero"`
+	P *int           `firestore:"p,omitzero"`
+	L []string       `firestore:"l,omitzero"`
+	M map[string]int `firestore:"m,omitzero"`
+	Z isZeroerStruct `firestore:"z,omitzero"`
+	A int            // no omitzero tag
+}
+
+type isZeroerStruct struct {
+	X int
+}
+
+func (z isZeroerStruct) IsZero() bool {
+	return z.X == 0
+}
+
+func TestIntegration_OmitZero(t *testing.T) {
+	h := testHelper{t}
+	coll := integrationColl(t)
+	doc1 := coll.NewDoc()
+	doc2 := coll.NewDoc()
+	doc3 := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc1, doc2, doc3})
+	})
+
+	// Mixed zero and non-zero values.
+	p1 := 2
+	data1 := omitZeroStruct{
+		I: 1,
+		S: "", // zero
+		B: true,
+		F: 0.0, // zero
+		P: &p1,
+		L: nil, // zero
+		M: map[string]int{"a": 1},
+		Z: isZeroerStruct{X: 0}, // zero
+		A: 0,                    // zero, but no omitzero tag
+	}
+	h.mustCreate(doc1, data1)
+	ds1 := h.mustGet(doc1)
+	got1 := ds1.Data()
+	want1 := map[string]interface{}{
+		"i": int64(1),
+		"b": true,
+		"p": int64(2),
+		"m": map[string]interface{}{"a": int64(1)},
+		"A": int64(0),
+	}
+	if !testEqual(got1, want1) {
+		t.Errorf("mixed: got\n%#v\nwant\n%#v", got1, want1)
+	}
+
+	// All non-zero.
+	p2 := 3
+	data2 := omitZeroStruct{
+		I: 1,
+		S: "x",
+		B: true,
+		F: 3.14,
+		P: &p2,
+		L: []string{"a"},
+		M: map[string]int{"b": 2},
+		Z: isZeroerStruct{X: 1},
+		A: 5,
+	}
+	h.mustCreate(doc2, data2)
+	ds2 := h.mustGet(doc2)
+	got2 := ds2.Data()
+	want2 := map[string]interface{}{
+		"i": int64(1),
+		"s": "x",
+		"b": true,
+		"f": 3.14,
+		"p": int64(3),
+		"l": []interface{}{"a"},
+		"m": map[string]interface{}{"b": int64(2)},
+		"z": map[string]interface{}{"X": int64(1)},
+		"A": int64(5),
+	}
+	if !testEqual(got2, want2) {
+		t.Errorf("non-zero: got\n%#v\nwant\n%#v", got2, want2)
+	}
+
+	// All zero, except for empty slice and map which are not zero for omitzero.
+	data3 := omitZeroStruct{
+		I: 0,
+		S: "",
+		B: false,
+		F: 0.0,
+		P: nil,
+		L: []string{},       // not zero
+		M: map[string]int{}, // not zero
+		Z: isZeroerStruct{X: 0},
+		A: 0,
+	}
+	h.mustCreate(doc3, data3)
+	ds3 := h.mustGet(doc3)
+	got3 := ds3.Data()
+	want3 := map[string]interface{}{
+		"A": int64(0),
+		"l": []interface{}{},
+		"m": map[string]interface{}{},
+	}
+	if !testEqual(got3, want3) {
+		t.Errorf("zero: got\n%#v\nwant\n%#v", got3, want3)
+	}
+}
+
 func TestIntegration_WriteBatch(t *testing.T) {
 	ctx := context.Background()
 	b := integrationClient(t).Batch()
@@ -2213,15 +2326,17 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	h.mustCreate(doc2, imap{"e": int64(1)})
 
 	// Update the first doc. We should see the change. We won't see doc2.
+	oldWDS := wds
 	h.mustUpdate(doc1, []Update{{Path: "e", Value: int64(3)}})
 	wds = h.mustGet(doc1)
 	check("update",
 		[]*DocumentSnapshot{wds},
-		[]DocumentChange{{Kind: DocumentModified, Doc: wds, OldIndex: 0, NewIndex: 0}})
+		[]DocumentChange{{Kind: DocumentModified, Doc: wds, OldDoc: oldWDS, OldIndex: 0, NewIndex: 0}})
 
 	// Now update doc so that it is not in the query. We should see a snapshot with no docs.
+	oldWDS = wds
 	h.mustUpdate(doc1, []Update{{Path: "e", Value: int64(0)}})
-	check("update2", nil, []DocumentChange{{Kind: DocumentRemoved, Doc: wds, OldIndex: 0, NewIndex: -1}})
+	check("update2", nil, []DocumentChange{{Kind: DocumentRemoved, Doc: oldWDS, OldDoc: oldWDS, OldIndex: 0, NewIndex: -1}})
 
 	// Add two docs out of order. We should see them in order.
 	doc3 := coll.NewDoc()
@@ -2240,7 +2355,7 @@ func TestIntegration_WatchQuery(t *testing.T) {
 		[]DocumentChange{{Kind: DocumentAdded, Doc: wds4, OldIndex: -1, NewIndex: 0}})
 	// Delete a doc.
 	h.mustDelete(doc4)
-	check("after del", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentRemoved, Doc: wds4, OldIndex: 0, NewIndex: -1}})
+	check("after del", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentRemoved, Doc: wds4, OldDoc: wds4, OldIndex: 0, NewIndex: -1}})
 
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc1, doc2, doc3})

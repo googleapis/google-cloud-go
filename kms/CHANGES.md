@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.23.0...kms/v1.23.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **kms:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.22.0...kms/v1.23.0) (2025-09-11)
 
 

@@ -30,6 +30,9 @@ func TestCleanupLegacyConfigs(t *testing.T) {
 		"ai",
 		// Test an individually-released module in release-please-config-individual.json, etc.
 		"auth",
+		"cloudtasks",
+		// Test datastore which has google/datastore/v1 and google/datastore/admin/v1
+		"datastore",
 	}
 	for _, testModuleName := range testModuleNames {
 		// Create a temporary directory for the test repo.

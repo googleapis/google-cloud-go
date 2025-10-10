@@ -181,6 +181,12 @@ type CloudEvent_TextData struct {
 
 type CloudEvent_ProtoData struct {
 	// Optional. Proto data.
+	//
+	// NOTE: The `protoData` field only functions as expected when the payload
+	// is specifically a `CloudEvent` message type, and can't be used for
+	// arbitrary protocol buffer messages. For any other protocol buffer type,
+	// you must serialize your proto message into bytes, and use the
+	// `binaryData` field instead.
 	ProtoData *anypb.Any `protobuf:"bytes,8,opt,name=proto_data,json=protoData,proto3,oneof"`
 }
 

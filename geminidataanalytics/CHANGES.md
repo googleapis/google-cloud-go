@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/geminidataanalytics/v0.2.0...geminidataanalytics/v0.2.1) (2025-09-18)
 

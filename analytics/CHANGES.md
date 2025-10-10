@@ -1,5 +1,12 @@
 # Changes
 
+## [0.30.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.30.0...analytics/v0.30.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **analytics:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [0.30.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.29.0...analytics/v0.30.0) (2025-09-04)
 
 
