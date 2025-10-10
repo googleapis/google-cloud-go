@@ -1103,9 +1103,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
-<<<<<<< HEAD
   - compute/metadata
-=======
   - confidentialcomputing
   - cloudtasks
   - cloudquotas
@@ -1126,7 +1124,6 @@ skip-module-scan-paths:
   - asset
   - area120
   - apps
->>>>>>> main
   - maps
   - eventarc
   - apphub
