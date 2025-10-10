@@ -1,6 +1,1 @@
-TestMutateRows_Retry_WithRoutingCookie\|
-TestReadRow_Retry_WithRoutingCookie\|
-TestReadRows_Retry_WithRoutingCookie\|
-TestReadRows_Retry_WithRoutingCookie_MultipleErrorResponses\|
-TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
-TestSampleRowKeys_Retry_WithRoutingCookie
+TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse

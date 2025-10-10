@@ -457,6 +457,9 @@ type opTracer struct {
 	currAttempt attemptTracer
 
 	appBlockingLatency float64
+
+	// For routing cookie and gRPC attempt number
+	cookies map[string]string
 }
 
 func (o *opTracer) setStartTime(t time.Time) {
@@ -524,13 +527,19 @@ func (a *attemptTracer) setServerLatencyErr(err error) {
 }
 
 func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context, tableName string, isStreaming bool) builtinMetricsTracer {
-	if !tf.enabled {
-		return builtinMetricsTracer{builtInEnabled: false}
-	}
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
-	currOpTracer := opTracer{}
+	currOpTracer := opTracer{
+		cookies: make(map[string]string),
+	}
 	currOpTracer.setStartTime(time.Now())
+
+	if !tf.enabled {
+		return builtinMetricsTracer{
+			builtInEnabled: false,
+			currOp:         currOpTracer,
+		}
+	}
 
 	return builtinMetricsTracer{
 		ctx:            ctx,

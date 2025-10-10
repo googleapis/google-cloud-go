@@ -55,6 +55,9 @@ const (
 	queryExpiredViolationType        = "PREPARED_QUERY_EXPIRED"
 	preparedQueryExpireEarlyDuration = time.Second
 	methodNameReadRows               = "ReadRows"
+
+	// For routing cookie
+	cookiePrefix = "x-goog-cbt-cookie-"
 )
 
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
@@ -398,6 +401,7 @@ type Table struct {
 // and enabled on the client
 func (c *Client) newFeatureFlags() metadata.MD {
 	ff := btpb.FeatureFlags{
+		RoutingCookie:            true,
 		ReverseScans:             true,
 		LastScannedRowResponses:  true,
 		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
@@ -2281,15 +2285,37 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 	mt.setMethod(method)
 
 	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
+		op := &mt.currOp
+		// Inject cookie and attempt information
+		md := metadata.New(nil)
+		for k, v := range op.cookies {
+			md.Append(k, v)
+		}
+
+		existingMD, _ := metadata.FromOutgoingContext(ctx)
+		finalMD := metadata.Join(existingMD, md)
+		newCtx := metadata.NewOutgoingContext(ctx, finalMD)
+
 		mt.recordAttemptStart()
 
 		// f makes calls to CBT service
-		err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
 		// Record attempt specific metrics
 		mt.recordAttemptCompletion(attemptHeaderMD, attempTrailerMD, err)
+
+		extractCookies(attemptHeaderMD, op)
+		extractCookies(attempTrailerMD, op)
 		return err
 	}
 
 	return gax.Invoke(ctx, callWrapper, opts...)
+}
+
+func extractCookies(md metadata.MD, op *opTracer) {
+	for k, v := range md {
+		if strings.HasPrefix(k, cookiePrefix) {
+			op.cookies[k] = v[len(v)-1]
+		}
+	}
 }
