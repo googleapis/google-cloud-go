@@ -39,9 +39,6 @@
         "compute": {
             "component": "compute"
         },
-        "confidentialcomputing": {
-            "component": "confidentialcomputing"
-        },
         "config": {
             "component": "config"
         },
