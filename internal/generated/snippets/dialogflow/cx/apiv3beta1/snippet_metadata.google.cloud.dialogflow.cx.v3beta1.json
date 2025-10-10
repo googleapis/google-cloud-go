@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
-    "version": "1.69.1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -6335,6 +6335,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v3beta1_generated_Playbooks_ExportPlaybook_sync",
+      "title": "dialogflow ExportPlaybook Sample",
+      "description": "ExportPlaybook exports the specified playbook to a binary file.\n\nNote that resources (e.g. examples, tools) that the playbook\nreferences will also be exported.",
+      "file": "PlaybooksClient/ExportPlaybook/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportPlaybook",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.PlaybooksClient.ExportPlaybook",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ExportPlaybookRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportPlaybookOperation",
+        "client": {
+          "shortName": "PlaybooksClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.PlaybooksClient"
+        },
+        "method": {
+          "shortName": "ExportPlaybook",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Playbooks.ExportPlaybook",
+          "service": {
+            "shortName": "Playbooks",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Playbooks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v3beta1_generated_Playbooks_GetLocation_sync",
       "title": "dialogflow GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -6519,6 +6565,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v3beta1_generated_Playbooks_ImportPlaybook_sync",
+      "title": "dialogflow ImportPlaybook Sample",
+      "description": "ImportPlaybook imports the specified playbook to the specified agent from a binary file.",
+      "file": "PlaybooksClient/ImportPlaybook/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportPlaybook",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.PlaybooksClient.ImportPlaybook",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ImportPlaybookRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportPlaybookOperation",
+        "client": {
+          "shortName": "PlaybooksClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.PlaybooksClient"
+        },
+        "method": {
+          "shortName": "ImportPlaybook",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Playbooks.ImportPlaybook",
+          "service": {
+            "shortName": "Playbooks",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Playbooks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v3beta1_generated_Playbooks_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
       "description": "ListLocations lists information about the supported locations for this service.",
@@ -6698,6 +6790,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_Playbooks_RestorePlaybookVersion_sync",
+      "title": "dialogflow RestorePlaybookVersion Sample",
+      "description": "RestorePlaybookVersion retrieves the specified version of the Playbook and stores it as the\ncurrent playbook draft, returning the playbook with resources updated.",
+      "file": "PlaybooksClient/RestorePlaybookVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestorePlaybookVersion",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.PlaybooksClient.RestorePlaybookVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.RestorePlaybookVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cxpb.RestorePlaybookVersionResponse",
+        "client": {
+          "shortName": "PlaybooksClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.PlaybooksClient"
+        },
+        "method": {
+          "shortName": "RestorePlaybookVersion",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Playbooks.RestorePlaybookVersion",
+          "service": {
+            "shortName": "Playbooks",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Playbooks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
