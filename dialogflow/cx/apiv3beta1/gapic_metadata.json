@@ -1533,6 +1533,11 @@
                 "DeletePlaybookVersion"
               ]
             },
+            "ExportPlaybook": {
+              "methods": [
+                "ExportPlaybook"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -1553,6 +1558,11 @@
                 "GetPlaybookVersion"
               ]
             },
+            "ImportPlaybook": {
+              "methods": [
+                "ImportPlaybook"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -1571,6 +1581,11 @@
             "ListPlaybooks": {
               "methods": [
                 "ListPlaybooks"
+              ]
+            },
+            "RestorePlaybookVersion": {
+              "methods": [
+                "RestorePlaybookVersion"
               ]
             },
             "UpdatePlaybook": {
@@ -1608,6 +1623,11 @@
                 "DeletePlaybookVersion"
               ]
             },
+            "ExportPlaybook": {
+              "methods": [
+                "ExportPlaybook"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -1628,6 +1648,11 @@
                 "GetPlaybookVersion"
               ]
             },
+            "ImportPlaybook": {
+              "methods": [
+                "ImportPlaybook"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -1646,6 +1671,11 @@
             "ListPlaybooks": {
               "methods": [
                 "ListPlaybooks"
+              ]
+            },
+            "RestorePlaybookVersion": {
+              "methods": [
+                "RestorePlaybookVersion"
               ]
             },
             "UpdatePlaybook": {

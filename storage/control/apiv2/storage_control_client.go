@@ -86,6 +86,8 @@ func defaultStorageControlGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableDirectPath(true),
+		internaloption.EnableDirectPathXds(),
 		internaloption.EnableJwtWithScope(),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

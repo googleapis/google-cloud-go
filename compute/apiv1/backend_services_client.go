@@ -42,22 +42,23 @@ var newBackendServicesClientHook clientHook
 
 // BackendServicesCallOptions contains the retry settings for each method of BackendServicesClient.
 type BackendServicesCallOptions struct {
-	AddSignedUrlKey       []gax.CallOption
-	AggregatedList        []gax.CallOption
-	Delete                []gax.CallOption
-	DeleteSignedUrlKey    []gax.CallOption
-	Get                   []gax.CallOption
-	GetHealth             []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	Insert                []gax.CallOption
-	List                  []gax.CallOption
-	ListUsable            []gax.CallOption
-	Patch                 []gax.CallOption
-	SetEdgeSecurityPolicy []gax.CallOption
-	SetIamPolicy          []gax.CallOption
-	SetSecurityPolicy     []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	Update                []gax.CallOption
+	AddSignedUrlKey              []gax.CallOption
+	AggregatedList               []gax.CallOption
+	Delete                       []gax.CallOption
+	DeleteSignedUrlKey           []gax.CallOption
+	Get                          []gax.CallOption
+	GetEffectiveSecurityPolicies []gax.CallOption
+	GetHealth                    []gax.CallOption
+	GetIamPolicy                 []gax.CallOption
+	Insert                       []gax.CallOption
+	List                         []gax.CallOption
+	ListUsable                   []gax.CallOption
+	Patch                        []gax.CallOption
+	SetEdgeSecurityPolicy        []gax.CallOption
+	SetIamPolicy                 []gax.CallOption
+	SetSecurityPolicy            []gax.CallOption
+	TestIamPermissions           []gax.CallOption
+	Update                       []gax.CallOption
 }
 
 func defaultBackendServicesRESTCallOptions() *BackendServicesCallOptions {
@@ -84,6 +85,18 @@ func defaultBackendServicesRESTCallOptions() *BackendServicesCallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetEffectiveSecurityPolicies: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -168,6 +181,7 @@ type internalBackendServicesClient interface {
 	Delete(context.Context, *computepb.DeleteBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	DeleteSignedUrlKey(context.Context, *computepb.DeleteSignedUrlKeyBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetBackendServiceRequest, ...gax.CallOption) (*computepb.BackendService, error)
+	GetEffectiveSecurityPolicies(context.Context, *computepb.GetEffectiveSecurityPoliciesBackendServiceRequest, ...gax.CallOption) (*computepb.GetEffectiveSecurityPoliciesBackendServiceResponse, error)
 	GetHealth(context.Context, *computepb.GetHealthBackendServiceRequest, ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyBackendServiceRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertBackendServiceRequest, ...gax.CallOption) (*Operation, error)
@@ -239,6 +253,11 @@ func (c *BackendServicesClient) DeleteSignedUrlKey(ctx context.Context, req *com
 // Get returns the specified BackendService resource.
 func (c *BackendServicesClient) Get(ctx context.Context, req *computepb.GetBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendService, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetEffectiveSecurityPolicies returns effective security policies applied to this backend service.
+func (c *BackendServicesClient) GetEffectiveSecurityPolicies(ctx context.Context, req *computepb.GetEffectiveSecurityPoliciesBackendServiceRequest, opts ...gax.CallOption) (*computepb.GetEffectiveSecurityPoliciesBackendServiceResponse, error) {
+	return c.internalClient.GetEffectiveSecurityPolicies(ctx, req, opts...)
 }
 
 // GetHealth gets the most recent health check results for this BackendService. Example request body: { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
@@ -702,6 +721,51 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Get")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetEffectiveSecurityPolicies returns effective security policies applied to this backend service.
+func (c *backendServicesRESTClient) GetEffectiveSecurityPolicies(ctx context.Context, req *computepb.GetEffectiveSecurityPoliciesBackendServiceRequest, opts ...gax.CallOption) (*computepb.GetEffectiveSecurityPoliciesBackendServiceResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/getEffectiveSecurityPolicies", req.GetProject(), req.GetBackendService())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_service", url.QueryEscape(req.GetBackendService()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEffectiveSecurityPolicies[0:len((*c.CallOptions).GetEffectiveSecurityPolicies):len((*c.CallOptions).GetEffectiveSecurityPolicies)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.GetEffectiveSecurityPoliciesBackendServiceResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEffectiveSecurityPolicies")
 		if err != nil {
 			return err
 		}

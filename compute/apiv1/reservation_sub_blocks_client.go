@@ -17,6 +17,7 @@
 package compute
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -43,6 +44,7 @@ type ReservationSubBlocksCallOptions struct {
 	Get                []gax.CallOption
 	List               []gax.CallOption
 	PerformMaintenance []gax.CallOption
+	ReportFaulty       []gax.CallOption
 }
 
 func defaultReservationSubBlocksRESTCallOptions() *ReservationSubBlocksCallOptions {
@@ -74,6 +76,9 @@ func defaultReservationSubBlocksRESTCallOptions() *ReservationSubBlocksCallOptio
 		PerformMaintenance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		ReportFaulty: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -85,6 +90,7 @@ type internalReservationSubBlocksClient interface {
 	Get(context.Context, *computepb.GetReservationSubBlockRequest, ...gax.CallOption) (*computepb.ReservationSubBlocksGetResponse, error)
 	List(context.Context, *computepb.ListReservationSubBlocksRequest, ...gax.CallOption) *ReservationSubBlockIterator
 	PerformMaintenance(context.Context, *computepb.PerformMaintenanceReservationSubBlockRequest, ...gax.CallOption) (*Operation, error)
+	ReportFaulty(context.Context, *computepb.ReportFaultyReservationSubBlockRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // ReservationSubBlocksClient is a client for interacting with Google Compute Engine API.
@@ -135,6 +141,11 @@ func (c *ReservationSubBlocksClient) List(ctx context.Context, req *computepb.Li
 // PerformMaintenance allows customers to perform maintenance on a reservation subBlock
 func (c *ReservationSubBlocksClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceReservationSubBlockRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PerformMaintenance(ctx, req, opts...)
+}
+
+// ReportFaulty allows customers to report a faulty subBlock.
+func (c *ReservationSubBlocksClient) ReportFaulty(ctx context.Context, req *computepb.ReportFaultyReservationSubBlockRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.ReportFaulty(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -397,6 +408,73 @@ func (c *reservationSubBlocksRESTClient) PerformMaintenance(ctx context.Context,
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "PerformMaintenance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// ReportFaulty allows customers to report a faulty subBlock.
+func (c *reservationSubBlocksRESTClient) ReportFaulty(ctx context.Context, req *computepb.ReportFaultyReservationSubBlockRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetReservationSubBlocksReportFaultyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSubBlocks/%v/reportFaulty", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSubBlock())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "parent_name", url.QueryEscape(req.GetParentName()), "reservation_sub_block", url.QueryEscape(req.GetReservationSubBlock()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ReportFaulty[0:len((*c.CallOptions).ReportFaulty):len((*c.CallOptions).ReportFaulty)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReportFaulty")
 		if err != nil {
 			return err
 		}

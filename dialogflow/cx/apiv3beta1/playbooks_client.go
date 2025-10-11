@@ -27,6 +27,8 @@ import (
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -45,20 +47,23 @@ var newPlaybooksClientHook clientHook
 
 // PlaybooksCallOptions contains the retry settings for each method of PlaybooksClient.
 type PlaybooksCallOptions struct {
-	CreatePlaybook        []gax.CallOption
-	DeletePlaybook        []gax.CallOption
-	ListPlaybooks         []gax.CallOption
-	GetPlaybook           []gax.CallOption
-	UpdatePlaybook        []gax.CallOption
-	CreatePlaybookVersion []gax.CallOption
-	GetPlaybookVersion    []gax.CallOption
-	ListPlaybookVersions  []gax.CallOption
-	DeletePlaybookVersion []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	CancelOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
+	CreatePlaybook         []gax.CallOption
+	DeletePlaybook         []gax.CallOption
+	ListPlaybooks          []gax.CallOption
+	GetPlaybook            []gax.CallOption
+	ExportPlaybook         []gax.CallOption
+	ImportPlaybook         []gax.CallOption
+	UpdatePlaybook         []gax.CallOption
+	CreatePlaybookVersion  []gax.CallOption
+	GetPlaybookVersion     []gax.CallOption
+	RestorePlaybookVersion []gax.CallOption
+	ListPlaybookVersions   []gax.CallOption
+	DeletePlaybookVersion  []gax.CallOption
+	GetLocation            []gax.CallOption
+	ListLocations          []gax.CallOption
+	CancelOperation        []gax.CallOption
+	GetOperation           []gax.CallOption
+	ListOperations         []gax.CallOption
 }
 
 func defaultPlaybooksGRPCClientOptions() []option.ClientOption {
@@ -126,6 +131,30 @@ func defaultPlaybooksCallOptions() *PlaybooksCallOptions {
 				})
 			}),
 		},
+		ExportPlaybook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportPlaybook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		UpdatePlaybook: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -151,6 +180,18 @@ func defaultPlaybooksCallOptions() *PlaybooksCallOptions {
 			}),
 		},
 		GetPlaybookVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RestorePlaybookVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -240,6 +281,28 @@ func defaultPlaybooksRESTCallOptions() *PlaybooksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ExportPlaybook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ImportPlaybook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		UpdatePlaybook: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -263,6 +326,17 @@ func defaultPlaybooksRESTCallOptions() *PlaybooksCallOptions {
 			}),
 		},
 		GetPlaybookVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RestorePlaybookVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -312,9 +386,14 @@ type internalPlaybooksClient interface {
 	DeletePlaybook(context.Context, *cxpb.DeletePlaybookRequest, ...gax.CallOption) error
 	ListPlaybooks(context.Context, *cxpb.ListPlaybooksRequest, ...gax.CallOption) *PlaybookIterator
 	GetPlaybook(context.Context, *cxpb.GetPlaybookRequest, ...gax.CallOption) (*cxpb.Playbook, error)
+	ExportPlaybook(context.Context, *cxpb.ExportPlaybookRequest, ...gax.CallOption) (*ExportPlaybookOperation, error)
+	ExportPlaybookOperation(name string) *ExportPlaybookOperation
+	ImportPlaybook(context.Context, *cxpb.ImportPlaybookRequest, ...gax.CallOption) (*ImportPlaybookOperation, error)
+	ImportPlaybookOperation(name string) *ImportPlaybookOperation
 	UpdatePlaybook(context.Context, *cxpb.UpdatePlaybookRequest, ...gax.CallOption) (*cxpb.Playbook, error)
 	CreatePlaybookVersion(context.Context, *cxpb.CreatePlaybookVersionRequest, ...gax.CallOption) (*cxpb.PlaybookVersion, error)
 	GetPlaybookVersion(context.Context, *cxpb.GetPlaybookVersionRequest, ...gax.CallOption) (*cxpb.PlaybookVersion, error)
+	RestorePlaybookVersion(context.Context, *cxpb.RestorePlaybookVersionRequest, ...gax.CallOption) (*cxpb.RestorePlaybookVersionResponse, error)
 	ListPlaybookVersions(context.Context, *cxpb.ListPlaybookVersionsRequest, ...gax.CallOption) *PlaybookVersionIterator
 	DeletePlaybookVersion(context.Context, *cxpb.DeletePlaybookVersionRequest, ...gax.CallOption) error
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -335,6 +414,11 @@ type PlaybooksClient struct {
 
 	// The call options for this service.
 	CallOptions *PlaybooksCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -380,6 +464,31 @@ func (c *PlaybooksClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlaybook
 	return c.internalClient.GetPlaybook(ctx, req, opts...)
 }
 
+// ExportPlaybook exports the specified playbook to a binary file.
+//
+// Note that resources (e.g. examples, tools) that the playbook
+// references will also be exported.
+func (c *PlaybooksClient) ExportPlaybook(ctx context.Context, req *cxpb.ExportPlaybookRequest, opts ...gax.CallOption) (*ExportPlaybookOperation, error) {
+	return c.internalClient.ExportPlaybook(ctx, req, opts...)
+}
+
+// ExportPlaybookOperation returns a new ExportPlaybookOperation from a given name.
+// The name must be that of a previously created ExportPlaybookOperation, possibly from a different process.
+func (c *PlaybooksClient) ExportPlaybookOperation(name string) *ExportPlaybookOperation {
+	return c.internalClient.ExportPlaybookOperation(name)
+}
+
+// ImportPlaybook imports the specified playbook to the specified agent from a binary file.
+func (c *PlaybooksClient) ImportPlaybook(ctx context.Context, req *cxpb.ImportPlaybookRequest, opts ...gax.CallOption) (*ImportPlaybookOperation, error) {
+	return c.internalClient.ImportPlaybook(ctx, req, opts...)
+}
+
+// ImportPlaybookOperation returns a new ImportPlaybookOperation from a given name.
+// The name must be that of a previously created ImportPlaybookOperation, possibly from a different process.
+func (c *PlaybooksClient) ImportPlaybookOperation(name string) *ImportPlaybookOperation {
+	return c.internalClient.ImportPlaybookOperation(name)
+}
+
 // UpdatePlaybook updates the specified Playbook.
 func (c *PlaybooksClient) UpdatePlaybook(ctx context.Context, req *cxpb.UpdatePlaybookRequest, opts ...gax.CallOption) (*cxpb.Playbook, error) {
 	return c.internalClient.UpdatePlaybook(ctx, req, opts...)
@@ -393,6 +502,12 @@ func (c *PlaybooksClient) CreatePlaybookVersion(ctx context.Context, req *cxpb.C
 // GetPlaybookVersion retrieves the specified version of the Playbook.
 func (c *PlaybooksClient) GetPlaybookVersion(ctx context.Context, req *cxpb.GetPlaybookVersionRequest, opts ...gax.CallOption) (*cxpb.PlaybookVersion, error) {
 	return c.internalClient.GetPlaybookVersion(ctx, req, opts...)
+}
+
+// RestorePlaybookVersion retrieves the specified version of the Playbook and stores it as the
+// current playbook draft, returning the playbook with resources updated.
+func (c *PlaybooksClient) RestorePlaybookVersion(ctx context.Context, req *cxpb.RestorePlaybookVersionRequest, opts ...gax.CallOption) (*cxpb.RestorePlaybookVersionResponse, error) {
+	return c.internalClient.RestorePlaybookVersion(ctx, req, opts...)
 }
 
 // ListPlaybookVersions lists versions for the specified Playbook.
@@ -443,6 +558,11 @@ type playbooksGRPCClient struct {
 	// The gRPC API client.
 	playbooksClient cxpb.PlaybooksClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	locationsClient locationpb.LocationsClient
@@ -486,6 +606,17 @@ func NewPlaybooksClient(ctx context.Context, opts ...option.ClientOption) (*Play
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -522,6 +653,11 @@ type playbooksRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
@@ -550,6 +686,16 @@ func NewPlaybooksRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &PlaybooksClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -687,6 +833,46 @@ func (c *playbooksGRPCClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 	return resp, nil
 }
 
+func (c *playbooksGRPCClient) ExportPlaybook(ctx context.Context, req *cxpb.ExportPlaybookRequest, opts ...gax.CallOption) (*ExportPlaybookOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportPlaybook[0:len((*c.CallOptions).ExportPlaybook):len((*c.CallOptions).ExportPlaybook)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.playbooksClient.ExportPlaybook, req, settings.GRPC, c.logger, "ExportPlaybook")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportPlaybookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *playbooksGRPCClient) ImportPlaybook(ctx context.Context, req *cxpb.ImportPlaybookRequest, opts ...gax.CallOption) (*ImportPlaybookOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportPlaybook[0:len((*c.CallOptions).ImportPlaybook):len((*c.CallOptions).ImportPlaybook)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.playbooksClient.ImportPlaybook, req, settings.GRPC, c.logger, "ImportPlaybook")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportPlaybookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *playbooksGRPCClient) UpdatePlaybook(ctx context.Context, req *cxpb.UpdatePlaybookRequest, opts ...gax.CallOption) (*cxpb.Playbook, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "playbook.name", url.QueryEscape(req.GetPlaybook().GetName()))}
 
@@ -733,6 +919,24 @@ func (c *playbooksGRPCClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.playbooksClient.GetPlaybookVersion, req, settings.GRPC, c.logger, "GetPlaybookVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *playbooksGRPCClient) RestorePlaybookVersion(ctx context.Context, req *cxpb.RestorePlaybookVersionRequest, opts ...gax.CallOption) (*cxpb.RestorePlaybookVersionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestorePlaybookVersion[0:len((*c.CallOptions).RestorePlaybookVersion):len((*c.CallOptions).RestorePlaybookVersion)], opts...)
+	var resp *cxpb.RestorePlaybookVersionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.playbooksClient.RestorePlaybookVersion, req, settings.GRPC, c.logger, "RestorePlaybookVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1163,6 +1367,127 @@ func (c *playbooksRESTClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 	return resp, nil
 }
 
+// ExportPlaybook exports the specified playbook to a binary file.
+//
+// Note that resources (e.g. examples, tools) that the playbook
+// references will also be exported.
+func (c *playbooksRESTClient) ExportPlaybook(ctx context.Context, req *cxpb.ExportPlaybookRequest, opts ...gax.CallOption) (*ExportPlaybookOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportPlaybook")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	return &ExportPlaybookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ImportPlaybook imports the specified playbook to the specified agent from a binary file.
+func (c *playbooksRESTClient) ImportPlaybook(ctx context.Context, req *cxpb.ImportPlaybookRequest, opts ...gax.CallOption) (*ImportPlaybookOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/playbooks:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportPlaybook")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	return &ImportPlaybookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // UpdatePlaybook updates the specified Playbook.
 func (c *playbooksRESTClient) UpdatePlaybook(ctx context.Context, req *cxpb.UpdatePlaybookRequest, opts ...gax.CallOption) (*cxpb.Playbook, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1318,6 +1643,63 @@ func (c *playbooksRESTClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPlaybookVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RestorePlaybookVersion retrieves the specified version of the Playbook and stores it as the
+// current playbook draft, returning the playbook with resources updated.
+func (c *playbooksRESTClient) RestorePlaybookVersion(ctx context.Context, req *cxpb.RestorePlaybookVersionRequest, opts ...gax.CallOption) (*cxpb.RestorePlaybookVersionResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:restore", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RestorePlaybookVersion[0:len((*c.CallOptions).RestorePlaybookVersion):len((*c.CallOptions).RestorePlaybookVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.RestorePlaybookVersionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestorePlaybookVersion")
 		if err != nil {
 			return err
 		}
@@ -1742,4 +2124,40 @@ func (c *playbooksRESTClient) ListOperations(ctx context.Context, req *longrunni
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// ExportPlaybookOperation returns a new ExportPlaybookOperation from a given name.
+// The name must be that of a previously created ExportPlaybookOperation, possibly from a different process.
+func (c *playbooksGRPCClient) ExportPlaybookOperation(name string) *ExportPlaybookOperation {
+	return &ExportPlaybookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportPlaybookOperation returns a new ExportPlaybookOperation from a given name.
+// The name must be that of a previously created ExportPlaybookOperation, possibly from a different process.
+func (c *playbooksRESTClient) ExportPlaybookOperation(name string) *ExportPlaybookOperation {
+	override := fmt.Sprintf("/v3beta1/%s", name)
+	return &ExportPlaybookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ImportPlaybookOperation returns a new ImportPlaybookOperation from a given name.
+// The name must be that of a previously created ImportPlaybookOperation, possibly from a different process.
+func (c *playbooksGRPCClient) ImportPlaybookOperation(name string) *ImportPlaybookOperation {
+	return &ImportPlaybookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportPlaybookOperation returns a new ImportPlaybookOperation from a given name.
+// The name must be that of a previously created ImportPlaybookOperation, possibly from a different process.
+func (c *playbooksRESTClient) ImportPlaybookOperation(name string) *ImportPlaybookOperation {
+	override := fmt.Sprintf("/v3beta1/%s", name)
+	return &ImportPlaybookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
