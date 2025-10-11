@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/notifications/apiv1",
-    "version": "$VERSION",
+    "version": "1.2.1",
     "language": "GO",
     "apis": [
       {
