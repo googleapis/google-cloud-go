@@ -4,8 +4,8 @@ go 1.24.0
 
 require (
 	github.com/google/go-cmp v0.7.0
-	golang.org/x/tools v0.36.0
-	google.golang.org/grpc v1.74.2
+	golang.org/x/tools v0.38.0
+	google.golang.org/grpc v1.76.0
 )
 
 require (

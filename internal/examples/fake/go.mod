@@ -3,9 +3,9 @@ module cloud.google.com/go/internal/examples/fake
 go 1.24.0
 
 require (
-	cloud.google.com/go/translate v1.12.6
-	google.golang.org/api v0.247.0
-	google.golang.org/grpc v1.74.2
+	cloud.google.com/go/translate v1.12.7
+	google.golang.org/api v0.252.0
+	google.golang.org/grpc v1.76.0
 )
 
 require (

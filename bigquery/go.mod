@@ -3,11 +3,11 @@ module cloud.google.com/go/bigquery
 go 1.24.0
 
 require (
-	cloud.google.com/go v0.121.6
-	cloud.google.com/go/datacatalog v1.26.0
-	cloud.google.com/go/iam v1.5.2
+	cloud.google.com/go v0.123.0
+	cloud.google.com/go/datacatalog v1.26.1
+	cloud.google.com/go/iam v1.5.3
 	cloud.google.com/go/longrunning v0.6.7
-	cloud.google.com/go/storage v1.56.0
+	cloud.google.com/go/storage v1.57.0
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
@@ -17,12 +17,12 @@ require (
 	go.opentelemetry.io/otel/sdk v1.37.0
 	golang.org/x/sync v0.17.0
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da
-	google.golang.org/api v0.250.0
+	google.golang.org/api v0.252.0
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
-	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250908214217-97024824d090
-	google.golang.org/grpc v1.75.1
-	google.golang.org/protobuf v1.36.9
+	google.golang.org/genproto/googleapis/api 49b9836ed3ff
+	google.golang.org/genproto/googleapis/rpc 49b9836ed3ff
+	google.golang.org/grpc v1.76.0
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
