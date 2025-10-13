@@ -21,8 +21,9 @@
 package discoveryenginepb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"

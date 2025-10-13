@@ -6,23 +6,8 @@
         "accessapproval": {
             "component": "accessapproval"
         },
-        "accesscontextmanager": {
-            "component": "accesscontextmanager"
-        },
-        "advisorynotifications": {
-            "component": "advisorynotifications"
-        },
-        "ai": {
-            "component": "ai"
-        },
         "aiplatform": {
             "component": "aiplatform"
-        },
-        "analytics": {
-            "component": "analytics"
-        },
-        "artifactregistry": {
-            "component": "artifactregistry"
         },
         "certificatemanager": {
             "component": "certificatemanager"
@@ -33,23 +18,11 @@
         "cloudprofiler": {
             "component": "cloudprofiler"
         },
-        "commerce": {
-            "component": "commerce"
-        },
         "compute": {
             "component": "compute"
         },
-        "config": {
-            "component": "config"
-        },
         "configdelivery": {
             "component": "configdelivery"
-        },
-        "contactcenterinsights": {
-            "component": "contactcenterinsights"
-        },
-        "container": {
-            "component": "container"
         },
         "containeranalysis": {
             "component": "containeranalysis"
@@ -57,47 +30,17 @@
         "datacatalog": {
             "component": "datacatalog"
         },
-        "dataflow": {
-            "component": "dataflow"
-        },
-        "dataform": {
-            "component": "dataform"
-        },
-        "datafusion": {
-            "component": "datafusion"
-        },
-        "datalabeling": {
-            "component": "datalabeling"
-        },
-        "dataplex": {
-            "component": "dataplex"
-        },
         "dataqna": {
             "component": "dataqna"
         },
         "datastream": {
             "component": "datastream"
         },
-        "deploy": {
-            "component": "deploy"
-        },
-        "developerconnect": {
-            "component": "developerconnect"
-        },
-        "devicestreaming": {
-            "component": "devicestreaming"
-        },
         "dialogflow": {
             "component": "dialogflow"
         },
-        "discoveryengine": {
-            "component": "discoveryengine"
-        },
         "documentai": {
             "component": "documentai"
-        },
-        "domains": {
-            "component": "domains"
         },
         "edgecontainer": {
             "component": "edgecontainer"

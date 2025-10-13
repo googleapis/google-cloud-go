@@ -50,3 +50,4 @@
 * **pubsub/v2:** Update v2 package docs with migration guide ([#12564](https://github.com/googleapis/google-cloud-go/issues/12564)) ([5ef6068](https://github.com/googleapis/google-cloud-go/commit/5ef606838a84f1c56225fc4e33f4ee394eb34725))
 
 ## Changes
+
