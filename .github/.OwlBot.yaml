@@ -10,7 +10,6 @@ deep-remove-regex:
   - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
-  - /advisorynotifications/apiv1/
   - /analytics/admin/apiv1alpha/
   - /artifactregistry/apiv1/
   - /artifactregistry/apiv1beta2/
@@ -111,7 +110,6 @@ deep-remove-regex:
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
-  - /internal/generated/snippets/advisorynotifications/apiv1/
   - /internal/generated/snippets/analytics/admin/apiv1alpha/
   - /internal/generated/snippets/artifactregistry/apiv1/
   - /internal/generated/snippets/artifactregistry/apiv1beta2/
@@ -592,8 +590,6 @@ deep-copy-regex:
   - source: /google/cloud/aiplatform/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/advisorynotifications/v1/cloud.google.com/go
     dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
     dest: /

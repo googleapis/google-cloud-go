@@ -1,5 +1,29 @@
 image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
 libraries:
+  - id: advisorynotifications
+    version: 1.5.6
+    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    apis:
+      - path: google/cloud/advisorynotifications/v1
+        service_config: advisorynotifications_v1.yaml
+    source_roots:
+      - advisorynotifications
+      - internal/generated/snippets/advisorynotifications
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/advisorynotifications/
+      - ^advisorynotifications/apiv1/[^/]*_client\.go$
+      - ^advisorynotifications/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^advisorynotifications/apiv1/[^/]*_client_example_test\.go$
+      - ^advisorynotifications/apiv1/auxiliary\.go$
+      - ^advisorynotifications/apiv1/auxiliary_go123\.go$
+      - ^advisorynotifications/apiv1/doc\.go$
+      - ^advisorynotifications/apiv1/gapic_metadata\.json$
+      - ^advisorynotifications/apiv1/helpers\.go$
+      - ^advisorynotifications/apiv1/advisorynotificationspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/advisorynotifications/
+    tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.19.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b

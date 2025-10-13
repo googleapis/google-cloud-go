@@ -3,7 +3,6 @@ modules:
   - accesscontextmanager
   - ai
   - aiplatform
-  - advisorynotifications
   - analytics
   - artifactregistry
   # List the bigquery/v2 module before the bigquery module so that the contents
@@ -293,9 +292,6 @@ service-configs:
   - input-directory: google/cloud/aiplatform/v1beta1
     service-config: aiplatform_v1beta1.yaml
     import-path: cloud.google.com/go/aiplatform/apiv1beta1
-  - input-directory: google/cloud/advisorynotifications/v1
-    service-config: advisorynotifications_v1.yaml
-    import-path: cloud.google.com/go/advisorynotifications/apiv1
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
@@ -1103,6 +1099,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - advisorynotifications
   - compute/metadata
   - confidentialcomputing
   - cloudtasks
