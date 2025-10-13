@@ -9,9 +9,6 @@
         "accesscontextmanager": {
             "component": "accesscontextmanager"
         },
-        "advisorynotifications": {
-            "component": "advisorynotifications"
-        },
         "ai": {
             "component": "ai"
         },
