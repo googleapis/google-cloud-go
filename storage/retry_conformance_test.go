@@ -707,12 +707,15 @@ var methods = map[string][]retryFunc{
 
 			}
 
+			// TODO: Remove this exception and enable the attrs check below once we
+			// figure out how to handle the redirect w/ write handle case.
+			// See b/451594633
 			if err := objW.Close(); err != nil {
-				return fmt.Errorf("Writer.Close: %w", err)
+				if !strings.Contains(err.Error(), "no object attributes returned") {
+					return fmt.Errorf("Writer.Close: %w", err)
+				}
 			}
 
-			// TODO: Enable this check once we figure out what to do with case
-			// where redirect includes write handle.
 			// if objW.Attrs() == nil {
 			// 	return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
 			// }
