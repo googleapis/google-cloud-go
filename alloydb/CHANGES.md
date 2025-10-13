@@ -3,6 +3,26 @@
 
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.19.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+* add CRUD APIs on Databases (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add PG 17 as a Database version (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add configuration for Managed Connection Pool (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* update `Database.charset` to be immutable (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add additional fields to Database object to specify the collation type, character type, if it is a template database, and the template to use for the database (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add field to ExecuteSQL request to just validate the sql statement (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+
+### Bug Fixes
+
+* An existing enum `PoolMode` is removed from the `ConnectionPoolConfig` (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+
+### Documentation
+
+* specify that the STOPPED state is not used for clusters anymore (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.17.0...alloydb/v1.18.0) (2025-06-25)
 
 

@@ -1,5 +1,11 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.26.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.25.0) (2025-09-12)
 
 ### Features
