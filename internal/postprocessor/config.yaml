@@ -1,10 +1,6 @@
 modules:
   - accessapproval
-  - accesscontextmanager
-  - ai
   - aiplatform
-  - analytics
-  - artifactregistry
   # List the bigquery/v2 module before the bigquery module so that the contents
   # are processed using the correct inner module boundary.
   # More info: https://github.com/googleapis/google-cloud-go/issues/12452
@@ -13,30 +9,14 @@ modules:
   - bigtable
   - certificatemanager
   - cloudbuild
-  - cloudprofiler
-  - commerce
   - compute
-  - config
   - configdelivery
-  - contactcenterinsights
-  - container
   - containeranalysis
   - datacatalog
-  - dataflow
-  - dataform
-  - datafusion
-  - datalabeling
-  - dataplex
   - dataqna
   - datastore
   - datastream
-  - deploy
-  - developerconnect
-  - devicestreaming
   - dialogflow
-  - discoveryengine
-  - documentai
-  - domains
   - edgecontainer
   - edgenetwork
   - errorreporting
@@ -268,21 +248,6 @@ manual-clients:
     library-type: GAPIC_MANUAL
 
 service-configs:
-  - input-directory: google/ai/generativelanguage/v1
-    service-config: generativelanguage_v1.yaml
-    import-path: cloud.google.com/go/ai/generativelanguage/apiv1
-  - input-directory: google/ai/generativelanguage/v1alpha
-    service-config: generativelanguage_v1alpha.yaml
-    import-path: cloud.google.com/go/ai/generativelanguage/apiv1alpha
-  - input-directory: google/ai/generativelanguage/v1beta
-    service-config: generativelanguage_v1beta.yaml
-    import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta
-  - input-directory: google/ai/generativelanguage/v1beta2
-    service-config: generativelanguage_v1beta2.yaml
-    import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta2
-  - input-directory: google/analytics/admin/v1alpha
-    service-config: analyticsadmin_v1alpha.yaml
-    import-path: cloud.google.com/go/analytics/admin/apiv1alpha
   - input-directory: google/cloud/accessapproval/v1
     service-config: accessapproval_v1.yaml
     import-path: cloud.google.com/go/accessapproval/apiv1
@@ -363,30 +328,18 @@ service-configs:
   - input-directory: google/cloud/certificatemanager/v1
     service-config: certificatemanager_v1.yaml
     import-path: cloud.google.com/go/certificatemanager/apiv1
-  - input-directory: google/devtools/cloudprofiler/v2
-    service-config: cloudprofiler_v2.yaml
-    import-path: cloud.google.com/go/cloudprofiler/apiv2
-  - input-directory: google/cloud/commerce/consumer/procurement/v1
-    service-config: cloudcommerceconsumerprocurement_v1.yaml
-    import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
     import-path: cloud.google.com/go/compute/apiv1
   - input-directory: google/cloud/compute/v1beta
     service-config: compute_v1beta.yaml
     import-path: cloud.google.com/go/compute/apiv1beta
-  - input-directory: google/cloud/config/v1
-    service-config: config_v1.yaml
-    import-path: cloud.google.com/go/config/apiv1
   - input-directory: google/cloud/configdelivery/v1
     service-config: configdelivery_v1.yaml
     import-path: cloud.google.com/go/configdelivery/apiv1
   - input-directory: google/cloud/configdelivery/v1beta
     service-config: configdelivery_v1beta.yaml
     import-path: cloud.google.com/go/configdelivery/apiv1beta
-  - input-directory: google/cloud/contactcenterinsights/v1
-    service-config: contactcenterinsights_v1.yaml
-    import-path: cloud.google.com/go/contactcenterinsights/apiv1
   - input-directory: google/cloud/datacatalog/lineage/v1
     service-config: datalineage_v1.yaml
     import-path: cloud.google.com/go/datacatalog/lineage/apiv1
@@ -396,21 +349,6 @@ service-configs:
   - input-directory: google/cloud/datacatalog/v1beta1
     service-config: datacatalog_v1beta1.yaml
     import-path: cloud.google.com/go/datacatalog/apiv1beta1
-  - input-directory: google/cloud/dataform/v1
-    service-config: dataform_v1.yaml
-    import-path: cloud.google.com/go/dataform/apiv1
-  - input-directory: google/cloud/dataform/v1beta1
-    service-config: dataform_v1beta1.yaml
-    import-path: cloud.google.com/go/dataform/apiv1beta1
-  - input-directory: google/cloud/datafusion/v1
-    service-config: datafusion_v1.yaml
-    import-path: cloud.google.com/go/datafusion/apiv1
-  - input-directory: google/cloud/datalabeling/v1beta1
-    service-config: datalabeling_v1beta1.yaml
-    import-path: cloud.google.com/go/datalabeling/apiv1beta1
-  - input-directory: google/cloud/dataplex/v1
-    service-config: dataplex_v1.yaml
-    import-path: cloud.google.com/go/dataplex/apiv1
   - input-directory: google/cloud/dataqna/v1alpha
     service-config: dataqna_v1alpha.yaml
     import-path: cloud.google.com/go/dataqna/apiv1alpha
@@ -420,15 +358,6 @@ service-configs:
   - input-directory: google/cloud/datastream/v1alpha1
     service-config: datastream_v1alpha1.yaml
     import-path: cloud.google.com/go/datastream/apiv1alpha1
-  - input-directory: google/cloud/deploy/v1
-    service-config: clouddeploy_v1.yaml
-    import-path: cloud.google.com/go/deploy/apiv1
-  - input-directory: google/cloud/developerconnect/v1
-    service-config: developerconnect_v1.yaml
-    import-path: cloud.google.com/go/developerconnect/apiv1
-  - input-directory: google/cloud/devicestreaming/v1
-    service-config: devicestreaming_v1.yaml
-    import-path: cloud.google.com/go/devicestreaming/apiv1
   - input-directory: google/cloud/dialogflow/cx/v3
     service-config: dialogflow_v3.yaml
     import-path: cloud.google.com/go/dialogflow/cx/apiv3
@@ -441,24 +370,6 @@ service-configs:
   - input-directory: google/cloud/dialogflow/v2beta1
     service-config: dialogflow_v2beta1.yaml
     import-path: cloud.google.com/go/dialogflow/apiv2beta1
-  - input-directory: google/cloud/discoveryengine/v1
-    service-config: discoveryengine_v1.yaml
-    import-path: cloud.google.com/go/discoveryengine/apiv1
-  - input-directory: google/cloud/discoveryengine/v1beta
-    service-config: discoveryengine_v1beta.yaml
-    import-path: cloud.google.com/go/discoveryengine/apiv1beta
-  - input-directory: google/cloud/discoveryengine/v1alpha
-    service-config: discoveryengine_v1alpha.yaml
-    import-path: cloud.google.com/go/discoveryengine/apiv1alpha
-  - input-directory: google/cloud/documentai/v1
-    service-config: documentai_v1.yaml
-    import-path: cloud.google.com/go/documentai/apiv1
-  - input-directory: google/cloud/documentai/v1beta3
-    service-config: documentai_v1beta3.yaml
-    import-path: cloud.google.com/go/documentai/apiv1beta3
-  - input-directory: google/cloud/domains/v1beta1
-    service-config: domains_v1beta1.yaml
-    import-path: cloud.google.com/go/domains/apiv1beta1
   - input-directory: google/cloud/edgecontainer/v1
     service-config: edgecontainer_v1.yaml
     import-path: cloud.google.com/go/edgecontainer/apiv1
@@ -985,12 +896,6 @@ service-configs:
   - input-directory: google/cloud/workstations/v1
     service-config: workstations_v1.yaml
     import-path: cloud.google.com/go/workstations/apiv1
-  - input-directory: google/container/v1
-    service-config: container_v1.yaml
-    import-path: cloud.google.com/go/container/apiv1
-  - input-directory: google/dataflow/v1beta3
-    service-config: dataflow_v1beta3.yaml
-    import-path: cloud.google.com/go/dataflow/apiv1beta3
   - input-directory: google/datastore/admin/v1
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/admin/apiv1
@@ -998,12 +903,6 @@ service-configs:
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/apiv1
     release-level-override: stable
-  - input-directory: google/devtools/artifactregistry/v1
-    service-config: artifactregistry_v1.yaml
-    import-path: cloud.google.com/go/artifactregistry/apiv1
-  - input-directory: google/devtools/artifactregistry/v1beta2
-    service-config: artifactregistry_v1beta2.yaml
-    import-path: cloud.google.com/go/artifactregistry/apiv1beta2
   - input-directory: google/devtools/cloudbuild/v1
     service-config: cloudbuild_v1.yaml
     import-path: cloud.google.com/go/cloudbuild/apiv1/v2
@@ -1034,9 +933,6 @@ service-configs:
   - input-directory: google/iam/v3beta
     service-config: iam_v3beta.yaml
     import-path: cloud.google.com/go/iam/apiv3beta
-  - input-directory: google/identity/accesscontextmanager/v1
-    service-config: accesscontextmanager_v1.yaml
-    import-path: cloud.google.com/go/accesscontextmanager/apiv1
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
@@ -1099,6 +995,26 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - domains
+  - documentai
+  - discoveryengine
+  - devicestreaming
+  - developerconnect
+  - deploy
+  - dataplex
+  - datalabeling
+  - datafusion
+  - dataform
+  - dataflow
+  - container
+  - contactcenterinsights
+  - config
+  - commerce
+  - cloudprofiler
+  - artifactregistry
+  - analytics
+  - ai
+  - accesscontextmanager
   - advisorynotifications
   - compute/metadata
   - confidentialcomputing
