@@ -1500,7 +1500,7 @@ libraries:
       - internal/generated/snippets/discoveryengine/
     tag_format: '{id}/v{version}'
   - id: dlp
-    version: 1.26.0
+    version: 1.27.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/privacy/dlp/v2
