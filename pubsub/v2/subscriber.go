@@ -320,6 +320,15 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				msgChan := make(chan []*Message)
 				errChan := make(chan error)
 				go func() {
+					// Make message pulling dependent on iterator for context cancellation
+					// If the context is cancelled while pulling messages, stop reading from stream early.
+					select {
+					case <-ctx.Done():
+						msgChan <- nil
+						return
+					default:
+					}
+
 					msgs, err := iter.receive(maxToPull)
 					if errors.Is(err, io.EOF) {
 						errChan <- nil
@@ -332,12 +341,8 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 					msgChan <- msgs
 				}()
 
-				// Make message pulling dependent on iterator for context cancellation
-				// If the context is cancelled while pulling messages, stop reading from stream early.
 				var msgs []*Message
 				select {
-				case <-ctx.Done():
-					return nil
 				case err := <-errChan:
 					return err
 				case msgs = <-msgChan:
