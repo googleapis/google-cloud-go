@@ -246,6 +246,13 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 		return fmt.Errorf("loading postprocessor config: %w", err)
 	}
 	importPrefix := "cloud.google.com/go/" + moduleName + "/"
+	// These are designed to match lines conservatively. The leading
+	// space before the module name prevents spurious matches such as
+	// "- /policytroubleshooter/iam/apiv3/" for a module of "iam".
+	// Likewise the "/snippets/" prefix effectively roots the snippet
+	// matches for this module - so
+	// " - /internal/generated/snippets/policytroubleshooter/iam/apiv3/"
+	// shouldn't be removed for module "iam".
 	modulePathFragment := " /" + moduleName + "/"
 	snippetsPathFragment := "/snippets/" + moduleName + "/"
 
