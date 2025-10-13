@@ -51,15 +51,150 @@ const (
 	otherLibraryType       libraryType = "OTHER"
 )
 
-// Manifest writes a manifest file with info about all of the confs.
-func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
-	log.Println("updating gapic manifest")
-	entries := map[string]ManifestEntry{} // Key is the package name.
-	f, err := os.Create(filepath.Join(p.googleCloudDir, "internal", ".repo-metadata-full.json"))
+func (p *postProcessor) readManifest() (map[string]ManifestEvent, error) {
+	log.Println("reading gapic manifest")
+	// Read existing manifest to preserve entries from skipped modules.
+	entries := map[string]ManifestEvent{}
+	manifestPath := filepath.Join(p.googleCloudDir, "internal", ".repo-metadata-full.json")
+	b, err := os.ReadFile(manifestPath)
 	if err != nil {
 		return nil, err
 	}
+	if err := json.Unmarshal(b, &entries); err != nil {
+		return nil, err
+	}
+	return entries, nil
+}
+
+// UpdateManifest updates the manifest file with info about all of the confs.
+func (p *postProcessor) UpdateManifest(modules string) error {
+	entries := make(map[string]ManifestEntry)
+	manifestPath := filepath.Join(p.googleCloudDir, "internal", ".repo-metadata-full.json")
+	if modules == "" {
+		log.Println("updating gapic manifest")
+		var err error
+		entries, err = p.generateManifestEntries()
+		if err != nil {
+			return err
+		}
+	} else {
+		log.Println("updating gapic manifest for", modules)
+		b, err := os.ReadFile(manifestPath)
+		if err != nil && !os.IsNotExist(err) {
+			return err
+		}
+		if err == nil {
+			if err := json.Unmarshal(b, &entries); err != nil {
+				return err
+			}
+		}
+		modList := strings.Split(modules, ",")
+		for _, mod := range modList {
+			for inputDir, li := range p.config.GoogleapisToImportPath {
+				if !strings.Contains(li.ImportPath, mod) {
+					continue
+				}
+				if li.ServiceConfig == "" {
+					continue
+				}
+				yamlPath := filepath.Join(p.googleapisDir, inputDir, li.ServiceConfig)
+				yamlFile, err := os.Open(yamlPath)
+				if err != nil {
+					return err
+				}
+				yamlConfig := struct {
+					Title    string `yaml:"title"` // We only need the title and name.
+					NameFull string `yaml:"name"`  // We only need the title and name.
+				}{}
+				if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
+					return fmt.Errorf("decode: %v", err)
+				}
+				docURL, err := docURL(p.googleCloudDir, li.ImportPath, li.RelPath)
+				if err != nil {
+					return fmt.Errorf("unable to build docs URL: %v", err)
+				}
+
+				releaseLevel, err := releaseLevel(p.googleCloudDir, li)
+				if err != nil {
+					return fmt.Errorf("unable to calculate release level for %v: %v", inputDir, err)
+				}
+
+				apiShortname, err := apiShortname(yamlConfig.NameFull)
+				if err != nil {
+					return fmt.Errorf("unable to determine api_shortname from %v: %v", yamlConfig.NameFull, err)
+				}
+
+				entry := ManifestEntry{
+					APIShortname:        apiShortname,
+					DistributionName:    li.ImportPath,
+					Description:         yamlConfig.Title,
+					Language:            "go",
+					ClientLibraryType:   "generated",
+					ClientDocumentation: docURL,
+					ReleaseLevel:        releaseLevel,
+					LibraryType:         gapicAutoLibraryType,
+				}
+				entries[li.ImportPath] = entry
+			}
+		}
+	}
+
+	// Sort and write the manifest file.
+	keys := make([]string, 0, len(entries))
+	for k := range entries {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	f, err := os.Create(manifestPath)
+	if err != nil {
+		return err
+	}
 	defer f.Close()
+
+	buf := &bytes.Buffer{}
+	buf.WriteString("{\n")
+
+	for i, key := range keys {
+		entry := entries[key]
+		entryBytes, err := json.MarshalIndent(entry, "  ", "  ")
+		if err != nil {
+			return err
+		}
+
+		// Indent the entry itself
+		indentedEntry := strings.ReplaceAll(string(entryBytes), "\n", "\n  ")
+
+		buf.WriteString(fmt.Sprintf("  %q: %s", key, indentedEntry))
+		if i < len(keys)-1 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("\n")
+	}
+
+	buf.WriteString("}\n")
+	if _, err := f.Write(buf.Bytes()); err != nil {
+		return err
+	}
+	return nil
+}
+
+// generateManifestEntries gathers info about all of the confs.
+func (p *postProcessor) generateManifestEntries() (map[string]ManifestEntry, error) {
+	// Read existing manifest to preserve entries from skipped modules.
+	existingEntries := map[string]ManifestEntry{}
+	manifestPath := filepath.Join(p.googleCloudDir, "internal", ".repo-metadata-full.json")
+	b, err := os.ReadFile(manifestPath)
+	if err != nil && !os.IsNotExist(err) {
+		return nil, err
+	}
+	if err == nil {
+		if err := json.Unmarshal(b, &existingEntries); err != nil {
+			return nil, err
+		}
+	}
+
+	entries := map[string]ManifestEntry{} // Key is the package name.
 	for _, manual := range p.config.ManualClientInfo {
 		entries[manual.DistributionName] = *manual
 	}
@@ -106,11 +241,30 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 		}
 		entries[li.ImportPath] = entry
 	}
+
+	// Add back entries from skipped modules that were in the old manifest.
+	for distName, entry := range existingEntries {
+		isSkipped := false
+		for _, skippedPath := range p.config.SkipModuleScanPaths {
+			prefix := "cloud.google.com/go/" + skippedPath
+			// Add a trailing slash to prefix to avoid matching substrings, e.g.
+			// `.../go/a` matching `.../go/abc`. Except when the distName is
+			// exactly the prefix without a slash.
+			if strings.HasPrefix(distName, prefix+"/") || distName == prefix {
+				isSkipped = true
+				break
+			}
+		}
+		if isSkipped {
+			if _, ok := entries[distName]; !ok {
+				entries[distName] = entry
+			}
+		}
+	}
+
 	// Remove base module entry
 	delete(entries, "")
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	return entries, enc.Encode(entries)
+	return entries, nil
 }
 
 // Name is of form secretmanager.googleapis.com api_shortname

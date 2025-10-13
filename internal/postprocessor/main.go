@@ -67,6 +67,9 @@ var (
 		"build":    true,
 		"ci":       true,
 	}
+
+	manifestCmd *flag.FlagSet
+	modulesFlag string
 )
 
 var (
@@ -78,6 +81,11 @@ var (
 	internalVersionTmpl string
 )
 
+func init() {
+	manifestCmd = flag.NewFlagSet("manifest", flag.ExitOnError)
+	manifestCmd.StringVar(&modulesFlag, "modules", "", "Comma-separated list of module names to regenerate.")
+}
+
 func main() {
 	clientRoot := flag.String("client-root", "/workspace/google-cloud-go", "Path to clients.")
 	googleapisDir := flag.String("googleapis-dir", "", "Path to googleapis/googleapis repo.")
@@ -85,6 +93,7 @@ func main() {
 	branchOverride := flag.String("branch", "", "The branch that should be processed by this code")
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
+	manifestCmd.StringVar(googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo.")
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
@@ -94,6 +103,36 @@ func main() {
 				log.Fatal(err)
 			}
 			log.Println("Validation complete.")
+			return
+		case "manifest":
+			manifestCmd.Parse(os.Args[2:])
+			log.Println("Starting manifest generation.")
+			if *googleapisDir == "" {
+				log.Println("creating temp dir")
+				tmpDir, err := os.MkdirTemp("", "update-postprocessor")
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer os.RemoveAll(tmpDir)
+
+				log.Printf("working out %s\n", tmpDir)
+				*googleapisDir = filepath.Join(tmpDir, "googleapis")
+
+				if err := DeepClone("https://github.com/googleapis/googleapis", *googleapisDir); err != nil {
+					log.Fatal(err)
+				}
+			}
+			p := &postProcessor{
+				googleapisDir:  *googleapisDir,
+				googleCloudDir: *clientRoot,
+			}
+			if err := p.loadConfig(); err != nil {
+				log.Fatal(err)
+			}
+			if err := p.UpdateManifest(modulesFlag); err != nil {
+				log.Fatal(err)
+			}
+			log.Println("Manifest generation complete.")
 			return
 		}
 	}
@@ -108,7 +147,7 @@ func main() {
 
 	dirSlice := []string{}
 	if *directories != "" {
-		dirSlice = strings.Split(*directories, ",")
+		dirSlice := strings.Split(*directories, ",")
 		log.Println("Postprocessor running on", dirSlice)
 	} else {
 		log.Println("Postprocessor running on all modules.")
@@ -174,7 +213,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 		return nil
 	}
 
-	manifest, err := p.Manifest()
+	manifest, err := p.readManifest()
 	if err != nil {
 		return err
 	}
