@@ -9,8 +9,8 @@ exclude google.golang.org/grpc v1.71.0
 require (
 	cloud.google.com/go/spanner v1.84.1
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.29.0
-	go.opentelemetry.io/otel v1.36.0
-	go.opentelemetry.io/otel/sdk v1.36.0
+	go.opentelemetry.io/otel v1.38.0
+	go.opentelemetry.io/otel/sdk v1.38.0
 	google.golang.org/api v0.247.0
 )
 
