@@ -1,7 +1,7 @@
 image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
 libraries:
   - id: alloydb
-    version: 1.18.0
+    version: 1.19.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/alloydb/v1
@@ -128,7 +128,7 @@ libraries:
       - internal/generated/snippets/apigeeconnect/
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
-    version: 0.9.6
+    version: 0.10.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/apigeeregistry/v1
@@ -224,7 +224,7 @@ libraries:
       - internal/generated/snippets/appengine/
     tag_format: '{id}/v{version}'
   - id: apphub
-    version: 0.3.1
+    version: 0.4.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/apphub/v1
@@ -329,7 +329,7 @@ libraries:
       - internal/generated/snippets/area120/
     tag_format: '{id}/v{version}'
   - id: asset
-    version: 1.21.1
+    version: 1.22.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/asset/v1
@@ -375,7 +375,7 @@ libraries:
       - internal/generated/snippets/asset/
     tag_format: '{id}/v{version}'
   - id: assuredworkloads
-    version: 1.12.6
+    version: 1.13.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/assuredworkloads/v1
@@ -430,7 +430,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: automl
-    version: 1.14.7
+    version: 1.15.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/automl/v1
@@ -489,7 +489,7 @@ libraries:
       - internal/generated/snippets/backupdr/
     tag_format: '{id}/v{version}'
   - id: baremetalsolution
-    version: 1.3.6
+    version: 1.4.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/baremetalsolution/v2
@@ -513,7 +513,7 @@ libraries:
       - internal/generated/snippets/baremetalsolution/
     tag_format: '{id}/v{version}'
   - id: batch
-    version: 1.12.2
+    version: 1.13.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/batch/v1
@@ -538,7 +538,7 @@ libraries:
       - internal/generated/snippets/batch/
     tag_format: '{id}/v{version}'
   - id: beyondcorp
-    version: 1.1.6
+    version: 1.2.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/beyondcorp/appconnections/v1
@@ -606,7 +606,7 @@ libraries:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
   - id: billing
-    version: 1.20.4
+    version: 1.21.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/billing/budgets/v1
@@ -652,7 +652,7 @@ libraries:
       - internal/generated/snippets/billing/
     tag_format: '{id}/v{version}'
   - id: binaryauthorization
-    version: 1.9.5
+    version: 1.10.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/binaryauthorization/v1
@@ -687,7 +687,7 @@ libraries:
       - internal/generated/snippets/binaryauthorization/
     tag_format: '{id}/v{version}'
   - id: capacityplanner
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/capacityplanner/v1beta
@@ -759,7 +759,7 @@ libraries:
       - internal/generated/snippets/chat/
     tag_format: '{id}/v{version}'
   - id: chronicle
-    version: 0.1.1
+    version: 0.2.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/chronicle/v1
@@ -783,7 +783,7 @@ libraries:
       - internal/generated/snippets/chronicle/
     tag_format: '{id}/v{version}'
   - id: cloudcontrolspartner
-    version: 1.4.0
+    version: 1.5.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/cloudcontrolspartner/v1
@@ -967,7 +967,7 @@ libraries:
       - internal/generated/snippets/confidentialcomputing/
     tag_format: '{id}/v{version}'
   - id: dataproc
-    version: 2.14.1
+    version: 2.15.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/dataproc/v1
@@ -991,7 +991,7 @@ libraries:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
   - id: dlp
-    version: 1.25.0
+    version: 1.26.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/privacy/dlp/v2
@@ -1013,7 +1013,7 @@ libraries:
       - ^dlp/apiv2/dlppb/.*$
     tag_format: '{id}/v{version}'
   - id: eventarc
-    version: 1.16.1
+    version: 1.17.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/cloud/eventarc/v1
@@ -1072,7 +1072,7 @@ libraries:
       - internal/generated/snippets/longrunning/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.23.0
+    version: 1.24.0
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
     apis:
       - path: google/maps/addressvalidation/v1
