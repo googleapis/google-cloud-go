@@ -13,7 +13,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.4
 	github.com/googleapis/gax-go/v2 v2.15.0
-	go.opentelemetry.io/contrib/detectors/gcp v1.36.0
+	go.opentelemetry.io/contrib/detectors/gcp v1.38.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/metric v1.36.0
 	go.opentelemetry.io/otel/sdk v1.36.0

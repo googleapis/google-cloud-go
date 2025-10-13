@@ -8,8 +8,8 @@ require (
 	github.com/google/s2a-go v0.1.9
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6
 	github.com/googleapis/gax-go/v2 v2.15.0
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.63.0
 	golang.org/x/net v0.43.0
 	golang.org/x/time v0.12.0
 	google.golang.org/grpc v1.74.2
