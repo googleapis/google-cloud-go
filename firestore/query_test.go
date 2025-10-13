@@ -972,6 +972,9 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 				t.Fatal(err)
 			}
 			got, err := gotq.toRunQueryRequestProto()
+			if err != nil {
+				t.Fatal(err)
+			}
 			want := test.want
 			want.QueryType.(*pb.RunQueryRequest_StructuredQuery).StructuredQuery.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
 			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
