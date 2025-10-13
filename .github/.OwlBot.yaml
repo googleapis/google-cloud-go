@@ -94,11 +94,6 @@ deep-remove-regex:
   - /gkehub/apiv1beta1/
   - /gkemulticloud/apiv1/
   - /gsuiteaddons/apiv1/
-  - /iam/apiv1/
-  - /iam/apiv2/
-  - /iam/apiv3/
-  - /iam/apiv3beta/
-  - /iam/credentials/apiv1/
   - /iap/apiv1/
   - /identitytoolkit/apiv2/
   - /ids/apiv1/
@@ -192,11 +187,6 @@ deep-remove-regex:
   - /internal/generated/snippets/gkehub/apiv1beta1/
   - /internal/generated/snippets/gkemulticloud/apiv1/
   - /internal/generated/snippets/gsuiteaddons/apiv1/
-  - /internal/generated/snippets/iam/apiv1/
-  - /internal/generated/snippets/iam/apiv2/
-  - /internal/generated/snippets/iam/apiv3/
-  - /internal/generated/snippets/iam/apiv3beta/
-  - /internal/generated/snippets/iam/credentials/apiv1/
   - /internal/generated/snippets/iap/apiv1/
   - /internal/generated/snippets/identitytoolkit/apiv2/
   - /internal/generated/snippets/ids/apiv1/
@@ -762,16 +752,6 @@ deep-copy-regex:
   - source: /google/cloud/gkemulticloud/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/gsuiteaddons/v1/cloud.google.com/go
-    dest: /
-  - source: /google/iam/v1/cloud.google.com/go
-    dest: /
-  - source: /google/iam/v2/cloud.google.com/go
-    dest: /
-  - source: /google/iam/v3/cloud.google.com/go
-    dest: /
-  - source: /google/iam/v3beta/cloud.google.com/go
-    dest: /
-  - source: /google/iam/credentials/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/iap/v1/cloud.google.com/go
     dest: /

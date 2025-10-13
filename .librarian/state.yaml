@@ -1047,6 +1047,83 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/eventarc/
     tag_format: '{id}/v{version}'
+  - id: iam
+    version: 1.5.3
+    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    apis:
+      - path: google/iam/credentials/v1
+        service_config: iamcredentials_v1.yaml
+      - path: google/iam/v1
+        service_config: iam_meta_api.yaml
+      - path: google/iam/v2
+        service_config: iam_v2.yaml
+      - path: google/iam/v3
+        service_config: iam_v3.yaml
+      - path: google/iam/v3beta
+        service_config: iam_v3beta.yaml
+    source_roots:
+      - iam
+      - internal/generated/snippets/iam
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/iam/
+      - ^iam/admin/apiv1/[^/]*_client\.go$
+      - ^iam/admin/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^iam/admin/apiv1/[^/]*_client_example_test\.go$
+      - ^iam/admin/apiv1/auxiliary\.go$
+      - ^iam/admin/apiv1/auxiliary_go123\.go$
+      - ^iam/admin/apiv1/doc\.go$
+      - ^iam/admin/apiv1/gapic_metadata\.json$
+      - ^iam/admin/apiv1/helpers\.go$
+      - ^iam/admin/apiv1/adminpb/.*$
+      - ^iam/apiv1/[^/]*_client\.go$
+      - ^iam/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv1/[^/]*_client_example_test\.go$
+      - ^iam/apiv1/auxiliary\.go$
+      - ^iam/apiv1/auxiliary_go123\.go$
+      - ^iam/apiv1/doc\.go$
+      - ^iam/apiv1/gapic_metadata\.json$
+      - ^iam/apiv1/helpers\.go$
+      - ^iam/apiv1/iampb/.*$
+      - ^iam/apiv2/[^/]*_client\.go$
+      - ^iam/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv2/[^/]*_client_example_test\.go$
+      - ^iam/apiv2/auxiliary\.go$
+      - ^iam/apiv2/auxiliary_go123\.go$
+      - ^iam/apiv2/doc\.go$
+      - ^iam/apiv2/gapic_metadata\.json$
+      - ^iam/apiv2/helpers\.go$
+      - ^iam/apiv2/iampb/.*$
+      - ^iam/apiv3/[^/]*_client\.go$
+      - ^iam/apiv3/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv3/[^/]*_client_example_test\.go$
+      - ^iam/apiv3/auxiliary\.go$
+      - ^iam/apiv3/auxiliary_go123\.go$
+      - ^iam/apiv3/doc\.go$
+      - ^iam/apiv3/gapic_metadata\.json$
+      - ^iam/apiv3/helpers\.go$
+      - ^iam/apiv3/iampb/.*$
+      - ^iam/apiv3beta/[^/]*_client\.go$
+      - ^iam/apiv3beta/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv3beta/[^/]*_client_example_test\.go$
+      - ^iam/apiv3beta/auxiliary\.go$
+      - ^iam/apiv3beta/auxiliary_go123\.go$
+      - ^iam/apiv3beta/doc\.go$
+      - ^iam/apiv3beta/gapic_metadata\.json$
+      - ^iam/apiv3beta/helpers\.go$
+      - ^iam/apiv3beta/iampb/.*$
+      - ^iam/credentials/apiv1/[^/]*_client\.go$
+      - ^iam/credentials/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^iam/credentials/apiv1/[^/]*_client_example_test\.go$
+      - ^iam/credentials/apiv1/auxiliary\.go$
+      - ^iam/credentials/apiv1/auxiliary_go123\.go$
+      - ^iam/credentials/apiv1/doc\.go$
+      - ^iam/credentials/apiv1/gapic_metadata\.json$
+      - ^iam/credentials/apiv1/helpers\.go$
+      - ^iam/credentials/apiv1/credentialspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/iam/
+    tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.6.7
     last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b

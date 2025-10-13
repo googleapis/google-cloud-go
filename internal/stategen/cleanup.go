@@ -246,13 +246,25 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 		return fmt.Errorf("loading postprocessor config: %w", err)
 	}
 	importPrefix := "cloud.google.com/go/" + moduleName + "/"
-	// These are designed to match lines conservatively. The leading
-	// space before the module name prevents spurious matches such as
-	// "- /policytroubleshooter/iam/apiv3/" for a module of "iam".
-	// Likewise the "/snippets/" prefix effectively roots the snippet
-	// matches for this module - so
-	// " - /internal/generated/snippets/policytroubleshooter/iam/apiv3/"
-	// shouldn't be removed for module "iam".
+	// These are designed to match lines conservatively against the root
+	// of the repo and the root of the generated snippets. For example,
+	// when removing deep-remove-regex entries for the module "iam"
+	// want to remove all of:
+	//
+	// - /iam/apiv1/
+	// - /iam/apiv2/
+	// - /iam/apiv3/
+	// - /iam/apiv3beta/
+	// - /iam/credentials/apiv1/
+	// - /internal/generated/snippets/iam/apiv1/
+	// - /internal/generated/snippets/iam/apiv2/
+	// - /internal/generated/snippets/iam/apiv3/
+	// - /internal/generated/snippets/iam/apiv3beta/
+	// - /internal/generated/snippets/iam/credentials/apiv1
+	//
+	// ... but we *don't* want to remove:
+	// - /policytroubleshooter/iam/apiv3/
+	// - /internal/generated/snippets/policytroubleshooter/iam/apiv3/
 	modulePathFragment := " /" + moduleName + "/"
 	snippetsPathFragment := "/snippets/" + moduleName + "/"
 
