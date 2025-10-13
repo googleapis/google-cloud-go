@@ -320,7 +320,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 				msgChan := make(chan []*Message)
 				errChan := make(chan error)
 				go func() {
-					// Make message pulling dependent on iterator for context cancellation
+					// Make message pulling dependent on iterator for context cancellation.
 					// If the context is cancelled while pulling messages, stop reading from stream early.
 					select {
 					case <-ctx.Done():
