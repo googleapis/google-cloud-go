@@ -138,6 +138,9 @@
         "gsuiteaddons": {
             "component": "gsuiteaddons"
         },
+        "iam": {
+            "component": "iam"
+        },
         "iap": {
             "component": "iap"
         },
