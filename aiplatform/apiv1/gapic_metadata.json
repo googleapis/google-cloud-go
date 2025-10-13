@@ -629,6 +629,11 @@
                 "FetchFeatureValues"
               ]
             },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
