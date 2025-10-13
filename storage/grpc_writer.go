@@ -622,7 +622,8 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 		}
 		obj, err = w.streamSender.sendBuffer(ctx, data[:l], offset, flush, flush && doneReading)
 		if err != nil {
-			return nil, err
+			// Note, an object resource may also be returned in case of non-nil error.
+			return
 		}
 		data = data[l:]
 		offset += int64(l)
@@ -957,7 +958,8 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			}
 		}
 		if s.recvErr != io.EOF {
-			return nil, s.recvErr
+			err = s.recvErr
+			return
 		}
 		if obj.GetSize() > s.flushOffset {
 			s.flushOffset = obj.GetSize()
@@ -967,14 +969,16 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 	}
 
 	if flush {
-		// We don't necessarily expect multiple responses for a single flush, but
-		// this allows the server to send multiple responses if it wants to.
+		// We may receive multiple responses for a single flush. In particular
+		// if only part of the data was persisted, we may get a success response
+		// (persisted size or object resource) followed by an error.
 		flushOffset := s.flushOffset
 
 		for flushOffset < offset+int64(len(buf)) {
 			resp, ok := <-s.recvs
 			if !ok {
-				return nil, s.recvErr
+				err = s.recvErr
+				return
 			}
 			pSize := resp.GetPersistedSize()
 			rSize := resp.GetResource().GetSize()

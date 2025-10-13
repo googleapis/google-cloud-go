@@ -291,7 +291,11 @@ func (w *Writer) openWriter() (err error) {
 		donec:                w.donec,
 		setError:             w.error,
 		progress:             w.progress,
-		setObj:               func(o *ObjectAttrs) { w.obj = o },
+		setObj: func(o *ObjectAttrs) {
+			if o != nil {
+				w.obj = o
+			}
+		},
 		setSize: func(n int64) {
 			if w.obj != nil {
 				w.obj.Size = n

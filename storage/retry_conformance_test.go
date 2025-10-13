@@ -656,6 +656,10 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("Writer.Close: %v", err)
 			}
 
+			if objW.Attrs() == nil {
+				return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			}
+
 			// Don't reuse obj, in case preconditions were set on the write request.
 			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
 			defer r.Close()
@@ -706,6 +710,12 @@ var methods = map[string][]retryFunc{
 			if err := objW.Close(); err != nil {
 				return fmt.Errorf("Writer.Close: %w", err)
 			}
+
+			// TODO: Enable this check once we figure out what to do with case
+			// where redirect includes write handle.
+			// if objW.Attrs() == nil {
+			// 	return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			// }
 
 			// Don't reuse obj, in case preconditions were set on the write request.
 			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
