@@ -261,6 +261,12 @@ func (w *Writer) Close() error {
 	w.closed = true
 	w.mu.Lock()
 	defer w.mu.Unlock()
+	// In rare cases for gRPC, the write may succeed but the server does not
+	// return a full object resource. This should cause an error to keep the
+	// contract that either w.Attrs or the error should be non-nil.
+	if w.obj == nil && w.err == nil {
+		w.err = errors.New("storage: write succeeded but no object attributes returned from the server")
+	}
 	trace.EndSpan(w.ctx, w.err)
 	return w.err
 }
@@ -291,7 +297,11 @@ func (w *Writer) openWriter() (err error) {
 		donec:                w.donec,
 		setError:             w.error,
 		progress:             w.progress,
-		setObj:               func(o *ObjectAttrs) { w.obj = o },
+		setObj: func(o *ObjectAttrs) {
+			if o != nil {
+				w.obj = o
+			}
+		},
 		setSize: func(n int64) {
 			if w.obj != nil {
 				w.obj.Size = n
