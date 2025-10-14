@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.56.3](https://github.com/googleapis/google-cloud-go/compare/storage/v1.56.2...storage/v1.56.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* **storage:** Persist resource in append retry ([#13128](https://github.com/googleapis/google-cloud-go/issues/13128)) ([9ad2100](https://github.com/googleapis/google-cloud-go/commit/9ad2100ab53801be483492e8ff87662c43c846f8))
+
 ## [1.56.2](https://github.com/googleapis/google-cloud-go/compare/storage/v1.56.1...storage/v1.56.2) (2025-09-12)
 
 
