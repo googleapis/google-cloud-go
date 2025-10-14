@@ -1672,6 +1672,12 @@ type ObjectAttrs struct {
 	HardDeleteTime time.Time
 }
 
+// isZero reports whether the ObjectAttrs struct is empty (i.e. all the
+// fields are their zero value).
+func (o *ObjectAttrs) isZero() bool {
+	return reflect.DeepEqual(o, &ObjectAttrs{})
+}
+
 // ObjectRetention contains the retention configuration for this object.
 type ObjectRetention struct {
 	// Mode is the retention policy's mode on this object. Valid values are
