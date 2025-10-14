@@ -587,9 +587,11 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 // uploadBuffer uploads the buffer at the given offset using a bi-directional
 // Write stream. It will open a new stream if necessary (on the first call or
 // after resuming from failure) and chunk the buffer per maxPerMessageWriteSize.
-// The final Object is returned on success if doneReading is true.
+// The object resource will be returned as well when it's available from the
+// server (on finalization or on object creation in an appendable write).
 //
-// Returns object and any error that is not retriable.
+// Returns object and any error that is not retriable. Both object and non-nil
+// error may be returned in some cases.
 func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, doneReading bool) (obj *storagepb.Object, err error) {
 	if w.streamSender == nil {
 		if w.append {
@@ -927,6 +929,9 @@ func (s *gRPCAppendBidiWriteBufferSender) receiveMessages(resps chan<- *storagep
 	close(resps)
 }
 
+// Send contents of the buffer to the stream.
+// Returns object resource (if available) and error. Both object and error
+// may be non-nil in some cases.
 func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offset int64, flush, finishWrite, sendFirstMessage bool) (obj *storagepb.Object, err error) {
 	var req *storagepb.BidiWriteObjectRequest
 	finalizeObject := finishWrite && s.finalizeOnClose
