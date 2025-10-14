@@ -77,7 +77,7 @@
         },
         "vmmigration": {
             "component": "vmmigration"
-        },
+        }
     },
     "plugins": [
         "sentence-case"
