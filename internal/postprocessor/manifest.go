@@ -16,11 +16,13 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
@@ -51,10 +53,10 @@ const (
 	otherLibraryType       libraryType = "OTHER"
 )
 
-func (p *postProcessor) readManifest() (map[string]ManifestEvent, error) {
+func (p *postProcessor) readManifest() (map[string]ManifestEntry, error) {
 	log.Println("reading gapic manifest")
 	// Read existing manifest to preserve entries from skipped modules.
-	entries := map[string]ManifestEvent{}
+	entries := map[string]ManifestEntry{}
 	manifestPath := filepath.Join(p.googleCloudDir, "internal", ".repo-metadata-full.json")
 	b, err := os.ReadFile(manifestPath)
 	if err != nil {
@@ -66,7 +68,15 @@ func (p *postProcessor) readManifest() (map[string]ManifestEvent, error) {
 	return entries, nil
 }
 
-// UpdateManifest updates the manifest file with info about all of the confs.
+// UpdateManifest regenerates or updates the `internal/.repo-metadata-full.json` file.
+// There are two modes of operation:
+//  1. **Full Regeneration (default):** This mode regenerates the entire file from scratch
+//     based on the existing `config.yaml` and `.OwlBot.yaml` files. To prevent accidental
+//     data loss, this mode automatically preserves existing entries for modules listed in
+//     the `skip-module-scan-paths` section of the configuration.
+//  2. **Targeted Update (non-empty `modules` param):** This mode allows you to add or
+//     refresh one or more specific modules without regenerating the entire file. This i
+//     useful for adding a newly-generated module to the manifest.
 func (p *postProcessor) UpdateManifest(modules string) error {
 	entries := make(map[string]ManifestEntry)
 	manifestPath := filepath.Join(p.googleCloudDir, "internal", ".repo-metadata-full.json")
@@ -90,6 +100,7 @@ func (p *postProcessor) UpdateManifest(modules string) error {
 		}
 		modList := strings.Split(modules, ",")
 		for _, mod := range modList {
+			modFound := false
 			for inputDir, li := range p.config.GoogleapisToImportPath {
 				if !strings.Contains(li.ImportPath, mod) {
 					continue
@@ -135,6 +146,10 @@ func (p *postProcessor) UpdateManifest(modules string) error {
 					LibraryType:         gapicAutoLibraryType,
 				}
 				entries[li.ImportPath] = entry
+				modFound = true
+			}
+			if !modFound {
+				return fmt.Errorf("configuration not found for %q", mod)
 			}
 		}
 	}
@@ -157,15 +172,19 @@ func (p *postProcessor) UpdateManifest(modules string) error {
 
 	for i, key := range keys {
 		entry := entries[key]
+		// The prefix for MarshalIndent should be "  " to indent the members of
+		// the entry, and the indent should be "  " for sub-members.
 		entryBytes, err := json.MarshalIndent(entry, "  ", "  ")
 		if err != nil {
 			return err
 		}
 
-		// Indent the entry itself
-		indentedEntry := strings.ReplaceAll(string(entryBytes), "\n", "\n  ")
+		s := string(entryBytes)
+		firstBrace := strings.Index(s, "{")
+		// Write the key and then the marshaled entry starting from the brace.
+		buf.WriteString(fmt.Sprintf("  %q: ", key))
+		buf.WriteString(s[firstBrace:])
 
-		buf.WriteString(fmt.Sprintf("  %q: %s", key, indentedEntry))
 		if i < len(keys)-1 {
 			buf.WriteString(",")
 		}

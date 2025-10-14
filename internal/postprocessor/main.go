@@ -83,7 +83,7 @@ var (
 
 func init() {
 	manifestCmd = flag.NewFlagSet("manifest", flag.ExitOnError)
-	manifestCmd.StringVar(&modulesFlag, "modules", "", "Comma-separated list of module names to regenerate.")
+	manifestCmd.StringVar(&modulesFlag, "modules", "", "Comma-separated list of module names to update. If empty, regenerates entire manifest based on OwlBot config files.")
 }
 
 func main() {
@@ -93,6 +93,7 @@ func main() {
 	branchOverride := flag.String("branch", "", "The branch that should be processed by this code")
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
+	manifestCmd.StringVar(clientRoot, "client-root", "/workspace/google-cloud-go", "Path to clients.")
 	manifestCmd.StringVar(googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo.")
 
 	if len(os.Args) > 1 {
@@ -147,7 +148,7 @@ func main() {
 
 	dirSlice := []string{}
 	if *directories != "" {
-		dirSlice := strings.Split(*directories, ",")
+		dirSlice = strings.Split(*directories, ",")
 		log.Println("Postprocessor running on", dirSlice)
 	} else {
 		log.Println("Postprocessor running on all modules.")
