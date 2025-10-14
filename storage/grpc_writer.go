@@ -620,7 +620,11 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 			l = len(data)
 			flush = true
 		}
-		obj, err = w.streamSender.sendBuffer(ctx, data[:l], offset, flush, flush && doneReading)
+		var recvObj *storagepb.Object
+		recvObj, err = w.streamSender.sendBuffer(ctx, data[:l], offset, flush, flush && doneReading)
+		if recvObj != nil {
+			obj = recvObj
+		}
 		if err != nil {
 			// Note, an object resource may also be returned in case of non-nil error.
 			return
@@ -1012,8 +1016,10 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 			}
 		}
 
-		obj, err = s.sendOnConnectedStream(buf, offset, flush, finishWrite, sendFirstMessage)
-		if obj != nil {
+		var recvObj *storagepb.Object
+		recvObj, err = s.sendOnConnectedStream(buf, offset, flush, finishWrite, sendFirstMessage)
+		if recvObj != nil {
+			obj = recvObj
 			s.objResource = obj
 		}
 		if err == nil {
