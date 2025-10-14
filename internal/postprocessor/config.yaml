@@ -732,7 +732,6 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
-  - pubsublite
   - recaptchaenterprise
   - rapidmigrationassessment
   - privilegedaccessmanager
@@ -782,6 +781,7 @@ skip-module-scan-paths:
   - edgecontainer
   - documentai
   - cloudprofiler
+  - pubsublite
   - domains
   - discoveryengine
   - devicestreaming
