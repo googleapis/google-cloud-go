@@ -31,7 +31,6 @@ modules:
   - profiler
   - pubsub/v2
   - pubsub
-  - pubsublite
   - recommendationengine
   - recommender
   - redis
@@ -344,9 +343,6 @@ service-configs:
   - input-directory: google/cloud/orgpolicy/v2
     service-config: orgpolicy_v2.yaml
     import-path: cloud.google.com/go/orgpolicy/apiv2
-  - input-directory: google/cloud/pubsublite/v1
-    service-config: pubsublite_v1.yaml
-    import-path: cloud.google.com/go/pubsublite/apiv1
   - input-directory: google/cloud/recommendationengine/v1beta1
     service-config: recommendationengine_v1beta1.yaml
     import-path: cloud.google.com/go/recommendationengine/apiv1beta1
@@ -736,6 +732,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - pubsublite
   - recaptchaenterprise
   - rapidmigrationassessment
   - privilegedaccessmanager
@@ -851,7 +848,6 @@ skip-module-scan-paths:
   - profiler
   - pubsub/v2
   - pubsub
-  - pubsublite
   - spanner
   - storage
   - vertexai

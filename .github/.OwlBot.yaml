@@ -120,7 +120,6 @@ deep-remove-regex:
   - /internal/generated/snippets/monitoring/metricsscope/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
   - /internal/generated/snippets/pubsub/apiv1/
-  - /internal/generated/snippets/pubsublite/apiv1/
   - /internal/generated/snippets/recommendationengine/apiv1beta1/
   - /internal/generated/snippets/recommender/apiv1/
   - /internal/generated/snippets/recommender/apiv1beta1/
@@ -237,7 +236,6 @@ deep-remove-regex:
   - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
   - /pubsub/v2/apiv1/
-  - /pubsublite/apiv1/
   - /recommendationengine/apiv1beta1/
   - /recommender/apiv1/
   - /recommender/apiv1beta1/
@@ -510,8 +508,6 @@ deep-copy-regex:
   - source: /google/cloud/orgpolicy/v2/cloud.google.com/go
     dest: /
   - source: /google/pubsub/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/pubsublite/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/recommendationengine/v1beta1/cloud.google.com/go
     dest: /

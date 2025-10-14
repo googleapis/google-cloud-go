@@ -2103,7 +2103,7 @@ libraries:
       - internal/generated/snippets/lifesciences/
     tag_format: '{id}/v{version}'
   - id: longrunning
-    version: 0.6.7
+    version: 0.7.0
     last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
     apis:
       - path: google/longrunning
@@ -3076,6 +3076,30 @@ libraries:
       - ^privilegedaccessmanager/apiv1/privilegedaccessmanagerpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/privilegedaccessmanager/
+    tag_format: '{id}/v{version}'
+  - id: pubsublite
+    version: 1.8.2
+    last_generated_commit: 9215671dbc32a2bb26be3fe0678f7942ca12b365
+    apis:
+      - path: google/cloud/pubsublite/v1
+        service_config: pubsublite_v1.yaml
+    source_roots:
+      - pubsublite
+      - internal/generated/snippets/pubsublite
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/pubsublite/
+      - ^pubsublite/apiv1/[^/]*_client\.go$
+      - ^pubsublite/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^pubsublite/apiv1/[^/]*_client_example_test\.go$
+      - ^pubsublite/apiv1/auxiliary\.go$
+      - ^pubsublite/apiv1/auxiliary_go123\.go$
+      - ^pubsublite/apiv1/doc\.go$
+      - ^pubsublite/apiv1/gapic_metadata\.json$
+      - ^pubsublite/apiv1/helpers\.go$
+      - ^pubsublite/apiv1/pubsublitepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/pubsublite/
     tag_format: '{id}/v{version}'
   - id: rapidmigrationassessment
     version: 1.1.8

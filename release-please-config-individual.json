@@ -34,9 +34,6 @@
     "pubsub/v2": {
       "component": "pubsub/v2"
     },
-    "pubsublite": {
-      "component": "pubsublite"
-    },
     "spanner": {
       "component": "spanner"
     },
