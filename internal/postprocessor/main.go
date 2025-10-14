@@ -268,6 +268,9 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
 			apiName := manifest[serviceImportPath].Description
+			if apiName == "" {
+				return fmt.Errorf("no ManifestEntry.Description found for serviceImportPath %s. Cannot generate min required files", serviceImportPath)
+			}
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
