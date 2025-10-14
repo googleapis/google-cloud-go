@@ -1581,7 +1581,7 @@ libraries:
       - internal/generated/snippets/eventarc/
     tag_format: '{id}/v{version}'
   - id: longrunning
-    version: 0.6.7
+    version: 0.7.0
     last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
     apis:
       - path: google/longrunning
