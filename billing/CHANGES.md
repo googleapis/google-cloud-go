@@ -1,5 +1,11 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/billing%2Fv1.21.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
 ## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.20.3...billing/v1.20.4) (2025-04-15)
 
 

@@ -22,11 +22,7 @@ package issueresolutionpb
 
 import (
 	typepb "cloud.google.com/go/shopping/type/typepb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -811,92 +807,4 @@ func file_google_shopping_merchant_issueresolution_v1_aggregateproductstatuses_p
 	file_google_shopping_merchant_issueresolution_v1_aggregateproductstatuses_proto_rawDesc = nil
 	file_google_shopping_merchant_issueresolution_v1_aggregateproductstatuses_proto_goTypes = nil
 	file_google_shopping_merchant_issueresolution_v1_aggregateproductstatuses_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// AggregateProductStatusesServiceClient is the client API for AggregateProductStatusesService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AggregateProductStatusesServiceClient interface {
-	// Lists the `AggregateProductStatuses` resources for your merchant account.
-	// The response might contain fewer items than specified by `pageSize`.
-	// If `pageToken` was returned in previous request, it can be used to obtain
-	// additional results.
-	ListAggregateProductStatuses(ctx context.Context, in *ListAggregateProductStatusesRequest, opts ...grpc.CallOption) (*ListAggregateProductStatusesResponse, error)
-}
-
-type aggregateProductStatusesServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAggregateProductStatusesServiceClient(cc grpc.ClientConnInterface) AggregateProductStatusesServiceClient {
-	return &aggregateProductStatusesServiceClient{cc}
-}
-
-func (c *aggregateProductStatusesServiceClient) ListAggregateProductStatuses(ctx context.Context, in *ListAggregateProductStatusesRequest, opts ...grpc.CallOption) (*ListAggregateProductStatusesResponse, error) {
-	out := new(ListAggregateProductStatusesResponse)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.issueresolution.v1.AggregateProductStatusesService/ListAggregateProductStatuses", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AggregateProductStatusesServiceServer is the server API for AggregateProductStatusesService service.
-type AggregateProductStatusesServiceServer interface {
-	// Lists the `AggregateProductStatuses` resources for your merchant account.
-	// The response might contain fewer items than specified by `pageSize`.
-	// If `pageToken` was returned in previous request, it can be used to obtain
-	// additional results.
-	ListAggregateProductStatuses(context.Context, *ListAggregateProductStatusesRequest) (*ListAggregateProductStatusesResponse, error)
-}
-
-// UnimplementedAggregateProductStatusesServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedAggregateProductStatusesServiceServer struct {
-}
-
-func (*UnimplementedAggregateProductStatusesServiceServer) ListAggregateProductStatuses(context.Context, *ListAggregateProductStatusesRequest) (*ListAggregateProductStatusesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListAggregateProductStatuses not implemented")
-}
-
-func RegisterAggregateProductStatusesServiceServer(s *grpc.Server, srv AggregateProductStatusesServiceServer) {
-	s.RegisterService(&_AggregateProductStatusesService_serviceDesc, srv)
-}
-
-func _AggregateProductStatusesService_ListAggregateProductStatuses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListAggregateProductStatusesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AggregateProductStatusesServiceServer).ListAggregateProductStatuses(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.issueresolution.v1.AggregateProductStatusesService/ListAggregateProductStatuses",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AggregateProductStatusesServiceServer).ListAggregateProductStatuses(ctx, req.(*ListAggregateProductStatusesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _AggregateProductStatusesService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.issueresolution.v1.AggregateProductStatusesService",
-	HandlerType: (*AggregateProductStatusesServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListAggregateProductStatuses",
-			Handler:    _AggregateProductStatusesService_ListAggregateProductStatuses_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/issueresolution/v1/aggregateproductstatuses.proto",
 }

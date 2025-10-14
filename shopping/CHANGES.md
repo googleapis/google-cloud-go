@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.2.0...shopping/v1.2.1) (2025-10-09)
+
+
+### Bug Fixes
+
+* **shopping:** Upgrade gRPC service registration func ([9157a71](https://github.com/googleapis/google-cloud-go/commit/9157a715e39b0b15074ba34187ff70c820d8834a))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.1.1...shopping/v1.2.0) (2025-10-07)
 
 
