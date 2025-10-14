@@ -1,5 +1,13 @@
 # Changes
 
+## [2.2.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2/v2.2.0...pubsub/v2/v2.2.1) (2025-10-14)
+
+
+### Bug Fixes
+
+* **pubsub/v2:** Avoid Receive hang on context cancellation ([#13114](https://github.com/googleapis/google-cloud-go/issues/13114)) ([e7e169d](https://github.com/googleapis/google-cloud-go/commit/e7e169d1c1e48ad0fb78bcfe23d73f2de76d1f01))
+* **pubsub/v2:** Upgrade gRPC service registration func ([8fffca2](https://github.com/googleapis/google-cloud-go/commit/8fffca2819fa3dc858c213aa0c503e0df331b084))
+
 ## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2/v2.1.0...pubsub/v2/v2.2.0) (2025-10-03)
 
 
@@ -50,4 +58,3 @@
 * **pubsub/v2:** Update v2 package docs with migration guide ([#12564](https://github.com/googleapis/google-cloud-go/issues/12564)) ([5ef6068](https://github.com/googleapis/google-cloud-go/commit/5ef606838a84f1c56225fc4e33f4ee394eb34725))
 
 ## Changes
-
