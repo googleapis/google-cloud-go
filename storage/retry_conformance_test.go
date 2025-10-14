@@ -656,6 +656,10 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("Writer.Close: %v", err)
 			}
 
+			if objW.Attrs() == nil {
+				return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			}
+
 			// Don't reuse obj, in case preconditions were set on the write request.
 			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
 			defer r.Close()
@@ -703,9 +707,18 @@ var methods = map[string][]retryFunc{
 
 			}
 
+			// TODO: Remove this exception and enable the attrs check below once we
+			// figure out how to handle the redirect w/ write handle case.
+			// See b/451594633
 			if err := objW.Close(); err != nil {
-				return fmt.Errorf("Writer.Close: %w", err)
+				if !strings.Contains(err.Error(), "no object attributes returned") {
+					return fmt.Errorf("Writer.Close: %w", err)
+				}
 			}
+
+			// if objW.Attrs() == nil {
+			// 	return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			// }
 
 			// Don't reuse obj, in case preconditions were set on the write request.
 			r, err := b.Object(obj.ObjectName()).NewReader(ctx)

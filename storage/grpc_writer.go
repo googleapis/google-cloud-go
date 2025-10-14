@@ -587,9 +587,11 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 // uploadBuffer uploads the buffer at the given offset using a bi-directional
 // Write stream. It will open a new stream if necessary (on the first call or
 // after resuming from failure) and chunk the buffer per maxPerMessageWriteSize.
-// The final Object is returned on success if doneReading is true.
+// The object resource will be returned as well when it's available from the
+// server (on finalization or on object creation in an appendable write).
 //
-// Returns object and any error that is not retriable.
+// Returns object and any error that is not retriable. Both object and non-nil
+// error may be returned in some cases.
 func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, doneReading bool) (obj *storagepb.Object, err error) {
 	if w.streamSender == nil {
 		if w.append {
@@ -620,9 +622,14 @@ func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, d
 			l = len(data)
 			flush = true
 		}
-		obj, err = w.streamSender.sendBuffer(ctx, data[:l], offset, flush, flush && doneReading)
+		var recvObj *storagepb.Object
+		recvObj, err = w.streamSender.sendBuffer(ctx, data[:l], offset, flush, flush && doneReading)
+		if recvObj != nil {
+			obj = recvObj
+		}
 		if err != nil {
-			return nil, err
+			// Note, an object resource may also be returned in case of non-nil error.
+			return
 		}
 		data = data[l:]
 		offset += int64(l)
@@ -922,6 +929,9 @@ func (s *gRPCAppendBidiWriteBufferSender) receiveMessages(resps chan<- *storagep
 	close(resps)
 }
 
+// Send contents of the buffer to the stream.
+// Returns object resource (if available) and error. Both object and error
+// may be non-nil in some cases.
 func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offset int64, flush, finishWrite, sendFirstMessage bool) (obj *storagepb.Object, err error) {
 	var req *storagepb.BidiWriteObjectRequest
 	finalizeObject := finishWrite && s.finalizeOnClose
@@ -957,7 +967,8 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 			}
 		}
 		if s.recvErr != io.EOF {
-			return nil, s.recvErr
+			err = s.recvErr
+			return
 		}
 		if obj.GetSize() > s.flushOffset {
 			s.flushOffset = obj.GetSize()
@@ -967,14 +978,16 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 	}
 
 	if flush {
-		// We don't necessarily expect multiple responses for a single flush, but
-		// this allows the server to send multiple responses if it wants to.
+		// We may receive multiple responses for a single flush. In particular
+		// if only part of the data was persisted, we may get a success response
+		// (persisted size or object resource) followed by an error.
 		flushOffset := s.flushOffset
 
 		for flushOffset < offset+int64(len(buf)) {
 			resp, ok := <-s.recvs
 			if !ok {
-				return nil, s.recvErr
+				err = s.recvErr
+				return
 			}
 			pSize := resp.GetPersistedSize()
 			rSize := resp.GetResource().GetSize()
@@ -1008,8 +1021,10 @@ func (s *gRPCAppendBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []
 			}
 		}
 
-		obj, err = s.sendOnConnectedStream(buf, offset, flush, finishWrite, sendFirstMessage)
-		if obj != nil {
+		var recvObj *storagepb.Object
+		recvObj, err = s.sendOnConnectedStream(buf, offset, flush, finishWrite, sendFirstMessage)
+		if recvObj != nil {
+			obj = recvObj
 			s.objResource = obj
 		}
 		if err == nil {
