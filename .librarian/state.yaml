@@ -2,7 +2,7 @@ image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian
 libraries:
   - id: accesscontextmanager
     version: 1.9.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/identity/accesscontextmanager/v1
         service_config: accesscontextmanager_v1.yaml
@@ -26,7 +26,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: advisorynotifications
     version: 1.5.6
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/advisorynotifications/v1
         service_config: advisorynotifications_v1.yaml
@@ -50,7 +50,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: ai
     version: 0.13.0
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/ai/generativelanguage/v1
         service_config: generativelanguage_v1.yaml
@@ -107,7 +107,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.19.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -186,7 +186,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: analytics
     version: 0.30.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/analytics/admin/v1alpha
         service_config: analyticsadmin_v1alpha.yaml
@@ -210,7 +210,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigateway
     version: 1.7.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/apigateway/v1
         service_config: apigateway_v1.yaml
@@ -234,7 +234,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeconnect
     version: 1.7.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/apigeeconnect/v1
         service_config: apigeeconnect_v1.yaml
@@ -258,7 +258,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
     version: 0.10.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/apigeeregistry/v1
         service_config: apigeeregistry_v1.yaml
@@ -282,7 +282,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apihub
     version: 0.2.0
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/apihub/v1
         service_config: apihub_v1.yaml
@@ -306,7 +306,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apikeys
     version: 1.2.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/api/apikeys/v2
         service_config: apikeys_v2.yaml
@@ -330,7 +330,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.9.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/appengine/v1
         service_config: appengine_v1.yaml
@@ -354,7 +354,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apphub
     version: 0.4.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/apphub/v1
         service_config: apphub_v1.yaml
@@ -378,7 +378,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apps
     version: 0.8.0
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/apps/events/subscriptions/v1
         service_config: workspaceevents_v1.yaml
@@ -435,7 +435,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: area120
     version: 0.9.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/area120/tables/v1alpha1
         service_config: area120tables_v1alpha1.yaml
@@ -459,7 +459,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: artifactregistry
     version: 1.17.2
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/devtools/artifactregistry/v1
         service_config: artifactregistry_v1.yaml
@@ -494,7 +494,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: asset
     version: 1.22.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/asset/v1
         service_config: cloudasset_v1.yaml
@@ -540,7 +540,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: assuredworkloads
     version: 1.13.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/assuredworkloads/v1
         service_config: assuredworkloads_v1.yaml
@@ -595,7 +595,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: automl
     version: 1.15.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/automl/v1
         service_config: automl_v1.yaml
@@ -630,7 +630,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.4.0
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -654,7 +654,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: baremetalsolution
     version: 1.4.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/baremetalsolution/v2
         service_config: baremetalsolution_v2.yaml
@@ -678,7 +678,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: batch
     version: 1.13.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/batch/v1
         service_config: batch_v1.yaml
@@ -703,7 +703,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: beyondcorp
     version: 1.2.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/beyondcorp/appconnections/v1
         service_config: beyondcorp_v1.yaml
@@ -771,7 +771,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: billing
     version: 1.21.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/billing/budgets/v1
         service_config: billingbudgets.yaml
@@ -817,7 +817,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: binaryauthorization
     version: 1.10.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/binaryauthorization/v1
         service_config: binaryauthorization_v1.yaml
@@ -852,7 +852,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: capacityplanner
     version: 0.2.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/capacityplanner/v1beta
         service_config: capacityplanner_v1beta.yaml
@@ -876,7 +876,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: channel
     version: 1.20.0
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/channel/v1
         service_config: cloudchannel_v1.yaml
@@ -900,7 +900,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chat
     version: 0.15.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/chat/v1
         service_config: chat_v1.yaml
@@ -924,7 +924,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chronicle
     version: 0.2.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/chronicle/v1
         service_config: chronicle_v1.yaml
@@ -946,9 +946,44 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/chronicle/
     tag_format: '{id}/v{version}'
+  - id: cloudbuild
+    version: 1.23.1
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/devtools/cloudbuild/v1
+        service_config: cloudbuild_v1.yaml
+      - path: google/devtools/cloudbuild/v2
+        service_config: cloudbuild_v2.yaml
+    source_roots:
+      - cloudbuild
+      - internal/generated/snippets/cloudbuild
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/cloudbuild/
+      - ^cloudbuild/apiv1/v2/[^/]*_client\.go$
+      - ^cloudbuild/apiv1/v2/[^/]*_client_example_go123_test\.go$
+      - ^cloudbuild/apiv1/v2/[^/]*_client_example_test\.go$
+      - ^cloudbuild/apiv1/v2/auxiliary\.go$
+      - ^cloudbuild/apiv1/v2/auxiliary_go123\.go$
+      - ^cloudbuild/apiv1/v2/doc\.go$
+      - ^cloudbuild/apiv1/v2/gapic_metadata\.json$
+      - ^cloudbuild/apiv1/v2/helpers\.go$
+      - ^cloudbuild/apiv1/v2/cloudbuildpb/.*$
+      - ^cloudbuild/apiv2/[^/]*_client\.go$
+      - ^cloudbuild/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^cloudbuild/apiv2/[^/]*_client_example_test\.go$
+      - ^cloudbuild/apiv2/auxiliary\.go$
+      - ^cloudbuild/apiv2/auxiliary_go123\.go$
+      - ^cloudbuild/apiv2/doc\.go$
+      - ^cloudbuild/apiv2/gapic_metadata\.json$
+      - ^cloudbuild/apiv2/helpers\.go$
+      - ^cloudbuild/apiv2/cloudbuildpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/cloudbuild/
+    tag_format: '{id}/v{version}'
   - id: cloudcontrolspartner
     version: 1.5.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/cloudcontrolspartner/v1
         service_config: cloudcontrolspartner_v1.yaml
@@ -983,7 +1018,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: clouddms
     version: 1.8.8
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/clouddms/v1
         service_config: datamigration_v1.yaml
@@ -1007,7 +1042,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudprofiler
     version: 0.4.6
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/devtools/cloudprofiler/v2
         service_config: cloudprofiler_v2.yaml
@@ -1031,7 +1066,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudquotas
     version: 1.4.0
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/api/cloudquotas/v1
         service_config: cloudquotas_v1.yaml
@@ -1066,7 +1101,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudtasks
     version: 1.13.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/tasks/v2
         service_config: cloudtasks_v2.yaml
@@ -1112,7 +1147,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: commerce
     version: 1.2.6
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
         service_config: cloudcommerceconsumerprocurement_v1.yaml
@@ -1145,7 +1180,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: confidentialcomputing
     version: 1.10.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/confidentialcomputing/v1
         service_config: confidentialcomputing_v1.yaml
@@ -1180,7 +1215,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: config
     version: 1.5.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/config/v1
         service_config: config_v1.yaml
@@ -1204,7 +1239,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: contactcenterinsights
     version: 1.17.4
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/contactcenterinsights/v1
         service_config: contactcenterinsights_v1.yaml
@@ -1228,7 +1263,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: container
     version: 1.44.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/container/v1
         service_config: container_v1.yaml
@@ -1250,9 +1285,56 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/container/
     tag_format: '{id}/v{version}'
+  - id: datacatalog
+    version: 1.26.1
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/cloud/datacatalog/lineage/v1
+        service_config: datalineage_v1.yaml
+      - path: google/cloud/datacatalog/v1
+        service_config: datacatalog_v1.yaml
+      - path: google/cloud/datacatalog/v1beta1
+        service_config: datacatalog_v1beta1.yaml
+    source_roots:
+      - datacatalog
+      - internal/generated/snippets/datacatalog
+    preserve_regex:
+      - ^datacatalog/apiv1/iam_policy_client\.go$
+    remove_regex:
+      - ^internal/generated/snippets/datacatalog/
+      - ^datacatalog/apiv1/[^/]*_client\.go$
+      - ^datacatalog/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^datacatalog/apiv1/[^/]*_client_example_test\.go$
+      - ^datacatalog/apiv1/auxiliary\.go$
+      - ^datacatalog/apiv1/auxiliary_go123\.go$
+      - ^datacatalog/apiv1/doc\.go$
+      - ^datacatalog/apiv1/gapic_metadata\.json$
+      - ^datacatalog/apiv1/helpers\.go$
+      - ^datacatalog/apiv1/datacatalogpb/.*$
+      - ^datacatalog/apiv1beta1/[^/]*_client\.go$
+      - ^datacatalog/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^datacatalog/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^datacatalog/apiv1beta1/auxiliary\.go$
+      - ^datacatalog/apiv1beta1/auxiliary_go123\.go$
+      - ^datacatalog/apiv1beta1/doc\.go$
+      - ^datacatalog/apiv1beta1/gapic_metadata\.json$
+      - ^datacatalog/apiv1beta1/helpers\.go$
+      - ^datacatalog/apiv1beta1/datacatalogpb/.*$
+      - ^datacatalog/lineage/apiv1/[^/]*_client\.go$
+      - ^datacatalog/lineage/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^datacatalog/lineage/apiv1/[^/]*_client_example_test\.go$
+      - ^datacatalog/lineage/apiv1/auxiliary\.go$
+      - ^datacatalog/lineage/apiv1/auxiliary_go123\.go$
+      - ^datacatalog/lineage/apiv1/doc\.go$
+      - ^datacatalog/lineage/apiv1/gapic_metadata\.json$
+      - ^datacatalog/lineage/apiv1/helpers\.go$
+      - ^datacatalog/lineage/apiv1/lineagepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/datacatalog/
+    tag_format: '{id}/v{version}'
   - id: dataflow
     version: 0.11.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/dataflow/v1beta3
         service_config: dataflow_v1beta3.yaml
@@ -1276,7 +1358,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataform
     version: 0.12.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/dataform/v1
         service_config: dataform_v1.yaml
@@ -1311,7 +1393,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datafusion
     version: 1.8.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/datafusion/v1
         service_config: datafusion_v1.yaml
@@ -1335,7 +1417,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datalabeling
     version: 0.9.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/datalabeling/v1beta1
         service_config: datalabeling_v1beta1.yaml
@@ -1359,7 +1441,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.27.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/dataplex/v1
         service_config: dataplex_v1.yaml
@@ -1383,7 +1465,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataproc
     version: 2.15.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/dataproc/v1
         service_config: dataproc_v1.yaml
@@ -1405,9 +1487,45 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
+  - id: datastream
+    version: 1.15.1
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/cloud/datastream/v1
+        service_config: datastream_v1.yaml
+      - path: google/cloud/datastream/v1alpha1
+        service_config: datastream_v1alpha1.yaml
+    source_roots:
+      - datastream
+      - internal/generated/snippets/datastream
+    preserve_regex:
+      - ^datastream/apiv1/iam_policy_client\.go$
+    remove_regex:
+      - ^internal/generated/snippets/datastream/
+      - ^datastream/apiv1/[^/]*_client\.go$
+      - ^datastream/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^datastream/apiv1/[^/]*_client_example_test\.go$
+      - ^datastream/apiv1/auxiliary\.go$
+      - ^datastream/apiv1/auxiliary_go123\.go$
+      - ^datastream/apiv1/doc\.go$
+      - ^datastream/apiv1/gapic_metadata\.json$
+      - ^datastream/apiv1/helpers\.go$
+      - ^datastream/apiv1/datastreampb/.*$
+      - ^datastream/apiv1alpha1/[^/]*_client\.go$
+      - ^datastream/apiv1alpha1/[^/]*_client_example_go123_test\.go$
+      - ^datastream/apiv1alpha1/[^/]*_client_example_test\.go$
+      - ^datastream/apiv1alpha1/auxiliary\.go$
+      - ^datastream/apiv1alpha1/auxiliary_go123\.go$
+      - ^datastream/apiv1alpha1/doc\.go$
+      - ^datastream/apiv1alpha1/gapic_metadata\.json$
+      - ^datastream/apiv1alpha1/helpers\.go$
+      - ^datastream/apiv1alpha1/datastreampb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/datastream/
+    tag_format: '{id}/v{version}'
   - id: deploy
     version: 1.27.3
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/deploy/v1
         service_config: clouddeploy_v1.yaml
@@ -1431,7 +1549,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: developerconnect
     version: 0.4.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/developerconnect/v1
         service_config: developerconnect_v1.yaml
@@ -1455,7 +1573,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: devicestreaming
     version: 0.1.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/devicestreaming/v1
         service_config: devicestreaming_v1.yaml
@@ -1477,9 +1595,66 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
+  - id: dialogflow
+    version: 1.70.0
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/cloud/dialogflow/cx/v3
+        service_config: dialogflow_v3.yaml
+      - path: google/cloud/dialogflow/cx/v3beta1
+        service_config: dialogflow_v3beta1.yaml
+      - path: google/cloud/dialogflow/v2
+        service_config: dialogflow_v2.yaml
+      - path: google/cloud/dialogflow/v2beta1
+        service_config: dialogflow_v2beta1.yaml
+    source_roots:
+      - dialogflow
+      - internal/generated/snippets/dialogflow
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/dialogflow/
+      - ^dialogflow/apiv2/[^/]*_client\.go$
+      - ^dialogflow/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^dialogflow/apiv2/[^/]*_client_example_test\.go$
+      - ^dialogflow/apiv2/auxiliary\.go$
+      - ^dialogflow/apiv2/auxiliary_go123\.go$
+      - ^dialogflow/apiv2/doc\.go$
+      - ^dialogflow/apiv2/gapic_metadata\.json$
+      - ^dialogflow/apiv2/helpers\.go$
+      - ^dialogflow/apiv2/dialogflowpb/.*$
+      - ^dialogflow/apiv2beta1/[^/]*_client\.go$
+      - ^dialogflow/apiv2beta1/[^/]*_client_example_go123_test\.go$
+      - ^dialogflow/apiv2beta1/[^/]*_client_example_test\.go$
+      - ^dialogflow/apiv2beta1/auxiliary\.go$
+      - ^dialogflow/apiv2beta1/auxiliary_go123\.go$
+      - ^dialogflow/apiv2beta1/doc\.go$
+      - ^dialogflow/apiv2beta1/gapic_metadata\.json$
+      - ^dialogflow/apiv2beta1/helpers\.go$
+      - ^dialogflow/apiv2beta1/dialogflowpb/.*$
+      - ^dialogflow/cx/apiv3/[^/]*_client\.go$
+      - ^dialogflow/cx/apiv3/[^/]*_client_example_go123_test\.go$
+      - ^dialogflow/cx/apiv3/[^/]*_client_example_test\.go$
+      - ^dialogflow/cx/apiv3/auxiliary\.go$
+      - ^dialogflow/cx/apiv3/auxiliary_go123\.go$
+      - ^dialogflow/cx/apiv3/doc\.go$
+      - ^dialogflow/cx/apiv3/gapic_metadata\.json$
+      - ^dialogflow/cx/apiv3/helpers\.go$
+      - ^dialogflow/cx/apiv3/cxpb/.*$
+      - ^dialogflow/cx/apiv3beta1/[^/]*_client\.go$
+      - ^dialogflow/cx/apiv3beta1/[^/]*_client_example_go123_test\.go$
+      - ^dialogflow/cx/apiv3beta1/[^/]*_client_example_test\.go$
+      - ^dialogflow/cx/apiv3beta1/auxiliary\.go$
+      - ^dialogflow/cx/apiv3beta1/auxiliary_go123\.go$
+      - ^dialogflow/cx/apiv3beta1/doc\.go$
+      - ^dialogflow/cx/apiv3beta1/gapic_metadata\.json$
+      - ^dialogflow/cx/apiv3beta1/helpers\.go$
+      - ^dialogflow/cx/apiv3beta1/cxpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/dialogflow/
+    tag_format: '{id}/v{version}'
   - id: discoveryengine
     version: 1.21.1
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/discoveryengine/v1
         service_config: discoveryengine_v1.yaml
@@ -1525,7 +1700,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dlp
     version: 1.27.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/privacy/dlp/v2
         service_config: dlp_v2.yaml
@@ -1547,7 +1722,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: documentai
     version: 1.39.0
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/documentai/v1
         service_config: documentai_v1.yaml
@@ -1582,7 +1757,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: domains
     version: 0.10.7
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/domains/v1beta1
         service_config: domains_v1beta1.yaml
@@ -1606,7 +1781,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: edgecontainer
     version: 1.4.4
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/edgecontainer/v1
         service_config: edgecontainer_v1.yaml
@@ -1630,7 +1805,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: edgenetwork
     version: 1.2.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/edgenetwork/v1
         service_config: edgenetwork_v1.yaml
@@ -1654,7 +1829,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: essentialcontacts
     version: 1.7.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/essentialcontacts/v1
         service_config: essentialcontacts_v1.yaml
@@ -1678,7 +1853,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: eventarc
     version: 1.17.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/eventarc/v1
         service_config: eventarc_v1.yaml
@@ -1713,7 +1888,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: filestore
     version: 1.10.3
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/filestore/v1
         service_config: file_v1.yaml
@@ -1737,7 +1912,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: financialservices
     version: 0.1.4
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/financialservices/v1
         service_config: financialservices_v1.yaml
@@ -1761,7 +1936,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: functions
     version: 1.19.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/functions/v1
         service_config: cloudfunctions_v1.yaml
@@ -1807,7 +1982,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkebackup
     version: 1.8.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/gkebackup/v1
         service_config: gkebackup_v1.yaml
@@ -1831,7 +2006,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkeconnect
     version: 0.12.5
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/gkeconnect/gateway/v1beta1
         service_config: connectgateway_v1beta1.yaml
@@ -1866,7 +2041,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkehub
     version: 0.16.0
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/gkehub/v1beta1
         service_config: gkehub_v1beta1.yaml
@@ -1890,7 +2065,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkemulticloud
     version: 1.5.4
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/gkemulticloud/v1
         service_config: gkemulticloud_v1.yaml
@@ -1914,7 +2089,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gsuiteaddons
     version: 1.7.8
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/gsuiteaddons/v1
         service_config: gsuiteaddons_v1.yaml
@@ -1936,9 +2111,77 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/gsuiteaddons/
     tag_format: '{id}/v{version}'
+  - id: iam
+    version: 1.5.3
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/iam/credentials/v1
+        service_config: iamcredentials_v1.yaml
+      - path: google/iam/v1
+        service_config: iam_meta_api.yaml
+      - path: google/iam/v2
+        service_config: iam_v2.yaml
+      - path: google/iam/v3
+        service_config: iam_v3.yaml
+      - path: google/iam/v3beta
+        service_config: iam_v3beta.yaml
+    source_roots:
+      - iam
+      - internal/generated/snippets/iam
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/iam/
+      - ^iam/apiv1/[^/]*_client\.go$
+      - ^iam/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv1/[^/]*_client_example_test\.go$
+      - ^iam/apiv1/auxiliary\.go$
+      - ^iam/apiv1/auxiliary_go123\.go$
+      - ^iam/apiv1/doc\.go$
+      - ^iam/apiv1/gapic_metadata\.json$
+      - ^iam/apiv1/helpers\.go$
+      - ^iam/apiv1/iampb/.*$
+      - ^iam/apiv2/[^/]*_client\.go$
+      - ^iam/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv2/[^/]*_client_example_test\.go$
+      - ^iam/apiv2/auxiliary\.go$
+      - ^iam/apiv2/auxiliary_go123\.go$
+      - ^iam/apiv2/doc\.go$
+      - ^iam/apiv2/gapic_metadata\.json$
+      - ^iam/apiv2/helpers\.go$
+      - ^iam/apiv2/iampb/.*$
+      - ^iam/apiv3/[^/]*_client\.go$
+      - ^iam/apiv3/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv3/[^/]*_client_example_test\.go$
+      - ^iam/apiv3/auxiliary\.go$
+      - ^iam/apiv3/auxiliary_go123\.go$
+      - ^iam/apiv3/doc\.go$
+      - ^iam/apiv3/gapic_metadata\.json$
+      - ^iam/apiv3/helpers\.go$
+      - ^iam/apiv3/iampb/.*$
+      - ^iam/apiv3beta/[^/]*_client\.go$
+      - ^iam/apiv3beta/[^/]*_client_example_go123_test\.go$
+      - ^iam/apiv3beta/[^/]*_client_example_test\.go$
+      - ^iam/apiv3beta/auxiliary\.go$
+      - ^iam/apiv3beta/auxiliary_go123\.go$
+      - ^iam/apiv3beta/doc\.go$
+      - ^iam/apiv3beta/gapic_metadata\.json$
+      - ^iam/apiv3beta/helpers\.go$
+      - ^iam/apiv3beta/iampb/.*$
+      - ^iam/credentials/apiv1/[^/]*_client\.go$
+      - ^iam/credentials/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^iam/credentials/apiv1/[^/]*_client_example_test\.go$
+      - ^iam/credentials/apiv1/auxiliary\.go$
+      - ^iam/credentials/apiv1/auxiliary_go123\.go$
+      - ^iam/credentials/apiv1/doc\.go$
+      - ^iam/credentials/apiv1/gapic_metadata\.json$
+      - ^iam/credentials/apiv1/helpers\.go$
+      - ^iam/credentials/apiv1/credentialspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/iam/
+    tag_format: '{id}/v{version}'
   - id: iap
     version: 1.11.3
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/iap/v1
         service_config: iap_v1.yaml
@@ -1962,7 +2205,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: identitytoolkit
     version: 0.2.6
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/identitytoolkit/v2
         service_config: identitytoolkit_v2.yaml
@@ -1986,7 +2229,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: ids
     version: 1.5.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/ids/v1
         service_config: ids_v1.yaml
@@ -2010,7 +2253,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: iot
     version: 1.8.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/iot/v1
         service_config: cloudiot_v1.yaml
@@ -2034,7 +2277,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: language
     version: 1.14.6
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/language/v1
         service_config: language_v1.yaml
@@ -2080,7 +2323,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: lifesciences
     version: 0.10.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/lifesciences/v2beta
         service_config: lifesciences_v2beta.yaml
@@ -2104,7 +2347,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.7.0
-    last_generated_commit: 6821943108fe3284f483defc9b60774a3752de2b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/longrunning
         service_config: longrunning.yaml
@@ -2128,7 +2371,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: lustre
     version: 0.2.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/lustre/v1
         service_config: lustre_v1.yaml
@@ -2152,7 +2395,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maintenance
     version: 0.1.2
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/maintenance/api/v1beta
         service_config: maintenance_v1beta.yaml
@@ -2176,7 +2419,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: managedidentities
     version: 1.7.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/managedidentities/v1
         service_config: managedidentities_v1.yaml
@@ -2200,7 +2443,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: managedkafka
     version: 0.8.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/managedkafka/v1
         service_config: managedkafka_v1.yaml
@@ -2235,7 +2478,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maps
     version: 1.24.0
-    last_generated_commit: 7b2b58ff4fb3eee3c0923af35fdee90134fabe3b
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/maps/addressvalidation/v1
         service_config: addressvalidation_v1.yaml
@@ -2336,7 +2579,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: mediatranslation
     version: 0.9.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/mediatranslation/v1beta1
         service_config: mediatranslation_v1beta1.yaml
@@ -2360,7 +2603,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: memcache
     version: 1.11.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/memcache/v1
         service_config: memcache_v1.yaml
@@ -2395,7 +2638,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: memorystore
     version: 0.3.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/memorystore/v1
         service_config: memorystore_v1.yaml
@@ -2430,7 +2673,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: metastore
     version: 1.14.8
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/metastore/v1
         service_config: metastore_v1.yaml
@@ -2476,7 +2719,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: migrationcenter
     version: 1.1.6
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/migrationcenter/v1
         service_config: migrationcenter_v1.yaml
@@ -2500,7 +2743,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: modelarmor
     version: 0.6.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/modelarmor/v1
         service_config: modelarmor_v1.yaml
@@ -2533,9 +2776,55 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/modelarmor/
     tag_format: '{id}/v{version}'
+  - id: monitoring
+    version: 1.24.3
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/monitoring/dashboard/v1
+        service_config: monitoring.yaml
+      - path: google/monitoring/metricsscope/v1
+        service_config: monitoring.yaml
+      - path: google/monitoring/v3
+        service_config: monitoring.yaml
+    source_roots:
+      - monitoring
+      - internal/generated/snippets/monitoring
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/monitoring/
+      - ^monitoring/apiv3/v2/[^/]*_client\.go$
+      - ^monitoring/apiv3/v2/[^/]*_client_example_go123_test\.go$
+      - ^monitoring/apiv3/v2/[^/]*_client_example_test\.go$
+      - ^monitoring/apiv3/v2/auxiliary\.go$
+      - ^monitoring/apiv3/v2/auxiliary_go123\.go$
+      - ^monitoring/apiv3/v2/doc\.go$
+      - ^monitoring/apiv3/v2/gapic_metadata\.json$
+      - ^monitoring/apiv3/v2/helpers\.go$
+      - ^monitoring/apiv3/v2/monitoringpb/.*$
+      - ^monitoring/dashboard/apiv1/[^/]*_client\.go$
+      - ^monitoring/dashboard/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^monitoring/dashboard/apiv1/[^/]*_client_example_test\.go$
+      - ^monitoring/dashboard/apiv1/auxiliary\.go$
+      - ^monitoring/dashboard/apiv1/auxiliary_go123\.go$
+      - ^monitoring/dashboard/apiv1/doc\.go$
+      - ^monitoring/dashboard/apiv1/gapic_metadata\.json$
+      - ^monitoring/dashboard/apiv1/helpers\.go$
+      - ^monitoring/dashboard/apiv1/dashboardpb/.*$
+      - ^monitoring/metricsscope/apiv1/[^/]*_client\.go$
+      - ^monitoring/metricsscope/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^monitoring/metricsscope/apiv1/[^/]*_client_example_test\.go$
+      - ^monitoring/metricsscope/apiv1/auxiliary\.go$
+      - ^monitoring/metricsscope/apiv1/auxiliary_go123\.go$
+      - ^monitoring/metricsscope/apiv1/doc\.go$
+      - ^monitoring/metricsscope/apiv1/gapic_metadata\.json$
+      - ^monitoring/metricsscope/apiv1/helpers\.go$
+      - ^monitoring/metricsscope/apiv1/metricsscopepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/monitoring/
+    tag_format: '{id}/v{version}'
   - id: netapp
     version: 1.10.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/netapp/v1
         service_config: netapp_v1.yaml
@@ -2559,7 +2848,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
     version: 1.19.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/networkconnectivity/v1
         service_config: networkconnectivity_v1.yaml
@@ -2594,7 +2883,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.20.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/networkmanagement/v1
         service_config: networkmanagement_v1.yaml
@@ -2618,7 +2907,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networksecurity
     version: 0.10.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/networksecurity/v1beta1
         service_config: networksecurity_v1beta1.yaml
@@ -2642,7 +2931,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkservices
     version: 0.5.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/networkservices/v1
         service_config: networkservices_v1.yaml
@@ -2666,7 +2955,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: notebooks
     version: 1.12.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/notebooks/v1
         service_config: notebooks_v1.yaml
@@ -2712,7 +3001,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: optimization
     version: 1.7.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/optimization/v1
         service_config: cloudoptimization_v1.yaml
@@ -2736,7 +3025,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oracledatabase
     version: 0.5.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/oracledatabase/v1
         service_config: oracledatabase_v1.yaml
@@ -2760,7 +3049,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: orchestration
     version: 1.11.10
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/orchestration/airflow/service/v1
         service_config: composer_v1.yaml
@@ -2784,7 +3073,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: osconfig
     version: 1.15.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/osconfig/agentendpoint/v1
         service_config: osconfig_v1.yaml
@@ -2852,7 +3141,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oslogin
     version: 1.14.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/oslogin/v1
         service_config: oslogin_v1.yaml
@@ -2889,7 +3178,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: parallelstore
     version: 0.11.4
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/parallelstore/v1
         service_config: parallelstore_v1.yaml
@@ -2924,7 +3213,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: parametermanager
     version: 0.3.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/parametermanager/v1
         service_config: parametermanager_v1.yaml
@@ -2948,7 +3237,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: phishingprotection
     version: 0.9.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/phishingprotection/v1beta1
         service_config: phishingprotection_v1beta1.yaml
@@ -2972,7 +3261,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: policysimulator
     version: 0.4.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/policysimulator/v1
         service_config: policysimulator_v1.yaml
@@ -2996,7 +3285,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: policytroubleshooter
     version: 1.11.7
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/policytroubleshooter/iam/v3
         service_config: policytroubleshooter_v3.yaml
@@ -3031,7 +3320,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: privatecatalog
     version: 0.10.8
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/privatecatalog/v1beta1
         service_config: cloudprivatecatalog_v1beta1.yaml
@@ -3055,7 +3344,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: privilegedaccessmanager
     version: 0.3.1
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/privilegedaccessmanager/v1
         service_config: privilegedaccessmanager_v1.yaml
@@ -3077,9 +3366,56 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/privilegedaccessmanager/
     tag_format: '{id}/v{version}'
+  - id: pubsub
+    version: 1.50.1
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis: []
+    source_roots:
+      - pubsub
+      - internal/generated/snippets/pubsub
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/pubsub/
+      - ^pubsub/apiv1/[^/]*_client\.go$
+      - ^pubsub/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^pubsub/apiv1/[^/]*_client_example_test\.go$
+      - ^pubsub/apiv1/auxiliary\.go$
+      - ^pubsub/apiv1/auxiliary_go123\.go$
+      - ^pubsub/apiv1/doc\.go$
+      - ^pubsub/apiv1/gapic_metadata\.json$
+      - ^pubsub/apiv1/helpers\.go$
+      - ^pubsub/apiv1/pubsubpb/.*$
+    release_exclude_paths:
+      - pubsub/v2
+      - internal/generated/snippets/pubsub/
+    tag_format: '{id}/v{version}'
+  - id: pubsub/v2
+    version: 2.2.1
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/pubsub/v1
+        service_config: ""
+    source_roots:
+      - pubsub/v2
+      - internal/generated/snippets/pubsub/v2
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/pubsub/v2/
+      - ^pubsub/v2/apiv1/[^/]*_client\.go$
+      - ^pubsub/v2/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^pubsub/v2/apiv1/[^/]*_client_example_test\.go$
+      - ^pubsub/v2/apiv1/auxiliary\.go$
+      - ^pubsub/v2/apiv1/auxiliary_go123\.go$
+      - ^pubsub/v2/apiv1/doc\.go$
+      - ^pubsub/v2/apiv1/gapic_metadata\.json$
+      - ^pubsub/v2/apiv1/helpers\.go$
+      - ^pubsub/v2/apiv1/v2pb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/pubsub/v2/
+    tag_format: pubsub/v{version}
   - id: pubsublite
     version: 1.8.2
-    last_generated_commit: 9215671dbc32a2bb26be3fe0678f7942ca12b365
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/pubsublite/v1
         service_config: pubsublite_v1.yaml
@@ -3103,7 +3439,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: rapidmigrationassessment
     version: 1.1.8
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/rapidmigrationassessment/v1
         service_config: rapidmigrationassessment_v1.yaml
@@ -3127,7 +3463,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: recaptchaenterprise
     version: 2.20.5
-    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
     apis:
       - path: google/cloud/recaptchaenterprise/v1
         service_config: recaptchaenterprise_v1.yaml
@@ -3159,4 +3495,1584 @@ libraries:
       - ^recaptchaenterprise/apiv1beta1/recaptchaenterprisepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/recaptchaenterprise/
+    tag_format: '{id}/v{version}'
+  - id: recommendationengine
+    version: 0.9.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/recommendationengine/v1beta1
+        service_config: recommendationengine_v1beta1.yaml
+    source_roots:
+      - recommendationengine
+      - internal/generated/snippets/recommendationengine
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/recommendationengine/
+      - ^recommendationengine/apiv1beta1/[^/]*_client\.go$
+      - ^recommendationengine/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^recommendationengine/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^recommendationengine/apiv1beta1/auxiliary\.go$
+      - ^recommendationengine/apiv1beta1/auxiliary_go123\.go$
+      - ^recommendationengine/apiv1beta1/doc\.go$
+      - ^recommendationengine/apiv1beta1/gapic_metadata\.json$
+      - ^recommendationengine/apiv1beta1/helpers\.go$
+      - ^recommendationengine/apiv1beta1/recommendationenginepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/recommendationengine/
+    tag_format: '{id}/v{version}'
+  - id: recommender
+    version: 1.13.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/recommender/v1
+        service_config: recommender_v1.yaml
+      - path: google/cloud/recommender/v1beta1
+        service_config: recommender_v1beta1.yaml
+    source_roots:
+      - recommender
+      - internal/generated/snippets/recommender
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/recommender/
+      - ^recommender/apiv1/[^/]*_client\.go$
+      - ^recommender/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^recommender/apiv1/[^/]*_client_example_test\.go$
+      - ^recommender/apiv1/auxiliary\.go$
+      - ^recommender/apiv1/auxiliary_go123\.go$
+      - ^recommender/apiv1/doc\.go$
+      - ^recommender/apiv1/gapic_metadata\.json$
+      - ^recommender/apiv1/helpers\.go$
+      - ^recommender/apiv1/recommenderpb/.*$
+      - ^recommender/apiv1beta1/[^/]*_client\.go$
+      - ^recommender/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^recommender/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^recommender/apiv1beta1/auxiliary\.go$
+      - ^recommender/apiv1beta1/auxiliary_go123\.go$
+      - ^recommender/apiv1beta1/doc\.go$
+      - ^recommender/apiv1beta1/gapic_metadata\.json$
+      - ^recommender/apiv1beta1/helpers\.go$
+      - ^recommender/apiv1beta1/recommenderpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/recommender/
+    tag_format: '{id}/v{version}'
+  - id: redis
+    version: 1.18.3
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/redis/v1
+        service_config: redis_v1.yaml
+      - path: google/cloud/redis/v1beta1
+        service_config: redis_v1beta1.yaml
+      - path: google/cloud/redis/cluster/v1
+        service_config: redis_v1.yaml
+    source_roots:
+      - redis
+      - internal/generated/snippets/redis
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/redis/
+      - ^redis/apiv1/[^/]*_client\.go$
+      - ^redis/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^redis/apiv1/[^/]*_client_example_test\.go$
+      - ^redis/apiv1/auxiliary\.go$
+      - ^redis/apiv1/auxiliary_go123\.go$
+      - ^redis/apiv1/doc\.go$
+      - ^redis/apiv1/gapic_metadata\.json$
+      - ^redis/apiv1/helpers\.go$
+      - ^redis/apiv1/redispb/.*$
+      - ^redis/apiv1beta1/[^/]*_client\.go$
+      - ^redis/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^redis/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^redis/apiv1beta1/auxiliary\.go$
+      - ^redis/apiv1beta1/auxiliary_go123\.go$
+      - ^redis/apiv1beta1/doc\.go$
+      - ^redis/apiv1beta1/gapic_metadata\.json$
+      - ^redis/apiv1beta1/helpers\.go$
+      - ^redis/apiv1beta1/redispb/.*$
+      - ^redis/cluster/apiv1/[^/]*_client\.go$
+      - ^redis/cluster/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^redis/cluster/apiv1/[^/]*_client_example_test\.go$
+      - ^redis/cluster/apiv1/auxiliary\.go$
+      - ^redis/cluster/apiv1/auxiliary_go123\.go$
+      - ^redis/cluster/apiv1/doc\.go$
+      - ^redis/cluster/apiv1/gapic_metadata\.json$
+      - ^redis/cluster/apiv1/helpers\.go$
+      - ^redis/cluster/apiv1/clusterpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/redis/
+    tag_format: '{id}/v{version}'
+  - id: resourcemanager
+    version: 1.10.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/resourcemanager/v2
+        service_config: cloudresourcemanager_v2.yaml
+      - path: google/cloud/resourcemanager/v3
+        service_config: cloudresourcemanager_v3.yaml
+    source_roots:
+      - resourcemanager
+      - internal/generated/snippets/resourcemanager
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/resourcemanager/
+      - ^resourcemanager/apiv2/[^/]*_client\.go$
+      - ^resourcemanager/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^resourcemanager/apiv2/[^/]*_client_example_test\.go$
+      - ^resourcemanager/apiv2/auxiliary\.go$
+      - ^resourcemanager/apiv2/auxiliary_go123\.go$
+      - ^resourcemanager/apiv2/doc\.go$
+      - ^resourcemanager/apiv2/gapic_metadata\.json$
+      - ^resourcemanager/apiv2/helpers\.go$
+      - ^resourcemanager/apiv2/resourcemanagerpb/.*$
+      - ^resourcemanager/apiv3/[^/]*_client\.go$
+      - ^resourcemanager/apiv3/[^/]*_client_example_go123_test\.go$
+      - ^resourcemanager/apiv3/[^/]*_client_example_test\.go$
+      - ^resourcemanager/apiv3/auxiliary\.go$
+      - ^resourcemanager/apiv3/auxiliary_go123\.go$
+      - ^resourcemanager/apiv3/doc\.go$
+      - ^resourcemanager/apiv3/gapic_metadata\.json$
+      - ^resourcemanager/apiv3/helpers\.go$
+      - ^resourcemanager/apiv3/resourcemanagerpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/resourcemanager/
+    tag_format: '{id}/v{version}'
+  - id: retail
+    version: 1.25.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/retail/v2
+        service_config: retail_v2.yaml
+      - path: google/cloud/retail/v2alpha
+        service_config: retail_v2alpha.yaml
+      - path: google/cloud/retail/v2beta
+        service_config: retail_v2beta.yaml
+    source_roots:
+      - retail
+      - internal/generated/snippets/retail
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/retail/
+      - ^retail/apiv2/[^/]*_client\.go$
+      - ^retail/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^retail/apiv2/[^/]*_client_example_test\.go$
+      - ^retail/apiv2/auxiliary\.go$
+      - ^retail/apiv2/auxiliary_go123\.go$
+      - ^retail/apiv2/doc\.go$
+      - ^retail/apiv2/gapic_metadata\.json$
+      - ^retail/apiv2/helpers\.go$
+      - ^retail/apiv2/retailpb/.*$
+      - ^retail/apiv2alpha/[^/]*_client\.go$
+      - ^retail/apiv2alpha/[^/]*_client_example_go123_test\.go$
+      - ^retail/apiv2alpha/[^/]*_client_example_test\.go$
+      - ^retail/apiv2alpha/auxiliary\.go$
+      - ^retail/apiv2alpha/auxiliary_go123\.go$
+      - ^retail/apiv2alpha/doc\.go$
+      - ^retail/apiv2alpha/gapic_metadata\.json$
+      - ^retail/apiv2alpha/helpers\.go$
+      - ^retail/apiv2alpha/retailpb/.*$
+      - ^retail/apiv2beta/[^/]*_client\.go$
+      - ^retail/apiv2beta/[^/]*_client_example_go123_test\.go$
+      - ^retail/apiv2beta/[^/]*_client_example_test\.go$
+      - ^retail/apiv2beta/auxiliary\.go$
+      - ^retail/apiv2beta/auxiliary_go123\.go$
+      - ^retail/apiv2beta/doc\.go$
+      - ^retail/apiv2beta/gapic_metadata\.json$
+      - ^retail/apiv2beta/helpers\.go$
+      - ^retail/apiv2beta/retailpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/retail/
+    tag_format: '{id}/v{version}'
+  - id: run
+    version: 1.12.1
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/cloud/run/v2
+        service_config: run_v2.yaml
+    source_roots:
+      - run
+      - internal/generated/snippets/run
+    preserve_regex:
+      - ^run/apiv2/locations_client\.go$
+    remove_regex:
+      - ^internal/generated/snippets/run/
+      - ^run/apiv2/[^/]*_client\.go$
+      - ^run/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^run/apiv2/[^/]*_client_example_test\.go$
+      - ^run/apiv2/auxiliary\.go$
+      - ^run/apiv2/auxiliary_go123\.go$
+      - ^run/apiv2/doc\.go$
+      - ^run/apiv2/gapic_metadata\.json$
+      - ^run/apiv2/helpers\.go$
+      - ^run/apiv2/runpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/run/
+    tag_format: '{id}/v{version}'
+  - id: scheduler
+    version: 1.11.8
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/scheduler/v1
+        service_config: cloudscheduler_v1.yaml
+      - path: google/cloud/scheduler/v1beta1
+        service_config: cloudscheduler_v1beta1.yaml
+    source_roots:
+      - scheduler
+      - internal/generated/snippets/scheduler
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/scheduler/
+      - ^scheduler/apiv1/[^/]*_client\.go$
+      - ^scheduler/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^scheduler/apiv1/[^/]*_client_example_test\.go$
+      - ^scheduler/apiv1/auxiliary\.go$
+      - ^scheduler/apiv1/auxiliary_go123\.go$
+      - ^scheduler/apiv1/doc\.go$
+      - ^scheduler/apiv1/gapic_metadata\.json$
+      - ^scheduler/apiv1/helpers\.go$
+      - ^scheduler/apiv1/schedulerpb/.*$
+      - ^scheduler/apiv1beta1/[^/]*_client\.go$
+      - ^scheduler/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^scheduler/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^scheduler/apiv1beta1/auxiliary\.go$
+      - ^scheduler/apiv1beta1/auxiliary_go123\.go$
+      - ^scheduler/apiv1beta1/doc\.go$
+      - ^scheduler/apiv1beta1/gapic_metadata\.json$
+      - ^scheduler/apiv1beta1/helpers\.go$
+      - ^scheduler/apiv1beta1/schedulerpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/scheduler/
+    tag_format: '{id}/v{version}'
+  - id: secretmanager
+    version: 1.15.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/secretmanager/v1
+        service_config: secretmanager_v1.yaml
+      - path: google/cloud/secretmanager/v1beta2
+        service_config: secretmanager_v1beta2.yaml
+    source_roots:
+      - secretmanager
+      - internal/generated/snippets/secretmanager
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/secretmanager/
+      - ^secretmanager/apiv1/[^/]*_client\.go$
+      - ^secretmanager/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^secretmanager/apiv1/[^/]*_client_example_test\.go$
+      - ^secretmanager/apiv1/auxiliary\.go$
+      - ^secretmanager/apiv1/auxiliary_go123\.go$
+      - ^secretmanager/apiv1/doc\.go$
+      - ^secretmanager/apiv1/gapic_metadata\.json$
+      - ^secretmanager/apiv1/helpers\.go$
+      - ^secretmanager/apiv1/secretmanagerpb/.*$
+      - ^secretmanager/apiv1beta2/[^/]*_client\.go$
+      - ^secretmanager/apiv1beta2/[^/]*_client_example_go123_test\.go$
+      - ^secretmanager/apiv1beta2/[^/]*_client_example_test\.go$
+      - ^secretmanager/apiv1beta2/auxiliary\.go$
+      - ^secretmanager/apiv1beta2/auxiliary_go123\.go$
+      - ^secretmanager/apiv1beta2/doc\.go$
+      - ^secretmanager/apiv1beta2/gapic_metadata\.json$
+      - ^secretmanager/apiv1beta2/helpers\.go$
+      - ^secretmanager/apiv1beta2/secretmanagerpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/secretmanager/
+    tag_format: '{id}/v{version}'
+  - id: securesourcemanager
+    version: 1.4.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/securesourcemanager/v1
+        service_config: securesourcemanager_v1.yaml
+    source_roots:
+      - securesourcemanager
+      - internal/generated/snippets/securesourcemanager
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/securesourcemanager/
+      - ^securesourcemanager/apiv1/[^/]*_client\.go$
+      - ^securesourcemanager/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^securesourcemanager/apiv1/[^/]*_client_example_test\.go$
+      - ^securesourcemanager/apiv1/auxiliary\.go$
+      - ^securesourcemanager/apiv1/auxiliary_go123\.go$
+      - ^securesourcemanager/apiv1/doc\.go$
+      - ^securesourcemanager/apiv1/gapic_metadata\.json$
+      - ^securesourcemanager/apiv1/helpers\.go$
+      - ^securesourcemanager/apiv1/securesourcemanagerpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/securesourcemanager/
+    tag_format: '{id}/v{version}'
+  - id: security
+    version: 1.19.2
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/security/privateca/v1
+        service_config: privateca_v1.yaml
+      - path: google/cloud/security/publicca/v1beta1
+        service_config: publicca_v1beta1.yaml
+      - path: google/cloud/security/publicca/v1
+        service_config: publicca_v1.yaml
+    source_roots:
+      - security
+      - internal/generated/snippets/security
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/security/
+      - ^security/privateca/apiv1/[^/]*_client\.go$
+      - ^security/privateca/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^security/privateca/apiv1/[^/]*_client_example_test\.go$
+      - ^security/privateca/apiv1/auxiliary\.go$
+      - ^security/privateca/apiv1/auxiliary_go123\.go$
+      - ^security/privateca/apiv1/doc\.go$
+      - ^security/privateca/apiv1/gapic_metadata\.json$
+      - ^security/privateca/apiv1/helpers\.go$
+      - ^security/privateca/apiv1/privatecapb/.*$
+      - ^security/publicca/apiv1/[^/]*_client\.go$
+      - ^security/publicca/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^security/publicca/apiv1/[^/]*_client_example_test\.go$
+      - ^security/publicca/apiv1/auxiliary\.go$
+      - ^security/publicca/apiv1/auxiliary_go123\.go$
+      - ^security/publicca/apiv1/doc\.go$
+      - ^security/publicca/apiv1/gapic_metadata\.json$
+      - ^security/publicca/apiv1/helpers\.go$
+      - ^security/publicca/apiv1/publiccapb/.*$
+      - ^security/publicca/apiv1beta1/[^/]*_client\.go$
+      - ^security/publicca/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^security/publicca/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^security/publicca/apiv1beta1/auxiliary\.go$
+      - ^security/publicca/apiv1beta1/auxiliary_go123\.go$
+      - ^security/publicca/apiv1beta1/doc\.go$
+      - ^security/publicca/apiv1beta1/gapic_metadata\.json$
+      - ^security/publicca/apiv1beta1/helpers\.go$
+      - ^security/publicca/apiv1beta1/publiccapb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/security/
+    tag_format: '{id}/v{version}'
+  - id: securitycenter
+    version: 1.38.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/securitycenter/settings/v1beta1
+        service_config: securitycenter_settings.yaml
+      - path: google/cloud/securitycenter/v1
+        service_config: securitycenter_v1.yaml
+      - path: google/cloud/securitycenter/v1beta1
+        service_config: securitycenter_v1beta1.yaml
+      - path: google/cloud/securitycenter/v1p1beta1
+        service_config: securitycenter_v1p1beta1.yaml
+      - path: google/cloud/securitycenter/v2
+        service_config: securitycenter_v2.yaml
+    source_roots:
+      - securitycenter
+      - internal/generated/snippets/securitycenter
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/securitycenter/
+      - ^securitycenter/apiv1/[^/]*_client\.go$
+      - ^securitycenter/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^securitycenter/apiv1/[^/]*_client_example_test\.go$
+      - ^securitycenter/apiv1/auxiliary\.go$
+      - ^securitycenter/apiv1/auxiliary_go123\.go$
+      - ^securitycenter/apiv1/doc\.go$
+      - ^securitycenter/apiv1/gapic_metadata\.json$
+      - ^securitycenter/apiv1/helpers\.go$
+      - ^securitycenter/apiv1/securitycenterpb/.*$
+      - ^securitycenter/apiv1beta1/[^/]*_client\.go$
+      - ^securitycenter/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^securitycenter/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^securitycenter/apiv1beta1/auxiliary\.go$
+      - ^securitycenter/apiv1beta1/auxiliary_go123\.go$
+      - ^securitycenter/apiv1beta1/doc\.go$
+      - ^securitycenter/apiv1beta1/gapic_metadata\.json$
+      - ^securitycenter/apiv1beta1/helpers\.go$
+      - ^securitycenter/apiv1beta1/securitycenterpb/.*$
+      - ^securitycenter/apiv1p1beta1/[^/]*_client\.go$
+      - ^securitycenter/apiv1p1beta1/[^/]*_client_example_go123_test\.go$
+      - ^securitycenter/apiv1p1beta1/[^/]*_client_example_test\.go$
+      - ^securitycenter/apiv1p1beta1/auxiliary\.go$
+      - ^securitycenter/apiv1p1beta1/auxiliary_go123\.go$
+      - ^securitycenter/apiv1p1beta1/doc\.go$
+      - ^securitycenter/apiv1p1beta1/gapic_metadata\.json$
+      - ^securitycenter/apiv1p1beta1/helpers\.go$
+      - ^securitycenter/apiv1p1beta1/securitycenterpb/.*$
+      - ^securitycenter/apiv2/[^/]*_client\.go$
+      - ^securitycenter/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^securitycenter/apiv2/[^/]*_client_example_test\.go$
+      - ^securitycenter/apiv2/auxiliary\.go$
+      - ^securitycenter/apiv2/auxiliary_go123\.go$
+      - ^securitycenter/apiv2/doc\.go$
+      - ^securitycenter/apiv2/gapic_metadata\.json$
+      - ^securitycenter/apiv2/helpers\.go$
+      - ^securitycenter/apiv2/securitycenterpb/.*$
+      - ^securitycenter/settings/apiv1beta1/[^/]*_client\.go$
+      - ^securitycenter/settings/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^securitycenter/settings/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^securitycenter/settings/apiv1beta1/auxiliary\.go$
+      - ^securitycenter/settings/apiv1beta1/auxiliary_go123\.go$
+      - ^securitycenter/settings/apiv1beta1/doc\.go$
+      - ^securitycenter/settings/apiv1beta1/gapic_metadata\.json$
+      - ^securitycenter/settings/apiv1beta1/helpers\.go$
+      - ^securitycenter/settings/apiv1beta1/settingspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/securitycenter/
+    tag_format: '{id}/v{version}'
+  - id: securitycentermanagement
+    version: 1.1.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/securitycentermanagement/v1
+        service_config: securitycentermanagement_v1.yaml
+    source_roots:
+      - securitycentermanagement
+      - internal/generated/snippets/securitycentermanagement
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/securitycentermanagement/
+      - ^securitycentermanagement/apiv1/[^/]*_client\.go$
+      - ^securitycentermanagement/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^securitycentermanagement/apiv1/[^/]*_client_example_test\.go$
+      - ^securitycentermanagement/apiv1/auxiliary\.go$
+      - ^securitycentermanagement/apiv1/auxiliary_go123\.go$
+      - ^securitycentermanagement/apiv1/doc\.go$
+      - ^securitycentermanagement/apiv1/gapic_metadata\.json$
+      - ^securitycentermanagement/apiv1/helpers\.go$
+      - ^securitycentermanagement/apiv1/securitycentermanagementpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/securitycentermanagement/
+    tag_format: '{id}/v{version}'
+  - id: securityposture
+    version: 0.2.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/securityposture/v1
+        service_config: securityposture_v1.yaml
+    source_roots:
+      - securityposture
+      - internal/generated/snippets/securityposture
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/securityposture/
+      - ^securityposture/apiv1/[^/]*_client\.go$
+      - ^securityposture/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^securityposture/apiv1/[^/]*_client_example_test\.go$
+      - ^securityposture/apiv1/auxiliary\.go$
+      - ^securityposture/apiv1/auxiliary_go123\.go$
+      - ^securityposture/apiv1/doc\.go$
+      - ^securityposture/apiv1/gapic_metadata\.json$
+      - ^securityposture/apiv1/helpers\.go$
+      - ^securityposture/apiv1/securityposturepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/securityposture/
+    tag_format: '{id}/v{version}'
+  - id: servicedirectory
+    version: 1.12.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/servicedirectory/v1
+        service_config: servicedirectory_v1.yaml
+      - path: google/cloud/servicedirectory/v1beta1
+        service_config: servicedirectory_v1beta1.yaml
+    source_roots:
+      - servicedirectory
+      - internal/generated/snippets/servicedirectory
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/servicedirectory/
+      - ^servicedirectory/apiv1/[^/]*_client\.go$
+      - ^servicedirectory/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^servicedirectory/apiv1/[^/]*_client_example_test\.go$
+      - ^servicedirectory/apiv1/auxiliary\.go$
+      - ^servicedirectory/apiv1/auxiliary_go123\.go$
+      - ^servicedirectory/apiv1/doc\.go$
+      - ^servicedirectory/apiv1/gapic_metadata\.json$
+      - ^servicedirectory/apiv1/helpers\.go$
+      - ^servicedirectory/apiv1/servicedirectorypb/.*$
+      - ^servicedirectory/apiv1beta1/[^/]*_client\.go$
+      - ^servicedirectory/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^servicedirectory/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^servicedirectory/apiv1beta1/auxiliary\.go$
+      - ^servicedirectory/apiv1beta1/auxiliary_go123\.go$
+      - ^servicedirectory/apiv1beta1/doc\.go$
+      - ^servicedirectory/apiv1beta1/gapic_metadata\.json$
+      - ^servicedirectory/apiv1beta1/helpers\.go$
+      - ^servicedirectory/apiv1beta1/servicedirectorypb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/servicedirectory/
+    tag_format: '{id}/v{version}'
+  - id: servicehealth
+    version: 1.2.4
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/servicehealth/v1
+        service_config: servicehealth_v1.yaml
+    source_roots:
+      - servicehealth
+      - internal/generated/snippets/servicehealth
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/servicehealth/
+      - ^servicehealth/apiv1/[^/]*_client\.go$
+      - ^servicehealth/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^servicehealth/apiv1/[^/]*_client_example_test\.go$
+      - ^servicehealth/apiv1/auxiliary\.go$
+      - ^servicehealth/apiv1/auxiliary_go123\.go$
+      - ^servicehealth/apiv1/doc\.go$
+      - ^servicehealth/apiv1/gapic_metadata\.json$
+      - ^servicehealth/apiv1/helpers\.go$
+      - ^servicehealth/apiv1/servicehealthpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/servicehealth/
+    tag_format: '{id}/v{version}'
+  - id: shell
+    version: 1.8.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/shell/v1
+        service_config: cloudshell_v1.yaml
+    source_roots:
+      - shell
+      - internal/generated/snippets/shell
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/shell/
+      - ^shell/apiv1/[^/]*_client\.go$
+      - ^shell/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shell/apiv1/[^/]*_client_example_test\.go$
+      - ^shell/apiv1/auxiliary\.go$
+      - ^shell/apiv1/auxiliary_go123\.go$
+      - ^shell/apiv1/doc\.go$
+      - ^shell/apiv1/gapic_metadata\.json$
+      - ^shell/apiv1/helpers\.go$
+      - ^shell/apiv1/shellpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/shell/
+    tag_format: '{id}/v{version}'
+  - id: shopping
+    version: 1.2.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/shopping/css/v1
+        service_config: css_v1.yaml
+      - path: google/shopping/merchant/accounts/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/accounts/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/conversions/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/conversions/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/datasources/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/datasources/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/notifications/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/notifications/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/ordertracking/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/ordertracking/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/products/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/products/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/productstudio/v1alpha
+        service_config: merchantapi_v1alpha.yaml
+      - path: google/shopping/merchant/promotions/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/promotions/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/quota/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/quota/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/inventories/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/inventories/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/issueresolution/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/issueresolution/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/lfp/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/lfp/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/reports/v1
+        service_config: merchantapi_v1.yaml
+      - path: google/shopping/merchant/reports/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/merchant/reviews/v1beta
+        service_config: merchantapi_v1beta.yaml
+      - path: google/shopping/type
+        service_config: ""
+    source_roots:
+      - shopping
+      - internal/generated/snippets/shopping
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/shopping/
+      - ^shopping/css/apiv1/[^/]*_client\.go$
+      - ^shopping/css/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/css/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/css/apiv1/auxiliary\.go$
+      - ^shopping/css/apiv1/auxiliary_go123\.go$
+      - ^shopping/css/apiv1/doc\.go$
+      - ^shopping/css/apiv1/gapic_metadata\.json$
+      - ^shopping/css/apiv1/helpers\.go$
+      - ^shopping/css/apiv1/csspb/.*$
+      - ^shopping/merchant/accounts/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/accounts/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/accounts/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/accounts/apiv1/auxiliary\.go$
+      - ^shopping/merchant/accounts/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/accounts/apiv1/doc\.go$
+      - ^shopping/merchant/accounts/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/accounts/apiv1/helpers\.go$
+      - ^shopping/merchant/accounts/apiv1/accountspb/.*$
+      - ^shopping/merchant/accounts/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/accounts/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/accounts/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/accounts/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/accounts/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/accounts/apiv1beta/doc\.go$
+      - ^shopping/merchant/accounts/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/accounts/apiv1beta/helpers\.go$
+      - ^shopping/merchant/accounts/apiv1beta/accountspb/.*$
+      - ^shopping/merchant/conversions/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/conversions/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/conversions/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/conversions/apiv1/auxiliary\.go$
+      - ^shopping/merchant/conversions/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/conversions/apiv1/doc\.go$
+      - ^shopping/merchant/conversions/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/conversions/apiv1/helpers\.go$
+      - ^shopping/merchant/conversions/apiv1/conversionspb/.*$
+      - ^shopping/merchant/conversions/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/conversions/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/conversions/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/conversions/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/conversions/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/conversions/apiv1beta/doc\.go$
+      - ^shopping/merchant/conversions/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/conversions/apiv1beta/helpers\.go$
+      - ^shopping/merchant/conversions/apiv1beta/conversionspb/.*$
+      - ^shopping/merchant/datasources/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/datasources/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/datasources/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/datasources/apiv1/auxiliary\.go$
+      - ^shopping/merchant/datasources/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/datasources/apiv1/doc\.go$
+      - ^shopping/merchant/datasources/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/datasources/apiv1/helpers\.go$
+      - ^shopping/merchant/datasources/apiv1/datasourcespb/.*$
+      - ^shopping/merchant/datasources/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/datasources/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/datasources/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/datasources/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/datasources/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/datasources/apiv1beta/doc\.go$
+      - ^shopping/merchant/datasources/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/datasources/apiv1beta/helpers\.go$
+      - ^shopping/merchant/datasources/apiv1beta/datasourcespb/.*$
+      - ^shopping/merchant/inventories/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/inventories/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/inventories/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/inventories/apiv1/auxiliary\.go$
+      - ^shopping/merchant/inventories/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/inventories/apiv1/doc\.go$
+      - ^shopping/merchant/inventories/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/inventories/apiv1/helpers\.go$
+      - ^shopping/merchant/inventories/apiv1/inventoriespb/.*$
+      - ^shopping/merchant/inventories/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/inventories/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/inventories/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/inventories/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/inventories/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/inventories/apiv1beta/doc\.go$
+      - ^shopping/merchant/inventories/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/inventories/apiv1beta/helpers\.go$
+      - ^shopping/merchant/inventories/apiv1beta/inventoriespb/.*$
+      - ^shopping/merchant/issueresolution/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/issueresolution/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/issueresolution/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/issueresolution/apiv1/auxiliary\.go$
+      - ^shopping/merchant/issueresolution/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/issueresolution/apiv1/doc\.go$
+      - ^shopping/merchant/issueresolution/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/issueresolution/apiv1/helpers\.go$
+      - ^shopping/merchant/issueresolution/apiv1/issueresolutionpb/.*$
+      - ^shopping/merchant/issueresolution/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/issueresolution/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/issueresolution/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/issueresolution/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/issueresolution/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/issueresolution/apiv1beta/doc\.go$
+      - ^shopping/merchant/issueresolution/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/issueresolution/apiv1beta/helpers\.go$
+      - ^shopping/merchant/issueresolution/apiv1beta/issueresolutionpb/.*$
+      - ^shopping/merchant/lfp/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/lfp/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/lfp/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/lfp/apiv1/auxiliary\.go$
+      - ^shopping/merchant/lfp/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/lfp/apiv1/doc\.go$
+      - ^shopping/merchant/lfp/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/lfp/apiv1/helpers\.go$
+      - ^shopping/merchant/lfp/apiv1/lfppb/.*$
+      - ^shopping/merchant/lfp/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/lfp/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/lfp/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/lfp/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/lfp/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/lfp/apiv1beta/doc\.go$
+      - ^shopping/merchant/lfp/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/lfp/apiv1beta/helpers\.go$
+      - ^shopping/merchant/lfp/apiv1beta/lfppb/.*$
+      - ^shopping/merchant/notifications/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/notifications/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/notifications/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/notifications/apiv1/auxiliary\.go$
+      - ^shopping/merchant/notifications/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/notifications/apiv1/doc\.go$
+      - ^shopping/merchant/notifications/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/notifications/apiv1/helpers\.go$
+      - ^shopping/merchant/notifications/apiv1/notificationspb/.*$
+      - ^shopping/merchant/notifications/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/notifications/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/notifications/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/notifications/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/notifications/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/notifications/apiv1beta/doc\.go$
+      - ^shopping/merchant/notifications/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/notifications/apiv1beta/helpers\.go$
+      - ^shopping/merchant/notifications/apiv1beta/notificationspb/.*$
+      - ^shopping/merchant/ordertracking/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/ordertracking/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/ordertracking/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/ordertracking/apiv1/auxiliary\.go$
+      - ^shopping/merchant/ordertracking/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/ordertracking/apiv1/doc\.go$
+      - ^shopping/merchant/ordertracking/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/ordertracking/apiv1/helpers\.go$
+      - ^shopping/merchant/ordertracking/apiv1/ordertrackingpb/.*$
+      - ^shopping/merchant/ordertracking/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/ordertracking/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/ordertracking/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/ordertracking/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/ordertracking/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/ordertracking/apiv1beta/doc\.go$
+      - ^shopping/merchant/ordertracking/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/ordertracking/apiv1beta/helpers\.go$
+      - ^shopping/merchant/ordertracking/apiv1beta/ordertrackingpb/.*$
+      - ^shopping/merchant/products/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/products/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/products/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/products/apiv1/auxiliary\.go$
+      - ^shopping/merchant/products/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/products/apiv1/doc\.go$
+      - ^shopping/merchant/products/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/products/apiv1/helpers\.go$
+      - ^shopping/merchant/products/apiv1/productspb/.*$
+      - ^shopping/merchant/products/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/products/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/products/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/products/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/products/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/products/apiv1beta/doc\.go$
+      - ^shopping/merchant/products/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/products/apiv1beta/helpers\.go$
+      - ^shopping/merchant/products/apiv1beta/productspb/.*$
+      - ^shopping/merchant/productstudio/apiv1alpha/[^/]*_client\.go$
+      - ^shopping/merchant/productstudio/apiv1alpha/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/productstudio/apiv1alpha/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/productstudio/apiv1alpha/auxiliary\.go$
+      - ^shopping/merchant/productstudio/apiv1alpha/auxiliary_go123\.go$
+      - ^shopping/merchant/productstudio/apiv1alpha/doc\.go$
+      - ^shopping/merchant/productstudio/apiv1alpha/gapic_metadata\.json$
+      - ^shopping/merchant/productstudio/apiv1alpha/helpers\.go$
+      - ^shopping/merchant/productstudio/apiv1alpha/productstudiopb/.*$
+      - ^shopping/merchant/promotions/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/promotions/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/promotions/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/promotions/apiv1/auxiliary\.go$
+      - ^shopping/merchant/promotions/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/promotions/apiv1/doc\.go$
+      - ^shopping/merchant/promotions/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/promotions/apiv1/helpers\.go$
+      - ^shopping/merchant/promotions/apiv1/promotionspb/.*$
+      - ^shopping/merchant/promotions/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/promotions/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/promotions/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/promotions/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/promotions/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/promotions/apiv1beta/doc\.go$
+      - ^shopping/merchant/promotions/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/promotions/apiv1beta/helpers\.go$
+      - ^shopping/merchant/promotions/apiv1beta/promotionspb/.*$
+      - ^shopping/merchant/quota/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/quota/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/quota/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/quota/apiv1/auxiliary\.go$
+      - ^shopping/merchant/quota/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/quota/apiv1/doc\.go$
+      - ^shopping/merchant/quota/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/quota/apiv1/helpers\.go$
+      - ^shopping/merchant/quota/apiv1/quotapb/.*$
+      - ^shopping/merchant/quota/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/quota/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/quota/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/quota/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/quota/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/quota/apiv1beta/doc\.go$
+      - ^shopping/merchant/quota/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/quota/apiv1beta/helpers\.go$
+      - ^shopping/merchant/quota/apiv1beta/quotapb/.*$
+      - ^shopping/merchant/reports/apiv1/[^/]*_client\.go$
+      - ^shopping/merchant/reports/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/reports/apiv1/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/reports/apiv1/auxiliary\.go$
+      - ^shopping/merchant/reports/apiv1/auxiliary_go123\.go$
+      - ^shopping/merchant/reports/apiv1/doc\.go$
+      - ^shopping/merchant/reports/apiv1/gapic_metadata\.json$
+      - ^shopping/merchant/reports/apiv1/helpers\.go$
+      - ^shopping/merchant/reports/apiv1/reportspb/.*$
+      - ^shopping/merchant/reports/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/reports/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/reports/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/reports/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/reports/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/reports/apiv1beta/doc\.go$
+      - ^shopping/merchant/reports/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/reports/apiv1beta/helpers\.go$
+      - ^shopping/merchant/reports/apiv1beta/reportspb/.*$
+      - ^shopping/merchant/reviews/apiv1beta/[^/]*_client\.go$
+      - ^shopping/merchant/reviews/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^shopping/merchant/reviews/apiv1beta/[^/]*_client_example_test\.go$
+      - ^shopping/merchant/reviews/apiv1beta/auxiliary\.go$
+      - ^shopping/merchant/reviews/apiv1beta/auxiliary_go123\.go$
+      - ^shopping/merchant/reviews/apiv1beta/doc\.go$
+      - ^shopping/merchant/reviews/apiv1beta/gapic_metadata\.json$
+      - ^shopping/merchant/reviews/apiv1beta/helpers\.go$
+      - ^shopping/merchant/reviews/apiv1beta/reviewspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/shopping/
+    tag_format: '{id}/v{version}'
+  - id: speech
+    version: 1.28.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/speech/v1
+        service_config: speech_v1.yaml
+      - path: google/cloud/speech/v1p1beta1
+        service_config: speech_v1p1beta1.yaml
+      - path: google/cloud/speech/v2
+        service_config: speech_v2.yaml
+    source_roots:
+      - speech
+      - internal/generated/snippets/speech
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/speech/
+      - ^speech/apiv1/[^/]*_client\.go$
+      - ^speech/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^speech/apiv1/[^/]*_client_example_test\.go$
+      - ^speech/apiv1/auxiliary\.go$
+      - ^speech/apiv1/auxiliary_go123\.go$
+      - ^speech/apiv1/doc\.go$
+      - ^speech/apiv1/gapic_metadata\.json$
+      - ^speech/apiv1/helpers\.go$
+      - ^speech/apiv1/speechpb/.*$
+      - ^speech/apiv1p1beta1/[^/]*_client\.go$
+      - ^speech/apiv1p1beta1/[^/]*_client_example_go123_test\.go$
+      - ^speech/apiv1p1beta1/[^/]*_client_example_test\.go$
+      - ^speech/apiv1p1beta1/auxiliary\.go$
+      - ^speech/apiv1p1beta1/auxiliary_go123\.go$
+      - ^speech/apiv1p1beta1/doc\.go$
+      - ^speech/apiv1p1beta1/gapic_metadata\.json$
+      - ^speech/apiv1p1beta1/helpers\.go$
+      - ^speech/apiv1p1beta1/speechpb/.*$
+      - ^speech/apiv2/[^/]*_client\.go$
+      - ^speech/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^speech/apiv2/[^/]*_client_example_test\.go$
+      - ^speech/apiv2/auxiliary\.go$
+      - ^speech/apiv2/auxiliary_go123\.go$
+      - ^speech/apiv2/doc\.go$
+      - ^speech/apiv2/gapic_metadata\.json$
+      - ^speech/apiv2/helpers\.go$
+      - ^speech/apiv2/speechpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/speech/
+    tag_format: '{id}/v{version}'
+  - id: storagebatchoperations
+    version: 0.1.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/storagebatchoperations/v1
+        service_config: storagebatchoperations_v1.yaml
+    source_roots:
+      - storagebatchoperations
+      - internal/generated/snippets/storagebatchoperations
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/storagebatchoperations/
+      - ^storagebatchoperations/apiv1/[^/]*_client\.go$
+      - ^storagebatchoperations/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^storagebatchoperations/apiv1/[^/]*_client_example_test\.go$
+      - ^storagebatchoperations/apiv1/auxiliary\.go$
+      - ^storagebatchoperations/apiv1/auxiliary_go123\.go$
+      - ^storagebatchoperations/apiv1/doc\.go$
+      - ^storagebatchoperations/apiv1/gapic_metadata\.json$
+      - ^storagebatchoperations/apiv1/helpers\.go$
+      - ^storagebatchoperations/apiv1/storagebatchoperationspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/storagebatchoperations/
+    tag_format: '{id}/v{version}'
+  - id: storageinsights
+    version: 1.2.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/storageinsights/v1
+        service_config: storageinsights_v1.yaml
+    source_roots:
+      - storageinsights
+      - internal/generated/snippets/storageinsights
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/storageinsights/
+      - ^storageinsights/apiv1/[^/]*_client\.go$
+      - ^storageinsights/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^storageinsights/apiv1/[^/]*_client_example_test\.go$
+      - ^storageinsights/apiv1/auxiliary\.go$
+      - ^storageinsights/apiv1/auxiliary_go123\.go$
+      - ^storageinsights/apiv1/doc\.go$
+      - ^storageinsights/apiv1/gapic_metadata\.json$
+      - ^storageinsights/apiv1/helpers\.go$
+      - ^storageinsights/apiv1/storageinsightspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/storageinsights/
+    tag_format: '{id}/v{version}'
+  - id: storagetransfer
+    version: 1.13.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/storagetransfer/v1
+        service_config: storagetransfer_v1.yaml
+    source_roots:
+      - storagetransfer
+      - internal/generated/snippets/storagetransfer
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/storagetransfer/
+      - ^storagetransfer/apiv1/[^/]*_client\.go$
+      - ^storagetransfer/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^storagetransfer/apiv1/[^/]*_client_example_test\.go$
+      - ^storagetransfer/apiv1/auxiliary\.go$
+      - ^storagetransfer/apiv1/auxiliary_go123\.go$
+      - ^storagetransfer/apiv1/doc\.go$
+      - ^storagetransfer/apiv1/gapic_metadata\.json$
+      - ^storagetransfer/apiv1/helpers\.go$
+      - ^storagetransfer/apiv1/storagetransferpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/storagetransfer/
+    tag_format: '{id}/v{version}'
+  - id: streetview
+    version: 0.2.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/streetview/publish/v1
+        service_config: streetviewpublish.yaml
+    source_roots:
+      - streetview
+      - internal/generated/snippets/streetview
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/streetview/
+      - ^streetview/publish/apiv1/[^/]*_client\.go$
+      - ^streetview/publish/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^streetview/publish/apiv1/[^/]*_client_example_test\.go$
+      - ^streetview/publish/apiv1/auxiliary\.go$
+      - ^streetview/publish/apiv1/auxiliary_go123\.go$
+      - ^streetview/publish/apiv1/doc\.go$
+      - ^streetview/publish/apiv1/gapic_metadata\.json$
+      - ^streetview/publish/apiv1/helpers\.go$
+      - ^streetview/publish/apiv1/publishpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/streetview/
+    tag_format: '{id}/v{version}'
+  - id: support
+    version: 1.4.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/support/v2
+        service_config: cloudsupport_v2.yaml
+      - path: google/cloud/support/v2beta
+        service_config: cloudsupport_v2beta.yaml
+    source_roots:
+      - support
+      - internal/generated/snippets/support
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/support/
+      - ^support/apiv2/[^/]*_client\.go$
+      - ^support/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^support/apiv2/[^/]*_client_example_test\.go$
+      - ^support/apiv2/auxiliary\.go$
+      - ^support/apiv2/auxiliary_go123\.go$
+      - ^support/apiv2/doc\.go$
+      - ^support/apiv2/gapic_metadata\.json$
+      - ^support/apiv2/helpers\.go$
+      - ^support/apiv2/supportpb/.*$
+      - ^support/apiv2beta/[^/]*_client\.go$
+      - ^support/apiv2beta/[^/]*_client_example_go123_test\.go$
+      - ^support/apiv2beta/[^/]*_client_example_test\.go$
+      - ^support/apiv2beta/auxiliary\.go$
+      - ^support/apiv2beta/auxiliary_go123\.go$
+      - ^support/apiv2beta/doc\.go$
+      - ^support/apiv2beta/gapic_metadata\.json$
+      - ^support/apiv2beta/helpers\.go$
+      - ^support/apiv2beta/supportpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/support/
+    tag_format: '{id}/v{version}'
+  - id: talent
+    version: 1.8.4
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/talent/v4
+        service_config: jobs_v4.yaml
+      - path: google/cloud/talent/v4beta1
+        service_config: jobs_v4beta1.yaml
+    source_roots:
+      - talent
+      - internal/generated/snippets/talent
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/talent/
+      - ^talent/apiv4/[^/]*_client\.go$
+      - ^talent/apiv4/[^/]*_client_example_go123_test\.go$
+      - ^talent/apiv4/[^/]*_client_example_test\.go$
+      - ^talent/apiv4/auxiliary\.go$
+      - ^talent/apiv4/auxiliary_go123\.go$
+      - ^talent/apiv4/doc\.go$
+      - ^talent/apiv4/gapic_metadata\.json$
+      - ^talent/apiv4/helpers\.go$
+      - ^talent/apiv4/talentpb/.*$
+      - ^talent/apiv4beta1/[^/]*_client\.go$
+      - ^talent/apiv4beta1/[^/]*_client_example_go123_test\.go$
+      - ^talent/apiv4beta1/[^/]*_client_example_test\.go$
+      - ^talent/apiv4beta1/auxiliary\.go$
+      - ^talent/apiv4beta1/auxiliary_go123\.go$
+      - ^talent/apiv4beta1/doc\.go$
+      - ^talent/apiv4beta1/gapic_metadata\.json$
+      - ^talent/apiv4beta1/helpers\.go$
+      - ^talent/apiv4beta1/talentpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/talent/
+    tag_format: '{id}/v{version}'
+  - id: telcoautomation
+    version: 1.1.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/telcoautomation/v1
+        service_config: telcoautomation_v1.yaml
+    source_roots:
+      - telcoautomation
+      - internal/generated/snippets/telcoautomation
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/telcoautomation/
+      - ^telcoautomation/apiv1/[^/]*_client\.go$
+      - ^telcoautomation/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^telcoautomation/apiv1/[^/]*_client_example_test\.go$
+      - ^telcoautomation/apiv1/auxiliary\.go$
+      - ^telcoautomation/apiv1/auxiliary_go123\.go$
+      - ^telcoautomation/apiv1/doc\.go$
+      - ^telcoautomation/apiv1/gapic_metadata\.json$
+      - ^telcoautomation/apiv1/helpers\.go$
+      - ^telcoautomation/apiv1/telcoautomationpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/telcoautomation/
+    tag_format: '{id}/v{version}'
+  - id: texttospeech
+    version: 1.15.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/texttospeech/v1
+        service_config: texttospeech_v1.yaml
+    source_roots:
+      - texttospeech
+      - internal/generated/snippets/texttospeech
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/texttospeech/
+      - ^texttospeech/apiv1/[^/]*_client\.go$
+      - ^texttospeech/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^texttospeech/apiv1/[^/]*_client_example_test\.go$
+      - ^texttospeech/apiv1/auxiliary\.go$
+      - ^texttospeech/apiv1/auxiliary_go123\.go$
+      - ^texttospeech/apiv1/doc\.go$
+      - ^texttospeech/apiv1/gapic_metadata\.json$
+      - ^texttospeech/apiv1/helpers\.go$
+      - ^texttospeech/apiv1/texttospeechpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/texttospeech/
+    tag_format: '{id}/v{version}'
+  - id: tpu
+    version: 1.8.4
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/tpu/v1
+        service_config: tpu_v1.yaml
+    source_roots:
+      - tpu
+      - internal/generated/snippets/tpu
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/tpu/
+      - ^tpu/apiv1/[^/]*_client\.go$
+      - ^tpu/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^tpu/apiv1/[^/]*_client_example_test\.go$
+      - ^tpu/apiv1/auxiliary\.go$
+      - ^tpu/apiv1/auxiliary_go123\.go$
+      - ^tpu/apiv1/doc\.go$
+      - ^tpu/apiv1/gapic_metadata\.json$
+      - ^tpu/apiv1/helpers\.go$
+      - ^tpu/apiv1/tpupb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/tpu/
+    tag_format: '{id}/v{version}'
+  - id: trace
+    version: 1.11.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/devtools/cloudtrace/v1
+        service_config: cloudtrace_v1.yaml
+      - path: google/devtools/cloudtrace/v2
+        service_config: cloudtrace_v2.yaml
+    source_roots:
+      - trace
+      - internal/generated/snippets/trace
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/trace/
+      - ^trace/apiv1/[^/]*_client\.go$
+      - ^trace/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^trace/apiv1/[^/]*_client_example_test\.go$
+      - ^trace/apiv1/auxiliary\.go$
+      - ^trace/apiv1/auxiliary_go123\.go$
+      - ^trace/apiv1/doc\.go$
+      - ^trace/apiv1/gapic_metadata\.json$
+      - ^trace/apiv1/helpers\.go$
+      - ^trace/apiv1/tracepb/.*$
+      - ^trace/apiv2/[^/]*_client\.go$
+      - ^trace/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^trace/apiv2/[^/]*_client_example_test\.go$
+      - ^trace/apiv2/auxiliary\.go$
+      - ^trace/apiv2/auxiliary_go123\.go$
+      - ^trace/apiv2/doc\.go$
+      - ^trace/apiv2/gapic_metadata\.json$
+      - ^trace/apiv2/helpers\.go$
+      - ^trace/apiv2/tracepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/trace/
+    tag_format: '{id}/v{version}'
+  - id: translate
+    version: 1.12.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/translate/v3
+        service_config: translate_v3.yaml
+    source_roots:
+      - translate
+      - internal/generated/snippets/translate
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/translate/
+      - ^translate/apiv3/[^/]*_client\.go$
+      - ^translate/apiv3/[^/]*_client_example_go123_test\.go$
+      - ^translate/apiv3/[^/]*_client_example_test\.go$
+      - ^translate/apiv3/auxiliary\.go$
+      - ^translate/apiv3/auxiliary_go123\.go$
+      - ^translate/apiv3/doc\.go$
+      - ^translate/apiv3/gapic_metadata\.json$
+      - ^translate/apiv3/helpers\.go$
+      - ^translate/apiv3/translatepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/translate/
+    tag_format: '{id}/v{version}'
+  - id: video
+    version: 1.27.1
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/video/livestream/v1
+        service_config: livestream_v1.yaml
+      - path: google/cloud/video/transcoder/v1
+        service_config: transcoder_v1.yaml
+      - path: google/cloud/video/stitcher/v1
+        service_config: videostitcher_v1.yaml
+    source_roots:
+      - video
+      - internal/generated/snippets/video
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/video/
+      - ^video/livestream/apiv1/[^/]*_client\.go$
+      - ^video/livestream/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^video/livestream/apiv1/[^/]*_client_example_test\.go$
+      - ^video/livestream/apiv1/auxiliary\.go$
+      - ^video/livestream/apiv1/auxiliary_go123\.go$
+      - ^video/livestream/apiv1/doc\.go$
+      - ^video/livestream/apiv1/gapic_metadata\.json$
+      - ^video/livestream/apiv1/helpers\.go$
+      - ^video/livestream/apiv1/livestreampb/.*$
+      - ^video/stitcher/apiv1/[^/]*_client\.go$
+      - ^video/stitcher/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^video/stitcher/apiv1/[^/]*_client_example_test\.go$
+      - ^video/stitcher/apiv1/auxiliary\.go$
+      - ^video/stitcher/apiv1/auxiliary_go123\.go$
+      - ^video/stitcher/apiv1/doc\.go$
+      - ^video/stitcher/apiv1/gapic_metadata\.json$
+      - ^video/stitcher/apiv1/helpers\.go$
+      - ^video/stitcher/apiv1/stitcherpb/.*$
+      - ^video/transcoder/apiv1/[^/]*_client\.go$
+      - ^video/transcoder/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^video/transcoder/apiv1/[^/]*_client_example_test\.go$
+      - ^video/transcoder/apiv1/auxiliary\.go$
+      - ^video/transcoder/apiv1/auxiliary_go123\.go$
+      - ^video/transcoder/apiv1/doc\.go$
+      - ^video/transcoder/apiv1/gapic_metadata\.json$
+      - ^video/transcoder/apiv1/helpers\.go$
+      - ^video/transcoder/apiv1/transcoderpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/video/
+    tag_format: '{id}/v{version}'
+  - id: videointelligence
+    version: 1.12.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/videointelligence/v1
+        service_config: videointelligence_v1.yaml
+      - path: google/cloud/videointelligence/v1beta2
+        service_config: videointelligence_v1beta2.yaml
+      - path: google/cloud/videointelligence/v1p3beta1
+        service_config: videointelligence_v1p3beta1.yaml
+    source_roots:
+      - videointelligence
+      - internal/generated/snippets/videointelligence
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/videointelligence/
+      - ^videointelligence/apiv1/[^/]*_client\.go$
+      - ^videointelligence/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^videointelligence/apiv1/[^/]*_client_example_test\.go$
+      - ^videointelligence/apiv1/auxiliary\.go$
+      - ^videointelligence/apiv1/auxiliary_go123\.go$
+      - ^videointelligence/apiv1/doc\.go$
+      - ^videointelligence/apiv1/gapic_metadata\.json$
+      - ^videointelligence/apiv1/helpers\.go$
+      - ^videointelligence/apiv1/videointelligencepb/.*$
+      - ^videointelligence/apiv1beta2/[^/]*_client\.go$
+      - ^videointelligence/apiv1beta2/[^/]*_client_example_go123_test\.go$
+      - ^videointelligence/apiv1beta2/[^/]*_client_example_test\.go$
+      - ^videointelligence/apiv1beta2/auxiliary\.go$
+      - ^videointelligence/apiv1beta2/auxiliary_go123\.go$
+      - ^videointelligence/apiv1beta2/doc\.go$
+      - ^videointelligence/apiv1beta2/gapic_metadata\.json$
+      - ^videointelligence/apiv1beta2/helpers\.go$
+      - ^videointelligence/apiv1beta2/videointelligencepb/.*$
+      - ^videointelligence/apiv1p3beta1/[^/]*_client\.go$
+      - ^videointelligence/apiv1p3beta1/[^/]*_client_example_go123_test\.go$
+      - ^videointelligence/apiv1p3beta1/[^/]*_client_example_test\.go$
+      - ^videointelligence/apiv1p3beta1/auxiliary\.go$
+      - ^videointelligence/apiv1p3beta1/auxiliary_go123\.go$
+      - ^videointelligence/apiv1p3beta1/doc\.go$
+      - ^videointelligence/apiv1p3beta1/gapic_metadata\.json$
+      - ^videointelligence/apiv1p3beta1/helpers\.go$
+      - ^videointelligence/apiv1p3beta1/videointelligencepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/videointelligence/
+    tag_format: '{id}/v{version}'
+  - id: vision
+    version: 2.9.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/vision/v1
+        service_config: vision_v1.yaml
+      - path: google/cloud/vision/v1p1beta1
+        service_config: vision_v1p1beta1.yaml
+    source_roots:
+      - vision
+      - internal/generated/snippets/vision
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/vision/
+      - ^vision/apiv1/[^/]*_client\.go$
+      - ^vision/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^vision/apiv1/[^/]*_client_example_test\.go$
+      - ^vision/apiv1/auxiliary\.go$
+      - ^vision/apiv1/auxiliary_go123\.go$
+      - ^vision/apiv1/doc\.go$
+      - ^vision/apiv1/gapic_metadata\.json$
+      - ^vision/apiv1/helpers\.go$
+      - ^vision/apiv1/visionpb/.*$
+      - ^vision/apiv1p1beta1/[^/]*_client\.go$
+      - ^vision/apiv1p1beta1/[^/]*_client_example_go123_test\.go$
+      - ^vision/apiv1p1beta1/[^/]*_client_example_test\.go$
+      - ^vision/apiv1p1beta1/auxiliary\.go$
+      - ^vision/apiv1p1beta1/auxiliary_go123\.go$
+      - ^vision/apiv1p1beta1/doc\.go$
+      - ^vision/apiv1p1beta1/gapic_metadata\.json$
+      - ^vision/apiv1p1beta1/helpers\.go$
+      - ^vision/apiv1p1beta1/visionpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/vision/
+    tag_format: '{id}/v{version}'
+  - id: visionai
+    version: 0.4.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/visionai/v1
+        service_config: visionai_v1.yaml
+    source_roots:
+      - visionai
+      - internal/generated/snippets/visionai
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/visionai/
+      - ^visionai/apiv1/[^/]*_client\.go$
+      - ^visionai/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^visionai/apiv1/[^/]*_client_example_test\.go$
+      - ^visionai/apiv1/auxiliary\.go$
+      - ^visionai/apiv1/auxiliary_go123\.go$
+      - ^visionai/apiv1/doc\.go$
+      - ^visionai/apiv1/gapic_metadata\.json$
+      - ^visionai/apiv1/helpers\.go$
+      - ^visionai/apiv1/visionaipb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/visionai/
+    tag_format: '{id}/v{version}'
+  - id: vmmigration
+    version: 1.9.1
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    apis:
+      - path: google/cloud/vmmigration/v1
+        service_config: vmmigration_v1.yaml
+    source_roots:
+      - vmmigration
+      - internal/generated/snippets/vmmigration
+    preserve_regex:
+      - ^vmmigration/apiv1/iam_policy_client\.go$
+    remove_regex:
+      - ^internal/generated/snippets/vmmigration/
+      - ^vmmigration/apiv1/[^/]*_client\.go$
+      - ^vmmigration/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^vmmigration/apiv1/[^/]*_client_example_test\.go$
+      - ^vmmigration/apiv1/auxiliary\.go$
+      - ^vmmigration/apiv1/auxiliary_go123\.go$
+      - ^vmmigration/apiv1/doc\.go$
+      - ^vmmigration/apiv1/gapic_metadata\.json$
+      - ^vmmigration/apiv1/helpers\.go$
+      - ^vmmigration/apiv1/vmmigrationpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/vmmigration/
+    tag_format: '{id}/v{version}'
+  - id: vmwareengine
+    version: 1.3.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/vmwareengine/v1
+        service_config: vmwareengine_v1.yaml
+    source_roots:
+      - vmwareengine
+      - internal/generated/snippets/vmwareengine
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/vmwareengine/
+      - ^vmwareengine/apiv1/[^/]*_client\.go$
+      - ^vmwareengine/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^vmwareengine/apiv1/[^/]*_client_example_test\.go$
+      - ^vmwareengine/apiv1/auxiliary\.go$
+      - ^vmwareengine/apiv1/auxiliary_go123\.go$
+      - ^vmwareengine/apiv1/doc\.go$
+      - ^vmwareengine/apiv1/gapic_metadata\.json$
+      - ^vmwareengine/apiv1/helpers\.go$
+      - ^vmwareengine/apiv1/vmwareenginepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/vmwareengine/
+    tag_format: '{id}/v{version}'
+  - id: vpcaccess
+    version: 1.8.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/vpcaccess/v1
+        service_config: vpcaccess_v1.yaml
+    source_roots:
+      - vpcaccess
+      - internal/generated/snippets/vpcaccess
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/vpcaccess/
+      - ^vpcaccess/apiv1/[^/]*_client\.go$
+      - ^vpcaccess/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^vpcaccess/apiv1/[^/]*_client_example_test\.go$
+      - ^vpcaccess/apiv1/auxiliary\.go$
+      - ^vpcaccess/apiv1/auxiliary_go123\.go$
+      - ^vpcaccess/apiv1/doc\.go$
+      - ^vpcaccess/apiv1/gapic_metadata\.json$
+      - ^vpcaccess/apiv1/helpers\.go$
+      - ^vpcaccess/apiv1/vpcaccesspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/vpcaccess/
+    tag_format: '{id}/v{version}'
+  - id: webrisk
+    version: 1.11.2
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/webrisk/v1
+        service_config: webrisk_v1.yaml
+      - path: google/cloud/webrisk/v1beta1
+        service_config: webrisk_v1beta1.yaml
+    source_roots:
+      - webrisk
+      - internal/generated/snippets/webrisk
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/webrisk/
+      - ^webrisk/apiv1/[^/]*_client\.go$
+      - ^webrisk/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^webrisk/apiv1/[^/]*_client_example_test\.go$
+      - ^webrisk/apiv1/auxiliary\.go$
+      - ^webrisk/apiv1/auxiliary_go123\.go$
+      - ^webrisk/apiv1/doc\.go$
+      - ^webrisk/apiv1/gapic_metadata\.json$
+      - ^webrisk/apiv1/helpers\.go$
+      - ^webrisk/apiv1/webriskpb/.*$
+      - ^webrisk/apiv1beta1/[^/]*_client\.go$
+      - ^webrisk/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^webrisk/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^webrisk/apiv1beta1/auxiliary\.go$
+      - ^webrisk/apiv1beta1/auxiliary_go123\.go$
+      - ^webrisk/apiv1beta1/doc\.go$
+      - ^webrisk/apiv1beta1/gapic_metadata\.json$
+      - ^webrisk/apiv1beta1/helpers\.go$
+      - ^webrisk/apiv1beta1/webriskpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/webrisk/
+    tag_format: '{id}/v{version}'
+  - id: websecurityscanner
+    version: 1.7.7
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/websecurityscanner/v1
+        service_config: websecurityscanner_v1.yaml
+    source_roots:
+      - websecurityscanner
+      - internal/generated/snippets/websecurityscanner
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/websecurityscanner/
+      - ^websecurityscanner/apiv1/[^/]*_client\.go$
+      - ^websecurityscanner/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^websecurityscanner/apiv1/[^/]*_client_example_test\.go$
+      - ^websecurityscanner/apiv1/auxiliary\.go$
+      - ^websecurityscanner/apiv1/auxiliary_go123\.go$
+      - ^websecurityscanner/apiv1/doc\.go$
+      - ^websecurityscanner/apiv1/gapic_metadata\.json$
+      - ^websecurityscanner/apiv1/helpers\.go$
+      - ^websecurityscanner/apiv1/websecurityscannerpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/websecurityscanner/
+    tag_format: '{id}/v{version}'
+  - id: workflows
+    version: 1.14.3
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/workflows/executions/v1
+        service_config: workflowexecutions_v1.yaml
+      - path: google/cloud/workflows/executions/v1beta
+        service_config: workflowexecutions_v1beta.yaml
+      - path: google/cloud/workflows/v1
+        service_config: workflows_v1.yaml
+      - path: google/cloud/workflows/v1beta
+        service_config: workflows_v1beta.yaml
+    source_roots:
+      - workflows
+      - internal/generated/snippets/workflows
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/workflows/
+      - ^workflows/apiv1/[^/]*_client\.go$
+      - ^workflows/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^workflows/apiv1/[^/]*_client_example_test\.go$
+      - ^workflows/apiv1/auxiliary\.go$
+      - ^workflows/apiv1/auxiliary_go123\.go$
+      - ^workflows/apiv1/doc\.go$
+      - ^workflows/apiv1/gapic_metadata\.json$
+      - ^workflows/apiv1/helpers\.go$
+      - ^workflows/apiv1/workflowspb/.*$
+      - ^workflows/apiv1beta/[^/]*_client\.go$
+      - ^workflows/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^workflows/apiv1beta/[^/]*_client_example_test\.go$
+      - ^workflows/apiv1beta/auxiliary\.go$
+      - ^workflows/apiv1beta/auxiliary_go123\.go$
+      - ^workflows/apiv1beta/doc\.go$
+      - ^workflows/apiv1beta/gapic_metadata\.json$
+      - ^workflows/apiv1beta/helpers\.go$
+      - ^workflows/apiv1beta/workflowspb/.*$
+      - ^workflows/executions/apiv1/[^/]*_client\.go$
+      - ^workflows/executions/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^workflows/executions/apiv1/[^/]*_client_example_test\.go$
+      - ^workflows/executions/apiv1/auxiliary\.go$
+      - ^workflows/executions/apiv1/auxiliary_go123\.go$
+      - ^workflows/executions/apiv1/doc\.go$
+      - ^workflows/executions/apiv1/gapic_metadata\.json$
+      - ^workflows/executions/apiv1/helpers\.go$
+      - ^workflows/executions/apiv1/executionspb/.*$
+      - ^workflows/executions/apiv1beta/[^/]*_client\.go$
+      - ^workflows/executions/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^workflows/executions/apiv1beta/[^/]*_client_example_test\.go$
+      - ^workflows/executions/apiv1beta/auxiliary\.go$
+      - ^workflows/executions/apiv1beta/auxiliary_go123\.go$
+      - ^workflows/executions/apiv1beta/doc\.go$
+      - ^workflows/executions/apiv1beta/gapic_metadata\.json$
+      - ^workflows/executions/apiv1beta/helpers\.go$
+      - ^workflows/executions/apiv1beta/executionspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/workflows/
+    tag_format: '{id}/v{version}'
+  - id: workstations
+    version: 1.1.6
+    last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
+    apis:
+      - path: google/cloud/workstations/v1beta
+        service_config: workstations_v1beta.yaml
+      - path: google/cloud/workstations/v1
+        service_config: workstations_v1.yaml
+    source_roots:
+      - workstations
+      - internal/generated/snippets/workstations
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/workstations/
+      - ^workstations/apiv1/[^/]*_client\.go$
+      - ^workstations/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^workstations/apiv1/[^/]*_client_example_test\.go$
+      - ^workstations/apiv1/auxiliary\.go$
+      - ^workstations/apiv1/auxiliary_go123\.go$
+      - ^workstations/apiv1/doc\.go$
+      - ^workstations/apiv1/gapic_metadata\.json$
+      - ^workstations/apiv1/helpers\.go$
+      - ^workstations/apiv1/workstationspb/.*$
+      - ^workstations/apiv1beta/[^/]*_client\.go$
+      - ^workstations/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^workstations/apiv1beta/[^/]*_client_example_test\.go$
+      - ^workstations/apiv1beta/auxiliary\.go$
+      - ^workstations/apiv1beta/auxiliary_go123\.go$
+      - ^workstations/apiv1beta/doc\.go$
+      - ^workstations/apiv1beta/gapic_metadata\.json$
+      - ^workstations/apiv1beta/helpers\.go$
+      - ^workstations/apiv1beta/workstationspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/workstations/
     tag_format: '{id}/v{version}'
