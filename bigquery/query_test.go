@@ -373,6 +373,20 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+				Continuous:       true,
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.Continuous = true
+				return j
+			}(),
+		},
 	}
 	for i, tc := range testCases {
 		query := c.Query("")
@@ -523,6 +537,14 @@ func TestProbeFastPath(t *testing.T) {
 			inCfg: QueryConfig{
 				Q:                   "foo",
 				SchemaUpdateOptions: []string{"bar"},
+			},
+			wantErr: true,
+		},
+		{
+			// fail, continuous query
+			inCfg: QueryConfig{
+				Q:          "foo",
+				Continuous: true,
 			},
 			wantErr: true,
 		},
