@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.23.1...kms/v1.23.2) (2025-10-15)
+
+
+### Bug Fixes
+
+* **kms:** Conditionally enable AllowHardBoundTokens ([fc134e0](https://github.com/googleapis/google-cloud-go/commit/fc134e09b9928b07b362fe8ae8b292210546793d))
+
 ## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.23.0...kms/v1.23.1) (2025-10-07)
 
 
@@ -398,4 +405,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out kms as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
