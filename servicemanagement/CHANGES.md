@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.10.6...servicemanagement/v1.10.7) (2025-10-15)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Upgrade gRPC service registration func ([fc134e0](https://github.com/googleapis/google-cloud-go/commit/fc134e09b9928b07b362fe8ae8b292210546793d))
+
 ## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.10.5...servicemanagement/v1.10.6) (2025-04-15)
 
 
@@ -226,4 +233,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out servicemanagement as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
