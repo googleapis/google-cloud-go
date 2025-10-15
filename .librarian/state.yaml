@@ -3079,7 +3079,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub
     version: 1.50.1
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
     apis: []
     source_roots:
       - pubsub
@@ -3102,7 +3102,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.2.1
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
     apis:
       - path: google/pubsub/v1
         service_config: ""
