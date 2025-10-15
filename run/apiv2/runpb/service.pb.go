@@ -21,6 +21,9 @@
 package runpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	api "google.golang.org/genproto/googleapis/api"
@@ -29,8 +32,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (

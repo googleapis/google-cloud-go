@@ -8,74 +8,26 @@ modules:
   - bigquery
   - bigtable
   - certificatemanager
-  - cloudbuild
   - compute
   - configdelivery
   - containeranalysis
-  - datacatalog
   - dataqna
   - datastore
-  - datastream
-  - dialogflow
   - errorreporting
   - firestore
   - geminidataanalytics
   - grafeas
-  - iam
   - kms
   - licensemanager
   - locationfinder
   - logging
-  - monitoring
   - orgpolicy
   - profiler
-  - pubsub/v2
-  - pubsub
-  - recommendationengine
-  - recommender
-  - redis
-  - resourcemanager
-  - retail
-  - run
-  - scheduler
-  - secretmanager
-  - securesourcemanager
-  - security
-  - securitycenter
-  - securitycentermanagement
-  - securityposture
   - servicecontrol
-  - servicedirectory
-  - servicehealth
   - servicemanagement
   - serviceusage
-  - shell
-  - shopping
   - spanner
-  - speech
   - storage
-  - storagebatchoperations
-  - storageinsights
-  - storagetransfer
-  - streetview
-  - support
-  - talent
-  - telcoautomation
-  - texttospeech
-  - tpu
-  - trace
-  - translate
-  - video
-  - videointelligence
-  - vision
-  - visionai
-  - vmmigration
-  - vmwareengine
-  - vpcaccess
-  - webrisk
-  - websecurityscanner
-  - workflows
-  - workstations
 
 manual-clients:
   - api-shortname: bigquery
@@ -292,36 +244,9 @@ service-configs:
   - input-directory: google/cloud/configdelivery/v1beta
     service-config: configdelivery_v1beta.yaml
     import-path: cloud.google.com/go/configdelivery/apiv1beta
-  - input-directory: google/cloud/datacatalog/lineage/v1
-    service-config: datalineage_v1.yaml
-    import-path: cloud.google.com/go/datacatalog/lineage/apiv1
-  - input-directory: google/cloud/datacatalog/v1
-    service-config: datacatalog_v1.yaml
-    import-path: cloud.google.com/go/datacatalog/apiv1
-  - input-directory: google/cloud/datacatalog/v1beta1
-    service-config: datacatalog_v1beta1.yaml
-    import-path: cloud.google.com/go/datacatalog/apiv1beta1
   - input-directory: google/cloud/dataqna/v1alpha
     service-config: dataqna_v1alpha.yaml
     import-path: cloud.google.com/go/dataqna/apiv1alpha
-  - input-directory: google/cloud/datastream/v1
-    service-config: datastream_v1.yaml
-    import-path: cloud.google.com/go/datastream/apiv1
-  - input-directory: google/cloud/datastream/v1alpha1
-    service-config: datastream_v1alpha1.yaml
-    import-path: cloud.google.com/go/datastream/apiv1alpha1
-  - input-directory: google/cloud/dialogflow/cx/v3
-    service-config: dialogflow_v3.yaml
-    import-path: cloud.google.com/go/dialogflow/cx/apiv3
-  - input-directory: google/cloud/dialogflow/cx/v3beta1
-    service-config: dialogflow_v3beta1.yaml
-    import-path: cloud.google.com/go/dialogflow/cx/apiv3beta1
-  - input-directory: google/cloud/dialogflow/v2
-    service-config: dialogflow_v2.yaml
-    import-path: cloud.google.com/go/dialogflow/apiv2
-  - input-directory: google/cloud/dialogflow/v2beta1
-    service-config: dialogflow_v2beta1.yaml
-    import-path: cloud.google.com/go/dialogflow/apiv2beta1
   - input-directory: google/cloud/geminidataanalytics/v1beta
     service-config: geminidataanalytics_v1beta.yaml
     import-path: cloud.google.com/go/geminidataanalytics/apiv1beta
@@ -343,302 +268,18 @@ service-configs:
   - input-directory: google/cloud/orgpolicy/v2
     service-config: orgpolicy_v2.yaml
     import-path: cloud.google.com/go/orgpolicy/apiv2
-  - input-directory: google/cloud/recommendationengine/v1beta1
-    service-config: recommendationengine_v1beta1.yaml
-    import-path: cloud.google.com/go/recommendationengine/apiv1beta1
-  - input-directory: google/cloud/recommender/v1
-    service-config: recommender_v1.yaml
-    import-path: cloud.google.com/go/recommender/apiv1
-  - input-directory: google/cloud/recommender/v1beta1
-    service-config: recommender_v1beta1.yaml
-    import-path: cloud.google.com/go/recommender/apiv1beta1
-  - input-directory: google/cloud/redis/v1
-    service-config: redis_v1.yaml
-    import-path: cloud.google.com/go/redis/apiv1
-  - input-directory: google/cloud/redis/v1beta1
-    service-config: redis_v1beta1.yaml
-    import-path: cloud.google.com/go/redis/apiv1beta1
-  - input-directory: google/cloud/redis/cluster/v1
-    service-config: redis_v1.yaml
-    import-path: cloud.google.com/go/redis/cluster/apiv1
-  - input-directory: google/cloud/resourcemanager/v2
-    service-config: cloudresourcemanager_v2.yaml
-    import-path: cloud.google.com/go/resourcemanager/apiv2
-  - input-directory: google/cloud/resourcemanager/v3
-    service-config: cloudresourcemanager_v3.yaml
-    import-path: cloud.google.com/go/resourcemanager/apiv3
-  - input-directory: google/cloud/retail/v2
-    service-config: retail_v2.yaml
-    import-path: cloud.google.com/go/retail/apiv2
-  - input-directory: google/cloud/retail/v2alpha
-    service-config: retail_v2alpha.yaml
-    import-path: cloud.google.com/go/retail/apiv2alpha
-  - input-directory: google/cloud/retail/v2beta
-    service-config: retail_v2beta.yaml
-    import-path: cloud.google.com/go/retail/apiv2beta
-  - input-directory: google/cloud/run/v2
-    service-config: run_v2.yaml
-    import-path: cloud.google.com/go/run/apiv2
-  - input-directory: google/cloud/scheduler/v1
-    service-config: cloudscheduler_v1.yaml
-    import-path: cloud.google.com/go/scheduler/apiv1
-  - input-directory: google/cloud/scheduler/v1beta1
-    service-config: cloudscheduler_v1beta1.yaml
-    import-path: cloud.google.com/go/scheduler/apiv1beta1
-  - input-directory: google/cloud/secretmanager/v1
-    service-config: secretmanager_v1.yaml
-    import-path: cloud.google.com/go/secretmanager/apiv1
-  - input-directory: google/cloud/secretmanager/v1beta2
-    service-config: secretmanager_v1beta2.yaml
-    import-path: cloud.google.com/go/secretmanager/apiv1beta2
-  - input-directory: google/cloud/securesourcemanager/v1
-    service-config: securesourcemanager_v1.yaml
-    import-path: cloud.google.com/go/securesourcemanager/apiv1
-  - input-directory: google/cloud/security/privateca/v1
-    service-config: privateca_v1.yaml
-    import-path: cloud.google.com/go/security/privateca/apiv1
-  - input-directory: google/cloud/security/publicca/v1beta1
-    service-config: publicca_v1beta1.yaml
-    import-path: cloud.google.com/go/security/publicca/apiv1beta1
-  - input-directory: google/cloud/security/publicca/v1
-    service-config: publicca_v1.yaml
-    import-path: cloud.google.com/go/security/publicca/apiv1
-  - input-directory: google/cloud/securitycenter/settings/v1beta1
-    service-config: securitycenter_settings.yaml
-    import-path: cloud.google.com/go/securitycenter/settings/apiv1beta1
-  - input-directory: google/cloud/securitycenter/v1
-    service-config: securitycenter_v1.yaml
-    import-path: cloud.google.com/go/securitycenter/apiv1
-  - input-directory: google/cloud/securitycenter/v1beta1
-    service-config: securitycenter_v1beta1.yaml
-    import-path: cloud.google.com/go/securitycenter/apiv1beta1
-  - input-directory: google/cloud/securitycenter/v1p1beta1
-    service-config: securitycenter_v1p1beta1.yaml
-    import-path: cloud.google.com/go/securitycenter/apiv1p1beta1
-  - input-directory: google/cloud/securitycenter/v2
-    service-config: securitycenter_v2.yaml
-    import-path: cloud.google.com/go/securitycenter/apiv2
-  - input-directory: google/cloud/securitycentermanagement/v1
-    service-config: securitycentermanagement_v1.yaml
-    import-path: cloud.google.com/go/securitycentermanagement/apiv1
-  - input-directory: google/cloud/securityposture/v1
-    service-config: securityposture_v1.yaml
-    import-path: cloud.google.com/go/securityposture/apiv1
   - input-directory: google/api/servicecontrol/v1
     service-config: servicecontrol.yaml
     import-path: cloud.google.com/go/servicecontrol/apiv1
-  - input-directory: google/cloud/servicedirectory/v1
-    service-config: servicedirectory_v1.yaml
-    import-path: cloud.google.com/go/servicedirectory/apiv1
-  - input-directory: google/cloud/servicedirectory/v1beta1
-    service-config: servicedirectory_v1beta1.yaml
-    import-path: cloud.google.com/go/servicedirectory/apiv1beta1
-  - input-directory: google/cloud/servicehealth/v1
-    service-config: servicehealth_v1.yaml
-    import-path: cloud.google.com/go/servicehealth/apiv1
   - input-directory: google/api/servicemanagement/v1
     service-config: servicemanagement_v1.yaml
     import-path: cloud.google.com/go/servicemanagement/apiv1
   - input-directory: google/api/serviceusage/v1
     service-config: serviceusage_v1.yaml
     import-path: cloud.google.com/go/serviceusage/apiv1
-  - input-directory: google/cloud/shell/v1
-    service-config: cloudshell_v1.yaml
-    import-path: cloud.google.com/go/shell/apiv1
-  - input-directory: google/shopping/css/v1
-    service-config: css_v1.yaml
-    import-path: cloud.google.com/go/shopping/css/apiv1
-  - input-directory: google/shopping/merchant/accounts/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/accounts/apiv1
-  - input-directory: google/shopping/merchant/accounts/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/accounts/apiv1beta
-  - input-directory: google/shopping/merchant/conversions/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/conversions/apiv1
-  - input-directory: google/shopping/merchant/conversions/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/conversions/apiv1beta
-  - input-directory: google/shopping/merchant/datasources/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/datasources/apiv1
-  - input-directory: google/shopping/merchant/datasources/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/datasources/apiv1beta
-  - input-directory: google/shopping/merchant/notifications/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1
-  - input-directory: google/shopping/merchant/notifications/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
-  - input-directory: google/shopping/merchant/ordertracking/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/ordertracking/apiv1
-  - input-directory: google/shopping/merchant/ordertracking/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta
-  - input-directory: google/shopping/merchant/products/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/products/apiv1
-  - input-directory: google/shopping/merchant/products/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/products/apiv1beta
-  - input-directory: google/shopping/merchant/productstudio/v1alpha
-    service-config: merchantapi_v1alpha.yaml
-    import-path: cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha
-  - input-directory: google/shopping/merchant/promotions/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/promotions/apiv1
-  - input-directory: google/shopping/merchant/promotions/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/promotions/apiv1beta
-  - input-directory: google/shopping/merchant/quota/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/quota/apiv1
-  - input-directory: google/shopping/merchant/quota/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/quota/apiv1beta
-  - input-directory: google/shopping/merchant/inventories/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/inventories/apiv1
-  - input-directory: google/shopping/merchant/inventories/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/inventories/apiv1beta
-  - input-directory: google/shopping/merchant/issueresolution/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/issueresolution/apiv1
-  - input-directory: google/shopping/merchant/issueresolution/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/issueresolution/apiv1beta
-  - input-directory: google/shopping/merchant/lfp/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/lfp/apiv1
-  - input-directory: google/shopping/merchant/lfp/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/lfp/apiv1beta
-  - input-directory: google/shopping/merchant/reports/v1
-    service-config: merchantapi_v1.yaml
-    import-path: cloud.google.com/go/shopping/merchant/reports/apiv1
-  - input-directory: google/shopping/merchant/reports/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/reports/apiv1beta
-  - input-directory: google/shopping/merchant/reviews/v1beta
-    service-config: merchantapi_v1beta.yaml
-    import-path: cloud.google.com/go/shopping/merchant/reviews/apiv1beta
-  - input-directory: google/shopping/type
-    service-config:
-    import-path: cloud.google.com/go/shopping/type
-  - input-directory: google/cloud/speech/v1
-    service-config: speech_v1.yaml
-    import-path: cloud.google.com/go/speech/apiv1
-  - input-directory: google/cloud/speech/v1p1beta1
-    service-config: speech_v1p1beta1.yaml
-    import-path: cloud.google.com/go/speech/apiv1p1beta1
-  - input-directory: google/cloud/speech/v2
-    service-config: speech_v2.yaml
-    import-path: cloud.google.com/go/speech/apiv2
-  - input-directory: google/cloud/storagebatchoperations/v1
-    service-config: storagebatchoperations_v1.yaml
-    import-path: cloud.google.com/go/storagebatchoperations/apiv1
-  - input-directory: google/cloud/storageinsights/v1
-    service-config: storageinsights_v1.yaml
-    import-path: cloud.google.com/go/storageinsights/apiv1
-  - input-directory: google/cloud/support/v2
-    service-config: cloudsupport_v2.yaml
-    import-path: cloud.google.com/go/support/apiv2
-  - input-directory: google/cloud/support/v2beta
-    service-config: cloudsupport_v2beta.yaml
-    import-path: cloud.google.com/go/support/apiv2beta
-  - input-directory: google/cloud/talent/v4
-    service-config: jobs_v4.yaml
-    import-path: cloud.google.com/go/talent/apiv4
-  - input-directory: google/cloud/talent/v4beta1
-    service-config: jobs_v4beta1.yaml
-    import-path: cloud.google.com/go/talent/apiv4beta1
-  - input-directory: google/cloud/telcoautomation/v1
-    service-config: telcoautomation_v1.yaml
-    import-path: cloud.google.com/go/telcoautomation/apiv1
-  - input-directory: google/cloud/texttospeech/v1
-    service-config: texttospeech_v1.yaml
-    import-path: cloud.google.com/go/texttospeech/apiv1
-  - input-directory: google/cloud/tpu/v1
-    service-config: tpu_v1.yaml
-    import-path: cloud.google.com/go/tpu/apiv1
-  - input-directory: google/cloud/translate/v3
-    service-config: translate_v3.yaml
-    import-path: cloud.google.com/go/translate/apiv3
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
     import-path: cloud.google.com/go/errorreporting/apiv1beta1
-  - input-directory: google/devtools/cloudtrace/v1
-    service-config: cloudtrace_v1.yaml
-    import-path: cloud.google.com/go/trace/apiv1
-  - input-directory: google/devtools/cloudtrace/v2
-    service-config: cloudtrace_v2.yaml
-    import-path: cloud.google.com/go/trace/apiv2
-  - input-directory: google/cloud/video/livestream/v1
-    service-config: livestream_v1.yaml
-    import-path: cloud.google.com/go/video/livestream/apiv1
-  - input-directory: google/cloud/video/transcoder/v1
-    service-config: transcoder_v1.yaml
-    import-path: cloud.google.com/go/video/transcoder/apiv1
-  - input-directory: google/cloud/videointelligence/v1
-    service-config: videointelligence_v1.yaml
-    import-path: cloud.google.com/go/videointelligence/apiv1
-  - input-directory: google/cloud/videointelligence/v1beta2
-    service-config: videointelligence_v1beta2.yaml
-    import-path: cloud.google.com/go/videointelligence/apiv1beta2
-  - input-directory: google/cloud/videointelligence/v1p3beta1
-    service-config: videointelligence_v1p3beta1.yaml
-    import-path: cloud.google.com/go/videointelligence/apiv1p3beta1
-  - input-directory: google/cloud/vision/v1
-    service-config: vision_v1.yaml
-    import-path: cloud.google.com/go/vision/v2/apiv1
-    rel-path: /vision/apiv1
-  - input-directory: google/cloud/vision/v1p1beta1
-    service-config: vision_v1p1beta1.yaml
-    import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
-    rel-path: /vision/apiv1p1beta1
-  - input-directory: google/cloud/visionai/v1
-    service-config: visionai_v1.yaml
-    import-path: cloud.google.com/go/visionai/apiv1
-  - input-directory: google/cloud/vmmigration/v1
-    service-config: vmmigration_v1.yaml
-    import-path: cloud.google.com/go/vmmigration/apiv1
-  - input-directory: google/cloud/vmwareengine/v1
-    service-config: vmwareengine_v1.yaml
-    import-path: cloud.google.com/go/vmwareengine/apiv1
-  - input-directory: google/cloud/vpcaccess/v1
-    service-config: vpcaccess_v1.yaml
-    import-path: cloud.google.com/go/vpcaccess/apiv1
-  - input-directory: google/cloud/webrisk/v1
-    service-config: webrisk_v1.yaml
-    import-path: cloud.google.com/go/webrisk/apiv1
-  - input-directory: google/cloud/webrisk/v1beta1
-    service-config: webrisk_v1beta1.yaml
-    import-path: cloud.google.com/go/webrisk/apiv1beta1
-  - input-directory: google/cloud/websecurityscanner/v1
-    service-config: websecurityscanner_v1.yaml
-    import-path: cloud.google.com/go/websecurityscanner/apiv1
-  - input-directory: google/cloud/workflows/executions/v1
-    service-config: workflowexecutions_v1.yaml
-    import-path: cloud.google.com/go/workflows/executions/apiv1
-  - input-directory: google/cloud/workflows/executions/v1beta
-    service-config: workflowexecutions_v1beta.yaml
-    import-path: cloud.google.com/go/workflows/executions/apiv1beta
-  - input-directory: google/cloud/workflows/v1
-    service-config: workflows_v1.yaml
-    import-path: cloud.google.com/go/workflows/apiv1
-  - input-directory: google/cloud/workflows/v1beta
-    service-config: workflows_v1beta.yaml
-    import-path: cloud.google.com/go/workflows/apiv1beta
-  - input-directory: google/cloud/workstations/v1beta
-    service-config: workstations_v1beta.yaml
-    import-path: cloud.google.com/go/workstations/apiv1beta
-  - input-directory: google/cloud/workstations/v1
-    service-config: workstations_v1.yaml
-    import-path: cloud.google.com/go/workstations/apiv1
   - input-directory: google/datastore/admin/v1
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/admin/apiv1
@@ -646,12 +287,6 @@ service-configs:
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/apiv1
     release-level-override: stable
-  - input-directory: google/devtools/cloudbuild/v1
-    service-config: cloudbuild_v1.yaml
-    import-path: cloud.google.com/go/cloudbuild/apiv1/v2
-  - input-directory: google/devtools/cloudbuild/v2
-    service-config: cloudbuild_v2.yaml
-    import-path: cloud.google.com/go/cloudbuild/apiv2
   - input-directory: google/devtools/containeranalysis/v1beta1
     service-config: containeranalysis_v1beta1.yaml
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
@@ -661,36 +296,9 @@ service-configs:
   - input-directory: google/firestore/v1
     service-config: firestore_v1.yaml
     import-path: cloud.google.com/go/firestore/apiv1
-  - input-directory: google/iam/credentials/v1
-    service-config: iamcredentials_v1.yaml
-    import-path: cloud.google.com/go/iam/credentials/apiv1
-  - input-directory: google/iam/v1
-    service-config: iam_meta_api.yaml
-    import-path: cloud.google.com/go/iam/apiv1
-  - input-directory: google/iam/v2
-    service-config: iam_v2.yaml
-    import-path: cloud.google.com/go/iam/apiv2
-  - input-directory: google/iam/v3
-    service-config: iam_v3.yaml
-    import-path: cloud.google.com/go/iam/apiv3
-  - input-directory: google/iam/v3beta
-    service-config: iam_v3beta.yaml
-    import-path: cloud.google.com/go/iam/apiv3beta
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/monitoring/dashboard/v1
-    service-config: monitoring.yaml
-    import-path: cloud.google.com/go/monitoring/dashboard/apiv1
-  - input-directory: google/monitoring/metricsscope/v1
-    service-config: monitoring.yaml
-    import-path: cloud.google.com/go/monitoring/metricsscope/apiv1
-  - input-directory: google/monitoring/v3
-    service-config: monitoring.yaml
-    import-path: cloud.google.com/go/monitoring/apiv3/v2
-  - input-directory: google/pubsub/v1
-    service-config: pubsub_v1.yaml
-    import-path: cloud.google.com/go/pubsub/v2/apiv1
   - input-directory: google/spanner/adapter/v1
     service-config: spanner.yaml
     import-path: cloud.google.com/go/spanner/adapter/apiv1
@@ -712,26 +320,61 @@ service-configs:
   - input-directory: google/storage/v2
     service-config: storage_v2.yaml
     import-path: cloud.google.com/go/storage/internal/apiv2
-  - input-directory: google/storagetransfer/v1
-    service-config: storagetransfer_v1.yaml
-    import-path: cloud.google.com/go/storagetransfer/apiv1
-  - input-directory: google/streetview/publish/v1
-    service-config: streetviewpublish.yaml
-    import-path: cloud.google.com/go/streetview/publish/apiv1
-    # All entries below are clients that are not currently copied by owlbot. They
-    # explicitly express their import path for some code gen.
   - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
     service-config: ../containeranalysis_v1beta1.yaml
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
     rel-path: /containeranalysis/apiv1beta1
-  - input-directory: google/cloud/video/stitcher/v1
-    service-config: videostitcher_v1.yaml
-    import-path: cloud.google.com/go/video/stitcher/apiv1
 
 skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - vmmigration
+  - run
+  - monitoring
+  - iam
+  - dialogflow
+  - datastream
+  - datacatalog
+  - cloudbuild
+  - workstations
+  - workflows
+  - websecurityscanner
+  - webrisk
+  - vpcaccess
+  - vmwareengine
+  - visionai
+  - vision
+  - videointelligence
+  - video
+  - translate
+  - trace
+  - tpu
+  - texttospeech
+  - telcoautomation
+  - talent
+  - support
+  - streetview
+  - storagetransfer
+  - storageinsights
+  - storagebatchoperations
+  - speech
+  - shopping
+  - shell
+  - servicehealth
+  - servicedirectory
+  - securityposture
+  - securitycentermanagement
+  - securitycenter
+  - security
+  - securesourcemanager
+  - secretmanager
+  - scheduler
+  - retail
+  - resourcemanager
+  - redis
+  - recommender
+  - recommendationengine
   - recaptchaenterprise
   - rapidmigrationassessment
   - privilegedaccessmanager
@@ -837,6 +480,8 @@ skip-module-scan-paths:
   - dataproc
   - dlp
   - longrunning
+  - pubsub/v2
+  - pubsub
   # individually released modules
   - bigquery
   - bigquery/v2
@@ -846,8 +491,6 @@ skip-module-scan-paths:
   - firestore
   - logging
   - profiler
-  - pubsub/v2
-  - pubsub
   - spanner
   - storage
   - vertexai
