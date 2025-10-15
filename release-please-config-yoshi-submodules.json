@@ -60,53 +60,11 @@
         "orgpolicy": {
             "component": "orgpolicy"
         },
-        "recommendationengine": {
-            "component": "recommendationengine"
-        },
-        "recommender": {
-            "component": "recommender"
-        },
-        "redis": {
-            "component": "redis"
-        },
-        "resourcemanager": {
-            "component": "resourcemanager"
-        },
-        "retail": {
-            "component": "retail"
-        },
         "run": {
             "component": "run"
         },
-        "scheduler": {
-            "component": "scheduler"
-        },
-        "secretmanager": {
-            "component": "secretmanager"
-        },
-        "securesourcemanager": {
-            "component": "securesourcemanager"
-        },
-        "security": {
-            "component": "security"
-        },
-        "securitycenter": {
-            "component": "securitycenter"
-        },
-        "securitycentermanagement": {
-            "component": "securitycentermanagement"
-        },
-        "securityposture": {
-            "component": "securityposture"
-        },
         "servicecontrol": {
             "component": "servicecontrol"
-        },
-        "servicedirectory": {
-            "component": "servicedirectory"
-        },
-        "servicehealth": {
-            "component": "servicehealth"
         },
         "servicemanagement": {
             "component": "servicemanagement"
@@ -114,83 +72,11 @@
         "serviceusage": {
             "component": "serviceusage"
         },
-        "shell": {
-            "component": "shell"
-        },
-        "shopping": {
-            "component": "shopping"
-        },
         "spanner/benchmarks": {
             "component": "spanner/benchmarks"
         },
-        "speech": {
-            "component": "speech"
-        },
-        "storagebatchoperations": {
-            "component": "storagebatchoperations"
-        },
-        "storageinsights": {
-            "component": "storageinsights"
-        },
-        "storagetransfer": {
-            "component": "storagetransfer"
-        },
-        "streetview": {
-            "component": "streetview"
-        },
-        "support": {
-            "component": "support"
-        },
-        "talent": {
-            "component": "talent"
-        },
-        "telcoautomation": {
-            "component": "telcoautomation"
-        },
-        "texttospeech": {
-            "component": "texttospeech"
-        },
-        "tpu": {
-            "component": "tpu"
-        },
-        "trace": {
-            "component": "trace"
-        },
-        "translate": {
-            "component": "translate"
-        },
-        "video": {
-            "component": "video"
-        },
-        "videointelligence": {
-            "component": "videointelligence"
-        },
-        "vision": {
-            "component": "vision"
-        },
-        "visionai": {
-            "component": "visionai"
-        },
         "vmmigration": {
             "component": "vmmigration"
-        },
-        "vmwareengine": {
-            "component": "vmwareengine"
-        },
-        "vpcaccess": {
-            "component": "vpcaccess"
-        },
-        "webrisk": {
-            "component": "webrisk"
-        },
-        "websecurityscanner": {
-            "component": "websecurityscanner"
-        },
-        "workflows": {
-            "component": "workflows"
-        },
-        "workstations": {
-            "component": "workstations"
         }
     },
     "plugins": [
