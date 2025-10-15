@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.106.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.105.0...aiplatform/v1.106.0) (2025-10-14)
+
+
+### Features
+
+* **aiplatform:** Add aspect_ratio and image_config for v1beta1 version ([#13118](https://github.com/googleapis/google-cloud-go/issues/13118)) ([486bd40](https://github.com/googleapis/google-cloud-go/commit/486bd406336fe91eae7c9040f2496ebfc8aee342))
+
 ## [1.105.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.104.0...aiplatform/v1.105.0) (2025-10-13)
 
 

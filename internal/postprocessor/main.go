@@ -67,6 +67,9 @@ var (
 		"build":    true,
 		"ci":       true,
 	}
+
+	manifestCmd *flag.FlagSet
+	modulesFlag string
 )
 
 var (
@@ -78,6 +81,11 @@ var (
 	internalVersionTmpl string
 )
 
+func init() {
+	manifestCmd = flag.NewFlagSet("manifest", flag.ExitOnError)
+	manifestCmd.StringVar(&modulesFlag, "modules", "", "Comma-separated list of module names to update. If empty, regenerates entire manifest based on OwlBot config files.")
+}
+
 func main() {
 	clientRoot := flag.String("client-root", "/workspace/google-cloud-go", "Path to clients.")
 	googleapisDir := flag.String("googleapis-dir", "", "Path to googleapis/googleapis repo.")
@@ -85,6 +93,8 @@ func main() {
 	branchOverride := flag.String("branch", "", "The branch that should be processed by this code")
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
+	manifestCmd.StringVar(clientRoot, "client-root", "/workspace/google-cloud-go", "Path to clients.")
+	manifestCmd.StringVar(googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo.")
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
@@ -94,6 +104,36 @@ func main() {
 				log.Fatal(err)
 			}
 			log.Println("Validation complete.")
+			return
+		case "manifest":
+			manifestCmd.Parse(os.Args[2:])
+			log.Println("Starting manifest generation.")
+			if *googleapisDir == "" {
+				log.Println("creating temp dir")
+				tmpDir, err := os.MkdirTemp("", "update-postprocessor")
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer os.RemoveAll(tmpDir)
+
+				log.Printf("working out %s\n", tmpDir)
+				*googleapisDir = filepath.Join(tmpDir, "googleapis")
+
+				if err := DeepClone("https://github.com/googleapis/googleapis", *googleapisDir); err != nil {
+					log.Fatal(err)
+				}
+			}
+			p := &postProcessor{
+				googleapisDir:  *googleapisDir,
+				googleCloudDir: *clientRoot,
+			}
+			if err := p.loadConfig(); err != nil {
+				log.Fatal(err)
+			}
+			if err := p.UpdateManifest(modulesFlag); err != nil {
+				log.Fatal(err)
+			}
+			log.Println("Manifest generation complete.")
 			return
 		}
 	}
@@ -174,7 +214,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 		return nil
 	}
 
-	manifest, err := p.Manifest()
+	manifest, err := p.readManifest()
 	if err != nil {
 		return err
 	}
@@ -228,6 +268,9 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
 			apiName := manifest[serviceImportPath].Description
+			if apiName == "" {
+				return fmt.Errorf("no ManifestEntry.Description found for serviceImportPath %s. Cannot generate min required files", serviceImportPath)
+			}
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
