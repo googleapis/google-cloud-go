@@ -181,7 +181,7 @@ func Log(left, right any) Expr {
 //
 // Example:
 //
-//	// Natural logarithmic value of the 'age' field.
+//	// Base 10 logarithmic value of the 'age' field.
 //	Log10("age")
 func Log10(numericExprOrField any) Expr {
 	return newBaseFunction("log10", []Expr{toExprOrField(numericExprOrField)})
@@ -198,31 +198,31 @@ func Ln(numericExprOrField any) Expr {
 	return newBaseFunction("ln", []Expr{toExprOrField(numericExprOrField)})
 }
 
-// Mod creates an expression that subtracts the right expression from the left expression, returning it as an Expr.
+// Mod creates an expression that computes the modulo of the left expression by the right expression, returning it as an Expr.
 // - left can be a field path string, [FieldPath] or [Expr].
 // - right can be a constant or an [Expr].
 //
 // Example:
 //
-//	// Subtract 5 from the value of the 'age' field.
+//	// Modulo of 'age' field by 5.
 //	Mod("age", 5)
 //
-//	// Subtract 'discount' from 'price' field.
+//	// Modulo of 'price' field by 'discount' field.
 //	Mod(FieldOf("price"), FieldOf("discount"))
 func Mod(left, right any) Expr {
 	return leftRightToBaseFunction("mod", left, right)
 }
 
-// Pow creates an expression that subtracts the right expression from the left expression, returning it as an Expr.
+// Pow creates an expression that computes the left expression raised to the power of the right expression, returning it as an Expr.
 // - left can be a field path string, [FieldPath] or [Expr].
 // - right can be a constant or an [Expr].
 //
 // Example:
 //
-//	// Subtract 5 from the value of the 'age' field.
+//	// 'age' field raised to the power of 5.
 //	Pow("age", 5)
 //
-//	// Subtract 'discount' from 'price' field.
+//	// 'price' field raised to the power of 'discount' field.
 //	Pow(FieldOf("price"), FieldOf("discount"))
 func Pow(left, right any) Expr {
 	return leftRightToBaseFunction("pow", left, right)
@@ -239,7 +239,7 @@ func Rand() Expr {
 //
 // Example:
 //
-//	// Natural logarithmic value of the 'age' field.
+//	// Round the value of the 'age' field.
 //	Round("age")
 func Round(numericExprOrField any) Expr {
 	return newBaseFunction("round", []Expr{toExprOrField(numericExprOrField)})
@@ -250,7 +250,7 @@ func Round(numericExprOrField any) Expr {
 //
 // Example:
 //
-//	// Natural logarithmic value of the 'age' field.
+//	// Square root of the value of the 'age' field.
 //	Sqrt("age")
 func Sqrt(numericExprOrField any) Expr {
 	return newBaseFunction("sqrt", []Expr{toExprOrField(numericExprOrField)})
