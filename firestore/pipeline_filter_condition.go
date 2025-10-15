@@ -30,7 +30,7 @@ func (b *baseBooleanExpr) isBooleanExpr() {}
 // Ensure that baseBooleanExpr implements the BooleanExpr interface.
 var _ BooleanExpr = (*baseBooleanExpr)(nil)
 
-// Eq creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
+// Equal creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
 // returning it as a BooleanExpr.
 //   - left: The field path string, [FieldPath] or [Expr] to compare.
 //   - right: The constant value or [Expr] to compare to.
@@ -38,21 +38,21 @@ var _ BooleanExpr = (*baseBooleanExpr)(nil)
 // Example:
 //
 //		// Check if the 'age' field is equal to 21
-//		Eq(FieldOf("age"), 21)
+//		Equal(FieldOf("age"), 21)
 //
 //		// Check if the 'age' field is equal to an expression
-//	 	Eq(FieldOf("age"), FieldOf("minAge").Add(10))
+//	 	Equal(FieldOf("age"), FieldOf("minAge").Add(10))
 //
 //		// Check if the 'age' field is equal to the 'limit' field
-//		Eq("age", FieldOf("limit"))
+//		Equal("age", FieldOf("limit"))
 //
 //		// Check if the 'city' field is equal to string constant "London"
-//		Eq("city", "London")
-func Eq(left, right any) BooleanExpr {
+//		Equal("city", "London")
+func Equal(left, right any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("eq", left, right)}
 }
 
-// Neq creates an expression that checks if field's value or an expression is not equal to an expression or a constant value,
+// NotEqual creates an expression that checks if field's value or an expression is not equal to an expression or a constant value,
 // returning it as a BooleanExpr.
 //   - left: The field path string, [FieldPath] or [Expr] to compare.
 //   - right: The constant value or [Expr] to compare to.
@@ -60,16 +60,126 @@ func Eq(left, right any) BooleanExpr {
 // Example:
 //
 //		// Check if the 'age' field is not equal to 21
-//		Neq(FieldOf("age"), 21)
+//		NotEqual(FieldOf("age"), 21)
 //
 //		// Check if the 'age' field is not equal to an expression
-//	 	Neq(FieldOf("age"), FieldOf("minAge").Add(10))
+//	 	NotEqual(FieldOf("age"), FieldOf("minAge").Add(10))
 //
 //		// Check if the 'age' field is not equal to the 'limit' field
-//		Neq("age", FieldOf("limit"))
+//		NotEqual("age", FieldOf("limit"))
 //
 //		// Check if the 'city' field is not equal to string constant "London"
-//		Neq("city", "London")
-func Neq(left, right any) BooleanExpr {
+//		NotEqual("city", "London")
+func NotEqual(left, right any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("neq", left, right)}
+}
+
+// GreaterThan creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
+// returning it as a BooleanExpr.
+//   - left: The field path string, [FieldPath] or [Expr] to compare.
+//   - right: The constant value or [Expr] to compare to.
+//
+// Example:
+//
+//		// Check if the 'age' field is equal to 21
+//		GreaterThan(FieldOf("age"), 21)
+//
+//		// Check if the 'age' field is equal to an expression
+//	 	GreaterThan(FieldOf("age"), FieldOf("minAge").Add(10))
+//
+//		// Check if the 'age' field is equal to the 'limit' field
+//		GreaterThan("age", FieldOf("limit"))
+//
+//		// Check if the 'city' field is equal to string constant "London"
+//		GreaterThan("city", "London")
+func GreaterThan(left, right any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("eq", left, right)}
+}
+
+// GreaterThanOrEqual creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
+// returning it as a BooleanExpr.
+//   - left: The field path string, [FieldPath] or [Expr] to compare.
+//   - right: The constant value or [Expr] to compare to.
+//
+// Example:
+//
+//		// Check if the 'age' field is equal to 21
+//		GreaterThanOrEqual(FieldOf("age"), 21)
+//
+//		// Check if the 'age' field is equal to an expression
+//	 	GreaterThanOrEqual(FieldOf("age"), FieldOf("minAge").Add(10))
+//
+//		// Check if the 'age' field is equal to the 'limit' field
+//		GreaterThanOrEqual("age", FieldOf("limit"))
+//
+//		// Check if the 'city' field is equal to string constant "London"
+//		GreaterThanOrEqual("city", "London")
+func GreaterThanOrEqual(left, right any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("eq", left, right)}
+}
+
+// LessThan creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
+// returning it as a BooleanExpr.
+//   - left: The field path string, [FieldPath] or [Expr] to compare.
+//   - right: The constant value or [Expr] to compare to.
+//
+// Example:
+//
+//		// Check if the 'age' field is equal to 21
+//		LessThan(FieldOf("age"), 21)
+//
+//		// Check if the 'age' field is equal to an expression
+//	 	LessThan(FieldOf("age"), FieldOf("minAge").Add(10))
+//
+//		// Check if the 'age' field is equal to the 'limit' field
+//		LessThan("age", FieldOf("limit"))
+//
+//		// Check if the 'city' field is equal to string constant "London"
+//		LessThan("city", "London")
+func LessThan(left, right any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("eq", left, right)}
+}
+
+// LessThanOrEqual creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
+// returning it as a BooleanExpr.
+//   - left: The field path string, [FieldPath] or [Expr] to compare.
+//   - right: The constant value or [Expr] to compare to.
+//
+// Example:
+//
+//		// Check if the 'age' field is equal to 21
+//		LessThanOrEqual(FieldOf("age"), 21)
+//
+//		// Check if the 'age' field is equal to an expression
+//	 	LessThanOrEqual(FieldOf("age"), FieldOf("minAge").Add(10))
+//
+//		// Check if the 'age' field is equal to the 'limit' field
+//		LessThanOrEqual("age", FieldOf("limit"))
+//
+//		// Check if the 'city' field is equal to string constant "London"
+//		LessThanOrEqual("city", "London")
+func LessThanOrEqual(left, right any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("eq", left, right)}
+}
+
+// Equivalent creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
+// returning it as a BooleanExpr.
+//   - left: The field path string, [FieldPath] or [Expr] to compare.
+//   - right: The constant value or [Expr] to compare to.
+//
+// Example:
+//
+//		// Check if the 'age' field is equal to 21
+//		Equivalent(FieldOf("age"), 21)
+//
+//		// Check if the 'age' field is equal to an expression
+//	 	Equivalent(FieldOf("age"), FieldOf("minAge").Add(10))
+//
+//		// Check if the 'age' field is equal to the 'limit' field
+//		Equivalent("age", FieldOf("limit"))
+//
+//		// Check if the 'city' field is equal to string constant "London"
+//		Equivalent("city", "London")
+func Equivalent(left, right any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("eq", left, right)}
 }
