@@ -1,6 +1,6 @@
 {
     "accessapproval": "1.8.7",
-    "aiplatform": "1.106.0",
+    "aiplatform": "1.107.0",
     "certificatemanager": "1.9.5",
     "compute": "1.49.0",
     "configdelivery": "0.1.1",

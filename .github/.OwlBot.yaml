@@ -84,7 +84,6 @@ deep-remove-regex:
   - /internal/generated/snippets/locationfinder/apiv1/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/orgpolicy/apiv2/
-  - /internal/generated/snippets/pubsub/apiv1/
   - /internal/generated/snippets/servicecontrol/apiv1/
   - /internal/generated/snippets/servicemanagement/apiv1/
   - /internal/generated/snippets/serviceusage/apiv1/
@@ -101,7 +100,6 @@ deep-remove-regex:
   - /logging/apiv2/
   - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
-  - /pubsub/v2/apiv1/
   - /servicecontrol/apiv1/
   - /servicemanagement/apiv1/
   - /serviceusage/apiv1/
@@ -121,10 +119,6 @@ deep-preserve-regex:
   - /kms/apiv1/iam_example_test.go
   - /logging/apiv2/WriteLogEntries_smoke_test.go
   # TODO(#7336): Remove these networkconnectivity lines once breaking change is handled.
-  # Preserve pubsub apiv1 until deprecation date in a year even though it's not generated.
-  - /pubsub/apiv1/.*
-  - /pubsub/v2/apiv1/iam.go
-  - /pubsub/v2/apiv1/ListTopics_smoke_test.go
   - /spanner/admin/database/apiv1/backup.go
   - /spanner/admin/database/apiv1/backup_test.go
   - /spanner/admin/database/apiv1/database.go
@@ -230,8 +224,6 @@ deep-copy-regex:
   - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orgpolicy/v2/cloud.google.com/go
-    dest: /
-  - source: /google/pubsub/v1/cloud.google.com/go
     dest: /
   - source: /google/api/servicecontrol/v1/cloud.google.com/go
     dest: /

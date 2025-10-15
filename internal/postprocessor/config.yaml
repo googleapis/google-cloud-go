@@ -23,8 +23,6 @@ modules:
   - logging
   - orgpolicy
   - profiler
-  - pubsub/v2
-  - pubsub
   - servicecontrol
   - servicemanagement
   - serviceusage
@@ -301,9 +299,6 @@ service-configs:
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/pubsub/v1
-    service-config: pubsub_v1.yaml
-    import-path: cloud.google.com/go/pubsub/v2/apiv1
   - input-directory: google/spanner/adapter/v1
     service-config: spanner.yaml
     import-path: cloud.google.com/go/spanner/adapter/apiv1
@@ -485,6 +480,8 @@ skip-module-scan-paths:
   - dataproc
   - dlp
   - longrunning
+  - pubsub/v2
+  - pubsub
   # individually released modules
   - bigquery
   - bigquery/v2
@@ -494,8 +491,6 @@ skip-module-scan-paths:
   - firestore
   - logging
   - profiler
-  - pubsub/v2
-  - pubsub
   - spanner
   - storage
   - vertexai
