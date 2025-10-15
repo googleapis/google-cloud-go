@@ -39,8 +39,6 @@ deep-remove-regex:
   - /datacatalog/apiv1beta1/
   - /datacatalog/lineage/apiv1/
   - /dataqna/apiv1alpha/
-  - /datastore/admin/apiv1/
-  - /datastore/apiv1/
   - /datastream/apiv1/
   - /datastream/apiv1alpha1/
   - /dialogflow/apiv2/
@@ -48,8 +46,6 @@ deep-remove-regex:
   - /dialogflow/cx/apiv3/
   - /dialogflow/cx/apiv3beta1/
   # - /errorreporting/apiv1beta1/
-  - /firestore/apiv1/
-  - /firestore/apiv1/admin/
   - /geminidataanalytics/apiv1beta/
   - /iam/apiv1/
   - /iam/apiv2/
@@ -92,7 +88,6 @@ deep-remove-regex:
   - /internal/generated/snippets/datacatalog/apiv1beta1/
   - /internal/generated/snippets/datacatalog/lineage/apiv1/
   - /internal/generated/snippets/dataqna/apiv1alpha/
-  - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets/datastream/apiv1/
   - /internal/generated/snippets/datastream/apiv1alpha1/
   - /internal/generated/snippets//developerconnect/apiv1/
@@ -102,8 +97,6 @@ deep-remove-regex:
   - /internal/generated/snippets/dialogflow/cx/apiv3/
   - /internal/generated/snippets/dialogflow/cx/apiv3beta1/
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
-  - /internal/generated/snippets/firestore/apiv1/
-  - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/geminidataanalytics/apiv1beta/
   - /internal/generated/snippets/iam/apiv1/
   - /internal/generated/snippets/iam/apiv2/
@@ -452,11 +445,7 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
-  - source: /google/datastore/admin/v1/cloud.google.com/go
-    dest: /
   # Just copy the datastore protos for now
-  - source: /google/datastore/v1/cloud.google.com/go/datastore/apiv1/datastorepb
-    dest: /datastore/apiv1/datastorepb
   - source: /google/cloud/datastream/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go
@@ -471,10 +460,6 @@ deep-copy-regex:
     dest: /
   # - source: /google/devtools/clouderrorreporting/v1beta1/cloud.google.com/go
   #   dest: /
-  - source: /google/firestore/v1/cloud.google.com/go
-    dest: /
-  - source: /google/firestore/admin/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/geminidataanalytics/v1beta/cloud.google.com/go
     dest: /
   - source: /google/iam/v1/cloud.google.com/go
