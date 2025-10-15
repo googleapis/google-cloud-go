@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"sync"
 	"time"
@@ -181,6 +182,12 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 	if !w.opened {
 		if err := w.openWriter(); err != nil {
 			return 0, err
+		}
+	}
+	if w.SendCRC32C {
+		crc32c := crc32.Checksum(p, crc32cTable)
+		if w.CRC32C == 0 {
+			w.CRC32C = crc32c
 		}
 	}
 	n, err = w.iw.Write(p)
