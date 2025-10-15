@@ -47,10 +47,28 @@ type Expr interface {
 	// Aritmetic operations
 	Add(other any) Expr
 	Subtract(other any) Expr
+	Multiply(other any) Expr
+	Divide(other any) Expr
+	Abs() Expr
+	Floor() Expr
+	Ceil() Expr
+	Exp() Expr
+	Log(other any) Expr
+	Log10() Expr
+	Ln() Expr
+	Mod(other any) Expr
+	Pow(other any) Expr
+	Round() Expr
+	Sqrt() Expr
 
 	// Comparison operations
-	Eq(other any) BooleanExpr
-	Neq(other any) BooleanExpr
+	Equal(other any) BooleanExpr
+	NotEqual(other any) BooleanExpr
+	GreaterThan(other any) BooleanExpr
+	GreaterThanOrEqual(other any) BooleanExpr
+	LessThan(other any) BooleanExpr
+	LessThanOrEqual(other any) BooleanExpr
+	Equivalent(other any) BooleanExpr
 
 	// Aggregators
 	Sum() AggregateFunction
@@ -75,10 +93,28 @@ func (b *baseExpr) getBaseExpr() *baseExpr      { return b }
 // Aritmetic functions
 func (b *baseExpr) Add(other any) Expr      { return Add(b, other) }
 func (b *baseExpr) Subtract(other any) Expr { return Subtract(b, other) }
+func (b *baseExpr) Multiply(other any) Expr { return Multiply(b, other) }
+func (b *baseExpr) Divide(other any) Expr   { return Divide(b, other) }
+func (b *baseExpr) Abs() Expr               { return Abs(b) }
+func (b *baseExpr) Floor() Expr             { return Floor(b) }
+func (b *baseExpr) Ceil() Expr              { return Ceil(b) }
+func (b *baseExpr) Exp() Expr               { return Exp(b) }
+func (b *baseExpr) Log(other any) Expr      { return Log(b, other) }
+func (b *baseExpr) Log10() Expr             { return Log10(b) }
+func (b *baseExpr) Ln() Expr                { return Ln(b) }
+func (b *baseExpr) Mod(other any) Expr      { return Mod(b, other) }
+func (b *baseExpr) Pow(other any) Expr      { return Pow(b, other) }
+func (b *baseExpr) Round() Expr             { return Round(b) }
+func (b *baseExpr) Sqrt() Expr              { return Sqrt(b) }
 
 // Comparison functions
-func (b *baseExpr) Eq(other any) BooleanExpr  { return Eq(b, other) }
-func (b *baseExpr) Neq(other any) BooleanExpr { return Neq(b, other) }
+func (b *baseExpr) Equal(other any) BooleanExpr              { return Equal(b, other) }
+func (b *baseExpr) NotEqual(other any) BooleanExpr           { return NotEqual(b, other) }
+func (b *baseExpr) GreaterThan(other any) BooleanExpr        { return GreaterThan(b, other) }
+func (b *baseExpr) GreaterThanOrEqual(other any) BooleanExpr { return GreaterThanOrEqual(b, other) }
+func (b *baseExpr) LessThan(other any) BooleanExpr           { return LessThan(b, other) }
+func (b *baseExpr) LessThanOrEqual(other any) BooleanExpr    { return LessThanOrEqual(b, other) }
+func (b *baseExpr) Equivalent(other any) BooleanExpr         { return Equivalent(b, other) }
 
 // Aggregation operations
 func (b *baseExpr) Sum() AggregateFunction   { return Sum(b) }
