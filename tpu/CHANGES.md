@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/tpu/v1.8.3...tpu/v1.8.4) (2025-09-22)
+
+
+### Bug Fixes
+
+* **tpu:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/tpu/v1.8.2...tpu/v1.8.3) (2025-04-15)
 
 

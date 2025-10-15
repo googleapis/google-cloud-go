@@ -509,9 +509,11 @@ type SessionPoolConfig struct {
 	enableMultiplexSession bool
 
 	// enableMultiplexedSessionForRW is a flag to enable multiplexed session for read/write transactions
+	// Defaults to true
 	enableMultiplexedSessionForRW bool
 
 	// enableMultiplexedSessionForPartitionedOps is a flag to enable multiplexed session for partitioned DML and read/query operations
+	// Defaults to true
 	enableMultiplexedSessionForPartitionedOps bool
 
 	// healthCheckSampleInterval is how often the health checker samples live

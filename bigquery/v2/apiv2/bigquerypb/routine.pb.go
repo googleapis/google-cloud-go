@@ -21,11 +21,7 @@
 package bigquerypb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -511,7 +507,7 @@ type Routine struct {
 	//
 	// For functions, this is the expression in the AS clause.
 	//
-	// If language=SQL, it is the substring inside (but excluding) the
+	// If `language = "SQL"`, it is the substring inside (but excluding) the
 	// parentheses. For example, for the function created with the following
 	// statement:
 	//
@@ -520,7 +516,7 @@ type Routine struct {
 	// The definition_body is `concat(x, "\n", y)` (\n is not replaced with
 	// linebreak).
 	//
-	// If language=JAVASCRIPT, it is the evaluated string in the AS clause.
+	// If `language="JAVASCRIPT"`, it is the evaluated string in the AS clause.
 	// For example, for the function created with the following statement:
 	//
 	// `CREATE FUNCTION f() RETURNS STRING LANGUAGE js AS 'return "\n";\n'`
@@ -530,6 +526,9 @@ type Routine struct {
 	// `return "\n";\n`
 	//
 	// Note that both \n are replaced with linebreaks.
+	//
+	// If `definition_body` references another routine, then that routine must
+	// be fully qualified with its project ID.
 	DefinitionBody string `protobuf:"bytes,9,opt,name=definition_body,json=definitionBody,proto3" json:"definition_body,omitempty"`
 	// Optional. The description of the routine, if defined.
 	Description string `protobuf:"bytes,11,opt,name=description,proto3" json:"description,omitempty"`
@@ -561,7 +560,7 @@ type Routine struct {
 	// masking
 	// routines](https://cloud.google.com/bigquery/docs/user-defined-functions#custom-mask).
 	DataGovernanceType Routine_DataGovernanceType `protobuf:"varint,17,opt,name=data_governance_type,json=dataGovernanceType,proto3,enum=google.cloud.bigquery.v2.Routine_DataGovernanceType" json:"data_governance_type,omitempty"`
-	// Optional. Options for Python UDF.
+	// Optional. Options for the Python UDF.
 	// [Preview](https://cloud.google.com/products/#product-launch-stages)
 	PythonOptions *PythonOptions `protobuf:"bytes,20,opt,name=python_options,json=pythonOptions,proto3" json:"python_options,omitempty"`
 	// Optional. Options for the runtime of the external system executing the
@@ -746,11 +745,13 @@ type PythonOptions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The entry point function in the user's Python code.
+	// Required. The name of the function defined in Python code as the entry
+	// point when the Python UDF is invoked.
 	EntryPoint string `protobuf:"bytes,1,opt,name=entry_point,json=entryPoint,proto3" json:"entry_point,omitempty"`
-	// Optional. A list of package names along with versions to be installed.
-	// Follows requirements.txt syntax (e.g. numpy==2.0, permutation,
-	// urllib3<2.2.1)
+	// Optional. A list of Python package names along with versions to be
+	// installed. Example: ["pandas>=2.1", "google-cloud-translate==3.11"]. For
+	// more information, see [Use third-party
+	// packages](https://cloud.google.com/bigquery/docs/user-defined-functions-python#third-party-packages).
 	Packages []string `protobuf:"bytes,2,rep,name=packages,proto3" json:"packages,omitempty"`
 }
 
@@ -804,12 +805,15 @@ type ExternalRuntimeOptions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Amount of memory provisioned for the container instance. Format:
-	// {number}{unit} where unit is one of "M", "G", "Mi" and "Gi" (e.g. 1G,
-	// 512Mi). If not specified, the default value is 512Mi.
+	// Optional. Amount of memory provisioned for a Python UDF container instance.
+	// Format: {number}{unit} where unit is one of "M", "G", "Mi" and "Gi" (e.g.
+	// 1G, 512Mi). If not specified, the default value is 512Mi. For more
+	// information, see [Configure container limits for Python
+	// UDFs](https://cloud.google.com/bigquery/docs/user-defined-functions-python#configure-container-limits)
 	ContainerMemory string `protobuf:"bytes,1,opt,name=container_memory,json=containerMemory,proto3" json:"container_memory,omitempty"`
-	// Optional. Amount of CPU provisioned for the container instance. If not
-	// specified, the default value is 0.33 vCPUs.
+	// Optional. Amount of CPU provisioned for a Python UDF container instance.
+	// For more information, see [Configure container limits for Python
+	// UDFs](https://cloud.google.com/bigquery/docs/user-defined-functions-python#configure-container-limits)
 	ContainerCpu float64 `protobuf:"fixed64,2,opt,name=container_cpu,json=containerCpu,proto3" json:"container_cpu,omitempty"`
 	// Optional. Fully qualified name of the connection whose service account will
 	// be used to execute the code in the container. Format:
@@ -819,7 +823,7 @@ type ExternalRuntimeOptions struct {
 	// runtime. If absent or if 0, BigQuery dynamically decides the number of rows
 	// in a batch.
 	MaxBatchingRows int64 `protobuf:"varint,4,opt,name=max_batching_rows,json=maxBatchingRows,proto3" json:"max_batching_rows,omitempty"`
-	// Optional. Language runtime version (e.g. python-3.11).
+	// Optional. Language runtime version. Example: `python-3.11`.
 	RuntimeVersion string `protobuf:"bytes,5,opt,name=runtime_version,json=runtimeVersion,proto3" json:"runtime_version,omitempty"`
 }
 
@@ -2243,282 +2247,4 @@ func file_google_cloud_bigquery_v2_routine_proto_init() {
 	file_google_cloud_bigquery_v2_routine_proto_rawDesc = nil
 	file_google_cloud_bigquery_v2_routine_proto_goTypes = nil
 	file_google_cloud_bigquery_v2_routine_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// RoutineServiceClient is the client API for RoutineService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type RoutineServiceClient interface {
-	// Gets the specified routine resource by routine ID.
-	GetRoutine(ctx context.Context, in *GetRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
-	// Creates a new routine in the dataset.
-	InsertRoutine(ctx context.Context, in *InsertRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
-	// Updates information in an existing routine. The update method replaces the
-	// entire Routine resource.
-	UpdateRoutine(ctx context.Context, in *UpdateRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
-	// Patches information in an existing routine. The patch method does a partial
-	// update to an existing Routine resource.
-	PatchRoutine(ctx context.Context, in *PatchRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
-	// Deletes the routine specified by routineId from the dataset.
-	DeleteRoutine(ctx context.Context, in *DeleteRoutineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Lists all routines in the specified dataset. Requires the READER dataset
-	// role.
-	ListRoutines(ctx context.Context, in *ListRoutinesRequest, opts ...grpc.CallOption) (*ListRoutinesResponse, error)
-}
-
-type routineServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewRoutineServiceClient(cc grpc.ClientConnInterface) RoutineServiceClient {
-	return &routineServiceClient{cc}
-}
-
-func (c *routineServiceClient) GetRoutine(ctx context.Context, in *GetRoutineRequest, opts ...grpc.CallOption) (*Routine, error) {
-	out := new(Routine)
-	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.v2.RoutineService/GetRoutine", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *routineServiceClient) InsertRoutine(ctx context.Context, in *InsertRoutineRequest, opts ...grpc.CallOption) (*Routine, error) {
-	out := new(Routine)
-	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.v2.RoutineService/InsertRoutine", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *routineServiceClient) UpdateRoutine(ctx context.Context, in *UpdateRoutineRequest, opts ...grpc.CallOption) (*Routine, error) {
-	out := new(Routine)
-	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.v2.RoutineService/UpdateRoutine", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *routineServiceClient) PatchRoutine(ctx context.Context, in *PatchRoutineRequest, opts ...grpc.CallOption) (*Routine, error) {
-	out := new(Routine)
-	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.v2.RoutineService/PatchRoutine", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *routineServiceClient) DeleteRoutine(ctx context.Context, in *DeleteRoutineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.v2.RoutineService/DeleteRoutine", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *routineServiceClient) ListRoutines(ctx context.Context, in *ListRoutinesRequest, opts ...grpc.CallOption) (*ListRoutinesResponse, error) {
-	out := new(ListRoutinesResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.v2.RoutineService/ListRoutines", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// RoutineServiceServer is the server API for RoutineService service.
-type RoutineServiceServer interface {
-	// Gets the specified routine resource by routine ID.
-	GetRoutine(context.Context, *GetRoutineRequest) (*Routine, error)
-	// Creates a new routine in the dataset.
-	InsertRoutine(context.Context, *InsertRoutineRequest) (*Routine, error)
-	// Updates information in an existing routine. The update method replaces the
-	// entire Routine resource.
-	UpdateRoutine(context.Context, *UpdateRoutineRequest) (*Routine, error)
-	// Patches information in an existing routine. The patch method does a partial
-	// update to an existing Routine resource.
-	PatchRoutine(context.Context, *PatchRoutineRequest) (*Routine, error)
-	// Deletes the routine specified by routineId from the dataset.
-	DeleteRoutine(context.Context, *DeleteRoutineRequest) (*emptypb.Empty, error)
-	// Lists all routines in the specified dataset. Requires the READER dataset
-	// role.
-	ListRoutines(context.Context, *ListRoutinesRequest) (*ListRoutinesResponse, error)
-}
-
-// UnimplementedRoutineServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedRoutineServiceServer struct {
-}
-
-func (*UnimplementedRoutineServiceServer) GetRoutine(context.Context, *GetRoutineRequest) (*Routine, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRoutine not implemented")
-}
-func (*UnimplementedRoutineServiceServer) InsertRoutine(context.Context, *InsertRoutineRequest) (*Routine, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InsertRoutine not implemented")
-}
-func (*UnimplementedRoutineServiceServer) UpdateRoutine(context.Context, *UpdateRoutineRequest) (*Routine, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoutine not implemented")
-}
-func (*UnimplementedRoutineServiceServer) PatchRoutine(context.Context, *PatchRoutineRequest) (*Routine, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatchRoutine not implemented")
-}
-func (*UnimplementedRoutineServiceServer) DeleteRoutine(context.Context, *DeleteRoutineRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoutine not implemented")
-}
-func (*UnimplementedRoutineServiceServer) ListRoutines(context.Context, *ListRoutinesRequest) (*ListRoutinesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListRoutines not implemented")
-}
-
-func RegisterRoutineServiceServer(s *grpc.Server, srv RoutineServiceServer) {
-	s.RegisterService(&_RoutineService_serviceDesc, srv)
-}
-
-func _RoutineService_GetRoutine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRoutineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoutineServiceServer).GetRoutine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.bigquery.v2.RoutineService/GetRoutine",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoutineServiceServer).GetRoutine(ctx, req.(*GetRoutineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RoutineService_InsertRoutine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InsertRoutineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoutineServiceServer).InsertRoutine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.bigquery.v2.RoutineService/InsertRoutine",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoutineServiceServer).InsertRoutine(ctx, req.(*InsertRoutineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RoutineService_UpdateRoutine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRoutineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoutineServiceServer).UpdateRoutine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.bigquery.v2.RoutineService/UpdateRoutine",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoutineServiceServer).UpdateRoutine(ctx, req.(*UpdateRoutineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RoutineService_PatchRoutine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PatchRoutineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoutineServiceServer).PatchRoutine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.bigquery.v2.RoutineService/PatchRoutine",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoutineServiceServer).PatchRoutine(ctx, req.(*PatchRoutineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RoutineService_DeleteRoutine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRoutineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoutineServiceServer).DeleteRoutine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.bigquery.v2.RoutineService/DeleteRoutine",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoutineServiceServer).DeleteRoutine(ctx, req.(*DeleteRoutineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RoutineService_ListRoutines_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRoutinesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoutineServiceServer).ListRoutines(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.bigquery.v2.RoutineService/ListRoutines",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoutineServiceServer).ListRoutines(ctx, req.(*ListRoutinesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _RoutineService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.bigquery.v2.RoutineService",
-	HandlerType: (*RoutineServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetRoutine",
-			Handler:    _RoutineService_GetRoutine_Handler,
-		},
-		{
-			MethodName: "InsertRoutine",
-			Handler:    _RoutineService_InsertRoutine_Handler,
-		},
-		{
-			MethodName: "UpdateRoutine",
-			Handler:    _RoutineService_UpdateRoutine_Handler,
-		},
-		{
-			MethodName: "PatchRoutine",
-			Handler:    _RoutineService_PatchRoutine_Handler,
-		},
-		{
-			MethodName: "DeleteRoutine",
-			Handler:    _RoutineService_DeleteRoutine_Handler,
-		},
-		{
-			MethodName: "ListRoutines",
-			Handler:    _RoutineService_ListRoutines_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/bigquery/v2/routine.proto",
 }

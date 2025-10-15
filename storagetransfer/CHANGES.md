@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.13.0...storagetransfer/v1.13.1) (2025-10-09)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Upgrade gRPC service registration func ([9157a71](https://github.com/googleapis/google-cloud-go/commit/9157a715e39b0b15074ba34187ff70c820d8834a))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.4...storagetransfer/v1.13.0) (2025-05-29)
 
 

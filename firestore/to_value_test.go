@@ -399,6 +399,90 @@ func TestToProtoValue_Tags(t *testing.T) {
 	}
 }
 
+type izero struct{ I int }
+
+func (z izero) IsZero() bool { return z.I == 0 }
+
+type pzero struct{ I int }
+
+func (z *pzero) IsZero() bool {
+	if z == nil {
+		return true
+	}
+	return z.I == 0
+}
+
+type testStructOmitZero struct {
+	I    int       `firestore:",omitzero"`
+	S    string    `firestore:",omitzero"`
+	P    *int      `firestore:",omitzero"`
+	Z    izero     `firestore:",omitzero"`
+	W    pzero     `firestore:",omitzero"`
+	WP   *pzero    `firestore:",omitzero"`
+	T    time.Time `firestore:",omitzero"`
+	Keep int       `firestore:"K"`
+}
+
+func TestToProtoValue_OmitZero(t *testing.T) {
+	i0 := 0
+	i1 := 1
+	tm := time.Unix(1, 0)
+	for _, test := range []struct {
+		desc string
+		in   interface{}
+		want *pb.Value
+	}{
+		{
+			"all zero",
+			testStructOmitZero{},
+			mapval(map[string]*pb.Value{"K": intval(0)}),
+		},
+		{
+			"all zero except WP which is pointer to zero struct",
+			testStructOmitZero{WP: &pzero{I: 0}},
+			mapval(map[string]*pb.Value{"K": intval(0)}),
+		},
+		{
+			"all non-zero",
+			testStructOmitZero{I: 1, S: "x", P: &i1, Z: izero{1}, W: pzero{1}, WP: &pzero{1}, T: tm, Keep: 1},
+			mapval(map[string]*pb.Value{
+				"I":  intval(1),
+				"S":  strval("x"),
+				"P":  intval(1),
+				"Z":  mapval(map[string]*pb.Value{"I": intval(1)}),
+				"W":  mapval(map[string]*pb.Value{"I": intval(1)}),
+				"WP": mapval(map[string]*pb.Value{"I": intval(1)}),
+				"T":  tsval(tm),
+				"K":  intval(1),
+			}),
+		},
+		{
+			"all non-zero, pointer to zero",
+			testStructOmitZero{I: 1, S: "x", P: &i0, Z: izero{1}, W: pzero{1}, WP: &pzero{1}, T: tm, Keep: 1},
+			mapval(map[string]*pb.Value{
+				"I":  intval(1),
+				"S":  strval("x"),
+				"P":  intval(0),
+				"Z":  mapval(map[string]*pb.Value{"I": intval(1)}),
+				"W":  mapval(map[string]*pb.Value{"I": intval(1)}),
+				"WP": mapval(map[string]*pb.Value{"I": intval(1)}),
+				"T":  tsval(tm),
+				"K":  intval(1),
+			}),
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got, _, err := toProtoValue(reflect.ValueOf(test.in))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !testEqual(got, test.want) {
+				t.Errorf("got\n%+v\nwant\n%+v", got, test.want)
+			}
+		})
+	}
+}
+
 func TestToProtoValue_Embedded(t *testing.T) {
 	// Embedded time.Time, LatLng, or Timestamp should behave like non-embedded.
 	type embed struct {

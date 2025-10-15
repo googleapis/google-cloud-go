@@ -1,0 +1,22 @@
+go_gapic_library(
+    name = "workflows_go_gapic",
+    srcs = [":workflows_proto"],
+    grpc_service_config = "workflows_grpc_service_config.json",
+    importpath = "cloud.google.com/go/workflows/apiv1;workflows",
+    metadata = True,
+    release_level = "ga",
+    rest_numeric_enums = True,
+    service_yaml = "workflows_v1.yaml",
+    transport = "grpc+rest",
+)
+
+go_grpc_library(
+    name = "workflows_go_proto",
+    importpath = "cloud.google.com/go/workflows/apiv1/workflowspb",
+    protos = [":workflows_proto"],
+)
+
+proto_library(
+    name = "workflows_proto",
+    srcs = ["workflows.proto"],
+)

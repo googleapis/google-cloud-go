@@ -21,19 +21,16 @@
 package routeoptimizationpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -7382,192 +7379,4 @@ func file_google_maps_routeoptimization_v1_route_optimization_service_proto_init
 	file_google_maps_routeoptimization_v1_route_optimization_service_proto_rawDesc = nil
 	file_google_maps_routeoptimization_v1_route_optimization_service_proto_goTypes = nil
 	file_google_maps_routeoptimization_v1_route_optimization_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// RouteOptimizationClient is the client API for RouteOptimization service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type RouteOptimizationClient interface {
-	// Sends an `OptimizeToursRequest` containing a `ShipmentModel` and returns an
-	// `OptimizeToursResponse` containing `ShipmentRoute`s, which are a set of
-	// routes to be performed by vehicles minimizing the overall cost.
-	//
-	// A `ShipmentModel` model consists mainly of `Shipment`s that need to be
-	// carried out and `Vehicle`s that can be used to transport the `Shipment`s.
-	// The `ShipmentRoute`s assign `Shipment`s to `Vehicle`s. More specifically,
-	// they assign a series of `Visit`s to each vehicle, where a `Visit`
-	// corresponds to a `VisitRequest`, which is a pickup or delivery for a
-	// `Shipment`.
-	//
-	// The goal is to provide an assignment of `ShipmentRoute`s to `Vehicle`s that
-	// minimizes the total cost where cost has many components defined in the
-	// `ShipmentModel`.
-	OptimizeTours(ctx context.Context, in *OptimizeToursRequest, opts ...grpc.CallOption) (*OptimizeToursResponse, error)
-	// Optimizes vehicle tours for one or more `OptimizeToursRequest`
-	// messages as a batch.
-	//
-	// This method is a Long Running Operation (LRO). The inputs for optimization
-	// (`OptimizeToursRequest` messages) and outputs (`OptimizeToursResponse`
-	// messages) are read from and written to Cloud Storage in user-specified
-	// format. Like the `OptimizeTours` method, each `OptimizeToursRequest`
-	// contains a `ShipmentModel` and returns an `OptimizeToursResponse`
-	// containing `ShipmentRoute` fields, which are a set of routes to be
-	// performed by vehicles minimizing the overall cost.
-	//
-	// The user can poll `operations.get` to check the status of the LRO:
-	//
-	// If the LRO `done` field is false, then at least one request is still
-	// being processed. Other requests may have completed successfully and their
-	// results are available in Cloud Storage.
-	//
-	// If the LRO's `done` field is true, then all requests have been processed.
-	// Any successfully processed requests will have their results available in
-	// Cloud Storage. Any requests that failed will not have their results
-	// available in Cloud Storage. If the LRO's `error` field is set, then it
-	// contains the error from one of the failed requests.
-	BatchOptimizeTours(ctx context.Context, in *BatchOptimizeToursRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type routeOptimizationClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewRouteOptimizationClient(cc grpc.ClientConnInterface) RouteOptimizationClient {
-	return &routeOptimizationClient{cc}
-}
-
-func (c *routeOptimizationClient) OptimizeTours(ctx context.Context, in *OptimizeToursRequest, opts ...grpc.CallOption) (*OptimizeToursResponse, error) {
-	out := new(OptimizeToursResponse)
-	err := c.cc.Invoke(ctx, "/google.maps.routeoptimization.v1.RouteOptimization/OptimizeTours", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *routeOptimizationClient) BatchOptimizeTours(ctx context.Context, in *BatchOptimizeToursRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.maps.routeoptimization.v1.RouteOptimization/BatchOptimizeTours", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// RouteOptimizationServer is the server API for RouteOptimization service.
-type RouteOptimizationServer interface {
-	// Sends an `OptimizeToursRequest` containing a `ShipmentModel` and returns an
-	// `OptimizeToursResponse` containing `ShipmentRoute`s, which are a set of
-	// routes to be performed by vehicles minimizing the overall cost.
-	//
-	// A `ShipmentModel` model consists mainly of `Shipment`s that need to be
-	// carried out and `Vehicle`s that can be used to transport the `Shipment`s.
-	// The `ShipmentRoute`s assign `Shipment`s to `Vehicle`s. More specifically,
-	// they assign a series of `Visit`s to each vehicle, where a `Visit`
-	// corresponds to a `VisitRequest`, which is a pickup or delivery for a
-	// `Shipment`.
-	//
-	// The goal is to provide an assignment of `ShipmentRoute`s to `Vehicle`s that
-	// minimizes the total cost where cost has many components defined in the
-	// `ShipmentModel`.
-	OptimizeTours(context.Context, *OptimizeToursRequest) (*OptimizeToursResponse, error)
-	// Optimizes vehicle tours for one or more `OptimizeToursRequest`
-	// messages as a batch.
-	//
-	// This method is a Long Running Operation (LRO). The inputs for optimization
-	// (`OptimizeToursRequest` messages) and outputs (`OptimizeToursResponse`
-	// messages) are read from and written to Cloud Storage in user-specified
-	// format. Like the `OptimizeTours` method, each `OptimizeToursRequest`
-	// contains a `ShipmentModel` and returns an `OptimizeToursResponse`
-	// containing `ShipmentRoute` fields, which are a set of routes to be
-	// performed by vehicles minimizing the overall cost.
-	//
-	// The user can poll `operations.get` to check the status of the LRO:
-	//
-	// If the LRO `done` field is false, then at least one request is still
-	// being processed. Other requests may have completed successfully and their
-	// results are available in Cloud Storage.
-	//
-	// If the LRO's `done` field is true, then all requests have been processed.
-	// Any successfully processed requests will have their results available in
-	// Cloud Storage. Any requests that failed will not have their results
-	// available in Cloud Storage. If the LRO's `error` field is set, then it
-	// contains the error from one of the failed requests.
-	BatchOptimizeTours(context.Context, *BatchOptimizeToursRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedRouteOptimizationServer can be embedded to have forward compatible implementations.
-type UnimplementedRouteOptimizationServer struct {
-}
-
-func (*UnimplementedRouteOptimizationServer) OptimizeTours(context.Context, *OptimizeToursRequest) (*OptimizeToursResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OptimizeTours not implemented")
-}
-func (*UnimplementedRouteOptimizationServer) BatchOptimizeTours(context.Context, *BatchOptimizeToursRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BatchOptimizeTours not implemented")
-}
-
-func RegisterRouteOptimizationServer(s *grpc.Server, srv RouteOptimizationServer) {
-	s.RegisterService(&_RouteOptimization_serviceDesc, srv)
-}
-
-func _RouteOptimization_OptimizeTours_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OptimizeToursRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RouteOptimizationServer).OptimizeTours(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.maps.routeoptimization.v1.RouteOptimization/OptimizeTours",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RouteOptimizationServer).OptimizeTours(ctx, req.(*OptimizeToursRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RouteOptimization_BatchOptimizeTours_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BatchOptimizeToursRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RouteOptimizationServer).BatchOptimizeTours(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.maps.routeoptimization.v1.RouteOptimization/BatchOptimizeTours",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RouteOptimizationServer).BatchOptimizeTours(ctx, req.(*BatchOptimizeToursRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _RouteOptimization_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.maps.routeoptimization.v1.RouteOptimization",
-	HandlerType: (*RouteOptimizationServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "OptimizeTours",
-			Handler:    _RouteOptimization_OptimizeTours_Handler,
-		},
-		{
-			MethodName: "BatchOptimizeTours",
-			Handler:    _RouteOptimization_BatchOptimizeTours_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/maps/routeoptimization/v1/route_optimization_service.proto",
 }

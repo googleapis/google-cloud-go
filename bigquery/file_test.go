@@ -39,8 +39,9 @@ var (
 			AllowJaggedRows:                true,
 			AllowQuotedNewlines:            true,
 			Encoding:                       UTF_8,
-			NullMarker:                     "marker",
+			NullMarkers:                    []string{"marker"},
 			PreserveASCIIControlCharacters: true,
+			SourceColumnMatch:              SourceColumnMatchPosition,
 		},
 	}
 )
@@ -73,8 +74,9 @@ func TestFileConfigPopulateLoadConfig(t *testing.T) {
 				Encoding:                       "UTF-8",
 				MaxBadRecords:                  7,
 				IgnoreUnknownValues:            true,
-				NullMarker:                     "marker",
+				NullMarkers:                    []string{"marker"},
 				PreserveAsciiControlCharacters: true,
+				SourceColumnMatch:              "POSITION",
 				Schema: &bq.TableSchema{
 					Fields: []*bq.TableFieldSchema{
 						bqStringFieldSchema(),
@@ -111,6 +113,23 @@ func TestFileConfigPopulateLoadConfig(t *testing.T) {
 			want: &bq.JobConfigurationLoad{
 				SourceFormat:        "AVRO",
 				UseAvroLogicalTypes: true,
+			},
+		},
+		{
+			description: "Custom date/datetime/time/timestamp formats",
+			fileConfig: &FileConfig{
+				TimeZone:        "America/Los_Angeles",
+				TimestampFormat: "%a %b %e %I:%M:%S %Y",
+				TimeFormat:      "%I:%M:%S",
+				DateFormat:      "%A %b %e %Y",
+				DatetimeFormat:  "%a %b %e %I:%M:%S %Y",
+			},
+			want: &bq.JobConfigurationLoad{
+				TimeZone:        "America/Los_Angeles",
+				TimestampFormat: "%a %b %e %I:%M:%S %Y",
+				TimeFormat:      "%I:%M:%S",
+				DateFormat:      "%A %b %e %Y",
+				DatetimeFormat:  "%a %b %e %I:%M:%S %Y",
 			},
 		},
 	}
@@ -158,7 +177,8 @@ func TestFileConfigPopulateExternalDataConfig(t *testing.T) {
 					FieldDelimiter:                 "\t",
 					Quote:                          &hyphen,
 					SkipLeadingRows:                8,
-					NullMarker:                     "marker",
+					NullMarkers:                    []string{"marker"},
+					SourceColumnMatch:              "POSITION",
 					PreserveAsciiControlCharacters: true,
 				},
 			},

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/database/apiv1",
-    "version": "1.82.0",
+    "version": "1.86.0",
     "language": "GO",
     "apis": [
       {
@@ -730,6 +730,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_InternalUpdateGraphOperation_sync",
+      "title": "spanner InternalUpdateGraphOperation Sample",
+      "description": "InternalUpdateGraphOperation this is an internal API called by Spanner Graph jobs. You should never need\nto call this API directly.",
+      "file": "DatabaseAdminClient/InternalUpdateGraphOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InternalUpdateGraphOperation",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.InternalUpdateGraphOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.InternalUpdateGraphOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*databasepb.InternalUpdateGraphOperationResponse",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "InternalUpdateGraphOperation",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.InternalUpdateGraphOperation",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
           }
         }
       },

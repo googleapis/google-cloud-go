@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/security/publicca/apiv1beta1",
-    "version": "1.18.5",
+    "version": "1.19.2",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "publicca_v1beta1_generated_PublicCertificateAuthorityService_CreateExternalAccountKey_sync",
       "title": "publicca CreateExternalAccountKey Sample",
-      "description": "CreateExternalAccountKey creates a new [ExternalAccountKey][google.cloud.security.publicca.v1beta1.ExternalAccountKey] bound to the project.",
+      "description": "CreateExternalAccountKey creates a new\n[ExternalAccountKey][google.cloud.security.publicca.v1beta1.ExternalAccountKey]\nbound to the project.",
       "file": "PublicCertificateAuthorityClient/CreateExternalAccountKey/main.go",
       "language": "GO",
       "clientMethod": {

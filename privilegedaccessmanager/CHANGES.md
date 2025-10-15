@@ -1,4 +1,18 @@
-# Changelog
+# Changes
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.3.0...privilegedaccessmanager/v0.3.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **privilegedaccessmanager:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.2.5...privilegedaccessmanager/v0.3.0) (2025-07-31)
+
+
+### Features
+
+* **privilegedaccessmanager:** Introducing new Grant states for Withdrawal operation ([#12626](https://github.com/googleapis/google-cloud-go/issues/12626)) ([9d29fa9](https://github.com/googleapis/google-cloud-go/commit/9d29fa96abaac05868fa4ed1bc986244e9f561d8))
 
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.2.4...privilegedaccessmanager/v0.2.5) (2025-04-15)
 

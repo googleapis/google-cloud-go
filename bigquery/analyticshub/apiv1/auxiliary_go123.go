@@ -39,6 +39,12 @@ func (it *ListingIterator) All() iter.Seq2[*analyticshubpb.Listing, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *QueryTemplateIterator) All() iter.Seq2[*analyticshubpb.QueryTemplate, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *SubscriptionIterator) All() iter.Seq2[*analyticshubpb.Subscription, error] {
 	return iterator.RangeAdapter(it.Next)
 }

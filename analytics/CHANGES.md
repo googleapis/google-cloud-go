@@ -1,5 +1,50 @@
 # Changes
 
+## [0.30.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.30.0...analytics/v0.30.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **analytics:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
+## [0.30.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.29.0...analytics/v0.30.0) (2025-09-04)
+
+
+### Features
+
+* **analytics/admin:** Add reporting_identity_settings` fields to the `ChangeHistoryResource` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Add the `GetReportingIdentitySettings` method ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Add the `GetReportingIdentitySettingsRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Add the `REPORTING_IDENTITY_SETTINGS` resource type to the `ChangeHistoryResourceType` enum ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Add the `ReportingIdentitySettings` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+
+
+### Bug Fixes
+
+* **analytics/admin:** Remove the `ConnectedSiteTag` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `CreateConnectedSiteTag` method ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `CreateConnectedSiteTagRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `CreateConnectedSiteTagResponse` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `DeleteConnectedSiteTag` method ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `DeleteConnectedSiteTagRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `FetchAutomatedGa4ConfigurationOptOut` method ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `FetchAutomatedGa4ConfigurationOptOutRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `FetchAutomatedGa4ConfigurationOptOutResponse` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `FetchConnectedGa4Property` method ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `FetchConnectedGa4PropertyRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `FetchConnectedGa4PropertyResponse` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `ListConnectedSiteTags` method ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `ListConnectedSiteTagsRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `ListConnectedSiteTagsResponse` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `SetAutomatedGa4ConfigurationOptOut` method ([#12738](https://github.com/googleapis/google-cloud-go/issues/12738)) ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `SetAutomatedGa4ConfigurationOptOutRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+* **analytics/admin:** Remove the `SetAutomatedGa4ConfigurationOptOutResponse` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+
+
+### Documentation
+
+* **analytics/admin:** Provide additional guidelines for the `user_provided_data` field in the `SubmitUserDeletionRequest` resource ([d6956df](https://github.com/googleapis/google-cloud-go/commit/d6956df90b0ec5bd44d5bbe7f614e2da0165e830))
+
 ## [0.29.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.28.1...analytics/v0.29.0) (2025-06-17)
 
 

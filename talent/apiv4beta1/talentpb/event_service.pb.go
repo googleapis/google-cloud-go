@@ -21,11 +21,7 @@
 package talentpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -215,98 +211,4 @@ func file_google_cloud_talent_v4beta1_event_service_proto_init() {
 	file_google_cloud_talent_v4beta1_event_service_proto_rawDesc = nil
 	file_google_cloud_talent_v4beta1_event_service_proto_goTypes = nil
 	file_google_cloud_talent_v4beta1_event_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// EventServiceClient is the client API for EventService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type EventServiceClient interface {
-	// Report events issued when end user interacts with customer's application
-	// that uses Cloud Talent Solution. You may inspect the created events in
-	// [self service
-	// tools](https://console.cloud.google.com/talent-solution/overview).
-	// [Learn
-	// more](https://cloud.google.com/talent-solution/docs/management-tools)
-	// about self service tools.
-	CreateClientEvent(ctx context.Context, in *CreateClientEventRequest, opts ...grpc.CallOption) (*ClientEvent, error)
-}
-
-type eventServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewEventServiceClient(cc grpc.ClientConnInterface) EventServiceClient {
-	return &eventServiceClient{cc}
-}
-
-func (c *eventServiceClient) CreateClientEvent(ctx context.Context, in *CreateClientEventRequest, opts ...grpc.CallOption) (*ClientEvent, error) {
-	out := new(ClientEvent)
-	err := c.cc.Invoke(ctx, "/google.cloud.talent.v4beta1.EventService/CreateClientEvent", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// EventServiceServer is the server API for EventService service.
-type EventServiceServer interface {
-	// Report events issued when end user interacts with customer's application
-	// that uses Cloud Talent Solution. You may inspect the created events in
-	// [self service
-	// tools](https://console.cloud.google.com/talent-solution/overview).
-	// [Learn
-	// more](https://cloud.google.com/talent-solution/docs/management-tools)
-	// about self service tools.
-	CreateClientEvent(context.Context, *CreateClientEventRequest) (*ClientEvent, error)
-}
-
-// UnimplementedEventServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedEventServiceServer struct {
-}
-
-func (*UnimplementedEventServiceServer) CreateClientEvent(context.Context, *CreateClientEventRequest) (*ClientEvent, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateClientEvent not implemented")
-}
-
-func RegisterEventServiceServer(s *grpc.Server, srv EventServiceServer) {
-	s.RegisterService(&_EventService_serviceDesc, srv)
-}
-
-func _EventService_CreateClientEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateClientEventRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(EventServiceServer).CreateClientEvent(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.talent.v4beta1.EventService/CreateClientEvent",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EventServiceServer).CreateClientEvent(ctx, req.(*CreateClientEventRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _EventService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.talent.v4beta1.EventService",
-	HandlerType: (*EventServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateClientEvent",
-			Handler:    _EventService_CreateClientEvent_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/talent/v4beta1/event_service.proto",
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/policysimulator/apiv1",
-    "version": "0.3.6",
+    "version": "0.4.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,282 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_CreateOrgPolicyViolationsPreview_sync",
+      "title": "policysimulator CreateOrgPolicyViolationsPreview Sample",
+      "description": "CreateOrgPolicyViolationsPreview createOrgPolicyViolationsPreview creates an\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nfor the proposed changes in the provided\n[OrgPolicyViolationsPreview.OrgPolicyOverlay][]. The changes to OrgPolicy\nare specified by this `OrgPolicyOverlay`. The resources to scan are\ninferred from these specified changes.",
+      "file": "OrgPolicyViolationsPreviewClient/CreateOrgPolicyViolationsPreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOrgPolicyViolationsPreview",
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.CreateOrgPolicyViolationsPreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policysimulatorpb.CreateOrgPolicyViolationsPreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateOrgPolicyViolationsPreviewOperation",
+        "client": {
+          "shortName": "OrgPolicyViolationsPreviewClient",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient"
+        },
+        "method": {
+          "shortName": "CreateOrgPolicyViolationsPreview",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.CreateOrgPolicyViolationsPreview",
+          "service": {
+            "shortName": "OrgPolicyViolationsPreviewService",
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_GetOperation_sync",
+      "title": "policysimulator GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "OrgPolicyViolationsPreviewClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "OrgPolicyViolationsPreviewClient",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_GetOrgPolicyViolationsPreview_sync",
+      "title": "policysimulator GetOrgPolicyViolationsPreview Sample",
+      "description": "GetOrgPolicyViolationsPreview getOrgPolicyViolationsPreview gets the specified\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview].\nEach\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nis available for at least 7 days.",
+      "file": "OrgPolicyViolationsPreviewClient/GetOrgPolicyViolationsPreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOrgPolicyViolationsPreview",
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.GetOrgPolicyViolationsPreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policysimulatorpb.GetOrgPolicyViolationsPreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*policysimulatorpb.OrgPolicyViolationsPreview",
+        "client": {
+          "shortName": "OrgPolicyViolationsPreviewClient",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient"
+        },
+        "method": {
+          "shortName": "GetOrgPolicyViolationsPreview",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.GetOrgPolicyViolationsPreview",
+          "service": {
+            "shortName": "OrgPolicyViolationsPreviewService",
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_ListOperations_sync",
+      "title": "policysimulator ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "OrgPolicyViolationsPreviewClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "OrgPolicyViolationsPreviewClient",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_ListOrgPolicyViolations_sync",
+      "title": "policysimulator ListOrgPolicyViolations Sample",
+      "description": "ListOrgPolicyViolations listOrgPolicyViolations lists the [OrgPolicyViolations][] that are present\nin an\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview].",
+      "file": "OrgPolicyViolationsPreviewClient/ListOrgPolicyViolations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOrgPolicyViolations",
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.ListOrgPolicyViolations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policysimulatorpb.ListOrgPolicyViolationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OrgPolicyViolationIterator",
+        "client": {
+          "shortName": "OrgPolicyViolationsPreviewClient",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient"
+        },
+        "method": {
+          "shortName": "ListOrgPolicyViolations",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.ListOrgPolicyViolations",
+          "service": {
+            "shortName": "OrgPolicyViolationsPreviewService",
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_ListOrgPolicyViolationsPreviews_sync",
+      "title": "policysimulator ListOrgPolicyViolationsPreviews Sample",
+      "description": "ListOrgPolicyViolationsPreviews listOrgPolicyViolationsPreviews lists each\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nin an organization. Each\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nis available for at least 7 days.",
+      "file": "OrgPolicyViolationsPreviewClient/ListOrgPolicyViolationsPreviews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOrgPolicyViolationsPreviews",
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.ListOrgPolicyViolationsPreviews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OrgPolicyViolationsPreviewIterator",
+        "client": {
+          "shortName": "OrgPolicyViolationsPreviewClient",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient"
+        },
+        "method": {
+          "shortName": "ListOrgPolicyViolationsPreviews",
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.ListOrgPolicyViolationsPreviews",
+          "service": {
+            "shortName": "OrgPolicyViolationsPreviewService",
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "policysimulator_v1_generated_Simulator_CreateReplay_sync",
       "title": "policysimulator CreateReplay Sample",

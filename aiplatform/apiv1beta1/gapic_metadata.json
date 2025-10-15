@@ -1632,6 +1632,11 @@
                 "FetchFeatureValues"
               ]
             },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -1705,6 +1710,11 @@
             "FetchFeatureValues": {
               "methods": [
                 "FetchFeatureValues"
+              ]
+            },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
               ]
             },
             "GetIamPolicy": {
@@ -5251,6 +5261,11 @@
                 "MergeVersionAliases"
               ]
             },
+            "RecommendSpec": {
+              "methods": [
+                "RecommendSpec"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -5399,6 +5414,11 @@
             "MergeVersionAliases": {
               "methods": [
                 "MergeVersionAliases"
+              ]
+            },
+            "RecommendSpec": {
+              "methods": [
+                "RecommendSpec"
               ]
             },
             "SetIamPolicy": {

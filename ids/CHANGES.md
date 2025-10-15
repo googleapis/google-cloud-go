@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.7](https://github.com/googleapis/google-cloud-go/compare/ids/v1.5.6...ids/v1.5.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* **ids:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.5.6](https://github.com/googleapis/google-cloud-go/compare/ids/v1.5.5...ids/v1.5.6) (2025-04-15)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/video/livestream/apiv1",
-    "version": "1.24.0",
+    "version": "1.27.1",
     "language": "GO",
     "apis": [
       {
@@ -1435,6 +1435,52 @@
       ]
     },
     {
+      "regionTag": "livestream_v1_generated_LivestreamService_PreviewInput_sync",
+      "title": "livestream PreviewInput Sample",
+      "description": "PreviewInput preview the streaming content of the specified input.",
+      "file": "Client/PreviewInput/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PreviewInput",
+        "fullName": "google.cloud.video.livestream.v1.Client.PreviewInput",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.PreviewInputRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*livestreampb.PreviewInputResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "PreviewInput",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.PreviewInput",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "livestream_v1_generated_LivestreamService_StartChannel_sync",
       "title": "livestream StartChannel Sample",
       "description": "StartChannel starts the specified channel. Part of the video pipeline will be created\nonly when the StartChannel request is received by the server.",
@@ -1481,6 +1527,52 @@
       ]
     },
     {
+      "regionTag": "livestream_v1_generated_LivestreamService_StartDistribution_sync",
+      "title": "livestream StartDistribution Sample",
+      "description": "StartDistribution starts distribution which delivers outputs to the destination indicated by\nthe Distribution configuration.",
+      "file": "Client/StartDistribution/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartDistribution",
+        "fullName": "google.cloud.video.livestream.v1.Client.StartDistribution",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.StartDistributionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartDistributionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "StartDistribution",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.StartDistribution",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "livestream_v1_generated_LivestreamService_StopChannel_sync",
       "title": "livestream StopChannel Sample",
       "description": "StopChannel stops the specified channel. Part of the video pipeline will be released\nwhen the StopChannel request is received by the server.",
@@ -1511,6 +1603,52 @@
         "method": {
           "shortName": "StopChannel",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.StopChannel",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_StopDistribution_sync",
+      "title": "livestream StopDistribution Sample",
+      "description": "StopDistribution stops the specified distribution.",
+      "file": "Client/StopDistribution/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopDistribution",
+        "fullName": "google.cloud.video.livestream.v1.Client.StopDistribution",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.StopDistributionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopDistributionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "StopDistribution",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.StopDistribution",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"

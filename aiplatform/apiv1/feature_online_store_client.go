@@ -40,18 +40,20 @@ var newFeatureOnlineStoreClientHook clientHook
 
 // FeatureOnlineStoreCallOptions contains the retry settings for each method of FeatureOnlineStoreClient.
 type FeatureOnlineStoreCallOptions struct {
-	FetchFeatureValues    []gax.CallOption
-	SearchNearestEntities []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	SetIamPolicy          []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	CancelOperation       []gax.CallOption
-	DeleteOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
-	WaitOperation         []gax.CallOption
+	FetchFeatureValues       []gax.CallOption
+	SearchNearestEntities    []gax.CallOption
+	FeatureViewDirectWrite   []gax.CallOption
+	GenerateFetchAccessToken []gax.CallOption
+	GetLocation              []gax.CallOption
+	ListLocations            []gax.CallOption
+	GetIamPolicy             []gax.CallOption
+	SetIamPolicy             []gax.CallOption
+	TestIamPermissions       []gax.CallOption
+	CancelOperation          []gax.CallOption
+	DeleteOperation          []gax.CallOption
+	GetOperation             []gax.CallOption
+	ListOperations           []gax.CallOption
+	WaitOperation            []gax.CallOption
 }
 
 func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
@@ -71,18 +73,20 @@ func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
 
 func defaultFeatureOnlineStoreCallOptions() *FeatureOnlineStoreCallOptions {
 	return &FeatureOnlineStoreCallOptions{
-		FetchFeatureValues:    []gax.CallOption{},
-		SearchNearestEntities: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		FetchFeatureValues:       []gax.CallOption{},
+		SearchNearestEntities:    []gax.CallOption{},
+		FeatureViewDirectWrite:   []gax.CallOption{},
+		GenerateFetchAccessToken: []gax.CallOption{},
+		GetLocation:              []gax.CallOption{},
+		ListLocations:            []gax.CallOption{},
+		GetIamPolicy:             []gax.CallOption{},
+		SetIamPolicy:             []gax.CallOption{},
+		TestIamPermissions:       []gax.CallOption{},
+		CancelOperation:          []gax.CallOption{},
+		DeleteOperation:          []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
+		ListOperations:           []gax.CallOption{},
+		WaitOperation:            []gax.CallOption{},
 	}
 }
 
@@ -93,6 +97,8 @@ type internalFeatureOnlineStoreClient interface {
 	Connection() *grpc.ClientConn
 	FetchFeatureValues(context.Context, *aiplatformpb.FetchFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error)
 	SearchNearestEntities(context.Context, *aiplatformpb.SearchNearestEntitiesRequest, ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error)
+	FeatureViewDirectWrite(context.Context, ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error)
+	GenerateFetchAccessToken(context.Context, *aiplatformpb.GenerateFetchAccessTokenRequest, ...gax.CallOption) (*aiplatformpb.GenerateFetchAccessTokenResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -150,6 +156,19 @@ func (c *FeatureOnlineStoreClient) FetchFeatureValues(ctx context.Context, req *
 // indexable, returns Invalid argument response.
 func (c *FeatureOnlineStoreClient) SearchNearestEntities(ctx context.Context, req *aiplatformpb.SearchNearestEntitiesRequest, opts ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error) {
 	return c.internalClient.SearchNearestEntities(ctx, req, opts...)
+}
+
+// FeatureViewDirectWrite bidirectional streaming RPC to directly write to feature values in a
+// feature view. Requests may not have a one-to-one mapping to responses and
+// responses may be returned out-of-order to reduce latency.
+func (c *FeatureOnlineStoreClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	return c.internalClient.FeatureViewDirectWrite(ctx, opts...)
+}
+
+// GenerateFetchAccessToken rPC to generate an access token for the given feature view. FeatureViews
+// under the same FeatureOnlineStore share the same access token.
+func (c *FeatureOnlineStoreClient) GenerateFetchAccessToken(ctx context.Context, req *aiplatformpb.GenerateFetchAccessTokenRequest, opts ...gax.CallOption) (*aiplatformpb.GenerateFetchAccessTokenResponse, error) {
+	return c.internalClient.GenerateFetchAccessToken(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -327,6 +346,41 @@ func (c *featureOnlineStoreGRPCClient) SearchNearestEntities(ctx context.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.featureOnlineStoreClient.SearchNearestEntities, req, settings.GRPC, c.logger, "SearchNearestEntities")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureOnlineStoreGRPCClient) FeatureViewDirectWrite(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp aiplatformpb.FeatureOnlineStoreService_FeatureViewDirectWriteClient
+	opts = append((*c.CallOptions).FeatureViewDirectWrite[0:len((*c.CallOptions).FeatureViewDirectWrite):len((*c.CallOptions).FeatureViewDirectWrite)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "FeatureViewDirectWrite")
+		resp, err = c.featureOnlineStoreClient.FeatureViewDirectWrite(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "FeatureViewDirectWrite")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureOnlineStoreGRPCClient) GenerateFetchAccessToken(ctx context.Context, req *aiplatformpb.GenerateFetchAccessTokenRequest, opts ...gax.CallOption) (*aiplatformpb.GenerateFetchAccessTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "feature_view", url.QueryEscape(req.GetFeatureView()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateFetchAccessToken[0:len((*c.CallOptions).GenerateFetchAccessToken):len((*c.CallOptions).GenerateFetchAccessToken)], opts...)
+	var resp *aiplatformpb.GenerateFetchAccessTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.featureOnlineStoreClient.GenerateFetchAccessToken, req, settings.GRPC, c.logger, "GenerateFetchAccessToken")
 		return err
 	}, opts...)
 	if err != nil {

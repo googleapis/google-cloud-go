@@ -1,4 +1,18 @@
-# Changelog
+# Changes
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.5.0...networkservices/v0.5.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **networkservices:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.4.0...networkservices/v0.5.0) (2025-07-09)
+
+
+### Features
+
+* **networkservices:** Add isolation support to prevent cross-region overflow by adding a new field "isolation_config" to message "ServiceLbPolicy" ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
 
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.3.0...networkservices/v0.4.0) (2025-06-25)
 

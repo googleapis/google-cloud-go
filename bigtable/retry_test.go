@@ -76,14 +76,16 @@ func setupDefaultFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(
 func TestRetryApply(t *testing.T) {
 	ctx := context.Background()
 
-	errCount := 0
-	code := codes.Unavailable // Will be retried
-	errMsg := ""
+	var errCount int
+	var code codes.Code
+	var errMsg string
+
 	// Intercept requests and return an error or defer to the underlying handler
 	errInjector := func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		if strings.HasSuffix(info.FullMethod, "MutateRow") && errCount < 3 {
+		// The test is designed to fail the first 3 calls to MutateRow or CheckAndMutateRow.
+		if (strings.HasSuffix(info.FullMethod, "MutateRow") || strings.HasSuffix(info.FullMethod, "CheckAndMutateRow")) && errCount < 3 {
 			errCount++
-			return nil, status.Errorf(code, errMsg)
+			return nil, status.Error(code, errMsg)
 		}
 		return handler(ctx, req)
 	}
@@ -95,66 +97,89 @@ func TestRetryApply(t *testing.T) {
 
 	mut := NewMutation()
 	mut.Set("cf", "col", 1000, []byte("val"))
-	if err := tbl.Apply(ctx, "row1", mut); err != nil {
-		t.Errorf("applying single mutation with retries: %v", err)
-	}
-	row, err := tbl.ReadRow(ctx, "row1")
-	if err != nil {
-		t.Errorf("reading single value with retries: %v", err)
-	}
-	if row == nil {
-		t.Errorf("applying single mutation with retries: could not read back row")
-	}
 
-	code = codes.FailedPrecondition // Won't be retried
-	errCount = 0
-	if err := tbl.Apply(ctx, "row", mut); err == nil {
-		t.Errorf("applying single mutation with no retries: no error")
-	}
+	t.Run("SimpleRetry", func(t *testing.T) {
+		errCount = 0
+		code = codes.Unavailable // Will be retried
+		errMsg = ""
 
-	// Check and mutate
+		if err := tbl.Apply(ctx, "row-simple-retry", mut); err != nil {
+			t.Errorf("applying single mutation with retries: %v", err)
+		}
+		row, err := tbl.ReadRow(ctx, "row-simple-retry")
+		if err != nil {
+			t.Errorf("reading single value with retries: %v", err)
+		}
+		if row == nil {
+			t.Errorf("applying single mutation with retries: could not read back row")
+		}
+	})
+
+	t.Run("NonRetryable", func(t *testing.T) {
+		errCount = 0
+		code = codes.FailedPrecondition // Won't be retried
+		errMsg = ""
+
+		if err := tbl.Apply(ctx, "row-non-retryable", mut); err == nil {
+			t.Errorf("applying single mutation with no retries: got nil, want error")
+		}
+	})
+
+	// Conditional mutations are idempotent if their true and false mutations are idempotent.
+	// In this test, mutTrue (DeleteRow) and mutFalse (Set with fixed timestamp) are idempotent.
 	mutTrue := NewMutation()
 	mutTrue.DeleteRow()
 	mutFalse := NewMutation()
 	mutFalse.Set("cf", "col", 1000, []byte("val"))
 	condMut := NewCondMutation(ValueFilter(".*"), mutTrue, mutFalse)
 
-	errCount = 0
-	code = codes.Unavailable // Won't be retried
-	if err := tbl.Apply(ctx, "row1", condMut); err == nil {
-		t.Errorf("conditionally mutating row with no retries: no error")
-	}
-
-	for _, msg := range retryableInternalErrMsgs {
+	t.Run("ConditionalNotRetried", func(t *testing.T) {
 		errCount = 0
-		code = codes.Internal // Will be retried
-		errMsg = msg
-		if err := tbl.Apply(ctx, "row", mut); err != nil {
-			t.Errorf("applying single mutation with retries: %v, errMsg: %v", err, errMsg)
-		}
-		row, err = tbl.ReadRow(ctx, "row")
-		if err != nil {
-			t.Errorf("reading single value with retries: %v, errMsg: %v", err, errMsg)
-		}
-		if row == nil {
-			t.Errorf("applying single mutation with retries: could not read back row. errMsg: %v", errMsg)
-		}
-	}
+		code = codes.Unavailable // Won't be retried, as CheckAndMutateRow has no retry policy by default
+		errMsg = ""
 
-	errCount = 0
-	errMsg = ""
-	code = codes.Internal // Won't be retried
-	errMsg = "Placeholder message"
-	if err := tbl.Apply(ctx, "row", condMut); err == nil {
-		t.Errorf("conditionally mutating row with no retries: no error")
-	}
+		if err := tbl.Apply(ctx, "row-cond-not-retried", condMut); err == nil {
+			t.Errorf("conditionally mutating row with no retries: got nil, want error")
+		}
+	})
 
-	errCount = 0
-	errMsg = ""
-	code = codes.FailedPrecondition // Won't be retried
-	if err := tbl.Apply(ctx, "row", condMut); err == nil {
-		t.Errorf("conditionally mutating row with no retries: no error")
-	}
+	t.Run("RetryableInternal", func(t *testing.T) {
+		for _, msg := range retryableInternalErrMsgs {
+			t.Run(msg, func(t *testing.T) {
+				errCount = 0
+				code = codes.Internal // Will be retried
+				errMsg = msg
+				if err := tbl.Apply(ctx, "row-retryable-internal", mut); err != nil {
+					t.Errorf("applying single mutation with retries: %v, errMsg: %v", err, errMsg)
+				}
+				row, err := tbl.ReadRow(ctx, "row-retryable-internal")
+				if err != nil {
+					t.Errorf("reading single value with retries: %v, errMsg: %v", err, errMsg)
+				}
+				if row == nil {
+					t.Errorf("applying single mutation with retries: could not read back row. errMsg: %v", errMsg)
+				}
+			})
+		}
+	})
+
+	t.Run("ConditionalNonRetryableInternal", func(t *testing.T) {
+		errCount = 0
+		code = codes.Internal // Won't be retried for conditional mutation with non-retryable message
+		errMsg = "Placeholder message"
+		if err := tbl.Apply(ctx, "row-cond-non-retryable-internal", condMut); err == nil {
+			t.Errorf("conditionally mutating row with no retries: got nil, want error")
+		}
+	})
+
+	t.Run("ConditionalNonRetryableFailedPrecondition", func(t *testing.T) {
+		errCount = 0
+		code = codes.FailedPrecondition // Won't be retried
+		errMsg = ""
+		if err := tbl.Apply(ctx, "row-cond-non-retryable-failed-precondition", condMut); err == nil {
+			t.Errorf("conditionally mutating row with no retries: got nil, want error")
+		}
+	})
 }
 
 // Test overall request failure and retries.

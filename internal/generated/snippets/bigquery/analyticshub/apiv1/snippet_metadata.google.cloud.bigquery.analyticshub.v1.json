@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/analyticshub/apiv1",
-    "version": "1.69.0",
+    "version": "1.71.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ApproveQueryTemplate_sync",
+      "title": "analyticshub ApproveQueryTemplate Sample",
+      "description": "ApproveQueryTemplate approves a query template.",
+      "file": "Client/ApproveQueryTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ApproveQueryTemplate",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.ApproveQueryTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.ApproveQueryTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*analyticshubpb.QueryTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "ApproveQueryTemplate",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ApproveQueryTemplate",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "analyticshub_v1_generated_AnalyticsHubService_CreateDataExchange_sync",
       "title": "analyticshub CreateDataExchange Sample",
@@ -104,6 +150,52 @@
       ]
     },
     {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_CreateQueryTemplate_sync",
+      "title": "analyticshub CreateQueryTemplate Sample",
+      "description": "CreateQueryTemplate creates a new QueryTemplate",
+      "file": "Client/CreateQueryTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateQueryTemplate",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.CreateQueryTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.CreateQueryTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*analyticshubpb.QueryTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateQueryTemplate",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.CreateQueryTemplate",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticshub_v1_generated_AnalyticsHubService_DeleteDataExchange_sync",
       "title": "analyticshub DeleteDataExchange Sample",
       "description": "DeleteDataExchange deletes an existing data exchange.",
@@ -178,6 +270,51 @@
         "method": {
           "shortName": "DeleteListing",
           "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.DeleteListing",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_DeleteQueryTemplate_sync",
+      "title": "analyticshub DeleteQueryTemplate Sample",
+      "description": "DeleteQueryTemplate deletes a query template.",
+      "file": "Client/DeleteQueryTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteQueryTemplate",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.DeleteQueryTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.DeleteQueryTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteQueryTemplate",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.DeleteQueryTemplate",
           "service": {
             "shortName": "AnalyticsHubService",
             "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
@@ -378,6 +515,52 @@
       ]
     },
     {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_GetQueryTemplate_sync",
+      "title": "analyticshub GetQueryTemplate Sample",
+      "description": "GetQueryTemplate gets a QueryTemplate",
+      "file": "Client/GetQueryTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetQueryTemplate",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.GetQueryTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.GetQueryTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*analyticshubpb.QueryTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "GetQueryTemplate",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.GetQueryTemplate",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticshub_v1_generated_AnalyticsHubService_GetSubscription_sync",
       "title": "analyticshub GetSubscription Sample",
       "description": "GetSubscription gets the details of a Subscription.",
@@ -546,6 +729,52 @@
         "method": {
           "shortName": "ListOrgDataExchanges",
           "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ListOrgDataExchanges",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ListQueryTemplates_sync",
+      "title": "analyticshub ListQueryTemplates Sample",
+      "description": "ListQueryTemplates lists all QueryTemplates in a given project and location.",
+      "file": "Client/ListQueryTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListQueryTemplates",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.ListQueryTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.ListQueryTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QueryTemplateIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListQueryTemplates",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ListQueryTemplates",
           "service": {
             "shortName": "AnalyticsHubService",
             "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
@@ -792,6 +1021,52 @@
       ]
     },
     {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_SubmitQueryTemplate_sync",
+      "title": "analyticshub SubmitQueryTemplate Sample",
+      "description": "SubmitQueryTemplate submits a query template for approval.",
+      "file": "Client/SubmitQueryTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitQueryTemplate",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.SubmitQueryTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.SubmitQueryTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*analyticshubpb.QueryTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "SubmitQueryTemplate",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.SubmitQueryTemplate",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticshub_v1_generated_AnalyticsHubService_SubscribeDataExchange_sync",
       "title": "analyticshub SubscribeDataExchange Sample",
       "description": "SubscribeDataExchange creates a Subscription to a Data Clean Room. This is a\nlong-running operation as it will create one or more linked datasets.\nThrows a Bad Request error if the Data Exchange does not contain any\nlistings.",
@@ -1006,6 +1281,52 @@
         "method": {
           "shortName": "UpdateListing",
           "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.UpdateListing",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_UpdateQueryTemplate_sync",
+      "title": "analyticshub UpdateQueryTemplate Sample",
+      "description": "UpdateQueryTemplate updates an existing QueryTemplate",
+      "file": "Client/UpdateQueryTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateQueryTemplate",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.UpdateQueryTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.UpdateQueryTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*analyticshubpb.QueryTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateQueryTemplate",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.UpdateQueryTemplate",
           "service": {
             "shortName": "AnalyticsHubService",
             "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"

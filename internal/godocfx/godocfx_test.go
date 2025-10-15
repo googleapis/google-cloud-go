@@ -174,8 +174,8 @@ func TestGoldens(t *testing.T) {
 			t.Fatalf("failed to read golden: %v", err)
 		}
 
-		if string(gotContent) != string(goldenContent) {
-			t.Errorf("got %s is different from expected %s", gotPath, goldenPath)
+		if diff := cmp.Diff(goldenContent, gotContent); diff != "" {
+			t.Errorf("diff with golden (%q,%q) (-want +got):\n\n%s", goldenPath, gotPath, diff)
 		}
 
 		return nil

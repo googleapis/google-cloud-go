@@ -43,7 +43,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := aiplatform.NewDatasetClient(ctx)
+//	c, err := aiplatform.NewDataFoundryClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -57,16 +57,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &aiplatformpb.CreateDatasetRequest{
+//	req := &aiplatformpb.GenerateSyntheticDataRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateDatasetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GenerateSyntheticDataRequest.
 //	}
-//	op, err := c.CreateDataset(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.GenerateSyntheticData(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -75,7 +70,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewDatasetClient is used for authentication requests and
+// The ctx passed to NewDataFoundryClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

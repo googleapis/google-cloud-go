@@ -82,6 +82,28 @@ To add a new module, add the directory name of the module to `modules` in
 `google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
 alphabetical ordering of the module names.
 
+## Updating the Repo Metadata Manifest
+
+The `manifest` command regenerates the `internal/.repo-metadata-full.json` file.
+This file contains metadata about all of the modules in the repository.
+
+There are two modes of operation:
+1. **Full Regeneration (default):** This mode regenerates the entire file from scratch based on the existing `config.yaml` and `.OwlBot.yaml` files. It should be run anytime there are changes to those configuration files. To prevent accidental data loss, this mode automatically preserves existing entries for modules listed in the `skip-module-scan-paths` section of the configuration.
+2. **Targeted Update (`-modules` flag):** This mode allows you to add or refresh one or more specific modules without regenerating the entire file. This is useful for adding a newly-generated module to the manifest.
+
+To run a full regeneration, from the **repository root**, run the following:
+
+```
+go run ./internal/postprocessor manifest -googleapis-dir=$GOOGLEAPIS
+```
+
+To add or refresh only the `accessapproval` and `asset` modules:
+```
+go run ./internal/postprocessor manifest -googleapis-dir=$GOOGLEAPIS -modules=accessapproval,asset
+```
+
+Note: `$GOOGLEAPIS` should be an absolute path to a local clone of `googleapis/googleapis`.
+
 ## Validating your config changes
 
 The `validate` command is run as a presubmit on changes to either the

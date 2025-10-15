@@ -1,5 +1,26 @@
 # Changes
 
+## [2.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataproc%2Fv2.15.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+* Added support for JUPYTER_KERNEL_GATEWAY component ([1b8adbf](https://github.com/googleapis/google-cloud-go/commit/1b8adbf438328a3419aa524eed76340afe79ee6c))
+
+## [2.14.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.14.0...dataproc/v2.14.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **dataproc:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
+## [2.14.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.13.0...dataproc/v2.14.0) (2025-07-09)
+
+
+### Features
+
+* **dataproc:** Add `cluster_tier` to support creating premium clusters ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [2.13.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.12.0...dataproc/v2.13.0) (2025-06-17)
 
 

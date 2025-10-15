@@ -1,6 +1,13 @@
-# Changelog
+# Changes
 
 
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.8.0...gkebackup/v1.8.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **gkebackup:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
 
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.7.0...gkebackup/v1.8.0) (2025-05-21)
 

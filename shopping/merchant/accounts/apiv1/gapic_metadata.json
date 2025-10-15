@@ -1,0 +1,1047 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.accounts.v1",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+  "services": {
+    "AccountIssueService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AccountIssueClient",
+          "rpcs": {
+            "ListAccountIssues": {
+              "methods": [
+                "ListAccountIssues"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AccountIssueClient",
+          "rpcs": {
+            "ListAccountIssues": {
+              "methods": [
+                "ListAccountIssues"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AccountRelationshipsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AccountRelationshipsClient",
+          "rpcs": {
+            "GetAccountRelationship": {
+              "methods": [
+                "GetAccountRelationship"
+              ]
+            },
+            "ListAccountRelationships": {
+              "methods": [
+                "ListAccountRelationships"
+              ]
+            },
+            "UpdateAccountRelationship": {
+              "methods": [
+                "UpdateAccountRelationship"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AccountRelationshipsClient",
+          "rpcs": {
+            "GetAccountRelationship": {
+              "methods": [
+                "GetAccountRelationship"
+              ]
+            },
+            "ListAccountRelationships": {
+              "methods": [
+                "ListAccountRelationships"
+              ]
+            },
+            "UpdateAccountRelationship": {
+              "methods": [
+                "UpdateAccountRelationship"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AccountServicesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AccountServicesClient",
+          "rpcs": {
+            "ApproveAccountService": {
+              "methods": [
+                "ApproveAccountService"
+              ]
+            },
+            "GetAccountService": {
+              "methods": [
+                "GetAccountService"
+              ]
+            },
+            "ListAccountServices": {
+              "methods": [
+                "ListAccountServices"
+              ]
+            },
+            "ProposeAccountService": {
+              "methods": [
+                "ProposeAccountService"
+              ]
+            },
+            "RejectAccountService": {
+              "methods": [
+                "RejectAccountService"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AccountServicesClient",
+          "rpcs": {
+            "ApproveAccountService": {
+              "methods": [
+                "ApproveAccountService"
+              ]
+            },
+            "GetAccountService": {
+              "methods": [
+                "GetAccountService"
+              ]
+            },
+            "ListAccountServices": {
+              "methods": [
+                "ListAccountServices"
+              ]
+            },
+            "ProposeAccountService": {
+              "methods": [
+                "ProposeAccountService"
+              ]
+            },
+            "RejectAccountService": {
+              "methods": [
+                "RejectAccountService"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AccountsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateAndConfigureAccount": {
+              "methods": [
+                "CreateAndConfigureAccount"
+              ]
+            },
+            "DeleteAccount": {
+              "methods": [
+                "DeleteAccount"
+              ]
+            },
+            "GetAccount": {
+              "methods": [
+                "GetAccount"
+              ]
+            },
+            "ListAccounts": {
+              "methods": [
+                "ListAccounts"
+              ]
+            },
+            "ListSubAccounts": {
+              "methods": [
+                "ListSubAccounts"
+              ]
+            },
+            "UpdateAccount": {
+              "methods": [
+                "UpdateAccount"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateAndConfigureAccount": {
+              "methods": [
+                "CreateAndConfigureAccount"
+              ]
+            },
+            "DeleteAccount": {
+              "methods": [
+                "DeleteAccount"
+              ]
+            },
+            "GetAccount": {
+              "methods": [
+                "GetAccount"
+              ]
+            },
+            "ListAccounts": {
+              "methods": [
+                "ListAccounts"
+              ]
+            },
+            "ListSubAccounts": {
+              "methods": [
+                "ListSubAccounts"
+              ]
+            },
+            "UpdateAccount": {
+              "methods": [
+                "UpdateAccount"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AutofeedSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AutofeedSettingsClient",
+          "rpcs": {
+            "GetAutofeedSettings": {
+              "methods": [
+                "GetAutofeedSettings"
+              ]
+            },
+            "UpdateAutofeedSettings": {
+              "methods": [
+                "UpdateAutofeedSettings"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AutofeedSettingsClient",
+          "rpcs": {
+            "GetAutofeedSettings": {
+              "methods": [
+                "GetAutofeedSettings"
+              ]
+            },
+            "UpdateAutofeedSettings": {
+              "methods": [
+                "UpdateAutofeedSettings"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AutomaticImprovementsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AutomaticImprovementsClient",
+          "rpcs": {
+            "GetAutomaticImprovements": {
+              "methods": [
+                "GetAutomaticImprovements"
+              ]
+            },
+            "UpdateAutomaticImprovements": {
+              "methods": [
+                "UpdateAutomaticImprovements"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AutomaticImprovementsClient",
+          "rpcs": {
+            "GetAutomaticImprovements": {
+              "methods": [
+                "GetAutomaticImprovements"
+              ]
+            },
+            "UpdateAutomaticImprovements": {
+              "methods": [
+                "UpdateAutomaticImprovements"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "BusinessIdentityService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BusinessIdentityClient",
+          "rpcs": {
+            "GetBusinessIdentity": {
+              "methods": [
+                "GetBusinessIdentity"
+              ]
+            },
+            "UpdateBusinessIdentity": {
+              "methods": [
+                "UpdateBusinessIdentity"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BusinessIdentityClient",
+          "rpcs": {
+            "GetBusinessIdentity": {
+              "methods": [
+                "GetBusinessIdentity"
+              ]
+            },
+            "UpdateBusinessIdentity": {
+              "methods": [
+                "UpdateBusinessIdentity"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "BusinessInfoService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BusinessInfoClient",
+          "rpcs": {
+            "GetBusinessInfo": {
+              "methods": [
+                "GetBusinessInfo"
+              ]
+            },
+            "UpdateBusinessInfo": {
+              "methods": [
+                "UpdateBusinessInfo"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BusinessInfoClient",
+          "rpcs": {
+            "GetBusinessInfo": {
+              "methods": [
+                "GetBusinessInfo"
+              ]
+            },
+            "UpdateBusinessInfo": {
+              "methods": [
+                "UpdateBusinessInfo"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CheckoutSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CheckoutSettingsClient",
+          "rpcs": {
+            "CreateCheckoutSettings": {
+              "methods": [
+                "CreateCheckoutSettings"
+              ]
+            },
+            "DeleteCheckoutSettings": {
+              "methods": [
+                "DeleteCheckoutSettings"
+              ]
+            },
+            "GetCheckoutSettings": {
+              "methods": [
+                "GetCheckoutSettings"
+              ]
+            },
+            "UpdateCheckoutSettings": {
+              "methods": [
+                "UpdateCheckoutSettings"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CheckoutSettingsClient",
+          "rpcs": {
+            "CreateCheckoutSettings": {
+              "methods": [
+                "CreateCheckoutSettings"
+              ]
+            },
+            "DeleteCheckoutSettings": {
+              "methods": [
+                "DeleteCheckoutSettings"
+              ]
+            },
+            "GetCheckoutSettings": {
+              "methods": [
+                "GetCheckoutSettings"
+              ]
+            },
+            "UpdateCheckoutSettings": {
+              "methods": [
+                "UpdateCheckoutSettings"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DeveloperRegistrationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DeveloperRegistrationClient",
+          "rpcs": {
+            "GetDeveloperRegistration": {
+              "methods": [
+                "GetDeveloperRegistration"
+              ]
+            },
+            "RegisterGcp": {
+              "methods": [
+                "RegisterGcp"
+              ]
+            },
+            "UnregisterGcp": {
+              "methods": [
+                "UnregisterGcp"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DeveloperRegistrationClient",
+          "rpcs": {
+            "GetDeveloperRegistration": {
+              "methods": [
+                "GetDeveloperRegistration"
+              ]
+            },
+            "RegisterGcp": {
+              "methods": [
+                "RegisterGcp"
+              ]
+            },
+            "UnregisterGcp": {
+              "methods": [
+                "UnregisterGcp"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "EmailPreferencesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EmailPreferencesClient",
+          "rpcs": {
+            "GetEmailPreferences": {
+              "methods": [
+                "GetEmailPreferences"
+              ]
+            },
+            "UpdateEmailPreferences": {
+              "methods": [
+                "UpdateEmailPreferences"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "EmailPreferencesClient",
+          "rpcs": {
+            "GetEmailPreferences": {
+              "methods": [
+                "GetEmailPreferences"
+              ]
+            },
+            "UpdateEmailPreferences": {
+              "methods": [
+                "UpdateEmailPreferences"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "GbpAccountsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GbpAccountsClient",
+          "rpcs": {
+            "LinkGbpAccount": {
+              "methods": [
+                "LinkGbpAccount"
+              ]
+            },
+            "ListGbpAccounts": {
+              "methods": [
+                "ListGbpAccounts"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GbpAccountsClient",
+          "rpcs": {
+            "LinkGbpAccount": {
+              "methods": [
+                "LinkGbpAccount"
+              ]
+            },
+            "ListGbpAccounts": {
+              "methods": [
+                "ListGbpAccounts"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "HomepageService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "HomepageClient",
+          "rpcs": {
+            "ClaimHomepage": {
+              "methods": [
+                "ClaimHomepage"
+              ]
+            },
+            "GetHomepage": {
+              "methods": [
+                "GetHomepage"
+              ]
+            },
+            "UnclaimHomepage": {
+              "methods": [
+                "UnclaimHomepage"
+              ]
+            },
+            "UpdateHomepage": {
+              "methods": [
+                "UpdateHomepage"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "HomepageClient",
+          "rpcs": {
+            "ClaimHomepage": {
+              "methods": [
+                "ClaimHomepage"
+              ]
+            },
+            "GetHomepage": {
+              "methods": [
+                "GetHomepage"
+              ]
+            },
+            "UnclaimHomepage": {
+              "methods": [
+                "UnclaimHomepage"
+              ]
+            },
+            "UpdateHomepage": {
+              "methods": [
+                "UpdateHomepage"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LfpProvidersService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LfpProvidersClient",
+          "rpcs": {
+            "FindLfpProviders": {
+              "methods": [
+                "FindLfpProviders"
+              ]
+            },
+            "LinkLfpProvider": {
+              "methods": [
+                "LinkLfpProvider"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LfpProvidersClient",
+          "rpcs": {
+            "FindLfpProviders": {
+              "methods": [
+                "FindLfpProviders"
+              ]
+            },
+            "LinkLfpProvider": {
+              "methods": [
+                "LinkLfpProvider"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "OmnichannelSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OmnichannelSettingsClient",
+          "rpcs": {
+            "CreateOmnichannelSetting": {
+              "methods": [
+                "CreateOmnichannelSetting"
+              ]
+            },
+            "GetOmnichannelSetting": {
+              "methods": [
+                "GetOmnichannelSetting"
+              ]
+            },
+            "ListOmnichannelSettings": {
+              "methods": [
+                "ListOmnichannelSettings"
+              ]
+            },
+            "RequestInventoryVerification": {
+              "methods": [
+                "RequestInventoryVerification"
+              ]
+            },
+            "UpdateOmnichannelSetting": {
+              "methods": [
+                "UpdateOmnichannelSetting"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OmnichannelSettingsClient",
+          "rpcs": {
+            "CreateOmnichannelSetting": {
+              "methods": [
+                "CreateOmnichannelSetting"
+              ]
+            },
+            "GetOmnichannelSetting": {
+              "methods": [
+                "GetOmnichannelSetting"
+              ]
+            },
+            "ListOmnichannelSettings": {
+              "methods": [
+                "ListOmnichannelSettings"
+              ]
+            },
+            "RequestInventoryVerification": {
+              "methods": [
+                "RequestInventoryVerification"
+              ]
+            },
+            "UpdateOmnichannelSetting": {
+              "methods": [
+                "UpdateOmnichannelSetting"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "OnlineReturnPolicyService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OnlineReturnPolicyClient",
+          "rpcs": {
+            "CreateOnlineReturnPolicy": {
+              "methods": [
+                "CreateOnlineReturnPolicy"
+              ]
+            },
+            "DeleteOnlineReturnPolicy": {
+              "methods": [
+                "DeleteOnlineReturnPolicy"
+              ]
+            },
+            "GetOnlineReturnPolicy": {
+              "methods": [
+                "GetOnlineReturnPolicy"
+              ]
+            },
+            "ListOnlineReturnPolicies": {
+              "methods": [
+                "ListOnlineReturnPolicies"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OnlineReturnPolicyClient",
+          "rpcs": {
+            "CreateOnlineReturnPolicy": {
+              "methods": [
+                "CreateOnlineReturnPolicy"
+              ]
+            },
+            "DeleteOnlineReturnPolicy": {
+              "methods": [
+                "DeleteOnlineReturnPolicy"
+              ]
+            },
+            "GetOnlineReturnPolicy": {
+              "methods": [
+                "GetOnlineReturnPolicy"
+              ]
+            },
+            "ListOnlineReturnPolicies": {
+              "methods": [
+                "ListOnlineReturnPolicies"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ProgramsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProgramsClient",
+          "rpcs": {
+            "DisableProgram": {
+              "methods": [
+                "DisableProgram"
+              ]
+            },
+            "EnableProgram": {
+              "methods": [
+                "EnableProgram"
+              ]
+            },
+            "GetProgram": {
+              "methods": [
+                "GetProgram"
+              ]
+            },
+            "ListPrograms": {
+              "methods": [
+                "ListPrograms"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProgramsClient",
+          "rpcs": {
+            "DisableProgram": {
+              "methods": [
+                "DisableProgram"
+              ]
+            },
+            "EnableProgram": {
+              "methods": [
+                "EnableProgram"
+              ]
+            },
+            "GetProgram": {
+              "methods": [
+                "GetProgram"
+              ]
+            },
+            "ListPrograms": {
+              "methods": [
+                "ListPrograms"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RegionsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RegionsClient",
+          "rpcs": {
+            "BatchCreateRegions": {
+              "methods": [
+                "BatchCreateRegions"
+              ]
+            },
+            "BatchDeleteRegions": {
+              "methods": [
+                "BatchDeleteRegions"
+              ]
+            },
+            "BatchUpdateRegions": {
+              "methods": [
+                "BatchUpdateRegions"
+              ]
+            },
+            "CreateRegion": {
+              "methods": [
+                "CreateRegion"
+              ]
+            },
+            "DeleteRegion": {
+              "methods": [
+                "DeleteRegion"
+              ]
+            },
+            "GetRegion": {
+              "methods": [
+                "GetRegion"
+              ]
+            },
+            "ListRegions": {
+              "methods": [
+                "ListRegions"
+              ]
+            },
+            "UpdateRegion": {
+              "methods": [
+                "UpdateRegion"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RegionsClient",
+          "rpcs": {
+            "BatchCreateRegions": {
+              "methods": [
+                "BatchCreateRegions"
+              ]
+            },
+            "BatchDeleteRegions": {
+              "methods": [
+                "BatchDeleteRegions"
+              ]
+            },
+            "BatchUpdateRegions": {
+              "methods": [
+                "BatchUpdateRegions"
+              ]
+            },
+            "CreateRegion": {
+              "methods": [
+                "CreateRegion"
+              ]
+            },
+            "DeleteRegion": {
+              "methods": [
+                "DeleteRegion"
+              ]
+            },
+            "GetRegion": {
+              "methods": [
+                "GetRegion"
+              ]
+            },
+            "ListRegions": {
+              "methods": [
+                "ListRegions"
+              ]
+            },
+            "UpdateRegion": {
+              "methods": [
+                "UpdateRegion"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ShippingSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ShippingSettingsClient",
+          "rpcs": {
+            "GetShippingSettings": {
+              "methods": [
+                "GetShippingSettings"
+              ]
+            },
+            "InsertShippingSettings": {
+              "methods": [
+                "InsertShippingSettings"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ShippingSettingsClient",
+          "rpcs": {
+            "GetShippingSettings": {
+              "methods": [
+                "GetShippingSettings"
+              ]
+            },
+            "InsertShippingSettings": {
+              "methods": [
+                "InsertShippingSettings"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TermsOfServiceAgreementStateService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TermsOfServiceAgreementStateClient",
+          "rpcs": {
+            "GetTermsOfServiceAgreementState": {
+              "methods": [
+                "GetTermsOfServiceAgreementState"
+              ]
+            },
+            "RetrieveForApplicationTermsOfServiceAgreementState": {
+              "methods": [
+                "RetrieveForApplicationTermsOfServiceAgreementState"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TermsOfServiceAgreementStateClient",
+          "rpcs": {
+            "GetTermsOfServiceAgreementState": {
+              "methods": [
+                "GetTermsOfServiceAgreementState"
+              ]
+            },
+            "RetrieveForApplicationTermsOfServiceAgreementState": {
+              "methods": [
+                "RetrieveForApplicationTermsOfServiceAgreementState"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TermsOfServiceService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TermsOfServiceClient",
+          "rpcs": {
+            "AcceptTermsOfService": {
+              "methods": [
+                "AcceptTermsOfService"
+              ]
+            },
+            "GetTermsOfService": {
+              "methods": [
+                "GetTermsOfService"
+              ]
+            },
+            "RetrieveLatestTermsOfService": {
+              "methods": [
+                "RetrieveLatestTermsOfService"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TermsOfServiceClient",
+          "rpcs": {
+            "AcceptTermsOfService": {
+              "methods": [
+                "AcceptTermsOfService"
+              ]
+            },
+            "GetTermsOfService": {
+              "methods": [
+                "GetTermsOfService"
+              ]
+            },
+            "RetrieveLatestTermsOfService": {
+              "methods": [
+                "RetrieveLatestTermsOfService"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserClient",
+          "rpcs": {
+            "CreateUser": {
+              "methods": [
+                "CreateUser"
+              ]
+            },
+            "DeleteUser": {
+              "methods": [
+                "DeleteUser"
+              ]
+            },
+            "GetUser": {
+              "methods": [
+                "GetUser"
+              ]
+            },
+            "ListUsers": {
+              "methods": [
+                "ListUsers"
+              ]
+            },
+            "UpdateUser": {
+              "methods": [
+                "UpdateUser"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "UserClient",
+          "rpcs": {
+            "CreateUser": {
+              "methods": [
+                "CreateUser"
+              ]
+            },
+            "DeleteUser": {
+              "methods": [
+                "DeleteUser"
+              ]
+            },
+            "GetUser": {
+              "methods": [
+                "GetUser"
+              ]
+            },
+            "ListUsers": {
+              "methods": [
+                "ListUsers"
+              ]
+            },
+            "UpdateUser": {
+              "methods": [
+                "UpdateUser"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

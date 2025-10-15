@@ -21,17 +21,14 @@
 package dataprocpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -463,172 +460,4 @@ func file_google_cloud_dataproc_v1_node_groups_proto_init() {
 	file_google_cloud_dataproc_v1_node_groups_proto_rawDesc = nil
 	file_google_cloud_dataproc_v1_node_groups_proto_goTypes = nil
 	file_google_cloud_dataproc_v1_node_groups_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// NodeGroupControllerClient is the client API for NodeGroupController service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type NodeGroupControllerClient interface {
-	// Creates a node group in a cluster. The returned
-	// [Operation.metadata][google.longrunning.Operation.metadata] is
-	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	CreateNodeGroup(ctx context.Context, in *CreateNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Resizes a node group in a cluster. The returned
-	// [Operation.metadata][google.longrunning.Operation.metadata] is
-	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	ResizeNodeGroup(ctx context.Context, in *ResizeNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Gets the resource representation for a node group in a
-	// cluster.
-	GetNodeGroup(ctx context.Context, in *GetNodeGroupRequest, opts ...grpc.CallOption) (*NodeGroup, error)
-}
-
-type nodeGroupControllerClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewNodeGroupControllerClient(cc grpc.ClientConnInterface) NodeGroupControllerClient {
-	return &nodeGroupControllerClient{cc}
-}
-
-func (c *nodeGroupControllerClient) CreateNodeGroup(ctx context.Context, in *CreateNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.NodeGroupController/CreateNodeGroup", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *nodeGroupControllerClient) ResizeNodeGroup(ctx context.Context, in *ResizeNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.NodeGroupController/ResizeNodeGroup", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *nodeGroupControllerClient) GetNodeGroup(ctx context.Context, in *GetNodeGroupRequest, opts ...grpc.CallOption) (*NodeGroup, error) {
-	out := new(NodeGroup)
-	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.NodeGroupController/GetNodeGroup", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// NodeGroupControllerServer is the server API for NodeGroupController service.
-type NodeGroupControllerServer interface {
-	// Creates a node group in a cluster. The returned
-	// [Operation.metadata][google.longrunning.Operation.metadata] is
-	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	CreateNodeGroup(context.Context, *CreateNodeGroupRequest) (*longrunningpb.Operation, error)
-	// Resizes a node group in a cluster. The returned
-	// [Operation.metadata][google.longrunning.Operation.metadata] is
-	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	ResizeNodeGroup(context.Context, *ResizeNodeGroupRequest) (*longrunningpb.Operation, error)
-	// Gets the resource representation for a node group in a
-	// cluster.
-	GetNodeGroup(context.Context, *GetNodeGroupRequest) (*NodeGroup, error)
-}
-
-// UnimplementedNodeGroupControllerServer can be embedded to have forward compatible implementations.
-type UnimplementedNodeGroupControllerServer struct {
-}
-
-func (*UnimplementedNodeGroupControllerServer) CreateNodeGroup(context.Context, *CreateNodeGroupRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateNodeGroup not implemented")
-}
-func (*UnimplementedNodeGroupControllerServer) ResizeNodeGroup(context.Context, *ResizeNodeGroupRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResizeNodeGroup not implemented")
-}
-func (*UnimplementedNodeGroupControllerServer) GetNodeGroup(context.Context, *GetNodeGroupRequest) (*NodeGroup, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetNodeGroup not implemented")
-}
-
-func RegisterNodeGroupControllerServer(s *grpc.Server, srv NodeGroupControllerServer) {
-	s.RegisterService(&_NodeGroupController_serviceDesc, srv)
-}
-
-func _NodeGroupController_CreateNodeGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateNodeGroupRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeGroupControllerServer).CreateNodeGroup(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataproc.v1.NodeGroupController/CreateNodeGroup",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeGroupControllerServer).CreateNodeGroup(ctx, req.(*CreateNodeGroupRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NodeGroupController_ResizeNodeGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResizeNodeGroupRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeGroupControllerServer).ResizeNodeGroup(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataproc.v1.NodeGroupController/ResizeNodeGroup",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeGroupControllerServer).ResizeNodeGroup(ctx, req.(*ResizeNodeGroupRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NodeGroupController_GetNodeGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetNodeGroupRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeGroupControllerServer).GetNodeGroup(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dataproc.v1.NodeGroupController/GetNodeGroup",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeGroupControllerServer).GetNodeGroup(ctx, req.(*GetNodeGroupRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _NodeGroupController_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.dataproc.v1.NodeGroupController",
-	HandlerType: (*NodeGroupControllerServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateNodeGroup",
-			Handler:    _NodeGroupController_CreateNodeGroup_Handler,
-		},
-		{
-			MethodName: "ResizeNodeGroup",
-			Handler:    _NodeGroupController_ResizeNodeGroup_Handler,
-		},
-		{
-			MethodName: "GetNodeGroup",
-			Handler:    _NodeGroupController_GetNodeGroup_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/dataproc/v1/node_groups.proto",
 }

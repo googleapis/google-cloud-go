@@ -961,7 +961,9 @@ func (c *Client) DeleteChannelConnectionOperation(name string) *DeleteChannelCon
 	return c.internalClient.DeleteChannelConnectionOperation(name)
 }
 
-// GetGoogleChannelConfig get a GoogleChannelConfig
+// GetGoogleChannelConfig get a GoogleChannelConfig.
+// The name of the GoogleChannelConfig in the response is ALWAYS coded with
+// projectID.
 func (c *Client) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb.GetGoogleChannelConfigRequest, opts ...gax.CallOption) (*eventarcpb.GoogleChannelConfig, error) {
 	return c.internalClient.GetGoogleChannelConfig(ctx, req, opts...)
 }
@@ -3633,7 +3635,9 @@ func (c *restClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	}, nil
 }
 
-// GetGoogleChannelConfig get a GoogleChannelConfig
+// GetGoogleChannelConfig get a GoogleChannelConfig.
+// The name of the GoogleChannelConfig in the response is ALWAYS coded with
+// projectID.
 func (c *restClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb.GetGoogleChannelConfigRequest, opts ...gax.CallOption) (*eventarcpb.GoogleChannelConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

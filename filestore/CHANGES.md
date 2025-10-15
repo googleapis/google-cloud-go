@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.10.2...filestore/v1.10.3) (2025-09-18)
+
+
+### Bug Fixes
+
+* **filestore:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.10.1...filestore/v1.10.2) (2025-04-15)
 
 

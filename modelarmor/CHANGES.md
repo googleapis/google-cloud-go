@@ -1,4 +1,50 @@
-# Changelog
+# Changes
+
+## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.6.0...modelarmor/v0.6.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **modelarmor:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.5.0...modelarmor/v0.6.0) (2025-07-31)
+
+
+### Features
+
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.4.0...modelarmor/v0.5.0) (2025-07-23)
+
+
+### Features
+
+* **modelarmor:** Add support for EnforcementType ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** Add support for EnforcementType ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** MultiLanguage Detection in Model Armor Floor Setting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+
+### Documentation
+
+* **modelarmor:** Fix comment formatting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **modelarmor:** Fix comment formatting ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.3.0...modelarmor/v0.4.0) (2025-07-09)
+
+
+### Features
+
+* **modelarmor:** Add client libraries for v1beta API ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **modelarmor:** Add MultiLingual Support for Sanitize APIs ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **modelarmor:** Add MultiLingual Support for Sanitize APIs ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **modelarmor:** Support added for `TXT` and `CSV` files ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+
+### Documentation
+
+* **modelarmor:** Updated docs for Multi Language Detection Metadata ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
 
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.2.0...modelarmor/v0.3.0) (2025-05-29)
 

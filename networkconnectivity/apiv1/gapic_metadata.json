@@ -149,6 +149,120 @@
         }
       }
     },
+    "DataTransferService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataTransferClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDestination": {
+              "methods": [
+                "CreateDestination"
+              ]
+            },
+            "CreateMulticloudDataTransferConfig": {
+              "methods": [
+                "CreateMulticloudDataTransferConfig"
+              ]
+            },
+            "DeleteDestination": {
+              "methods": [
+                "DeleteDestination"
+              ]
+            },
+            "DeleteMulticloudDataTransferConfig": {
+              "methods": [
+                "DeleteMulticloudDataTransferConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDestination": {
+              "methods": [
+                "GetDestination"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMulticloudDataTransferConfig": {
+              "methods": [
+                "GetMulticloudDataTransferConfig"
+              ]
+            },
+            "GetMulticloudDataTransferSupportedService": {
+              "methods": [
+                "GetMulticloudDataTransferSupportedService"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDestinations": {
+              "methods": [
+                "ListDestinations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMulticloudDataTransferConfigs": {
+              "methods": [
+                "ListMulticloudDataTransferConfigs"
+              ]
+            },
+            "ListMulticloudDataTransferSupportedServices": {
+              "methods": [
+                "ListMulticloudDataTransferSupportedServices"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDestination": {
+              "methods": [
+                "UpdateDestination"
+              ]
+            },
+            "UpdateMulticloudDataTransferConfig": {
+              "methods": [
+                "UpdateMulticloudDataTransferConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
     "HubService": {
       "clients": {
         "grpc": {
@@ -312,6 +426,85 @@
             "UpdateSpoke": {
               "methods": [
                 "UpdateSpoke"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "InternalRangeService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "InternalRangeClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateInternalRange": {
+              "methods": [
+                "CreateInternalRange"
+              ]
+            },
+            "DeleteInternalRange": {
+              "methods": [
+                "DeleteInternalRange"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInternalRange": {
+              "methods": [
+                "GetInternalRange"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListInternalRanges": {
+              "methods": [
+                "ListInternalRanges"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInternalRange": {
+              "methods": [
+                "UpdateInternalRange"
               ]
             }
           }

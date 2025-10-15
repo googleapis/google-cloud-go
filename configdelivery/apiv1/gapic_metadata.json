@@ -1,0 +1,333 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.configdelivery.v1",
+  "libraryPackage": "cloud.google.com/go/configdelivery/apiv1",
+  "services": {
+    "ConfigDelivery": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AbortRollout": {
+              "methods": [
+                "AbortRollout"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFleetPackage": {
+              "methods": [
+                "CreateFleetPackage"
+              ]
+            },
+            "CreateRelease": {
+              "methods": [
+                "CreateRelease"
+              ]
+            },
+            "CreateResourceBundle": {
+              "methods": [
+                "CreateResourceBundle"
+              ]
+            },
+            "CreateVariant": {
+              "methods": [
+                "CreateVariant"
+              ]
+            },
+            "DeleteFleetPackage": {
+              "methods": [
+                "DeleteFleetPackage"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRelease": {
+              "methods": [
+                "DeleteRelease"
+              ]
+            },
+            "DeleteResourceBundle": {
+              "methods": [
+                "DeleteResourceBundle"
+              ]
+            },
+            "DeleteVariant": {
+              "methods": [
+                "DeleteVariant"
+              ]
+            },
+            "GetFleetPackage": {
+              "methods": [
+                "GetFleetPackage"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRelease": {
+              "methods": [
+                "GetRelease"
+              ]
+            },
+            "GetResourceBundle": {
+              "methods": [
+                "GetResourceBundle"
+              ]
+            },
+            "GetRollout": {
+              "methods": [
+                "GetRollout"
+              ]
+            },
+            "GetVariant": {
+              "methods": [
+                "GetVariant"
+              ]
+            },
+            "ListFleetPackages": {
+              "methods": [
+                "ListFleetPackages"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReleases": {
+              "methods": [
+                "ListReleases"
+              ]
+            },
+            "ListResourceBundles": {
+              "methods": [
+                "ListResourceBundles"
+              ]
+            },
+            "ListRollouts": {
+              "methods": [
+                "ListRollouts"
+              ]
+            },
+            "ListVariants": {
+              "methods": [
+                "ListVariants"
+              ]
+            },
+            "ResumeRollout": {
+              "methods": [
+                "ResumeRollout"
+              ]
+            },
+            "SuspendRollout": {
+              "methods": [
+                "SuspendRollout"
+              ]
+            },
+            "UpdateFleetPackage": {
+              "methods": [
+                "UpdateFleetPackage"
+              ]
+            },
+            "UpdateRelease": {
+              "methods": [
+                "UpdateRelease"
+              ]
+            },
+            "UpdateResourceBundle": {
+              "methods": [
+                "UpdateResourceBundle"
+              ]
+            },
+            "UpdateVariant": {
+              "methods": [
+                "UpdateVariant"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AbortRollout": {
+              "methods": [
+                "AbortRollout"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFleetPackage": {
+              "methods": [
+                "CreateFleetPackage"
+              ]
+            },
+            "CreateRelease": {
+              "methods": [
+                "CreateRelease"
+              ]
+            },
+            "CreateResourceBundle": {
+              "methods": [
+                "CreateResourceBundle"
+              ]
+            },
+            "CreateVariant": {
+              "methods": [
+                "CreateVariant"
+              ]
+            },
+            "DeleteFleetPackage": {
+              "methods": [
+                "DeleteFleetPackage"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRelease": {
+              "methods": [
+                "DeleteRelease"
+              ]
+            },
+            "DeleteResourceBundle": {
+              "methods": [
+                "DeleteResourceBundle"
+              ]
+            },
+            "DeleteVariant": {
+              "methods": [
+                "DeleteVariant"
+              ]
+            },
+            "GetFleetPackage": {
+              "methods": [
+                "GetFleetPackage"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRelease": {
+              "methods": [
+                "GetRelease"
+              ]
+            },
+            "GetResourceBundle": {
+              "methods": [
+                "GetResourceBundle"
+              ]
+            },
+            "GetRollout": {
+              "methods": [
+                "GetRollout"
+              ]
+            },
+            "GetVariant": {
+              "methods": [
+                "GetVariant"
+              ]
+            },
+            "ListFleetPackages": {
+              "methods": [
+                "ListFleetPackages"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReleases": {
+              "methods": [
+                "ListReleases"
+              ]
+            },
+            "ListResourceBundles": {
+              "methods": [
+                "ListResourceBundles"
+              ]
+            },
+            "ListRollouts": {
+              "methods": [
+                "ListRollouts"
+              ]
+            },
+            "ListVariants": {
+              "methods": [
+                "ListVariants"
+              ]
+            },
+            "ResumeRollout": {
+              "methods": [
+                "ResumeRollout"
+              ]
+            },
+            "SuspendRollout": {
+              "methods": [
+                "SuspendRollout"
+              ]
+            },
+            "UpdateFleetPackage": {
+              "methods": [
+                "UpdateFleetPackage"
+              ]
+            },
+            "UpdateRelease": {
+              "methods": [
+                "UpdateRelease"
+              ]
+            },
+            "UpdateResourceBundle": {
+              "methods": [
+                "UpdateResourceBundle"
+              ]
+            },
+            "UpdateVariant": {
+              "methods": [
+                "UpdateVariant"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

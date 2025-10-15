@@ -80,6 +80,27 @@ type FileConfig struct {
 
 	// Additional options for Avro files.
 	AvroOptions *AvroOptions
+
+	// Time zone used when parsing timestamp values that do not
+	// have specific time zone information (e.g. 2024-04-20 12:34:56).
+	// The expected format is a IANA timezone string (e.g. America/Los_Angeles).
+	TimeZone string
+
+	// Format used to parse DATE values. Supports C-style and
+	// SQL-style values
+	DateFormat string
+
+	// Format used to parse DATETIME values. Supports
+	// C-style and SQL-style values.
+	DatetimeFormat string
+
+	// Format used to parse TIME values. Supports C-style and
+	// SQL-style values.
+	TimeFormat string
+
+	// Format used to parse TIMESTAMP values. Supports
+	// C-style and SQL-style values.
+	TimestampFormat string
 }
 
 func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
@@ -93,6 +114,8 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 	conf.IgnoreUnknownValues = fc.IgnoreUnknownValues
 	conf.MaxBadRecords = fc.MaxBadRecords
 	conf.NullMarker = fc.NullMarker
+	conf.NullMarkers = fc.NullMarkers
+	conf.SourceColumnMatch = string(fc.SourceColumnMatch)
 	conf.PreserveAsciiControlCharacters = fc.PreserveASCIIControlCharacters
 	if fc.Schema != nil {
 		conf.Schema = fc.Schema.toBQ()
@@ -107,6 +130,11 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 		conf.UseAvroLogicalTypes = fc.AvroOptions.UseAvroLogicalTypes
 	}
 	conf.Quote = fc.quote()
+	conf.TimeZone = fc.TimeZone
+	conf.TimeFormat = fc.TimeFormat
+	conf.TimestampFormat = fc.TimestampFormat
+	conf.DatetimeFormat = fc.DatetimeFormat
+	conf.DateFormat = fc.DateFormat
 }
 
 func bqPopulateFileConfig(conf *bq.JobConfigurationLoad, fc *FileConfig) {
@@ -120,7 +148,14 @@ func bqPopulateFileConfig(conf *bq.JobConfigurationLoad, fc *FileConfig) {
 	fc.AllowQuotedNewlines = conf.AllowQuotedNewlines
 	fc.Encoding = Encoding(conf.Encoding)
 	fc.FieldDelimiter = conf.FieldDelimiter
+	fc.TimeZone = conf.TimeZone
+	fc.TimeFormat = conf.TimeFormat
+	fc.TimestampFormat = conf.TimestampFormat
+	fc.DatetimeFormat = conf.DatetimeFormat
+	fc.DateFormat = conf.DateFormat
 	fc.CSVOptions.NullMarker = conf.NullMarker
+	fc.CSVOptions.NullMarkers = conf.NullMarkers
+	fc.CSVOptions.SourceColumnMatch = SourceColumnMatch(conf.SourceColumnMatch)
 	fc.CSVOptions.PreserveASCIIControlCharacters = conf.PreserveAsciiControlCharacters
 	fc.CSVOptions.setQuote(conf.Quote)
 }
@@ -164,4 +199,22 @@ const (
 	UTF_8 Encoding = "UTF-8"
 	// ISO_8859_1 specifies the ISO-8859-1 encoding type.
 	ISO_8859_1 Encoding = "ISO-8859-1"
+)
+
+// SourceColumnMatch indicates the strategy used to match loaded columns to the schema.
+type SourceColumnMatch string
+
+const (
+	// SourceColumnMatchUnspecified keeps the default behavior. Which is to use
+	// sensible defaults based on how the schema is provided. If autodetect
+	// is used, then columns are matched by name. Otherwise, columns are matched
+	// by position. This is done to keep the behavior backward-compatible.
+	SourceColumnMatchUnspecified SourceColumnMatch = "SOURCE_COLUMN_MATCH_UNSPECIFIED"
+
+	// SourceColumnMatchPosition matches by position. This assumes that the columns are ordered the same
+	// way as the schema.
+	SourceColumnMatchPosition SourceColumnMatch = "POSITION"
+	// SourceColumnMatchName matches by name. This reads the header row as column names and reorders
+	// columns to match the field names in the schema.
+	SourceColumnMatchName SourceColumnMatch = "NAME"
 )

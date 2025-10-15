@@ -1,0 +1,7 @@
+librariangen
+librariangen.log
+librariangen-release-init.log
+librariangen-container.log
+librariangen-container-release-init.log
+build-docker-and-test.log
+doc

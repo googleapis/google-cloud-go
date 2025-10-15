@@ -56,6 +56,7 @@ type CollectionRef struct {
 }
 
 func newTopLevelCollRef(c *Client, dbPath, id string) *CollectionRef {
+	readSettings := &readSettings{}
 	return &CollectionRef{
 		c:          c,
 		ID:         id,
@@ -67,13 +68,15 @@ func newTopLevelCollRef(c *Client, dbPath, id string) *CollectionRef {
 			collectionID: id,
 			path:         dbPath + "/documents/" + id,
 			parentPath:   dbPath + "/documents",
+			readSettings: readSettings,
 		},
-		readSettings: &readSettings{},
+		readSettings: readSettings,
 	}
 }
 
 func newCollRefWithParent(c *Client, parent *DocumentRef, id string) *CollectionRef {
 	selfPath := parent.shortPath + "/" + id
+	readSettings := &readSettings{}
 	return &CollectionRef{
 		c:          c,
 		Parent:     parent,
@@ -86,8 +89,9 @@ func newCollRefWithParent(c *Client, parent *DocumentRef, id string) *Collection
 			collectionID: id,
 			path:         parent.Path + "/" + id,
 			parentPath:   parent.Path,
+			readSettings: readSettings,
 		},
-		readSettings: &readSettings{},
+		readSettings: readSettings,
 	}
 }
 

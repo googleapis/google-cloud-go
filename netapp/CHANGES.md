@@ -1,5 +1,39 @@
-# Changelog
+# Changes
 
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.10.0...netapp/v1.10.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **netapp:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.9.0...netapp/v1.10.0) (2025-09-04)
+
+
+### Features
+
+* **netapp:** Add fields for hybrid replication ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Add fields for manual qos ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Add new fields for flex auto tiering ([#12798](https://github.com/googleapis/google-cloud-go/issues/12798)) ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+
+
+### Documentation
+
+* **netapp:** A comment for field `cold_tier_size_gib` in message `.google.cloud.netapp.v1.Volume` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `command_expiry_time` in message `.google.cloud.netapp.v1.HybridPeeringDetails` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `command` in message `.google.cloud.netapp.v1.HybridPeeringDetails` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `daily_backup_immutable` in message `.google.cloud.netapp.v1.BackupVault` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `manual_backup_immutable` in message `.google.cloud.netapp.v1.BackupVault` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `monthly_backup_immutable` in message `.google.cloud.netapp.v1.BackupVault` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `passphrase` in message `.google.cloud.netapp.v1.HybridPeeringDetails` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `peer_cluster_name` in message `.google.cloud.netapp.v1.HybridPeeringDetails` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `peer_svm_name` in message `.google.cloud.netapp.v1.HybridPeeringDetails` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `peer_volume_name` in message `.google.cloud.netapp.v1.HybridPeeringDetails` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `subnet_ip` in message `.google.cloud.netapp.v1.HybridPeeringDetails` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `total_iops` in message `.google.cloud.netapp.v1.StoragePool` is added ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `total_throughput_mibps` in message `.google.cloud.netapp.v1.StoragePool` is added ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+* **netapp:** Field `weekly_backup_immutable` in message `.google.cloud.netapp.v1.BackupVault` is changed ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
 
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.8.0...netapp/v1.9.0) (2025-05-21)
 

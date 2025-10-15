@@ -5,6 +5,230 @@
   "protoPackage": "google.cloud.dataplex.v1",
   "libraryPackage": "cloud.google.com/go/dataplex/apiv1",
   "services": {
+    "BusinessGlossaryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BusinessGlossaryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGlossary": {
+              "methods": [
+                "CreateGlossary"
+              ]
+            },
+            "CreateGlossaryCategory": {
+              "methods": [
+                "CreateGlossaryCategory"
+              ]
+            },
+            "CreateGlossaryTerm": {
+              "methods": [
+                "CreateGlossaryTerm"
+              ]
+            },
+            "DeleteGlossary": {
+              "methods": [
+                "DeleteGlossary"
+              ]
+            },
+            "DeleteGlossaryCategory": {
+              "methods": [
+                "DeleteGlossaryCategory"
+              ]
+            },
+            "DeleteGlossaryTerm": {
+              "methods": [
+                "DeleteGlossaryTerm"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetGlossary": {
+              "methods": [
+                "GetGlossary"
+              ]
+            },
+            "GetGlossaryCategory": {
+              "methods": [
+                "GetGlossaryCategory"
+              ]
+            },
+            "GetGlossaryTerm": {
+              "methods": [
+                "GetGlossaryTerm"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGlossaries": {
+              "methods": [
+                "ListGlossaries"
+              ]
+            },
+            "ListGlossaryCategories": {
+              "methods": [
+                "ListGlossaryCategories"
+              ]
+            },
+            "ListGlossaryTerms": {
+              "methods": [
+                "ListGlossaryTerms"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGlossary": {
+              "methods": [
+                "UpdateGlossary"
+              ]
+            },
+            "UpdateGlossaryCategory": {
+              "methods": [
+                "UpdateGlossaryCategory"
+              ]
+            },
+            "UpdateGlossaryTerm": {
+              "methods": [
+                "UpdateGlossaryTerm"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BusinessGlossaryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGlossary": {
+              "methods": [
+                "CreateGlossary"
+              ]
+            },
+            "CreateGlossaryCategory": {
+              "methods": [
+                "CreateGlossaryCategory"
+              ]
+            },
+            "CreateGlossaryTerm": {
+              "methods": [
+                "CreateGlossaryTerm"
+              ]
+            },
+            "DeleteGlossary": {
+              "methods": [
+                "DeleteGlossary"
+              ]
+            },
+            "DeleteGlossaryCategory": {
+              "methods": [
+                "DeleteGlossaryCategory"
+              ]
+            },
+            "DeleteGlossaryTerm": {
+              "methods": [
+                "DeleteGlossaryTerm"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetGlossary": {
+              "methods": [
+                "GetGlossary"
+              ]
+            },
+            "GetGlossaryCategory": {
+              "methods": [
+                "GetGlossaryCategory"
+              ]
+            },
+            "GetGlossaryTerm": {
+              "methods": [
+                "GetGlossaryTerm"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGlossaries": {
+              "methods": [
+                "ListGlossaries"
+              ]
+            },
+            "ListGlossaryCategories": {
+              "methods": [
+                "ListGlossaryCategories"
+              ]
+            },
+            "ListGlossaryTerms": {
+              "methods": [
+                "ListGlossaryTerms"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGlossary": {
+              "methods": [
+                "UpdateGlossary"
+              ]
+            },
+            "UpdateGlossaryCategory": {
+              "methods": [
+                "UpdateGlossaryCategory"
+              ]
+            },
+            "UpdateGlossaryTerm": {
+              "methods": [
+                "UpdateGlossaryTerm"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CatalogService": {
       "clients": {
         "grpc": {
@@ -35,6 +259,11 @@
                 "CreateEntryGroup"
               ]
             },
+            "CreateEntryLink": {
+              "methods": [
+                "CreateEntryLink"
+              ]
+            },
             "CreateEntryType": {
               "methods": [
                 "CreateEntryType"
@@ -60,6 +289,11 @@
                 "DeleteEntryGroup"
               ]
             },
+            "DeleteEntryLink": {
+              "methods": [
+                "DeleteEntryLink"
+              ]
+            },
             "DeleteEntryType": {
               "methods": [
                 "DeleteEntryType"
@@ -83,6 +317,11 @@
             "GetEntryGroup": {
               "methods": [
                 "GetEntryGroup"
+              ]
+            },
+            "GetEntryLink": {
+              "methods": [
+                "GetEntryLink"
               ]
             },
             "GetEntryType": {
@@ -200,6 +439,11 @@
                 "CreateEntryGroup"
               ]
             },
+            "CreateEntryLink": {
+              "methods": [
+                "CreateEntryLink"
+              ]
+            },
             "CreateEntryType": {
               "methods": [
                 "CreateEntryType"
@@ -225,6 +469,11 @@
                 "DeleteEntryGroup"
               ]
             },
+            "DeleteEntryLink": {
+              "methods": [
+                "DeleteEntryLink"
+              ]
+            },
             "DeleteEntryType": {
               "methods": [
                 "DeleteEntryType"
@@ -248,6 +497,11 @@
             "GetEntryGroup": {
               "methods": [
                 "GetEntryGroup"
+              ]
+            },
+            "GetEntryLink": {
+              "methods": [
+                "GetEntryLink"
               ]
             },
             "GetEntryType": {

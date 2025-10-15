@@ -142,6 +142,7 @@ func TestLoad(t *testing.T) {
 			config: LoadConfig{
 				JobTimeout:  4 * time.Second,
 				Reservation: "reservation/1",
+				MaxSlots:    345,
 			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()
@@ -151,6 +152,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.IgnoreUnknownValues = true
 				j.Configuration.JobTimeoutMs = 4000
 				j.Configuration.Reservation = "reservation/1"
+				j.Configuration.MaxSlots = 345
 				return j
 			}(),
 		},

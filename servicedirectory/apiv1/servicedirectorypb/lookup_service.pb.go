@@ -21,11 +21,7 @@
 package servicedirectorypb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -322,90 +318,4 @@ func file_google_cloud_servicedirectory_v1_lookup_service_proto_init() {
 	file_google_cloud_servicedirectory_v1_lookup_service_proto_rawDesc = nil
 	file_google_cloud_servicedirectory_v1_lookup_service_proto_goTypes = nil
 	file_google_cloud_servicedirectory_v1_lookup_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// LookupServiceClient is the client API for LookupService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type LookupServiceClient interface {
-	// Returns a [service][google.cloud.servicedirectory.v1.Service] and its
-	// associated endpoints.
-	// Resolving a service is not considered an active developer method.
-	ResolveService(ctx context.Context, in *ResolveServiceRequest, opts ...grpc.CallOption) (*ResolveServiceResponse, error)
-}
-
-type lookupServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewLookupServiceClient(cc grpc.ClientConnInterface) LookupServiceClient {
-	return &lookupServiceClient{cc}
-}
-
-func (c *lookupServiceClient) ResolveService(ctx context.Context, in *ResolveServiceRequest, opts ...grpc.CallOption) (*ResolveServiceResponse, error) {
-	out := new(ResolveServiceResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.servicedirectory.v1.LookupService/ResolveService", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// LookupServiceServer is the server API for LookupService service.
-type LookupServiceServer interface {
-	// Returns a [service][google.cloud.servicedirectory.v1.Service] and its
-	// associated endpoints.
-	// Resolving a service is not considered an active developer method.
-	ResolveService(context.Context, *ResolveServiceRequest) (*ResolveServiceResponse, error)
-}
-
-// UnimplementedLookupServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedLookupServiceServer struct {
-}
-
-func (*UnimplementedLookupServiceServer) ResolveService(context.Context, *ResolveServiceRequest) (*ResolveServiceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResolveService not implemented")
-}
-
-func RegisterLookupServiceServer(s *grpc.Server, srv LookupServiceServer) {
-	s.RegisterService(&_LookupService_serviceDesc, srv)
-}
-
-func _LookupService_ResolveService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResolveServiceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LookupServiceServer).ResolveService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.servicedirectory.v1.LookupService/ResolveService",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LookupServiceServer).ResolveService(ctx, req.(*ResolveServiceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _LookupService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.servicedirectory.v1.LookupService",
-	HandlerType: (*LookupServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ResolveService",
-			Handler:    _LookupService_ResolveService_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/servicedirectory/v1/lookup_service.proto",
 }

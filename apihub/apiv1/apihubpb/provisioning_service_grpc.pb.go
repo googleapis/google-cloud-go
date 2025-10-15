@@ -21,8 +21,9 @@
 package apihubpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +36,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Provisioning_CreateApiHubInstance_FullMethodName = "/google.cloud.apihub.v1.Provisioning/CreateApiHubInstance"
+	Provisioning_DeleteApiHubInstance_FullMethodName = "/google.cloud.apihub.v1.Provisioning/DeleteApiHubInstance"
 	Provisioning_GetApiHubInstance_FullMethodName    = "/google.cloud.apihub.v1.Provisioning/GetApiHubInstance"
 	Provisioning_LookupApiHubInstance_FullMethodName = "/google.cloud.apihub.v1.Provisioning/LookupApiHubInstance"
 )
@@ -45,6 +47,8 @@ const (
 type ProvisioningClient interface {
 	// Provisions instance resources for the API Hub.
 	CreateApiHubInstance(ctx context.Context, in *CreateApiHubInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes the API hub instance.
+	DeleteApiHubInstance(ctx context.Context, in *DeleteApiHubInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details of a single API Hub instance.
 	GetApiHubInstance(ctx context.Context, in *GetApiHubInstanceRequest, opts ...grpc.CallOption) (*ApiHubInstance, error)
 	// Looks up an Api Hub instance in a given GCP project. There will always be
@@ -63,6 +67,15 @@ func NewProvisioningClient(cc grpc.ClientConnInterface) ProvisioningClient {
 func (c *provisioningClient) CreateApiHubInstance(ctx context.Context, in *CreateApiHubInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, Provisioning_CreateApiHubInstance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *provisioningClient) DeleteApiHubInstance(ctx context.Context, in *DeleteApiHubInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Provisioning_DeleteApiHubInstance_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +106,8 @@ func (c *provisioningClient) LookupApiHubInstance(ctx context.Context, in *Looku
 type ProvisioningServer interface {
 	// Provisions instance resources for the API Hub.
 	CreateApiHubInstance(context.Context, *CreateApiHubInstanceRequest) (*longrunningpb.Operation, error)
+	// Deletes the API hub instance.
+	DeleteApiHubInstance(context.Context, *DeleteApiHubInstanceRequest) (*longrunningpb.Operation, error)
 	// Gets details of a single API Hub instance.
 	GetApiHubInstance(context.Context, *GetApiHubInstanceRequest) (*ApiHubInstance, error)
 	// Looks up an Api Hub instance in a given GCP project. There will always be
@@ -106,6 +121,9 @@ type UnimplementedProvisioningServer struct {
 
 func (UnimplementedProvisioningServer) CreateApiHubInstance(context.Context, *CreateApiHubInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateApiHubInstance not implemented")
+}
+func (UnimplementedProvisioningServer) DeleteApiHubInstance(context.Context, *DeleteApiHubInstanceRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteApiHubInstance not implemented")
 }
 func (UnimplementedProvisioningServer) GetApiHubInstance(context.Context, *GetApiHubInstanceRequest) (*ApiHubInstance, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApiHubInstance not implemented")
@@ -139,6 +157,24 @@ func _Provisioning_CreateApiHubInstance_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProvisioningServer).CreateApiHubInstance(ctx, req.(*CreateApiHubInstanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Provisioning_DeleteApiHubInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteApiHubInstanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProvisioningServer).DeleteApiHubInstance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Provisioning_DeleteApiHubInstance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProvisioningServer).DeleteApiHubInstance(ctx, req.(*DeleteApiHubInstanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -189,6 +225,10 @@ var Provisioning_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateApiHubInstance",
 			Handler:    _Provisioning_CreateApiHubInstance_Handler,
+		},
+		{
+			MethodName: "DeleteApiHubInstance",
+			Handler:    _Provisioning_DeleteApiHubInstance_Handler,
 		},
 		{
 			MethodName: "GetApiHubInstance",
