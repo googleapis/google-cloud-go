@@ -6,17 +6,8 @@
         "accessapproval": {
             "component": "accessapproval"
         },
-        "aiplatform": {
-            "component": "aiplatform"
-        },
         "certificatemanager": {
             "component": "certificatemanager"
-        },
-        "cloudbuild": {
-            "component": "cloudbuild"
-        },
-        "compute": {
-            "component": "compute"
         },
         "configdelivery": {
             "component": "configdelivery"
@@ -24,17 +15,8 @@
         "containeranalysis": {
             "component": "containeranalysis"
         },
-        "datacatalog": {
-            "component": "datacatalog"
-        },
         "dataqna": {
             "component": "dataqna"
-        },
-        "datastream": {
-            "component": "datastream"
-        },
-        "dialogflow": {
-            "component": "dialogflow"
         },
         "geminidataanalytics": {
             "component": "geminidataanalytics"
@@ -54,14 +36,8 @@
         "locationfinder": {
             "component": "locationfinder"
         },
-        "monitoring": {
-            "component": "monitoring"
-        },
         "orgpolicy": {
             "component": "orgpolicy"
-        },
-        "run": {
-            "component": "run"
         },
         "servicecontrol": {
             "component": "servicecontrol"
@@ -75,9 +51,6 @@
         "spanner/benchmarks": {
             "component": "spanner/benchmarks"
         },
-        "vmmigration": {
-            "component": "vmmigration"
-        }
     },
     "plugins": [
         "sentence-case"

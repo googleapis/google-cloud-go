@@ -3,8 +3,6 @@ docker:
 
 deep-remove-regex:
   - /accessapproval/apiv1/
-  - /aiplatform/apiv1/
-  - /aiplatform/apiv1beta1/
   - /bigquery/analyticshub/apiv1/
   - /bigquery/biglake/apiv1/
   - /bigquery/biglake/apiv1alpha1/
@@ -28,25 +26,12 @@ deep-remove-regex:
   - /bigtable/admin/apiv2/
   - /bigtable/apiv2/
   - /certificatemanager/apiv1/
-  - /cloudbuild/apiv1/v2/
-  - /cloudbuild/apiv2/
-  - /compute/apiv1
-  - /compute/apiv1beta
   - /configdelivery/apiv1/
   - /configdelivery/apiv1beta/
   - /containeranalysis/apiv1beta1/
-  - /datacatalog/apiv1/
-  - /datacatalog/apiv1beta1/
-  - /datacatalog/lineage/apiv1/
   - /dataqna/apiv1alpha/
   - /datastore/admin/apiv1/
   - /datastore/apiv1/
-  - /datastream/apiv1/
-  - /datastream/apiv1alpha1/
-  - /dialogflow/apiv2/
-  - /dialogflow/apiv2beta1/
-  - /dialogflow/cx/apiv3/
-  - /dialogflow/cx/apiv3beta1/
   # - /errorreporting/apiv1beta1/
   - /firestore/apiv1/
   - /firestore/apiv1/admin/
@@ -58,8 +43,6 @@ deep-remove-regex:
   - /iam/credentials/apiv1/
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
-  - /internal/generated/snippets/aiplatform/apiv1/
-  - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1alpha1/
@@ -81,26 +64,13 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/storage/apiv1beta2/
   - /internal/generated/snippets/bigquery/v2/apiv2/
   - /internal/generated/snippets/certificatemanager/apiv1/
-  - /internal/generated/snippets/cloudbuild/apiv1/v2/
-  - /internal/generated/snippets/cloudbuild/apiv2/
-  - /internal/generated/snippets/compute/apiv1
-  - /internal/generated/snippets/compute/apiv1beta
   - /internal/generated/snippets/configdelivery/apiv1/
   - /internal/generated/snippets/configdelivery/apiv1beta/
   - /internal/generated/snippets/containeranalysis/apiv1beta1/
-  - /internal/generated/snippets/datacatalog/apiv1/
-  - /internal/generated/snippets/datacatalog/apiv1beta1/
-  - /internal/generated/snippets/datacatalog/lineage/apiv1/
   - /internal/generated/snippets/dataqna/apiv1alpha/
   - /internal/generated/snippets/datastore/admin/apiv1/
-  - /internal/generated/snippets/datastream/apiv1/
-  - /internal/generated/snippets/datastream/apiv1alpha1/
   - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets//devicestreaming/apiv1/
-  - /internal/generated/snippets/dialogflow/apiv2/
-  - /internal/generated/snippets/dialogflow/apiv2beta1/
-  - /internal/generated/snippets/dialogflow/cx/apiv3/
-  - /internal/generated/snippets/dialogflow/cx/apiv3beta1/
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/firestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/admin/
@@ -115,12 +85,8 @@ deep-remove-regex:
   - /internal/generated/snippets/licensemanager/apiv1/
   - /internal/generated/snippets/locationfinder/apiv1/
   - /internal/generated/snippets/logging/apiv2/
-  - /internal/generated/snippets/monitoring/apiv3/v2/
-  - /internal/generated/snippets/monitoring/dashboard/apiv1/
-  - /internal/generated/snippets/monitoring/metricsscope/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
   - /internal/generated/snippets/pubsub/apiv1/
-  - /internal/generated/snippets/run/apiv2/
   - /internal/generated/snippets/servicecontrol/apiv1/
   - /internal/generated/snippets/servicemanagement/apiv1/
   - /internal/generated/snippets/serviceusage/apiv1/
@@ -129,20 +95,15 @@ deep-remove-regex:
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
   - /internal/generated/snippets/spanner/apiv1/
   - /internal/generated/snippets/storage/control/apiv2/
-  - /internal/generated/snippets/vmmigration/apiv1/
   # END snippets
   - /kms/apiv1/
   - /kms/inventory/apiv1/
   - /licensemanager/apiv1/
   - /locationfinder/apiv1/
   - /logging/apiv2/
-  - /monitoring/apiv3/v2/
-  - /monitoring/dashboard/apiv1/
-  - /monitoring/metricsscope/apiv1/
   - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
   - /pubsub/v2/apiv1/
-  - /run/apiv2/
   - /servicecontrol/apiv1/
   - /servicemanagement/apiv1/
   - /serviceusage/apiv1/
@@ -153,7 +114,6 @@ deep-remove-regex:
   - /spanner/executor/apiv1/
   - /storage/control/apiv2/
   - /storage/internal/apiv2/
-  - /vmmigration/apiv1/
 
 deep-preserve-regex:
   - /.*/info.go
@@ -178,19 +138,9 @@ deep-preserve-regex:
   - /storage/internal/apiv2/metadata.go
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Must preserve these even though they aren't generated anymore
-  - /vmmigration/apiv1/iam_policy_client.go
-  - /datastream/apiv1/iam_policy_client.go
-  - /datacatalog/apiv1/iam_policy_client.go
-  - /run/apiv2/locations_client.go
-  - /datacatalog/apiv1/iam_policy_client.go
-  - /compute/apiv1/smoke_test.go
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/aiplatform/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
     dest: /
   # Just copy the bigtable protos for now
   - source: /google/bigtable/admin/v2/cloud.google.com/go/bigtable/admin/apiv2/adminpb
@@ -239,25 +189,11 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/certificatemanager/v1/cloud.google.com/go
     dest: /
-  - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
-    dest: /
-  - source: /google/devtools/cloudbuild/v2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/compute/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/compute/v1beta/cloud.google.com/go
-    dest: /
   - source: /google/cloud/configdelivery/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/configdelivery/v1beta/cloud.google.com/go
     dest: /
   - source: /google/devtools/containeranalysis/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/datacatalog/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/datacatalog/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/datacatalog/lineage/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
@@ -266,18 +202,6 @@ deep-copy-regex:
   # Just copy the datastore protos for now
   - source: /google/datastore/v1/cloud.google.com/go/datastore/apiv1/datastorepb
     dest: /datastore/apiv1/datastorepb
-  - source: /google/cloud/datastream/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/dialogflow/v2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/dialogflow/v2beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/dialogflow/cx/v3/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/dialogflow/cx/v3beta1/cloud.google.com/go
-    dest: /
   # - source: /google/devtools/clouderrorreporting/v1beta1/cloud.google.com/go
   #   dest: /
   - source: /google/firestore/v1/cloud.google.com/go
@@ -306,19 +230,11 @@ deep-copy-regex:
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
     dest: /
-  - source: /google/monitoring/v3/cloud.google.com/go
-    dest: /
-  - source: /google/monitoring/dashboard/v1/cloud.google.com/go
-    dest: /
-  - source: /google/monitoring/metricsscope/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orgpolicy/v2/cloud.google.com/go
     dest: /
   - source: /google/pubsub/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/run/v2/cloud.google.com/go
     dest: /
   - source: /google/api/servicecontrol/v1/cloud.google.com/go
     dest: /
@@ -340,5 +256,3 @@ deep-copy-regex:
     dest: /
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
-  - source: /google/cloud/vmmigration/v1/cloud.google.com/go
-    dest: /
