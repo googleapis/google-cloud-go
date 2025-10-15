@@ -188,6 +188,7 @@ func BigtableLoadBalancingStrategy() LoadBalancingStrategy {
 	return parseLoadBalancingStrategy(strategyStr)
 }
 
+// EnableBigtableConnectionPool uses new conn pool if envVar is set.
 func EnableBigtableConnectionPool() bool {
 	bigtableConnPoolEnvVal := os.Getenv(BigtableConnectionPoolEnvVar)
 	if bigtableConnPoolEnvVal == "" {

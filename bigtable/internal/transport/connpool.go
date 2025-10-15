@@ -123,6 +123,7 @@ func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args in
 	return conn.Invoke(ctx, method, args, reply, opts...)
 }
 
+// Conn provides connbased on selectfunc()
 func (p *BigtableChannelPool) Conn() *grpc.ClientConn {
 	index, err := p.selectFunc()
 	if err != nil {
