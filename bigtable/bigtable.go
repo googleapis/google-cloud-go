@@ -163,7 +163,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	var connPool gtransport.ConnPool
 	var connPoolErr error
-	enableBigtableConnPool, _ := strconv.ParseBool(os.Getenv("ENABLE_BIGTABLE_CONN_POOL"))
+	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	if enableBigtableConnPool {
 		connPool, connPoolErr = btransport.NewBigtableChannelPool(defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), func() (*grpc.ClientConn, error) {
 			return gtransport.Dial(ctx, o...)

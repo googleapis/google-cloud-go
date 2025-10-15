@@ -32,7 +32,7 @@ var errNoConnections = fmt.Errorf("bigtable_connpool: no connections available i
 var _ gtransport.ConnPool = &BigtableChannelPool{}
 
 // BigtableChannelPool implements ConnPool and routes requests to the connection
-// with the least number of active requests.
+// pool according to load balancing strategy.
 //
 // To benefit from automatic load tracking, use the Invoke and NewStream methods
 // directly on the BigtableChannelPool instance.
@@ -52,14 +52,8 @@ type BigtableChannelPool struct {
 
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
 func NewBigtableChannelPool(connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*grpc.ClientConn, error)) (*BigtableChannelPool, error) {
-	if connPoolSize < 0 {
+	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
-	}
-
-	// consistent
-	if connPoolSize == 0 {
-		// this should never happen, but add this as fail-safe dialSettings hack to  extract d.GRPCConnPoolSize
-		connPoolSize = 4
 	}
 
 	if dial == nil {

@@ -44,6 +44,8 @@ const (
 	LeastInFlightLBPolicy = "least_in_flight"
 	// PowerOfTwoLeastInFlightLBPolicy is the policy name for power of two least in flight (custom).
 	PowerOfTwoLeastInFlightLBPolicy = "power_of_two_least_in_flight"
+	// BigtableConnectionPoolEnvVar is the env var for enabling Bigtable Connection Pool.
+	BigtableConnectionPoolEnvVar = "CBT_BIGTABLE_CONN_POOL"
 )
 
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
@@ -137,6 +139,7 @@ func ClientInterceptorOptions(stream []grpc.StreamClientInterceptor, unary []grp
 	}
 }
 
+// LoadBalancingStrategy for connection pool.
 type LoadBalancingStrategy int
 
 const (
@@ -179,8 +182,21 @@ func parseLoadBalancingStrategy(strategyStr string) LoadBalancingStrategy {
 	}
 }
 
-// LoadBalancingStrategy returns the gRPC service config JSON string for the chosen policy.
+// BigtableLoadBalancingStrategy returns the gRPC service config JSON string for the chosen policy.
 func BigtableLoadBalancingStrategy() LoadBalancingStrategy {
 	strategyStr := os.Getenv(LoadBalancingStrategyEnvVar)
 	return parseLoadBalancingStrategy(strategyStr)
+}
+
+func EnableBigtableConnectionPool() bool {
+	bigtableConnPoolEnvVal := os.Getenv(BigtableConnectionPoolEnvVar)
+	if bigtableConnPoolEnvVal == "" {
+		return false
+	}
+	enableBigtableConnPool, err := strconv.ParseBool(bigtableConnPoolEnvVal)
+	if err != nil {
+		// just fail and use default conn pool
+		return false
+	}
+	return enableBigtableConnPool
 }
