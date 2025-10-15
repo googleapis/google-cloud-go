@@ -47,6 +47,19 @@ type Expr interface {
 	// Aritmetic operations
 	Add(other any) Expr
 	Subtract(other any) Expr
+	Multiply(other any) Expr
+	Divide(other any) Expr
+	Abs() Expr
+	Floor() Expr
+	Ceil() Expr
+	Exp() Expr
+	Log(other any) Expr
+	Log10() Expr
+	Ln() Expr
+	Mod(other any) Expr
+	Pow(other any) Expr
+	Round() Expr
+	Sqrt() Expr
 
 	// Comparison operations
 	Eq(other any) BooleanExpr
@@ -75,6 +88,19 @@ func (b *baseExpr) getBaseExpr() *baseExpr      { return b }
 // Aritmetic functions
 func (b *baseExpr) Add(other any) Expr      { return Add(b, other) }
 func (b *baseExpr) Subtract(other any) Expr { return Subtract(b, other) }
+func (b *baseExpr) Multiply(other any) Expr { return Multiply(b, other) }
+func (b *baseExpr) Divide(other any) Expr   { return Divide(b, other) }
+func (b *baseExpr) Abs() Expr               { return Abs(b) }
+func (b *baseExpr) Floor() Expr             { return Floor(b) }
+func (b *baseExpr) Ceil() Expr              { return Ceil(b) }
+func (b *baseExpr) Exp() Expr               { return Exp(b) }
+func (b *baseExpr) Log(other any) Expr      { return Log(b, other) }
+func (b *baseExpr) Log10() Expr             { return Log10(b) }
+func (b *baseExpr) Ln() Expr                { return Ln(b) }
+func (b *baseExpr) Mod(other any) Expr      { return Mod(b, other) }
+func (b *baseExpr) Pow(other any) Expr      { return Pow(b, other) }
+func (b *baseExpr) Round() Expr             { return Round(b) }
+func (b *baseExpr) Sqrt() Expr              { return Sqrt(b) }
 
 // Comparison functions
 func (b *baseExpr) Eq(other any) BooleanExpr  { return Eq(b, other) }

@@ -36,13 +36,12 @@ func (b *baseFunction) isFunction() {}
 // Ensure that *baseFunction implements the Function interface.
 var _ Function = (*baseFunction)(nil)
 
-func newBaseFunction(name string, params []Expr, err error) *baseFunction {
-	if err != nil {
-		return &baseFunction{baseExpr: &baseExpr{err: err}}
-	}
+func newBaseFunction(name string, params []Expr) *baseFunction {
 	argsPbVals := make([]*pb.Value, 0, len(params))
 	for i, param := range params {
-		pbVal, err := param.toProto()
+
+		paramExpr := toExprOrField(param)
+		pbVal, err := paramExpr.toProto()
 		if err != nil {
 			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("error converting arg %d for function %q: %w", i, name, err)}}
 		}
@@ -86,4 +85,173 @@ func Add(left, right any) Expr {
 //	Subtract(FieldOf("price"), FieldOf("discount"))
 func Subtract(left, right any) Expr {
 	return leftRightToBaseFunction("subtract", left, right)
+}
+
+// Multiply creates an expression that multiplies the left and right expressions, returning it as an Expr.
+// - left can be a field path string, [FieldPath] or [Expr].
+// - right can be a constant or an [Expr].
+//
+// Example:
+//
+//	// Multiply 5 to the value of the 'age' field.
+//	Multiply("age", 5)
+//
+//	// Multiply 'discount' and 'price' fields.
+//	Multiply(FieldOf("price"), FieldOf("discount"))
+func Multiply(left, right any) Expr {
+	return leftRightToBaseFunction("multiply", left, right)
+}
+
+// Divide creates an expression that divides the left expression by the right expression, returning it as an Expr.
+// - left can be a field path string, [FieldPath] or [Expr].
+// - right can be a constant or an [Expr].
+//
+// Example:
+//
+//	// Divide the value of the 'age' field by 5.
+//	Divide("age", 5)
+//
+//	// Divide 'discount' field by 'price' field.
+//	Divide(FieldOf("price"), FieldOf("discount"))
+func Divide(left, right any) Expr {
+	return leftRightToBaseFunction("divide", left, right)
+}
+
+// Abs creates an expression that is the absolute value of the input field or expression.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// Absolute value of the 'age' field.
+//	Abs("age")
+func Abs(numericExprOrField any) Expr {
+	return newBaseFunction("abs", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// Floor creates an expression that is the largest integer that isn't less than the input field or expression.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// Floor value of the 'age' field.
+//	Floor("age")
+func Floor(numericExprOrField any) Expr {
+	return newBaseFunction("floor", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// Ceil creates an expression that is the smallest integer that isn't less than the input field or expression.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// Ceiling value of the 'age' field.
+//	Ceil("age")
+func Ceil(numericExprOrField any) Expr {
+	return newBaseFunction("ceil", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// Exp creates an expression that is the Euler's number e raised to the power of the input field or expression.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// e to the power of the value of the 'age' field.
+//	Exp("age")
+func Exp(numericExprOrField any) Expr {
+	return newBaseFunction("exp", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// Log creates an expression that is logarithm of the left expression to base as the right expression, returning it as an Expr.
+// - left can be a field path string, [FieldPath] or [Expr].
+// - right can be a constant or an [Expr].
+//
+// Example:
+//
+//	// Logarithm of 'age' field to base 5.
+//	Log("age", 5)
+//
+//	// Log 'height' to base 'weight' field.
+//	Log(FieldOf("height"), FieldOf("weight"))
+func Log(left, right any) Expr {
+	return leftRightToBaseFunction("log", left, right)
+}
+
+// Log10 creates an expression that is the base 10 logarithm of the input field or expression.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// Natural logarithmic value of the 'age' field.
+//	Log10("age")
+func Log10(numericExprOrField any) Expr {
+	return newBaseFunction("log10", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// Ln creates an expression that is the natural logarithm (base e) of the input field or expression.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// Natural logarithmic value of the 'age' field.
+//	Ln("age")
+func Ln(numericExprOrField any) Expr {
+	return newBaseFunction("ln", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// Mod creates an expression that subtracts the right expression from the left expression, returning it as an Expr.
+// - left can be a field path string, [FieldPath] or [Expr].
+// - right can be a constant or an [Expr].
+//
+// Example:
+//
+//	// Subtract 5 from the value of the 'age' field.
+//	Mod("age", 5)
+//
+//	// Subtract 'discount' from 'price' field.
+//	Mod(FieldOf("price"), FieldOf("discount"))
+func Mod(left, right any) Expr {
+	return leftRightToBaseFunction("mod", left, right)
+}
+
+// Pow creates an expression that subtracts the right expression from the left expression, returning it as an Expr.
+// - left can be a field path string, [FieldPath] or [Expr].
+// - right can be a constant or an [Expr].
+//
+// Example:
+//
+//	// Subtract 5 from the value of the 'age' field.
+//	Pow("age", 5)
+//
+//	// Subtract 'discount' from 'price' field.
+//	Pow(FieldOf("price"), FieldOf("discount"))
+func Pow(left, right any) Expr {
+	return leftRightToBaseFunction("pow", left, right)
+}
+
+// Rand creates an expression that return a pseudo-random number of type double in the range of [0, 1),
+// inclusive of 0 and exclusive of 1.
+func Rand() Expr {
+	return newBaseFunction("rand", []Expr{})
+}
+
+// Round creates an expression that rounds the input field or expression to nearest integer.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// Natural logarithmic value of the 'age' field.
+//	Round("age")
+func Round(numericExprOrField any) Expr {
+	return newBaseFunction("round", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// Sqrt creates an expression that is the square root of the input field or expression.
+// - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
+//
+// Example:
+//
+//	// Natural logarithmic value of the 'age' field.
+//	Sqrt("age")
+func Sqrt(numericExprOrField any) Expr {
+	return newBaseFunction("sqrt", []Expr{toExprOrField(numericExprOrField)})
 }
