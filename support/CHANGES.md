@@ -1,5 +1,19 @@
-# Changelog
+# Changes
 
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/support/v1.4.0...support/v1.4.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **support:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.3.0...support/v1.4.0) (2025-08-12)
+
+
+### Features
+
+* **support:** A new message `GetAttachmentRequest` and `GetComment` is added ([53f9781](https://github.com/googleapis/google-cloud-go/commit/53f97813d99aeaaf45108c642a2d94f598d1bb6b))
 
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.2.0...support/v1.3.0) (2025-05-29)
 

@@ -1,0 +1,1530 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+    "version": "0.8.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.managedkafka.schemaregistry.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CancelOperation_sync",
+      "title": "managedkafka CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ManagedSchemaRegistryClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CheckCompatibility_sync",
+      "title": "managedkafka CheckCompatibility Sample",
+      "description": "CheckCompatibility check compatibility of a schema with all versions or a specific version of\na subject.",
+      "file": "ManagedSchemaRegistryClient/CheckCompatibility/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckCompatibility",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.CheckCompatibility",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.CheckCompatibilityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.CheckCompatibilityResponse",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "CheckCompatibility",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.CheckCompatibility",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CreateSchemaRegistry_sync",
+      "title": "managedkafka CreateSchemaRegistry Sample",
+      "description": "CreateSchemaRegistry create a schema registry instance.",
+      "file": "ManagedSchemaRegistryClient/CreateSchemaRegistry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSchemaRegistry",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.CreateSchemaRegistry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.CreateSchemaRegistryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaRegistry",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "CreateSchemaRegistry",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.CreateSchemaRegistry",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CreateVersion_sync",
+      "title": "managedkafka CreateVersion Sample",
+      "description": "CreateVersion register a new version under a given subject with the given schema.",
+      "file": "ManagedSchemaRegistryClient/CreateVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateVersion",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.CreateVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.CreateVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.CreateVersionResponse",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "CreateVersion",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.CreateVersion",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteOperation_sync",
+      "title": "managedkafka DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ManagedSchemaRegistryClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSchemaConfig_sync",
+      "title": "managedkafka DeleteSchemaConfig Sample",
+      "description": "DeleteSchemaConfig delete schema config for a subject.",
+      "file": "ManagedSchemaRegistryClient/DeleteSchemaConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSchemaConfig",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.DeleteSchemaConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.DeleteSchemaConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaConfig",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteSchemaConfig",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.DeleteSchemaConfig",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSchemaMode_sync",
+      "title": "managedkafka DeleteSchemaMode Sample",
+      "description": "DeleteSchemaMode delete schema mode for a subject.",
+      "file": "ManagedSchemaRegistryClient/DeleteSchemaMode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSchemaMode",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.DeleteSchemaMode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.DeleteSchemaModeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaMode",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteSchemaMode",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.DeleteSchemaMode",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSchemaRegistry_sync",
+      "title": "managedkafka DeleteSchemaRegistry Sample",
+      "description": "DeleteSchemaRegistry delete a schema registry instance.",
+      "file": "ManagedSchemaRegistryClient/DeleteSchemaRegistry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSchemaRegistry",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.DeleteSchemaRegistry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.DeleteSchemaRegistryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteSchemaRegistry",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.DeleteSchemaRegistry",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSubject_sync",
+      "title": "managedkafka DeleteSubject Sample",
+      "description": "DeleteSubject delete a subject.\nThe response will be an array of versions of the deleted subject.",
+      "file": "ManagedSchemaRegistryClient/DeleteSubject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSubject",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.DeleteSubject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.DeleteSubjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteSubject",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.DeleteSubject",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteVersion_sync",
+      "title": "managedkafka DeleteVersion Sample",
+      "description": "DeleteVersion delete a version of a subject.\nThe response will be the deleted version id.",
+      "file": "ManagedSchemaRegistryClient/DeleteVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteVersion",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.DeleteVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.DeleteVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteVersion",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.DeleteVersion",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetContext_sync",
+      "title": "managedkafka GetContext Sample",
+      "description": "GetContext get the context.",
+      "file": "ManagedSchemaRegistryClient/GetContext/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetContext",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetContext",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetContextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.Context",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetContext",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetContext",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetLocation_sync",
+      "title": "managedkafka GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ManagedSchemaRegistryClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetOperation_sync",
+      "title": "managedkafka GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ManagedSchemaRegistryClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetRawSchema_sync",
+      "title": "managedkafka GetRawSchema Sample",
+      "description": "GetRawSchema get the schema string for the given schema id.\nThe response will be the schema string.",
+      "file": "ManagedSchemaRegistryClient/GetRawSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRawSchema",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetRawSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetRawSchema",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetRawSchema",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetRawSchemaVersion_sync",
+      "title": "managedkafka GetRawSchemaVersion Sample",
+      "description": "GetRawSchemaVersion get the schema string only for a version of a subject.\nThe response will be the schema string.",
+      "file": "ManagedSchemaRegistryClient/GetRawSchemaVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRawSchemaVersion",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetRawSchemaVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetRawSchemaVersion",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetRawSchemaVersion",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchema_sync",
+      "title": "managedkafka GetSchema Sample",
+      "description": "GetSchema get the schema for the given schema id.",
+      "file": "ManagedSchemaRegistryClient/GetSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSchema",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.Schema",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetSchema",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetSchema",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchemaConfig_sync",
+      "title": "managedkafka GetSchemaConfig Sample",
+      "description": "GetSchemaConfig get schema config at global level or for a subject.",
+      "file": "ManagedSchemaRegistryClient/GetSchemaConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSchemaConfig",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetSchemaConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetSchemaConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaConfig",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetSchemaConfig",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetSchemaConfig",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchemaMode_sync",
+      "title": "managedkafka GetSchemaMode Sample",
+      "description": "GetSchemaMode get mode at global level or for a subject.",
+      "file": "ManagedSchemaRegistryClient/GetSchemaMode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSchemaMode",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetSchemaMode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetSchemaModeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaMode",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetSchemaMode",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetSchemaMode",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchemaRegistry_sync",
+      "title": "managedkafka GetSchemaRegistry Sample",
+      "description": "GetSchemaRegistry get the schema registry instance.",
+      "file": "ManagedSchemaRegistryClient/GetSchemaRegistry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSchemaRegistry",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetSchemaRegistry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetSchemaRegistryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaRegistry",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetSchemaRegistry",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetSchemaRegistry",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetVersion_sync",
+      "title": "managedkafka GetVersion Sample",
+      "description": "GetVersion get a versioned schema (schema with subject/version) of a subject.",
+      "file": "ManagedSchemaRegistryClient/GetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVersion",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.GetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.GetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaVersion",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "GetVersion",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.GetVersion",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListContexts_sync",
+      "title": "managedkafka ListContexts Sample",
+      "description": "ListContexts list contexts for a schema registry.",
+      "file": "ManagedSchemaRegistryClient/ListContexts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListContexts",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListContexts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListContextsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListContexts",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListContexts",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListLocations_sync",
+      "title": "managedkafka ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ManagedSchemaRegistryClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListOperations_sync",
+      "title": "managedkafka ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ManagedSchemaRegistryClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListReferencedSchemas_sync",
+      "title": "managedkafka ListReferencedSchemas Sample",
+      "description": "ListReferencedSchemas get a list of IDs of schemas that reference the schema with the given\nsubject and version.",
+      "file": "ManagedSchemaRegistryClient/ListReferencedSchemas/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReferencedSchemas",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListReferencedSchemas",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListReferencedSchemasRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListReferencedSchemas",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListReferencedSchemas",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSchemaRegistries_sync",
+      "title": "managedkafka ListSchemaRegistries Sample",
+      "description": "ListSchemaRegistries list schema registries.",
+      "file": "ManagedSchemaRegistryClient/ListSchemaRegistries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSchemaRegistries",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListSchemaRegistries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListSchemaRegistriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.ListSchemaRegistriesResponse",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListSchemaRegistries",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListSchemaRegistries",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSchemaTypes_sync",
+      "title": "managedkafka ListSchemaTypes Sample",
+      "description": "ListSchemaTypes list the supported schema types.\nThe response will be an array of schema types.",
+      "file": "ManagedSchemaRegistryClient/ListSchemaTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSchemaTypes",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListSchemaTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListSchemaTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListSchemaTypes",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListSchemaTypes",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSchemaVersions_sync",
+      "title": "managedkafka ListSchemaVersions Sample",
+      "description": "ListSchemaVersions list the schema versions for the given schema id.\nThe response will be an array of subject-version pairs as: \n[{\"subject\": \"subject1\", \"version\": 1}, {\"subject\": \"subject2\", \"version\": 2}].",
+      "file": "ManagedSchemaRegistryClient/ListSchemaVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSchemaVersions",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListSchemaVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListSchemaVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListSchemaVersions",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListSchemaVersions",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSubjects_sync",
+      "title": "managedkafka ListSubjects Sample",
+      "description": "ListSubjects list subjects in the schema registry.\nThe response will be an array of subject names.",
+      "file": "ManagedSchemaRegistryClient/ListSubjects/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubjects",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListSubjects",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListSubjectsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListSubjects",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListSubjects",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSubjectsBySchemaId_sync",
+      "title": "managedkafka ListSubjectsBySchemaId Sample",
+      "description": "ListSubjectsBySchemaId list subjects which reference a particular schema id.\nThe response will be an array of subject names.",
+      "file": "ManagedSchemaRegistryClient/ListSubjectsBySchemaId/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubjectsBySchemaId",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListSubjectsBySchemaId",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListSubjectsBySchemaIdRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListSubjectsBySchemaId",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListSubjectsBySchemaId",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListVersions_sync",
+      "title": "managedkafka ListVersions Sample",
+      "description": "ListVersions get all versions of a subject.\nThe response will be an array of versions of the subject.",
+      "file": "ManagedSchemaRegistryClient/ListVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVersions",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.ListVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.ListVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "ListVersions",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.ListVersions",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_LookupVersion_sync",
+      "title": "managedkafka LookupVersion Sample",
+      "description": "LookupVersion lookup a schema under the specified subject.",
+      "file": "ManagedSchemaRegistryClient/LookupVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LookupVersion",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.LookupVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.LookupVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaVersion",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "LookupVersion",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.LookupVersion",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_UpdateSchemaConfig_sync",
+      "title": "managedkafka UpdateSchemaConfig Sample",
+      "description": "UpdateSchemaConfig update config at global level or for a subject.\nCreates a SchemaSubject-level SchemaConfig if it does not exist.",
+      "file": "ManagedSchemaRegistryClient/UpdateSchemaConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSchemaConfig",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.UpdateSchemaConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.UpdateSchemaConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaConfig",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateSchemaConfig",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.UpdateSchemaConfig",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_UpdateSchemaMode_sync",
+      "title": "managedkafka UpdateSchemaMode Sample",
+      "description": "UpdateSchemaMode update mode at global level or for a subject.",
+      "file": "ManagedSchemaRegistryClient/UpdateSchemaMode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSchemaMode",
+        "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient.UpdateSchemaMode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schemaregistrypb.UpdateSchemaModeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*schemaregistrypb.SchemaMode",
+        "client": {
+          "shortName": "ManagedSchemaRegistryClient",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateSchemaMode",
+          "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry.UpdateSchemaMode",
+          "service": {
+            "shortName": "ManagedSchemaRegistry",
+            "fullName": "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

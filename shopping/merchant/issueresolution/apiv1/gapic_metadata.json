@@ -1,0 +1,77 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.issueresolution.v1",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+  "services": {
+    "AggregateProductStatusesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AggregateProductStatusesClient",
+          "rpcs": {
+            "ListAggregateProductStatuses": {
+              "methods": [
+                "ListAggregateProductStatuses"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AggregateProductStatusesClient",
+          "rpcs": {
+            "ListAggregateProductStatuses": {
+              "methods": [
+                "ListAggregateProductStatuses"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "IssueResolutionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "RenderAccountIssues": {
+              "methods": [
+                "RenderAccountIssues"
+              ]
+            },
+            "RenderProductIssues": {
+              "methods": [
+                "RenderProductIssues"
+              ]
+            },
+            "TriggerAction": {
+              "methods": [
+                "TriggerAction"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "RenderAccountIssues": {
+              "methods": [
+                "RenderAccountIssues"
+              ]
+            },
+            "RenderProductIssues": {
+              "methods": [
+                "RenderProductIssues"
+              ]
+            },
+            "TriggerAction": {
+              "methods": [
+                "TriggerAction"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

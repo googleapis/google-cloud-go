@@ -16,11 +16,10 @@
 package execv
 
 import (
-	"io/fs"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 )
 
@@ -35,6 +34,10 @@ func Command(name string, arg ...string) *CmdWrapper {
 	c := &CmdWrapper{exec.Command(name, arg...)}
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin
+	c.Env = []string{
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
+	}
 	return &CmdWrapper{exec.Command(name, arg...)}
 }
 
@@ -57,22 +60,4 @@ func (c *CmdWrapper) Output() ([]byte, error) {
 		}
 	}
 	return b, err
-}
-
-// ForEachMod runs the given function with the directory of
-// every non-internal module.
-func ForEachMod(rootDir string, fn func(dir string) error) error {
-	return filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if strings.Contains(path, "internal") {
-			return filepath.SkipDir
-		}
-		if d.Name() != "go.mod" {
-			return nil
-		}
-		// process Go module directory.
-		return fn(filepath.Dir(path))
-	})
 }

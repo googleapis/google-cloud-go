@@ -26,6 +26,7 @@ import (
 	"net"
 	"os"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -44,6 +45,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
@@ -92,6 +94,19 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 			},
 		},
 	}
+	expectedResourceHeaderFormat := regexp.MustCompile("projects/.+/instances/.+/databases/.+.*")
+	grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
+		Key: resourcePrefixHeader,
+		ValuesValidator: func(token ...string) error {
+			if len(token) != 1 {
+				return status.Errorf(codes.Internal, "unexpected number of resource headers: %v", len(token))
+			}
+			if !expectedResourceHeaderFormat.MatchString(token[0]) {
+				return status.Errorf(codes.Internal, "invalid resource header value: %v", token[0])
+			}
+			return nil
+		},
+	})
 	if config.Compression == gzip.Name {
 		grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
 			Key: "x-response-encoding",
@@ -565,7 +580,7 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			},
 		},
 		{
-			name: "Given if multiplexed session is enabled, When executing R/W transactions, should always use regular session",
+			name: "Given if multiplexed session is enabled, When executing R/W transactions, should always use multiplex session",
 			test: func(client *Client) error {
 				ctx := context.Background()
 				// Test the read-write transaction
@@ -578,8 +593,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				return err
 			},
 			validate: func(server InMemSpannerServer) {
-				// Validate the regular session is used, toatl session created should be 25
-				expectedSessionCount := uint(26)
+				// Validate the regular session is used, total session created should be 1
+				expectedSessionCount := uint(1)
 				if !isMultiplexEnabled {
 					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
 				}
@@ -590,8 +605,7 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				for _, s := range reqs {
 					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						// Validate the session is not multiplexed
-						if !testEqual(false, strings.Contains(req.Session, "multiplexed")) {
+						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
 						}
 					}
@@ -657,12 +671,53 @@ func TestClient_Single(t *testing.T) {
 	}
 }
 
-func TestClient_Single_Unavailable(t *testing.T) {
+func TestClient_NonConformingHeader(t *testing.T) {
 	t.Parallel()
-	err := testSingleQuery(t, status.Error(codes.Unavailable, "Temporary unavailable"))
+	ctx := context.Background()
+	md := metadata.Pairs(resourcePrefixHeader, "projects/foo/documents/bar")
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	err := testSingleQueryWithContext(ctx, t, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Verify that even though the request is sent without the non-conforming header,
+	// it is still present in the original context.
+	if md, ok := metadata.FromOutgoingContext(ctx); ok {
+		header := md.Get(resourcePrefixHeader)
+		if g, w := len(header), 1; g != w {
+			t.Fatalf("header length mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		if g, w := header[0], "projects/foo/documents/bar"; g != w {
+			t.Fatalf("header mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	} else {
+		t.Fatal("could not get metadata from context")
+	}
+}
+
+func TestClient_Single_Unavailable(t *testing.T) {
+	t.Parallel()
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.Unavailable, "Temporary unavailable"))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_Single_ResourceExhausted(t *testing.T) {
+	t.Parallel()
+	err := testSingleQuery(t, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "Temporary server overload"))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func serverErrorWithMinimalRetryDelay(code codes.Code, msg string) error {
+	st := status.New(code, msg)
+	retry := &errdetails.RetryInfo{
+		RetryDelay: durationpb.New(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	return st.Err()
 }
 
 func TestClient_Single_InvalidArgument(t *testing.T) {
@@ -1173,9 +1228,22 @@ func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo
 }
 
 func testSingleQuery(t *testing.T, serverError error) error {
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
+	return testSingleQueryWithContext(context.Background(), t, serverError)
+}
+
+func testSingleQueryWithContext(ctx context.Context, t *testing.T, serverError error) error {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: SessionPoolConfig{MinOpened: 1}})
 	defer teardown()
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
+		}
+		return nil
+	})
 
 	if serverError != nil {
 		server.TestSpanner.SetError(serverError)
@@ -1421,15 +1489,31 @@ func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_AndThenSes
 	if expectedAttempts != attempts {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
 	}
+	var want []interface{}
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			// when no session found error thrown in multiplex session
+			// it will fallback to regular session
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -1471,15 +1555,32 @@ func TestClient_ReadWriteTransaction_AbortedForFirstStatement_AndThenSessionNotF
 	if expectedAttempts != attempts {
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
 	}
+	var want []interface{}
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			// when no session found error thrown in multiplex session
+			// it will fallback to regular session
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
+
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -1524,14 +1625,26 @@ func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_DoesNotLea
 		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.BatchCreateSessionsRequest{}, // We need to create more sessions, as the one used first was destroyed.
-		&sppb.BeginTransactionRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	var want []interface{}
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.BatchCreateSessionsRequest{}, // We need to create more sessions, as the one used first was destroyed.
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -1801,18 +1914,24 @@ func TestClient_ReadWriteTransaction(t *testing.T) {
 	}
 }
 
-func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpannerInMemTestServer, expected sppb.TransactionOptions_IsolationLevel) {
+func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpannerInMemTestServer, expected sppb.TransactionOptions_IsolationLevel, beginTransactionOption BeginTransactionOption) {
 	found := false
 	requests := drainRequestsFromServer(server.TestSpanner)
 	for _, req := range requests {
 		switch sqlReq := req.(type) {
 		case *sppb.ExecuteSqlRequest:
+			if beginTransactionOption == ExplicitBeginTransaction {
+				t.Fatalf("got TransactionOptions on ExecuteSqlRequest in combination with ExplicitBeginTransaction")
+			}
 			found = true
 			if sqlReq.GetTransaction().GetBegin().GetIsolationLevel() != expected {
 				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", expected, sqlReq.GetTransaction().GetBegin().GetIsolationLevel())
 			}
 			break
 		case *sppb.BeginTransactionRequest:
+			if beginTransactionOption == InlinedBeginTransaction {
+				t.Fatalf("got BeginTransaction RPC in combination with InlinedBeginTransaction")
+			}
 			found = true
 			if sqlReq.GetOptions().GetIsolationLevel() != expected {
 				t.Fatalf("Invalid IsolationLevel\n Expected: %v\n Got: %v\n", expected, sqlReq.GetOptions().GetIsolationLevel())
@@ -1838,32 +1957,32 @@ func validateIsolationLevelForRWTransactions(t *testing.T, server *MockedSpanner
 
 func TestClient_ReadWriteTransactionWithNoIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer teardown()
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED, InlinedBeginTransaction)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtClientConfig(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer teardown()
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, InlinedBeginTransaction)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransactionLevel(t *testing.T) {
 	t.Parallel()
-	server, teardown, err := testReadWriteTransactionWithConfigWithTransactionOptions(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}}, TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}, make(map[string]SimulatedExecutionTime), 1)
+	server, teardown, err := testReadWriteTransactionWithConfigWithTransactionOptions(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}}, TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ}, make(map[string]SimulatedExecutionTime), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer teardown()
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, InlinedBeginTransaction)
 }
 
 func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransactionLevelWithAbort(t *testing.T) {
@@ -1882,7 +2001,7 @@ func TestClient_ReadWriteTransactionWithIsolationLevelForRWTransactionAtTransact
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, InlinedBeginTransaction)
 }
 
 func TestClient_ApplyMutationsWithAtLeastOnceIsolationLevel(t *testing.T) {
@@ -1897,7 +2016,7 @@ func TestClient_ApplyMutationsWithAtLeastOnceIsolationLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, ExplicitBeginTransaction)
 }
 
 func TestClient_ApplyMutationsWithIsolationLevel(t *testing.T) {
@@ -1912,61 +2031,111 @@ func TestClient_ApplyMutationsWithIsolationLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE, ExplicitBeginTransaction)
 }
 
-func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t *testing.T) {
+func consumeIterator(iter *RowIterator) error {
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevelWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t, ExplicitBeginTransaction)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevelWithInlineBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t, InlinedBeginTransaction)
+}
+
+func testClientReadWriteStmtBasedTransactionWithIsolationLevelAtTransactionLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
 		ctx,
 		client,
-		TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ})
+		TransactionOptions{IsolationLevel: sppb.TransactionOptions_REPEATABLE_READ, BeginTransactionOption: beginTransactionOption})
 	if err != nil {
 		t.Fatalf("Unexpected error when creating transaction: %v", err)
 	}
 
 	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
+	if err := consumeIterator(iter); err != nil {
+		t.Fatal(err)
+	}
 
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_REPEATABLE_READ, beginTransactionOption)
 }
 
-func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t *testing.T) {
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}})
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevelWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t, ExplicitBeginTransaction)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevelWithInlineBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t, InlinedBeginTransaction)
+}
+
+func testClientReadWriteStmtBasedTransactionWithIsolationLevelAtClientConfigLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: TransactionOptions{IsolationLevel: sppb.TransactionOptions_SERIALIZABLE}})
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
 		ctx,
 		client,
-		TransactionOptions{})
+		TransactionOptions{BeginTransactionOption: beginTransactionOption})
 	if err != nil {
 		t.Fatalf("Unexpected error when creating transaction: %v", err)
 	}
 
 	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
+	if err := consumeIterator(iter); err != nil {
+		t.Fatal(err)
+	}
 
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_SERIALIZABLE, beginTransactionOption)
 }
 
-func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevel(t *testing.T) {
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: TransactionOptions{}})
+func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevelWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithNoIsolationLevel(t, ExplicitBeginTransaction)
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithNoIsolationLevelWithInlineBegin(t *testing.T) {
+	t.Parallel()
+	testClientReadWriteStmtBasedTransactionWithNoIsolationLevel(t, InlinedBeginTransaction)
+}
+
+func testClientReadWriteStmtBasedTransactionWithNoIsolationLevel(t *testing.T, beginTransactionOption BeginTransactionOption) {
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: TransactionOptions{}})
 	defer teardown()
 	ctx := context.Background()
 	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
 		ctx,
 		client,
-		TransactionOptions{})
+		TransactionOptions{BeginTransactionOption: beginTransactionOption})
 	if err != nil {
 		t.Fatalf("Unexpected error when creating transaction: %v", err)
 	}
 
 	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
+	if err := consumeIterator(iter); err != nil {
+		t.Fatal(err)
+	}
 
-	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED)
+	validateIsolationLevelForRWTransactions(t, server, sppb.TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED, beginTransactionOption)
 }
 
 func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
@@ -2340,6 +2509,9 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T
 }
 
 func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping regular session tests in multiplex session enabled tests")
+	}
 	t.Parallel()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -2812,20 +2984,16 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ExecuteSqlRequest(t *
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[1].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[2].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[3+muxCreateBuffer].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[3].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Begin Transaction is not set to optimistic")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming query to use transactionID from explicit begin transaction")
 	}
 }
@@ -2859,20 +3027,16 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ReadRequest(t *testin
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if requests[1+muxCreateBuffer].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[1].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[2+muxCreateBuffer].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[2].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Transaction is not set to optimistic")
 	}
-	if requests[3+muxCreateBuffer].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+	if requests[3].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
 		t.Fatal("Begin Transaction is not set to optimistic")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming read to use transactionID from explicit begin transaction")
 	}
 }
@@ -3406,17 +3570,13 @@ func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetr
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected streaming query to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected streaming query to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming query to use transactionID from explicit begin transaction")
 	}
 }
@@ -3460,17 +3620,13 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected streaming read to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[2+muxCreateBuffer].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[2].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming read to use transactionID from previous success request")
 	}
-	if requests[2+muxCreateBuffer].(*sppb.ReadRequest).ResumeToken == nil {
+	if requests[2].(*sppb.ReadRequest).ResumeToken == nil {
 		t.Fatal("expected streaming read to include resume token")
 	}
 }
@@ -3514,17 +3670,13 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testin
 	}
 	// The first statement will fail and not return a transaction id. This will trigger a retry of
 	// the entire transaction, and the retry will do an explicit BeginTransaction RPC.
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected first BatchUpdate to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[3+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[3].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected second BatchUpdate to use transactionID from explicit begin")
 	}
-	if _, ok := requests[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected second ExecuteSqlRequest to use transactionID from explicit begin")
 	}
 }
@@ -3567,14 +3719,10 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnSecondStatement(t *testi
 	}
 	// Although the batch DML returned an error, that error was for the second statement. That
 	// means that the transaction was started by the first statement.
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if _, ok := requests[1+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected BatchUpdate to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected ExecuteSqlRequest use transactionID from BatchUpdate request")
 	}
 }
@@ -3650,7 +3798,7 @@ func TestClient_ReadWriteTransaction_WithCancelledContext(t *testing.T) {
 }
 
 func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
-	_, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
+	_, teardown, err := testReadWriteTransactionWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
 	defer teardown()
 	return err
 }
@@ -5881,7 +6029,7 @@ func TestClient_BatchWrite(t *testing.T) {
 	defer teardown()
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -5916,7 +6064,7 @@ func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -5954,7 +6102,7 @@ func TestClient_BatchWrite_Error(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6029,7 +6177,7 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 
 			mutationGroups := []*MutationGroup{
 				{[]*Mutation{
-					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 				}},
 			}
 			iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, tt.write)
@@ -6075,7 +6223,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
@@ -6206,15 +6354,29 @@ func TestClient_ReadWriteTransactionWithTag_SessionNotFound(t *testing.T) {
 		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
 	}
 
+	var want []interface{}
+	if isMultiplexEnabled {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+		}
+	} else {
+		want = []interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.CommitRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
+	if err := compareRequests(want, requests); err != nil {
 		t.Fatal(err)
 	}
 	muxCreateBuffer := 0
@@ -6268,23 +6430,19 @@ func TestClient_NestedReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if g, w := requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[1].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[2+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[3].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[4+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[6+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
 }
@@ -6331,26 +6489,22 @@ func TestClient_NestedReadWriteTransactionWithTag_OuterAbortedOnce(t *testing.T)
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if g, w := requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[1].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[2+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[4+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[5+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[5].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[6+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[8+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[8].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
 }
@@ -6396,27 +6550,23 @@ func TestClient_NestedReadWriteTransactionWithTag_InnerBlindWrite(t *testing.T) 
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
 
-	if g, w := requests[2+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[3].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[4+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[6+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[7+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[7].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
-	if g, w := requests[8+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+	if g, w := requests[8].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
 }
@@ -6443,11 +6593,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_ExecuteSqlRe
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.ExecuteSqlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
@@ -6475,11 +6621,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BufferWrite(
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
@@ -6506,11 +6648,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BatchUpdate(
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
@@ -6572,11 +6710,7 @@ func TestClient_ApplyExcludeTxnFromChangeStreams(t *testing.T) {
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
@@ -6627,7 +6761,7 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
 		}},
 	}
 	iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, BatchWriteOptions{ExcludeTxnFromChangeStreams: true})
@@ -6654,6 +6788,42 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 	if !requests[1+muxCreateBuffer].(*sppb.BatchWriteRequest).ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestClient_DelayedExcludeTxnFromChangeStreams(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+
+	// Randomly exclude the transaction from change streams.
+	exclude := time.Now().UnixNano()%2 == 0
+	// Start a transaction without an ExcludeTxnFromChangeStreams option, but register a callback that allows us to set
+	// it right before the transaction is actually started.
+	tx, err := NewReadWriteStmtBasedTransactionWithCallbackForOptions(ctx, client, TransactionOptions{}, func() TransactionOptions {
+		return TransactionOptions{ExcludeTxnFromChangeStreams: exclude}
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = tx.BufferWrite(ms)
+	if _, err := tx.Commit(ctx); err != nil {
+		t.Fatal(err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	beginRequests := requestsOfType(requests, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(beginRequests), 1; g != w {
+		t.Fatalf("num BeginTransaction requests mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	beginRequest := beginRequests[0].(*sppb.BeginTransactionRequest)
+	if g, w := beginRequest.Options.ExcludeTxnFromChangeStreams, exclude; g != w {
+		t.Fatalf("exclude option mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 

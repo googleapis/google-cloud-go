@@ -275,14 +275,14 @@ func TestAggregateProto(t *testing.T) {
 				},
 			},
 		}}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for i := range testCases {
+		t.Run(testCases[i].name, func(t *testing.T) {
 			want := &btapb.Type{
 				Kind: &btapb.Type_AggregateType{
-					AggregateType: &tc.protoAgg,
+					AggregateType: &testCases[i].protoAgg,
 				},
 			}
-			at := AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: tc.agg}
+			at := AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: testCases[i].agg}
 
 			assertType(t, at, want)
 		})

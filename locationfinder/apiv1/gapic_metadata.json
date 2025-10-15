@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.locationfinder.v1",
+  "libraryPackage": "cloud.google.com/go/locationfinder/apiv1",
+  "services": {
+    "CloudLocationFinder": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudLocationFinderClient",
+          "rpcs": {
+            "GetCloudLocation": {
+              "methods": [
+                "GetCloudLocation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListCloudLocations": {
+              "methods": [
+                "ListCloudLocations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "SearchCloudLocations": {
+              "methods": [
+                "SearchCloudLocations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudLocationFinderClient",
+          "rpcs": {
+            "GetCloudLocation": {
+              "methods": [
+                "GetCloudLocation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListCloudLocations": {
+              "methods": [
+                "ListCloudLocations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "SearchCloudLocations": {
+              "methods": [
+                "SearchCloudLocations"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

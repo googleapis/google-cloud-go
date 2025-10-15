@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/confidentialcomputing/apiv1",
-    "version": "1.9.2",
+    "version": "1.10.1",
     "language": "GO",
     "apis": [
       {
@@ -152,7 +152,7 @@
     {
       "regionTag": "confidentialcomputing_v1_generated_ConfidentialComputing_VerifyAttestation_sync",
       "title": "confidentialcomputing VerifyAttestation Sample",
-      "description": "VerifyAttestation verifies the provided attestation info, returning a signed OIDC token.",
+      "description": "VerifyAttestation verifies the provided attestation info, returning a signed attestation\ntoken.",
       "file": "Client/VerifyAttestation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -180,6 +180,98 @@
         "method": {
           "shortName": "VerifyAttestation",
           "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyAttestation",
+          "service": {
+            "shortName": "ConfidentialComputing",
+            "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "confidentialcomputing_v1_generated_ConfidentialComputing_VerifyConfidentialGke_sync",
+      "title": "confidentialcomputing VerifyConfidentialGke Sample",
+      "description": "VerifyConfidentialGke verifies the provided Confidential GKE attestation info, returning a signed\nOIDC token.",
+      "file": "Client/VerifyConfidentialGke/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyConfidentialGke",
+        "fullName": "google.cloud.confidentialcomputing.v1.Client.VerifyConfidentialGke",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "confidentialcomputingpb.VerifyConfidentialGkeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*confidentialcomputingpb.VerifyConfidentialGkeResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.confidentialcomputing.v1.Client"
+        },
+        "method": {
+          "shortName": "VerifyConfidentialGke",
+          "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialGke",
+          "service": {
+            "shortName": "ConfidentialComputing",
+            "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "confidentialcomputing_v1_generated_ConfidentialComputing_VerifyConfidentialSpace_sync",
+      "title": "confidentialcomputing VerifyConfidentialSpace Sample",
+      "description": "VerifyConfidentialSpace verifies whether the provided attestation info is valid, returning a signed\nattestation token if so.",
+      "file": "Client/VerifyConfidentialSpace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyConfidentialSpace",
+        "fullName": "google.cloud.confidentialcomputing.v1.Client.VerifyConfidentialSpace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "confidentialcomputingpb.VerifyConfidentialSpaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*confidentialcomputingpb.VerifyConfidentialSpaceResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.confidentialcomputing.v1.Client"
+        },
+        "method": {
+          "shortName": "VerifyConfidentialSpace",
+          "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialSpace",
           "service": {
             "shortName": "ConfidentialComputing",
             "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing"

@@ -1,4 +1,28 @@
-# Changelog
+# Changes
+
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.14.0...vertexai/v0.15.0) (2025-06-25)
+
+
+### Features
+
+* **vertexai:** Support ThinkingConfig ([#12493](https://github.com/googleapis/google-cloud-go/issues/12493)) ([9cc6c04](https://github.com/googleapis/google-cloud-go/commit/9cc6c0418b0afeece20187ac01a086fc080f9dd2))
+
+
+### Bug Fixes
+
+* **vertexai:** Fix flaky test ([#12492](https://github.com/googleapis/google-cloud-go/issues/12492)) ([a961cb5](https://github.com/googleapis/google-cloud-go/commit/a961cb5e85ed07e2eaf088faa29ed9b60882212b))
+
+
+### Documentation
+
+* **vertexai:** Add deprecation note to README ([#12486](https://github.com/googleapis/google-cloud-go/issues/12486)) ([52da9d0](https://github.com/googleapis/google-cloud-go/commit/52da9d00293362877b8b6b3f2e6a4f6fadc60b24))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.4...vertexai/v0.14.0) (2025-06-16)
+
+
+### Features
+
+* **vertexai:** Support global endpoint ([#12450](https://github.com/googleapis/google-cloud-go/issues/12450)) ([0fc210c](https://github.com/googleapis/google-cloud-go/commit/0fc210cf11d0b90468b07ce0be65e20dc73635db))
 
 ## [0.13.4](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.3...vertexai/v0.13.4) (2025-05-15)
 

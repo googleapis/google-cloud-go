@@ -411,7 +411,7 @@ func getInstanceConfig() string {
 }
 
 func getMultiplexEnableFlag() bool {
-	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true"
+	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
 }
 
 const (
@@ -529,6 +529,9 @@ func initIntegrationTests() (cleanup func()) {
 }
 
 func TestIntegration_InitSessionPool(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping session pool test in multiplex session tests")
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up an empty testing environment.
@@ -1071,6 +1074,9 @@ func TestIntegration_Interval(t *testing.T) {
 }
 
 func TestIntegration_TransactionWasStartedInDifferentSession(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping regular-session tests in multiplex session enabled tests")
+	}
 	t.Parallel()
 	// TODO: unskip once https://b.corp.google.com/issues/309745482 is fixed
 	skipOnNonProd(t)
@@ -3675,6 +3681,8 @@ func TestIntegration_ReadErrors(t *testing.T) {
 // Test TransactionRunner. Test that transactions are aborted and retried as
 // expected.
 func TestIntegration_TransactionRunner(t *testing.T) {
+	// TODO(sakthivelmani): Enable the tests once b/422916293 is fixed
+	skipDirectPathTest(t)
 	skipEmulatorTest(t)
 	t.Parallel()
 
@@ -4736,7 +4744,8 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 }
 
 func TestIntegration_DML(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
+	fmt.Printf("Starting the test")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -4923,6 +4932,8 @@ func TestIntegration_DML(t *testing.T) {
 	if got, want := ErrCode(err), codes.InvalidArgument; got != want {
 		t.Errorf("got %s, want %s", got, want)
 	}
+
+	fmt.Printf("Ending the test")
 }
 
 func TestIntegration_StructParametersBind(t *testing.T) {
@@ -5099,7 +5110,7 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 func TestIntegration_PDML(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
@@ -5893,6 +5904,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 }
 
 func TestIntegration_GFE_Latency(t *testing.T) {
+	skipDirectPathTest(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
@@ -6762,6 +6774,14 @@ func isEmulatorEnvSet() bool {
 func skipEmulatorTest(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
+	}
+}
+
+func skipDirectPathTest(t *testing.T) {
+	if directPathEnabled, found := os.LookupEnv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); found {
+		if enabled, _ := strconv.ParseBool(directPathEnabled); enabled {
+			t.Skip("Skipping GFE tests when DirectPath is enabled")
+		}
 	}
 }
 

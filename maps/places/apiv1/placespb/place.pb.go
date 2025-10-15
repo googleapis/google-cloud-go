@@ -21,6 +21,9 @@
 package placespb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -31,8 +34,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -280,16 +281,21 @@ type Place struct {
 	// B at
 	// https://developers.google.com/maps/documentation/places/web-service/place-types
 	Types []string `protobuf:"bytes,5,rep,name=types,proto3" json:"types,omitempty"`
-	// The primary type of the given result. This type must one of the Places API
-	// supported types. For example, "restaurant", "cafe", "airport", etc.  A
+	// The primary type of the given result. This type must be one of the Places
+	// API supported types. For example, "restaurant", "cafe", "airport", etc.  A
 	// place can only have a single primary type.  For the complete list of
 	// possible values, see Table A and Table B at
-	// https://developers.google.com/maps/documentation/places/web-service/place-types
+	// https://developers.google.com/maps/documentation/places/web-service/place-types.
+	// The primary type may be missing if the place's primary type is not a
+	// supported type. When a primary type is present, it is always one of the
+	// types in the `types` field.
 	PrimaryType string `protobuf:"bytes,50,opt,name=primary_type,json=primaryType,proto3" json:"primary_type,omitempty"`
 	// The display name of the primary type, localized to the request language if
 	// applicable. For the complete list of possible values, see Table A and Table
 	// B at
-	// https://developers.google.com/maps/documentation/places/web-service/place-types
+	// https://developers.google.com/maps/documentation/places/web-service/place-types.
+	// The primary type may be missing if the place's primary type is not a
+	// supported type.
 	PrimaryTypeDisplayName *localized_text.LocalizedText `protobuf:"bytes,32,opt,name=primary_type_display_name,json=primaryTypeDisplayName,proto3" json:"primary_type_display_name,omitempty"`
 	// A human-readable phone number for the place, in national format.
 	NationalPhoneNumber string `protobuf:"bytes,7,opt,name=national_phone_number,json=nationalPhoneNumber,proto3" json:"national_phone_number,omitempty"`
@@ -1161,13 +1167,30 @@ type Place_OpeningHours struct {
 	// this field means whether the secondary hours of this place is active.
 	OpenNow *bool `protobuf:"varint,1,opt,name=open_now,json=openNow,proto3,oneof" json:"open_now,omitempty"`
 	// The periods that this place is open during the week. The periods are in
-	// chronological order, starting with Sunday in the place-local timezone. An
-	// empty (but not absent) value indicates a place that is never open, e.g.
+	// chronological order, in the place-local timezone. An empty (but not
+	// absent) value indicates a place that is never open, e.g.
 	// because it is closed temporarily for renovations.
+	//
+	// The starting day of `periods` is NOT fixed and should not be assumed to
+	// be Sunday. The API determines the start day based on a variety of
+	// factors. For example, for a 24/7 business, the first period may begin on
+	// the day of the request. For other businesses, it might be the first day
+	// of the week that they are open.
+	//
+	// NOTE: The ordering of the `periods` array is independent of the ordering
+	// of the `weekday_descriptions` array. Do not assume they will begin on the
+	// same day.
 	Periods []*Place_OpeningHours_Period `protobuf:"bytes,2,rep,name=periods,proto3" json:"periods,omitempty"`
 	// Localized strings describing the opening hours of this place, one string
-	// for each day of the week.  Will be empty if the hours are unknown or
-	// could not be converted to localized text. Example: "Sun: 18:00–06:00"
+	// for each day of the week.
+	//
+	// NOTE: The order of the days and the start of the week is determined by
+	// the locale (language and region). The ordering of the `periods` array is
+	// independent of the ordering of the `weekday_descriptions` array. Do not
+	// assume they will begin on the same day.
+	//
+	// Will be empty if the hours are unknown or could not be converted to
+	// localized text. Example: "Sun: 18:00–06:00"
 	WeekdayDescriptions []string `protobuf:"bytes,3,rep,name=weekday_descriptions,json=weekdayDescriptions,proto3" json:"weekday_descriptions,omitempty"`
 	// A type string used to identify the type of secondary hours.
 	SecondaryHoursType Place_OpeningHours_SecondaryHoursType `protobuf:"varint,4,opt,name=secondary_hours_type,json=secondaryHoursType,proto3,enum=google.maps.places.v1.Place_OpeningHours_SecondaryHoursType" json:"secondary_hours_type,omitempty"`

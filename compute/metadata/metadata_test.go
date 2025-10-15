@@ -17,8 +17,11 @@ package metadata
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"sync"
@@ -104,7 +107,7 @@ func TestOnGCE_CancelTryHarder(t *testing.T) {
 	}
 
 	// Should have returned around 500ms, but account for some scheduling budget
-	if time.Now().Sub(start) > 510*time.Millisecond {
+	if time.Since(start) > 510*time.Millisecond {
 		t.Error("OnGCE() did not return within deadline")
 	}
 }
@@ -316,4 +319,210 @@ func (r *failingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 		return &http.Response{StatusCode: r.failCode}, nil
 	}
 	return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(strings.NewReader(r.response))}, nil
+}
+
+func TestNewClient(t *testing.T) {
+	customClient := &http.Client{}
+
+	tests := []struct {
+		name      string
+		in        *http.Client
+		wantHC    *http.Client
+		isDefault bool
+	}{
+		{
+			name:      "nil returns default",
+			in:        nil,
+			isDefault: true,
+		},
+		{
+			name:   "custom client",
+			in:     customClient,
+			wantHC: customClient,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewClient(tt.in)
+			if tt.isDefault {
+				if got != defaultClient {
+					t.Errorf("NewClient() = %p, want %p", got, defaultClient)
+				}
+			}
+			if tt.wantHC != nil {
+				if got.hc != tt.wantHC {
+					t.Errorf("NewClient().hc = %p, want %p", got.hc, tt.wantHC)
+				}
+				if got.subClient != tt.wantHC {
+					t.Errorf("NewClient().hc = %p, want %p", got.hc, tt.wantHC)
+				}
+			}
+		})
+	}
+}
+
+func TestNewWithOptions(t *testing.T) {
+	customClient := &http.Client{}
+	customLogger := slog.New(slog.NewTextHandler(io.Discard, nil))
+
+	tests := []struct {
+		name                string
+		opts                *Options
+		wantHC              *http.Client
+		isDefault           bool
+		wantSharedTransport bool
+		wantSharedHC        bool
+		hasCustomLogger     bool
+	}{
+		{
+			name:      "nil opts returns default",
+			opts:      nil,
+			isDefault: true,
+		},
+		{
+			name: "empty opts returns new isolated client",
+			opts: &Options{},
+		},
+		{
+			name:   "with custom client",
+			opts:   &Options{Client: customClient},
+			wantHC: customClient,
+		},
+		{
+			name:                "UseDefaultClient returns client with default hc",
+			opts:                &Options{UseDefaultClient: true},
+			wantSharedHC:        true,
+			wantSharedTransport: true,
+		},
+		{
+			name:                "UseDefaultClient with custom logger",
+			opts:                &Options{UseDefaultClient: true, Logger: customLogger},
+			wantSharedHC:        true,
+			wantSharedTransport: true,
+			hasCustomLogger:     true,
+		},
+		{
+			name:                "UseDefaultClient ignores custom client",
+			opts:                &Options{UseDefaultClient: true, Client: customClient},
+			wantSharedHC:        true,
+			wantSharedTransport: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewWithOptions(tt.opts)
+
+			if tt.isDefault {
+				if got != defaultClient {
+					t.Errorf("NewWithOptions() = %p, want defaultClient %p", got, defaultClient)
+				}
+				return // Don't run other checks for this case
+			}
+			if got == defaultClient {
+				t.Errorf("NewWithOptions() = %p, should not be defaultClient", got)
+			}
+			if tt.wantHC != nil {
+				if got.hc != tt.wantHC {
+					t.Errorf("NewWithOptions().hc = %p, want %p", got.hc, tt.wantHC)
+				}
+				if got.subClient != tt.wantHC {
+					t.Errorf("NewWithOptions().hc = %p, want %p", got.hc, tt.wantHC)
+				}
+			}
+			if tt.hasCustomLogger {
+				if got.logger != customLogger {
+					t.Errorf("NewWithOptions().logger = %p, want %p", got.logger, customLogger)
+				}
+			}
+
+			// Check transport sharing behavior
+			if tt.opts != nil && tt.opts.Client == nil {
+				got2 := NewWithOptions(tt.opts)
+				transportsAreShared := got.hc.Transport == got2.hc.Transport
+				if transportsAreShared != tt.wantSharedTransport {
+					t.Errorf("Transport sharing mismatch: got %v, want %v", transportsAreShared, tt.wantSharedTransport)
+				}
+			}
+
+			// Check http client sharing behavior
+			if tt.opts != nil && tt.opts.Client == nil {
+				got2 := NewWithOptions(tt.opts)
+				clientsAreShared := got.hc == got2.hc
+				if clientsAreShared != tt.wantSharedHC {
+					t.Errorf("Client sharing mismatch: got %v, want %v", clientsAreShared, tt.wantSharedHC)
+				}
+			}
+		})
+	}
+}
+
+func TestNewWithOptions_UseDefaultClient(t *testing.T) {
+	client := NewWithOptions(&Options{UseDefaultClient: true})
+	if client.hc != defaultClient.hc {
+		t.Errorf("NewWithOptions(UseDefaultClient: true).hc = %p, want %p", client.hc, defaultClient.hc)
+	}
+	if client.subClient != defaultClient.subClient {
+		t.Errorf("NewWithOptions(UseDefaultClient: true).subClient = %p, want %p", client.subClient, defaultClient.subClient)
+	}
+}
+
+func TestSubscribeUsesSubscribeClient(t *testing.T) {
+	subscribeClientUsed := make(chan bool, 1)
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Test-Header") == "subscribe" {
+			subscribeClientUsed <- true
+		} else {
+			subscribeClientUsed <- false
+		}
+		w.Header().Set("Etag", "etag-1")
+		fmt.Fprint(w, "initial-value")
+	}))
+	defer ts.Close()
+
+	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
+
+	subTransport := &headerTransport{
+		header: "X-Test-Header",
+		value:  "subscribe",
+		base:   http.DefaultTransport,
+	}
+	subClient := &http.Client{Transport: subTransport}
+	hc := newDefaultHTTPClient(true)
+
+	c := &Client{
+		hc:        hc,
+		subClient: subClient,
+		logger:    slog.New(slog.NewTextHandler(io.Discard, nil)),
+	}
+
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+
+	c.SubscribeWithContext(ctx, "some/path", func(ctx context.Context, v string, ok bool) error {
+		cancel()
+		return nil
+	})
+
+	select {
+	case used := <-subscribeClientUsed:
+		if !used {
+			t.Error("Subscribe did not use the subscribe client")
+		}
+	case <-time.After(5 * time.Second):
+		// This can happen if the request from the client is never sent.
+		t.Fatal("Test timed out")
+	}
+}
+
+type headerTransport struct {
+	header string
+	value  string
+	base   http.RoundTripper
+}
+
+func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set(t.header, t.value)
+	return t.base.RoundTrip(req)
 }

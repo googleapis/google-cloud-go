@@ -29,6 +29,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DestinationIterator) All() iter.Seq2[*networkconnectivitypb.Destination, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *GroupIterator) All() iter.Seq2[*networkconnectivitypb.Group, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -47,7 +53,25 @@ func (it *HubStatusEntryIterator) All() iter.Seq2[*networkconnectivitypb.HubStat
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *InternalRangeIterator) All() iter.Seq2[*networkconnectivitypb.InternalRange, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MulticloudDataTransferConfigIterator) All() iter.Seq2[*networkconnectivitypb.MulticloudDataTransferConfig, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MulticloudDataTransferSupportedServiceIterator) All() iter.Seq2[*networkconnectivitypb.MulticloudDataTransferSupportedService, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

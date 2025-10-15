@@ -1632,6 +1632,11 @@
                 "FetchFeatureValues"
               ]
             },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -1705,6 +1710,11 @@
             "FetchFeatureValues": {
               "methods": [
                 "FetchFeatureValues"
+              ]
+            },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
               ]
             },
             "GetIamPolicy": {
@@ -3971,6 +3981,190 @@
         }
       }
     },
+    "MemoryBankService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MemoryBankClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateMemory": {
+              "methods": [
+                "CreateMemory"
+              ]
+            },
+            "DeleteMemory": {
+              "methods": [
+                "DeleteMemory"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateMemories": {
+              "methods": [
+                "GenerateMemories"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMemory": {
+              "methods": [
+                "GetMemory"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMemories": {
+              "methods": [
+                "ListMemories"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetrieveMemories": {
+              "methods": [
+                "RetrieveMemories"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateMemory": {
+              "methods": [
+                "UpdateMemory"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MemoryBankClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateMemory": {
+              "methods": [
+                "CreateMemory"
+              ]
+            },
+            "DeleteMemory": {
+              "methods": [
+                "DeleteMemory"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateMemories": {
+              "methods": [
+                "GenerateMemories"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMemory": {
+              "methods": [
+                "GetMemory"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMemories": {
+              "methods": [
+                "ListMemories"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetrieveMemories": {
+              "methods": [
+                "RetrieveMemories"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateMemory": {
+              "methods": [
+                "UpdateMemory"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "MetadataService": {
       "clients": {
         "grpc": {
@@ -5067,6 +5261,11 @@
                 "MergeVersionAliases"
               ]
             },
+            "RecommendSpec": {
+              "methods": [
+                "RecommendSpec"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -5215,6 +5414,11 @@
             "MergeVersionAliases": {
               "methods": [
                 "MergeVersionAliases"
+              ]
+            },
+            "RecommendSpec": {
+              "methods": [
+                "RecommendSpec"
               ]
             },
             "SetIamPolicy": {

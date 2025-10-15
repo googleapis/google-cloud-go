@@ -73,6 +73,9 @@ type CatalogCallOptions struct {
 	GetMetadataJob    []gax.CallOption
 	ListMetadataJobs  []gax.CallOption
 	CancelMetadataJob []gax.CallOption
+	CreateEntryLink   []gax.CallOption
+	DeleteEntryLink   []gax.CallOption
+	GetEntryLink      []gax.CallOption
 	GetLocation       []gax.CallOption
 	ListLocations     []gax.CallOption
 	CancelOperation   []gax.CallOption
@@ -278,6 +281,9 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 		GetMetadataJob:    []gax.CallOption{},
 		ListMetadataJobs:  []gax.CallOption{},
 		CancelMetadataJob: []gax.CallOption{},
+		CreateEntryLink:   []gax.CallOption{},
+		DeleteEntryLink:   []gax.CallOption{},
+		GetEntryLink:      []gax.CallOption{},
 		GetLocation:       []gax.CallOption{},
 		ListLocations:     []gax.CallOption{},
 		CancelOperation:   []gax.CallOption{},
@@ -458,6 +464,9 @@ func defaultCatalogRESTCallOptions() *CatalogCallOptions {
 		GetMetadataJob:    []gax.CallOption{},
 		ListMetadataJobs:  []gax.CallOption{},
 		CancelMetadataJob: []gax.CallOption{},
+		CreateEntryLink:   []gax.CallOption{},
+		DeleteEntryLink:   []gax.CallOption{},
+		GetEntryLink:      []gax.CallOption{},
 		GetLocation:       []gax.CallOption{},
 		ListLocations:     []gax.CallOption{},
 		CancelOperation:   []gax.CallOption{},
@@ -508,6 +517,9 @@ type internalCatalogClient interface {
 	GetMetadataJob(context.Context, *dataplexpb.GetMetadataJobRequest, ...gax.CallOption) (*dataplexpb.MetadataJob, error)
 	ListMetadataJobs(context.Context, *dataplexpb.ListMetadataJobsRequest, ...gax.CallOption) *MetadataJobIterator
 	CancelMetadataJob(context.Context, *dataplexpb.CancelMetadataJobRequest, ...gax.CallOption) error
+	CreateEntryLink(context.Context, *dataplexpb.CreateEntryLinkRequest, ...gax.CallOption) (*dataplexpb.EntryLink, error)
+	DeleteEntryLink(context.Context, *dataplexpb.DeleteEntryLinkRequest, ...gax.CallOption) (*dataplexpb.EntryLink, error)
+	GetEntryLink(context.Context, *dataplexpb.GetEntryLinkRequest, ...gax.CallOption) (*dataplexpb.EntryLink, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -520,10 +532,10 @@ type internalCatalogClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The primary resources offered by this service are EntryGroups, EntryTypes,
-// AspectTypes, and Entries. They collectively let data administrators organize,
-// manage, secure, and catalog data located across cloud projects in their
-// organization in a variety of storage systems, including Cloud Storage and
-// BigQuery.
+// AspectTypes, Entries and EntryLinks. They collectively let data
+// administrators organize, manage, secure, and catalog data located across
+// cloud projects in their organization in a variety of storage systems,
+// including Cloud Storage and BigQuery.
 type CatalogClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCatalogClient
@@ -724,8 +736,8 @@ func (c *CatalogClient) SearchEntries(ctx context.Context, req *dataplexpb.Searc
 	return c.internalClient.SearchEntries(ctx, req, opts...)
 }
 
-// CreateMetadataJob creates a metadata job. For example, use a metadata job to import Dataplex
-// Catalog entries and aspects from a third-party system into Dataplex.
+// CreateMetadataJob creates a metadata job. For example, use a metadata job to import metadata
+// from a third-party system into Dataplex Universal Catalog.
 func (c *CatalogClient) CreateMetadataJob(ctx context.Context, req *dataplexpb.CreateMetadataJobRequest, opts ...gax.CallOption) (*CreateMetadataJobOperation, error) {
 	return c.internalClient.CreateMetadataJob(ctx, req, opts...)
 }
@@ -754,6 +766,21 @@ func (c *CatalogClient) ListMetadataJobs(ctx context.Context, req *dataplexpb.Li
 // reverts the changes from the canceled job.
 func (c *CatalogClient) CancelMetadataJob(ctx context.Context, req *dataplexpb.CancelMetadataJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelMetadataJob(ctx, req, opts...)
+}
+
+// CreateEntryLink creates an Entry Link.
+func (c *CatalogClient) CreateEntryLink(ctx context.Context, req *dataplexpb.CreateEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	return c.internalClient.CreateEntryLink(ctx, req, opts...)
+}
+
+// DeleteEntryLink deletes an Entry Link.
+func (c *CatalogClient) DeleteEntryLink(ctx context.Context, req *dataplexpb.DeleteEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	return c.internalClient.DeleteEntryLink(ctx, req, opts...)
+}
+
+// GetEntryLink gets an Entry Link.
+func (c *CatalogClient) GetEntryLink(ctx context.Context, req *dataplexpb.GetEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	return c.internalClient.GetEntryLink(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -818,10 +845,10 @@ type catalogGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The primary resources offered by this service are EntryGroups, EntryTypes,
-// AspectTypes, and Entries. They collectively let data administrators organize,
-// manage, secure, and catalog data located across cloud projects in their
-// organization in a variety of storage systems, including Cloud Storage and
-// BigQuery.
+// AspectTypes, Entries and EntryLinks. They collectively let data
+// administrators organize, manage, secure, and catalog data located across
+// cloud projects in their organization in a variety of storage systems,
+// including Cloud Storage and BigQuery.
 func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
 	clientOpts := defaultCatalogGRPCClientOptions()
 	if newCatalogClientHook != nil {
@@ -914,10 +941,10 @@ type catalogRESTClient struct {
 // NewCatalogRESTClient creates a new catalog service rest client.
 //
 // The primary resources offered by this service are EntryGroups, EntryTypes,
-// AspectTypes, and Entries. They collectively let data administrators organize,
-// manage, secure, and catalog data located across cloud projects in their
-// organization in a variety of storage systems, including Cloud Storage and
-// BigQuery.
+// AspectTypes, Entries and EntryLinks. They collectively let data
+// administrators organize, manage, secure, and catalog data located across
+// cloud projects in their organization in a variety of storage systems,
+// including Cloud Storage and BigQuery.
 func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
 	clientOpts := append(defaultCatalogRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1634,6 +1661,60 @@ func (c *catalogGRPCClient) CancelMetadataJob(ctx context.Context, req *dataplex
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *catalogGRPCClient) CreateEntryLink(ctx context.Context, req *dataplexpb.CreateEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateEntryLink[0:len((*c.CallOptions).CreateEntryLink):len((*c.CallOptions).CreateEntryLink)], opts...)
+	var resp *dataplexpb.EntryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.CreateEntryLink, req, settings.GRPC, c.logger, "CreateEntryLink")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) DeleteEntryLink(ctx context.Context, req *dataplexpb.DeleteEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteEntryLink[0:len((*c.CallOptions).DeleteEntryLink):len((*c.CallOptions).DeleteEntryLink)], opts...)
+	var resp *dataplexpb.EntryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.DeleteEntryLink, req, settings.GRPC, c.logger, "DeleteEntryLink")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) GetEntryLink(ctx context.Context, req *dataplexpb.GetEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetEntryLink[0:len((*c.CallOptions).GetEntryLink):len((*c.CallOptions).GetEntryLink)], opts...)
+	var resp *dataplexpb.EntryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.GetEntryLink, req, settings.GRPC, c.logger, "GetEntryLink")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *catalogGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -3191,6 +3272,9 @@ func (c *catalogRESTClient) SearchEntries(ctx context.Context, req *dataplexpb.S
 		if req.GetScope() != "" {
 			params.Add("scope", fmt.Sprintf("%v", req.GetScope()))
 		}
+		if req.GetSemanticSearch() {
+			params.Add("semanticSearch", fmt.Sprintf("%v", req.GetSemanticSearch()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -3240,8 +3324,8 @@ func (c *catalogRESTClient) SearchEntries(ctx context.Context, req *dataplexpb.S
 	return it
 }
 
-// CreateMetadataJob creates a metadata job. For example, use a metadata job to import Dataplex
-// Catalog entries and aspects from a third-party system into Dataplex.
+// CreateMetadataJob creates a metadata job. For example, use a metadata job to import metadata
+// from a third-party system into Dataplex Universal Catalog.
 func (c *catalogRESTClient) CreateMetadataJob(ctx context.Context, req *dataplexpb.CreateMetadataJobRequest, opts ...gax.CallOption) (*CreateMetadataJobOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMetadataJob()
@@ -3485,6 +3569,164 @@ func (c *catalogRESTClient) CancelMetadataJob(ctx context.Context, req *dataplex
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelMetadataJob")
 		return err
 	}, opts...)
+}
+
+// CreateEntryLink creates an Entry Link.
+func (c *catalogRESTClient) CreateEntryLink(ctx context.Context, req *dataplexpb.CreateEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEntryLink()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/entryLinks", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("entryLinkId", fmt.Sprintf("%v", req.GetEntryLinkId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateEntryLink[0:len((*c.CallOptions).CreateEntryLink):len((*c.CallOptions).CreateEntryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.EntryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEntryLink")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteEntryLink deletes an Entry Link.
+func (c *catalogRESTClient) DeleteEntryLink(ctx context.Context, req *dataplexpb.DeleteEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteEntryLink[0:len((*c.CallOptions).DeleteEntryLink):len((*c.CallOptions).DeleteEntryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.EntryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEntryLink")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetEntryLink gets an Entry Link.
+func (c *catalogRESTClient) GetEntryLink(ctx context.Context, req *dataplexpb.GetEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEntryLink[0:len((*c.CallOptions).GetEntryLink):len((*c.CallOptions).GetEntryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.EntryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEntryLink")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.

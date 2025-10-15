@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1alpha",
-    "version": "1.16.1",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
@@ -190,6 +190,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1alpha_generated_AlloyDBAdmin_CreateDatabase_sync",
+      "title": "alloydb CreateDatabase Sample",
+      "description": "CreateDatabase creates a new Database in a given project, location, and cluster.",
+      "file": "AlloyDBAdminClient/CreateDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDatabase",
+        "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient.CreateDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.CreateDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.Database",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "CreateDatabase",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin.CreateDatabase",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -1,7 +1,68 @@
-# Changelog
+# Changes
 
 
 
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.19.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+* add CRUD APIs on Databases (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add PG 17 as a Database version (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add configuration for Managed Connection Pool (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* update `Database.charset` to be immutable (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add additional fields to Database object to specify the collation type, character type, if it is a template database, and the template to use for the database (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+* add field to ExecuteSQL request to just validate the sql statement (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+
+### Bug Fixes
+
+* An existing enum `PoolMode` is removed from the `ConnectionPoolConfig` (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+
+### Documentation
+
+* specify that the STOPPED state is not used for clusters anymore (PiperOrigin-RevId: 811874519) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.17.0...alloydb/v1.18.0) (2025-06-25)
+
+
+### Features
+
+* **alloydb:** Backup.create_completion_time output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Backup.create_completion_time output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Cluster.DenyMaintenancePeriod field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Cluster.DenyMaintenancePeriod field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Instance.ActivationPolicy field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** Instance.ActivationPolicy field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.allocated_ip_range_override field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.allocated_ip_range_override field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.network output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** InstanceNetworkConfig.network output field ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
+
+### Documentation
+
+* **alloydb:** A comment for field `earliest_restorable_time` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** A comment for field `earliest_restorable_time` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** A comment for field `status` in message `PscAutoConnectionConfig` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+* **alloydb:** A comment for field `status` in message `PscAutoConnectionConfig` ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.16.1...alloydb/v1.17.0) (2025-06-17)
+
+
+### Features
+
+* **alloydb:** Backup.create_completion_time output field ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **alloydb:** Cluster.DenyMaintenancePeriod field ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **alloydb:** Instance.ActivationPolicy field ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **alloydb:** InstanceNetworkConfig.allocated_ip_range_override field ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **alloydb:** InstanceNetworkConfig.network output field ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
+
+### Documentation
+
+* **alloydb:** A comment for field `earliest_restorable_time` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **alloydb:** A comment for field `status` in message `PscAutoConnectionConfig` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
 
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.16.0...alloydb/v1.16.1) (2025-06-04)
 

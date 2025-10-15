@@ -1,4 +1,11 @@
-# Changelog
+# Changes
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.2.5...identitytoolkit/v0.2.6) (2025-09-18)
+
+
+### Bug Fixes
+
+* **identitytoolkit:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
 
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.2.4...identitytoolkit/v0.2.5) (2025-04-15)
 

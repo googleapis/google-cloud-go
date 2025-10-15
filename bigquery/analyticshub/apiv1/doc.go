@@ -56,11 +56,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &analyticshubpb.CreateDataExchangeRequest{
+//	req := &analyticshubpb.ApproveQueryTemplateRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb#CreateDataExchangeRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb#ApproveQueryTemplateRequest.
 //	}
-//	resp, err := c.CreateDataExchange(ctx, req)
+//	resp, err := c.ApproveQueryTemplate(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

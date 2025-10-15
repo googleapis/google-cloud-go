@@ -27,6 +27,8 @@ import (
 	"time"
 
 	apihubpb "cloud.google.com/go/apihub/apiv1/apihubpb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -43,15 +45,26 @@ var newApiHubPluginClientHook clientHook
 
 // ApiHubPluginCallOptions contains the retry settings for each method of ApiHubPluginClient.
 type ApiHubPluginCallOptions struct {
-	GetPlugin       []gax.CallOption
-	EnablePlugin    []gax.CallOption
-	DisablePlugin   []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	CancelOperation []gax.CallOption
-	DeleteOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	GetPlugin                   []gax.CallOption
+	EnablePlugin                []gax.CallOption
+	DisablePlugin               []gax.CallOption
+	CreatePlugin                []gax.CallOption
+	ListPlugins                 []gax.CallOption
+	DeletePlugin                []gax.CallOption
+	CreatePluginInstance        []gax.CallOption
+	ExecutePluginInstanceAction []gax.CallOption
+	GetPluginInstance           []gax.CallOption
+	ListPluginInstances         []gax.CallOption
+	EnablePluginInstanceAction  []gax.CallOption
+	DisablePluginInstanceAction []gax.CallOption
+	UpdatePluginInstance        []gax.CallOption
+	DeletePluginInstance        []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
+	CancelOperation             []gax.CallOption
+	DeleteOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
 }
 
 func defaultApiHubPluginRESTCallOptions() *ApiHubPluginCallOptions {
@@ -73,12 +86,23 @@ func defaultApiHubPluginRESTCallOptions() *ApiHubPluginCallOptions {
 		DisablePlugin: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		CreatePlugin:                []gax.CallOption{},
+		ListPlugins:                 []gax.CallOption{},
+		DeletePlugin:                []gax.CallOption{},
+		CreatePluginInstance:        []gax.CallOption{},
+		ExecutePluginInstanceAction: []gax.CallOption{},
+		GetPluginInstance:           []gax.CallOption{},
+		ListPluginInstances:         []gax.CallOption{},
+		EnablePluginInstanceAction:  []gax.CallOption{},
+		DisablePluginInstanceAction: []gax.CallOption{},
+		UpdatePluginInstance:        []gax.CallOption{},
+		DeletePluginInstance:        []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
+		CancelOperation:             []gax.CallOption{},
+		DeleteOperation:             []gax.CallOption{},
+		GetOperation:                []gax.CallOption{},
+		ListOperations:              []gax.CallOption{},
 	}
 }
 
@@ -90,6 +114,23 @@ type internalApiHubPluginClient interface {
 	GetPlugin(context.Context, *apihubpb.GetPluginRequest, ...gax.CallOption) (*apihubpb.Plugin, error)
 	EnablePlugin(context.Context, *apihubpb.EnablePluginRequest, ...gax.CallOption) (*apihubpb.Plugin, error)
 	DisablePlugin(context.Context, *apihubpb.DisablePluginRequest, ...gax.CallOption) (*apihubpb.Plugin, error)
+	CreatePlugin(context.Context, *apihubpb.CreatePluginRequest, ...gax.CallOption) (*apihubpb.Plugin, error)
+	ListPlugins(context.Context, *apihubpb.ListPluginsRequest, ...gax.CallOption) *PluginIterator
+	DeletePlugin(context.Context, *apihubpb.DeletePluginRequest, ...gax.CallOption) (*DeletePluginOperation, error)
+	DeletePluginOperation(name string) *DeletePluginOperation
+	CreatePluginInstance(context.Context, *apihubpb.CreatePluginInstanceRequest, ...gax.CallOption) (*CreatePluginInstanceOperation, error)
+	CreatePluginInstanceOperation(name string) *CreatePluginInstanceOperation
+	ExecutePluginInstanceAction(context.Context, *apihubpb.ExecutePluginInstanceActionRequest, ...gax.CallOption) (*ExecutePluginInstanceActionOperation, error)
+	ExecutePluginInstanceActionOperation(name string) *ExecutePluginInstanceActionOperation
+	GetPluginInstance(context.Context, *apihubpb.GetPluginInstanceRequest, ...gax.CallOption) (*apihubpb.PluginInstance, error)
+	ListPluginInstances(context.Context, *apihubpb.ListPluginInstancesRequest, ...gax.CallOption) *PluginInstanceIterator
+	EnablePluginInstanceAction(context.Context, *apihubpb.EnablePluginInstanceActionRequest, ...gax.CallOption) (*EnablePluginInstanceActionOperation, error)
+	EnablePluginInstanceActionOperation(name string) *EnablePluginInstanceActionOperation
+	DisablePluginInstanceAction(context.Context, *apihubpb.DisablePluginInstanceActionRequest, ...gax.CallOption) (*DisablePluginInstanceActionOperation, error)
+	DisablePluginInstanceActionOperation(name string) *DisablePluginInstanceActionOperation
+	UpdatePluginInstance(context.Context, *apihubpb.UpdatePluginInstanceRequest, ...gax.CallOption) (*apihubpb.PluginInstance, error)
+	DeletePluginInstance(context.Context, *apihubpb.DeletePluginInstanceRequest, ...gax.CallOption) (*DeletePluginInstanceOperation, error)
+	DeletePluginInstanceOperation(name string) *DeletePluginInstanceOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -108,6 +149,11 @@ type ApiHubPluginClient struct {
 
 	// The call options for this service.
 	CallOptions *ApiHubPluginCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -133,7 +179,7 @@ func (c *ApiHubPluginClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetPlugin get details about an API Hub plugin.
+// GetPlugin get an API Hub plugin.
 func (c *ApiHubPluginClient) GetPlugin(ctx context.Context, req *apihubpb.GetPluginRequest, opts ...gax.CallOption) (*apihubpb.Plugin, error) {
 	return c.internalClient.GetPlugin(ctx, req, opts...)
 }
@@ -148,6 +194,118 @@ func (c *ApiHubPluginClient) EnablePlugin(ctx context.Context, req *apihubpb.Ena
 // The state of the plugin after disabling is DISABLED
 func (c *ApiHubPluginClient) DisablePlugin(ctx context.Context, req *apihubpb.DisablePluginRequest, opts ...gax.CallOption) (*apihubpb.Plugin, error) {
 	return c.internalClient.DisablePlugin(ctx, req, opts...)
+}
+
+// CreatePlugin create an API Hub plugin resource in the API hub.
+// Once a plugin is created, it can be used to create plugin instances.
+func (c *ApiHubPluginClient) CreatePlugin(ctx context.Context, req *apihubpb.CreatePluginRequest, opts ...gax.CallOption) (*apihubpb.Plugin, error) {
+	return c.internalClient.CreatePlugin(ctx, req, opts...)
+}
+
+// ListPlugins list all the plugins in a given project and location.
+func (c *ApiHubPluginClient) ListPlugins(ctx context.Context, req *apihubpb.ListPluginsRequest, opts ...gax.CallOption) *PluginIterator {
+	return c.internalClient.ListPlugins(ctx, req, opts...)
+}
+
+// DeletePlugin delete a Plugin in API hub.
+// Note, only user owned plugins can be deleted via this method.
+func (c *ApiHubPluginClient) DeletePlugin(ctx context.Context, req *apihubpb.DeletePluginRequest, opts ...gax.CallOption) (*DeletePluginOperation, error) {
+	return c.internalClient.DeletePlugin(ctx, req, opts...)
+}
+
+// DeletePluginOperation returns a new DeletePluginOperation from a given name.
+// The name must be that of a previously created DeletePluginOperation, possibly from a different process.
+func (c *ApiHubPluginClient) DeletePluginOperation(name string) *DeletePluginOperation {
+	return c.internalClient.DeletePluginOperation(name)
+}
+
+// CreatePluginInstance creates a Plugin instance in the API hub.
+func (c *ApiHubPluginClient) CreatePluginInstance(ctx context.Context, req *apihubpb.CreatePluginInstanceRequest, opts ...gax.CallOption) (*CreatePluginInstanceOperation, error) {
+	return c.internalClient.CreatePluginInstance(ctx, req, opts...)
+}
+
+// CreatePluginInstanceOperation returns a new CreatePluginInstanceOperation from a given name.
+// The name must be that of a previously created CreatePluginInstanceOperation, possibly from a different process.
+func (c *ApiHubPluginClient) CreatePluginInstanceOperation(name string) *CreatePluginInstanceOperation {
+	return c.internalClient.CreatePluginInstanceOperation(name)
+}
+
+// ExecutePluginInstanceAction executes a plugin instance in the API hub.
+func (c *ApiHubPluginClient) ExecutePluginInstanceAction(ctx context.Context, req *apihubpb.ExecutePluginInstanceActionRequest, opts ...gax.CallOption) (*ExecutePluginInstanceActionOperation, error) {
+	return c.internalClient.ExecutePluginInstanceAction(ctx, req, opts...)
+}
+
+// ExecutePluginInstanceActionOperation returns a new ExecutePluginInstanceActionOperation from a given name.
+// The name must be that of a previously created ExecutePluginInstanceActionOperation, possibly from a different process.
+func (c *ApiHubPluginClient) ExecutePluginInstanceActionOperation(name string) *ExecutePluginInstanceActionOperation {
+	return c.internalClient.ExecutePluginInstanceActionOperation(name)
+}
+
+// GetPluginInstance get an API Hub plugin instance.
+func (c *ApiHubPluginClient) GetPluginInstance(ctx context.Context, req *apihubpb.GetPluginInstanceRequest, opts ...gax.CallOption) (*apihubpb.PluginInstance, error) {
+	return c.internalClient.GetPluginInstance(ctx, req, opts...)
+}
+
+// ListPluginInstances list all the plugins in a given project and location.
+// - can be used as wildcard value for {plugin_id}
+func (c *ApiHubPluginClient) ListPluginInstances(ctx context.Context, req *apihubpb.ListPluginInstancesRequest, opts ...gax.CallOption) *PluginInstanceIterator {
+	return c.internalClient.ListPluginInstances(ctx, req, opts...)
+}
+
+// EnablePluginInstanceAction enables a plugin instance in the API hub.
+func (c *ApiHubPluginClient) EnablePluginInstanceAction(ctx context.Context, req *apihubpb.EnablePluginInstanceActionRequest, opts ...gax.CallOption) (*EnablePluginInstanceActionOperation, error) {
+	return c.internalClient.EnablePluginInstanceAction(ctx, req, opts...)
+}
+
+// EnablePluginInstanceActionOperation returns a new EnablePluginInstanceActionOperation from a given name.
+// The name must be that of a previously created EnablePluginInstanceActionOperation, possibly from a different process.
+func (c *ApiHubPluginClient) EnablePluginInstanceActionOperation(name string) *EnablePluginInstanceActionOperation {
+	return c.internalClient.EnablePluginInstanceActionOperation(name)
+}
+
+// DisablePluginInstanceAction disables a plugin instance in the API hub.
+func (c *ApiHubPluginClient) DisablePluginInstanceAction(ctx context.Context, req *apihubpb.DisablePluginInstanceActionRequest, opts ...gax.CallOption) (*DisablePluginInstanceActionOperation, error) {
+	return c.internalClient.DisablePluginInstanceAction(ctx, req, opts...)
+}
+
+// DisablePluginInstanceActionOperation returns a new DisablePluginInstanceActionOperation from a given name.
+// The name must be that of a previously created DisablePluginInstanceActionOperation, possibly from a different process.
+func (c *ApiHubPluginClient) DisablePluginInstanceActionOperation(name string) *DisablePluginInstanceActionOperation {
+	return c.internalClient.DisablePluginInstanceActionOperation(name)
+}
+
+// UpdatePluginInstance updates a plugin instance in the API hub.
+// The following fields in the
+// plugin_instance can be updated
+// currently:
+//
+//	display_name
+//
+//	schedule_cron_expression
+//
+// The
+// update_mask
+// should be used to specify the fields being updated.
+//
+// To update the
+// auth_config and
+// additional_config
+// of the plugin instance, use the
+// ApplyPluginInstanceConfig
+// method.
+func (c *ApiHubPluginClient) UpdatePluginInstance(ctx context.Context, req *apihubpb.UpdatePluginInstanceRequest, opts ...gax.CallOption) (*apihubpb.PluginInstance, error) {
+	return c.internalClient.UpdatePluginInstance(ctx, req, opts...)
+}
+
+// DeletePluginInstance deletes a plugin instance in the API hub.
+func (c *ApiHubPluginClient) DeletePluginInstance(ctx context.Context, req *apihubpb.DeletePluginInstanceRequest, opts ...gax.CallOption) (*DeletePluginInstanceOperation, error) {
+	return c.internalClient.DeletePluginInstance(ctx, req, opts...)
+}
+
+// DeletePluginInstanceOperation returns a new DeletePluginInstanceOperation from a given name.
+// The name must be that of a previously created DeletePluginInstanceOperation, possibly from a different process.
+func (c *ApiHubPluginClient) DeletePluginInstanceOperation(name string) *DeletePluginInstanceOperation {
+	return c.internalClient.DeletePluginInstanceOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -188,6 +346,11 @@ type apiHubPluginRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
@@ -215,6 +378,16 @@ func NewApiHubPluginRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &ApiHubPluginClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -257,7 +430,7 @@ func (c *apiHubPluginRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// GetPlugin get details about an API Hub plugin.
+// GetPlugin get an API Hub plugin.
 func (c *apiHubPluginRESTClient) GetPlugin(ctx context.Context, req *apihubpb.GetPluginRequest, opts ...gax.CallOption) (*apihubpb.Plugin, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -419,6 +592,709 @@ func (c *apiHubPluginRESTClient) DisablePlugin(ctx context.Context, req *apihubp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CreatePlugin create an API Hub plugin resource in the API hub.
+// Once a plugin is created, it can be used to create plugin instances.
+func (c *apiHubPluginRESTClient) CreatePlugin(ctx context.Context, req *apihubpb.CreatePluginRequest, opts ...gax.CallOption) (*apihubpb.Plugin, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPlugin()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/plugins", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPluginId() != "" {
+		params.Add("pluginId", fmt.Sprintf("%v", req.GetPluginId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreatePlugin[0:len((*c.CallOptions).CreatePlugin):len((*c.CallOptions).CreatePlugin)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &apihubpb.Plugin{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePlugin")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPlugins list all the plugins in a given project and location.
+func (c *apiHubPluginRESTClient) ListPlugins(ctx context.Context, req *apihubpb.ListPluginsRequest, opts ...gax.CallOption) *PluginIterator {
+	it := &PluginIterator{}
+	req = proto.Clone(req).(*apihubpb.ListPluginsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Plugin, string, error) {
+		resp := &apihubpb.ListPluginsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/plugins", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPlugins")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPlugins(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeletePlugin delete a Plugin in API hub.
+// Note, only user owned plugins can be deleted via this method.
+func (c *apiHubPluginRESTClient) DeletePlugin(ctx context.Context, req *apihubpb.DeletePluginRequest, opts ...gax.CallOption) (*DeletePluginOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePlugin")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeletePluginOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreatePluginInstance creates a Plugin instance in the API hub.
+func (c *apiHubPluginRESTClient) CreatePluginInstance(ctx context.Context, req *apihubpb.CreatePluginInstanceRequest, opts ...gax.CallOption) (*CreatePluginInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPluginInstance()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPluginInstanceId() != "" {
+		params.Add("pluginInstanceId", fmt.Sprintf("%v", req.GetPluginInstanceId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePluginInstance")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreatePluginInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExecutePluginInstanceAction executes a plugin instance in the API hub.
+func (c *apiHubPluginRESTClient) ExecutePluginInstanceAction(ctx context.Context, req *apihubpb.ExecutePluginInstanceActionRequest, opts ...gax.CallOption) (*ExecutePluginInstanceActionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:executeAction", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecutePluginInstanceAction")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ExecutePluginInstanceActionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetPluginInstance get an API Hub plugin instance.
+func (c *apiHubPluginRESTClient) GetPluginInstance(ctx context.Context, req *apihubpb.GetPluginInstanceRequest, opts ...gax.CallOption) (*apihubpb.PluginInstance, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPluginInstance[0:len((*c.CallOptions).GetPluginInstance):len((*c.CallOptions).GetPluginInstance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &apihubpb.PluginInstance{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPluginInstance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPluginInstances list all the plugins in a given project and location.
+// - can be used as wildcard value for {plugin_id}
+func (c *apiHubPluginRESTClient) ListPluginInstances(ctx context.Context, req *apihubpb.ListPluginInstancesRequest, opts ...gax.CallOption) *PluginInstanceIterator {
+	it := &PluginInstanceIterator{}
+	req = proto.Clone(req).(*apihubpb.ListPluginInstancesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.PluginInstance, string, error) {
+		resp := &apihubpb.ListPluginInstancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPluginInstances")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPluginInstances(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// EnablePluginInstanceAction enables a plugin instance in the API hub.
+func (c *apiHubPluginRESTClient) EnablePluginInstanceAction(ctx context.Context, req *apihubpb.EnablePluginInstanceActionRequest, opts ...gax.CallOption) (*EnablePluginInstanceActionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:enableAction", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnablePluginInstanceAction")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &EnablePluginInstanceActionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DisablePluginInstanceAction disables a plugin instance in the API hub.
+func (c *apiHubPluginRESTClient) DisablePluginInstanceAction(ctx context.Context, req *apihubpb.DisablePluginInstanceActionRequest, opts ...gax.CallOption) (*DisablePluginInstanceActionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:disableAction", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DisablePluginInstanceAction")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DisablePluginInstanceActionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdatePluginInstance updates a plugin instance in the API hub.
+// The following fields in the
+// plugin_instance can be updated
+// currently:
+//
+//	display_name
+//
+//	schedule_cron_expression
+//
+// The
+// update_mask
+// should be used to specify the fields being updated.
+//
+// To update the
+// auth_config and
+// additional_config
+// of the plugin instance, use the
+// ApplyPluginInstanceConfig
+// method.
+func (c *apiHubPluginRESTClient) UpdatePluginInstance(ctx context.Context, req *apihubpb.UpdatePluginInstanceRequest, opts ...gax.CallOption) (*apihubpb.PluginInstance, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPluginInstance()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPluginInstance().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "plugin_instance.name", url.QueryEscape(req.GetPluginInstance().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePluginInstance[0:len((*c.CallOptions).UpdatePluginInstance):len((*c.CallOptions).UpdatePluginInstance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &apihubpb.PluginInstance{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePluginInstance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeletePluginInstance deletes a plugin instance in the API hub.
+func (c *apiHubPluginRESTClient) DeletePluginInstance(ctx context.Context, req *apihubpb.DeletePluginInstanceRequest, opts ...gax.CallOption) (*DeletePluginInstanceOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePluginInstance")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeletePluginInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -757,4 +1633,64 @@ func (c *apiHubPluginRESTClient) ListOperations(ctx context.Context, req *longru
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreatePluginInstanceOperation returns a new CreatePluginInstanceOperation from a given name.
+// The name must be that of a previously created CreatePluginInstanceOperation, possibly from a different process.
+func (c *apiHubPluginRESTClient) CreatePluginInstanceOperation(name string) *CreatePluginInstanceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreatePluginInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeletePluginOperation returns a new DeletePluginOperation from a given name.
+// The name must be that of a previously created DeletePluginOperation, possibly from a different process.
+func (c *apiHubPluginRESTClient) DeletePluginOperation(name string) *DeletePluginOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeletePluginOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeletePluginInstanceOperation returns a new DeletePluginInstanceOperation from a given name.
+// The name must be that of a previously created DeletePluginInstanceOperation, possibly from a different process.
+func (c *apiHubPluginRESTClient) DeletePluginInstanceOperation(name string) *DeletePluginInstanceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeletePluginInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DisablePluginInstanceActionOperation returns a new DisablePluginInstanceActionOperation from a given name.
+// The name must be that of a previously created DisablePluginInstanceActionOperation, possibly from a different process.
+func (c *apiHubPluginRESTClient) DisablePluginInstanceActionOperation(name string) *DisablePluginInstanceActionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DisablePluginInstanceActionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// EnablePluginInstanceActionOperation returns a new EnablePluginInstanceActionOperation from a given name.
+// The name must be that of a previously created EnablePluginInstanceActionOperation, possibly from a different process.
+func (c *apiHubPluginRESTClient) EnablePluginInstanceActionOperation(name string) *EnablePluginInstanceActionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &EnablePluginInstanceActionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExecutePluginInstanceActionOperation returns a new ExecutePluginInstanceActionOperation from a given name.
+// The name must be that of a previously created ExecutePluginInstanceActionOperation, possibly from a different process.
+func (c *apiHubPluginRESTClient) ExecutePluginInstanceActionOperation(name string) *ExecutePluginInstanceActionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ExecutePluginInstanceActionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }

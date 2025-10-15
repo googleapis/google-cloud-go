@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storage/control/apiv2",
-    "version": "1.55.0",
+    "version": "1.57.0",
     "language": "GO",
     "apis": [
       {
@@ -408,6 +408,52 @@
         "method": {
           "shortName": "GetFolderIntelligenceConfig",
           "fullName": "google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetIamPolicy_sync",
+      "title": "storage GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy for a specified bucket.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
+      "file": "StorageControlClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.storage.control.v2.StorageControl.GetIamPolicy",
           "service": {
             "shortName": "StorageControl",
             "fullName": "google.storage.control.v2.StorageControl"
@@ -868,6 +914,98 @@
         "method": {
           "shortName": "ResumeAnywhereCache",
           "fullName": "google.storage.control.v2.StorageControl.ResumeAnywhereCache",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_SetIamPolicy_sync",
+      "title": "storage SetIamPolicy Sample",
+      "description": "SetIamPolicy updates an IAM policy for the specified bucket.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
+      "file": "StorageControlClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.storage.control.v2.StorageControlClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.storage.control.v2.StorageControl.SetIamPolicy",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_TestIamPermissions_sync",
+      "title": "storage TestIamPermissions Sample",
+      "description": "TestIamPermissions tests a set of permissions on the given bucket, object, or managed folder\nto see which, if any, are held by the caller.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket,\n`projects/_/buckets/{bucket}/objects/{object}` for an object, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
+      "file": "StorageControlClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.storage.control.v2.StorageControlClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.storage.control.v2.StorageControl.TestIamPermissions",
           "service": {
             "shortName": "StorageControl",
             "fullName": "google.storage.control.v2.StorageControl"

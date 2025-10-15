@@ -21,13 +21,14 @@
 package apihubpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -37,7 +38,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The [GetStyleGuide][ApiHub.GetStyleGuide] method's request.
+// The [GetStyleGuide][google.cloud.apihub.v1.LintingService.GetStyleGuide]
+// method's request.
 type GetStyleGuideRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -86,7 +88,9 @@ func (x *GetStyleGuideRequest) GetName() string {
 	return ""
 }
 
-// The [UpdateStyleGuide][ApiHub.UpdateStyleGuide] method's request.
+// The
+// [UpdateStyleGuide][google.cloud.apihub.v1.LintingService.UpdateStyleGuide]
+// method's request.
 type UpdateStyleGuideRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -142,7 +146,9 @@ func (x *UpdateStyleGuideRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// The [GetStyleGuideContents][ApiHub.GetStyleGuideContents] method's request.
+// The
+// [GetStyleGuideContents][google.cloud.apihub.v1.LintingService.GetStyleGuideContents]
+// method's request.
 type GetStyleGuideContentsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -192,7 +198,8 @@ func (x *GetStyleGuideContentsRequest) GetName() string {
 	return ""
 }
 
-// The [LintSpec][ApiHub.LintSpec] method's request.
+// The [LintSpec][google.cloud.apihub.v1.LintingService.LintSpec] method's
+// request.
 type LintSpecRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

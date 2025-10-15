@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.maintenance.api.v1beta",
+  "libraryPackage": "cloud.google.com/go/maintenance/api/apiv1beta",
+  "services": {
+    "Maintenance": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MaintenanceClient",
+          "rpcs": {
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetResourceMaintenance": {
+              "methods": [
+                "GetResourceMaintenance"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListResourceMaintenances": {
+              "methods": [
+                "ListResourceMaintenances"
+              ]
+            },
+            "SummarizeMaintenances": {
+              "methods": [
+                "SummarizeMaintenances"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MaintenanceClient",
+          "rpcs": {
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetResourceMaintenance": {
+              "methods": [
+                "GetResourceMaintenance"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListResourceMaintenances": {
+              "methods": [
+                "ListResourceMaintenances"
+              ]
+            },
+            "SummarizeMaintenances": {
+              "methods": [
+                "SummarizeMaintenances"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

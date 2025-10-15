@@ -1,6 +1,52 @@
 # Changes
 
 
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.27.0...video/v1.27.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **video:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.26.0...video/v1.27.0) (2025-09-17)
+
+
+### Features
+
+* **video/livestream:** Added Auto Transcription support ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added H.265 (HEVC) codec support ([#12900](https://github.com/googleapis/google-cloud-go/issues/12900)) ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added PreviewInput method used for the low latency input monitoring ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added StartDistribution/StopDistribution methods and Distribution/DistributionStream messages used for distributing live streams to external RTMP/SRT endpoints ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added UHD (4k) resolution support ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+* **video/livestream:** Added UpdateEncryptions event to perform key rotation without restarting a channel ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+
+
+### Documentation
+
+* **video/livestream:** Update requirements of resource ID fields to be more clear ([e71002d](https://github.com/googleapis/google-cloud-go/commit/e71002ddf47eeb11430eca9018ecaf48178fee9f))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.25.0...video/v1.26.0) (2025-09-04)
+
+
+### Features
+
+* **video/transcoder:** Add support for automatically generating subtitle for input videos ([7e241f3](https://github.com/googleapis/google-cloud-go/commit/7e241f3c17e44e83f858ac142ebedc916330651e))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.24.0...video/v1.25.0) (2025-07-23)
+
+
+### Features
+
+* **video/transcoder:** Added support for converting the input video to a supported high dynamic range (HDR) formats ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **video/transcoder:** Added support for DROP_DUPLICATE frame rate conversion strategy to achieve the exact frame rate on the output video ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **video/transcoder:** Added support for fill_content_gaps field to allow processing inputs with significant number of missing frames ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+* **video/transcoder:** Added support for specifying HEVC codec tag ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+
+### Documentation
+
+* **video/transcoder:** Improve comment formatting, add links, add references ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.5...video/v1.24.0) (2025-05-21)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/trace/v1.11.6...trace/v1.11.7) (2025-10-09)
+
+
+### Bug Fixes
+
+* **trace:** Upgrade gRPC service registration func ([9157a71](https://github.com/googleapis/google-cloud-go/commit/9157a715e39b0b15074ba34187ff70c820d8834a))
+
 ## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/trace/v1.11.5...trace/v1.11.6) (2025-04-15)
 
 

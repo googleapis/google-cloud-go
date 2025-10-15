@@ -22,6 +22,7 @@ package adminpb
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -138,8 +139,6 @@ const (
 	AnalyticsAdminService_CreateChannelGroup_FullMethodName                           = "/google.analytics.admin.v1alpha.AnalyticsAdminService/CreateChannelGroup"
 	AnalyticsAdminService_UpdateChannelGroup_FullMethodName                           = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateChannelGroup"
 	AnalyticsAdminService_DeleteChannelGroup_FullMethodName                           = "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteChannelGroup"
-	AnalyticsAdminService_SetAutomatedGa4ConfigurationOptOut_FullMethodName           = "/google.analytics.admin.v1alpha.AnalyticsAdminService/SetAutomatedGa4ConfigurationOptOut"
-	AnalyticsAdminService_FetchAutomatedGa4ConfigurationOptOut_FullMethodName         = "/google.analytics.admin.v1alpha.AnalyticsAdminService/FetchAutomatedGa4ConfigurationOptOut"
 	AnalyticsAdminService_CreateBigQueryLink_FullMethodName                           = "/google.analytics.admin.v1alpha.AnalyticsAdminService/CreateBigQueryLink"
 	AnalyticsAdminService_GetBigQueryLink_FullMethodName                              = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetBigQueryLink"
 	AnalyticsAdminService_ListBigQueryLinks_FullMethodName                            = "/google.analytics.admin.v1alpha.AnalyticsAdminService/ListBigQueryLinks"
@@ -147,10 +146,6 @@ const (
 	AnalyticsAdminService_UpdateBigQueryLink_FullMethodName                           = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateBigQueryLink"
 	AnalyticsAdminService_GetEnhancedMeasurementSettings_FullMethodName               = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetEnhancedMeasurementSettings"
 	AnalyticsAdminService_UpdateEnhancedMeasurementSettings_FullMethodName            = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateEnhancedMeasurementSettings"
-	AnalyticsAdminService_CreateConnectedSiteTag_FullMethodName                       = "/google.analytics.admin.v1alpha.AnalyticsAdminService/CreateConnectedSiteTag"
-	AnalyticsAdminService_DeleteConnectedSiteTag_FullMethodName                       = "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteConnectedSiteTag"
-	AnalyticsAdminService_ListConnectedSiteTags_FullMethodName                        = "/google.analytics.admin.v1alpha.AnalyticsAdminService/ListConnectedSiteTags"
-	AnalyticsAdminService_FetchConnectedGa4Property_FullMethodName                    = "/google.analytics.admin.v1alpha.AnalyticsAdminService/FetchConnectedGa4Property"
 	AnalyticsAdminService_GetAdSenseLink_FullMethodName                               = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetAdSenseLink"
 	AnalyticsAdminService_CreateAdSenseLink_FullMethodName                            = "/google.analytics.admin.v1alpha.AnalyticsAdminService/CreateAdSenseLink"
 	AnalyticsAdminService_DeleteAdSenseLink_FullMethodName                            = "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteAdSenseLink"
@@ -190,6 +185,10 @@ const (
 	AnalyticsAdminService_UpdateReportingDataAnnotation_FullMethodName                = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateReportingDataAnnotation"
 	AnalyticsAdminService_DeleteReportingDataAnnotation_FullMethodName                = "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteReportingDataAnnotation"
 	AnalyticsAdminService_SubmitUserDeletion_FullMethodName                           = "/google.analytics.admin.v1alpha.AnalyticsAdminService/SubmitUserDeletion"
+	AnalyticsAdminService_ListSubpropertySyncConfigs_FullMethodName                   = "/google.analytics.admin.v1alpha.AnalyticsAdminService/ListSubpropertySyncConfigs"
+	AnalyticsAdminService_UpdateSubpropertySyncConfig_FullMethodName                  = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertySyncConfig"
+	AnalyticsAdminService_GetSubpropertySyncConfig_FullMethodName                     = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertySyncConfig"
+	AnalyticsAdminService_GetReportingIdentitySettings_FullMethodName                 = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetReportingIdentitySettings"
 )
 
 // AnalyticsAdminServiceClient is the client API for AnalyticsAdminService service.
@@ -500,14 +499,6 @@ type AnalyticsAdminServiceClient interface {
 	UpdateChannelGroup(ctx context.Context, in *UpdateChannelGroupRequest, opts ...grpc.CallOption) (*ChannelGroup, error)
 	// Deletes a ChannelGroup on a property.
 	DeleteChannelGroup(ctx context.Context, in *DeleteChannelGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Sets the opt out status for the automated GA4 setup process for a UA
-	// property.
-	// Note: this has no effect on GA4 property.
-	SetAutomatedGa4ConfigurationOptOut(ctx context.Context, in *SetAutomatedGa4ConfigurationOptOutRequest, opts ...grpc.CallOption) (*SetAutomatedGa4ConfigurationOptOutResponse, error)
-	// Fetches the opt out status for the automated GA4 setup process for a UA
-	// property.
-	// Note: this has no effect on GA4 property.
-	FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, in *FetchAutomatedGa4ConfigurationOptOutRequest, opts ...grpc.CallOption) (*FetchAutomatedGa4ConfigurationOptOutResponse, error)
 	// Creates a BigQueryLink.
 	CreateBigQueryLink(ctx context.Context, in *CreateBigQueryLinkRequest, opts ...grpc.CallOption) (*BigQueryLink, error)
 	// Lookup for a single BigQuery Link.
@@ -526,20 +517,6 @@ type AnalyticsAdminServiceClient interface {
 	// Note that the stream must enable enhanced measurement for these settings to
 	// take effect.
 	UpdateEnhancedMeasurementSettings(ctx context.Context, in *UpdateEnhancedMeasurementSettingsRequest, opts ...grpc.CallOption) (*EnhancedMeasurementSettings, error)
-	// Creates a connected site tag for a Universal Analytics property. You can
-	// create a maximum of 20 connected site tags per property.
-	// Note: This API cannot be used on GA4 properties.
-	CreateConnectedSiteTag(ctx context.Context, in *CreateConnectedSiteTagRequest, opts ...grpc.CallOption) (*CreateConnectedSiteTagResponse, error)
-	// Deletes a connected site tag for a Universal Analytics property.
-	// Note: this has no effect on GA4 properties.
-	DeleteConnectedSiteTag(ctx context.Context, in *DeleteConnectedSiteTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Lists the connected site tags for a Universal Analytics property. A maximum
-	// of 20 connected site tags will be returned. Note: this has no effect on GA4
-	// property.
-	ListConnectedSiteTags(ctx context.Context, in *ListConnectedSiteTagsRequest, opts ...grpc.CallOption) (*ListConnectedSiteTagsResponse, error)
-	// Given a specified UA property, looks up the GA4 property connected to it.
-	// Note: this cannot be used with GA4 properties.
-	FetchConnectedGa4Property(ctx context.Context, in *FetchConnectedGa4PropertyRequest, opts ...grpc.CallOption) (*FetchConnectedGa4PropertyResponse, error)
 	// Looks up a single AdSenseLink.
 	GetAdSenseLink(ctx context.Context, in *GetAdSenseLinkRequest, opts ...grpc.CallOption) (*AdSenseLink, error)
 	// Creates an AdSenseLink.
@@ -627,6 +604,14 @@ type AnalyticsAdminServiceClient interface {
 	DeleteReportingDataAnnotation(ctx context.Context, in *DeleteReportingDataAnnotationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Submits a request for user deletion for a property.
 	SubmitUserDeletion(ctx context.Context, in *SubmitUserDeletionRequest, opts ...grpc.CallOption) (*SubmitUserDeletionResponse, error)
+	// List all `SubpropertySyncConfig` resources for a property.
+	ListSubpropertySyncConfigs(ctx context.Context, in *ListSubpropertySyncConfigsRequest, opts ...grpc.CallOption) (*ListSubpropertySyncConfigsResponse, error)
+	// Updates a `SubpropertySyncConfig`.
+	UpdateSubpropertySyncConfig(ctx context.Context, in *UpdateSubpropertySyncConfigRequest, opts ...grpc.CallOption) (*SubpropertySyncConfig, error)
+	// Lookup for a single `SubpropertySyncConfig`.
+	GetSubpropertySyncConfig(ctx context.Context, in *GetSubpropertySyncConfigRequest, opts ...grpc.CallOption) (*SubpropertySyncConfig, error)
+	// Returns the singleton data retention settings for this property.
+	GetReportingIdentitySettings(ctx context.Context, in *GetReportingIdentitySettingsRequest, opts ...grpc.CallOption) (*ReportingIdentitySettings, error)
 }
 
 type analyticsAdminServiceClient struct {
@@ -1578,24 +1563,6 @@ func (c *analyticsAdminServiceClient) DeleteChannelGroup(ctx context.Context, in
 	return out, nil
 }
 
-func (c *analyticsAdminServiceClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, in *SetAutomatedGa4ConfigurationOptOutRequest, opts ...grpc.CallOption) (*SetAutomatedGa4ConfigurationOptOutResponse, error) {
-	out := new(SetAutomatedGa4ConfigurationOptOutResponse)
-	err := c.cc.Invoke(ctx, AnalyticsAdminService_SetAutomatedGa4ConfigurationOptOut_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *analyticsAdminServiceClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, in *FetchAutomatedGa4ConfigurationOptOutRequest, opts ...grpc.CallOption) (*FetchAutomatedGa4ConfigurationOptOutResponse, error) {
-	out := new(FetchAutomatedGa4ConfigurationOptOutResponse)
-	err := c.cc.Invoke(ctx, AnalyticsAdminService_FetchAutomatedGa4ConfigurationOptOut_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *analyticsAdminServiceClient) CreateBigQueryLink(ctx context.Context, in *CreateBigQueryLinkRequest, opts ...grpc.CallOption) (*BigQueryLink, error) {
 	out := new(BigQueryLink)
 	err := c.cc.Invoke(ctx, AnalyticsAdminService_CreateBigQueryLink_FullMethodName, in, out, opts...)
@@ -1653,42 +1620,6 @@ func (c *analyticsAdminServiceClient) GetEnhancedMeasurementSettings(ctx context
 func (c *analyticsAdminServiceClient) UpdateEnhancedMeasurementSettings(ctx context.Context, in *UpdateEnhancedMeasurementSettingsRequest, opts ...grpc.CallOption) (*EnhancedMeasurementSettings, error) {
 	out := new(EnhancedMeasurementSettings)
 	err := c.cc.Invoke(ctx, AnalyticsAdminService_UpdateEnhancedMeasurementSettings_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *analyticsAdminServiceClient) CreateConnectedSiteTag(ctx context.Context, in *CreateConnectedSiteTagRequest, opts ...grpc.CallOption) (*CreateConnectedSiteTagResponse, error) {
-	out := new(CreateConnectedSiteTagResponse)
-	err := c.cc.Invoke(ctx, AnalyticsAdminService_CreateConnectedSiteTag_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *analyticsAdminServiceClient) DeleteConnectedSiteTag(ctx context.Context, in *DeleteConnectedSiteTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, AnalyticsAdminService_DeleteConnectedSiteTag_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *analyticsAdminServiceClient) ListConnectedSiteTags(ctx context.Context, in *ListConnectedSiteTagsRequest, opts ...grpc.CallOption) (*ListConnectedSiteTagsResponse, error) {
-	out := new(ListConnectedSiteTagsResponse)
-	err := c.cc.Invoke(ctx, AnalyticsAdminService_ListConnectedSiteTags_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *analyticsAdminServiceClient) FetchConnectedGa4Property(ctx context.Context, in *FetchConnectedGa4PropertyRequest, opts ...grpc.CallOption) (*FetchConnectedGa4PropertyResponse, error) {
-	out := new(FetchConnectedGa4PropertyResponse)
-	err := c.cc.Invoke(ctx, AnalyticsAdminService_FetchConnectedGa4Property_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2046,6 +1977,42 @@ func (c *analyticsAdminServiceClient) SubmitUserDeletion(ctx context.Context, in
 	return out, nil
 }
 
+func (c *analyticsAdminServiceClient) ListSubpropertySyncConfigs(ctx context.Context, in *ListSubpropertySyncConfigsRequest, opts ...grpc.CallOption) (*ListSubpropertySyncConfigsResponse, error) {
+	out := new(ListSubpropertySyncConfigsResponse)
+	err := c.cc.Invoke(ctx, AnalyticsAdminService_ListSubpropertySyncConfigs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsAdminServiceClient) UpdateSubpropertySyncConfig(ctx context.Context, in *UpdateSubpropertySyncConfigRequest, opts ...grpc.CallOption) (*SubpropertySyncConfig, error) {
+	out := new(SubpropertySyncConfig)
+	err := c.cc.Invoke(ctx, AnalyticsAdminService_UpdateSubpropertySyncConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsAdminServiceClient) GetSubpropertySyncConfig(ctx context.Context, in *GetSubpropertySyncConfigRequest, opts ...grpc.CallOption) (*SubpropertySyncConfig, error) {
+	out := new(SubpropertySyncConfig)
+	err := c.cc.Invoke(ctx, AnalyticsAdminService_GetSubpropertySyncConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsAdminServiceClient) GetReportingIdentitySettings(ctx context.Context, in *GetReportingIdentitySettingsRequest, opts ...grpc.CallOption) (*ReportingIdentitySettings, error) {
+	out := new(ReportingIdentitySettings)
+	err := c.cc.Invoke(ctx, AnalyticsAdminService_GetReportingIdentitySettings_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AnalyticsAdminServiceServer is the server API for AnalyticsAdminService service.
 // All implementations should embed UnimplementedAnalyticsAdminServiceServer
 // for forward compatibility
@@ -2354,14 +2321,6 @@ type AnalyticsAdminServiceServer interface {
 	UpdateChannelGroup(context.Context, *UpdateChannelGroupRequest) (*ChannelGroup, error)
 	// Deletes a ChannelGroup on a property.
 	DeleteChannelGroup(context.Context, *DeleteChannelGroupRequest) (*emptypb.Empty, error)
-	// Sets the opt out status for the automated GA4 setup process for a UA
-	// property.
-	// Note: this has no effect on GA4 property.
-	SetAutomatedGa4ConfigurationOptOut(context.Context, *SetAutomatedGa4ConfigurationOptOutRequest) (*SetAutomatedGa4ConfigurationOptOutResponse, error)
-	// Fetches the opt out status for the automated GA4 setup process for a UA
-	// property.
-	// Note: this has no effect on GA4 property.
-	FetchAutomatedGa4ConfigurationOptOut(context.Context, *FetchAutomatedGa4ConfigurationOptOutRequest) (*FetchAutomatedGa4ConfigurationOptOutResponse, error)
 	// Creates a BigQueryLink.
 	CreateBigQueryLink(context.Context, *CreateBigQueryLinkRequest) (*BigQueryLink, error)
 	// Lookup for a single BigQuery Link.
@@ -2380,20 +2339,6 @@ type AnalyticsAdminServiceServer interface {
 	// Note that the stream must enable enhanced measurement for these settings to
 	// take effect.
 	UpdateEnhancedMeasurementSettings(context.Context, *UpdateEnhancedMeasurementSettingsRequest) (*EnhancedMeasurementSettings, error)
-	// Creates a connected site tag for a Universal Analytics property. You can
-	// create a maximum of 20 connected site tags per property.
-	// Note: This API cannot be used on GA4 properties.
-	CreateConnectedSiteTag(context.Context, *CreateConnectedSiteTagRequest) (*CreateConnectedSiteTagResponse, error)
-	// Deletes a connected site tag for a Universal Analytics property.
-	// Note: this has no effect on GA4 properties.
-	DeleteConnectedSiteTag(context.Context, *DeleteConnectedSiteTagRequest) (*emptypb.Empty, error)
-	// Lists the connected site tags for a Universal Analytics property. A maximum
-	// of 20 connected site tags will be returned. Note: this has no effect on GA4
-	// property.
-	ListConnectedSiteTags(context.Context, *ListConnectedSiteTagsRequest) (*ListConnectedSiteTagsResponse, error)
-	// Given a specified UA property, looks up the GA4 property connected to it.
-	// Note: this cannot be used with GA4 properties.
-	FetchConnectedGa4Property(context.Context, *FetchConnectedGa4PropertyRequest) (*FetchConnectedGa4PropertyResponse, error)
 	// Looks up a single AdSenseLink.
 	GetAdSenseLink(context.Context, *GetAdSenseLinkRequest) (*AdSenseLink, error)
 	// Creates an AdSenseLink.
@@ -2481,6 +2426,14 @@ type AnalyticsAdminServiceServer interface {
 	DeleteReportingDataAnnotation(context.Context, *DeleteReportingDataAnnotationRequest) (*emptypb.Empty, error)
 	// Submits a request for user deletion for a property.
 	SubmitUserDeletion(context.Context, *SubmitUserDeletionRequest) (*SubmitUserDeletionResponse, error)
+	// List all `SubpropertySyncConfig` resources for a property.
+	ListSubpropertySyncConfigs(context.Context, *ListSubpropertySyncConfigsRequest) (*ListSubpropertySyncConfigsResponse, error)
+	// Updates a `SubpropertySyncConfig`.
+	UpdateSubpropertySyncConfig(context.Context, *UpdateSubpropertySyncConfigRequest) (*SubpropertySyncConfig, error)
+	// Lookup for a single `SubpropertySyncConfig`.
+	GetSubpropertySyncConfig(context.Context, *GetSubpropertySyncConfigRequest) (*SubpropertySyncConfig, error)
+	// Returns the singleton data retention settings for this property.
+	GetReportingIdentitySettings(context.Context, *GetReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error)
 }
 
 // UnimplementedAnalyticsAdminServiceServer should be embedded to have forward compatible implementations.
@@ -2799,12 +2752,6 @@ func (UnimplementedAnalyticsAdminServiceServer) UpdateChannelGroup(context.Conte
 func (UnimplementedAnalyticsAdminServiceServer) DeleteChannelGroup(context.Context, *DeleteChannelGroupRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteChannelGroup not implemented")
 }
-func (UnimplementedAnalyticsAdminServiceServer) SetAutomatedGa4ConfigurationOptOut(context.Context, *SetAutomatedGa4ConfigurationOptOutRequest) (*SetAutomatedGa4ConfigurationOptOutResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetAutomatedGa4ConfigurationOptOut not implemented")
-}
-func (UnimplementedAnalyticsAdminServiceServer) FetchAutomatedGa4ConfigurationOptOut(context.Context, *FetchAutomatedGa4ConfigurationOptOutRequest) (*FetchAutomatedGa4ConfigurationOptOutResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FetchAutomatedGa4ConfigurationOptOut not implemented")
-}
 func (UnimplementedAnalyticsAdminServiceServer) CreateBigQueryLink(context.Context, *CreateBigQueryLinkRequest) (*BigQueryLink, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBigQueryLink not implemented")
 }
@@ -2825,18 +2772,6 @@ func (UnimplementedAnalyticsAdminServiceServer) GetEnhancedMeasurementSettings(c
 }
 func (UnimplementedAnalyticsAdminServiceServer) UpdateEnhancedMeasurementSettings(context.Context, *UpdateEnhancedMeasurementSettingsRequest) (*EnhancedMeasurementSettings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEnhancedMeasurementSettings not implemented")
-}
-func (UnimplementedAnalyticsAdminServiceServer) CreateConnectedSiteTag(context.Context, *CreateConnectedSiteTagRequest) (*CreateConnectedSiteTagResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateConnectedSiteTag not implemented")
-}
-func (UnimplementedAnalyticsAdminServiceServer) DeleteConnectedSiteTag(context.Context, *DeleteConnectedSiteTagRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteConnectedSiteTag not implemented")
-}
-func (UnimplementedAnalyticsAdminServiceServer) ListConnectedSiteTags(context.Context, *ListConnectedSiteTagsRequest) (*ListConnectedSiteTagsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListConnectedSiteTags not implemented")
-}
-func (UnimplementedAnalyticsAdminServiceServer) FetchConnectedGa4Property(context.Context, *FetchConnectedGa4PropertyRequest) (*FetchConnectedGa4PropertyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FetchConnectedGa4Property not implemented")
 }
 func (UnimplementedAnalyticsAdminServiceServer) GetAdSenseLink(context.Context, *GetAdSenseLinkRequest) (*AdSenseLink, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAdSenseLink not implemented")
@@ -2954,6 +2889,18 @@ func (UnimplementedAnalyticsAdminServiceServer) DeleteReportingDataAnnotation(co
 }
 func (UnimplementedAnalyticsAdminServiceServer) SubmitUserDeletion(context.Context, *SubmitUserDeletionRequest) (*SubmitUserDeletionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitUserDeletion not implemented")
+}
+func (UnimplementedAnalyticsAdminServiceServer) ListSubpropertySyncConfigs(context.Context, *ListSubpropertySyncConfigsRequest) (*ListSubpropertySyncConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSubpropertySyncConfigs not implemented")
+}
+func (UnimplementedAnalyticsAdminServiceServer) UpdateSubpropertySyncConfig(context.Context, *UpdateSubpropertySyncConfigRequest) (*SubpropertySyncConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubpropertySyncConfig not implemented")
+}
+func (UnimplementedAnalyticsAdminServiceServer) GetSubpropertySyncConfig(context.Context, *GetSubpropertySyncConfigRequest) (*SubpropertySyncConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubpropertySyncConfig not implemented")
+}
+func (UnimplementedAnalyticsAdminServiceServer) GetReportingIdentitySettings(context.Context, *GetReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReportingIdentitySettings not implemented")
 }
 
 // UnsafeAnalyticsAdminServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -4839,42 +4786,6 @@ func _AnalyticsAdminService_DeleteChannelGroup_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AnalyticsAdminService_SetAutomatedGa4ConfigurationOptOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetAutomatedGa4ConfigurationOptOutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsAdminServiceServer).SetAutomatedGa4ConfigurationOptOut(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AnalyticsAdminService_SetAutomatedGa4ConfigurationOptOut_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsAdminServiceServer).SetAutomatedGa4ConfigurationOptOut(ctx, req.(*SetAutomatedGa4ConfigurationOptOutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AnalyticsAdminService_FetchAutomatedGa4ConfigurationOptOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FetchAutomatedGa4ConfigurationOptOutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsAdminServiceServer).FetchAutomatedGa4ConfigurationOptOut(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AnalyticsAdminService_FetchAutomatedGa4ConfigurationOptOut_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsAdminServiceServer).FetchAutomatedGa4ConfigurationOptOut(ctx, req.(*FetchAutomatedGa4ConfigurationOptOutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AnalyticsAdminService_CreateBigQueryLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateBigQueryLinkRequest)
 	if err := dec(in); err != nil {
@@ -4997,78 +4908,6 @@ func _AnalyticsAdminService_UpdateEnhancedMeasurementSettings_Handler(srv interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AnalyticsAdminServiceServer).UpdateEnhancedMeasurementSettings(ctx, req.(*UpdateEnhancedMeasurementSettingsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AnalyticsAdminService_CreateConnectedSiteTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateConnectedSiteTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsAdminServiceServer).CreateConnectedSiteTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AnalyticsAdminService_CreateConnectedSiteTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsAdminServiceServer).CreateConnectedSiteTag(ctx, req.(*CreateConnectedSiteTagRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AnalyticsAdminService_DeleteConnectedSiteTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteConnectedSiteTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsAdminServiceServer).DeleteConnectedSiteTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AnalyticsAdminService_DeleteConnectedSiteTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsAdminServiceServer).DeleteConnectedSiteTag(ctx, req.(*DeleteConnectedSiteTagRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AnalyticsAdminService_ListConnectedSiteTags_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListConnectedSiteTagsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsAdminServiceServer).ListConnectedSiteTags(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AnalyticsAdminService_ListConnectedSiteTags_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsAdminServiceServer).ListConnectedSiteTags(ctx, req.(*ListConnectedSiteTagsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AnalyticsAdminService_FetchConnectedGa4Property_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FetchConnectedGa4PropertyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsAdminServiceServer).FetchConnectedGa4Property(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AnalyticsAdminService_FetchConnectedGa4Property_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsAdminServiceServer).FetchConnectedGa4Property(ctx, req.(*FetchConnectedGa4PropertyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5775,6 +5614,78 @@ func _AnalyticsAdminService_SubmitUserDeletion_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AnalyticsAdminService_ListSubpropertySyncConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSubpropertySyncConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).ListSubpropertySyncConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsAdminService_ListSubpropertySyncConfigs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).ListSubpropertySyncConfigs(ctx, req.(*ListSubpropertySyncConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsAdminService_UpdateSubpropertySyncConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSubpropertySyncConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).UpdateSubpropertySyncConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsAdminService_UpdateSubpropertySyncConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).UpdateSubpropertySyncConfig(ctx, req.(*UpdateSubpropertySyncConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsAdminService_GetSubpropertySyncConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSubpropertySyncConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).GetSubpropertySyncConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsAdminService_GetSubpropertySyncConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).GetSubpropertySyncConfig(ctx, req.(*GetSubpropertySyncConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsAdminService_GetReportingIdentitySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReportingIdentitySettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).GetReportingIdentitySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsAdminService_GetReportingIdentitySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).GetReportingIdentitySettings(ctx, req.(*GetReportingIdentitySettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AnalyticsAdminService_ServiceDesc is the grpc.ServiceDesc for AnalyticsAdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -6199,14 +6110,6 @@ var AnalyticsAdminService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AnalyticsAdminService_DeleteChannelGroup_Handler,
 		},
 		{
-			MethodName: "SetAutomatedGa4ConfigurationOptOut",
-			Handler:    _AnalyticsAdminService_SetAutomatedGa4ConfigurationOptOut_Handler,
-		},
-		{
-			MethodName: "FetchAutomatedGa4ConfigurationOptOut",
-			Handler:    _AnalyticsAdminService_FetchAutomatedGa4ConfigurationOptOut_Handler,
-		},
-		{
 			MethodName: "CreateBigQueryLink",
 			Handler:    _AnalyticsAdminService_CreateBigQueryLink_Handler,
 		},
@@ -6233,22 +6136,6 @@ var AnalyticsAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateEnhancedMeasurementSettings",
 			Handler:    _AnalyticsAdminService_UpdateEnhancedMeasurementSettings_Handler,
-		},
-		{
-			MethodName: "CreateConnectedSiteTag",
-			Handler:    _AnalyticsAdminService_CreateConnectedSiteTag_Handler,
-		},
-		{
-			MethodName: "DeleteConnectedSiteTag",
-			Handler:    _AnalyticsAdminService_DeleteConnectedSiteTag_Handler,
-		},
-		{
-			MethodName: "ListConnectedSiteTags",
-			Handler:    _AnalyticsAdminService_ListConnectedSiteTags_Handler,
-		},
-		{
-			MethodName: "FetchConnectedGa4Property",
-			Handler:    _AnalyticsAdminService_FetchConnectedGa4Property_Handler,
 		},
 		{
 			MethodName: "GetAdSenseLink",
@@ -6405,6 +6292,22 @@ var AnalyticsAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubmitUserDeletion",
 			Handler:    _AnalyticsAdminService_SubmitUserDeletion_Handler,
+		},
+		{
+			MethodName: "ListSubpropertySyncConfigs",
+			Handler:    _AnalyticsAdminService_ListSubpropertySyncConfigs_Handler,
+		},
+		{
+			MethodName: "UpdateSubpropertySyncConfig",
+			Handler:    _AnalyticsAdminService_UpdateSubpropertySyncConfig_Handler,
+		},
+		{
+			MethodName: "GetSubpropertySyncConfig",
+			Handler:    _AnalyticsAdminService_GetSubpropertySyncConfig_Handler,
+		},
+		{
+			MethodName: "GetReportingIdentitySettings",
+			Handler:    _AnalyticsAdminService_GetReportingIdentitySettings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

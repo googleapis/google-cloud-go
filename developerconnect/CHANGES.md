@@ -1,4 +1,32 @@
-# Changelog
+# Changes
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.4.0...developerconnect/v0.4.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **developerconnect:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.3.3...developerconnect/v0.4.0) (2025-06-25)
+
+
+### Features
+
+* **developerconnect:** A new enum `google.cloud.developerconnect.v1.SystemProvider` is added ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A new field `bitbucket_cloud_config` is added to message `google.cloud.developerconnect.v1.Connection` ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A new field `bitbucket_data_center_config` is added to message `google.cloud.developerconnect.v1.Connection` ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A new field `oauth_start_uri` is added to message `google.cloud.developerconnect.v1.AccountConnector` ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A new field `provider_oauth_config` is added to message `google.cloud.developerconnect.v1.AccountConnector` ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A new message `google.cloud.developerconnect.v1.AccountConnector` is added ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A new message `google.cloud.developerconnect.v1.GitProxyConfig` is added ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A new message `google.cloud.developerconnect.v1.User` is added ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** Add DCI insights config proto ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+
+
+### Documentation
+
+* **developerconnect:** A comment for field `uid` in message `.google.cloud.developerconnect.v1.Connection` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
+* **developerconnect:** A comment for field `uid` in message `.google.cloud.developerconnect.v1.GitRepositoryLink` is changed ([116a33a](https://github.com/googleapis/google-cloud-go/commit/116a33ab13c9fac6f6830dded55c24d38504707b))
 
 ## [0.3.3](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.3.2...developerconnect/v0.3.3) (2025-04-15)
 

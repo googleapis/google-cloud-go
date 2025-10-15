@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.9.0...vmmigration/v1.9.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **vmmigration:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.8.6...vmmigration/v1.9.0) (2025-09-11)
+
+
+### Features
+
+* **vmmigration:** API for extending the time to live (TTL) of a Migrating VM ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Azure as a source ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** CMEK support ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Cutover forecast ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Image Import ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Machine Image Import ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Migration warnings in addition to errors ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Multiple additional supported target details ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** OS capabilities detection ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** VM disk migration ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+
+### Bug Fixes
+
+* **vmmigration:** Changed field behavior for an existing field `key` in message `.google.cloud.vmmigration.v1.AwsSourceDetails` to `required` to protect from incorrect input ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Changed field behavior for an existing field `project` in message `.google.cloud.vmmigration.v1.TargetProject` to `required` to protect from incorrect input ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **vmmigration:** Changed field behavior for an existing field `value` in message `.google.cloud.vmmigration.v1.AwsSourceDetails` to `required` to protect from incorrect input ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+
+### Documentation
+
+* **vmmigration:** Updated comments and descriptions to improve clarity ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
 ## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.8.5...vmmigration/v1.8.6) (2025-04-15)
 
 

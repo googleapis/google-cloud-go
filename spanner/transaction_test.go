@@ -304,6 +304,9 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 }
 
 func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwitchesToRegular(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -396,6 +399,9 @@ func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwi
 }
 
 func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
@@ -506,6 +512,9 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 }
 
 func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
@@ -598,6 +607,9 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 }
 
 func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -723,6 +735,9 @@ func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
 }
 
 func TestMutationOnlyCaseAborted(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 
@@ -838,20 +853,16 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if got, want := gotReqs[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	if got, want := gotReqs[1].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -941,50 +952,365 @@ func TestReadWriteStmtBasedTransaction_CommitNonAbortedErrorReturned(t *testing.
 	}
 }
 
+func TestReadOnlyTransaction_BeginTransactionOption(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	// Wait for the session pool to have been initialized, so we don't have to worry about that in the checks below.
+	waitForMinSessions(t, client, server)
+
+	ctx := context.Background()
+	for _, beginTransactionOption := range []BeginTransactionOption{DefaultBeginTransaction, ExplicitBeginTransaction, InlinedBeginTransaction} {
+		tx := client.ReadOnlyTransaction().WithBeginTransactionOption(beginTransactionOption)
+		for range 2 {
+			iter := tx.Query(ctx, Statement{SQL: SelectFooFromBar})
+			if err := consumeIterator(iter); err != nil {
+				t.Fatalf("failed to execute query: %v", err)
+			}
+		}
+		tx.Close()
+
+		requests := drainRequestsFromServer(server.TestSpanner)
+		if beginTransactionOption == InlinedBeginTransaction {
+			if err := compareRequests([]interface{}{
+				&sppb.ExecuteSqlRequest{},
+				&sppb.ExecuteSqlRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		} else {
+			if err := compareRequests([]interface{}{
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteSqlRequest{},
+				&sppb.ExecuteSqlRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+}
+
+func TestReadOnlyTransaction_ConcurrentQueries(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	// Wait for the session pool to have been initialized, so we don't have to worry about that in the checks below.
+	waitForMinSessions(t, client, server)
+
+	numQueries := 10
+	ctx := context.Background()
+	for _, beginTransactionOption := range []BeginTransactionOption{DefaultBeginTransaction, ExplicitBeginTransaction, InlinedBeginTransaction} {
+		tx := client.ReadOnlyTransaction().WithBeginTransactionOption(beginTransactionOption)
+		wg := sync.WaitGroup{}
+		errs := make([]error, 0, numQueries)
+		mu := sync.Mutex{}
+		for range numQueries {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				iter := tx.Query(ctx, Statement{SQL: SelectFooFromBar})
+				if err := consumeIterator(iter); err != nil {
+					mu.Lock()
+					errs = append(errs, err)
+					mu.Unlock()
+				}
+			}()
+		}
+		wg.Wait()
+		if len(errs) > 0 {
+			t.Fatalf("got errors: %v", errs)
+		}
+		tx.Close()
+
+		requests := drainRequestsFromServer(server.TestSpanner)
+		if g, w := countRequests(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{})), numQueries; g != w {
+			t.Fatalf("request count mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		if beginTransactionOption == InlinedBeginTransaction {
+			if g, w := len(requests), numQueries; g != w {
+				t.Fatalf("total request count mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			for n, req := range requests {
+				request, ok := req.(*sppb.ExecuteSqlRequest)
+				if !ok {
+					t.Fatalf("got a non-ExecuteSqlRequest: %T", req)
+				}
+				begin := request.Transaction.GetBegin()
+				if n == 0 && begin == nil {
+					t.Fatal("first request does not include a BeginTransaction option")
+				} else if n > 0 && begin != nil {
+					t.Fatalf("request %d contains a BeginTransaction option: %v", n, begin)
+				}
+			}
+		} else {
+			// The transaction used an explicit BeginTransaction RPC.
+			if g, w := len(requests), numQueries+1; g != w {
+				t.Fatalf("total request count mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			for n, req := range requests {
+				if n == 0 {
+					_, ok := req.(*sppb.BeginTransactionRequest)
+					if !ok {
+						t.Fatalf("got a non-BeginTransactionRequest: %T", req)
+					}
+				} else {
+					request := req.(*sppb.ExecuteSqlRequest)
+					begin := request.Transaction.GetBegin()
+					if begin != nil {
+						t.Fatalf("request %d contains a BeginTransaction option: %v", n, begin)
+					}
+				}
+			}
+		}
+	}
+}
+
+func TestReadWriteTransaction_BeginTransactionOption(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	// Wait for the session pool to have been initialized, so we don't have to worry about that in the checks below.
+	waitForMinSessions(t, client, server)
+
+	ctx := context.Background()
+	for _, beginTransactionOption := range []BeginTransactionOption{DefaultBeginTransaction, ExplicitBeginTransaction, InlinedBeginTransaction} {
+		if _, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+				return err
+			}
+			return nil
+		}, TransactionOptions{BeginTransactionOption: beginTransactionOption}); err != nil {
+			t.Fatalf("transaction failed: %v", err)
+		}
+		requests := drainRequestsFromServer(server.TestSpanner)
+		if beginTransactionOption == ExplicitBeginTransaction {
+			if err := compareRequests([]interface{}{
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteSqlRequest{},
+				&sppb.CommitRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		} else {
+			if err := compareRequests([]interface{}{
+				&sppb.ExecuteSqlRequest{},
+				&sppb.CommitRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+}
+
 func TestReadWriteStmtBasedTransaction(t *testing.T) {
 	t.Parallel()
 
-	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, make(map[string]SimulatedExecutionTime))
-	if err != nil {
-		t.Fatalf("transaction failed to commit: %v", err)
-	}
-	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-	}
-	if g, w := attempts, 1; g != w {
-		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	for _, beginTransactionOption := range []BeginTransactionOption{ExplicitBeginTransaction, InlinedBeginTransaction} {
+		rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, beginTransactionOption, make(map[string]SimulatedExecutionTime))
+		if err != nil {
+			t.Fatalf("transaction failed to commit: %v", err)
+		}
+		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+			t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		}
+		if g, w := attempts, 1; g != w {
+			t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+		}
 	}
 }
 
 func TestReadWriteStmtBasedTransaction_CommitAborted(t *testing.T) {
 	t.Parallel()
-	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
-		MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
-	})
-	if err != nil {
-		t.Fatalf("transaction failed to commit: %v", err)
-	}
-	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-	}
-	if g, w := attempts, 2; g != w {
-		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+
+	for _, beginTransactionOption := range []BeginTransactionOption{ExplicitBeginTransaction, InlinedBeginTransaction} {
+		rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, beginTransactionOption, map[string]SimulatedExecutionTime{
+			MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+		})
+		if err != nil {
+			t.Fatalf("transaction failed to commit: %v", err)
+		}
+		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+			t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		}
+		if g, w := attempts, 2; g != w {
+			t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+		}
 	}
 }
 
 func TestReadWriteStmtBasedTransaction_QueryAborted(t *testing.T) {
 	t.Parallel()
-	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
-		MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+
+	for _, beginTransactionOption := range []BeginTransactionOption{ExplicitBeginTransaction, InlinedBeginTransaction} {
+		rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, beginTransactionOption, map[string]SimulatedExecutionTime{
+			MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+		})
+		if err != nil {
+			t.Fatalf("transaction failed to commit: %v", err)
+		}
+		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+			t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		}
+		if g, w := attempts, 2; g != w {
+			t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+		}
+	}
+}
+
+func TestReadWriteTransaction_QueryFailed(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
 	})
-	if err != nil {
-		t.Fatalf("transaction failed to commit: %v", err)
+	defer teardown()
+	// Wait for the session pool to have been initialized, so we don't have to worry about that in the checks below.
+	waitForMinSessions(t, client, server)
+
+	// Add a sticky error to the server.
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteStreamingSql,
+		SimulatedExecutionTime{KeepError: true, Errors: []error{status.Error(codes.InvalidArgument, "Missing value for query parameter")}})
+
+	ctx := context.Background()
+	attempt := 0
+	if _, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempt++
+		iter := tx.Query(ctx, Statement{SQL: SelectFooFromBar})
+		err := consumeIterator(iter)
+		// Queries return the original errors, and not the 'internal' error that triggers a retry of the transaction.
+		if g, w := ErrCode(err), codes.InvalidArgument; g != w {
+			t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		_, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if attempt == 1 {
+			return err
+		}
+		if err != nil {
+			t.Fatalf("update failed: %v", err)
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("transaction failed: %v", err)
 	}
-	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	// We expect the following requests:
+	// 1. ExecuteSqlRequest with inline-begin. This fails and a retry will be triggered when the update function is
+	//    called, but before that request is sent to Spanner
+	// 2. BeginTransactionRequest for the retry.
+	// 3. ExecuteSqlRequest for the query.
+	// 4. ExecuteSqlRequest for the update.
+	// 5. CommitRequest.
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.ExecuteSqlRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
 	}
-	if g, w := attempts, 2; g != w {
-		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+}
+
+func TestReadWriteStmtBasedTransaction_QueryFailed(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	// Wait for the session pool to have been initialized, so we don't have to worry about that in the checks below.
+	waitForMinSessions(t, client, server)
+
+	// Add a 'sticky' error to the server
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteStreamingSql,
+		SimulatedExecutionTime{KeepError: true, Errors: []error{status.Error(codes.InvalidArgument, "Missing value for query parameter")}})
+
+	for _, beginTransactionOption := range []BeginTransactionOption{ExplicitBeginTransaction, InlinedBeginTransaction} {
+		ctx := context.Background()
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{BeginTransactionOption: beginTransactionOption})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Execute a query that will return an error as the first statement in the transaction.
+		// Queries always return the actual error, but if the transaction used inlined-begin, then the transaction is
+		// marked as aborted and any following statement or commit will fail with an Aborted error.
+		// If the transaction used explicit begin, then the transaction is not marked as aborted.
+		iter := tx.Query(ctx, Statement{SQL: SelectFooFromBar})
+		err = consumeIterator(iter)
+		if g, w := ErrCode(err), codes.InvalidArgument; g != w {
+			t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		_, err = tx.Commit(ctx)
+
+		if beginTransactionOption == InlinedBeginTransaction {
+			// The transaction used inline-begin, but the first statement failed. The transaction is then marked as
+			// aborted by the client library, and that error pops up on the second statement (or commit).
+			if g, w := ErrCode(err), codes.Aborted; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			// Reset and retry the transaction.
+			tx, err = tx.ResetForRetry(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			// The transaction should now use an explicit BeginTransaction and the query should still return the actual error.
+			iter := tx.Query(ctx, Statement{SQL: SelectFooFromBar})
+			err := consumeIterator(iter)
+			if g, w := ErrCode(err), codes.InvalidArgument; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			// The commit should now succeed, even though there are no successful statements in the transaction.
+			if _, err := tx.Commit(ctx); err != nil {
+				t.Fatalf("commit failed: %v", err)
+			}
+			requests := drainRequestsFromServer(server.TestSpanner)
+			if err := compareRequests([]interface{}{
+				&sppb.ExecuteSqlRequest{},
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteSqlRequest{},
+				&sppb.CommitRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		} else {
+			// The transaction used an explicit BeginTransaction, so the commit should have succeeded the first time.
+			if err != nil {
+				t.Fatalf("commit failed: %v", err)
+			}
+			requests := drainRequestsFromServer(server.TestSpanner)
+			if err := compareRequests([]interface{}{
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteSqlRequest{},
+				&sppb.CommitRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 }
 
@@ -999,29 +1325,120 @@ func TestReadWriteStmtBasedTransaction_UpdateAborted(t *testing.T) {
 		},
 	})
 	defer teardown()
+
+	for _, beginTransactionOption := range []BeginTransactionOption{ExplicitBeginTransaction, InlinedBeginTransaction} {
+		server.TestSpanner.PutExecutionTime(
+			MethodExecuteSql,
+			SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+
+		ctx := context.Background()
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{BeginTransactionOption: beginTransactionOption})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if g, w := ErrCode(err), codes.Aborted; g != w {
+			t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		tx, err = tx.ResetForRetry(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		c, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			t.Fatalf("update count mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		if _, err := tx.Commit(ctx); err != nil {
+			t.Fatalf("failed to commit: %v", err)
+		}
+	}
+}
+
+func waitForMinSessions(t *testing.T, client *Client, server *MockedSpannerInMemTestServer) {
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.idleList.Len() < int(sp.MinOpened) {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
+	drainRequestsFromServer(server.TestSpanner)
+}
+
+func TestReadWriteStmtBasedTransaction_UpdateFailed(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	// Wait for the session pool to have been initialized, so we don't have to worry about that in the checks below.
+	waitForMinSessions(t, client, server)
+
+	// Add a 'sticky' error to the server
 	server.TestSpanner.PutExecutionTime(
 		MethodExecuteSql,
-		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+		SimulatedExecutionTime{KeepError: true, Errors: []error{status.Error(codes.AlreadyExists, "This row already exists")}})
 
-	ctx := context.Background()
-	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
-	if g, w := ErrCode(err), codes.Aborted; g != w {
-		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
-	}
-	tx, err = tx.ResetForRetry(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	c, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
-		t.Fatalf("update count mismatch\n Got: %v\nWant: %v", g, w)
+	for _, beginTransactionOption := range []BeginTransactionOption{ExplicitBeginTransaction, InlinedBeginTransaction} {
+		ctx := context.Background()
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{BeginTransactionOption: beginTransactionOption})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Execute an update statement that will return an error as the first statement in the transaction.
+		// The returned error depends on the BeginTransactionOption that has been chosen:
+		// 1. ExplicitBegin: The actual error is returned.
+		// 2. InlinedBegin: An Aborted error is returned. This indicates that the user should retry the transaction.
+		_, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+
+		if beginTransactionOption == InlinedBeginTransaction {
+			if g, w := ErrCode(err), codes.Aborted; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			// Reset and retry the transaction.
+			tx, err = tx.ResetForRetry(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			// The transaction should now use an explicit BeginTransaction and the update should now return the actual error.
+			_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+			if g, w := ErrCode(err), codes.AlreadyExists; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			tx.Rollback(ctx)
+			requests := drainRequestsFromServer(server.TestSpanner)
+			if err := compareRequests([]interface{}{
+				&sppb.ExecuteSqlRequest{},
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteSqlRequest{},
+				&sppb.RollbackRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		} else {
+			// The transaction used an explicit BeginTransaction, so the update should return the actual error the first time.
+			if g, w := ErrCode(err), codes.AlreadyExists; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			tx.Rollback(ctx)
+			requests := drainRequestsFromServer(server.TestSpanner)
+			if err := compareRequests([]interface{}{
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteSqlRequest{},
+				&sppb.RollbackRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 }
 
@@ -1062,8 +1479,79 @@ func TestReadWriteStmtBasedTransaction_BatchUpdateAborted(t *testing.T) {
 	}
 }
 
-func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
-	// server, client, teardown := setupMockedTestServer(t)
+func TestReadWriteStmtBasedTransaction_BatchUpdateFailed(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	// Wait for the session pool to have been initialized, so we don't have to worry about that in the checks below.
+	waitForMinSessions(t, client, server)
+
+	// Add a 'sticky' error to the server
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteBatchDml,
+		SimulatedExecutionTime{KeepError: true, Errors: []error{status.Error(codes.AlreadyExists, "This row already exists")}})
+
+	for _, beginTransactionOption := range []BeginTransactionOption{ExplicitBeginTransaction, InlinedBeginTransaction} {
+		ctx := context.Background()
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{BeginTransactionOption: beginTransactionOption})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Execute a BatchUpdate that will return an error as the first statement in the transaction.
+		// The returned error depends on the BeginTransactionOption that has been chosen:
+		// 1. ExplicitBegin: The actual error is returned.
+		// 2. InlinedBegin: An Aborted error is returned. This indicates that the user should retry the transaction.
+		_, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
+
+		if beginTransactionOption == InlinedBeginTransaction {
+			if g, w := ErrCode(err), codes.Aborted; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			// Reset and retry the transaction.
+			tx, err = tx.ResetForRetry(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			// The transaction should now use an explicit BeginTransaction and the update should now return the actual error.
+			_, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
+			if g, w := ErrCode(err), codes.AlreadyExists; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			tx.Rollback(ctx)
+			requests := drainRequestsFromServer(server.TestSpanner)
+			if err := compareRequests([]interface{}{
+				&sppb.ExecuteBatchDmlRequest{},
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteBatchDmlRequest{},
+				&sppb.RollbackRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		} else {
+			// The transaction used an explicit BeginTransaction, so the update should return the actual error the first time.
+			if g, w := ErrCode(err), codes.AlreadyExists; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			tx.Rollback(ctx)
+			requests := drainRequestsFromServer(server.TestSpanner)
+			if err := compareRequests([]interface{}{
+				&sppb.BeginTransactionRequest{},
+				&sppb.ExecuteBatchDmlRequest{},
+				&sppb.RollbackRequest{}}, requests); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+}
+
+func testReadWriteStmtBasedTransaction(t *testing.T, beginTransactionOption BeginTransactionOption, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
@@ -1106,12 +1594,12 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 		if attempts > 1 {
 			tx, err = tx.ResetForRetry(ctx)
 		} else {
-			tx, err = NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{TransactionTag: "test"})
+			tx, err = NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{TransactionTag: "test", BeginTransactionOption: beginTransactionOption})
 		}
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
-		if g, w := tx.options.TransactionTag, "test"; g != w {
+		if g, w := tx.txOpts.TransactionTag, "test"; g != w {
 			t.Errorf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
 		}
 		rowCount, err = f(tx)
@@ -1202,6 +1690,9 @@ func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 
 // Verify that requests in a ReadWriteStmtBasedTransaction uses multiplexed sessions when enabled
 func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -1213,7 +1704,8 @@ func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
@@ -1253,6 +1745,9 @@ func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
 
 // Verify that in ReadWriteStmtBasedTransaction when a transaction using a multiplexed session fails with ABORTED then during retry the previousTransactionID is passed
 func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSession_OnAbort(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -1264,7 +1759,8 @@ func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSe
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
@@ -1316,6 +1812,9 @@ func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSe
 
 // Verify that in ReadWriteStmtBasedTransaction, commit request has precommit token set when using multiplexed sessions
 func TestReadWriteStmtBasedTransaction_SetsPrecommitToken(t *testing.T) {
+	if !isMultiplexEnabled {
+		t.Skip("Skipping multiplex session tests when regular sessions enabled")
+	}
 	t.Parallel()
 	ctx := context.Background()
 	cfg := SessionPoolConfig{
@@ -1327,7 +1826,8 @@ func TestReadWriteStmtBasedTransaction_SetsPrecommitToken(t *testing.T) {
 		enableMultiplexedSessionForRW: true,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: cfg,
+		SessionPoolConfig:    cfg,
+		DisableNativeMetrics: true,
 	})
 	defer teardown()
 
@@ -1403,20 +1903,16 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -1478,26 +1974,22 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[5].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[6+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[6].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[7+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[7].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -1687,6 +2179,49 @@ func TestLastStatement_StmtBasedTx_BatchUpdate(t *testing.T) {
 	}
 }
 
+func TestReadWriteTransactionUsesNewContextForRollback(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 10,
+			MaxOpened: 10,
+		},
+	})
+	defer teardown()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		// Execute a statement that actually starts the transaction and returns a transaction ID.
+		if _, err := transaction.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+			return err
+		}
+		// Make the next statement slow. This should now fail with a DEADLINE_EXCEEDED error.
+		server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{MinimumExecutionTime: 100 * time.Millisecond})
+		if _, err := transaction.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+			return err
+		}
+		return nil
+	})
+	if g, w := ErrCode(err), codes.DeadlineExceeded; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(requests, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 2; g != w {
+		t.Fatalf("execute count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	// Make sure a Rollback request is actually sent to Spanner to release the locks of the transaction.
+	rollbackRequests := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbackRequests), 1; g != w {
+		t.Fatalf("rollback count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 // shouldHaveReceived asserts that exactly expectedRequests were present in
 // the server's ReceivedRequests channel. It only looks at type, not contents.
 //
@@ -1714,9 +2249,6 @@ func compareRequestsWithConfig(want []interface{}, got []interface{}, config *Se
 		want[0], want[sessReq] = want[sessReq], want[0]
 	}
 	if isMultiplexEnabled || (config != nil && config.enableMultiplexSession) {
-		if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
-			want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
-		}
 		if reflect.TypeOf(got[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 			muxSessionIndex := 0
 			for i := 0; i < len(got); i++ {
@@ -1726,6 +2258,20 @@ func compareRequestsWithConfig(want []interface{}, got []interface{}, config *Se
 				}
 			}
 			got[0], got[muxSessionIndex] = got[muxSessionIndex], got[0]
+		}
+		// With multiplex session enabled, if no SessionPoolConfig is configured then
+		// BatchCreationSessions will be not called. In such cases, only multiplex
+		//session will be created using CreateSession RPC
+		if reflect.TypeOf(want[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+			if len(got) > 1 && reflect.TypeOf(got[1]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+				want[0] = &sppb.CreateSessionRequest{}
+			}
+			if len(got) == 1 && reflect.TypeOf(got[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+				want[0] = &sppb.CreateSessionRequest{}
+			}
+			if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
+				want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
+			}
 		}
 	}
 	if len(got) != len(want) {

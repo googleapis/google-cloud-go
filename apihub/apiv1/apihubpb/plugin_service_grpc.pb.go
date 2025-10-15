@@ -22,6 +22,8 @@ package apihubpb
 
 import (
 	context "context"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -33,16 +35,27 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ApiHubPlugin_GetPlugin_FullMethodName     = "/google.cloud.apihub.v1.ApiHubPlugin/GetPlugin"
-	ApiHubPlugin_EnablePlugin_FullMethodName  = "/google.cloud.apihub.v1.ApiHubPlugin/EnablePlugin"
-	ApiHubPlugin_DisablePlugin_FullMethodName = "/google.cloud.apihub.v1.ApiHubPlugin/DisablePlugin"
+	ApiHubPlugin_GetPlugin_FullMethodName                   = "/google.cloud.apihub.v1.ApiHubPlugin/GetPlugin"
+	ApiHubPlugin_EnablePlugin_FullMethodName                = "/google.cloud.apihub.v1.ApiHubPlugin/EnablePlugin"
+	ApiHubPlugin_DisablePlugin_FullMethodName               = "/google.cloud.apihub.v1.ApiHubPlugin/DisablePlugin"
+	ApiHubPlugin_CreatePlugin_FullMethodName                = "/google.cloud.apihub.v1.ApiHubPlugin/CreatePlugin"
+	ApiHubPlugin_ListPlugins_FullMethodName                 = "/google.cloud.apihub.v1.ApiHubPlugin/ListPlugins"
+	ApiHubPlugin_DeletePlugin_FullMethodName                = "/google.cloud.apihub.v1.ApiHubPlugin/DeletePlugin"
+	ApiHubPlugin_CreatePluginInstance_FullMethodName        = "/google.cloud.apihub.v1.ApiHubPlugin/CreatePluginInstance"
+	ApiHubPlugin_ExecutePluginInstanceAction_FullMethodName = "/google.cloud.apihub.v1.ApiHubPlugin/ExecutePluginInstanceAction"
+	ApiHubPlugin_GetPluginInstance_FullMethodName           = "/google.cloud.apihub.v1.ApiHubPlugin/GetPluginInstance"
+	ApiHubPlugin_ListPluginInstances_FullMethodName         = "/google.cloud.apihub.v1.ApiHubPlugin/ListPluginInstances"
+	ApiHubPlugin_EnablePluginInstanceAction_FullMethodName  = "/google.cloud.apihub.v1.ApiHubPlugin/EnablePluginInstanceAction"
+	ApiHubPlugin_DisablePluginInstanceAction_FullMethodName = "/google.cloud.apihub.v1.ApiHubPlugin/DisablePluginInstanceAction"
+	ApiHubPlugin_UpdatePluginInstance_FullMethodName        = "/google.cloud.apihub.v1.ApiHubPlugin/UpdatePluginInstance"
+	ApiHubPlugin_DeletePluginInstance_FullMethodName        = "/google.cloud.apihub.v1.ApiHubPlugin/DeletePluginInstance"
 )
 
 // ApiHubPluginClient is the client API for ApiHubPlugin service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiHubPluginClient interface {
-	// Get details about an API Hub plugin.
+	// Get an API Hub plugin.
 	GetPlugin(ctx context.Context, in *GetPluginRequest, opts ...grpc.CallOption) (*Plugin, error)
 	// Enables a plugin.
 	// The `state` of the plugin after enabling is `ENABLED`
@@ -50,6 +63,48 @@ type ApiHubPluginClient interface {
 	// Disables a plugin.
 	// The `state` of the plugin after disabling is `DISABLED`
 	DisablePlugin(ctx context.Context, in *DisablePluginRequest, opts ...grpc.CallOption) (*Plugin, error)
+	// Create an API Hub plugin resource in the API hub.
+	// Once a plugin is created, it can be used to create plugin instances.
+	CreatePlugin(ctx context.Context, in *CreatePluginRequest, opts ...grpc.CallOption) (*Plugin, error)
+	// List all the plugins in a given project and location.
+	ListPlugins(ctx context.Context, in *ListPluginsRequest, opts ...grpc.CallOption) (*ListPluginsResponse, error)
+	// Delete a Plugin in API hub.
+	// Note, only user owned plugins can be deleted via this method.
+	DeletePlugin(ctx context.Context, in *DeletePluginRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Creates a Plugin instance in the API hub.
+	CreatePluginInstance(ctx context.Context, in *CreatePluginInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Executes a plugin instance in the API hub.
+	ExecutePluginInstanceAction(ctx context.Context, in *ExecutePluginInstanceActionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Get an API Hub plugin instance.
+	GetPluginInstance(ctx context.Context, in *GetPluginInstanceRequest, opts ...grpc.CallOption) (*PluginInstance, error)
+	// List all the plugins in a given project and location.
+	// `-` can be used as wildcard value for {plugin_id}
+	ListPluginInstances(ctx context.Context, in *ListPluginInstancesRequest, opts ...grpc.CallOption) (*ListPluginInstancesResponse, error)
+	// Enables a plugin instance in the API hub.
+	EnablePluginInstanceAction(ctx context.Context, in *EnablePluginInstanceActionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Disables a plugin instance in the API hub.
+	DisablePluginInstanceAction(ctx context.Context, in *DisablePluginInstanceActionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a plugin instance in the API hub.
+	// The following fields in the
+	// [plugin_instance][google.cloud.apihub.v1.PluginInstance] can be updated
+	// currently:
+	//
+	// * [display_name][google.cloud.apihub.v1.PluginInstance.display_name]
+	// * [schedule_cron_expression][PluginInstance.actions.schedule_cron_expression]
+	//
+	// The
+	// [update_mask][google.cloud.apihub.v1.UpdatePluginInstanceRequest.update_mask]
+	// should be used to specify the fields being updated.
+	//
+	// To update the
+	// [auth_config][google.cloud.apihub.v1.PluginInstance.auth_config] and
+	// [additional_config][google.cloud.apihub.v1.PluginInstance.additional_config]
+	// of the plugin instance, use the
+	// [ApplyPluginInstanceConfig][google.cloud.apihub.v1.ApiHubPlugin.ApplyPluginInstanceConfig]
+	// method.
+	UpdatePluginInstance(ctx context.Context, in *UpdatePluginInstanceRequest, opts ...grpc.CallOption) (*PluginInstance, error)
+	// Deletes a plugin instance in the API hub.
+	DeletePluginInstance(ctx context.Context, in *DeletePluginInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type apiHubPluginClient struct {
@@ -87,11 +142,110 @@ func (c *apiHubPluginClient) DisablePlugin(ctx context.Context, in *DisablePlugi
 	return out, nil
 }
 
+func (c *apiHubPluginClient) CreatePlugin(ctx context.Context, in *CreatePluginRequest, opts ...grpc.CallOption) (*Plugin, error) {
+	out := new(Plugin)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_CreatePlugin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) ListPlugins(ctx context.Context, in *ListPluginsRequest, opts ...grpc.CallOption) (*ListPluginsResponse, error) {
+	out := new(ListPluginsResponse)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_ListPlugins_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) DeletePlugin(ctx context.Context, in *DeletePluginRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_DeletePlugin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) CreatePluginInstance(ctx context.Context, in *CreatePluginInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_CreatePluginInstance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) ExecutePluginInstanceAction(ctx context.Context, in *ExecutePluginInstanceActionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_ExecutePluginInstanceAction_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) GetPluginInstance(ctx context.Context, in *GetPluginInstanceRequest, opts ...grpc.CallOption) (*PluginInstance, error) {
+	out := new(PluginInstance)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_GetPluginInstance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) ListPluginInstances(ctx context.Context, in *ListPluginInstancesRequest, opts ...grpc.CallOption) (*ListPluginInstancesResponse, error) {
+	out := new(ListPluginInstancesResponse)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_ListPluginInstances_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) EnablePluginInstanceAction(ctx context.Context, in *EnablePluginInstanceActionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_EnablePluginInstanceAction_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) DisablePluginInstanceAction(ctx context.Context, in *DisablePluginInstanceActionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_DisablePluginInstanceAction_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) UpdatePluginInstance(ctx context.Context, in *UpdatePluginInstanceRequest, opts ...grpc.CallOption) (*PluginInstance, error) {
+	out := new(PluginInstance)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_UpdatePluginInstance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubPluginClient) DeletePluginInstance(ctx context.Context, in *DeletePluginInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ApiHubPlugin_DeletePluginInstance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiHubPluginServer is the server API for ApiHubPlugin service.
 // All implementations should embed UnimplementedApiHubPluginServer
 // for forward compatibility
 type ApiHubPluginServer interface {
-	// Get details about an API Hub plugin.
+	// Get an API Hub plugin.
 	GetPlugin(context.Context, *GetPluginRequest) (*Plugin, error)
 	// Enables a plugin.
 	// The `state` of the plugin after enabling is `ENABLED`
@@ -99,6 +253,48 @@ type ApiHubPluginServer interface {
 	// Disables a plugin.
 	// The `state` of the plugin after disabling is `DISABLED`
 	DisablePlugin(context.Context, *DisablePluginRequest) (*Plugin, error)
+	// Create an API Hub plugin resource in the API hub.
+	// Once a plugin is created, it can be used to create plugin instances.
+	CreatePlugin(context.Context, *CreatePluginRequest) (*Plugin, error)
+	// List all the plugins in a given project and location.
+	ListPlugins(context.Context, *ListPluginsRequest) (*ListPluginsResponse, error)
+	// Delete a Plugin in API hub.
+	// Note, only user owned plugins can be deleted via this method.
+	DeletePlugin(context.Context, *DeletePluginRequest) (*longrunningpb.Operation, error)
+	// Creates a Plugin instance in the API hub.
+	CreatePluginInstance(context.Context, *CreatePluginInstanceRequest) (*longrunningpb.Operation, error)
+	// Executes a plugin instance in the API hub.
+	ExecutePluginInstanceAction(context.Context, *ExecutePluginInstanceActionRequest) (*longrunningpb.Operation, error)
+	// Get an API Hub plugin instance.
+	GetPluginInstance(context.Context, *GetPluginInstanceRequest) (*PluginInstance, error)
+	// List all the plugins in a given project and location.
+	// `-` can be used as wildcard value for {plugin_id}
+	ListPluginInstances(context.Context, *ListPluginInstancesRequest) (*ListPluginInstancesResponse, error)
+	// Enables a plugin instance in the API hub.
+	EnablePluginInstanceAction(context.Context, *EnablePluginInstanceActionRequest) (*longrunningpb.Operation, error)
+	// Disables a plugin instance in the API hub.
+	DisablePluginInstanceAction(context.Context, *DisablePluginInstanceActionRequest) (*longrunningpb.Operation, error)
+	// Updates a plugin instance in the API hub.
+	// The following fields in the
+	// [plugin_instance][google.cloud.apihub.v1.PluginInstance] can be updated
+	// currently:
+	//
+	// * [display_name][google.cloud.apihub.v1.PluginInstance.display_name]
+	// * [schedule_cron_expression][PluginInstance.actions.schedule_cron_expression]
+	//
+	// The
+	// [update_mask][google.cloud.apihub.v1.UpdatePluginInstanceRequest.update_mask]
+	// should be used to specify the fields being updated.
+	//
+	// To update the
+	// [auth_config][google.cloud.apihub.v1.PluginInstance.auth_config] and
+	// [additional_config][google.cloud.apihub.v1.PluginInstance.additional_config]
+	// of the plugin instance, use the
+	// [ApplyPluginInstanceConfig][google.cloud.apihub.v1.ApiHubPlugin.ApplyPluginInstanceConfig]
+	// method.
+	UpdatePluginInstance(context.Context, *UpdatePluginInstanceRequest) (*PluginInstance, error)
+	// Deletes a plugin instance in the API hub.
+	DeletePluginInstance(context.Context, *DeletePluginInstanceRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedApiHubPluginServer should be embedded to have forward compatible implementations.
@@ -113,6 +309,39 @@ func (UnimplementedApiHubPluginServer) EnablePlugin(context.Context, *EnablePlug
 }
 func (UnimplementedApiHubPluginServer) DisablePlugin(context.Context, *DisablePluginRequest) (*Plugin, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DisablePlugin not implemented")
+}
+func (UnimplementedApiHubPluginServer) CreatePlugin(context.Context, *CreatePluginRequest) (*Plugin, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePlugin not implemented")
+}
+func (UnimplementedApiHubPluginServer) ListPlugins(context.Context, *ListPluginsRequest) (*ListPluginsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPlugins not implemented")
+}
+func (UnimplementedApiHubPluginServer) DeletePlugin(context.Context, *DeletePluginRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePlugin not implemented")
+}
+func (UnimplementedApiHubPluginServer) CreatePluginInstance(context.Context, *CreatePluginInstanceRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePluginInstance not implemented")
+}
+func (UnimplementedApiHubPluginServer) ExecutePluginInstanceAction(context.Context, *ExecutePluginInstanceActionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecutePluginInstanceAction not implemented")
+}
+func (UnimplementedApiHubPluginServer) GetPluginInstance(context.Context, *GetPluginInstanceRequest) (*PluginInstance, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPluginInstance not implemented")
+}
+func (UnimplementedApiHubPluginServer) ListPluginInstances(context.Context, *ListPluginInstancesRequest) (*ListPluginInstancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPluginInstances not implemented")
+}
+func (UnimplementedApiHubPluginServer) EnablePluginInstanceAction(context.Context, *EnablePluginInstanceActionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnablePluginInstanceAction not implemented")
+}
+func (UnimplementedApiHubPluginServer) DisablePluginInstanceAction(context.Context, *DisablePluginInstanceActionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisablePluginInstanceAction not implemented")
+}
+func (UnimplementedApiHubPluginServer) UpdatePluginInstance(context.Context, *UpdatePluginInstanceRequest) (*PluginInstance, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePluginInstance not implemented")
+}
+func (UnimplementedApiHubPluginServer) DeletePluginInstance(context.Context, *DeletePluginInstanceRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePluginInstance not implemented")
 }
 
 // UnsafeApiHubPluginServer may be embedded to opt out of forward compatibility for this service.
@@ -180,6 +409,204 @@ func _ApiHubPlugin_DisablePlugin_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiHubPlugin_CreatePlugin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePluginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).CreatePlugin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_CreatePlugin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).CreatePlugin(ctx, req.(*CreatePluginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_ListPlugins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPluginsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).ListPlugins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_ListPlugins_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).ListPlugins(ctx, req.(*ListPluginsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_DeletePlugin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePluginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).DeletePlugin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_DeletePlugin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).DeletePlugin(ctx, req.(*DeletePluginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_CreatePluginInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePluginInstanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).CreatePluginInstance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_CreatePluginInstance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).CreatePluginInstance(ctx, req.(*CreatePluginInstanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_ExecutePluginInstanceAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecutePluginInstanceActionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).ExecutePluginInstanceAction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_ExecutePluginInstanceAction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).ExecutePluginInstanceAction(ctx, req.(*ExecutePluginInstanceActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_GetPluginInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPluginInstanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).GetPluginInstance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_GetPluginInstance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).GetPluginInstance(ctx, req.(*GetPluginInstanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_ListPluginInstances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPluginInstancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).ListPluginInstances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_ListPluginInstances_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).ListPluginInstances(ctx, req.(*ListPluginInstancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_EnablePluginInstanceAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnablePluginInstanceActionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).EnablePluginInstanceAction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_EnablePluginInstanceAction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).EnablePluginInstanceAction(ctx, req.(*EnablePluginInstanceActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_DisablePluginInstanceAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DisablePluginInstanceActionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).DisablePluginInstanceAction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_DisablePluginInstanceAction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).DisablePluginInstanceAction(ctx, req.(*DisablePluginInstanceActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_UpdatePluginInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePluginInstanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).UpdatePluginInstance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_UpdatePluginInstance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).UpdatePluginInstance(ctx, req.(*UpdatePluginInstanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHubPlugin_DeletePluginInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePluginInstanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubPluginServer).DeletePluginInstance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHubPlugin_DeletePluginInstance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubPluginServer).DeletePluginInstance(ctx, req.(*DeletePluginInstanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiHubPlugin_ServiceDesc is the grpc.ServiceDesc for ApiHubPlugin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -198,6 +625,50 @@ var ApiHubPlugin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DisablePlugin",
 			Handler:    _ApiHubPlugin_DisablePlugin_Handler,
+		},
+		{
+			MethodName: "CreatePlugin",
+			Handler:    _ApiHubPlugin_CreatePlugin_Handler,
+		},
+		{
+			MethodName: "ListPlugins",
+			Handler:    _ApiHubPlugin_ListPlugins_Handler,
+		},
+		{
+			MethodName: "DeletePlugin",
+			Handler:    _ApiHubPlugin_DeletePlugin_Handler,
+		},
+		{
+			MethodName: "CreatePluginInstance",
+			Handler:    _ApiHubPlugin_CreatePluginInstance_Handler,
+		},
+		{
+			MethodName: "ExecutePluginInstanceAction",
+			Handler:    _ApiHubPlugin_ExecutePluginInstanceAction_Handler,
+		},
+		{
+			MethodName: "GetPluginInstance",
+			Handler:    _ApiHubPlugin_GetPluginInstance_Handler,
+		},
+		{
+			MethodName: "ListPluginInstances",
+			Handler:    _ApiHubPlugin_ListPluginInstances_Handler,
+		},
+		{
+			MethodName: "EnablePluginInstanceAction",
+			Handler:    _ApiHubPlugin_EnablePluginInstanceAction_Handler,
+		},
+		{
+			MethodName: "DisablePluginInstanceAction",
+			Handler:    _ApiHubPlugin_DisablePluginInstanceAction_Handler,
+		},
+		{
+			MethodName: "UpdatePluginInstance",
+			Handler:    _ApiHubPlugin_UpdatePluginInstance_Handler,
+		},
+		{
+			MethodName: "DeletePluginInstance",
+			Handler:    _ApiHubPlugin_DeletePluginInstance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

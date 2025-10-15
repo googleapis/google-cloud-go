@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.39.0",
+    "version": "1.49.0",
     "language": "GO",
     "apis": [
       {
@@ -467,6 +467,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Addresses_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "AddressesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.AddressesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "AddressesClient",
+          "fullName": "google.cloud.compute.v1.AddressesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.Addresses.TestIamPermissions",
+          "service": {
+            "shortName": "Addresses",
+            "fullName": "google.cloud.compute.v1.Addresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1560,6 +1606,52 @@
         "method": {
           "shortName": "Get",
           "fullName": "google.cloud.compute.v1.BackendServices.Get",
+          "service": {
+            "shortName": "BackendServices",
+            "fullName": "google.cloud.compute.v1.BackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_BackendServices_GetEffectiveSecurityPolicies_sync",
+      "title": "compute GetEffectiveSecurityPolicies Sample",
+      "description": "GetEffectiveSecurityPolicies returns effective security policies applied to this backend service.",
+      "file": "BackendServicesClient/GetEffectiveSecurityPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEffectiveSecurityPolicies",
+        "fullName": "google.cloud.compute.v1.BackendServicesClient.GetEffectiveSecurityPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetEffectiveSecurityPoliciesBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.GetEffectiveSecurityPoliciesBackendServiceResponse",
+        "client": {
+          "shortName": "BackendServicesClient",
+          "fullName": "google.cloud.compute.v1.BackendServicesClient"
+        },
+        "method": {
+          "shortName": "GetEffectiveSecurityPolicies",
+          "fullName": "google.cloud.compute.v1.BackendServices.GetEffectiveSecurityPolicies",
           "service": {
             "shortName": "BackendServices",
             "fullName": "google.cloud.compute.v1.BackendServices"
@@ -5113,6 +5205,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_GlobalAddresses_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "GlobalAddressesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.GlobalAddressesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsGlobalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "GlobalAddressesClient",
+          "fullName": "google.cloud.compute.v1.GlobalAddressesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.GlobalAddresses.TestIamPermissions",
+          "service": {
+            "shortName": "GlobalAddresses",
+            "fullName": "google.cloud.compute.v1.GlobalAddresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -8982,6 +9120,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceGroups_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "InstanceGroupsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.InstanceGroupsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsInstanceGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "InstanceGroupsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.InstanceGroups.TestIamPermissions",
+          "service": {
+            "shortName": "InstanceGroups",
+            "fullName": "google.cloud.compute.v1.InstanceGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceSettingsService_Get_sync",
       "title": "compute Get Sample",
       "description": "Get get Instance settings.",
@@ -9488,6 +9672,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Instances_AddNetworkInterface_sync",
+      "title": "compute AddNetworkInterface Sample",
+      "description": "AddNetworkInterface adds one dynamic network interface to an active instance.",
+      "file": "InstancesClient/AddNetworkInterface/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddNetworkInterface",
+        "fullName": "google.cloud.compute.v1.InstancesClient.AddNetworkInterface",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddNetworkInterfaceInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "AddNetworkInterface",
+          "fullName": "google.cloud.compute.v1.Instances.AddNetworkInterface",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Instances_AddResourcePolicies_sync",
       "title": "compute AddResourcePolicies Sample",
       "description": "AddResourcePolicies adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.",
@@ -9748,6 +9978,52 @@
         "method": {
           "shortName": "DeleteAccessConfig",
           "fullName": "google.cloud.compute.v1.Instances.DeleteAccessConfig",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Instances_DeleteNetworkInterface_sync",
+      "title": "compute DeleteNetworkInterface Sample",
+      "description": "DeleteNetworkInterface deletes one dynamic network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - dynamic network interface to be deleted, using network_interface_name field;",
+      "file": "InstancesClient/DeleteNetworkInterface/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNetworkInterface",
+        "fullName": "google.cloud.compute.v1.InstancesClient.DeleteNetworkInterface",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteNetworkInterfaceInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "DeleteNetworkInterface",
+          "fullName": "google.cloud.compute.v1.Instances.DeleteNetworkInterface",
           "service": {
             "shortName": "Instances",
             "fullName": "google.cloud.compute.v1.Instances"
@@ -17354,6 +17630,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Networks_RequestRemovePeering_sync",
+      "title": "compute RequestRemovePeering Sample",
+      "description": "RequestRemovePeering requests to remove a peering from the specified network. Applicable only for PeeringConnection with update_strategy=CONSENSUS.",
+      "file": "NetworksClient/RequestRemovePeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RequestRemovePeering",
+        "fullName": "google.cloud.compute.v1.NetworksClient.RequestRemovePeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RequestRemovePeeringNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworksClient",
+          "fullName": "google.cloud.compute.v1.NetworksClient"
+        },
+        "method": {
+          "shortName": "RequestRemovePeering",
+          "fullName": "google.cloud.compute.v1.Networks.RequestRemovePeering",
+          "service": {
+            "shortName": "Networks",
+            "fullName": "google.cloud.compute.v1.Networks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Networks_SwitchToCustomMode_sync",
       "title": "compute SwitchToCustomMode Sample",
       "description": "SwitchToCustomMode switches the network mode from auto subnet mode to custom subnet mode.",
@@ -18642,6 +18964,742 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_AddAssociation_sync",
+      "title": "compute AddAssociation Sample",
+      "description": "AddAssociation inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.",
+      "file": "OrganizationSecurityPoliciesClient/AddAssociation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddAssociation",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.AddAssociation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddAssociationOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "AddAssociation",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.AddAssociation",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_AddRule_sync",
+      "title": "compute AddRule Sample",
+      "description": "AddRule inserts a rule into a security policy.",
+      "file": "OrganizationSecurityPoliciesClient/AddRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddRule",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.AddRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddRuleOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "AddRule",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.AddRule",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_CopyRules_sync",
+      "title": "compute CopyRules Sample",
+      "description": "CopyRules copies rules to the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.copyRules instead.",
+      "file": "OrganizationSecurityPoliciesClient/CopyRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CopyRules",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.CopyRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CopyRulesOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "CopyRules",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.CopyRules",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified policy. Use of this API to remove firewall policies is deprecated. Use firewallPolicies.delete instead.",
+      "file": "OrganizationSecurityPoliciesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.Delete",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get list all of the ordered rules present in a single specified policy. Use of this API to read firewall policies is deprecated. Use firewallPolicies.get instead.",
+      "file": "OrganizationSecurityPoliciesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.SecurityPolicy",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.Get",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_GetAssociation_sync",
+      "title": "compute GetAssociation Sample",
+      "description": "GetAssociation gets an association with the specified name. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getAssociation instead if possible.",
+      "file": "OrganizationSecurityPoliciesClient/GetAssociation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAssociation",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.GetAssociation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetAssociationOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.SecurityPolicyAssociation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "GetAssociation",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.GetAssociation",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_GetRule_sync",
+      "title": "compute GetRule Sample",
+      "description": "GetRule gets a rule at the specified priority. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getRule instead.",
+      "file": "OrganizationSecurityPoliciesClient/GetRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRule",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.GetRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRuleOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.SecurityPolicyRule",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "GetRule",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.GetRule",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new policy in the specified project using the data included in the request. Use of this API to insert firewall policies is deprecated. Use firewallPolicies.insert instead.",
+      "file": "OrganizationSecurityPoliciesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.Insert",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_List_sync",
+      "title": "compute List Sample",
+      "description": "List list all the policies that have been configured for the specified project. Use of this API to read firewall policies is deprecated. Use firewallPolicies.list instead.",
+      "file": "OrganizationSecurityPoliciesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListOrganizationSecurityPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SecurityPolicyIterator",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.List",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_ListAssociations_sync",
+      "title": "compute ListAssociations Sample",
+      "description": "ListAssociations lists associations of a specified target, i.e., organization or folder. Use of this API to read firewall policies is deprecated. Use firewallPolicies.listAssociations instead if possible.",
+      "file": "OrganizationSecurityPoliciesClient/ListAssociations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAssociations",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.ListAssociations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListAssociationsOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.OrganizationSecurityPoliciesListAssociationsResponse",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "ListAssociations",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.ListAssociations",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_ListPreconfiguredExpressionSets_sync",
+      "title": "compute ListPreconfiguredExpressionSets Sample",
+      "description": "ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF) expressions.",
+      "file": "OrganizationSecurityPoliciesClient/ListPreconfiguredExpressionSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPreconfiguredExpressionSets",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.ListPreconfiguredExpressionSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListPreconfiguredExpressionSetsOrganizationSecurityPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "ListPreconfiguredExpressionSets",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.ListPreconfiguredExpressionSets",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_Move_sync",
+      "title": "compute Move Sample",
+      "description": "Move moves the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.move instead.",
+      "file": "OrganizationSecurityPoliciesClient/Move/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Move",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.Move",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.MoveOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "Move",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.Move",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patches the specified policy with the data included in the request. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patch instead.",
+      "file": "OrganizationSecurityPoliciesClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.Patch",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_PatchRule_sync",
+      "title": "compute PatchRule Sample",
+      "description": "PatchRule patches a rule at the specified priority. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patchRule instead.",
+      "file": "OrganizationSecurityPoliciesClient/PatchRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchRule",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.PatchRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRuleOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "PatchRule",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.PatchRule",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_RemoveAssociation_sync",
+      "title": "compute RemoveAssociation Sample",
+      "description": "RemoveAssociation removes an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.removeAssociation instead if possible.",
+      "file": "OrganizationSecurityPoliciesClient/RemoveAssociation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveAssociation",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.RemoveAssociation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RemoveAssociationOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "RemoveAssociation",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.RemoveAssociation",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_OrganizationSecurityPolicies_RemoveRule_sync",
+      "title": "compute RemoveRule Sample",
+      "description": "RemoveRule deletes a rule at the specified priority.",
+      "file": "OrganizationSecurityPoliciesClient/RemoveRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveRule",
+        "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient.RemoveRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RemoveRuleOrganizationSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "OrganizationSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "RemoveRule",
+          "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies.RemoveRule",
+          "service": {
+            "shortName": "OrganizationSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.OrganizationSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_PacketMirrorings_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
@@ -18959,6 +20017,144 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_PreviewFeatures_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the details of the given PreviewFeature.",
+      "file": "PreviewFeaturesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.PreviewFeaturesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetPreviewFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.PreviewFeature",
+        "client": {
+          "shortName": "PreviewFeaturesClient",
+          "fullName": "google.cloud.compute.v1.PreviewFeaturesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.PreviewFeatures.Get",
+          "service": {
+            "shortName": "PreviewFeatures",
+            "fullName": "google.cloud.compute.v1.PreviewFeatures"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_PreviewFeatures_List_sync",
+      "title": "compute List Sample",
+      "description": "List returns the details of the given PreviewFeature.",
+      "file": "PreviewFeaturesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.PreviewFeaturesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListPreviewFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PreviewFeatureIterator",
+        "client": {
+          "shortName": "PreviewFeaturesClient",
+          "fullName": "google.cloud.compute.v1.PreviewFeaturesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.PreviewFeatures.List",
+          "service": {
+            "shortName": "PreviewFeatures",
+            "fullName": "google.cloud.compute.v1.PreviewFeatures"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_PreviewFeatures_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.",
+      "file": "PreviewFeaturesClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.PreviewFeaturesClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdatePreviewFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "PreviewFeaturesClient",
+          "fullName": "google.cloud.compute.v1.PreviewFeaturesClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.PreviewFeatures.Update",
+          "service": {
+            "shortName": "PreviewFeatures",
+            "fullName": "google.cloud.compute.v1.PreviewFeatures"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -19334,7 +20530,7 @@
     {
       "regionTag": "compute_v1_generated_Projects_MoveDisk_sync",
       "title": "compute MoveDisk Sample",
-      "description": "MoveDisk moves a persistent disk from one zone to another.",
+      "description": "MoveDisk starting September 29, 2025, you can't use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in [Change the location of a disk](https: //{$universe.dns_names.final_documentation_domain}/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.",
       "file": "ProjectsClient/MoveDisk/main.go",
       "language": "GO",
       "clientMethod": {
@@ -23978,6 +25174,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionInstanceGroups_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionInstanceGroupsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionInstanceGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionInstanceGroupsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroups.TestIamPermissions",
+          "service": {
+            "shortName": "RegionInstanceGroups",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionInstanceTemplates_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.",
@@ -28389,6 +29631,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSubBlocks_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance allows customers to perform maintenance on a reservation subBlock",
+      "file": "ReservationSubBlocksClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocks.PerformMaintenance",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSubBlocks_ReportFaulty_sync",
+      "title": "compute ReportFaulty Sample",
+      "description": "ReportFaulty allows customers to report a faulty subBlock.",
+      "file": "ReservationSubBlocksClient/ReportFaulty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportFaulty",
+        "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient.ReportFaulty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ReportFaultyReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "ReportFaulty",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocks.ReportFaulty",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -34742,6 +36076,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_TargetInstances_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "TargetInstancesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.TargetInstancesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsTargetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "TargetInstancesClient",
+          "fullName": "google.cloud.compute.v1.TargetInstancesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.TargetInstances.TestIamPermissions",
+          "service": {
+            "shortName": "TargetInstances",
+            "fullName": "google.cloud.compute.v1.TargetInstances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_TargetPools_AddHealthCheck_sync",
       "title": "compute AddHealthCheck Sample",
       "description": "AddHealthCheck adds health check URLs to a target pool.",
@@ -35289,6 +36669,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_TargetPools_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "TargetPoolsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.TargetPoolsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsTargetPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "TargetPoolsClient",
+          "fullName": "google.cloud.compute.v1.TargetPoolsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.TargetPools.TestIamPermissions",
+          "service": {
+            "shortName": "TargetPools",
+            "fullName": "google.cloud.compute.v1.TargetPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

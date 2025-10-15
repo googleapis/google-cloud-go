@@ -17,6 +17,7 @@ limitations under the License.
 package bigtable
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -152,7 +153,7 @@ func TestExtractLocation(t *testing.T) {
 			trailerMD:   metadata.MD{},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
+			wantError:   errors.New(invalidFormatErr),
 		},
 		{
 			desc:     "Invalid location metadata format in trailer",
@@ -162,7 +163,7 @@ func TestExtractLocation(t *testing.T) {
 			},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
+			wantError:   errors.New(invalidFormatErr),
 		},
 	}
 

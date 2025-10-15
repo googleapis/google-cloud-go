@@ -1,5 +1,30 @@
-# Changelog
+# Changes
 
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.10.0...confidentialcomputing/v1.10.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.9.2...confidentialcomputing/v1.10.0) (2025-09-04)
+
+
+### Features
+
+* **confidentialcomputing:** Add new VerifyConfidentialSpace and VerifyConfidentialGke rpcs and relevant fields ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Move AwsPrincipalTagsOptions out from TokenOptions message ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
+
+### Documentation
+
+* **confidentialcomputing:** A comment for field aws_principal_tags_options in message .google.cloud.confidentialcomputing.v1.TokenOptions is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **confidentialcomputing:** Updated comment for method VerifyAttestation, VerifyAttestationRequest and VerifyAttestationResponse in service ConfidentialComputing is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
 
 ## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.9.1...confidentialcomputing/v1.9.2) (2025-04-15)
 

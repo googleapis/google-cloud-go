@@ -147,8 +147,6 @@ type AnalyticsAdminCallOptions struct {
 	CreateChannelGroup                           []gax.CallOption
 	UpdateChannelGroup                           []gax.CallOption
 	DeleteChannelGroup                           []gax.CallOption
-	SetAutomatedGa4ConfigurationOptOut           []gax.CallOption
-	FetchAutomatedGa4ConfigurationOptOut         []gax.CallOption
 	CreateBigQueryLink                           []gax.CallOption
 	GetBigQueryLink                              []gax.CallOption
 	ListBigQueryLinks                            []gax.CallOption
@@ -156,10 +154,6 @@ type AnalyticsAdminCallOptions struct {
 	UpdateBigQueryLink                           []gax.CallOption
 	GetEnhancedMeasurementSettings               []gax.CallOption
 	UpdateEnhancedMeasurementSettings            []gax.CallOption
-	CreateConnectedSiteTag                       []gax.CallOption
-	DeleteConnectedSiteTag                       []gax.CallOption
-	ListConnectedSiteTags                        []gax.CallOption
-	FetchConnectedGa4Property                    []gax.CallOption
 	GetAdSenseLink                               []gax.CallOption
 	CreateAdSenseLink                            []gax.CallOption
 	DeleteAdSenseLink                            []gax.CallOption
@@ -199,6 +193,10 @@ type AnalyticsAdminCallOptions struct {
 	UpdateReportingDataAnnotation                []gax.CallOption
 	DeleteReportingDataAnnotation                []gax.CallOption
 	SubmitUserDeletion                           []gax.CallOption
+	ListSubpropertySyncConfigs                   []gax.CallOption
+	UpdateSubpropertySyncConfig                  []gax.CallOption
+	GetSubpropertySyncConfig                     []gax.CallOption
+	GetReportingIdentitySettings                 []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -1390,32 +1388,6 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		FetchAutomatedGa4ConfigurationOptOut: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
 		CreateBigQueryLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1486,58 +1458,6 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 		},
 		UpdateEnhancedMeasurementSettings: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		CreateConnectedSiteTag: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteConnectedSiteTag: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListConnectedSiteTags: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		FetchConnectedGa4Property: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
 		},
 		GetAdSenseLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -2034,6 +1954,58 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		SubmitUserDeletion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSubpropertySyncConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSubpropertySyncConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetSubpropertySyncConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetReportingIdentitySettings: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -3137,30 +3109,6 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		FetchAutomatedGa4ConfigurationOptOut: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
 		CreateBigQueryLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -3226,54 +3174,6 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 		},
 		UpdateEnhancedMeasurementSettings: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		CreateConnectedSiteTag: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteConnectedSiteTag: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListConnectedSiteTags: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		FetchConnectedGa4Property: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
 		},
 		GetAdSenseLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -3743,6 +3643,54 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		ListSubpropertySyncConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateSubpropertySyncConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetSubpropertySyncConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetReportingIdentitySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 	}
 }
 
@@ -3855,8 +3803,6 @@ type internalAnalyticsAdminClient interface {
 	CreateChannelGroup(context.Context, *adminpb.CreateChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
 	UpdateChannelGroup(context.Context, *adminpb.UpdateChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
 	DeleteChannelGroup(context.Context, *adminpb.DeleteChannelGroupRequest, ...gax.CallOption) error
-	SetAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error)
-	FetchAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error)
 	CreateBigQueryLink(context.Context, *adminpb.CreateBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
 	GetBigQueryLink(context.Context, *adminpb.GetBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
 	ListBigQueryLinks(context.Context, *adminpb.ListBigQueryLinksRequest, ...gax.CallOption) *BigQueryLinkIterator
@@ -3864,10 +3810,6 @@ type internalAnalyticsAdminClient interface {
 	UpdateBigQueryLink(context.Context, *adminpb.UpdateBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
 	GetEnhancedMeasurementSettings(context.Context, *adminpb.GetEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
 	UpdateEnhancedMeasurementSettings(context.Context, *adminpb.UpdateEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
-	CreateConnectedSiteTag(context.Context, *adminpb.CreateConnectedSiteTagRequest, ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error)
-	DeleteConnectedSiteTag(context.Context, *adminpb.DeleteConnectedSiteTagRequest, ...gax.CallOption) error
-	ListConnectedSiteTags(context.Context, *adminpb.ListConnectedSiteTagsRequest, ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error)
-	FetchConnectedGa4Property(context.Context, *adminpb.FetchConnectedGa4PropertyRequest, ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error)
 	GetAdSenseLink(context.Context, *adminpb.GetAdSenseLinkRequest, ...gax.CallOption) (*adminpb.AdSenseLink, error)
 	CreateAdSenseLink(context.Context, *adminpb.CreateAdSenseLinkRequest, ...gax.CallOption) (*adminpb.AdSenseLink, error)
 	DeleteAdSenseLink(context.Context, *adminpb.DeleteAdSenseLinkRequest, ...gax.CallOption) error
@@ -3907,6 +3849,10 @@ type internalAnalyticsAdminClient interface {
 	UpdateReportingDataAnnotation(context.Context, *adminpb.UpdateReportingDataAnnotationRequest, ...gax.CallOption) (*adminpb.ReportingDataAnnotation, error)
 	DeleteReportingDataAnnotation(context.Context, *adminpb.DeleteReportingDataAnnotationRequest, ...gax.CallOption) error
 	SubmitUserDeletion(context.Context, *adminpb.SubmitUserDeletionRequest, ...gax.CallOption) (*adminpb.SubmitUserDeletionResponse, error)
+	ListSubpropertySyncConfigs(context.Context, *adminpb.ListSubpropertySyncConfigsRequest, ...gax.CallOption) *SubpropertySyncConfigIterator
+	UpdateSubpropertySyncConfig(context.Context, *adminpb.UpdateSubpropertySyncConfigRequest, ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error)
+	GetSubpropertySyncConfig(context.Context, *adminpb.GetSubpropertySyncConfigRequest, ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error)
+	GetReportingIdentitySettings(context.Context, *adminpb.GetReportingIdentitySettingsRequest, ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -4567,20 +4513,6 @@ func (c *AnalyticsAdminClient) DeleteChannelGroup(ctx context.Context, req *admi
 	return c.internalClient.DeleteChannelGroup(ctx, req, opts...)
 }
 
-// SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
-// property.
-// Note: this has no effect on GA4 property.
-func (c *AnalyticsAdminClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
-	return c.internalClient.SetAutomatedGa4ConfigurationOptOut(ctx, req, opts...)
-}
-
-// FetchAutomatedGa4ConfigurationOptOut fetches the opt out status for the automated GA4 setup process for a UA
-// property.
-// Note: this has no effect on GA4 property.
-func (c *AnalyticsAdminClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
-	return c.internalClient.FetchAutomatedGa4ConfigurationOptOut(ctx, req, opts...)
-}
-
 // CreateBigQueryLink creates a BigQueryLink.
 func (c *AnalyticsAdminClient) CreateBigQueryLink(ctx context.Context, req *adminpb.CreateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
 	return c.internalClient.CreateBigQueryLink(ctx, req, opts...)
@@ -4618,32 +4550,6 @@ func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Contex
 // take effect.
 func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
 	return c.internalClient.UpdateEnhancedMeasurementSettings(ctx, req, opts...)
-}
-
-// CreateConnectedSiteTag creates a connected site tag for a Universal Analytics property. You can
-// create a maximum of 20 connected site tags per property.
-// Note: This API cannot be used on GA4 properties.
-func (c *AnalyticsAdminClient) CreateConnectedSiteTag(ctx context.Context, req *adminpb.CreateConnectedSiteTagRequest, opts ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error) {
-	return c.internalClient.CreateConnectedSiteTag(ctx, req, opts...)
-}
-
-// DeleteConnectedSiteTag deletes a connected site tag for a Universal Analytics property.
-// Note: this has no effect on GA4 properties.
-func (c *AnalyticsAdminClient) DeleteConnectedSiteTag(ctx context.Context, req *adminpb.DeleteConnectedSiteTagRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteConnectedSiteTag(ctx, req, opts...)
-}
-
-// ListConnectedSiteTags lists the connected site tags for a Universal Analytics property. A maximum
-// of 20 connected site tags will be returned. Note: this has no effect on GA4
-// property.
-func (c *AnalyticsAdminClient) ListConnectedSiteTags(ctx context.Context, req *adminpb.ListConnectedSiteTagsRequest, opts ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error) {
-	return c.internalClient.ListConnectedSiteTags(ctx, req, opts...)
-}
-
-// FetchConnectedGa4Property given a specified UA property, looks up the GA4 property connected to it.
-// Note: this cannot be used with GA4 properties.
-func (c *AnalyticsAdminClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
-	return c.internalClient.FetchConnectedGa4Property(ctx, req, opts...)
 }
 
 // GetAdSenseLink looks up a single AdSenseLink.
@@ -4848,6 +4754,26 @@ func (c *AnalyticsAdminClient) DeleteReportingDataAnnotation(ctx context.Context
 // SubmitUserDeletion submits a request for user deletion for a property.
 func (c *AnalyticsAdminClient) SubmitUserDeletion(ctx context.Context, req *adminpb.SubmitUserDeletionRequest, opts ...gax.CallOption) (*adminpb.SubmitUserDeletionResponse, error) {
 	return c.internalClient.SubmitUserDeletion(ctx, req, opts...)
+}
+
+// ListSubpropertySyncConfigs list all SubpropertySyncConfig resources for a property.
+func (c *AnalyticsAdminClient) ListSubpropertySyncConfigs(ctx context.Context, req *adminpb.ListSubpropertySyncConfigsRequest, opts ...gax.CallOption) *SubpropertySyncConfigIterator {
+	return c.internalClient.ListSubpropertySyncConfigs(ctx, req, opts...)
+}
+
+// UpdateSubpropertySyncConfig updates a SubpropertySyncConfig.
+func (c *AnalyticsAdminClient) UpdateSubpropertySyncConfig(ctx context.Context, req *adminpb.UpdateSubpropertySyncConfigRequest, opts ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error) {
+	return c.internalClient.UpdateSubpropertySyncConfig(ctx, req, opts...)
+}
+
+// GetSubpropertySyncConfig lookup for a single SubpropertySyncConfig.
+func (c *AnalyticsAdminClient) GetSubpropertySyncConfig(ctx context.Context, req *adminpb.GetSubpropertySyncConfigRequest, opts ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error) {
+	return c.internalClient.GetSubpropertySyncConfig(ctx, req, opts...)
+}
+
+// GetReportingIdentitySettings returns the singleton data retention settings for this property.
+func (c *AnalyticsAdminClient) GetReportingIdentitySettings(ctx context.Context, req *adminpb.GetReportingIdentitySettingsRequest, opts ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error) {
+	return c.internalClient.GetReportingIdentitySettings(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -7348,36 +7274,6 @@ func (c *analyticsAdminGRPCClient) DeleteChannelGroup(ctx context.Context, req *
 	return err
 }
 
-func (c *analyticsAdminGRPCClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut)], opts...)
-	var resp *adminpb.SetAutomatedGa4ConfigurationOptOutResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.analyticsAdminClient.SetAutomatedGa4ConfigurationOptOut, req, settings.GRPC, c.logger, "SetAutomatedGa4ConfigurationOptOut")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut)], opts...)
-	var resp *adminpb.FetchAutomatedGa4ConfigurationOptOutResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.analyticsAdminClient.FetchAutomatedGa4ConfigurationOptOut, req, settings.GRPC, c.logger, "FetchAutomatedGa4ConfigurationOptOut")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *analyticsAdminGRPCClient) CreateBigQueryLink(ctx context.Context, req *adminpb.CreateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -7520,62 +7416,6 @@ func (c *analyticsAdminGRPCClient) UpdateEnhancedMeasurementSettings(ctx context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateEnhancedMeasurementSettings, req, settings.GRPC, c.logger, "UpdateEnhancedMeasurementSettings")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) CreateConnectedSiteTag(ctx context.Context, req *adminpb.CreateConnectedSiteTagRequest, opts ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error) {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).CreateConnectedSiteTag[0:len((*c.CallOptions).CreateConnectedSiteTag):len((*c.CallOptions).CreateConnectedSiteTag)], opts...)
-	var resp *adminpb.CreateConnectedSiteTagResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.analyticsAdminClient.CreateConnectedSiteTag, req, settings.GRPC, c.logger, "CreateConnectedSiteTag")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) DeleteConnectedSiteTag(ctx context.Context, req *adminpb.DeleteConnectedSiteTagRequest, opts ...gax.CallOption) error {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).DeleteConnectedSiteTag[0:len((*c.CallOptions).DeleteConnectedSiteTag):len((*c.CallOptions).DeleteConnectedSiteTag)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = executeRPC(ctx, c.analyticsAdminClient.DeleteConnectedSiteTag, req, settings.GRPC, c.logger, "DeleteConnectedSiteTag")
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *analyticsAdminGRPCClient) ListConnectedSiteTags(ctx context.Context, req *adminpb.ListConnectedSiteTagsRequest, opts ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error) {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).ListConnectedSiteTags[0:len((*c.CallOptions).ListConnectedSiteTags):len((*c.CallOptions).ListConnectedSiteTags)], opts...)
-	var resp *adminpb.ListConnectedSiteTagsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.analyticsAdminClient.ListConnectedSiteTags, req, settings.GRPC, c.logger, "ListConnectedSiteTags")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).FetchConnectedGa4Property[0:len((*c.CallOptions).FetchConnectedGa4Property):len((*c.CallOptions).FetchConnectedGa4Property)], opts...)
-	var resp *adminpb.FetchConnectedGa4PropertyResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.analyticsAdminClient.FetchConnectedGa4Property, req, settings.GRPC, c.logger, "FetchConnectedGa4Property")
 		return err
 	}, opts...)
 	if err != nil {
@@ -8436,6 +8276,106 @@ func (c *analyticsAdminGRPCClient) SubmitUserDeletion(ctx context.Context, req *
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.analyticsAdminClient.SubmitUserDeletion, req, settings.GRPC, c.logger, "SubmitUserDeletion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListSubpropertySyncConfigs(ctx context.Context, req *adminpb.ListSubpropertySyncConfigsRequest, opts ...gax.CallOption) *SubpropertySyncConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSubpropertySyncConfigs[0:len((*c.CallOptions).ListSubpropertySyncConfigs):len((*c.CallOptions).ListSubpropertySyncConfigs)], opts...)
+	it := &SubpropertySyncConfigIterator{}
+	req = proto.Clone(req).(*adminpb.ListSubpropertySyncConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertySyncConfig, string, error) {
+		resp := &adminpb.ListSubpropertySyncConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.analyticsAdminClient.ListSubpropertySyncConfigs, req, settings.GRPC, c.logger, "ListSubpropertySyncConfigs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSubpropertySyncConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) UpdateSubpropertySyncConfig(ctx context.Context, req *adminpb.UpdateSubpropertySyncConfigRequest, opts ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subproperty_sync_config.name", url.QueryEscape(req.GetSubpropertySyncConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSubpropertySyncConfig[0:len((*c.CallOptions).UpdateSubpropertySyncConfig):len((*c.CallOptions).UpdateSubpropertySyncConfig)], opts...)
+	var resp *adminpb.SubpropertySyncConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.UpdateSubpropertySyncConfig, req, settings.GRPC, c.logger, "UpdateSubpropertySyncConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetSubpropertySyncConfig(ctx context.Context, req *adminpb.GetSubpropertySyncConfigRequest, opts ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubpropertySyncConfig[0:len((*c.CallOptions).GetSubpropertySyncConfig):len((*c.CallOptions).GetSubpropertySyncConfig)], opts...)
+	var resp *adminpb.SubpropertySyncConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetSubpropertySyncConfig, req, settings.GRPC, c.logger, "GetSubpropertySyncConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetReportingIdentitySettings(ctx context.Context, req *adminpb.GetReportingIdentitySettingsRequest, opts ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetReportingIdentitySettings[0:len((*c.CallOptions).GetReportingIdentitySettings):len((*c.CallOptions).GetReportingIdentitySettings)], opts...)
+	var resp *adminpb.ReportingIdentitySettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetReportingIdentitySettings, req, settings.GRPC, c.logger, "GetReportingIdentitySettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -14487,116 +14427,6 @@ func (c *analyticsAdminRESTClient) DeleteChannelGroup(ctx context.Context, req *
 	}, opts...)
 }
 
-// SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
-// property.
-// Note: this has no effect on GA4 property.
-func (c *analyticsAdminRESTClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:setAutomatedGa4ConfigurationOptOut")
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.SetAutomatedGa4ConfigurationOptOutResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetAutomatedGa4ConfigurationOptOut")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// FetchAutomatedGa4ConfigurationOptOut fetches the opt out status for the automated GA4 setup process for a UA
-// property.
-// Note: this has no effect on GA4 property.
-func (c *analyticsAdminRESTClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:fetchAutomatedGa4ConfigurationOptOut")
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.FetchAutomatedGa4ConfigurationOptOutResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchAutomatedGa4ConfigurationOptOut")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
 // CreateBigQueryLink creates a BigQueryLink.
 func (c *analyticsAdminRESTClient) CreateBigQueryLink(ctx context.Context, req *adminpb.CreateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -14983,204 +14813,6 @@ func (c *analyticsAdminRESTClient) UpdateEnhancedMeasurementSettings(ctx context
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEnhancedMeasurementSettings")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// CreateConnectedSiteTag creates a connected site tag for a Universal Analytics property. You can
-// create a maximum of 20 connected site tags per property.
-// Note: This API cannot be used on GA4 properties.
-func (c *analyticsAdminRESTClient) CreateConnectedSiteTag(ctx context.Context, req *adminpb.CreateConnectedSiteTagRequest, opts ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:createConnectedSiteTag")
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).CreateConnectedSiteTag[0:len((*c.CallOptions).CreateConnectedSiteTag):len((*c.CallOptions).CreateConnectedSiteTag)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.CreateConnectedSiteTagResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConnectedSiteTag")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// DeleteConnectedSiteTag deletes a connected site tag for a Universal Analytics property.
-// Note: this has no effect on GA4 properties.
-func (c *analyticsAdminRESTClient) DeleteConnectedSiteTag(ctx context.Context, req *adminpb.DeleteConnectedSiteTagRequest, opts ...gax.CallOption) error {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:deleteConnectedSiteTag")
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteConnectedSiteTag")
-		return err
-	}, opts...)
-}
-
-// ListConnectedSiteTags lists the connected site tags for a Universal Analytics property. A maximum
-// of 20 connected site tags will be returned. Note: this has no effect on GA4
-// property.
-func (c *analyticsAdminRESTClient) ListConnectedSiteTags(ctx context.Context, req *adminpb.ListConnectedSiteTagsRequest, opts ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:listConnectedSiteTags")
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).ListConnectedSiteTags[0:len((*c.CallOptions).ListConnectedSiteTags):len((*c.CallOptions).ListConnectedSiteTags)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.ListConnectedSiteTagsResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ListConnectedSiteTags")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// FetchConnectedGa4Property given a specified UA property, looks up the GA4 property connected to it.
-// Note: this cannot be used with GA4 properties.
-func (c *analyticsAdminRESTClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:fetchConnectedGa4Property")
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("property", fmt.Sprintf("%v", req.GetProperty()))
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).FetchConnectedGa4Property[0:len((*c.CallOptions).FetchConnectedGa4Property):len((*c.CallOptions).FetchConnectedGa4Property)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.FetchConnectedGa4PropertyResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchConnectedGa4Property")
 		if err != nil {
 			return err
 		}
@@ -17371,6 +17003,248 @@ func (c *analyticsAdminRESTClient) SubmitUserDeletion(ctx context.Context, req *
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SubmitUserDeletion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSubpropertySyncConfigs list all SubpropertySyncConfig resources for a property.
+func (c *analyticsAdminRESTClient) ListSubpropertySyncConfigs(ctx context.Context, req *adminpb.ListSubpropertySyncConfigsRequest, opts ...gax.CallOption) *SubpropertySyncConfigIterator {
+	it := &SubpropertySyncConfigIterator{}
+	req = proto.Clone(req).(*adminpb.ListSubpropertySyncConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertySyncConfig, string, error) {
+		resp := &adminpb.ListSubpropertySyncConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/subpropertySyncConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSubpropertySyncConfigs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSubpropertySyncConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateSubpropertySyncConfig updates a SubpropertySyncConfig.
+func (c *analyticsAdminRESTClient) UpdateSubpropertySyncConfig(ctx context.Context, req *adminpb.UpdateSubpropertySyncConfigRequest, opts ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSubpropertySyncConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSubpropertySyncConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subproperty_sync_config.name", url.QueryEscape(req.GetSubpropertySyncConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSubpropertySyncConfig[0:len((*c.CallOptions).UpdateSubpropertySyncConfig):len((*c.CallOptions).UpdateSubpropertySyncConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubpropertySyncConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSubpropertySyncConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetSubpropertySyncConfig lookup for a single SubpropertySyncConfig.
+func (c *analyticsAdminRESTClient) GetSubpropertySyncConfig(ctx context.Context, req *adminpb.GetSubpropertySyncConfigRequest, opts ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubpropertySyncConfig[0:len((*c.CallOptions).GetSubpropertySyncConfig):len((*c.CallOptions).GetSubpropertySyncConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubpropertySyncConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSubpropertySyncConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetReportingIdentitySettings returns the singleton data retention settings for this property.
+func (c *analyticsAdminRESTClient) GetReportingIdentitySettings(ctx context.Context, req *adminpb.GetReportingIdentitySettingsRequest, opts ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetReportingIdentitySettings[0:len((*c.CallOptions).GetReportingIdentitySettings):len((*c.CallOptions).GetReportingIdentitySettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ReportingIdentitySettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReportingIdentitySettings")
 		if err != nil {
 			return err
 		}

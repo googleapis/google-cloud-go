@@ -1,7 +1,21 @@
-# Changelog
+# Changes
 
 
 
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.4...cloudquotas/v1.4.0) (2025-06-17)
+
+
+### Features
+
+* **cloudquotas:** Added support for hierarchical enrollment in Quota Adjuster consumer API ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+
+
+### Documentation
+
+* **cloudquotas:** Added 2 new fields in `.google.api.cloudquotas.v1beta.QuotaAdjusterSettings` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **cloudquotas:** Added inherited and inherited_from in `.google.api.cloudquotas.v1beta.QuotaAdjusterSettings` ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
+* **cloudquotas:** Added support for folder and organization level enrollment ([9614487](https://github.com/googleapis/google-cloud-go/commit/96144875e01bfc8a59c2671c6eae87233710cef7))
 
 ## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.3.3...cloudquotas/v1.3.4) (2025-06-04)
 

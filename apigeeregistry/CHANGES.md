@@ -1,4 +1,10 @@
-# Changelog
+# Changes
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/apigeeregistry%2Fv0.10.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
 
 ## [0.9.6](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.9.5...apigeeregistry/v0.9.6) (2025-04-15)
 

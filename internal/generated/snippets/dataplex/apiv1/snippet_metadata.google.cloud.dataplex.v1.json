@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.25.3",
+    "version": "1.27.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,968 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "BusinessGlossaryClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_CreateGlossary_sync",
+      "title": "dataplex CreateGlossary Sample",
+      "description": "CreateGlossary creates a new Glossary resource.",
+      "file": "BusinessGlossaryClient/CreateGlossary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGlossary",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.CreateGlossary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateGlossaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateGlossaryOperation",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "CreateGlossary",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.CreateGlossary",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_CreateGlossaryCategory_sync",
+      "title": "dataplex CreateGlossaryCategory Sample",
+      "description": "CreateGlossaryCategory creates a new GlossaryCategory resource.",
+      "file": "BusinessGlossaryClient/CreateGlossaryCategory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGlossaryCategory",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.CreateGlossaryCategory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateGlossaryCategoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.GlossaryCategory",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "CreateGlossaryCategory",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.CreateGlossaryCategory",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_CreateGlossaryTerm_sync",
+      "title": "dataplex CreateGlossaryTerm Sample",
+      "description": "CreateGlossaryTerm creates a new GlossaryTerm resource.",
+      "file": "BusinessGlossaryClient/CreateGlossaryTerm/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGlossaryTerm",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.CreateGlossaryTerm",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateGlossaryTermRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.GlossaryTerm",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "CreateGlossaryTerm",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.CreateGlossaryTerm",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_DeleteGlossary_sync",
+      "title": "dataplex DeleteGlossary Sample",
+      "description": "DeleteGlossary deletes a Glossary resource. All the categories and terms within the\nGlossary must be deleted before the Glossary can be deleted.",
+      "file": "BusinessGlossaryClient/DeleteGlossary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGlossary",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.DeleteGlossary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteGlossaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteGlossaryOperation",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "DeleteGlossary",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.DeleteGlossary",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_DeleteGlossaryCategory_sync",
+      "title": "dataplex DeleteGlossaryCategory Sample",
+      "description": "DeleteGlossaryCategory deletes a GlossaryCategory resource. All the GlossaryCategories and\nGlossaryTerms nested directly under the specified GlossaryCategory will be\nmoved one level up to the parent in the hierarchy.",
+      "file": "BusinessGlossaryClient/DeleteGlossaryCategory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGlossaryCategory",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.DeleteGlossaryCategory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteGlossaryCategoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "DeleteGlossaryCategory",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.DeleteGlossaryCategory",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_DeleteGlossaryTerm_sync",
+      "title": "dataplex DeleteGlossaryTerm Sample",
+      "description": "DeleteGlossaryTerm deletes a GlossaryTerm resource.",
+      "file": "BusinessGlossaryClient/DeleteGlossaryTerm/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGlossaryTerm",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.DeleteGlossaryTerm",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteGlossaryTermRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "DeleteGlossaryTerm",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.DeleteGlossaryTerm",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "BusinessGlossaryClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_GetGlossary_sync",
+      "title": "dataplex GetGlossary Sample",
+      "description": "GetGlossary gets a Glossary resource.",
+      "file": "BusinessGlossaryClient/GetGlossary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGlossary",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.GetGlossary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetGlossaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Glossary",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "GetGlossary",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.GetGlossary",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_GetGlossaryCategory_sync",
+      "title": "dataplex GetGlossaryCategory Sample",
+      "description": "GetGlossaryCategory gets a GlossaryCategory resource.",
+      "file": "BusinessGlossaryClient/GetGlossaryCategory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGlossaryCategory",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.GetGlossaryCategory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetGlossaryCategoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.GlossaryCategory",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "GetGlossaryCategory",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.GetGlossaryCategory",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_GetGlossaryTerm_sync",
+      "title": "dataplex GetGlossaryTerm Sample",
+      "description": "GetGlossaryTerm gets a GlossaryTerm resource.",
+      "file": "BusinessGlossaryClient/GetGlossaryTerm/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGlossaryTerm",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.GetGlossaryTerm",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetGlossaryTermRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.GlossaryTerm",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "GetGlossaryTerm",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.GetGlossaryTerm",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "BusinessGlossaryClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "BusinessGlossaryClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_ListGlossaries_sync",
+      "title": "dataplex ListGlossaries Sample",
+      "description": "ListGlossaries lists Glossary resources in a project and location.",
+      "file": "BusinessGlossaryClient/ListGlossaries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGlossaries",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.ListGlossaries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListGlossariesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GlossaryIterator",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "ListGlossaries",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.ListGlossaries",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_ListGlossaryCategories_sync",
+      "title": "dataplex ListGlossaryCategories Sample",
+      "description": "ListGlossaryCategories lists GlossaryCategory resources in a Glossary.",
+      "file": "BusinessGlossaryClient/ListGlossaryCategories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGlossaryCategories",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.ListGlossaryCategories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListGlossaryCategoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GlossaryCategoryIterator",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "ListGlossaryCategories",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.ListGlossaryCategories",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_ListGlossaryTerms_sync",
+      "title": "dataplex ListGlossaryTerms Sample",
+      "description": "ListGlossaryTerms lists GlossaryTerm resources in a Glossary.",
+      "file": "BusinessGlossaryClient/ListGlossaryTerms/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGlossaryTerms",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.ListGlossaryTerms",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListGlossaryTermsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GlossaryTermIterator",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "ListGlossaryTerms",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.ListGlossaryTerms",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "BusinessGlossaryClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "BusinessGlossaryClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_UpdateGlossary_sync",
+      "title": "dataplex UpdateGlossary Sample",
+      "description": "UpdateGlossary updates a Glossary resource.",
+      "file": "BusinessGlossaryClient/UpdateGlossary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGlossary",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.UpdateGlossary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateGlossaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateGlossaryOperation",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "UpdateGlossary",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.UpdateGlossary",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_UpdateGlossaryCategory_sync",
+      "title": "dataplex UpdateGlossaryCategory Sample",
+      "description": "UpdateGlossaryCategory updates a GlossaryCategory resource.",
+      "file": "BusinessGlossaryClient/UpdateGlossaryCategory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGlossaryCategory",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.UpdateGlossaryCategory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateGlossaryCategoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.GlossaryCategory",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "UpdateGlossaryCategory",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.UpdateGlossaryCategory",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_UpdateGlossaryTerm_sync",
+      "title": "dataplex UpdateGlossaryTerm Sample",
+      "description": "UpdateGlossaryTerm updates a GlossaryTerm resource.",
+      "file": "BusinessGlossaryClient/UpdateGlossaryTerm/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGlossaryTerm",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.UpdateGlossaryTerm",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateGlossaryTermRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.GlossaryTerm",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "UpdateGlossaryTerm",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService.UpdateGlossaryTerm",
+          "service": {
+            "shortName": "BusinessGlossaryService",
+            "fullName": "google.cloud.dataplex.v1.BusinessGlossaryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CancelMetadataJob_sync",
       "title": "dataplex CancelMetadataJob Sample",
@@ -240,6 +1202,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryLink_sync",
+      "title": "dataplex CreateEntryLink Sample",
+      "description": "CreateEntryLink creates an Entry Link.",
+      "file": "CatalogClient/CreateEntryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEntryLink",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateEntryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateEntryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EntryLink",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateEntryLink",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateEntryLink",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryType_sync",
       "title": "dataplex CreateEntryType Sample",
       "description": "CreateEntryType creates an EntryType.",
@@ -288,7 +1296,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateMetadataJob_sync",
       "title": "dataplex CreateMetadataJob Sample",
-      "description": "CreateMetadataJob creates a metadata job. For example, use a metadata job to import Dataplex\nCatalog entries and aspects from a third-party system into Dataplex.",
+      "description": "CreateMetadataJob creates a metadata job. For example, use a metadata job to import metadata\nfrom a third-party system into Dataplex Universal Catalog.",
       "file": "CatalogClient/CreateMetadataJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -465,6 +1473,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntryLink_sync",
+      "title": "dataplex DeleteEntryLink Sample",
+      "description": "DeleteEntryLink deletes an Entry Link.",
+      "file": "CatalogClient/DeleteEntryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEntryLink",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.DeleteEntryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteEntryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EntryLink",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "DeleteEntryLink",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.DeleteEntryLink",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -683,6 +1737,52 @@
         "method": {
           "shortName": "GetEntryGroup",
           "fullName": "google.cloud.dataplex.v1.CatalogService.GetEntryGroup",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetEntryLink_sync",
+      "title": "dataplex GetEntryLink Sample",
+      "description": "GetEntryLink gets an Entry Link.",
+      "file": "CatalogClient/GetEntryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEntryLink",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetEntryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetEntryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EntryLink",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetEntryLink",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetEntryLink",
           "service": {
             "shortName": "CatalogService",
             "fullName": "google.cloud.dataplex.v1.CatalogService"

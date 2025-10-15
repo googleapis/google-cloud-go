@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.18.0",
+    "version": "1.21.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,143 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "discoveryengine_v1_generated_AssistantService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AssistantClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AssistantClient",
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_AssistantService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AssistantClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AssistantClient",
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_AssistantService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AssistantClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.AssistantClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AssistantClient",
+          "fullName": "google.cloud.discoveryengine.v1.AssistantClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "discoveryengine_v1_generated_CmekConfigService_CancelOperation_sync",
       "title": "discoveryengine CancelOperation Sample",
@@ -5311,6 +5448,372 @@
           "service": {
             "shortName": "ServingConfigService",
             "fullName": "google.cloud.discoveryengine.v1.ServingConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_CreateSession_sync",
+      "title": "discoveryengine CreateSession Sample",
+      "description": "CreateSession creates a Session.\n\nIf the [Session][google.cloud.discoveryengine.v1.Session] to create already\nexists, an ALREADY_EXISTS error is returned.",
+      "file": "SessionClient/CreateSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSession",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.CreateSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Session",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "CreateSession",
+          "fullName": "google.cloud.discoveryengine.v1.SessionService.CreateSession",
+          "service": {
+            "shortName": "SessionService",
+            "fullName": "google.cloud.discoveryengine.v1.SessionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_DeleteSession_sync",
+      "title": "discoveryengine DeleteSession Sample",
+      "description": "DeleteSession deletes a Session.\n\nIf the [Session][google.cloud.discoveryengine.v1.Session] to delete does\nnot exist, a NOT_FOUND error is returned.",
+      "file": "SessionClient/DeleteSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSession",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.DeleteSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "DeleteSession",
+          "fullName": "google.cloud.discoveryengine.v1.SessionService.DeleteSession",
+          "service": {
+            "shortName": "SessionService",
+            "fullName": "google.cloud.discoveryengine.v1.SessionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_GetSession_sync",
+      "title": "discoveryengine GetSession Sample",
+      "description": "GetSession gets a Session.",
+      "file": "SessionClient/GetSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSession",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.GetSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Session",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "GetSession",
+          "fullName": "google.cloud.discoveryengine.v1.SessionService.GetSession",
+          "service": {
+            "shortName": "SessionService",
+            "fullName": "google.cloud.discoveryengine.v1.SessionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SessionClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_ListSessions_sync",
+      "title": "discoveryengine ListSessions Sample",
+      "description": "ListSessions lists all Sessions by their parent\n[DataStore][google.cloud.discoveryengine.v1.DataStore].",
+      "file": "SessionClient/ListSessions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSessions",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.ListSessions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListSessionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SessionIterator",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "ListSessions",
+          "fullName": "google.cloud.discoveryengine.v1.SessionService.ListSessions",
+          "service": {
+            "shortName": "SessionService",
+            "fullName": "google.cloud.discoveryengine.v1.SessionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SessionService_UpdateSession_sync",
+      "title": "discoveryengine UpdateSession Sample",
+      "description": "UpdateSession updates a Session.\n\n[Session][google.cloud.discoveryengine.v1.Session] action type cannot be\nchanged. If the [Session][google.cloud.discoveryengine.v1.Session] to\nupdate does not exist, a NOT_FOUND error is returned.",
+      "file": "SessionClient/UpdateSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSession",
+        "fullName": "google.cloud.discoveryengine.v1.SessionClient.UpdateSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Session",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.discoveryengine.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "UpdateSession",
+          "fullName": "google.cloud.discoveryengine.v1.SessionService.UpdateSession",
+          "service": {
+            "shortName": "SessionService",
+            "fullName": "google.cloud.discoveryengine.v1.SessionService"
           }
         }
       },

@@ -21,10 +21,11 @@
 package fleetenginepb
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -40,11 +41,11 @@ type SpeedReadingInterval_Speed int32
 const (
 	// Default value. This value is unused.
 	SpeedReadingInterval_SPEED_UNSPECIFIED SpeedReadingInterval_Speed = 0
-	// Normal speed, no slowdown is detected.
+	// Normal speed, no traffic delays.
 	SpeedReadingInterval_NORMAL SpeedReadingInterval_Speed = 1
-	// Slowdown detected, but no traffic jam formed.
+	// Slowdown detected, medium amount of traffic.
 	SpeedReadingInterval_SLOW SpeedReadingInterval_Speed = 2
-	// Traffic jam detected.
+	// Traffic delays.
 	SpeedReadingInterval_TRAFFIC_JAM SpeedReadingInterval_Speed = 3
 )
 

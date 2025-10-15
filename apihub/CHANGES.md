@@ -1,4 +1,22 @@
-# Changelog
+# Changes
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/apihub/v0.1.5...apihub/v0.2.0) (2025-09-11)
+
+
+### Features
+
+* **apihub:** Add full lifecycle management for API Operations within API Versions (Create, Update, Delete) ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **apihub:** Add new fields and enums to resources to support richer metadata, including source tracking (SourceMetadata), plugin configurations (AuthConfig, ConfigVariable), new attributes, and additional deployment details ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **apihub:** Enable Deletion of ApiHub Instances via the Provisioning service ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **apihub:** Enhance list filtering options across various resources (APIs, Versions, Specs, Operations, Deployments) with support for user-defined attributes ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **apihub:** Introduce new services for data collection (ApiHubCollect) and curation (ApiHubCurate) ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **apihub:** Make CMEK configuration optional for ApiHub Instances, defaulting to GMEK ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+* **apihub:** Significantly expand Plugin and Plugin Instance management capabilities, including creation, execution, and lifecycle control ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+
+### Documentation
+
+* **apihub:** Update field descriptions, comments, and links in existing services ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
 
 ## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/apihub/v0.1.4...apihub/v0.1.5) (2025-04-15)
 

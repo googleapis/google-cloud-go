@@ -1,4 +1,11 @@
-# Changelog
+# Changes
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.2.5...securityposture/v0.2.6) (2025-09-22)
+
+
+### Bug Fixes
+
+* **securityposture:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
 
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.2.4...securityposture/v0.2.5) (2025-04-15)
 

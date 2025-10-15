@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/developerconnect/apiv1",
-    "version": "0.3.3",
+    "version": "0.4.1",
     "language": "GO",
     "apis": [
       {
@@ -52,6 +52,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_CreateAccountConnector_sync",
+      "title": "developerconnect CreateAccountConnector Sample",
+      "description": "CreateAccountConnector creates a new AccountConnector in a given project and location.",
+      "file": "Client/CreateAccountConnector/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAccountConnector",
+        "fullName": "google.cloud.developerconnect.v1.Client.CreateAccountConnector",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.CreateAccountConnectorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAccountConnectorOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAccountConnector",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.CreateAccountConnector",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,6 +190,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteAccountConnector_sync",
+      "title": "developerconnect DeleteAccountConnector Sample",
+      "description": "DeleteAccountConnector deletes a single AccountConnector.",
+      "file": "Client/DeleteAccountConnector/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAccountConnector",
+        "fullName": "google.cloud.developerconnect.v1.Client.DeleteAccountConnector",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.DeleteAccountConnectorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAccountConnectorOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAccountConnector",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.DeleteAccountConnector",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -281,6 +373,144 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteSelf_sync",
+      "title": "developerconnect DeleteSelf Sample",
+      "description": "DeleteSelf delete the User based on the user credentials.",
+      "file": "Client/DeleteSelf/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSelf",
+        "fullName": "google.cloud.developerconnect.v1.Client.DeleteSelf",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.DeleteSelfRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSelfOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSelf",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.DeleteSelf",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteUser_sync",
+      "title": "developerconnect DeleteUser Sample",
+      "description": "DeleteUser deletes a single User.",
+      "file": "Client/DeleteUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUser",
+        "fullName": "google.cloud.developerconnect.v1.Client.DeleteUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.DeleteUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteUserOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteUser",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.DeleteUser",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchAccessToken_sync",
+      "title": "developerconnect FetchAccessToken Sample",
+      "description": "FetchAccessToken fetches OAuth access token based on end user credentials.",
+      "file": "Client/FetchAccessToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchAccessToken",
+        "fullName": "google.cloud.developerconnect.v1.Client.FetchAccessToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.FetchAccessTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*developerconnectpb.FetchAccessTokenResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchAccessToken",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchAccessToken",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -516,6 +746,98 @@
       ]
     },
     {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchSelf_sync",
+      "title": "developerconnect FetchSelf Sample",
+      "description": "FetchSelf fetch the User based on the user credentials.",
+      "file": "Client/FetchSelf/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchSelf",
+        "fullName": "google.cloud.developerconnect.v1.Client.FetchSelf",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.FetchSelfRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*developerconnectpb.User",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchSelf",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FetchSelf",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetAccountConnector_sync",
+      "title": "developerconnect GetAccountConnector Sample",
+      "description": "GetAccountConnector gets details of a single AccountConnector.",
+      "file": "Client/GetAccountConnector/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccountConnector",
+        "fullName": "google.cloud.developerconnect.v1.Client.GetAccountConnector",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.GetAccountConnectorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*developerconnectpb.AccountConnector",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAccountConnector",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.GetAccountConnector",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetConnection_sync",
       "title": "developerconnect GetConnection Sample",
       "description": "GetConnection gets details of a single Connection.",
@@ -695,6 +1017,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListAccountConnectors_sync",
+      "title": "developerconnect ListAccountConnectors Sample",
+      "description": "ListAccountConnectors lists AccountConnectors in a given project and location.",
+      "file": "Client/ListAccountConnectors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccountConnectors",
+        "fullName": "google.cloud.developerconnect.v1.Client.ListAccountConnectors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.ListAccountConnectorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountConnectorIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAccountConnectors",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.ListAccountConnectors",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -884,6 +1252,98 @@
       ]
     },
     {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListUsers_sync",
+      "title": "developerconnect ListUsers Sample",
+      "description": "ListUsers lists Users in a given project, location, and account_connector.",
+      "file": "Client/ListUsers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsers",
+        "fullName": "google.cloud.developerconnect.v1.Client.ListUsers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.ListUsersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "ListUsers",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.ListUsers",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_UpdateAccountConnector_sync",
+      "title": "developerconnect UpdateAccountConnector Sample",
+      "description": "UpdateAccountConnector updates the parameters of a single AccountConnector.",
+      "file": "Client/UpdateAccountConnector/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAccountConnector",
+        "fullName": "google.cloud.developerconnect.v1.Client.UpdateAccountConnector",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.UpdateAccountConnectorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAccountConnectorOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAccountConnector",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.UpdateAccountConnector",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_UpdateConnection_sync",
       "title": "developerconnect UpdateConnection Sample",
       "description": "UpdateConnection updates the parameters of a single Connection.",
@@ -917,6 +1377,510 @@
           "service": {
             "shortName": "DeveloperConnect",
             "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_CancelOperation_sync",
+      "title": "developerconnect CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "InsightsConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_CreateInsightsConfig_sync",
+      "title": "developerconnect CreateInsightsConfig Sample",
+      "description": "CreateInsightsConfig creates a new InsightsConfig in a given project and location.",
+      "file": "InsightsConfigClient/CreateInsightsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInsightsConfig",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.CreateInsightsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.CreateInsightsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInsightsConfigOperation",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "CreateInsightsConfig",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigService.CreateInsightsConfig",
+          "service": {
+            "shortName": "InsightsConfigService",
+            "fullName": "google.cloud.developerconnect.v1.InsightsConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_DeleteInsightsConfig_sync",
+      "title": "developerconnect DeleteInsightsConfig Sample",
+      "description": "DeleteInsightsConfig delete a single Insight.",
+      "file": "InsightsConfigClient/DeleteInsightsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInsightsConfig",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.DeleteInsightsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.DeleteInsightsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteInsightsConfigOperation",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteInsightsConfig",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigService.DeleteInsightsConfig",
+          "service": {
+            "shortName": "InsightsConfigService",
+            "fullName": "google.cloud.developerconnect.v1.InsightsConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_DeleteOperation_sync",
+      "title": "developerconnect DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "InsightsConfigClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetInsightsConfig_sync",
+      "title": "developerconnect GetInsightsConfig Sample",
+      "description": "GetInsightsConfig gets details of a single Insight.",
+      "file": "InsightsConfigClient/GetInsightsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInsightsConfig",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.GetInsightsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.GetInsightsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*developerconnectpb.InsightsConfig",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "GetInsightsConfig",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigService.GetInsightsConfig",
+          "service": {
+            "shortName": "InsightsConfigService",
+            "fullName": "google.cloud.developerconnect.v1.InsightsConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetLocation_sync",
+      "title": "developerconnect GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "InsightsConfigClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetOperation_sync",
+      "title": "developerconnect GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "InsightsConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListInsightsConfigs_sync",
+      "title": "developerconnect ListInsightsConfigs Sample",
+      "description": "ListInsightsConfigs lists InsightsConfigs in a given project and location.",
+      "file": "InsightsConfigClient/ListInsightsConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInsightsConfigs",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.ListInsightsConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.ListInsightsConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InsightsConfigIterator",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "ListInsightsConfigs",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigService.ListInsightsConfigs",
+          "service": {
+            "shortName": "InsightsConfigService",
+            "fullName": "google.cloud.developerconnect.v1.InsightsConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListLocations_sync",
+      "title": "developerconnect ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "InsightsConfigClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListOperations_sync",
+      "title": "developerconnect ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "InsightsConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_UpdateInsightsConfig_sync",
+      "title": "developerconnect UpdateInsightsConfig Sample",
+      "description": "UpdateInsightsConfig updates the parameters of a single InsightsConfig.",
+      "file": "InsightsConfigClient/UpdateInsightsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInsightsConfig",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.UpdateInsightsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.UpdateInsightsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInsightsConfigOperation",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateInsightsConfig",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigService.UpdateInsightsConfig",
+          "service": {
+            "shortName": "InsightsConfigService",
+            "fullName": "google.cloud.developerconnect.v1.InsightsConfigService"
           }
         }
       },

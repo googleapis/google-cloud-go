@@ -1,0 +1,36 @@
+{
+  "libraries": [
+    {
+      "id": "google-cloud-secretmanager",
+      "apis": [
+        {
+          "path": "google/cloud/secretmanager/v1",
+          "service_config": "secretmanager_v1.yaml",
+          "status": "existing"
+        }
+      ],
+      "source_roots": [ "secretmanager" ]
+    },
+    {
+      "id": "google-cloud-pubsub-v1",
+      "apis": [
+        {
+          "path": "google/cloud/pubsub/v1",
+          "service_config": "pubsub_v1.yaml",
+          "status": "existing"
+        }
+      ],
+      "source_roots": [ "pubsub" ]
+    },
+    {
+      "id": "google-cloud-workflows",
+      "apis": [
+        {
+          "path": "google/cloud/workflows/v1",
+          "service_config": "workflows_v1.yaml",
+          "status": "new"
+        }
+      ]
+    }
+  ]
+}

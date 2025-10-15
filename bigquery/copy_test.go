@@ -89,6 +89,7 @@ func TestCopy(t *testing.T) {
 				DestinationEncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				Labels:                      map[string]string{"a": "b"},
 				Reservation:                 "reservation/1",
+				MaxSlots:                    123,
 			},
 			want: func() *bq.Job {
 				j := defaultCopyJob()
@@ -97,6 +98,7 @@ func TestCopy(t *testing.T) {
 				j.Configuration.Copy.WriteDisposition = "WRITE_TRUNCATE"
 				j.Configuration.Copy.DestinationEncryptionConfiguration = &bq.EncryptionConfiguration{KmsKeyName: "keyName"}
 				j.Configuration.Reservation = "reservation/1"
+				j.Configuration.MaxSlots = 123
 				return j
 			}(),
 		},

@@ -1,0 +1,25 @@
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
+libraries:
+    - id: secretmanager
+      version: 1.15.0
+      last_generated_commit: 8fe8f9f460fe5dd1df95057659d2520ceca3c9c6
+      apis:
+        - path: google/cloud/secretmanager/v1
+          service_config: secretmanager_v1.yaml
+        - path: google/cloud/secretmanager/v1beta2
+          service_config: secretmanager_v1beta2.yaml
+      source_roots:
+        - secretmanager
+        - internal/generated/snippets/secretmanager
+      preserve_regex:
+        - secretmanager/CHANGES.md
+        - secretmanager/internal/version.go
+        - internal/generated/snippets/secretmanager/snippet_metadata.google.cloud.secretmanager.v1.json
+        - secretmanager/aliasshim/aliasshim.go
+        - secretmanager/apiv1/iam.go
+        - secretmanager/apiv1/iam_example_test.go
+      remove_regex:
+        - secretmanager
+        - internal/generated/snippets/secretmanager
+      release_exclude_paths:
+      tag_format: "{id}/v{version}"

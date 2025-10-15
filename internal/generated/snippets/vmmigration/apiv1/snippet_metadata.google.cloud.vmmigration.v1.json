@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vmmigration/apiv1",
-    "version": "1.8.6",
+    "version": "1.9.1",
     "language": "GO",
     "apis": [
       {
@@ -134,6 +134,98 @@
         "method": {
           "shortName": "CancelCutoverJob",
           "fullName": "google.cloud.vmmigration.v1.VmMigration.CancelCutoverJob",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_CancelDiskMigrationJob_sync",
+      "title": "vmmigration CancelDiskMigrationJob Sample",
+      "description": "CancelDiskMigrationJob cancels the disk migration job.",
+      "file": "Client/CancelDiskMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelDiskMigrationJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.CancelDiskMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.CancelDiskMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CancelDiskMigrationJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelDiskMigrationJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.CancelDiskMigrationJob",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_CancelImageImportJob_sync",
+      "title": "vmmigration CancelImageImportJob Sample",
+      "description": "CancelImageImportJob initiates the cancellation of a running clone job.",
+      "file": "Client/CancelImageImportJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelImageImportJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.CancelImageImportJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.CancelImageImportJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CancelImageImportJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelImageImportJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.CancelImageImportJob",
           "service": {
             "shortName": "VmMigration",
             "fullName": "google.cloud.vmmigration.v1.VmMigration"
@@ -333,6 +425,52 @@
       ]
     },
     {
+      "regionTag": "vmmigration_v1_generated_VmMigration_CreateDiskMigrationJob_sync",
+      "title": "vmmigration CreateDiskMigrationJob Sample",
+      "description": "CreateDiskMigrationJob creates a new disk migration job in a given Source.",
+      "file": "Client/CreateDiskMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDiskMigrationJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.CreateDiskMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.CreateDiskMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDiskMigrationJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDiskMigrationJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.CreateDiskMigrationJob",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmmigration_v1_generated_VmMigration_CreateGroup_sync",
       "title": "vmmigration CreateGroup Sample",
       "description": "CreateGroup creates a new Group in a given project and location.",
@@ -363,6 +501,52 @@
         "method": {
           "shortName": "CreateGroup",
           "fullName": "google.cloud.vmmigration.v1.VmMigration.CreateGroup",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_CreateImageImport_sync",
+      "title": "vmmigration CreateImageImport Sample",
+      "description": "CreateImageImport creates a new ImageImport in a given project.",
+      "file": "Client/CreateImageImport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateImageImport",
+        "fullName": "google.cloud.vmmigration.v1.Client.CreateImageImport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.CreateImageImportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateImageImportOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateImageImport",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.CreateImageImport",
           "service": {
             "shortName": "VmMigration",
             "fullName": "google.cloud.vmmigration.v1.VmMigration"
@@ -609,6 +793,52 @@
       ]
     },
     {
+      "regionTag": "vmmigration_v1_generated_VmMigration_DeleteDiskMigrationJob_sync",
+      "title": "vmmigration DeleteDiskMigrationJob Sample",
+      "description": "DeleteDiskMigrationJob deletes a single DiskMigrationJob.",
+      "file": "Client/DeleteDiskMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDiskMigrationJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.DeleteDiskMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.DeleteDiskMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDiskMigrationJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDiskMigrationJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.DeleteDiskMigrationJob",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmmigration_v1_generated_VmMigration_DeleteGroup_sync",
       "title": "vmmigration DeleteGroup Sample",
       "description": "DeleteGroup deletes a single Group.",
@@ -639,6 +869,52 @@
         "method": {
           "shortName": "DeleteGroup",
           "fullName": "google.cloud.vmmigration.v1.VmMigration.DeleteGroup",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_DeleteImageImport_sync",
+      "title": "vmmigration DeleteImageImport Sample",
+      "description": "DeleteImageImport deletes a single ImageImport.",
+      "file": "Client/DeleteImageImport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteImageImport",
+        "fullName": "google.cloud.vmmigration.v1.Client.DeleteImageImport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.DeleteImageImportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteImageImportOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteImageImport",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.DeleteImageImport",
           "service": {
             "shortName": "VmMigration",
             "fullName": "google.cloud.vmmigration.v1.VmMigration"
@@ -884,6 +1160,52 @@
       ]
     },
     {
+      "regionTag": "vmmigration_v1_generated_VmMigration_ExtendMigration_sync",
+      "title": "vmmigration ExtendMigration Sample",
+      "description": "ExtendMigration extend the migrating VM time to live.",
+      "file": "Client/ExtendMigration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExtendMigration",
+        "fullName": "google.cloud.vmmigration.v1.Client.ExtendMigration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.ExtendMigrationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExtendMigrationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "ExtendMigration",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.ExtendMigration",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmmigration_v1_generated_VmMigration_FetchInventory_sync",
       "title": "vmmigration FetchInventory Sample",
       "description": "FetchInventory list remote source's inventory of VMs.\nThe remote source is the onprem vCenter (remote in the sense it's not in\nCompute Engine). The inventory describes the list of existing VMs in that\nsource. Note that this operation lists the VMs on the remote source, as\nopposed to listing the MigratingVms resources in the vmmigration service.",
@@ -925,6 +1247,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_FetchStorageInventory_sync",
+      "title": "vmmigration FetchStorageInventory Sample",
+      "description": "FetchStorageInventory list remote source's inventory of storage resources.\nThe remote source is another cloud vendor (e.g. AWS, Azure).\nThe inventory describes the list of existing storage resources in that\nsource. Note that this operation lists the resources on the remote source,\nas opposed to listing the MigratingVms resources in the vmmigration\nservice.",
+      "file": "Client/FetchStorageInventory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchStorageInventory",
+        "fullName": "google.cloud.vmmigration.v1.Client.FetchStorageInventory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.FetchStorageInventoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SourceStorageResourceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchStorageInventory",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.FetchStorageInventory",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1114,6 +1482,52 @@
       ]
     },
     {
+      "regionTag": "vmmigration_v1_generated_VmMigration_GetDiskMigrationJob_sync",
+      "title": "vmmigration GetDiskMigrationJob Sample",
+      "description": "GetDiskMigrationJob gets details of a single DiskMigrationJob.",
+      "file": "Client/GetDiskMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDiskMigrationJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.GetDiskMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.GetDiskMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmmigrationpb.DiskMigrationJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDiskMigrationJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.GetDiskMigrationJob",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmmigration_v1_generated_VmMigration_GetGroup_sync",
       "title": "vmmigration GetGroup Sample",
       "description": "GetGroup gets details of a single Group.",
@@ -1144,6 +1558,98 @@
         "method": {
           "shortName": "GetGroup",
           "fullName": "google.cloud.vmmigration.v1.VmMigration.GetGroup",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_GetImageImport_sync",
+      "title": "vmmigration GetImageImport Sample",
+      "description": "GetImageImport gets details of a single ImageImport.",
+      "file": "Client/GetImageImport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetImageImport",
+        "fullName": "google.cloud.vmmigration.v1.Client.GetImageImport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.GetImageImportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmmigrationpb.ImageImport",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "GetImageImport",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.GetImageImport",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_GetImageImportJob_sync",
+      "title": "vmmigration GetImageImportJob Sample",
+      "description": "GetImageImportJob gets details of a single ImageImportJob.",
+      "file": "Client/GetImageImportJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetImageImportJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.GetImageImportJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.GetImageImportJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmmigrationpb.ImageImportJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "GetImageImportJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.GetImageImportJob",
           "service": {
             "shortName": "VmMigration",
             "fullName": "google.cloud.vmmigration.v1.VmMigration"
@@ -1484,7 +1990,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_ListCloneJobs_sync",
       "title": "vmmigration ListCloneJobs Sample",
-      "description": "ListCloneJobs lists CloneJobs of a given migrating VM.",
+      "description": "ListCloneJobs lists the CloneJobs of a migrating VM. Only 25 most recent CloneJobs are\nlisted.",
       "file": "Client/ListCloneJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1530,7 +2036,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_ListCutoverJobs_sync",
       "title": "vmmigration ListCutoverJobs Sample",
-      "description": "ListCutoverJobs lists CutoverJobs of a given migrating VM.",
+      "description": "ListCutoverJobs lists the CutoverJobs of a migrating VM. Only 25 most recent CutoverJobs\nare listed.",
       "file": "Client/ListCutoverJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1620,6 +2126,52 @@
       ]
     },
     {
+      "regionTag": "vmmigration_v1_generated_VmMigration_ListDiskMigrationJobs_sync",
+      "title": "vmmigration ListDiskMigrationJobs Sample",
+      "description": "ListDiskMigrationJobs lists DiskMigrationJobs in a given Source.",
+      "file": "Client/ListDiskMigrationJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDiskMigrationJobs",
+        "fullName": "google.cloud.vmmigration.v1.Client.ListDiskMigrationJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.ListDiskMigrationJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DiskMigrationJobIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDiskMigrationJobs",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.ListDiskMigrationJobs",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmmigration_v1_generated_VmMigration_ListGroups_sync",
       "title": "vmmigration ListGroups Sample",
       "description": "ListGroups lists Groups in a given project and location.",
@@ -1650,6 +2202,98 @@
         "method": {
           "shortName": "ListGroups",
           "fullName": "google.cloud.vmmigration.v1.VmMigration.ListGroups",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_ListImageImportJobs_sync",
+      "title": "vmmigration ListImageImportJobs Sample",
+      "description": "ListImageImportJobs lists ImageImportJobs in a given project.",
+      "file": "Client/ListImageImportJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListImageImportJobs",
+        "fullName": "google.cloud.vmmigration.v1.Client.ListImageImportJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.ListImageImportJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImageImportJobIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "ListImageImportJobs",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.ListImageImportJobs",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_ListImageImports_sync",
+      "title": "vmmigration ListImageImports Sample",
+      "description": "ListImageImports lists ImageImports in a given project.",
+      "file": "Client/ListImageImports/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListImageImports",
+        "fullName": "google.cloud.vmmigration.v1.Client.ListImageImports",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.ListImageImportsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImageImportIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "ListImageImports",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.ListImageImports",
           "service": {
             "shortName": "VmMigration",
             "fullName": "google.cloud.vmmigration.v1.VmMigration"
@@ -2126,6 +2770,52 @@
       ]
     },
     {
+      "regionTag": "vmmigration_v1_generated_VmMigration_RunDiskMigrationJob_sync",
+      "title": "vmmigration RunDiskMigrationJob Sample",
+      "description": "RunDiskMigrationJob runs the disk migration job.",
+      "file": "Client/RunDiskMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunDiskMigrationJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.RunDiskMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.RunDiskMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunDiskMigrationJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "RunDiskMigrationJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.RunDiskMigrationJob",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmmigration_v1_generated_VmMigration_StartMigration_sync",
       "title": "vmmigration StartMigration Sample",
       "description": "StartMigration starts migration for a VM. Starts the process of uploading\ndata and creating snapshots, in replication cycles scheduled by the policy.",
@@ -2156,6 +2846,52 @@
         "method": {
           "shortName": "StartMigration",
           "fullName": "google.cloud.vmmigration.v1.VmMigration.StartMigration",
+          "service": {
+            "shortName": "VmMigration",
+            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmmigration_v1_generated_VmMigration_UpdateDiskMigrationJob_sync",
+      "title": "vmmigration UpdateDiskMigrationJob Sample",
+      "description": "UpdateDiskMigrationJob updates the parameters of a single DiskMigrationJob.",
+      "file": "Client/UpdateDiskMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDiskMigrationJob",
+        "fullName": "google.cloud.vmmigration.v1.Client.UpdateDiskMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmmigrationpb.UpdateDiskMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDiskMigrationJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmmigration.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDiskMigrationJob",
+          "fullName": "google.cloud.vmmigration.v1.VmMigration.UpdateDiskMigrationJob",
           "service": {
             "shortName": "VmMigration",
             "fullName": "google.cloud.vmmigration.v1.VmMigration"

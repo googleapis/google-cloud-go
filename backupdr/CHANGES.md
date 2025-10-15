@@ -1,7 +1,34 @@
-# Changelog
+# Changes
 
 
 
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.3.2...backupdr/v1.4.0) (2025-07-23)
+
+
+### Features
+
+* **backupdr:** Add BackupPlanRevision resource and associated RPCs ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Add DataSourceReference resource and associated RPCs ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Add FetchBackupPlanAssociationsForResourceType RPC ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Add new states to resources (UPDATING, UPLOADING) ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Add ON_DEMAND_OPERATIONAL backup type ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Add support for Cloud SQL backup and restore ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Add support for GCE Disk backup and restore ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Add Update RPCs for BackupPlan and BackupPlanAssociation ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** Change BackupRule.standard_schedule to be OPTIONAL ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+
+
+### Documentation
+
+* **backupdr:** A comment for field backup_retention_days in message .google.cloud.backupdr.v1.BackupRule is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** A comment for field disks in message .google.cloud.backupdr.v1.ComputeInstanceRestoreProperties is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** A comment for field hourly_frequency in message .google.cloud.backupdr.v1.StandardSchedule is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** A comment for field network_interfaces in message .google.cloud.backupdr.v1.ComputeInstanceRestoreProperties is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** A comment for field resource in message .google.cloud.backupdr.v1.BackupPlanAssociation is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** A comment for field resource_policies in message .google.cloud.backupdr.v1.ComputeInstanceRestoreProperties is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** A comment for field resource_type in message .google.cloud.backupdr.v1.BackupPlan is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
+* **backupdr:** A comment for field resource_type in message .google.cloud.backupdr.v1.BackupPlanAssociation is changed ([eeb4b1f](https://github.com/googleapis/google-cloud-go/commit/eeb4b1fe8eb83b73ec31b0bd46e3704bdc0212c3))
 
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.3.1...backupdr/v1.3.2) (2025-04-15)
 

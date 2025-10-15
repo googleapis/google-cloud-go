@@ -1,0 +1,245 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maintenance/api/apiv1beta",
+    "version": "0.1.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.maintenance.api.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "maintenance_v1beta_generated_Maintenance_GetLocation_sync",
+      "title": "maintenance GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "MaintenanceClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "MaintenanceClient",
+          "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "maintenance_v1beta_generated_Maintenance_GetResourceMaintenance_sync",
+      "title": "maintenance GetResourceMaintenance Sample",
+      "description": "GetResourceMaintenance retrieve a single resource maintenance.",
+      "file": "MaintenanceClient/GetResourceMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetResourceMaintenance",
+        "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient.GetResourceMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apipb.GetResourceMaintenanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*apipb.ResourceMaintenance",
+        "client": {
+          "shortName": "MaintenanceClient",
+          "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient"
+        },
+        "method": {
+          "shortName": "GetResourceMaintenance",
+          "fullName": "google.cloud.maintenance.api.v1beta.Maintenance.GetResourceMaintenance",
+          "service": {
+            "shortName": "Maintenance",
+            "fullName": "google.cloud.maintenance.api.v1beta.Maintenance"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "maintenance_v1beta_generated_Maintenance_ListLocations_sync",
+      "title": "maintenance ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "MaintenanceClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "MaintenanceClient",
+          "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "maintenance_v1beta_generated_Maintenance_ListResourceMaintenances_sync",
+      "title": "maintenance ListResourceMaintenances Sample",
+      "description": "ListResourceMaintenances retrieve a collection of resource maintenances.",
+      "file": "MaintenanceClient/ListResourceMaintenances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListResourceMaintenances",
+        "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient.ListResourceMaintenances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apipb.ListResourceMaintenancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResourceMaintenanceIterator",
+        "client": {
+          "shortName": "MaintenanceClient",
+          "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient"
+        },
+        "method": {
+          "shortName": "ListResourceMaintenances",
+          "fullName": "google.cloud.maintenance.api.v1beta.Maintenance.ListResourceMaintenances",
+          "service": {
+            "shortName": "Maintenance",
+            "fullName": "google.cloud.maintenance.api.v1beta.Maintenance"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "maintenance_v1beta_generated_Maintenance_SummarizeMaintenances_sync",
+      "title": "maintenance SummarizeMaintenances Sample",
+      "description": "SummarizeMaintenances retrieves the statistics of a specific maintenance.",
+      "file": "MaintenanceClient/SummarizeMaintenances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SummarizeMaintenances",
+        "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient.SummarizeMaintenances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apipb.SummarizeMaintenancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MaintenanceSummaryIterator",
+        "client": {
+          "shortName": "MaintenanceClient",
+          "fullName": "google.cloud.maintenance.api.v1beta.MaintenanceClient"
+        },
+        "method": {
+          "shortName": "SummarizeMaintenances",
+          "fullName": "google.cloud.maintenance.api.v1beta.Maintenance.SummarizeMaintenances",
+          "service": {
+            "shortName": "Maintenance",
+            "fullName": "google.cloud.maintenance.api.v1beta.Maintenance"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

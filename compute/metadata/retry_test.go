@@ -60,6 +60,12 @@ func TestMetadataRetryer(t *testing.T) {
 			wantShouldRetry: false,
 		},
 		{
+			name:            "retry on 429",
+			code:            429,
+			wantDelay:       100,
+			wantShouldRetry: true,
+		},
+		{
 			name:            "retry on io.ErrUnexpectedEOF",
 			code:            400,
 			err:             io.ErrUnexpectedEOF,

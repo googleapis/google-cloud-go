@@ -1,4 +1,18 @@
-# Changelog
+# Changes
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.3.0...parametermanager/v0.3.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **parametermanager:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.2.1...parametermanager/v0.3.0) (2025-06-25)
+
+
+### Features
+
+* **parametermanager:** KMS key resource_definition `cloudkms.googleapis.com/CryptoKey is added ([e720182](https://github.com/googleapis/google-cloud-go/commit/e720182b5704cac4ae9871785a87e3a94d446bc2))
 
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/parametermanager/v0.2.0...parametermanager/v0.2.1) (2025-04-15)
 

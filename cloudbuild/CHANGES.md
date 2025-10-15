@@ -1,5 +1,31 @@
 # Changes
 
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.23.0...cloudbuild/v1.23.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.3...cloudbuild/v1.23.0) (2025-08-18)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add option to enable nested virtualization if available ([#12720](https://github.com/googleapis/google-cloud-go/issues/12720)) ([f45b222](https://github.com/googleapis/google-cloud-go/commit/f45b2228923d975fc89dde490c651d01d7b0d9ab))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Update comments for `machine_type` and `disk_size_gb` ([f45b222](https://github.com/googleapis/google-cloud-go/commit/f45b2228923d975fc89dde490c651d01d7b0d9ab))
+
+## [1.22.3](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.2...cloudbuild/v1.22.3) (2025-07-31)
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Updated Private Service Connect IP ranges when route_all_traffic is false ([83f894e](https://github.com/googleapis/google-cloud-go/commit/83f894e372ae66b96d8d9d4379fa0ea18547fe72))
+
 ## [1.22.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.22.1...cloudbuild/v1.22.2) (2025-04-15)
 
 

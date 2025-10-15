@@ -28,6 +28,8 @@ import (
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
+	otcodes "go.opentelemetry.io/otel/codes"
+	otrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -39,6 +41,7 @@ import (
 // stream.
 type streamingReceiver interface {
 	Recv() (*sppb.PartialResultSet, error)
+	Context() context.Context
 }
 
 // errEarlyReadEnd returns error for read finishes when gRPC stream is still
@@ -92,7 +95,7 @@ func streamWithReplaceSessionFunc(
 	gsc *grpcSpannerClient,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
+	ctx, _ = startSpan(ctx, "RowIterator")
 	return &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
 		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, replaceSession, gsc),
@@ -191,7 +194,7 @@ func (r *RowIterator) Next() (*Row, error) {
 				// if request contains TransactionSelector::Begin option, this is here as fallback to retry with
 				// explicit transactionID after a retry.
 				r.setTransactionID(nil)
-				r.err = errInlineBeginTransactionFailed()
+				r.err = r.updateTxState(errInlineBeginTransactionFailed(nil))
 				return nil, r.err
 			}
 			r.setTransactionID = nil
@@ -677,13 +680,19 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
-			go func(s streamingReceiver) {
-				_, _ = s.Recv()
-				// Cancel the context after receiving trailers
-				if d.cancel != nil {
-					d.cancel()
-				}
-			}(d.stream)
+			if span := otrace.SpanFromContext(d.stream.Context()); span != nil && span.IsRecording() {
+				span.SetStatus(otcodes.Ok, "Stream finished successfully")
+				span.End()
+			}
+			if d.cancel != nil {
+				// Remove the cancel function to prevent iter.Stop from also calling it.
+				cancel := d.cancel
+				d.cancel = nil
+				go func() {
+					_, _ = d.stream.Recv()
+					cancel()
+				}()
+			}
 			d.changeState(finished)
 			return
 		}

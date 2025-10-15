@@ -1,12 +1,12 @@
 module cloud.google.com/go/internal/gapicgen
 
-go 1.23.0
+go 1.24.0
 
 require (
-	github.com/go-git/go-git/v5 v5.16.0
+	github.com/go-git/go-git/v5 v5.16.2
 	github.com/google/go-github/v59 v59.0.0
 	golang.org/x/oauth2 v0.30.0
-	golang.org/x/sync v0.14.0
+	golang.org/x/sync v0.16.0
 )
 
 require (
