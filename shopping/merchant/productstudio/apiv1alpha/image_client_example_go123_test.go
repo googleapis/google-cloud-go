@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package productstudio_test
-
-import (
-	productstudio "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha"
-)
