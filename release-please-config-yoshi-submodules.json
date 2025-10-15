@@ -53,7 +53,7 @@
         },
         "spanner/benchmarks": {
             "component": "spanner/benchmarks"
-        },
+        }
     },
     "plugins": [
         "sentence-case"
