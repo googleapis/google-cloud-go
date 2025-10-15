@@ -25,6 +25,8 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -114,6 +116,21 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 // filename used by well known types proto
 var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 
+// filename used by timestamp and duration proto
+var extraWellKnownTypesPerTypeName = map[string]struct {
+	name           string
+	fileDescriptor *descriptorpb.FileDescriptorProto
+}{
+	".google.protobuf.Timestamp": {
+		name:           "google/protobuf/timestamp.proto",
+		fileDescriptor: protodesc.ToFileDescriptorProto(timestamppb.File_google_protobuf_timestamp_proto),
+	},
+	".google.protobuf.Duration": {
+		name:           "google/protobuf/duration.proto",
+		fileDescriptor: protodesc.ToFileDescriptorProto(durationpb.File_google_protobuf_duration_proto),
+	},
+}
+
 var rangeTypesPrefix = "rangemessage_range_"
 
 // dependencyCache is used to reduce the number of unique messages we generate by caching based on the tableschema.
@@ -180,7 +197,7 @@ func (dm *dependencyCache) add(schema *storagepb.TableSchema, descriptor protore
 	return nil
 }
 
-func (dm *dependencyCache) addRangeByElementType(typ storagepb.TableFieldSchema_Type, useProto3 bool) (protoreflect.MessageDescriptor, error) {
+func (dm *dependencyCache) addRangeByElementType(typ storagepb.TableFieldSchema_Type, cfg *customConfig) (protoreflect.MessageDescriptor, error) {
 	if md, present := dm.rangeTypes[typ]; present {
 		// already added, do nothing.
 		return md, nil
@@ -212,7 +229,7 @@ func (dm *dependencyCache) addRangeByElementType(typ storagepb.TableFieldSchema_
 	// we put the range types outside the hierarchical namespace as they're effectively BQ-specific well-known types.
 	msgTypeName := fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(typ.String()))
 	// use a new dependency cache, as we don't want to taint the main one due to matching schema
-	md, err := storageSchemaToDescriptorInternal(ts, msgTypeName, newDependencyCache(), useProto3)
+	md, err := storageSchemaToDescriptorInternal(ts, msgTypeName, newDependencyCache(), cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate range descriptor %q: %v", msgTypeName, err)
 	}
@@ -230,9 +247,7 @@ func (dm *dependencyCache) getRange(typ storagepb.TableFieldSchema_Type) protore
 
 // StorageSchemaToProto2Descriptor builds a protoreflect.Descriptor for a given table schema using proto2 syntax.
 func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
-	dc := newDependencyCache()
-	// TODO: b/193064992 tracks support for wrapper types.  In the interim, disable wrapper usage.
-	return storageSchemaToDescriptorInternal(inSchema, scope, dc, false)
+	return StorageSchemaToProtoDescriptorWithOptions(inSchema, scope, withProto2())
 }
 
 // StorageSchemaToProto3Descriptor builds a protoreflect.Descriptor for a given table schema using proto3 syntax.
@@ -240,12 +255,26 @@ func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope stri
 // NOTE: Currently the write API doesn't yet support proto3 behaviors (default value, wrapper types, etc), but this is provided for
 // completeness.
 func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+	return StorageSchemaToProtoDescriptorWithOptions(inSchema, scope, withProto3())
+}
+
+// StorageSchemaToProtoDescriptorWithOptions builds a protoreflect.Descriptor for a given table schema with
+// extra configuration options. Uses proto2 syntax by default.
+func StorageSchemaToProtoDescriptorWithOptions(inSchema *storagepb.TableSchema, scope string, opts ...ProtoConversionOption) (protoreflect.Descriptor, error) {
 	dc := newDependencyCache()
-	return storageSchemaToDescriptorInternal(inSchema, scope, dc, true)
+	cfg := &customConfig{
+		useProto3:             false,
+		protoMappingOverrides: protoMappingOverrides{},
+	}
+	for _, opt := range opts {
+		opt.applyCustomClientOpt(cfg)
+	}
+	// TODO: b/193064992 tracks support for wrapper types.  In the interim, disable wrapper usage.
+	return storageSchemaToDescriptorInternal(inSchema, scope, dc, cfg)
 }
 
 // Internal implementation of the conversion code.
-func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.MessageDescriptor, error) {
+func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, cfg *customConfig) (protoreflect.MessageDescriptor, error) {
 	if inSchema == nil {
 		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
 	}
@@ -277,14 +306,14 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 					deps = append(deps, foundDesc.ParentFile())
 				}
 				// Construct field descriptor for the message.
-				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
+				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), cfg)
 				fields = append(fields, fdp)
 			} else {
 				// Wrap the current struct's fields in a TableSchema outer message, and then build the submessage.
 				ts := &storagepb.TableSchema{
 					Fields: f.GetFields(),
 				}
-				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, useProto3)
+				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, cfg)
 				if err != nil {
 					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %w", err))
 				}
@@ -295,7 +324,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				if err != nil {
 					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %w", err))
 				}
-				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
+				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, cfg)
 				fields = append(fields, fdp)
 			}
 		} else {
@@ -305,7 +334,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				if ret == nil {
 					return nil, fmt.Errorf("field %q is a RANGE, but doesn't include RangeElementType info", f.GetName())
 				}
-				foundDesc, err := cache.addRangeByElementType(ret.GetType(), useProto3)
+				foundDesc, err := cache.addRangeByElementType(ret.GetType(), cfg)
 				if err != nil {
 					return nil, err
 				}
@@ -323,7 +352,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 					}
 				}
 			}
-			fd := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
+			fd := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, cfg)
 			fields = append(fields, fd)
 		}
 	}
@@ -335,6 +364,11 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 
 	// Use the local dependencies to generate a list of filenames.
 	depNames := []string{wellKnownTypesWrapperName}
+	for _, override := range cfg.protoMappingOverrides {
+		if dep, found := extraWellKnownTypesPerTypeName[override.TypeName]; found {
+			depNames = append(depNames, dep.name)
+		}
+	}
 	for _, d := range deps {
 		depNames = append(depNames, d.ParentFile().Path())
 	}
@@ -346,7 +380,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 		Syntax:      proto.String("proto3"),
 		Dependency:  depNames,
 	}
-	if !useProto3 {
+	if !cfg.useProto3 {
 		fdp.Syntax = proto.String("proto2")
 	}
 
@@ -356,6 +390,11 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	fdpList := []*descriptorpb.FileDescriptorProto{
 		fdp,
 		protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
+	}
+	for _, override := range cfg.protoMappingOverrides {
+		if dep, found := extraWellKnownTypesPerTypeName[override.TypeName]; found {
+			fdpList = append(fdpList, dep.fileDescriptor)
+		}
 	}
 	fdpList = append(fdpList, cache.getFileDescriptorProtos()...)
 
@@ -402,7 +441,7 @@ func messageDependsOnFile(msg protoreflect.MessageDescriptor, file protoreflect.
 // For proto2, we propagate the mode->label annotation as expected.
 //
 // Messages are always nullable, and repeated fields are as well.
-func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) *descriptorpb.FieldDescriptorProto {
+func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, cfg *customConfig) *descriptorpb.FieldDescriptorProto {
 	name := field.GetName()
 	var fdp *descriptorpb.FieldDescriptorProto
 
@@ -411,45 +450,34 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(scope),
-			Label:    convertModeToLabel(field.GetMode(), useProto3),
+			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else if field.GetType() == storagepb.TableFieldSchema_RANGE {
 		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(fmt.Sprintf("%s%s", rangeTypesPrefix, strings.ToLower(field.GetRangeElementType().GetType().String()))),
-			Label:    convertModeToLabel(field.GetMode(), useProto3),
+			Label:    convertModeToLabel(field.GetMode(), cfg.useProto3),
 		}
 	} else {
-		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
-		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
-			outType := bqTypeToFieldTypeMap[field.GetType()]
-			fdp = &descriptorpb.FieldDescriptorProto{
-				Name:   proto.String(name),
-				Number: proto.Int32(idx),
-				Type:   outType.Enum(),
-				Label:  convertModeToLabel(field.GetMode(), useProto3),
-			}
+		typeName, outType, label := resolveType(scope, field, cfg)
+		fdp = &descriptorpb.FieldDescriptorProto{
+			Name:     proto.String(name),
+			Number:   proto.Int32(idx),
+			Type:     outType.Enum(),
+			TypeName: typeName,
+			Label:    label,
+		}
 
-			// Special case: proto2 repeated fields may benefit from using packed annotation.
-			if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !useProto3 {
-				for _, v := range packedTypes {
-					if outType == v {
-						fdp.Options = &descriptorpb.FieldOptions{
-							Packed: proto.Bool(true),
-						}
-						break
+		// Special case: proto2 repeated fields may benefit from using packed annotation.
+		if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !cfg.useProto3 {
+			for _, v := range packedTypes {
+				if outType == v {
+					fdp.Options = &descriptorpb.FieldOptions{
+						Packed: proto.Bool(true),
 					}
+					break
 				}
-			}
-		} else {
-			// For NULLABLE proto3 fields, use a wrapper type.
-			fdp = &descriptorpb.FieldDescriptorProto{
-				Name:     proto.String(name),
-				Number:   proto.Int32(idx),
-				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-				TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
-				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			}
 		}
 	}
@@ -466,6 +494,23 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		proto.SetExtension(fdp.Options, storagepb.E_ColumnName, name)
 	}
 	return fdp
+}
+
+func resolveType(scope string, field *storagepb.TableFieldSchema, cfg *customConfig) (*string, descriptorpb.FieldDescriptorProto_Type, *descriptorpb.FieldDescriptorProto_Label) {
+	path := strings.TrimPrefix(strings.ReplaceAll(scope, "__", "."), "root.")
+	if override := cfg.protoMappingOverrides.getByField(field, path); override != nil {
+		var typeName *string
+		if override.TypeName != "" {
+			typeName = proto.String(override.TypeName)
+		}
+		return typeName, override.Type, convertModeToLabel(field.GetMode(), cfg.useProto3)
+	}
+	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
+	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !cfg.useProto3 {
+		return nil, bqTypeToFieldTypeMap[field.GetType()], convertModeToLabel(field.GetMode(), cfg.useProto3)
+	}
+	// For NULLABLE proto3 fields, use a wrapper type.
+	return proto.String(bqTypeToWrapperMap[field.GetType()]), descriptorpb.FieldDescriptorProto_TYPE_MESSAGE, descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()
 }
 
 // nameRequiresAnnotation determines whether a field name requires unicode-annotation.

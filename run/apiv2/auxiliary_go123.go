@@ -61,3 +61,9 @@ func (it *ServiceIterator) All() iter.Seq2[*runpb.Service, error] {
 func (it *TaskIterator) All() iter.Seq2[*runpb.Task, error] {
 	return iterator.RangeAdapter(it.Next)
 }
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkerPoolIterator) All() iter.Seq2[*runpb.WorkerPool, error] {
+	return iterator.RangeAdapter(it.Next)
+}

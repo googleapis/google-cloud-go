@@ -1,4 +1,11 @@
-# Changelog
+# Changes
+
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/storagebatchoperations/v0.1.0...storagebatchoperations/v0.1.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **storagebatchoperations:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
 
 ## 0.1.0 (2025-05-13)
 

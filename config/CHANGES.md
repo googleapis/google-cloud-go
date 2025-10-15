@@ -1,5 +1,38 @@
-# Changelog
+# Changes
 
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.5.0...config/v1.5.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **config:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.4.0...config/v1.5.0) (2025-09-04)
+
+
+### Features
+
+* **config:** Added support for service maintained provider ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.2...config/v1.4.0) (2025-07-09)
+
+
+### Features
+
+* **config:** Added resource change and drift details for the preview ([#12513](https://github.com/googleapis/google-cloud-go/issues/12513)) ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
+
+### Documentation
+
+* **config:** A comment for field `annotations` in message `.google.cloud.config.v1.Preview` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `error` in message `.google.cloud.config.v1.TerraformError` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `input_value` in message `.google.cloud.config.v1.TerraformVariable` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `input_values` in message `.google.cloud.config.v1.TerraformBlueprint` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `labels` in message `.google.cloud.config.v1.Deployment` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `name` in message `.google.cloud.config.v1.Deployment` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `page_size` in message `.google.cloud.config.v1.ListTerraformVersionsRequest` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **config:** A comment for field `page_token` in message `.google.cloud.config.v1.ListTerraformVersionsRequest` is changed ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
 
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/config/v1.3.1...config/v1.3.2) (2025-04-15)
 

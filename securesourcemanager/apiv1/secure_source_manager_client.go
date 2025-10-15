@@ -48,31 +48,67 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListInstances          []gax.CallOption
-	GetInstance            []gax.CallOption
-	CreateInstance         []gax.CallOption
-	DeleteInstance         []gax.CallOption
-	ListRepositories       []gax.CallOption
-	GetRepository          []gax.CallOption
-	CreateRepository       []gax.CallOption
-	DeleteRepository       []gax.CallOption
-	GetIamPolicyRepo       []gax.CallOption
-	SetIamPolicyRepo       []gax.CallOption
-	TestIamPermissionsRepo []gax.CallOption
-	CreateBranchRule       []gax.CallOption
-	ListBranchRules        []gax.CallOption
-	GetBranchRule          []gax.CallOption
-	UpdateBranchRule       []gax.CallOption
-	DeleteBranchRule       []gax.CallOption
-	GetLocation            []gax.CallOption
-	ListLocations          []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	TestIamPermissions     []gax.CallOption
-	CancelOperation        []gax.CallOption
-	DeleteOperation        []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
+	ListInstances                  []gax.CallOption
+	GetInstance                    []gax.CallOption
+	CreateInstance                 []gax.CallOption
+	DeleteInstance                 []gax.CallOption
+	ListRepositories               []gax.CallOption
+	GetRepository                  []gax.CallOption
+	CreateRepository               []gax.CallOption
+	UpdateRepository               []gax.CallOption
+	DeleteRepository               []gax.CallOption
+	ListHooks                      []gax.CallOption
+	GetHook                        []gax.CallOption
+	CreateHook                     []gax.CallOption
+	UpdateHook                     []gax.CallOption
+	DeleteHook                     []gax.CallOption
+	GetIamPolicyRepo               []gax.CallOption
+	SetIamPolicyRepo               []gax.CallOption
+	TestIamPermissionsRepo         []gax.CallOption
+	CreateBranchRule               []gax.CallOption
+	ListBranchRules                []gax.CallOption
+	GetBranchRule                  []gax.CallOption
+	UpdateBranchRule               []gax.CallOption
+	DeleteBranchRule               []gax.CallOption
+	CreatePullRequest              []gax.CallOption
+	GetPullRequest                 []gax.CallOption
+	ListPullRequests               []gax.CallOption
+	UpdatePullRequest              []gax.CallOption
+	MergePullRequest               []gax.CallOption
+	OpenPullRequest                []gax.CallOption
+	ClosePullRequest               []gax.CallOption
+	ListPullRequestFileDiffs       []gax.CallOption
+	FetchTree                      []gax.CallOption
+	FetchBlob                      []gax.CallOption
+	CreateIssue                    []gax.CallOption
+	GetIssue                       []gax.CallOption
+	ListIssues                     []gax.CallOption
+	UpdateIssue                    []gax.CallOption
+	DeleteIssue                    []gax.CallOption
+	OpenIssue                      []gax.CallOption
+	CloseIssue                     []gax.CallOption
+	GetPullRequestComment          []gax.CallOption
+	ListPullRequestComments        []gax.CallOption
+	CreatePullRequestComment       []gax.CallOption
+	UpdatePullRequestComment       []gax.CallOption
+	DeletePullRequestComment       []gax.CallOption
+	BatchCreatePullRequestComments []gax.CallOption
+	ResolvePullRequestComments     []gax.CallOption
+	UnresolvePullRequestComments   []gax.CallOption
+	CreateIssueComment             []gax.CallOption
+	GetIssueComment                []gax.CallOption
+	ListIssueComments              []gax.CallOption
+	UpdateIssueComment             []gax.CallOption
+	DeleteIssueComment             []gax.CallOption
+	GetLocation                    []gax.CallOption
+	ListLocations                  []gax.CallOption
+	GetIamPolicy                   []gax.CallOption
+	SetIamPolicy                   []gax.CallOption
+	TestIamPermissions             []gax.CallOption
+	CancelOperation                []gax.CallOption
+	DeleteOperation                []gax.CallOption
+	GetOperation                   []gax.CallOption
+	ListOperations                 []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -143,7 +179,13 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateRepository: []gax.CallOption{},
+		UpdateRepository: []gax.CallOption{},
 		DeleteRepository: []gax.CallOption{},
+		ListHooks:        []gax.CallOption{},
+		GetHook:          []gax.CallOption{},
+		CreateHook:       []gax.CallOption{},
+		UpdateHook:       []gax.CallOption{},
+		DeleteHook:       []gax.CallOption{},
 		GetIamPolicyRepo: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -156,22 +198,52 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		SetIamPolicyRepo:       []gax.CallOption{},
-		TestIamPermissionsRepo: []gax.CallOption{},
-		CreateBranchRule:       []gax.CallOption{},
-		ListBranchRules:        []gax.CallOption{},
-		GetBranchRule:          []gax.CallOption{},
-		UpdateBranchRule:       []gax.CallOption{},
-		DeleteBranchRule:       []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		GetIamPolicy:           []gax.CallOption{},
-		SetIamPolicy:           []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
+		SetIamPolicyRepo:               []gax.CallOption{},
+		TestIamPermissionsRepo:         []gax.CallOption{},
+		CreateBranchRule:               []gax.CallOption{},
+		ListBranchRules:                []gax.CallOption{},
+		GetBranchRule:                  []gax.CallOption{},
+		UpdateBranchRule:               []gax.CallOption{},
+		DeleteBranchRule:               []gax.CallOption{},
+		CreatePullRequest:              []gax.CallOption{},
+		GetPullRequest:                 []gax.CallOption{},
+		ListPullRequests:               []gax.CallOption{},
+		UpdatePullRequest:              []gax.CallOption{},
+		MergePullRequest:               []gax.CallOption{},
+		OpenPullRequest:                []gax.CallOption{},
+		ClosePullRequest:               []gax.CallOption{},
+		ListPullRequestFileDiffs:       []gax.CallOption{},
+		FetchTree:                      []gax.CallOption{},
+		FetchBlob:                      []gax.CallOption{},
+		CreateIssue:                    []gax.CallOption{},
+		GetIssue:                       []gax.CallOption{},
+		ListIssues:                     []gax.CallOption{},
+		UpdateIssue:                    []gax.CallOption{},
+		DeleteIssue:                    []gax.CallOption{},
+		OpenIssue:                      []gax.CallOption{},
+		CloseIssue:                     []gax.CallOption{},
+		GetPullRequestComment:          []gax.CallOption{},
+		ListPullRequestComments:        []gax.CallOption{},
+		CreatePullRequestComment:       []gax.CallOption{},
+		UpdatePullRequestComment:       []gax.CallOption{},
+		DeletePullRequestComment:       []gax.CallOption{},
+		BatchCreatePullRequestComments: []gax.CallOption{},
+		ResolvePullRequestComments:     []gax.CallOption{},
+		UnresolvePullRequestComments:   []gax.CallOption{},
+		CreateIssueComment:             []gax.CallOption{},
+		GetIssueComment:                []gax.CallOption{},
+		ListIssueComments:              []gax.CallOption{},
+		UpdateIssueComment:             []gax.CallOption{},
+		DeleteIssueComment:             []gax.CallOption{},
+		GetLocation:                    []gax.CallOption{},
+		ListLocations:                  []gax.CallOption{},
+		GetIamPolicy:                   []gax.CallOption{},
+		SetIamPolicy:                   []gax.CallOption{},
+		TestIamPermissions:             []gax.CallOption{},
+		CancelOperation:                []gax.CallOption{},
+		DeleteOperation:                []gax.CallOption{},
+		GetOperation:                   []gax.CallOption{},
+		ListOperations:                 []gax.CallOption{},
 	}
 }
 
@@ -224,7 +296,13 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateRepository: []gax.CallOption{},
+		UpdateRepository: []gax.CallOption{},
 		DeleteRepository: []gax.CallOption{},
+		ListHooks:        []gax.CallOption{},
+		GetHook:          []gax.CallOption{},
+		CreateHook:       []gax.CallOption{},
+		UpdateHook:       []gax.CallOption{},
+		DeleteHook:       []gax.CallOption{},
 		GetIamPolicyRepo: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -236,22 +314,52 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetIamPolicyRepo:       []gax.CallOption{},
-		TestIamPermissionsRepo: []gax.CallOption{},
-		CreateBranchRule:       []gax.CallOption{},
-		ListBranchRules:        []gax.CallOption{},
-		GetBranchRule:          []gax.CallOption{},
-		UpdateBranchRule:       []gax.CallOption{},
-		DeleteBranchRule:       []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		GetIamPolicy:           []gax.CallOption{},
-		SetIamPolicy:           []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
+		SetIamPolicyRepo:               []gax.CallOption{},
+		TestIamPermissionsRepo:         []gax.CallOption{},
+		CreateBranchRule:               []gax.CallOption{},
+		ListBranchRules:                []gax.CallOption{},
+		GetBranchRule:                  []gax.CallOption{},
+		UpdateBranchRule:               []gax.CallOption{},
+		DeleteBranchRule:               []gax.CallOption{},
+		CreatePullRequest:              []gax.CallOption{},
+		GetPullRequest:                 []gax.CallOption{},
+		ListPullRequests:               []gax.CallOption{},
+		UpdatePullRequest:              []gax.CallOption{},
+		MergePullRequest:               []gax.CallOption{},
+		OpenPullRequest:                []gax.CallOption{},
+		ClosePullRequest:               []gax.CallOption{},
+		ListPullRequestFileDiffs:       []gax.CallOption{},
+		FetchTree:                      []gax.CallOption{},
+		FetchBlob:                      []gax.CallOption{},
+		CreateIssue:                    []gax.CallOption{},
+		GetIssue:                       []gax.CallOption{},
+		ListIssues:                     []gax.CallOption{},
+		UpdateIssue:                    []gax.CallOption{},
+		DeleteIssue:                    []gax.CallOption{},
+		OpenIssue:                      []gax.CallOption{},
+		CloseIssue:                     []gax.CallOption{},
+		GetPullRequestComment:          []gax.CallOption{},
+		ListPullRequestComments:        []gax.CallOption{},
+		CreatePullRequestComment:       []gax.CallOption{},
+		UpdatePullRequestComment:       []gax.CallOption{},
+		DeletePullRequestComment:       []gax.CallOption{},
+		BatchCreatePullRequestComments: []gax.CallOption{},
+		ResolvePullRequestComments:     []gax.CallOption{},
+		UnresolvePullRequestComments:   []gax.CallOption{},
+		CreateIssueComment:             []gax.CallOption{},
+		GetIssueComment:                []gax.CallOption{},
+		ListIssueComments:              []gax.CallOption{},
+		UpdateIssueComment:             []gax.CallOption{},
+		DeleteIssueComment:             []gax.CallOption{},
+		GetLocation:                    []gax.CallOption{},
+		ListLocations:                  []gax.CallOption{},
+		GetIamPolicy:                   []gax.CallOption{},
+		SetIamPolicy:                   []gax.CallOption{},
+		TestIamPermissions:             []gax.CallOption{},
+		CancelOperation:                []gax.CallOption{},
+		DeleteOperation:                []gax.CallOption{},
+		GetOperation:                   []gax.CallOption{},
+		ListOperations:                 []gax.CallOption{},
 	}
 }
 
@@ -270,8 +378,18 @@ type internalClient interface {
 	GetRepository(context.Context, *securesourcemanagerpb.GetRepositoryRequest, ...gax.CallOption) (*securesourcemanagerpb.Repository, error)
 	CreateRepository(context.Context, *securesourcemanagerpb.CreateRepositoryRequest, ...gax.CallOption) (*CreateRepositoryOperation, error)
 	CreateRepositoryOperation(name string) *CreateRepositoryOperation
+	UpdateRepository(context.Context, *securesourcemanagerpb.UpdateRepositoryRequest, ...gax.CallOption) (*UpdateRepositoryOperation, error)
+	UpdateRepositoryOperation(name string) *UpdateRepositoryOperation
 	DeleteRepository(context.Context, *securesourcemanagerpb.DeleteRepositoryRequest, ...gax.CallOption) (*DeleteRepositoryOperation, error)
 	DeleteRepositoryOperation(name string) *DeleteRepositoryOperation
+	ListHooks(context.Context, *securesourcemanagerpb.ListHooksRequest, ...gax.CallOption) *HookIterator
+	GetHook(context.Context, *securesourcemanagerpb.GetHookRequest, ...gax.CallOption) (*securesourcemanagerpb.Hook, error)
+	CreateHook(context.Context, *securesourcemanagerpb.CreateHookRequest, ...gax.CallOption) (*CreateHookOperation, error)
+	CreateHookOperation(name string) *CreateHookOperation
+	UpdateHook(context.Context, *securesourcemanagerpb.UpdateHookRequest, ...gax.CallOption) (*UpdateHookOperation, error)
+	UpdateHookOperation(name string) *UpdateHookOperation
+	DeleteHook(context.Context, *securesourcemanagerpb.DeleteHookRequest, ...gax.CallOption) (*DeleteHookOperation, error)
+	DeleteHookOperation(name string) *DeleteHookOperation
 	GetIamPolicyRepo(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicyRepo(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissionsRepo(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -283,6 +401,55 @@ type internalClient interface {
 	UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation
 	DeleteBranchRule(context.Context, *securesourcemanagerpb.DeleteBranchRuleRequest, ...gax.CallOption) (*DeleteBranchRuleOperation, error)
 	DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation
+	CreatePullRequest(context.Context, *securesourcemanagerpb.CreatePullRequestRequest, ...gax.CallOption) (*CreatePullRequestOperation, error)
+	CreatePullRequestOperation(name string) *CreatePullRequestOperation
+	GetPullRequest(context.Context, *securesourcemanagerpb.GetPullRequestRequest, ...gax.CallOption) (*securesourcemanagerpb.PullRequest, error)
+	ListPullRequests(context.Context, *securesourcemanagerpb.ListPullRequestsRequest, ...gax.CallOption) *PullRequestIterator
+	UpdatePullRequest(context.Context, *securesourcemanagerpb.UpdatePullRequestRequest, ...gax.CallOption) (*UpdatePullRequestOperation, error)
+	UpdatePullRequestOperation(name string) *UpdatePullRequestOperation
+	MergePullRequest(context.Context, *securesourcemanagerpb.MergePullRequestRequest, ...gax.CallOption) (*MergePullRequestOperation, error)
+	MergePullRequestOperation(name string) *MergePullRequestOperation
+	OpenPullRequest(context.Context, *securesourcemanagerpb.OpenPullRequestRequest, ...gax.CallOption) (*OpenPullRequestOperation, error)
+	OpenPullRequestOperation(name string) *OpenPullRequestOperation
+	ClosePullRequest(context.Context, *securesourcemanagerpb.ClosePullRequestRequest, ...gax.CallOption) (*ClosePullRequestOperation, error)
+	ClosePullRequestOperation(name string) *ClosePullRequestOperation
+	ListPullRequestFileDiffs(context.Context, *securesourcemanagerpb.ListPullRequestFileDiffsRequest, ...gax.CallOption) *FileDiffIterator
+	FetchTree(context.Context, *securesourcemanagerpb.FetchTreeRequest, ...gax.CallOption) *TreeEntryIterator
+	FetchBlob(context.Context, *securesourcemanagerpb.FetchBlobRequest, ...gax.CallOption) (*securesourcemanagerpb.FetchBlobResponse, error)
+	CreateIssue(context.Context, *securesourcemanagerpb.CreateIssueRequest, ...gax.CallOption) (*CreateIssueOperation, error)
+	CreateIssueOperation(name string) *CreateIssueOperation
+	GetIssue(context.Context, *securesourcemanagerpb.GetIssueRequest, ...gax.CallOption) (*securesourcemanagerpb.Issue, error)
+	ListIssues(context.Context, *securesourcemanagerpb.ListIssuesRequest, ...gax.CallOption) *IssueIterator
+	UpdateIssue(context.Context, *securesourcemanagerpb.UpdateIssueRequest, ...gax.CallOption) (*UpdateIssueOperation, error)
+	UpdateIssueOperation(name string) *UpdateIssueOperation
+	DeleteIssue(context.Context, *securesourcemanagerpb.DeleteIssueRequest, ...gax.CallOption) (*DeleteIssueOperation, error)
+	DeleteIssueOperation(name string) *DeleteIssueOperation
+	OpenIssue(context.Context, *securesourcemanagerpb.OpenIssueRequest, ...gax.CallOption) (*OpenIssueOperation, error)
+	OpenIssueOperation(name string) *OpenIssueOperation
+	CloseIssue(context.Context, *securesourcemanagerpb.CloseIssueRequest, ...gax.CallOption) (*CloseIssueOperation, error)
+	CloseIssueOperation(name string) *CloseIssueOperation
+	GetPullRequestComment(context.Context, *securesourcemanagerpb.GetPullRequestCommentRequest, ...gax.CallOption) (*securesourcemanagerpb.PullRequestComment, error)
+	ListPullRequestComments(context.Context, *securesourcemanagerpb.ListPullRequestCommentsRequest, ...gax.CallOption) *PullRequestCommentIterator
+	CreatePullRequestComment(context.Context, *securesourcemanagerpb.CreatePullRequestCommentRequest, ...gax.CallOption) (*CreatePullRequestCommentOperation, error)
+	CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation
+	UpdatePullRequestComment(context.Context, *securesourcemanagerpb.UpdatePullRequestCommentRequest, ...gax.CallOption) (*UpdatePullRequestCommentOperation, error)
+	UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation
+	DeletePullRequestComment(context.Context, *securesourcemanagerpb.DeletePullRequestCommentRequest, ...gax.CallOption) (*DeletePullRequestCommentOperation, error)
+	DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation
+	BatchCreatePullRequestComments(context.Context, *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error)
+	BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation
+	ResolvePullRequestComments(context.Context, *securesourcemanagerpb.ResolvePullRequestCommentsRequest, ...gax.CallOption) (*ResolvePullRequestCommentsOperation, error)
+	ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation
+	UnresolvePullRequestComments(context.Context, *securesourcemanagerpb.UnresolvePullRequestCommentsRequest, ...gax.CallOption) (*UnresolvePullRequestCommentsOperation, error)
+	UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation
+	CreateIssueComment(context.Context, *securesourcemanagerpb.CreateIssueCommentRequest, ...gax.CallOption) (*CreateIssueCommentOperation, error)
+	CreateIssueCommentOperation(name string) *CreateIssueCommentOperation
+	GetIssueComment(context.Context, *securesourcemanagerpb.GetIssueCommentRequest, ...gax.CallOption) (*securesourcemanagerpb.IssueComment, error)
+	ListIssueComments(context.Context, *securesourcemanagerpb.ListIssueCommentsRequest, ...gax.CallOption) *IssueCommentIterator
+	UpdateIssueComment(context.Context, *securesourcemanagerpb.UpdateIssueCommentRequest, ...gax.CallOption) (*UpdateIssueCommentOperation, error)
+	UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation
+	DeleteIssueComment(context.Context, *securesourcemanagerpb.DeleteIssueCommentRequest, ...gax.CallOption) (*DeleteIssueCommentOperation, error)
+	DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -300,19 +467,6 @@ type internalClient interface {
 // # Secure Source Manager API
 //
 // Access Secure Source Manager instances, resources, and repositories.
-//
-// This API is split across two servers: the Control Plane and the Data Plane.
-//
-// Data Plane endpoints are hosted directly by your Secure Source Manager
-// instance, so you must connect to your instance’s API hostname to access
-// them. The API hostname looks like the following:
-//
-// For example,
-//
-// Data Plane endpoints are denoted with Host: Data Plane.
-//
-// All other endpoints are found in the normal Cloud API location, namely,
-// securcesourcemanager.googleapis.com.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -383,21 +537,21 @@ func (c *Client) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 
 // ListRepositories lists Repositories in a given project and location.
 //
-// Host: Data Plane
+// The instance field is required in the query parameter for requests using
+// the securesourcemanager.googleapis.com (at http://securesourcemanager.googleapis.com) endpoint.
 func (c *Client) ListRepositories(ctx context.Context, req *securesourcemanagerpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	return c.internalClient.ListRepositories(ctx, req, opts...)
 }
 
 // GetRepository gets metadata of a repository.
-//
-// Host: Data Plane
 func (c *Client) GetRepository(ctx context.Context, req *securesourcemanagerpb.GetRepositoryRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Repository, error) {
 	return c.internalClient.GetRepository(ctx, req, opts...)
 }
 
 // CreateRepository creates a new repository in a given project and location.
 //
-// Host: Data Plane
+// The Repository.Instance field is required in the request body for requests
+// using the securesourcemanager.googleapis.com (at http://securesourcemanager.googleapis.com) endpoint.
 func (c *Client) CreateRepository(ctx context.Context, req *securesourcemanagerpb.CreateRepositoryRequest, opts ...gax.CallOption) (*CreateRepositoryOperation, error) {
 	return c.internalClient.CreateRepository(ctx, req, opts...)
 }
@@ -408,9 +562,18 @@ func (c *Client) CreateRepositoryOperation(name string) *CreateRepositoryOperati
 	return c.internalClient.CreateRepositoryOperation(name)
 }
 
+// UpdateRepository updates the metadata of a repository.
+func (c *Client) UpdateRepository(ctx context.Context, req *securesourcemanagerpb.UpdateRepositoryRequest, opts ...gax.CallOption) (*UpdateRepositoryOperation, error) {
+	return c.internalClient.UpdateRepository(ctx, req, opts...)
+}
+
+// UpdateRepositoryOperation returns a new UpdateRepositoryOperation from a given name.
+// The name must be that of a previously created UpdateRepositoryOperation, possibly from a different process.
+func (c *Client) UpdateRepositoryOperation(name string) *UpdateRepositoryOperation {
+	return c.internalClient.UpdateRepositoryOperation(name)
+}
+
 // DeleteRepository deletes a Repository.
-//
-// Host: Data Plane
 func (c *Client) DeleteRepository(ctx context.Context, req *securesourcemanagerpb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
 	return c.internalClient.DeleteRepository(ctx, req, opts...)
 }
@@ -419,6 +582,49 @@ func (c *Client) DeleteRepository(ctx context.Context, req *securesourcemanagerp
 // The name must be that of a previously created DeleteRepositoryOperation, possibly from a different process.
 func (c *Client) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	return c.internalClient.DeleteRepositoryOperation(name)
+}
+
+// ListHooks lists hooks in a given repository.
+func (c *Client) ListHooks(ctx context.Context, req *securesourcemanagerpb.ListHooksRequest, opts ...gax.CallOption) *HookIterator {
+	return c.internalClient.ListHooks(ctx, req, opts...)
+}
+
+// GetHook gets metadata of a hook.
+func (c *Client) GetHook(ctx context.Context, req *securesourcemanagerpb.GetHookRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Hook, error) {
+	return c.internalClient.GetHook(ctx, req, opts...)
+}
+
+// CreateHook creates a new hook in a given repository.
+func (c *Client) CreateHook(ctx context.Context, req *securesourcemanagerpb.CreateHookRequest, opts ...gax.CallOption) (*CreateHookOperation, error) {
+	return c.internalClient.CreateHook(ctx, req, opts...)
+}
+
+// CreateHookOperation returns a new CreateHookOperation from a given name.
+// The name must be that of a previously created CreateHookOperation, possibly from a different process.
+func (c *Client) CreateHookOperation(name string) *CreateHookOperation {
+	return c.internalClient.CreateHookOperation(name)
+}
+
+// UpdateHook updates the metadata of a hook.
+func (c *Client) UpdateHook(ctx context.Context, req *securesourcemanagerpb.UpdateHookRequest, opts ...gax.CallOption) (*UpdateHookOperation, error) {
+	return c.internalClient.UpdateHook(ctx, req, opts...)
+}
+
+// UpdateHookOperation returns a new UpdateHookOperation from a given name.
+// The name must be that of a previously created UpdateHookOperation, possibly from a different process.
+func (c *Client) UpdateHookOperation(name string) *UpdateHookOperation {
+	return c.internalClient.UpdateHookOperation(name)
+}
+
+// DeleteHook deletes a Hook.
+func (c *Client) DeleteHook(ctx context.Context, req *securesourcemanagerpb.DeleteHookRequest, opts ...gax.CallOption) (*DeleteHookOperation, error) {
+	return c.internalClient.DeleteHook(ctx, req, opts...)
+}
+
+// DeleteHookOperation returns a new DeleteHookOperation from a given name.
+// The name must be that of a previously created DeleteHookOperation, possibly from a different process.
+func (c *Client) DeleteHookOperation(name string) *DeleteHookOperation {
+	return c.internalClient.DeleteHookOperation(name)
 }
 
 // GetIamPolicyRepo get IAM policy for a repository.
@@ -478,6 +684,284 @@ func (c *Client) DeleteBranchRule(ctx context.Context, req *securesourcemanagerp
 // The name must be that of a previously created DeleteBranchRuleOperation, possibly from a different process.
 func (c *Client) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
 	return c.internalClient.DeleteBranchRuleOperation(name)
+}
+
+// CreatePullRequest creates a pull request.
+func (c *Client) CreatePullRequest(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestRequest, opts ...gax.CallOption) (*CreatePullRequestOperation, error) {
+	return c.internalClient.CreatePullRequest(ctx, req, opts...)
+}
+
+// CreatePullRequestOperation returns a new CreatePullRequestOperation from a given name.
+// The name must be that of a previously created CreatePullRequestOperation, possibly from a different process.
+func (c *Client) CreatePullRequestOperation(name string) *CreatePullRequestOperation {
+	return c.internalClient.CreatePullRequestOperation(name)
+}
+
+// GetPullRequest gets a pull request.
+func (c *Client) GetPullRequest(ctx context.Context, req *securesourcemanagerpb.GetPullRequestRequest, opts ...gax.CallOption) (*securesourcemanagerpb.PullRequest, error) {
+	return c.internalClient.GetPullRequest(ctx, req, opts...)
+}
+
+// ListPullRequests lists pull requests in a repository.
+func (c *Client) ListPullRequests(ctx context.Context, req *securesourcemanagerpb.ListPullRequestsRequest, opts ...gax.CallOption) *PullRequestIterator {
+	return c.internalClient.ListPullRequests(ctx, req, opts...)
+}
+
+// UpdatePullRequest updates a pull request.
+func (c *Client) UpdatePullRequest(ctx context.Context, req *securesourcemanagerpb.UpdatePullRequestRequest, opts ...gax.CallOption) (*UpdatePullRequestOperation, error) {
+	return c.internalClient.UpdatePullRequest(ctx, req, opts...)
+}
+
+// UpdatePullRequestOperation returns a new UpdatePullRequestOperation from a given name.
+// The name must be that of a previously created UpdatePullRequestOperation, possibly from a different process.
+func (c *Client) UpdatePullRequestOperation(name string) *UpdatePullRequestOperation {
+	return c.internalClient.UpdatePullRequestOperation(name)
+}
+
+// MergePullRequest merges a pull request.
+func (c *Client) MergePullRequest(ctx context.Context, req *securesourcemanagerpb.MergePullRequestRequest, opts ...gax.CallOption) (*MergePullRequestOperation, error) {
+	return c.internalClient.MergePullRequest(ctx, req, opts...)
+}
+
+// MergePullRequestOperation returns a new MergePullRequestOperation from a given name.
+// The name must be that of a previously created MergePullRequestOperation, possibly from a different process.
+func (c *Client) MergePullRequestOperation(name string) *MergePullRequestOperation {
+	return c.internalClient.MergePullRequestOperation(name)
+}
+
+// OpenPullRequest opens a pull request.
+func (c *Client) OpenPullRequest(ctx context.Context, req *securesourcemanagerpb.OpenPullRequestRequest, opts ...gax.CallOption) (*OpenPullRequestOperation, error) {
+	return c.internalClient.OpenPullRequest(ctx, req, opts...)
+}
+
+// OpenPullRequestOperation returns a new OpenPullRequestOperation from a given name.
+// The name must be that of a previously created OpenPullRequestOperation, possibly from a different process.
+func (c *Client) OpenPullRequestOperation(name string) *OpenPullRequestOperation {
+	return c.internalClient.OpenPullRequestOperation(name)
+}
+
+// ClosePullRequest closes a pull request without merging.
+func (c *Client) ClosePullRequest(ctx context.Context, req *securesourcemanagerpb.ClosePullRequestRequest, opts ...gax.CallOption) (*ClosePullRequestOperation, error) {
+	return c.internalClient.ClosePullRequest(ctx, req, opts...)
+}
+
+// ClosePullRequestOperation returns a new ClosePullRequestOperation from a given name.
+// The name must be that of a previously created ClosePullRequestOperation, possibly from a different process.
+func (c *Client) ClosePullRequestOperation(name string) *ClosePullRequestOperation {
+	return c.internalClient.ClosePullRequestOperation(name)
+}
+
+// ListPullRequestFileDiffs lists a pull request’s file diffs.
+func (c *Client) ListPullRequestFileDiffs(ctx context.Context, req *securesourcemanagerpb.ListPullRequestFileDiffsRequest, opts ...gax.CallOption) *FileDiffIterator {
+	return c.internalClient.ListPullRequestFileDiffs(ctx, req, opts...)
+}
+
+// FetchTree fetches a tree from a repository.
+func (c *Client) FetchTree(ctx context.Context, req *securesourcemanagerpb.FetchTreeRequest, opts ...gax.CallOption) *TreeEntryIterator {
+	return c.internalClient.FetchTree(ctx, req, opts...)
+}
+
+// FetchBlob fetches a blob from a repository.
+func (c *Client) FetchBlob(ctx context.Context, req *securesourcemanagerpb.FetchBlobRequest, opts ...gax.CallOption) (*securesourcemanagerpb.FetchBlobResponse, error) {
+	return c.internalClient.FetchBlob(ctx, req, opts...)
+}
+
+// CreateIssue creates an issue.
+func (c *Client) CreateIssue(ctx context.Context, req *securesourcemanagerpb.CreateIssueRequest, opts ...gax.CallOption) (*CreateIssueOperation, error) {
+	return c.internalClient.CreateIssue(ctx, req, opts...)
+}
+
+// CreateIssueOperation returns a new CreateIssueOperation from a given name.
+// The name must be that of a previously created CreateIssueOperation, possibly from a different process.
+func (c *Client) CreateIssueOperation(name string) *CreateIssueOperation {
+	return c.internalClient.CreateIssueOperation(name)
+}
+
+// GetIssue gets an issue.
+func (c *Client) GetIssue(ctx context.Context, req *securesourcemanagerpb.GetIssueRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Issue, error) {
+	return c.internalClient.GetIssue(ctx, req, opts...)
+}
+
+// ListIssues lists issues in a repository.
+func (c *Client) ListIssues(ctx context.Context, req *securesourcemanagerpb.ListIssuesRequest, opts ...gax.CallOption) *IssueIterator {
+	return c.internalClient.ListIssues(ctx, req, opts...)
+}
+
+// UpdateIssue updates a issue.
+func (c *Client) UpdateIssue(ctx context.Context, req *securesourcemanagerpb.UpdateIssueRequest, opts ...gax.CallOption) (*UpdateIssueOperation, error) {
+	return c.internalClient.UpdateIssue(ctx, req, opts...)
+}
+
+// UpdateIssueOperation returns a new UpdateIssueOperation from a given name.
+// The name must be that of a previously created UpdateIssueOperation, possibly from a different process.
+func (c *Client) UpdateIssueOperation(name string) *UpdateIssueOperation {
+	return c.internalClient.UpdateIssueOperation(name)
+}
+
+// DeleteIssue deletes an issue.
+func (c *Client) DeleteIssue(ctx context.Context, req *securesourcemanagerpb.DeleteIssueRequest, opts ...gax.CallOption) (*DeleteIssueOperation, error) {
+	return c.internalClient.DeleteIssue(ctx, req, opts...)
+}
+
+// DeleteIssueOperation returns a new DeleteIssueOperation from a given name.
+// The name must be that of a previously created DeleteIssueOperation, possibly from a different process.
+func (c *Client) DeleteIssueOperation(name string) *DeleteIssueOperation {
+	return c.internalClient.DeleteIssueOperation(name)
+}
+
+// OpenIssue opens an issue.
+func (c *Client) OpenIssue(ctx context.Context, req *securesourcemanagerpb.OpenIssueRequest, opts ...gax.CallOption) (*OpenIssueOperation, error) {
+	return c.internalClient.OpenIssue(ctx, req, opts...)
+}
+
+// OpenIssueOperation returns a new OpenIssueOperation from a given name.
+// The name must be that of a previously created OpenIssueOperation, possibly from a different process.
+func (c *Client) OpenIssueOperation(name string) *OpenIssueOperation {
+	return c.internalClient.OpenIssueOperation(name)
+}
+
+// CloseIssue closes an issue.
+func (c *Client) CloseIssue(ctx context.Context, req *securesourcemanagerpb.CloseIssueRequest, opts ...gax.CallOption) (*CloseIssueOperation, error) {
+	return c.internalClient.CloseIssue(ctx, req, opts...)
+}
+
+// CloseIssueOperation returns a new CloseIssueOperation from a given name.
+// The name must be that of a previously created CloseIssueOperation, possibly from a different process.
+func (c *Client) CloseIssueOperation(name string) *CloseIssueOperation {
+	return c.internalClient.CloseIssueOperation(name)
+}
+
+// GetPullRequestComment gets a pull request comment.
+func (c *Client) GetPullRequestComment(ctx context.Context, req *securesourcemanagerpb.GetPullRequestCommentRequest, opts ...gax.CallOption) (*securesourcemanagerpb.PullRequestComment, error) {
+	return c.internalClient.GetPullRequestComment(ctx, req, opts...)
+}
+
+// ListPullRequestComments lists pull request comments.
+func (c *Client) ListPullRequestComments(ctx context.Context, req *securesourcemanagerpb.ListPullRequestCommentsRequest, opts ...gax.CallOption) *PullRequestCommentIterator {
+	return c.internalClient.ListPullRequestComments(ctx, req, opts...)
+}
+
+// CreatePullRequestComment creates a pull request comment. This function is used to create a single
+// PullRequestComment of type Comment, or a single PullRequestComment of type
+// Code that’s replying to another PullRequestComment of type Code. Use
+// BatchCreatePullRequestComments to create multiple PullRequestComments for
+// code reviews.
+func (c *Client) CreatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestCommentRequest, opts ...gax.CallOption) (*CreatePullRequestCommentOperation, error) {
+	return c.internalClient.CreatePullRequestComment(ctx, req, opts...)
+}
+
+// CreatePullRequestCommentOperation returns a new CreatePullRequestCommentOperation from a given name.
+// The name must be that of a previously created CreatePullRequestCommentOperation, possibly from a different process.
+func (c *Client) CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation {
+	return c.internalClient.CreatePullRequestCommentOperation(name)
+}
+
+// UpdatePullRequestComment updates a pull request comment.
+func (c *Client) UpdatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.UpdatePullRequestCommentRequest, opts ...gax.CallOption) (*UpdatePullRequestCommentOperation, error) {
+	return c.internalClient.UpdatePullRequestComment(ctx, req, opts...)
+}
+
+// UpdatePullRequestCommentOperation returns a new UpdatePullRequestCommentOperation from a given name.
+// The name must be that of a previously created UpdatePullRequestCommentOperation, possibly from a different process.
+func (c *Client) UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation {
+	return c.internalClient.UpdatePullRequestCommentOperation(name)
+}
+
+// DeletePullRequestComment deletes a pull request comment.
+func (c *Client) DeletePullRequestComment(ctx context.Context, req *securesourcemanagerpb.DeletePullRequestCommentRequest, opts ...gax.CallOption) (*DeletePullRequestCommentOperation, error) {
+	return c.internalClient.DeletePullRequestComment(ctx, req, opts...)
+}
+
+// DeletePullRequestCommentOperation returns a new DeletePullRequestCommentOperation from a given name.
+// The name must be that of a previously created DeletePullRequestCommentOperation, possibly from a different process.
+func (c *Client) DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation {
+	return c.internalClient.DeletePullRequestCommentOperation(name)
+}
+
+// BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
+// multiple PullRequestComments for code review. There needs to be exactly one
+// PullRequestComment of type Review, and at most 100 PullRequestComments of
+// type Code per request. The Postition of the code comments must be unique
+// within the request.
+func (c *Client) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
+	return c.internalClient.BatchCreatePullRequestComments(ctx, req, opts...)
+}
+
+// BatchCreatePullRequestCommentsOperation returns a new BatchCreatePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created BatchCreatePullRequestCommentsOperation, possibly from a different process.
+func (c *Client) BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation {
+	return c.internalClient.BatchCreatePullRequestCommentsOperation(name)
+}
+
+// ResolvePullRequestComments resolves pull request comments. A list of PullRequestComment names must be
+// provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be resolved.
+func (c *Client) ResolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.ResolvePullRequestCommentsRequest, opts ...gax.CallOption) (*ResolvePullRequestCommentsOperation, error) {
+	return c.internalClient.ResolvePullRequestComments(ctx, req, opts...)
+}
+
+// ResolvePullRequestCommentsOperation returns a new ResolvePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created ResolvePullRequestCommentsOperation, possibly from a different process.
+func (c *Client) ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation {
+	return c.internalClient.ResolvePullRequestCommentsOperation(name)
+}
+
+// UnresolvePullRequestComments unresolves pull request comments. A list of PullRequestComment names must
+// be provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be unresolved.
+func (c *Client) UnresolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.UnresolvePullRequestCommentsRequest, opts ...gax.CallOption) (*UnresolvePullRequestCommentsOperation, error) {
+	return c.internalClient.UnresolvePullRequestComments(ctx, req, opts...)
+}
+
+// UnresolvePullRequestCommentsOperation returns a new UnresolvePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created UnresolvePullRequestCommentsOperation, possibly from a different process.
+func (c *Client) UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation {
+	return c.internalClient.UnresolvePullRequestCommentsOperation(name)
+}
+
+// CreateIssueComment creates an issue comment.
+func (c *Client) CreateIssueComment(ctx context.Context, req *securesourcemanagerpb.CreateIssueCommentRequest, opts ...gax.CallOption) (*CreateIssueCommentOperation, error) {
+	return c.internalClient.CreateIssueComment(ctx, req, opts...)
+}
+
+// CreateIssueCommentOperation returns a new CreateIssueCommentOperation from a given name.
+// The name must be that of a previously created CreateIssueCommentOperation, possibly from a different process.
+func (c *Client) CreateIssueCommentOperation(name string) *CreateIssueCommentOperation {
+	return c.internalClient.CreateIssueCommentOperation(name)
+}
+
+// GetIssueComment gets an issue comment.
+func (c *Client) GetIssueComment(ctx context.Context, req *securesourcemanagerpb.GetIssueCommentRequest, opts ...gax.CallOption) (*securesourcemanagerpb.IssueComment, error) {
+	return c.internalClient.GetIssueComment(ctx, req, opts...)
+}
+
+// ListIssueComments lists comments in an issue.
+func (c *Client) ListIssueComments(ctx context.Context, req *securesourcemanagerpb.ListIssueCommentsRequest, opts ...gax.CallOption) *IssueCommentIterator {
+	return c.internalClient.ListIssueComments(ctx, req, opts...)
+}
+
+// UpdateIssueComment updates an issue comment.
+func (c *Client) UpdateIssueComment(ctx context.Context, req *securesourcemanagerpb.UpdateIssueCommentRequest, opts ...gax.CallOption) (*UpdateIssueCommentOperation, error) {
+	return c.internalClient.UpdateIssueComment(ctx, req, opts...)
+}
+
+// UpdateIssueCommentOperation returns a new UpdateIssueCommentOperation from a given name.
+// The name must be that of a previously created UpdateIssueCommentOperation, possibly from a different process.
+func (c *Client) UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation {
+	return c.internalClient.UpdateIssueCommentOperation(name)
+}
+
+// DeleteIssueComment deletes an issue comment.
+func (c *Client) DeleteIssueComment(ctx context.Context, req *securesourcemanagerpb.DeleteIssueCommentRequest, opts ...gax.CallOption) (*DeleteIssueCommentOperation, error) {
+	return c.internalClient.DeleteIssueComment(ctx, req, opts...)
+}
+
+// DeleteIssueCommentOperation returns a new DeleteIssueCommentOperation from a given name.
+// The name must be that of a previously created DeleteIssueCommentOperation, possibly from a different process.
+func (c *Client) DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation {
+	return c.internalClient.DeleteIssueCommentOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -572,19 +1056,6 @@ type gRPCClient struct {
 // # Secure Source Manager API
 //
 // Access Secure Source Manager instances, resources, and repositories.
-//
-// This API is split across two servers: the Control Plane and the Data Plane.
-//
-// Data Plane endpoints are hosted directly by your Secure Source Manager
-// instance, so you must connect to your instance’s API hostname to access
-// them. The API hostname looks like the following:
-//
-// For example,
-//
-// Data Plane endpoints are denoted with Host: Data Plane.
-//
-// All other endpoints are found in the normal Cloud API location, namely,
-// securcesourcemanager.googleapis.com.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -680,19 +1151,6 @@ type restClient struct {
 // # Secure Source Manager API
 //
 // Access Secure Source Manager instances, resources, and repositories.
-//
-// This API is split across two servers: the Control Plane and the Data Plane.
-//
-// Data Plane endpoints are hosted directly by your Secure Source Manager
-// instance, so you must connect to your instance’s API hostname to access
-// them. The API hostname looks like the following:
-//
-// For example,
-//
-// Data Plane endpoints are denoted with Host: Data Plane.
-//
-// All other endpoints are found in the normal Cloud API location, namely,
-// securcesourcemanager.googleapis.com.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -947,6 +1405,26 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *securesourcemana
 	}, nil
 }
 
+func (c *gRPCClient) UpdateRepository(ctx context.Context, req *securesourcemanagerpb.UpdateRepositoryRequest, opts ...gax.CallOption) (*UpdateRepositoryOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository.name", url.QueryEscape(req.GetRepository().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateRepository, req, settings.GRPC, c.logger, "UpdateRepository")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateRepositoryOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) DeleteRepository(ctx context.Context, req *securesourcemanagerpb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -963,6 +1441,130 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *securesourcemana
 		return nil, err
 	}
 	return &DeleteRepositoryOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListHooks(ctx context.Context, req *securesourcemanagerpb.ListHooksRequest, opts ...gax.CallOption) *HookIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListHooks[0:len((*c.CallOptions).ListHooks):len((*c.CallOptions).ListHooks)], opts...)
+	it := &HookIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListHooksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Hook, string, error) {
+		resp := &securesourcemanagerpb.ListHooksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListHooks, req, settings.GRPC, c.logger, "ListHooks")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetHooks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetHook(ctx context.Context, req *securesourcemanagerpb.GetHookRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Hook, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetHook[0:len((*c.CallOptions).GetHook):len((*c.CallOptions).GetHook)], opts...)
+	var resp *securesourcemanagerpb.Hook
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetHook, req, settings.GRPC, c.logger, "GetHook")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.CreateHookRequest, opts ...gax.CallOption) (*CreateHookOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateHook[0:len((*c.CallOptions).CreateHook):len((*c.CallOptions).CreateHook)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateHook, req, settings.GRPC, c.logger, "CreateHook")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateHookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.UpdateHookRequest, opts ...gax.CallOption) (*UpdateHookOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "hook.name", url.QueryEscape(req.GetHook().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateHook[0:len((*c.CallOptions).UpdateHook):len((*c.CallOptions).UpdateHook)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateHook, req, settings.GRPC, c.logger, "UpdateHook")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateHookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.DeleteHookRequest, opts ...gax.CallOption) (*DeleteHookOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteHook[0:len((*c.CallOptions).DeleteHook):len((*c.CallOptions).DeleteHook)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteHook, req, settings.GRPC, c.logger, "DeleteHook")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteHookOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1141,6 +1743,752 @@ func (c *gRPCClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 		return nil, err
 	}
 	return &DeleteBranchRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreatePullRequest(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestRequest, opts ...gax.CallOption) (*CreatePullRequestOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreatePullRequest[0:len((*c.CallOptions).CreatePullRequest):len((*c.CallOptions).CreatePullRequest)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreatePullRequest, req, settings.GRPC, c.logger, "CreatePullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreatePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetPullRequest(ctx context.Context, req *securesourcemanagerpb.GetPullRequestRequest, opts ...gax.CallOption) (*securesourcemanagerpb.PullRequest, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetPullRequest[0:len((*c.CallOptions).GetPullRequest):len((*c.CallOptions).GetPullRequest)], opts...)
+	var resp *securesourcemanagerpb.PullRequest
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetPullRequest, req, settings.GRPC, c.logger, "GetPullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPullRequests(ctx context.Context, req *securesourcemanagerpb.ListPullRequestsRequest, opts ...gax.CallOption) *PullRequestIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListPullRequests[0:len((*c.CallOptions).ListPullRequests):len((*c.CallOptions).ListPullRequests)], opts...)
+	it := &PullRequestIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequest, string, error) {
+		resp := &securesourcemanagerpb.ListPullRequestsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListPullRequests, req, settings.GRPC, c.logger, "ListPullRequests")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPullRequests(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdatePullRequest(ctx context.Context, req *securesourcemanagerpb.UpdatePullRequestRequest, opts ...gax.CallOption) (*UpdatePullRequestOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "pull_request.name", url.QueryEscape(req.GetPullRequest().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePullRequest[0:len((*c.CallOptions).UpdatePullRequest):len((*c.CallOptions).UpdatePullRequest)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdatePullRequest, req, settings.GRPC, c.logger, "UpdatePullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdatePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) MergePullRequest(ctx context.Context, req *securesourcemanagerpb.MergePullRequestRequest, opts ...gax.CallOption) (*MergePullRequestOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).MergePullRequest[0:len((*c.CallOptions).MergePullRequest):len((*c.CallOptions).MergePullRequest)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MergePullRequest, req, settings.GRPC, c.logger, "MergePullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &MergePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) OpenPullRequest(ctx context.Context, req *securesourcemanagerpb.OpenPullRequestRequest, opts ...gax.CallOption) (*OpenPullRequestOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).OpenPullRequest[0:len((*c.CallOptions).OpenPullRequest):len((*c.CallOptions).OpenPullRequest)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.OpenPullRequest, req, settings.GRPC, c.logger, "OpenPullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &OpenPullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ClosePullRequest(ctx context.Context, req *securesourcemanagerpb.ClosePullRequestRequest, opts ...gax.CallOption) (*ClosePullRequestOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ClosePullRequest[0:len((*c.CallOptions).ClosePullRequest):len((*c.CallOptions).ClosePullRequest)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ClosePullRequest, req, settings.GRPC, c.logger, "ClosePullRequest")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ClosePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListPullRequestFileDiffs(ctx context.Context, req *securesourcemanagerpb.ListPullRequestFileDiffsRequest, opts ...gax.CallOption) *FileDiffIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListPullRequestFileDiffs[0:len((*c.CallOptions).ListPullRequestFileDiffs):len((*c.CallOptions).ListPullRequestFileDiffs)], opts...)
+	it := &FileDiffIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestFileDiffsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.FileDiff, string, error) {
+		resp := &securesourcemanagerpb.ListPullRequestFileDiffsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListPullRequestFileDiffs, req, settings.GRPC, c.logger, "ListPullRequestFileDiffs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFileDiffs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) FetchTree(ctx context.Context, req *securesourcemanagerpb.FetchTreeRequest, opts ...gax.CallOption) *TreeEntryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchTree[0:len((*c.CallOptions).FetchTree):len((*c.CallOptions).FetchTree)], opts...)
+	it := &TreeEntryIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.FetchTreeRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.TreeEntry, string, error) {
+		resp := &securesourcemanagerpb.FetchTreeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchTree, req, settings.GRPC, c.logger, "FetchTree")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTreeEntries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.FetchBlobRequest, opts ...gax.CallOption) (*securesourcemanagerpb.FetchBlobResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchBlob[0:len((*c.CallOptions).FetchBlob):len((*c.CallOptions).FetchBlob)], opts...)
+	var resp *securesourcemanagerpb.FetchBlobResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FetchBlob, req, settings.GRPC, c.logger, "FetchBlob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb.CreateIssueRequest, opts ...gax.CallOption) (*CreateIssueOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateIssue[0:len((*c.CallOptions).CreateIssue):len((*c.CallOptions).CreateIssue)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateIssue, req, settings.GRPC, c.logger, "CreateIssue")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetIssue(ctx context.Context, req *securesourcemanagerpb.GetIssueRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Issue, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIssue[0:len((*c.CallOptions).GetIssue):len((*c.CallOptions).GetIssue)], opts...)
+	var resp *securesourcemanagerpb.Issue
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetIssue, req, settings.GRPC, c.logger, "GetIssue")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListIssues(ctx context.Context, req *securesourcemanagerpb.ListIssuesRequest, opts ...gax.CallOption) *IssueIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListIssues[0:len((*c.CallOptions).ListIssues):len((*c.CallOptions).ListIssues)], opts...)
+	it := &IssueIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListIssuesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Issue, string, error) {
+		resp := &securesourcemanagerpb.ListIssuesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListIssues, req, settings.GRPC, c.logger, "ListIssues")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetIssues(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb.UpdateIssueRequest, opts ...gax.CallOption) (*UpdateIssueOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "issue.name", url.QueryEscape(req.GetIssue().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateIssue[0:len((*c.CallOptions).UpdateIssue):len((*c.CallOptions).UpdateIssue)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateIssue, req, settings.GRPC, c.logger, "UpdateIssue")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb.DeleteIssueRequest, opts ...gax.CallOption) (*DeleteIssueOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteIssue[0:len((*c.CallOptions).DeleteIssue):len((*c.CallOptions).DeleteIssue)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteIssue, req, settings.GRPC, c.logger, "DeleteIssue")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.OpenIssueRequest, opts ...gax.CallOption) (*OpenIssueOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).OpenIssue[0:len((*c.CallOptions).OpenIssue):len((*c.CallOptions).OpenIssue)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.OpenIssue, req, settings.GRPC, c.logger, "OpenIssue")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &OpenIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.CloseIssueRequest, opts ...gax.CallOption) (*CloseIssueOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CloseIssue[0:len((*c.CallOptions).CloseIssue):len((*c.CallOptions).CloseIssue)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CloseIssue, req, settings.GRPC, c.logger, "CloseIssue")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CloseIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetPullRequestComment(ctx context.Context, req *securesourcemanagerpb.GetPullRequestCommentRequest, opts ...gax.CallOption) (*securesourcemanagerpb.PullRequestComment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetPullRequestComment[0:len((*c.CallOptions).GetPullRequestComment):len((*c.CallOptions).GetPullRequestComment)], opts...)
+	var resp *securesourcemanagerpb.PullRequestComment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetPullRequestComment, req, settings.GRPC, c.logger, "GetPullRequestComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPullRequestComments(ctx context.Context, req *securesourcemanagerpb.ListPullRequestCommentsRequest, opts ...gax.CallOption) *PullRequestCommentIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListPullRequestComments[0:len((*c.CallOptions).ListPullRequestComments):len((*c.CallOptions).ListPullRequestComments)], opts...)
+	it := &PullRequestCommentIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestCommentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequestComment, string, error) {
+		resp := &securesourcemanagerpb.ListPullRequestCommentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListPullRequestComments, req, settings.GRPC, c.logger, "ListPullRequestComments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPullRequestComments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestCommentRequest, opts ...gax.CallOption) (*CreatePullRequestCommentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreatePullRequestComment[0:len((*c.CallOptions).CreatePullRequestComment):len((*c.CallOptions).CreatePullRequestComment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreatePullRequestComment, req, settings.GRPC, c.logger, "CreatePullRequestComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreatePullRequestCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.UpdatePullRequestCommentRequest, opts ...gax.CallOption) (*UpdatePullRequestCommentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "pull_request_comment.name", url.QueryEscape(req.GetPullRequestComment().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePullRequestComment[0:len((*c.CallOptions).UpdatePullRequestComment):len((*c.CallOptions).UpdatePullRequestComment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdatePullRequestComment, req, settings.GRPC, c.logger, "UpdatePullRequestComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdatePullRequestCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeletePullRequestComment(ctx context.Context, req *securesourcemanagerpb.DeletePullRequestCommentRequest, opts ...gax.CallOption) (*DeletePullRequestCommentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeletePullRequestComment[0:len((*c.CallOptions).DeletePullRequestComment):len((*c.CallOptions).DeletePullRequestComment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeletePullRequestComment, req, settings.GRPC, c.logger, "DeletePullRequestComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeletePullRequestCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCreatePullRequestComments[0:len((*c.CallOptions).BatchCreatePullRequestComments):len((*c.CallOptions).BatchCreatePullRequestComments)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.BatchCreatePullRequestComments, req, settings.GRPC, c.logger, "BatchCreatePullRequestComments")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCreatePullRequestCommentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ResolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.ResolvePullRequestCommentsRequest, opts ...gax.CallOption) (*ResolvePullRequestCommentsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ResolvePullRequestComments[0:len((*c.CallOptions).ResolvePullRequestComments):len((*c.CallOptions).ResolvePullRequestComments)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ResolvePullRequestComments, req, settings.GRPC, c.logger, "ResolvePullRequestComments")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ResolvePullRequestCommentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UnresolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.UnresolvePullRequestCommentsRequest, opts ...gax.CallOption) (*UnresolvePullRequestCommentsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UnresolvePullRequestComments[0:len((*c.CallOptions).UnresolvePullRequestComments):len((*c.CallOptions).UnresolvePullRequestComments)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UnresolvePullRequestComments, req, settings.GRPC, c.logger, "UnresolvePullRequestComments")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UnresolvePullRequestCommentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateIssueComment(ctx context.Context, req *securesourcemanagerpb.CreateIssueCommentRequest, opts ...gax.CallOption) (*CreateIssueCommentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateIssueComment[0:len((*c.CallOptions).CreateIssueComment):len((*c.CallOptions).CreateIssueComment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateIssueComment, req, settings.GRPC, c.logger, "CreateIssueComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateIssueCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetIssueComment(ctx context.Context, req *securesourcemanagerpb.GetIssueCommentRequest, opts ...gax.CallOption) (*securesourcemanagerpb.IssueComment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIssueComment[0:len((*c.CallOptions).GetIssueComment):len((*c.CallOptions).GetIssueComment)], opts...)
+	var resp *securesourcemanagerpb.IssueComment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetIssueComment, req, settings.GRPC, c.logger, "GetIssueComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListIssueComments(ctx context.Context, req *securesourcemanagerpb.ListIssueCommentsRequest, opts ...gax.CallOption) *IssueCommentIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListIssueComments[0:len((*c.CallOptions).ListIssueComments):len((*c.CallOptions).ListIssueComments)], opts...)
+	it := &IssueCommentIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListIssueCommentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.IssueComment, string, error) {
+		resp := &securesourcemanagerpb.ListIssueCommentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListIssueComments, req, settings.GRPC, c.logger, "ListIssueComments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetIssueComments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateIssueComment(ctx context.Context, req *securesourcemanagerpb.UpdateIssueCommentRequest, opts ...gax.CallOption) (*UpdateIssueCommentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "issue_comment.name", url.QueryEscape(req.GetIssueComment().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateIssueComment[0:len((*c.CallOptions).UpdateIssueComment):len((*c.CallOptions).UpdateIssueComment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateIssueComment, req, settings.GRPC, c.logger, "UpdateIssueComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateIssueCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteIssueComment(ctx context.Context, req *securesourcemanagerpb.DeleteIssueCommentRequest, opts ...gax.CallOption) (*DeleteIssueCommentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteIssueComment[0:len((*c.CallOptions).DeleteIssueComment):len((*c.CallOptions).DeleteIssueComment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteIssueComment, req, settings.GRPC, c.logger, "DeleteIssueComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteIssueCommentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1611,7 +2959,8 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 
 // ListRepositories lists Repositories in a given project and location.
 //
-// Host: Data Plane
+// The instance field is required in the query parameter for requests using
+// the securesourcemanager.googleapis.com (at http://securesourcemanager.googleapis.com) endpoint.
 func (c *restClient) ListRepositories(ctx context.Context, req *securesourcemanagerpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
 	req = proto.Clone(req).(*securesourcemanagerpb.ListRepositoriesRequest)
@@ -1696,8 +3045,6 @@ func (c *restClient) ListRepositories(ctx context.Context, req *securesourcemana
 }
 
 // GetRepository gets metadata of a repository.
-//
-// Host: Data Plane
 func (c *restClient) GetRepository(ctx context.Context, req *securesourcemanagerpb.GetRepositoryRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Repository, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1749,7 +3096,8 @@ func (c *restClient) GetRepository(ctx context.Context, req *securesourcemanager
 
 // CreateRepository creates a new repository in a given project and location.
 //
-// Host: Data Plane
+// The Repository.Instance field is required in the request body for requests
+// using the securesourcemanager.googleapis.com (at http://securesourcemanager.googleapis.com) endpoint.
 func (c *restClient) CreateRepository(ctx context.Context, req *securesourcemanagerpb.CreateRepositoryRequest, opts ...gax.CallOption) (*CreateRepositoryOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRepository()
@@ -1810,9 +3158,77 @@ func (c *restClient) CreateRepository(ctx context.Context, req *securesourcemana
 	}, nil
 }
 
+// UpdateRepository updates the metadata of a repository.
+func (c *restClient) UpdateRepository(ctx context.Context, req *securesourcemanagerpb.UpdateRepositoryRequest, opts ...gax.CallOption) (*UpdateRepositoryOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRepository()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRepository().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository.name", url.QueryEscape(req.GetRepository().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRepository")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateRepositoryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteRepository deletes a Repository.
-//
-// Host: Data Plane
 func (c *restClient) DeleteRepository(ctx context.Context, req *securesourcemanagerpb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1863,6 +3279,315 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *securesourcemana
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteRepositoryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListHooks lists hooks in a given repository.
+func (c *restClient) ListHooks(ctx context.Context, req *securesourcemanagerpb.ListHooksRequest, opts ...gax.CallOption) *HookIterator {
+	it := &HookIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListHooksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Hook, string, error) {
+		resp := &securesourcemanagerpb.ListHooksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/hooks", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListHooks")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetHooks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetHook gets metadata of a hook.
+func (c *restClient) GetHook(ctx context.Context, req *securesourcemanagerpb.GetHookRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Hook, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetHook[0:len((*c.CallOptions).GetHook):len((*c.CallOptions).GetHook)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securesourcemanagerpb.Hook{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHook")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateHook creates a new hook in a given repository.
+func (c *restClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.CreateHookRequest, opts ...gax.CallOption) (*CreateHookOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetHook()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/hooks", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("hookId", fmt.Sprintf("%v", req.GetHookId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateHook")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateHookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateHook updates the metadata of a hook.
+func (c *restClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.UpdateHookRequest, opts ...gax.CallOption) (*UpdateHookOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetHook()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetHook().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "hook.name", url.QueryEscape(req.GetHook().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateHook")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateHookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteHook deletes a Hook.
+func (c *restClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.DeleteHookRequest, opts ...gax.CallOption) (*DeleteHookOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteHook")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteHookOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2344,6 +4069,1890 @@ func (c *restClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteBranchRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreatePullRequest creates a pull request.
+func (c *restClient) CreatePullRequest(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestRequest, opts ...gax.CallOption) (*CreatePullRequestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPullRequest()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/pullRequests", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePullRequest")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreatePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetPullRequest gets a pull request.
+func (c *restClient) GetPullRequest(ctx context.Context, req *securesourcemanagerpb.GetPullRequestRequest, opts ...gax.CallOption) (*securesourcemanagerpb.PullRequest, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPullRequest[0:len((*c.CallOptions).GetPullRequest):len((*c.CallOptions).GetPullRequest)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securesourcemanagerpb.PullRequest{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPullRequest")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPullRequests lists pull requests in a repository.
+func (c *restClient) ListPullRequests(ctx context.Context, req *securesourcemanagerpb.ListPullRequestsRequest, opts ...gax.CallOption) *PullRequestIterator {
+	it := &PullRequestIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequest, string, error) {
+		resp := &securesourcemanagerpb.ListPullRequestsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/pullRequests", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPullRequests")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPullRequests(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdatePullRequest updates a pull request.
+func (c *restClient) UpdatePullRequest(ctx context.Context, req *securesourcemanagerpb.UpdatePullRequestRequest, opts ...gax.CallOption) (*UpdatePullRequestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPullRequest()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPullRequest().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "pull_request.name", url.QueryEscape(req.GetPullRequest().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePullRequest")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdatePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// MergePullRequest merges a pull request.
+func (c *restClient) MergePullRequest(ctx context.Context, req *securesourcemanagerpb.MergePullRequestRequest, opts ...gax.CallOption) (*MergePullRequestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:merge", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MergePullRequest")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &MergePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// OpenPullRequest opens a pull request.
+func (c *restClient) OpenPullRequest(ctx context.Context, req *securesourcemanagerpb.OpenPullRequestRequest, opts ...gax.CallOption) (*OpenPullRequestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:open", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "OpenPullRequest")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &OpenPullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ClosePullRequest closes a pull request without merging.
+func (c *restClient) ClosePullRequest(ctx context.Context, req *securesourcemanagerpb.ClosePullRequestRequest, opts ...gax.CallOption) (*ClosePullRequestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:close", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ClosePullRequest")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ClosePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListPullRequestFileDiffs lists a pull request’s file diffs.
+func (c *restClient) ListPullRequestFileDiffs(ctx context.Context, req *securesourcemanagerpb.ListPullRequestFileDiffsRequest, opts ...gax.CallOption) *FileDiffIterator {
+	it := &FileDiffIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestFileDiffsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.FileDiff, string, error) {
+		resp := &securesourcemanagerpb.ListPullRequestFileDiffsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listFileDiffs", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPullRequestFileDiffs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetFileDiffs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// FetchTree fetches a tree from a repository.
+func (c *restClient) FetchTree(ctx context.Context, req *securesourcemanagerpb.FetchTreeRequest, opts ...gax.CallOption) *TreeEntryIterator {
+	it := &TreeEntryIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.FetchTreeRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.TreeEntry, string, error) {
+		resp := &securesourcemanagerpb.FetchTreeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchTree", req.GetRepository())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetRecursive() {
+			params.Add("recursive", fmt.Sprintf("%v", req.GetRecursive()))
+		}
+		if req.GetRef() != "" {
+			params.Add("ref", fmt.Sprintf("%v", req.GetRef()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchTree")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTreeEntries(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// FetchBlob fetches a blob from a repository.
+func (c *restClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.FetchBlobRequest, opts ...gax.CallOption) (*securesourcemanagerpb.FetchBlobResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchBlob", req.GetRepository())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("sha", fmt.Sprintf("%v", req.GetSha()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FetchBlob[0:len((*c.CallOptions).FetchBlob):len((*c.CallOptions).FetchBlob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securesourcemanagerpb.FetchBlobResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchBlob")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateIssue creates an issue.
+func (c *restClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb.CreateIssueRequest, opts ...gax.CallOption) (*CreateIssueOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetIssue()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/issues", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateIssue")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetIssue gets an issue.
+func (c *restClient) GetIssue(ctx context.Context, req *securesourcemanagerpb.GetIssueRequest, opts ...gax.CallOption) (*securesourcemanagerpb.Issue, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIssue[0:len((*c.CallOptions).GetIssue):len((*c.CallOptions).GetIssue)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securesourcemanagerpb.Issue{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIssue")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListIssues lists issues in a repository.
+func (c *restClient) ListIssues(ctx context.Context, req *securesourcemanagerpb.ListIssuesRequest, opts ...gax.CallOption) *IssueIterator {
+	it := &IssueIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListIssuesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Issue, string, error) {
+		resp := &securesourcemanagerpb.ListIssuesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/issues", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIssues")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetIssues(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateIssue updates a issue.
+func (c *restClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb.UpdateIssueRequest, opts ...gax.CallOption) (*UpdateIssueOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetIssue()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetIssue().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "issue.name", url.QueryEscape(req.GetIssue().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIssue")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteIssue deletes an issue.
+func (c *restClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb.DeleteIssueRequest, opts ...gax.CallOption) (*DeleteIssueOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIssue")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// OpenIssue opens an issue.
+func (c *restClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.OpenIssueRequest, opts ...gax.CallOption) (*OpenIssueOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:open", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "OpenIssue")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &OpenIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CloseIssue closes an issue.
+func (c *restClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.CloseIssueRequest, opts ...gax.CallOption) (*CloseIssueOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:close", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CloseIssue")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CloseIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetPullRequestComment gets a pull request comment.
+func (c *restClient) GetPullRequestComment(ctx context.Context, req *securesourcemanagerpb.GetPullRequestCommentRequest, opts ...gax.CallOption) (*securesourcemanagerpb.PullRequestComment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPullRequestComment[0:len((*c.CallOptions).GetPullRequestComment):len((*c.CallOptions).GetPullRequestComment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securesourcemanagerpb.PullRequestComment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPullRequestComment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPullRequestComments lists pull request comments.
+func (c *restClient) ListPullRequestComments(ctx context.Context, req *securesourcemanagerpb.ListPullRequestCommentsRequest, opts ...gax.CallOption) *PullRequestCommentIterator {
+	it := &PullRequestCommentIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestCommentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequestComment, string, error) {
+		resp := &securesourcemanagerpb.ListPullRequestCommentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/pullRequestComments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPullRequestComments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPullRequestComments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreatePullRequestComment creates a pull request comment. This function is used to create a single
+// PullRequestComment of type Comment, or a single PullRequestComment of type
+// Code that’s replying to another PullRequestComment of type Code. Use
+// BatchCreatePullRequestComments to create multiple PullRequestComments for
+// code reviews.
+func (c *restClient) CreatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.CreatePullRequestCommentRequest, opts ...gax.CallOption) (*CreatePullRequestCommentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPullRequestComment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/pullRequestComments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePullRequestComment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreatePullRequestCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdatePullRequestComment updates a pull request comment.
+func (c *restClient) UpdatePullRequestComment(ctx context.Context, req *securesourcemanagerpb.UpdatePullRequestCommentRequest, opts ...gax.CallOption) (*UpdatePullRequestCommentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPullRequestComment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPullRequestComment().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "pull_request_comment.name", url.QueryEscape(req.GetPullRequestComment().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePullRequestComment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdatePullRequestCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeletePullRequestComment deletes a pull request comment.
+func (c *restClient) DeletePullRequestComment(ctx context.Context, req *securesourcemanagerpb.DeletePullRequestCommentRequest, opts ...gax.CallOption) (*DeletePullRequestCommentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePullRequestComment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeletePullRequestCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
+// multiple PullRequestComments for code review. There needs to be exactly one
+// PullRequestComment of type Review, and at most 100 PullRequestComments of
+// type Code per request. The Postition of the code comments must be unique
+// within the request.
+func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/pullRequestComments:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreatePullRequestComments")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BatchCreatePullRequestCommentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ResolvePullRequestComments resolves pull request comments. A list of PullRequestComment names must be
+// provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be resolved.
+func (c *restClient) ResolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.ResolvePullRequestCommentsRequest, opts ...gax.CallOption) (*ResolvePullRequestCommentsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/pullRequestComments:resolve", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResolvePullRequestComments")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ResolvePullRequestCommentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UnresolvePullRequestComments unresolves pull request comments. A list of PullRequestComment names must
+// be provided. The PullRequestComment names must be in the same conversation
+// thread. If auto_fill is set, all comments in the conversation thread will
+// be unresolved.
+func (c *restClient) UnresolvePullRequestComments(ctx context.Context, req *securesourcemanagerpb.UnresolvePullRequestCommentsRequest, opts ...gax.CallOption) (*UnresolvePullRequestCommentsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/pullRequestComments:unresolve", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnresolvePullRequestComments")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UnresolvePullRequestCommentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateIssueComment creates an issue comment.
+func (c *restClient) CreateIssueComment(ctx context.Context, req *securesourcemanagerpb.CreateIssueCommentRequest, opts ...gax.CallOption) (*CreateIssueCommentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetIssueComment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/issueComments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateIssueComment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateIssueCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetIssueComment gets an issue comment.
+func (c *restClient) GetIssueComment(ctx context.Context, req *securesourcemanagerpb.GetIssueCommentRequest, opts ...gax.CallOption) (*securesourcemanagerpb.IssueComment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIssueComment[0:len((*c.CallOptions).GetIssueComment):len((*c.CallOptions).GetIssueComment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securesourcemanagerpb.IssueComment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIssueComment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListIssueComments lists comments in an issue.
+func (c *restClient) ListIssueComments(ctx context.Context, req *securesourcemanagerpb.ListIssueCommentsRequest, opts ...gax.CallOption) *IssueCommentIterator {
+	it := &IssueCommentIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListIssueCommentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.IssueComment, string, error) {
+		resp := &securesourcemanagerpb.ListIssueCommentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/issueComments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIssueComments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetIssueComments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateIssueComment updates an issue comment.
+func (c *restClient) UpdateIssueComment(ctx context.Context, req *securesourcemanagerpb.UpdateIssueCommentRequest, opts ...gax.CallOption) (*UpdateIssueCommentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetIssueComment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetIssueComment().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "issue_comment.name", url.QueryEscape(req.GetIssueComment().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIssueComment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateIssueCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteIssueComment deletes an issue comment.
+func (c *restClient) DeleteIssueComment(ctx context.Context, req *securesourcemanagerpb.DeleteIssueCommentRequest, opts ...gax.CallOption) (*DeleteIssueCommentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIssueComment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteIssueCommentOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2863,6 +6472,60 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
+// BatchCreatePullRequestCommentsOperation returns a new BatchCreatePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created BatchCreatePullRequestCommentsOperation, possibly from a different process.
+func (c *gRPCClient) BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation {
+	return &BatchCreatePullRequestCommentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchCreatePullRequestCommentsOperation returns a new BatchCreatePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created BatchCreatePullRequestCommentsOperation, possibly from a different process.
+func (c *restClient) BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BatchCreatePullRequestCommentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CloseIssueOperation returns a new CloseIssueOperation from a given name.
+// The name must be that of a previously created CloseIssueOperation, possibly from a different process.
+func (c *gRPCClient) CloseIssueOperation(name string) *CloseIssueOperation {
+	return &CloseIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CloseIssueOperation returns a new CloseIssueOperation from a given name.
+// The name must be that of a previously created CloseIssueOperation, possibly from a different process.
+func (c *restClient) CloseIssueOperation(name string) *CloseIssueOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CloseIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ClosePullRequestOperation returns a new ClosePullRequestOperation from a given name.
+// The name must be that of a previously created ClosePullRequestOperation, possibly from a different process.
+func (c *gRPCClient) ClosePullRequestOperation(name string) *ClosePullRequestOperation {
+	return &ClosePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ClosePullRequestOperation returns a new ClosePullRequestOperation from a given name.
+// The name must be that of a previously created ClosePullRequestOperation, possibly from a different process.
+func (c *restClient) ClosePullRequestOperation(name string) *ClosePullRequestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ClosePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateBranchRuleOperation returns a new CreateBranchRuleOperation from a given name.
 // The name must be that of a previously created CreateBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
@@ -2881,6 +6544,24 @@ func (c *restClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOpe
 	}
 }
 
+// CreateHookOperation returns a new CreateHookOperation from a given name.
+// The name must be that of a previously created CreateHookOperation, possibly from a different process.
+func (c *gRPCClient) CreateHookOperation(name string) *CreateHookOperation {
+	return &CreateHookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateHookOperation returns a new CreateHookOperation from a given name.
+// The name must be that of a previously created CreateHookOperation, possibly from a different process.
+func (c *restClient) CreateHookOperation(name string) *CreateHookOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateHookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
@@ -2894,6 +6575,78 @@ func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateIssueOperation returns a new CreateIssueOperation from a given name.
+// The name must be that of a previously created CreateIssueOperation, possibly from a different process.
+func (c *gRPCClient) CreateIssueOperation(name string) *CreateIssueOperation {
+	return &CreateIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateIssueOperation returns a new CreateIssueOperation from a given name.
+// The name must be that of a previously created CreateIssueOperation, possibly from a different process.
+func (c *restClient) CreateIssueOperation(name string) *CreateIssueOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateIssueCommentOperation returns a new CreateIssueCommentOperation from a given name.
+// The name must be that of a previously created CreateIssueCommentOperation, possibly from a different process.
+func (c *gRPCClient) CreateIssueCommentOperation(name string) *CreateIssueCommentOperation {
+	return &CreateIssueCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateIssueCommentOperation returns a new CreateIssueCommentOperation from a given name.
+// The name must be that of a previously created CreateIssueCommentOperation, possibly from a different process.
+func (c *restClient) CreateIssueCommentOperation(name string) *CreateIssueCommentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateIssueCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreatePullRequestOperation returns a new CreatePullRequestOperation from a given name.
+// The name must be that of a previously created CreatePullRequestOperation, possibly from a different process.
+func (c *gRPCClient) CreatePullRequestOperation(name string) *CreatePullRequestOperation {
+	return &CreatePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreatePullRequestOperation returns a new CreatePullRequestOperation from a given name.
+// The name must be that of a previously created CreatePullRequestOperation, possibly from a different process.
+func (c *restClient) CreatePullRequestOperation(name string) *CreatePullRequestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreatePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreatePullRequestCommentOperation returns a new CreatePullRequestCommentOperation from a given name.
+// The name must be that of a previously created CreatePullRequestCommentOperation, possibly from a different process.
+func (c *gRPCClient) CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation {
+	return &CreatePullRequestCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreatePullRequestCommentOperation returns a new CreatePullRequestCommentOperation from a given name.
+// The name must be that of a previously created CreatePullRequestCommentOperation, possibly from a different process.
+func (c *restClient) CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreatePullRequestCommentOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -2935,6 +6688,24 @@ func (c *restClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOpe
 	}
 }
 
+// DeleteHookOperation returns a new DeleteHookOperation from a given name.
+// The name must be that of a previously created DeleteHookOperation, possibly from a different process.
+func (c *gRPCClient) DeleteHookOperation(name string) *DeleteHookOperation {
+	return &DeleteHookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteHookOperation returns a new DeleteHookOperation from a given name.
+// The name must be that of a previously created DeleteHookOperation, possibly from a different process.
+func (c *restClient) DeleteHookOperation(name string) *DeleteHookOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteHookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
@@ -2948,6 +6719,60 @@ func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteIssueOperation returns a new DeleteIssueOperation from a given name.
+// The name must be that of a previously created DeleteIssueOperation, possibly from a different process.
+func (c *gRPCClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
+	return &DeleteIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteIssueOperation returns a new DeleteIssueOperation from a given name.
+// The name must be that of a previously created DeleteIssueOperation, possibly from a different process.
+func (c *restClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteIssueCommentOperation returns a new DeleteIssueCommentOperation from a given name.
+// The name must be that of a previously created DeleteIssueCommentOperation, possibly from a different process.
+func (c *gRPCClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation {
+	return &DeleteIssueCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteIssueCommentOperation returns a new DeleteIssueCommentOperation from a given name.
+// The name must be that of a previously created DeleteIssueCommentOperation, possibly from a different process.
+func (c *restClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteIssueCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeletePullRequestCommentOperation returns a new DeletePullRequestCommentOperation from a given name.
+// The name must be that of a previously created DeletePullRequestCommentOperation, possibly from a different process.
+func (c *gRPCClient) DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation {
+	return &DeletePullRequestCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeletePullRequestCommentOperation returns a new DeletePullRequestCommentOperation from a given name.
+// The name must be that of a previously created DeletePullRequestCommentOperation, possibly from a different process.
+func (c *restClient) DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeletePullRequestCommentOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -2971,6 +6796,96 @@ func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 	}
 }
 
+// MergePullRequestOperation returns a new MergePullRequestOperation from a given name.
+// The name must be that of a previously created MergePullRequestOperation, possibly from a different process.
+func (c *gRPCClient) MergePullRequestOperation(name string) *MergePullRequestOperation {
+	return &MergePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// MergePullRequestOperation returns a new MergePullRequestOperation from a given name.
+// The name must be that of a previously created MergePullRequestOperation, possibly from a different process.
+func (c *restClient) MergePullRequestOperation(name string) *MergePullRequestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &MergePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// OpenIssueOperation returns a new OpenIssueOperation from a given name.
+// The name must be that of a previously created OpenIssueOperation, possibly from a different process.
+func (c *gRPCClient) OpenIssueOperation(name string) *OpenIssueOperation {
+	return &OpenIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// OpenIssueOperation returns a new OpenIssueOperation from a given name.
+// The name must be that of a previously created OpenIssueOperation, possibly from a different process.
+func (c *restClient) OpenIssueOperation(name string) *OpenIssueOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &OpenIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// OpenPullRequestOperation returns a new OpenPullRequestOperation from a given name.
+// The name must be that of a previously created OpenPullRequestOperation, possibly from a different process.
+func (c *gRPCClient) OpenPullRequestOperation(name string) *OpenPullRequestOperation {
+	return &OpenPullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// OpenPullRequestOperation returns a new OpenPullRequestOperation from a given name.
+// The name must be that of a previously created OpenPullRequestOperation, possibly from a different process.
+func (c *restClient) OpenPullRequestOperation(name string) *OpenPullRequestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &OpenPullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ResolvePullRequestCommentsOperation returns a new ResolvePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created ResolvePullRequestCommentsOperation, possibly from a different process.
+func (c *gRPCClient) ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation {
+	return &ResolvePullRequestCommentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ResolvePullRequestCommentsOperation returns a new ResolvePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created ResolvePullRequestCommentsOperation, possibly from a different process.
+func (c *restClient) ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ResolvePullRequestCommentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UnresolvePullRequestCommentsOperation returns a new UnresolvePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created UnresolvePullRequestCommentsOperation, possibly from a different process.
+func (c *gRPCClient) UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation {
+	return &UnresolvePullRequestCommentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UnresolvePullRequestCommentsOperation returns a new UnresolvePullRequestCommentsOperation from a given name.
+// The name must be that of a previously created UnresolvePullRequestCommentsOperation, possibly from a different process.
+func (c *restClient) UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UnresolvePullRequestCommentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateBranchRuleOperation returns a new UpdateBranchRuleOperation from a given name.
 // The name must be that of a previously created UpdateBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
@@ -2984,6 +6899,114 @@ func (c *gRPCClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOpe
 func (c *restClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBranchRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateHookOperation returns a new UpdateHookOperation from a given name.
+// The name must be that of a previously created UpdateHookOperation, possibly from a different process.
+func (c *gRPCClient) UpdateHookOperation(name string) *UpdateHookOperation {
+	return &UpdateHookOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateHookOperation returns a new UpdateHookOperation from a given name.
+// The name must be that of a previously created UpdateHookOperation, possibly from a different process.
+func (c *restClient) UpdateHookOperation(name string) *UpdateHookOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateHookOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateIssueOperation returns a new UpdateIssueOperation from a given name.
+// The name must be that of a previously created UpdateIssueOperation, possibly from a different process.
+func (c *gRPCClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
+	return &UpdateIssueOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateIssueOperation returns a new UpdateIssueOperation from a given name.
+// The name must be that of a previously created UpdateIssueOperation, possibly from a different process.
+func (c *restClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateIssueOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateIssueCommentOperation returns a new UpdateIssueCommentOperation from a given name.
+// The name must be that of a previously created UpdateIssueCommentOperation, possibly from a different process.
+func (c *gRPCClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation {
+	return &UpdateIssueCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateIssueCommentOperation returns a new UpdateIssueCommentOperation from a given name.
+// The name must be that of a previously created UpdateIssueCommentOperation, possibly from a different process.
+func (c *restClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateIssueCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdatePullRequestOperation returns a new UpdatePullRequestOperation from a given name.
+// The name must be that of a previously created UpdatePullRequestOperation, possibly from a different process.
+func (c *gRPCClient) UpdatePullRequestOperation(name string) *UpdatePullRequestOperation {
+	return &UpdatePullRequestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdatePullRequestOperation returns a new UpdatePullRequestOperation from a given name.
+// The name must be that of a previously created UpdatePullRequestOperation, possibly from a different process.
+func (c *restClient) UpdatePullRequestOperation(name string) *UpdatePullRequestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdatePullRequestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdatePullRequestCommentOperation returns a new UpdatePullRequestCommentOperation from a given name.
+// The name must be that of a previously created UpdatePullRequestCommentOperation, possibly from a different process.
+func (c *gRPCClient) UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation {
+	return &UpdatePullRequestCommentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdatePullRequestCommentOperation returns a new UpdatePullRequestCommentOperation from a given name.
+// The name must be that of a previously created UpdatePullRequestCommentOperation, possibly from a different process.
+func (c *restClient) UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdatePullRequestCommentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateRepositoryOperation returns a new UpdateRepositoryOperation from a given name.
+// The name must be that of a previously created UpdateRepositoryOperation, possibly from a different process.
+func (c *gRPCClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOperation {
+	return &UpdateRepositoryOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateRepositoryOperation returns a new UpdateRepositoryOperation from a given name.
+// The name must be that of a previously created UpdateRepositoryOperation, possibly from a different process.
+func (c *restClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateRepositoryOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

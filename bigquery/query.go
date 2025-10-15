@@ -159,6 +159,15 @@ type QueryConfig struct {
 	// format is
 	// `projects/{project}/locations/{location}/reservations/{reservation}`.
 	Reservation string
+
+	// A target limit on the rate of slot consumption by this query. If set to a
+	// value > 0, BigQuery will attempt to limit the rate of slot consumption by
+	// this query to keep it below the configured limit, even if the query is
+	// eligible for more slots based on fair scheduling. The unused slots will be
+	// available for other jobs and queries to use.
+	//
+	// Note: This feature is not yet generally available.
+	MaxSlots int32
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -234,6 +243,7 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		Labels:      qc.Labels,
 		DryRun:      qc.DryRun,
 		Reservation: qc.Reservation,
+		MaxSlots:    int64(qc.MaxSlots),
 		Query:       qconf,
 	}
 	if qc.JobTimeout > 0 {
@@ -264,6 +274,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 	}
 	qc.UseStandardSQL = !qc.UseLegacySQL
 	qc.Reservation = q.Reservation
+	qc.MaxSlots = int32(q.MaxSlots)
 
 	if len(qq.TableDefinitions) > 0 {
 		qc.TableDefinitions = make(map[string]ExternalData)
@@ -480,6 +491,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		RequestId:          uid.NewSpace("request", nil).New(),
 		Reservation:        q.Reservation,
+		MaxSlots:           int64(q.MaxSlots),
 		Labels:             q.Labels,
 		FormatOptions: &bq.DataFormatOptions{
 			UseInt64Timestamp: true,

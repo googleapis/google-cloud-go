@@ -18,6 +18,8 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -227,6 +229,117 @@ func TestNumShards(t *testing.T) {
 
 			if got != test.want {
 				t.Errorf("numShards incorrect; expect object to be divided into %d shards, got %d", test.want, got)
+			}
+		})
+	}
+}
+
+func TestIsSubPath(t *testing.T) {
+	t.Parallel()
+	sep := string(filepath.Separator)
+
+	// Create a temporary directory to work with relative paths.
+	tempDir := t.TempDir()
+
+	testCases := []struct {
+		name           string
+		localDirectory string
+		filePath       string
+		wantIsSub      bool
+		wantErrMsg     string
+	}{
+		{
+			name:           "filePath is a child",
+			localDirectory: "/tmp/foo",
+			filePath:       "/tmp/foo/bar",
+			wantIsSub:      true,
+		},
+		{
+			name:           "filePath is a nested child",
+			localDirectory: "/tmp/foo",
+			filePath:       "/tmp/foo/bar/baz",
+			wantIsSub:      true,
+		},
+		{
+			name:           "filePath is the same as localDirectory",
+			localDirectory: "/tmp/foo",
+			filePath:       "/tmp/foo",
+			wantIsSub:      true,
+		},
+		{
+			name:           "filePath is a sibling",
+			localDirectory: "/tmp/foo",
+			filePath:       "/tmp/bar",
+			wantIsSub:      false,
+		},
+		{
+			name:           "filePath is a parent",
+			localDirectory: "/tmp/foo",
+			filePath:       "/tmp",
+			wantIsSub:      false,
+		},
+		{
+			name:           "directory traversal attempt",
+			localDirectory: "/tmp/foo",
+			filePath:       "/tmp/foo/../bar", // resolves to /tmp/bar
+			wantIsSub:      false,
+		},
+		{
+			name:           "deeper directory traversal attempt",
+			localDirectory: "/tmp/foo",
+			filePath:       "/tmp/foo/bar/../../baz", // resolves to /tmp/baz
+			wantIsSub:      false,
+		},
+		{
+			name:           "relative paths - valid",
+			localDirectory: tempDir,
+			filePath:       filepath.Join(tempDir, "bar"),
+			wantIsSub:      true,
+		},
+		{
+			name:           "relative paths - traversal",
+			localDirectory: tempDir,
+			filePath:       filepath.Join(tempDir, "..", "bar"),
+			wantIsSub:      false,
+		},
+		{
+			name:           "relative path is just ..",
+			localDirectory: "foo",
+			filePath:       "foo" + sep + ".." + sep + "..",
+			wantIsSub:      false,
+		},
+		{
+			name:           "IsSubPath returns error when base dir is changed",
+			localDirectory: "foo",
+			filePath:       "bar",
+			wantErrMsg:     "no such file or directory",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			origWd, _ := os.Getwd()
+			t.Cleanup(func() {
+				os.Chdir(origWd)
+			})
+			wantErr := (tc.wantErrMsg != "")
+			// induce filepath.Abs() error
+			if wantErr {
+				dir, _ := os.MkdirTemp("", "")
+				os.Chdir(dir)
+				os.RemoveAll(dir)
+			}
+			isSub, err := isSubPath(tc.localDirectory, tc.filePath)
+
+			if (err != nil) != wantErr {
+				t.Fatalf("isSubPath() error = %v, wantErr %v", err, tc.wantErrMsg)
+			}
+			if wantErr && !strings.Contains(err.Error(), tc.wantErrMsg) {
+				t.Errorf("isSubPath() error = %s, want err containing %s", err.Error(), tc.wantErrMsg)
+				return
+			}
+			if isSub != tc.wantIsSub {
+				t.Errorf("isSubPath() = %v, want %v", isSub, tc.wantIsSub)
 			}
 		})
 	}

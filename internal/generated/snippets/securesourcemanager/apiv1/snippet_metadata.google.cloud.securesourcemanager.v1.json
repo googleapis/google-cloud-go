@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securesourcemanager/apiv1",
-    "version": "1.3.3",
+    "version": "1.4.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_BatchCreatePullRequestComments_sync",
+      "title": "securesourcemanager BatchCreatePullRequestComments Sample",
+      "description": "BatchCreatePullRequestComments batch creates pull request comments. This function is used to create\nmultiple PullRequestComments for code review. There needs to be exactly one\nPullRequestComment of type Review, and at most 100 PullRequestComments of\ntype Code per request. The Postition of the code comments must be unique\nwithin the request.",
+      "file": "Client/BatchCreatePullRequestComments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreatePullRequestComments",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.BatchCreatePullRequestComments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.BatchCreatePullRequestCommentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreatePullRequestCommentsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchCreatePullRequestComments",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.BatchCreatePullRequestComments",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CancelOperation_sync",
       "title": "securesourcemanager CancelOperation Sample",
@@ -57,6 +103,98 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CloseIssue_sync",
+      "title": "securesourcemanager CloseIssue Sample",
+      "description": "CloseIssue closes an issue.",
+      "file": "Client/CloseIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CloseIssue",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CloseIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CloseIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CloseIssueOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CloseIssue",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CloseIssue",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ClosePullRequest_sync",
+      "title": "securesourcemanager ClosePullRequest Sample",
+      "description": "ClosePullRequest closes a pull request without merging.",
+      "file": "Client/ClosePullRequest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ClosePullRequest",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ClosePullRequest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ClosePullRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ClosePullRequestOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ClosePullRequest",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ClosePullRequest",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateBranchRule_sync",
       "title": "securesourcemanager CreateBranchRule Sample",
       "description": "CreateBranchRule createBranchRule creates a branch rule in a given repository.",
@@ -87,6 +225,52 @@
         "method": {
           "shortName": "CreateBranchRule",
           "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreateBranchRule",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateHook_sync",
+      "title": "securesourcemanager CreateHook Sample",
+      "description": "CreateHook creates a new hook in a given repository.",
+      "file": "Client/CreateHook/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateHook",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreateHook",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreateHookRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateHookOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateHook",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreateHook",
           "service": {
             "shortName": "SecureSourceManager",
             "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
@@ -149,9 +333,193 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateIssue_sync",
+      "title": "securesourcemanager CreateIssue Sample",
+      "description": "CreateIssue creates an issue.",
+      "file": "Client/CreateIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateIssue",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreateIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreateIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateIssueOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateIssue",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssue",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateIssueComment_sync",
+      "title": "securesourcemanager CreateIssueComment Sample",
+      "description": "CreateIssueComment creates an issue comment.",
+      "file": "Client/CreateIssueComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateIssueComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreateIssueComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreateIssueCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateIssueCommentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateIssueComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssueComment",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreatePullRequest_sync",
+      "title": "securesourcemanager CreatePullRequest Sample",
+      "description": "CreatePullRequest creates a pull request.",
+      "file": "Client/CreatePullRequest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePullRequest",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreatePullRequest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreatePullRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePullRequestOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePullRequest",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequest",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreatePullRequestComment_sync",
+      "title": "securesourcemanager CreatePullRequestComment Sample",
+      "description": "CreatePullRequestComment creates a pull request comment. This function is used to create a single\nPullRequestComment of type Comment, or a single PullRequestComment of type\nCode that's replying to another PullRequestComment of type Code. Use\nBatchCreatePullRequestComments to create multiple PullRequestComments for\ncode reviews.",
+      "file": "Client/CreatePullRequestComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePullRequestComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreatePullRequestComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreatePullRequestCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePullRequestCommentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePullRequestComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequestComment",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateRepository_sync",
       "title": "securesourcemanager CreateRepository Sample",
-      "description": "CreateRepository creates a new repository in a given project and location.\n\n**Host: Data Plane**",
+      "description": "CreateRepository creates a new repository in a given project and location.\n\nThe Repository.Instance field is required in the request body for requests\nusing the securesourcemanager.googleapis.com endpoint.",
       "file": "Client/CreateRepository/main.go",
       "language": "GO",
       "clientMethod": {
@@ -241,6 +609,52 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteHook_sync",
+      "title": "securesourcemanager DeleteHook Sample",
+      "description": "DeleteHook deletes a Hook.",
+      "file": "Client/DeleteHook/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteHook",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeleteHook",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.DeleteHookRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteHookOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteHook",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteHook",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteInstance_sync",
       "title": "securesourcemanager DeleteInstance Sample",
       "description": "DeleteInstance deletes a single instance.",
@@ -271,6 +685,98 @@
         "method": {
           "shortName": "DeleteInstance",
           "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteInstance",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteIssue_sync",
+      "title": "securesourcemanager DeleteIssue Sample",
+      "description": "DeleteIssue deletes an issue.",
+      "file": "Client/DeleteIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteIssue",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeleteIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.DeleteIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteIssueOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteIssue",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssue",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteIssueComment_sync",
+      "title": "securesourcemanager DeleteIssueComment Sample",
+      "description": "DeleteIssueComment deletes an issue comment.",
+      "file": "Client/DeleteIssueComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteIssueComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeleteIssueComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.DeleteIssueCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteIssueCommentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteIssueComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssueComment",
           "service": {
             "shortName": "SecureSourceManager",
             "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
@@ -332,9 +838,55 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeletePullRequestComment_sync",
+      "title": "securesourcemanager DeletePullRequestComment Sample",
+      "description": "DeletePullRequestComment deletes a pull request comment.",
+      "file": "Client/DeletePullRequestComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePullRequestComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeletePullRequestComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.DeletePullRequestCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePullRequestCommentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePullRequestComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeletePullRequestComment",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteRepository_sync",
       "title": "securesourcemanager DeleteRepository Sample",
-      "description": "DeleteRepository deletes a Repository.\n\n**Host: Data Plane**",
+      "description": "DeleteRepository deletes a Repository.",
       "file": "Client/DeleteRepository/main.go",
       "language": "GO",
       "clientMethod": {
@@ -378,6 +930,98 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_FetchBlob_sync",
+      "title": "securesourcemanager FetchBlob Sample",
+      "description": "FetchBlob fetches a blob from a repository.",
+      "file": "Client/FetchBlob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchBlob",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.FetchBlob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.FetchBlobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.FetchBlobResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchBlob",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.FetchBlob",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_FetchTree_sync",
+      "title": "securesourcemanager FetchTree Sample",
+      "description": "FetchTree fetches a tree from a repository.",
+      "file": "Client/FetchTree/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchTree",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.FetchTree",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.FetchTreeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TreeEntryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchTree",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.FetchTree",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetBranchRule_sync",
       "title": "securesourcemanager GetBranchRule Sample",
       "description": "GetBranchRule getBranchRule gets a branch rule.",
@@ -408,6 +1052,52 @@
         "method": {
           "shortName": "GetBranchRule",
           "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetBranchRule",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetHook_sync",
+      "title": "securesourcemanager GetHook Sample",
+      "description": "GetHook gets metadata of a hook.",
+      "file": "Client/GetHook/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetHook",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetHook",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetHookRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.Hook",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetHook",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetHook",
           "service": {
             "shortName": "SecureSourceManager",
             "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
@@ -562,6 +1252,98 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIssue_sync",
+      "title": "securesourcemanager GetIssue Sample",
+      "description": "GetIssue gets an issue.",
+      "file": "Client/GetIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIssue",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.Issue",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIssue",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssue",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIssueComment_sync",
+      "title": "securesourcemanager GetIssueComment Sample",
+      "description": "GetIssueComment gets an issue comment.",
+      "file": "Client/GetIssueComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIssueComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetIssueComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetIssueCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.IssueComment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIssueComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssueComment",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetLocation_sync",
       "title": "securesourcemanager GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -654,9 +1436,101 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetPullRequest_sync",
+      "title": "securesourcemanager GetPullRequest Sample",
+      "description": "GetPullRequest gets a pull request.",
+      "file": "Client/GetPullRequest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPullRequest",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetPullRequest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetPullRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.PullRequest",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPullRequest",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequest",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetPullRequestComment_sync",
+      "title": "securesourcemanager GetPullRequestComment Sample",
+      "description": "GetPullRequestComment gets a pull request comment.",
+      "file": "Client/GetPullRequestComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPullRequestComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetPullRequestComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetPullRequestCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.PullRequestComment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPullRequestComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequestComment",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetRepository_sync",
       "title": "securesourcemanager GetRepository Sample",
-      "description": "GetRepository gets metadata of a repository.\n\n**Host: Data Plane**",
+      "description": "GetRepository gets metadata of a repository.",
       "file": "Client/GetRepository/main.go",
       "language": "GO",
       "clientMethod": {
@@ -746,6 +1620,52 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListHooks_sync",
+      "title": "securesourcemanager ListHooks Sample",
+      "description": "ListHooks lists hooks in a given repository.",
+      "file": "Client/ListHooks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListHooks",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListHooks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListHooksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HookIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListHooks",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListHooks",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListInstances_sync",
       "title": "securesourcemanager ListInstances Sample",
       "description": "ListInstances lists Instances in a given project and location.",
@@ -776,6 +1696,98 @@
         "method": {
           "shortName": "ListInstances",
           "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListInstances",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListIssueComments_sync",
+      "title": "securesourcemanager ListIssueComments Sample",
+      "description": "ListIssueComments lists comments in an issue.",
+      "file": "Client/ListIssueComments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIssueComments",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListIssueComments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListIssueCommentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IssueCommentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListIssueComments",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssueComments",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListIssues_sync",
+      "title": "securesourcemanager ListIssues Sample",
+      "description": "ListIssues lists issues in a repository.",
+      "file": "Client/ListIssues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIssues",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListIssues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListIssuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IssueIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListIssues",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssues",
           "service": {
             "shortName": "SecureSourceManager",
             "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
@@ -884,9 +1896,147 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListPullRequestComments_sync",
+      "title": "securesourcemanager ListPullRequestComments Sample",
+      "description": "ListPullRequestComments lists pull request comments.",
+      "file": "Client/ListPullRequestComments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPullRequestComments",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListPullRequestComments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListPullRequestCommentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PullRequestCommentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPullRequestComments",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestComments",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListPullRequestFileDiffs_sync",
+      "title": "securesourcemanager ListPullRequestFileDiffs Sample",
+      "description": "ListPullRequestFileDiffs lists a pull request's file diffs.",
+      "file": "Client/ListPullRequestFileDiffs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPullRequestFileDiffs",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListPullRequestFileDiffs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListPullRequestFileDiffsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FileDiffIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPullRequestFileDiffs",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestFileDiffs",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListPullRequests_sync",
+      "title": "securesourcemanager ListPullRequests Sample",
+      "description": "ListPullRequests lists pull requests in a repository.",
+      "file": "Client/ListPullRequests/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPullRequests",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListPullRequests",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListPullRequestsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PullRequestIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPullRequests",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequests",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListRepositories_sync",
       "title": "securesourcemanager ListRepositories Sample",
-      "description": "ListRepositories lists Repositories in a given project and location.\n\n**Host: Data Plane**",
+      "description": "ListRepositories lists Repositories in a given project and location.\n\nThe instance field is required in the query parameter for requests using\nthe securesourcemanager.googleapis.com endpoint.",
       "file": "Client/ListRepositories/main.go",
       "language": "GO",
       "clientMethod": {
@@ -925,6 +2075,190 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_MergePullRequest_sync",
+      "title": "securesourcemanager MergePullRequest Sample",
+      "description": "MergePullRequest merges a pull request.",
+      "file": "Client/MergePullRequest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MergePullRequest",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.MergePullRequest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.MergePullRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MergePullRequestOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "MergePullRequest",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.MergePullRequest",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_OpenIssue_sync",
+      "title": "securesourcemanager OpenIssue Sample",
+      "description": "OpenIssue opens an issue.",
+      "file": "Client/OpenIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "OpenIssue",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.OpenIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.OpenIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OpenIssueOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "OpenIssue",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.OpenIssue",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_OpenPullRequest_sync",
+      "title": "securesourcemanager OpenPullRequest Sample",
+      "description": "OpenPullRequest opens a pull request.",
+      "file": "Client/OpenPullRequest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "OpenPullRequest",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.OpenPullRequest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.OpenPullRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OpenPullRequestOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "OpenPullRequest",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.OpenPullRequest",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ResolvePullRequestComments_sync",
+      "title": "securesourcemanager ResolvePullRequestComments Sample",
+      "description": "ResolvePullRequestComments resolves pull request comments. A list of PullRequestComment names must be\nprovided. The PullRequestComment names must be in the same conversation\nthread. If auto_fill is set, all comments in the conversation thread will\nbe resolved.",
+      "file": "Client/ResolvePullRequestComments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResolvePullRequestComments",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ResolvePullRequestComments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ResolvePullRequestCommentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResolvePullRequestCommentsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ResolvePullRequestComments",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ResolvePullRequestComments",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1114,6 +2448,52 @@
       ]
     },
     {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UnresolvePullRequestComments_sync",
+      "title": "securesourcemanager UnresolvePullRequestComments Sample",
+      "description": "UnresolvePullRequestComments unresolves pull request comments. A list of PullRequestComment names must\nbe provided. The PullRequestComment names must be in the same conversation\nthread. If auto_fill is set, all comments in the conversation thread will\nbe unresolved.",
+      "file": "Client/UnresolvePullRequestComments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UnresolvePullRequestComments",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UnresolvePullRequestComments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UnresolvePullRequestCommentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UnresolvePullRequestCommentsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UnresolvePullRequestComments",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UnresolvePullRequestComments",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateBranchRule_sync",
       "title": "securesourcemanager UpdateBranchRule Sample",
       "description": "UpdateBranchRule updateBranchRule updates a branch rule.",
@@ -1144,6 +2524,282 @@
         "method": {
           "shortName": "UpdateBranchRule",
           "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateBranchRule",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateHook_sync",
+      "title": "securesourcemanager UpdateHook Sample",
+      "description": "UpdateHook updates the metadata of a hook.",
+      "file": "Client/UpdateHook/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateHook",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UpdateHook",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UpdateHookRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateHookOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateHook",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateHook",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateIssue_sync",
+      "title": "securesourcemanager UpdateIssue Sample",
+      "description": "UpdateIssue updates a issue.",
+      "file": "Client/UpdateIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateIssue",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UpdateIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UpdateIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateIssueOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateIssue",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssue",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateIssueComment_sync",
+      "title": "securesourcemanager UpdateIssueComment Sample",
+      "description": "UpdateIssueComment updates an issue comment.",
+      "file": "Client/UpdateIssueComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateIssueComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UpdateIssueComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UpdateIssueCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateIssueCommentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateIssueComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssueComment",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdatePullRequest_sync",
+      "title": "securesourcemanager UpdatePullRequest Sample",
+      "description": "UpdatePullRequest updates a pull request.",
+      "file": "Client/UpdatePullRequest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePullRequest",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UpdatePullRequest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UpdatePullRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePullRequestOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePullRequest",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequest",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdatePullRequestComment_sync",
+      "title": "securesourcemanager UpdatePullRequestComment Sample",
+      "description": "UpdatePullRequestComment updates a pull request comment.",
+      "file": "Client/UpdatePullRequestComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePullRequestComment",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UpdatePullRequestComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UpdatePullRequestCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePullRequestCommentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePullRequestComment",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequestComment",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateRepository_sync",
+      "title": "securesourcemanager UpdateRepository Sample",
+      "description": "UpdateRepository updates the metadata of a repository.",
+      "file": "Client/UpdateRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRepository",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UpdateRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UpdateRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRepositoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateRepository",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateRepository",
           "service": {
             "shortName": "SecureSourceManager",
             "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"

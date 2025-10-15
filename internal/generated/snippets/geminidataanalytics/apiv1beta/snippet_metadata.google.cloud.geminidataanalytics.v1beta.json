@@ -1,0 +1,1115 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/geminidataanalytics/apiv1beta",
+    "version": "0.2.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.geminidataanalytics.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_CancelOperation_sync",
+      "title": "geminidataanalytics CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataAgentClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_CreateDataAgent_sync",
+      "title": "geminidataanalytics CreateDataAgent Sample",
+      "description": "CreateDataAgent creates a new DataAgent in a given project and location.",
+      "file": "DataAgentClient/CreateDataAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAgent",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.CreateDataAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.CreateDataAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataAgentOperation",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "CreateDataAgent",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.CreateDataAgent",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_DeleteDataAgent_sync",
+      "title": "geminidataanalytics DeleteDataAgent Sample",
+      "description": "DeleteDataAgent deletes a single DataAgent.",
+      "file": "DataAgentClient/DeleteDataAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAgent",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.DeleteDataAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.DeleteDataAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataAgentOperation",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAgent",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.DeleteDataAgent",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_DeleteOperation_sync",
+      "title": "geminidataanalytics DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataAgentClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetDataAgent_sync",
+      "title": "geminidataanalytics GetDataAgent Sample",
+      "description": "GetDataAgent gets details of a single DataAgent.",
+      "file": "DataAgentClient/GetDataAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAgent",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.GetDataAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.GetDataAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*geminidataanalyticspb.DataAgent",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "GetDataAgent",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.GetDataAgent",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetIamPolicy_sync",
+      "title": "geminidataanalytics GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy for DataAgent",
+      "file": "DataAgentClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.GetIamPolicy",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetLocation_sync",
+      "title": "geminidataanalytics GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataAgentClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetOperation_sync",
+      "title": "geminidataanalytics GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataAgentClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListAccessibleDataAgents_sync",
+      "title": "geminidataanalytics ListAccessibleDataAgents Sample",
+      "description": "ListAccessibleDataAgents lists DataAgents that are accessible to the caller in a given project and\nlocation.",
+      "file": "DataAgentClient/ListAccessibleDataAgents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccessibleDataAgents",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.ListAccessibleDataAgents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.ListAccessibleDataAgentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAgentIterator",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "ListAccessibleDataAgents",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.ListAccessibleDataAgents",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListDataAgents_sync",
+      "title": "geminidataanalytics ListDataAgents Sample",
+      "description": "ListDataAgents lists DataAgents in a given project and location.",
+      "file": "DataAgentClient/ListDataAgents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAgents",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.ListDataAgents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.ListDataAgentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAgentIterator",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "ListDataAgents",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.ListDataAgents",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListLocations_sync",
+      "title": "geminidataanalytics ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DataAgentClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListOperations_sync",
+      "title": "geminidataanalytics ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataAgentClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_SetIamPolicy_sync",
+      "title": "geminidataanalytics SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM policy for a DataAgent.",
+      "file": "DataAgentClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.SetIamPolicy",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_UpdateDataAgent_sync",
+      "title": "geminidataanalytics UpdateDataAgent Sample",
+      "description": "UpdateDataAgent updates the parameters of a single DataAgent.",
+      "file": "DataAgentClient/UpdateDataAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAgent",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient.UpdateDataAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.UpdateDataAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataAgentOperation",
+        "client": {
+          "shortName": "DataAgentClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAgent",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService.UpdateDataAgent",
+          "service": {
+            "shortName": "DataAgentService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataAgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_CancelOperation_sync",
+      "title": "geminidataanalytics CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataChatClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_CreateConversation_sync",
+      "title": "geminidataanalytics CreateConversation Sample",
+      "description": "CreateConversation creates a new conversation to persist the conversation history. Each\nconversation will have multiple messages associated with it.",
+      "file": "DataChatClient/CreateConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConversation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.CreateConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.CreateConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*geminidataanalyticspb.Conversation",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "CreateConversation",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService.CreateConversation",
+          "service": {
+            "shortName": "DataChatService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_DeleteOperation_sync",
+      "title": "geminidataanalytics DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataChatClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_GetConversation_sync",
+      "title": "geminidataanalytics GetConversation Sample",
+      "description": "GetConversation gets details of a single conversation by using conversation id and parent.",
+      "file": "DataChatClient/GetConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.GetConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.GetConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*geminidataanalyticspb.Conversation",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "GetConversation",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService.GetConversation",
+          "service": {
+            "shortName": "DataChatService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_GetLocation_sync",
+      "title": "geminidataanalytics GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataChatClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_GetOperation_sync",
+      "title": "geminidataanalytics GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataChatClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListConversations_sync",
+      "title": "geminidataanalytics ListConversations Sample",
+      "description": "ListConversations lists all conversations for a given parent.",
+      "file": "DataChatClient/ListConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversations",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.ListConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.ListConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversationIterator",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "ListConversations",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService.ListConversations",
+          "service": {
+            "shortName": "DataChatService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListLocations_sync",
+      "title": "geminidataanalytics ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DataChatClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListMessages_sync",
+      "title": "geminidataanalytics ListMessages Sample",
+      "description": "ListMessages lists all messages for a given conversation.",
+      "file": "DataChatClient/ListMessages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMessages",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.ListMessages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.ListMessagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StorageMessageIterator",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "ListMessages",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService.ListMessages",
+          "service": {
+            "shortName": "DataChatService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListOperations_sync",
+      "title": "geminidataanalytics ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataChatClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

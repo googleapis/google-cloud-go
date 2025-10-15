@@ -1,0 +1,20 @@
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
+libraries:
+    - id: secretmanager
+      apis:
+        - path: google/cloud/secretmanager/v1
+          service_config: secretmanager_v1.yaml
+        - path: google/cloud/secretmanager/v1beta2
+          service_config: secretmanager_v1beta2.yaml
+      source_roots:
+        - secretmanager
+        - internal/generated/snippets/secretmanager
+      tag_format: "{id}/v{version}"
+    - id: pubsub
+      apis:
+        - path: google/pubsub/v1
+          service_config: pubsub_v1.yaml
+      source_roots:
+        - pubsub
+        - internal/generated/snippets/pubsub
+      tag_format: "{id}/v{version}"

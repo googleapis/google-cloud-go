@@ -1,5 +1,26 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.19.0...networkconnectivity/v1.19.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.18.0...networkconnectivity/v1.19.0) (2025-09-11)
+
+
+### Features
+
+* **networkconnectivity:** Introduce DataTransfer APIs ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.17.1...networkconnectivity/v1.18.0) (2025-07-23)
+
+
+### Features
+
+* **networkconnectivity:** Add Network Connectivity Center APIs for Internal Range service ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.17.0...networkconnectivity/v1.17.1) (2025-04-15)
 
 

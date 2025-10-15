@@ -46,7 +46,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -90,6 +89,9 @@ const (
 	testUniverseProject    = "TEST_UNIVERSE_PROJECT_ID"
 	testUniverseLocation   = "TEST_UNIVERSE_LOCATION"
 	testUniverseCreds      = "TEST_UNIVERSE_DOMAIN_CREDENTIAL"
+	// Location and Zone for zonal buckets tests
+	testZonalLocation = "us-west4"
+	testZonalZone     = "us-west4-a"
 )
 
 var (
@@ -99,6 +101,7 @@ var (
 	uidSpaceObjects *uid.Space
 	bucketName      string
 	grpcBucketName  string
+	zonalBucketName string
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -232,6 +235,21 @@ func initIntegrationTest() func() error {
 		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
 		}
+		if err := client.Bucket(zonalBucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{
+			Location: testZonalLocation,
+			CustomPlacementConfig: &CustomPlacementConfig{
+				DataLocations: []string{testZonalZone},
+			},
+			StorageClass: "RAPID",
+			HierarchicalNamespace: &HierarchicalNamespace{
+				Enabled: true,
+			},
+			UniformBucketLevelAccess: UniformBucketLevelAccess{
+				Enabled: true,
+			},
+		}); err != nil {
+			log.Fatalf("creating zonal bucket %q: %v", zonalBucketName, err)
+		}
 		return cleanup
 	}
 }
@@ -241,6 +259,7 @@ func initUIDsAndRand(t time.Time) {
 	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	grpcBucketName = grpcTestPrefix + uidSpace.New()
+	zonalBucketName = grpcTestPrefix + uidSpace.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
@@ -283,13 +302,13 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 // initTransportClients initializes Storage clients for each supported transport.
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	withJSON := append(slices.Clone(opts), WithJSONReads())
-	withBidi := append(slices.Clone(opts), experimental.WithGRPCBidiReads())
+	withZonal := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
 		// TODO: remove jsonReads when support for XML reads is dropped
-		"jsonReads": testConfig(ctx, t, withJSON...),
-		"bidiReads": testConfigGRPC(ctx, t, withBidi...),
+		"jsonReads":   testConfig(ctx, t, withJSON...),
+		"zonalBucket": testConfigGRPC(ctx, t, withZonal...),
 	}
 }
 
@@ -313,8 +332,11 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 
 			bucket := bucketName
 			prefix := testPrefix
-			if transport == "grpc" || transport == "bidiReads" {
+			if transport == "grpc" {
 				bucket = grpcBucketName
+				prefix = grpcTestPrefix
+			} else if transport == "zonalBucket" {
+				bucket = zonalBucketName
 				prefix = grpcTestPrefix
 			}
 
@@ -352,7 +374,7 @@ var readCases = []readCase{
 }
 
 func TestIntegration_MultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
@@ -416,10 +438,49 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 	})
 }
 
+// Test many concurrent reads on the same MultiRangeDownloader to try to detect
+// potential deadlocks.
+func TestIntegration_MRDManyReads(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloaderManyReads"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		// Previously 100 ranges here worked in a few seconds, but 1000 caused
+		// a deadlock. After this PR, 1000 also works in under 10s.
+		// 1000 is larger than the size of the buffer for the new ranges
+		// to be added.
+		for i := 0; i < 1000; i++ {
+			reader.Add(io.Discard, 0, 100, func(_ int64, _ int64, err error) {
+				if err != nil {
+					t.Errorf("error in call %v: %v", i, err)
+				}
+			})
+		}
+		reader.Wait()
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
 // TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
 // read length or not.
 func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
-	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1000)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MRDCallback"
@@ -468,7 +529,7 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
@@ -478,11 +539,11 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
 			t.Fatal(err)
 		}
-		defer func() {
-			if err := obj.Delete(ctx); err != nil {
+		t.Cleanup(func() {
+			if err := obj.Delete(context.Background()); err != nil {
 				log.Printf("failed to delete test object: %v", err)
 			}
-		}()
+		})
 		reader, err := obj.NewMultiRangeDownloader(ctx)
 		if err != nil {
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
@@ -529,30 +590,29 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 		}
 
 		reader.Wait()
-		for _, k := range res {
-			if k.offset < 0 {
-				k.offset += int64(len(content))
-			}
-			want := content[k.offset:]
-			if k.limit != 0 {
-				want = content[k.offset : k.offset+k.limit]
-			}
-			if k.err != nil {
-				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
-			}
-			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, len(k.buf.Bytes()), len(want))
-			}
-		}
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
+		}
+		for id, k := range res {
+			if k.err != nil {
+				t.Fatalf("reading range %v: %v", id, k.err)
+			}
+			if got, want := k.offset, 0; got != int64(want) {
+				t.Errorf("range id %v: got callback offset %v, want %v", id, got, want)
+			}
+			if got, want := k.limit, len(content); got != int64(want) {
+				t.Errorf("range id %v: got callback limit %v, want %v", id, got, want)
+			}
+			if !bytes.Equal(k.buf.Bytes(), content) {
+				t.Errorf("content mismatch in read range %v: got %v bytes, want %v bytes",
+					id, len(k.buf.Bytes()), len(content))
+			}
 		}
 	})
 }
 
 func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
-	multiTransportTest(skipAllButBidi(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "mrdnonretry"
@@ -1583,13 +1643,15 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 		}
 
 		last5s := []struct {
-			name   string
-			start  int64
-			length int64
+			name      string
+			start     int64
+			length    int64
+			wantStart int64
 		}{
-			{name: "negative offset", start: -5, length: -1},
-			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
-			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+			{name: "negative offset", start: -5, length: -1, wantStart: 31},
+			{name: "too large negative offset", start: -1000, length: -1, wantStart: 0},
+			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5, wantStart: 31},
+			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1, wantStart: 31},
 		}
 
 		for _, last5 := range last5s {
@@ -1597,14 +1659,14 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				// Test Read and WriteTo.
 				for _, c := range readCases {
 					t.Run(c.desc, func(t *testing.T) {
-						wantBuf := contents[len(contents)-5:]
+						wantBuf := contents[last5.wantStart:]
 						r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
 						if err != nil {
 							t.Fatalf("Failed to make range read: %v", err)
 						}
 						defer r.Close()
 
-						if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+						if got, want := r.Attrs.StartOffset, last5.wantStart; got != want {
 							t.Errorf("StartOffset mismatch, got %d want %d", got, want)
 						}
 
@@ -1612,7 +1674,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 						if err != nil {
 							t.Fatalf("reading object: %v", err)
 						}
-						if got, want := len(gotBuf), 5; got != want {
+						if got, want := len(gotBuf), len(contents)-int(last5.wantStart); got != want {
 							t.Errorf("Body length mismatch, got %d want %d", got, want)
 						} else if diff := cmp.Diff(string(gotBuf), string(wantBuf)); diff != "" {
 							t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
@@ -2204,7 +2266,7 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 }
 
 func TestIntegration_ObjectChecksums(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support MD5"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 		checksumCases := []struct {
 			name     string
@@ -2253,7 +2315,7 @@ func TestIntegration_ObjectChecksums(t *testing.T) {
 }
 
 func TestIntegration_ObjectCompose(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support compose"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 
 		objects := []*ObjectHandle{
@@ -2344,7 +2406,7 @@ func TestIntegration_Copy(t *testing.T) {
 		})
 
 		// Create new bucket
-		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
+		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "US-EAST1"}); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
 		t.Cleanup(func() {
@@ -2371,6 +2433,14 @@ func TestIntegration_Copy(t *testing.T) {
 		t.Cleanup(func() {
 			h.mustDeleteObject(obj)
 		})
+
+		// Set metadata on the source object to check if it's copied.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{
+			ContentLanguage:    "en",
+			ContentDisposition: "inline",
+		}); err != nil {
+			t.Fatalf("obj.Update: %v", err)
+		}
 
 		attrs, err := obj.Attrs(ctx)
 		if err != nil {
@@ -2455,6 +2525,14 @@ func TestIntegration_Copy(t *testing.T) {
 				if test.copierAttrs != nil {
 					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
 						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
+					}
+				} else {
+					// Check that metadata is copied when no destination attributes are provided.
+					if attrs.ContentLanguage != "en" {
+						t.Errorf("unexpected ContentLanguage; got: %s, want: en", attrs.ContentLanguage)
+					}
+					if attrs.ContentDisposition != "inline" {
+						t.Errorf("unexpected ContentDisposition; got: %s, want: inline", attrs.ContentDisposition)
 					}
 				}
 
@@ -3187,15 +3265,10 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 // Writer test for appendable uploads with and without finalization,
 // also validating Flush() at various offsets.
 func TestIntegration_WriterAppend(t *testing.T) {
-	t.Skip("b/402283880")
-	ctx := skipAllButBidi(context.Background(), "ZB test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	ctx := skipAllButZonal(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
-		bucketName := prefix + uidSpace.New()
-		bkt := client.Bucket(bucketName)
-
-		h.mustCreateZonalBucket(bkt, testutil.ProjID())
-		defer h.mustDeleteBucket(bkt)
+		bkt := client.Bucket(bucket)
 
 		testCases := []struct {
 			name        string
@@ -3329,15 +3402,10 @@ func TestIntegration_WriterAppend(t *testing.T) {
 // Writer test for append takeover of unfinalized object, including
 // calls to Flush() on takeover.
 func TestIntegration_WriterAppendTakeover(t *testing.T) {
-	t.Skip("b/402283880")
-	ctx := skipAllButBidi(context.Background(), "ZB test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	ctx := skipAllButZonal(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
-		bucketName := prefix + uidSpace.New()
-		bkt := client.Bucket(bucketName)
-
-		h.mustCreateZonalBucket(bkt, testutil.ProjID())
-		defer h.mustDeleteBucket(bkt)
+		bkt := client.Bucket(bucket)
 
 		testCases := []struct {
 			name                 string
@@ -3361,7 +3429,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{7 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{3 * MiB, 7 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:                "middle chunk takeover, small flush",
@@ -3403,7 +3471,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize: 4 * MiB,
 				},
-				checkProgressOffsets: []int64{4 * MiB, 8 * MiB},
+				checkProgressOffsets: []int64{0, 4 * MiB, 8 * MiB, 9 * MiB},
 			},
 			{
 				name:           "last byte takeover",
@@ -3458,11 +3526,6 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
 				}
 
-				// Check that local Writer.Attrs() is populated after takeover.
-				if w2.Attrs() == nil || w2.Attrs().Size != tc.takeoverOffset {
-					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", w2.Attrs(), tc.takeoverOffset)
-				}
-
 				// Validate that options are populated as expected.
 				wantChunkSize := 16 * MiB
 				if opts != nil && opts.ChunkSize != 0 {
@@ -3491,19 +3554,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					if n != remainingOffset {
 						t.Errorf("Writer.Flush: got %v bytes flushed, want %v", n, remainingOffset)
 					}
-					// Check local w.Attrs().Size is updated as expected.
-					if got, want := w2.Attrs().Size, remainingOffset; got != want {
-						t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
-					}
 				}
 
 				// Write remainder of the content and close.
 				h.mustWrite(w2, tc.content[remainingOffset:])
-
-				// Check local w.Attrs().Size is updated as expected.
-				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
-					t.Fatalf("Writer.Attrs(): got %+v, expected size = %v", got, want)
-				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -3529,8 +3583,8 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				if w2.Attrs() == nil {
 					t.Fatalf("takeover writer attrs: expected attrs, got nil")
 				}
-				if w2.Attrs().Size != 9*MiB {
-					t.Errorf("final object size: got %v, want %v", w2.Attrs().Size, 9*MiB)
+				if got, want := w2.Attrs().Size, int64(len(tc.content)); got != want {
+					t.Errorf("final object size: got %v, want %v", got, want)
 				}
 			})
 		}
@@ -3538,15 +3592,10 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 }
 
 func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
-	t.Skip("b/402283880")
-	ctx := skipAllButBidi(context.Background(), "ZB test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	ctx := skipAllButZonal(context.Background(), "ZB test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
-		bucketName := prefix + uidSpace.New()
-		bkt := client.Bucket(bucketName)
-
-		h.mustCreateZonalBucket(bkt, testutil.ProjID())
-		defer h.mustDeleteBucket(bkt)
+		bkt := client.Bucket(bucket)
 
 		objName := "object1"
 		obj := bkt.Object(objName)
@@ -3585,25 +3634,26 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 			t.Fatalf("tw.Flush: %v", err)
 		}
 
-		// Expect precondition error when writer to orginal Writer.
-		if _, err := w.Write(randomBytes3MiB); status.Code(err) != codes.FailedPrecondition {
-			t.Fatalf("got %v", err)
+		// Expect FAILED_PRECONDITION or ABORTED error when writing to orginal Writer.
+		_, err = w.Write(randomBytes3MiB)
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
+			t.Fatalf("w.Write: got error %v, want FailedPrecondition or Aborted", err)
 		}
 
-		// Another NewWriter to the unfinalized object should also return a
-		// precondition error when data is flushed.
+		// Another NewWriter to the unfinalized object should be able to
+		// overwrite the existing object.
 		w2 := obj.NewWriter(ctx)
 		w2.Append = true
 		if _, err := w2.Write([]byte("hello world")); err != nil {
 			t.Fatalf("w2.Write: %v", err)
 		}
-		if _, err := w2.Flush(); status.Code(err) != codes.FailedPrecondition {
-			t.Fatalf("w2.Flush: %v", err)
+		if err := w2.Close(); err != nil {
+			t.Fatalf("w2.Close: %v", err)
 		}
 
 		// If we add yet another takeover writer to finalize and delete the object,
-		// tw should also return an error on flush.
-		tw2, _, err := obj.Generation(w.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
+		// tw should return an error on flush.
+		tw2, _, err := obj.Generation(w2.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
 			FinalizeOnClose: true,
 		})
 		if err != nil {
@@ -3616,8 +3666,9 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		if _, err := tw.Write([]byte("abcde")); err != nil {
 			t.Fatalf("tw.Write: %v", err)
 		}
-		if _, err := tw.Flush(); status.Code(err) != codes.FailedPrecondition {
-			t.Errorf("tw.Flush: got %v, want FailedPrecondition", err)
+		_, err = tw.Flush()
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
+			t.Errorf("tw.Flush: got error %v, want FailedPrecondition or Aborted", err)
 		}
 	})
 }
@@ -3656,7 +3707,7 @@ func TestIntegration_Encryption(t *testing.T) {
 	// This function tests customer-supplied encryption keys for all operations
 	// involving objects. Bucket and ACL operations aren't tested because they
 	// aren't affected by customer encryption. Neither is deletion.
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support CSEK"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
 		obj := client.Bucket(bucket).Object("customer-encryption").Retryer(WithPolicy(RetryAlways))
@@ -3804,7 +3855,7 @@ func TestIntegration_Encryption(t *testing.T) {
 
 func TestIntegration_NonexistentObject(t *testing.T) {
 	t.Parallel()
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support compose"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		nonExistentObj := client.Bucket(bucket).Object("object-does-not-exist")
 		_, err := nonExistentObj.NewReader(ctx)
 		if !errors.Is(err, ErrObjectNotExist) {
@@ -4043,7 +4094,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 //     a. The project that owns the requester-pays bucket (same as (2))
 //     b. Another project (the Firestore project).
 func TestIntegration_RequesterPaysOwner(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support requester pays"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
@@ -4262,7 +4313,7 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support requester pays"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 
 		for _, test := range []struct {
@@ -4512,7 +4563,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 }
 
 func TestIntegration_PublicObject(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support object ACLs"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		publicObj := client.Bucket(bucket).Object("public-obj" + uidSpaceObjects.New())
 		contents := randomContents()
 
@@ -5319,83 +5370,6 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 	})
 }
 
-func TestIntegration_BucketIPFilter(t *testing.T) {
-	ctx := skipGRPC("IPFilter not yet supported in gRPC transport")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
-		h := testHelper{t}
-		projID := testutil.ProjID()
-
-		bucketName := prefix + uidSpace.New()
-		fmt.Printf("Creating bucket %q\n", bucketName)
-		bucket := client.Bucket(bucketName)
-		want := &IPFilter{
-			Mode: "Disabled",
-		}
-
-		h.mustCreate(bucket, projID, &BucketAttrs{
-			IPFilter: want,
-		})
-		defer h.mustDeleteBucket(bucket)
-
-		var attrs *BucketAttrs
-		attrs = h.mustBucketAttrs(bucket)
-		if !testutil.Equal(attrs.IPFilter, want) {
-			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
-		}
-
-		// Update IPFilter configuration with VPCNetworkSource and PublicNetworkSource.
-		want = &IPFilter{
-			Mode: "Disabled",
-			VPCNetworkSource: []VPCNetworkSource{
-				{
-					Network:             fmt.Sprintf("projects/%s/global/networks/default", projID),
-					AllowedIPCidrRanges: []string{"0.0.0.0/0"},
-				},
-			},
-			PublicNetworkSource: &PublicNetworkSource{
-				AllowedIPCidrRanges: []string{"1.2.3.4/32"},
-			},
-		}
-
-		ua := BucketAttrsToUpdate{
-			IPFilter: want,
-		}
-		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-		if !testutil.Equal(attrs.IPFilter, want) {
-			t.Errorf("got bucket IPFilter %+v, want %+v", attrs.IPFilter, want)
-		}
-
-		// Clear VPCNetworkSource and PublicNetworkSource.
-		want = &IPFilter{
-			Mode: "Disabled",
-		}
-		attrs, err := bucket.Attrs(ctx)
-		if err != nil {
-			t.Fatalf("b.Attrs(%q): %v", bucket.name, err)
-		}
-
-		// Update IPFilter and check the results.
-		// Retry in case of metadata propagation delay.
-		if err := retry(ctx, func() error {
-			attrs, err = bucket.Update(ctx, BucketAttrsToUpdate{IPFilter: want})
-			if err != nil {
-				return fmt.Errorf("b.Update: %v", err)
-			}
-			return nil
-		}, func() error {
-			if len(attrs.IPFilter.VPCNetworkSource) != 0 {
-				return fmt.Errorf("expected VPCNetworkSource to be cleared, got %+v", attrs.IPFilter.VPCNetworkSource)
-			}
-			if attrs.IPFilter.PublicNetworkSource != nil && len(attrs.IPFilter.PublicNetworkSource.AllowedIPCidrRanges) != 0 {
-				return fmt.Errorf("expected PublicNetworkSource to be cleared, got %+v", attrs.IPFilter.PublicNetworkSource)
-			}
-			return nil
-		}); err != nil {
-			t.Error(err)
-		}
-	})
-}
-
 func TestIntegration_SoftDelete(t *testing.T) {
 	multiTransportTest(skipExtraReadAPIs(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -5623,7 +5597,7 @@ func TestIntegration_ObjectMove(t *testing.T) {
 }
 
 func TestIntegration_KMS(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support KMS"), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
 		h := testHelper{t}
 
 		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
@@ -5949,6 +5923,7 @@ func TestIntegration_Reader(t *testing.T) {
 			{"-2 offset", -2, -1, 2},
 			{"-object length offset", -objlen, -1, objlen},
 			{"-half of object length offset", -(objlen / 2), -1, objlen / 2},
+			{"-offset above object length", -(2 * objlen), -1, objlen},
 		} {
 			t.Run(r.desc, func(t *testing.T) {
 
@@ -5984,6 +5959,10 @@ func TestIntegration_Reader(t *testing.T) {
 						switch {
 						case r.offset < 0: // The case of reading the last N bytes.
 							start := objlen + r.offset
+							// If negative offset is before the file size we expect the whole file.
+							if start < 0 {
+								start = 0
+							}
 							if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
 								t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
 							}
@@ -6727,7 +6706,7 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 		t.Fatalf("Cannot get token source to create client")
 	}
 
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support signed URL access"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
 			t.Fatalf("unable to find test credentials: %v", err)
@@ -7237,17 +7216,10 @@ func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttr
 
 func (h testHelper) mustCreateZonalBucket(b *BucketHandle, projID string) {
 	h.t.Helper()
-
-	// Create a bucket in the same zone as the test VM.
-	zone, err := metadata.ZoneWithContext(context.Background())
-	if err != nil {
-		h.t.Fatalf("could not determine VM zone: %v", err)
-	}
-	region := strings.Join(strings.Split(zone, "-")[:2], "-")
-	h.mustCreate(b, testutil.ProjID(), &BucketAttrs{
-		Location: region,
+	h.mustCreate(b, projID, &BucketAttrs{
+		Location: testZonalLocation,
 		CustomPlacementConfig: &CustomPlacementConfig{
-			DataLocations: []string{zone},
+			DataLocations: []string{testZonalZone},
 		},
 		StorageClass: "RAPID",
 		HierarchicalNamespace: &HierarchicalNamespace{
@@ -7396,6 +7368,7 @@ func newWriter(ctx context.Context, obj *ObjectHandle, contentType string, force
 	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
 	w.ContentType = contentType
 	w.ForceEmptyContentType = forceEmptyContentType
+	w.FinalizeOnClose = true // Default to finalize for appendable objects.
 
 	return w
 }
@@ -7424,11 +7397,10 @@ func cleanupBuckets() error {
 		return nil // Don't cleanup if we're not configured correctly.
 	}
 	defer client.Close()
-	if err := killBucket(ctx, client, bucketName); err != nil {
-		return err
-	}
-	if err := killBucket(ctx, client, grpcBucketName); err != nil {
-		return err
+	for _, b := range []string{bucketName, grpcBucketName, zonalBucketName} {
+		if err := killBucket(ctx, client, b); err != nil {
+			return err
+		}
 	}
 
 	// Delete buckets whose name begins with our test prefix, and which were
@@ -7691,7 +7663,7 @@ func retryOnTransient400and403(err error) bool {
 }
 
 func skipGRPC(reason string) context.Context {
-	ctx := context.WithValue(context.Background(), skipTransportTestKey("bidiReads"), reason)
+	ctx := context.WithValue(context.Background(), skipTransportTestKey("zonalBucket"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 }
 
@@ -7703,15 +7675,19 @@ func skipHTTP(reason string) context.Context {
 // Skips JSON and gRPC Bidi reads. Use to reduce test matrix in tests which don't do
 // downloads.
 func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
-	ctx = context.WithValue(ctx, skipTransportTestKey("bidiReads"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("zonalBucket"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
-// Skip all APIs except Bidi reads. Use for ZB tests.
-func skipAllButBidi(ctx context.Context, reason string) context.Context {
+// Only run test against zonal buckets. Use for appendable object and bidi read tests.
+func skipAllButZonal(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
 	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+}
+
+func skipZonalBucket(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("zonalBucket"), reason)
 }
 
 func skipXMLReads(ctx context.Context, reason string) context.Context {

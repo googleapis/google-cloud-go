@@ -21,13 +21,14 @@
 package dataplexpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -153,7 +154,7 @@ const (
 	Job_SUCCEEDED Job_State = 4
 	// The job is no longer running due to an error.
 	Job_FAILED Job_State = 5
-	// The job was cancelled outside of Dataplex.
+	// The job was cancelled outside of Dataplex Universal Catalog.
 	Job_ABORTED Job_State = 6
 )
 
@@ -212,8 +213,8 @@ type Job_Trigger int32
 const (
 	// The trigger is unspecified.
 	Job_TRIGGER_UNSPECIFIED Job_Trigger = 0
-	// The job was triggered by Dataplex based on trigger spec from task
-	// definition.
+	// The job was triggered by Dataplex Universal Catalog based on trigger spec
+	// from task definition.
 	Job_TASK_CONFIG Job_Trigger = 1
 	// The job was triggered by the explicit call of Task API.
 	Job_RUN_REQUEST Job_Trigger = 2

@@ -25,6 +25,11 @@
                 "CountTokens"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "EmbedContent": {
               "methods": [
                 "EmbedContent"
@@ -70,6 +75,11 @@
                 "CountTokens"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "EmbedContent": {
               "methods": [
                 "EmbedContent"
@@ -109,6 +119,11 @@
                 "CancelOperation"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetModel": {
               "methods": [
                 "GetModel"
@@ -137,6 +152,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "GetModel": {

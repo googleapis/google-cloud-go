@@ -53,6 +53,18 @@ func (it *PreviewIterator) All() iter.Seq2[*configpb.Preview, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ResourceChangeIterator) All() iter.Seq2[*configpb.ResourceChange, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceDriftIterator) All() iter.Seq2[*configpb.ResourceDrift, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ResourceIterator) All() iter.Seq2[*configpb.Resource, error] {
 	return iterator.RangeAdapter(it.Next)
 }

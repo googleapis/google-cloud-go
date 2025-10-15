@@ -57,7 +57,11 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 		return nil, fmt.Errorf("pattern %q matched 0 packages", glob)
 	}
 
-	module := allPkgs[0].Module
+	// To sort v1 modules before v2+
+	sort.Slice(allPkgs, func(i, j int) bool {
+		return allPkgs[i].PkgPath < allPkgs[j].PkgPath
+	})
+	modulePath := getModulePath(allPkgs)
 	skippedModules := map[string]struct{}{}
 
 	// First, collect all of the files grouped by package, including test
@@ -87,7 +91,7 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 			idToPkg[pkg.PkgPath] = pkg
 			pkgNames = append(pkgNames, pkg.PkgPath)
 			// The test package doesn't have Module set.
-			if pkg.Module.Path != module.Path {
+			if pkg.Module.Path != modulePath {
 				skippedModules[pkg.Module.Path] = struct{}{}
 				continue
 			}
@@ -133,7 +137,7 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 		}
 
 		// Extra filter in case the file filtering didn't catch everything.
-		if !strings.HasPrefix(docPkg.ImportPath, module.Path) {
+		if !strings.HasPrefix(docPkg.ImportPath, modulePath) {
 			continue
 		}
 
@@ -163,6 +167,15 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 	}
 
 	return result, nil
+}
+
+func getModulePath(pkgs []*packages.Package) string {
+	for _, pkg := range pkgs {
+		if pkg.Module != nil && pkg.Module.Path != "" {
+			return pkg.Module.Path
+		}
+	}
+	return ""
 }
 
 // pkgStatus returns the status of the given package with the

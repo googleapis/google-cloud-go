@@ -1,5 +1,26 @@
 # Changes
 
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.19.1...security/v1.19.2) (2025-09-22)
+
+
+### Bug Fixes
+
+* **security:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.19.0...security/v1.19.1) (2025-09-04)
+
+
+### Documentation
+
+* **security/publicca:** Add API publishing information for public CA.googleapis.com ([10e67ef](https://github.com/googleapis/google-cloud-go/commit/10e67efccf048adea11d3ecba8d0c625455e545f))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.5...security/v1.19.0) (2025-07-09)
+
+
+### Features
+
+* **security:** Add RDN sequence ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.18.4...security/v1.18.5) (2025-04-15)
 
 

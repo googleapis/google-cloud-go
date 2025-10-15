@@ -21,11 +21,7 @@
 package talentpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -579,88 +575,4 @@ func file_google_cloud_talent_v4_completion_service_proto_init() {
 	file_google_cloud_talent_v4_completion_service_proto_rawDesc = nil
 	file_google_cloud_talent_v4_completion_service_proto_goTypes = nil
 	file_google_cloud_talent_v4_completion_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// CompletionClient is the client API for Completion service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type CompletionClient interface {
-	// Completes the specified prefix with keyword suggestions.
-	// Intended for use by a job search auto-complete search box.
-	CompleteQuery(ctx context.Context, in *CompleteQueryRequest, opts ...grpc.CallOption) (*CompleteQueryResponse, error)
-}
-
-type completionClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewCompletionClient(cc grpc.ClientConnInterface) CompletionClient {
-	return &completionClient{cc}
-}
-
-func (c *completionClient) CompleteQuery(ctx context.Context, in *CompleteQueryRequest, opts ...grpc.CallOption) (*CompleteQueryResponse, error) {
-	out := new(CompleteQueryResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.talent.v4.Completion/CompleteQuery", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// CompletionServer is the server API for Completion service.
-type CompletionServer interface {
-	// Completes the specified prefix with keyword suggestions.
-	// Intended for use by a job search auto-complete search box.
-	CompleteQuery(context.Context, *CompleteQueryRequest) (*CompleteQueryResponse, error)
-}
-
-// UnimplementedCompletionServer can be embedded to have forward compatible implementations.
-type UnimplementedCompletionServer struct {
-}
-
-func (*UnimplementedCompletionServer) CompleteQuery(context.Context, *CompleteQueryRequest) (*CompleteQueryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CompleteQuery not implemented")
-}
-
-func RegisterCompletionServer(s *grpc.Server, srv CompletionServer) {
-	s.RegisterService(&_Completion_serviceDesc, srv)
-}
-
-func _Completion_CompleteQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CompleteQueryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CompletionServer).CompleteQuery(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.talent.v4.Completion/CompleteQuery",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompletionServer).CompleteQuery(ctx, req.(*CompleteQueryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Completion_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.talent.v4.Completion",
-	HandlerType: (*CompletionServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CompleteQuery",
-			Handler:    _Completion_CompleteQuery_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/talent/v4/completion_service.proto",
 }

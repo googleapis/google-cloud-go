@@ -22,14 +22,10 @@
 package visionpb
 
 import (
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	color "google.golang.org/genproto/googleapis/type/color"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -2654,86 +2650,4 @@ func file_google_cloud_vision_v1p1beta1_image_annotator_proto_init() {
 	file_google_cloud_vision_v1p1beta1_image_annotator_proto_rawDesc = nil
 	file_google_cloud_vision_v1p1beta1_image_annotator_proto_goTypes = nil
 	file_google_cloud_vision_v1p1beta1_image_annotator_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ImageAnnotatorClient is the client API for ImageAnnotator service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ImageAnnotatorClient interface {
-	// Run image detection and annotation for a batch of images.
-	BatchAnnotateImages(ctx context.Context, in *BatchAnnotateImagesRequest, opts ...grpc.CallOption) (*BatchAnnotateImagesResponse, error)
-}
-
-type imageAnnotatorClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewImageAnnotatorClient(cc grpc.ClientConnInterface) ImageAnnotatorClient {
-	return &imageAnnotatorClient{cc}
-}
-
-func (c *imageAnnotatorClient) BatchAnnotateImages(ctx context.Context, in *BatchAnnotateImagesRequest, opts ...grpc.CallOption) (*BatchAnnotateImagesResponse, error) {
-	out := new(BatchAnnotateImagesResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.vision.v1p1beta1.ImageAnnotator/BatchAnnotateImages", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ImageAnnotatorServer is the server API for ImageAnnotator service.
-type ImageAnnotatorServer interface {
-	// Run image detection and annotation for a batch of images.
-	BatchAnnotateImages(context.Context, *BatchAnnotateImagesRequest) (*BatchAnnotateImagesResponse, error)
-}
-
-// UnimplementedImageAnnotatorServer can be embedded to have forward compatible implementations.
-type UnimplementedImageAnnotatorServer struct {
-}
-
-func (*UnimplementedImageAnnotatorServer) BatchAnnotateImages(context.Context, *BatchAnnotateImagesRequest) (*BatchAnnotateImagesResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method BatchAnnotateImages not implemented")
-}
-
-func RegisterImageAnnotatorServer(s *grpc.Server, srv ImageAnnotatorServer) {
-	s.RegisterService(&_ImageAnnotator_serviceDesc, srv)
-}
-
-func _ImageAnnotator_BatchAnnotateImages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BatchAnnotateImagesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ImageAnnotatorServer).BatchAnnotateImages(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.vision.v1p1beta1.ImageAnnotator/BatchAnnotateImages",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ImageAnnotatorServer).BatchAnnotateImages(ctx, req.(*BatchAnnotateImagesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ImageAnnotator_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.vision.v1p1beta1.ImageAnnotator",
-	HandlerType: (*ImageAnnotatorServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "BatchAnnotateImages",
-			Handler:    _ImageAnnotator_BatchAnnotateImages_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/vision/v1p1beta1/image_annotator.proto",
 }

@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 ## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.14.0...vertexai/v0.15.0) (2025-06-25)
 

@@ -58,8 +58,6 @@ import (
 )
 
 const (
-	directPathIPV6Prefix      = "[2001:4860:8040"
-	directPathIPV4Prefix      = "34.126"
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
 	prefixOfClusterResources  = "bt-c-"
@@ -153,7 +151,7 @@ func cleanup(c IntegrationTestConfig) error {
 		return nil
 	}
 	ctx := context.Background()
-	iac, err := NewInstanceAdminClient(ctx, c.Project)
+	iac, err := NewInstanceAdminClient(ctx, c.Project, c.ClientOpts...)
 	if err != nil {
 		return err
 	}
@@ -237,6 +235,22 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	if !testutil.Equal(row, wantRow) {
 		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 	}
+}
+
+func TestIntegration_Pinger(t *testing.T) {
+	ctx := context.Background()
+	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { cleanup() })
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support PingAndWarm")
+	}
+	if err := client.PingAndWarm(ctx); err != nil {
+		t.Fatalf("pinger failed. got %v, want %v", err, nil)
+	}
+
 }
 
 func TestIntegration_PartialReadRows(t *testing.T) {
@@ -896,16 +910,46 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	wg.Wait()
 }
 
-func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
+func TestIntegration_NoopMetricsProvider(t *testing.T) {
 	ctx := context.Background()
+	testEnv, _, adminClient, _, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
 
-	// Reduce sampling period for faster test runs
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = time.Minute
-	defer func() {
-		defaultSamplePeriod = origSamplePeriod
-	}()
+	if testing.Short() || !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode or non-prod environments")
+	}
 
+	family := "export"
+	if err := createColumnFamily(ctx, t, adminClient, tableName, family, nil); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
+	noopClient, err := testEnv.NewClientWithConfig(ClientConfig{MetricsProvider: NoopMetricsProvider{}})
+	if err != nil {
+		t.Fatalf("NewClientWithConfig: %v", err)
+	}
+
+	noopTable := noopClient.Open(tableName)
+	for i := 0; i < 10; i++ {
+		mut := NewMutation()
+		mut.Set(family, "col", 1000, []byte("test"))
+		if err := noopTable.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
+			t.Fatalf("Apply: %v", err)
+		}
+	}
+
+	err = noopTable.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+}
+
+func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	// record start time
 	testStartTime := time.Now()
 	tsListStart := &timestamppb.Timestamp{
@@ -913,6 +957,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		Nanos:   int32(testStartTime.Nanosecond()),
 	}
 
+	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
@@ -935,6 +980,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 			t.Fatalf("Apply: %v", err)
 		}
 	}
+
 	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
 		return true
 	}, RowFilter(ColumnFilter("col")))
@@ -952,7 +998,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	// Sleep some more
 	time.Sleep(30 * time.Second)
 
-	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	monitoringClient, err := monitoring.NewMetricClient(ctx, testEnv.Config().ClientOpts...)
 	if err != nil {
 		t.Errorf("Failed to create metric client: %v", err)
 	}
@@ -960,6 +1006,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		metricNameOperationLatencies,
 		metricNameAttemptLatencies,
 		metricNameServerLatencies,
+		metricNameFirstRespLatencies,
 	}
 
 	// Try for 5m with 10s sleep between retries
@@ -4363,56 +4410,57 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// List backup
-	gotBackups, err := list(sourceCluster)
-	if err != nil {
-		t.Fatalf("Listing backups: %v", err)
-	}
-	if got, want := len(gotBackups), 3; got < want {
-		t.Fatalf("Listing backup count: %d, want: >= %d", got, want)
-	}
+	var gotBackups []*BackupInfo
+	testutil.Retry(t, 20, 30*time.Second, func(r *testutil.R) {
+		var err error
+		gotBackups, err = list(sourceCluster)
+		if err != nil {
+			r.Fatalf("Listing backups: %v", err)
+		}
 
-	wantBackups := map[string]struct {
-		HotToStandardTime *time.Time
-		BackupType        BackupType
-	}{
-		stdBkpName: {
-			BackupType: BackupTypeStandard,
-		},
-		hotBkpName1: {
-			BackupType:        BackupTypeHot,
-			HotToStandardTime: &wantHtsTime,
-		},
-		hotBkpName2: {
-			BackupType: BackupTypeHot,
-		},
-	}
+		wantBackups := map[string]struct {
+			HotToStandardTime *time.Time
+			BackupType        BackupType
+		}{
+			stdBkpName: {
+				BackupType: BackupTypeStandard,
+			},
+			hotBkpName1: {
+				BackupType:        BackupTypeHot,
+				HotToStandardTime: &wantHtsTime,
+			},
+			hotBkpName2: {
+				BackupType: BackupTypeHot,
+			},
+		}
 
-	foundBackups := map[string]bool{}
-	for _, gotBackup := range gotBackups {
-		wantBackup, ok := wantBackups[gotBackup.Name]
-		if !ok {
-			break
-		}
-		foundBackups[gotBackup.Name] = true
+		foundBackups := map[string]bool{}
+		for _, gotBackup := range gotBackups {
+			wantBackup, ok := wantBackups[gotBackup.Name]
+			if !ok {
+				continue
+			}
+			foundBackups[gotBackup.Name] = true
 
-		if got, want := gotBackup.SourceTable, tblConf.TableID; got != want {
-			t.Errorf("%v SourceTable got: %s, want: %s", gotBackup.Name, got, want)
+			if got, want := gotBackup.SourceTable, tblConf.TableID; got != want {
+				r.Errorf("%v SourceTable got: %s, want: %s", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.ExpireTime, gotBackup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+				r.Errorf("%v ExpireTime got: %s, want: %s", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.BackupType, wantBackup.BackupType; got != want {
+				r.Errorf("%v BackupType got: %v, want: %v", gotBackup.Name, got, want)
+			}
+			if got, want := gotBackup.HotToStandardTime, wantBackup.HotToStandardTime; (got != nil && !got.Equal(*want)) ||
+				(got == nil && got != want) || (want == nil && got != want) {
+				r.Errorf("%v HotToStandardTime got: %v, want: %v", gotBackup.Name, got, want)
+			}
 		}
-		if got, want := gotBackup.ExpireTime, gotBackup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-			t.Errorf("%v ExpireTime got: %s, want: %s", gotBackup.Name, got, want)
-		}
-		if got, want := gotBackup.BackupType, wantBackup.BackupType; got != want {
-			t.Errorf("%v BackupType got: %v, want: %v", gotBackup.Name, got, want)
-		}
-		if got, want := gotBackup.HotToStandardTime, wantBackup.HotToStandardTime; (got != nil && !got.Equal(*want)) ||
-			(got == nil && got != want) || (want == nil && got != want) {
-			t.Errorf("%v HotToStandardTime got: %v, want: %v", gotBackup.Name, got, want)
-		}
-	}
 
-	if len(foundBackups) != len(wantBackups) {
-		t.Errorf("foundBackups: %+v, wantBackups: %+v", foundBackups, wantBackups)
-	}
+		if len(foundBackups) != len(wantBackups) {
+			r.Errorf("foundBackups: %+v, wantBackups: %+v", foundBackups, wantBackups)
+		}
+	})
 
 	// Get BackupInfo
 	gotBackupInfo, err := adminClient.BackupInfo(ctx, sourceCluster, stdBkpName)
@@ -4927,6 +4975,129 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	}
 }
 
+func TestIntegration_AdminSchemaBundle(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support schemaBundles")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := createTableFromConf(ctx, adminClient, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create schema bundle
+	schemaBundleUUID := uid.NewSpace("schemaBundle-", &uid.Options{})
+	schemaBundle := schemaBundleUUID.New()
+	defer adminClient.DeleteSchemaBundle(ctx, tblConf.TableID, schemaBundle)
+
+	content, err := os.ReadFile("testdata/proto_schema_bundle.pb")
+	if err != nil {
+		t.Fatalf("Error reading the file: %v", err)
+	}
+
+	schemaBundleConf := SchemaBundleConf{
+		TableID:        tblConf.TableID,
+		SchemaBundleID: schemaBundle,
+		ProtoSchema: &ProtoSchemaInfo{
+			ProtoDescriptors: content,
+		},
+	}
+
+	if err = adminClient.CreateSchemaBundle(ctx, &schemaBundleConf); err != nil {
+		t.Fatalf("Creating schema bundle: %v", err)
+	}
+
+	// List schema bundles
+	schemaBundles, err := adminClient.SchemaBundles(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing schema bundles: %v", err)
+	}
+	if got, want := len(schemaBundles), 1; got != want {
+		t.Fatalf("Listing schema bundles count: %d, want: != %d", got, want)
+	}
+	if got, want := schemaBundles[0], schemaBundle; got != want {
+		t.Errorf("SchemaBundle Name: %s, want: %s", got, want)
+	}
+
+	// Get schema bundle
+	sbInfo, err := adminClient.GetSchemaBundle(ctx, tblConf.TableID, schemaBundle)
+	if err != nil {
+		t.Fatalf("Getting schema bundle: %v", err)
+	}
+	if got, want := sbInfo.SchemaBundle, content; !reflect.DeepEqual(got, want) {
+		t.Errorf("ProtoSchema: %v, want: %v", got, want)
+	}
+
+	content, err = os.ReadFile("testdata/updated_proto_schema_bundle.pb")
+	if err != nil {
+		t.Fatalf("Error reading the file: %v", err)
+	}
+
+	// Update schema bundle
+	newSchemaBundleConf := SchemaBundleConf{
+		TableID:        tblConf.TableID,
+		SchemaBundleID: schemaBundle,
+		Etag:           sbInfo.Etag,
+		ProtoSchema: &ProtoSchemaInfo{
+			ProtoDescriptors: content,
+		},
+	}
+	err = adminClient.UpdateSchemaBundle(ctx, UpdateSchemaBundleConf{
+		SchemaBundleConf: newSchemaBundleConf,
+	})
+	if err != nil {
+		t.Fatalf("UpdateSchemaBundle failed: %v", err)
+	}
+
+	// Get schema bundle
+	sbInfo, err = adminClient.GetSchemaBundle(ctx, tblConf.TableID, schemaBundle)
+	if err != nil {
+		t.Fatalf("Getting schema bundle: %v", err)
+	}
+	if got, want := sbInfo.SchemaBundle, content; !reflect.DeepEqual(got, want) {
+		t.Errorf("ProtoSchema: %v, want: %v", got, want)
+	}
+
+	// Delete schema bundle
+	if err = adminClient.DeleteSchemaBundle(ctx, tblConf.TableID, schemaBundle); err != nil {
+		t.Fatalf("DeleteSchemaBundle: %v", err)
+	}
+
+	// Verify the schema bundle was deleted.
+	schemaBundles, err = adminClient.SchemaBundles(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing schema bundles: %v", err)
+	}
+	if got, want := len(schemaBundles), 0; got != want {
+		t.Fatalf("Listing schema bundles count: %d, want: != %d", got, want)
+	}
+}
+
 func TestIntegration_DataMaterializedView(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -5250,12 +5421,10 @@ func TestIntegration_AdminMaterializedView(t *testing.T) {
 	if got, want := mvInfo.Query, materializedViewInfo.Query; got != want {
 		t.Errorf("MaterializedView Query: %q, want: %q", got, want)
 	}
-	// Cannot delete the authorized view because it is deletion protected
+	// Cannot delete the materialized view because it is deletion protected
 	if err = instanceAdminClient.DeleteMaterializedView(ctx, testEnv.Config().Instance, materializedView); err == nil {
 		t.Fatalf("DeleteMaterializedView: %v", err)
 	}
-
-	// Update authorized view
 
 	// Update materialized view
 	newMaterializedViewInfo := MaterializedViewInfo{
@@ -6005,6 +6174,9 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	_ = cancel // ignore for test
 
+	// Reduce sampling period for faster test runs
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = time.Minute
 	client, err := testEnv.NewClient()
 	if err != nil {
 		t.Logf("Error creating client: %v", err)
@@ -6064,6 +6236,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	}
 
 	return testEnv, client, adminClient, client.Open(tableName), tableName, func() {
+		defaultSamplePeriod = origSamplePeriod
 		if err := deleteTable(ctx, t, adminClient, tableName); err != nil {
 			t.Errorf("DeleteTable got error %v", err)
 		}

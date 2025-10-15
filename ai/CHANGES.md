@@ -1,5 +1,23 @@
-# Changelog
+# Changes
 
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.12.1...ai/v0.13.0) (2025-09-04)
+
+
+### Features
+
+* **ai/generativelanguage:** Add a flag whether the model supports thinking ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add a flag whether the model supports thinking ([bfcae15](https://github.com/googleapis/google-cloud-go/commit/bfcae150e55e481cd161c2d85782205ba8126d08))
+* **ai/generativelanguage:** Add AudioTranscriptionConfig ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add MultiSpeakerVoiceConfig to speech config ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add support for function response scheduling in the conversation ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add support for thought_signature ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add support for UrlContextMetadata ([bfcae15](https://github.com/googleapis/google-cloud-go/commit/bfcae150e55e481cd161c2d85782205ba8126d08))
+* **ai/generativelanguage:** Add support for video_metadata ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add support for video_metadata ([#12771](https://github.com/googleapis/google-cloud-go/issues/12771)) ([bfcae15](https://github.com/googleapis/google-cloud-go/commit/bfcae150e55e481cd161c2d85782205ba8126d08))
+* **ai/generativelanguage:** Add time_range_filter to GoogleSearch tool type ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add UNEXPECTED_TOOL_CALL to the Candidate.FinishReason enum ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **ai/generativelanguage:** Add url_context to GoogleSearch tool type ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
 
 ## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.12.0...ai/v0.12.1) (2025-06-04)
 

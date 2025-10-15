@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.15.0...datastream/v1.15.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **datastream:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.14.1...datastream/v1.15.0) (2025-08-12)
+
+
+### Features
+
+* **datastream:** Add new field `salesforce_org` to message `DiscoverConnectionProfileRequest` ([#12656](https://github.com/googleapis/google-cloud-go/issues/12656)) ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **datastream:** Add new field for server certificate to message OracleSslConfig ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **datastream:** Add new field for server certificate to message PostgresqlSslConfig ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **datastream:** Add new field mongodb_cluster to message DiscoverConnectionProfileRequest ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **datastream:** Add new field mongodb_profile to message ConnectionProfile ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **datastream:** Add new field project_id to message BigQueryDestinationConfig ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **datastream:** Add new field psc_interface_config to message PrivateConnection ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+* **datastream:** Add new field validate_only to message CreatePrivateConnectionRequest ([a846564](https://github.com/googleapis/google-cloud-go/commit/a8465647b7166ca85e85db5093cef563e3258467))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.14.0...datastream/v1.14.1) (2025-04-15)
 
 

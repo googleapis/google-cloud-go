@@ -1,4 +1,46 @@
-# Changelog
+# Changes
+
+## [0.15.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.15.0...chat/v0.15.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* **chat:** Changed field behavior for an existing field last_update_time in message .google.chat.v1.QuotedMessageMetadata ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** Changed field behavior for an existing field name in message .google.chat.v1.QuotedMessageMetadata ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
+
+### Documentation
+
+* **chat:** A comment for field customer in message .google.chat.v1.Space is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field last_update_time in message .google.chat.v1.QuotedMessageMetadata is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field name in message .google.chat.v1.QuotedMessageMetadata is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field quoted_message_metadata in message .google.chat.v1.Message is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for field update_mask in message .google.chat.v1.UpdateMessageRequest is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+* **chat:** A comment for message QuotedMessageMetadata is changed ([51583bd](https://github.com/googleapis/google-cloud-go/commit/51583bd5c9b886d22b45da092dc8311422b8b5ac))
+
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.14.0...chat/v0.15.0) (2025-07-31)
+
+
+### Features
+
+* **chat:** Addition of app auth support for chat api ([#12611](https://github.com/googleapis/google-cloud-go/issues/12611)) ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for createSpace,updateSpace,deleteSpace,createMembership,updateMembership,deleteMembership and the newly added field -customer- in space.proto ([c574e28](https://github.com/googleapis/google-cloud-go/commit/c574e287f49cc1c3b069b35d95b98da2bc9b948f))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.1...chat/v0.14.0) (2025-07-23)
+
+
+### Features
+
+* **chat:** Exposing 1p integration message content (drive, calendar, huddle, meet chips) ([#12589](https://github.com/googleapis/google-cloud-go/issues/12589)) ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
+
+
+### Documentation
+
+* **chat:** Update reference documentation for annotations. Introduce new richlink metadata types ([ac4970b](https://github.com/googleapis/google-cloud-go/commit/ac4970b5a6318dbfcdca7da5ee256852ca49ea23))
 
 ## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.13.0...chat/v0.13.1) (2025-06-04)
 

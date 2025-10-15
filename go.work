@@ -1,4 +1,4 @@
-go 1.23.0
+go 1.24.0
 
 use (
 	.
@@ -33,6 +33,7 @@ use (
 	./bigtable
 	./billing
 	./binaryauthorization
+	./capacityplanner
 	./certificatemanager
 	./channel
 	./chat
@@ -48,6 +49,7 @@ use (
 	./compute/metadata
 	./confidentialcomputing
 	./config
+	./configdelivery
 	./contactcenterinsights
 	./container
 	./containeranalysis
@@ -78,6 +80,7 @@ use (
 	./financialservices
 	./firestore
 	./functions
+	./geminidataanalytics
 	./gkebackup
 	./gkeconnect
 	./gkehub
@@ -97,12 +100,16 @@ use (
 	./internal/gapicgen
 	./internal/generated/snippets
 	./internal/godocfx
+	./internal/librariangen
 	./internal/postprocessor
 	./internal/protoveneer
+	./internal/stategen
 	./iot
 	./kms
 	./language
+	./licensemanager
 	./lifesciences
+	./locationfinder
 	./logging
 	./longrunning
 	./lustre
@@ -138,6 +145,7 @@ use (
 	./privilegedaccessmanager
 	./profiler
 	./pubsub
+	./pubsub/v2
 	./pubsublite
 	./rapidmigrationassessment
 	./recaptchaenterprise

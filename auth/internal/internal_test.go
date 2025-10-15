@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"reflect"
 	"testing"
 
 	"cloud.google.com/go/compute/metadata"
@@ -116,5 +117,117 @@ func TestDefaultClient(t *testing.T) {
 	got = DefaultClient()
 	if got.Transport != fakeTransport {
 		t.Errorf("DefaultClient() = %v, want %v", got, fakeTransport)
+	}
+}
+
+func TestNewTrustBoundaryData(t *testing.T) {
+	tests := []struct {
+		name             string
+		locations        []string
+		encodedLocations string
+		wantLocations    []string
+		wantEncoded      string
+	}{
+		{
+			name:             "Standard data",
+			locations:        []string{"us-central1", "europe-west1"},
+			encodedLocations: "0xABC123",
+			wantLocations:    []string{"us-central1", "europe-west1"},
+			wantEncoded:      "0xABC123",
+		},
+		{
+			name:             "Empty locations, not no-op encoded",
+			locations:        []string{},
+			encodedLocations: "0xDEF456",
+			wantLocations:    []string{},
+			wantEncoded:      "0xDEF456",
+		},
+		{
+			name:             "Nil locations, not no-op encoded",
+			locations:        nil,
+			encodedLocations: "0xGHI789",
+			wantLocations:    []string{}, // Expect empty slice, not nil
+			wantEncoded:      "0xGHI789",
+		},
+		{
+			name:             "No-op encoded locations",
+			locations:        []string{"us-east1"},
+			encodedLocations: TrustBoundaryNoOp,
+			wantLocations:    []string{"us-east1"},
+			wantEncoded:      TrustBoundaryNoOp,
+		},
+		{
+			name:             "Empty string encoded locations",
+			locations:        []string{},
+			encodedLocations: "",
+			wantLocations:    []string{},
+			wantEncoded:      "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data := NewTrustBoundaryData(tt.locations, tt.encodedLocations)
+
+			if got := data.EncodedLocations; got != tt.wantEncoded {
+				t.Errorf("NewTrustBoundaryData().EncodedLocations = %q, want %q", got, tt.wantEncoded)
+			}
+
+			gotLocations := data.Locations
+			if !reflect.DeepEqual(gotLocations, tt.wantLocations) {
+				t.Errorf("NewTrustBoundaryData().Locations = %v, want %v", gotLocations, tt.wantLocations)
+			}
+		})
+	}
+}
+
+func TestNewNoOpTrustBoundaryData(t *testing.T) {
+	data := NewNoOpTrustBoundaryData()
+
+	if data == nil {
+		t.Fatal("NewNoOpTrustBoundaryData() returned nil")
+	}
+
+	if got := data.EncodedLocations; got != TrustBoundaryNoOp {
+		t.Errorf("NewNoOpTrustBoundaryData().EncodedLocations = %q, want %q", got, TrustBoundaryNoOp)
+	}
+}
+
+func TestTrustBoundaryHeader(t *testing.T) {
+	tests := []struct {
+		name        string
+		tbd         TrustBoundaryData
+		wantValue   string
+		wantPresent bool
+	}{
+		{
+			name:        "empty data",
+			tbd:         TrustBoundaryData{},
+			wantValue:   "",
+			wantPresent: false,
+		},
+		{
+			name:        "no-op data",
+			tbd:         *NewNoOpTrustBoundaryData(),
+			wantValue:   "",
+			wantPresent: true,
+		},
+		{
+			name:        "regular data",
+			tbd:         *NewTrustBoundaryData(nil, "some-encoded-locations"),
+			wantValue:   "some-encoded-locations",
+			wantPresent: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotValue, gotPresent := tt.tbd.TrustBoundaryHeader()
+			if gotValue != tt.wantValue {
+				t.Errorf("TrustBoundaryHeader() gotValue = %v, want %v", gotValue, tt.wantValue)
+			}
+			if gotPresent != tt.wantPresent {
+				t.Errorf("TrustBoundaryHeader() gotPresent = %v, want %v", gotPresent, tt.wantPresent)
+			}
+		})
 	}
 }

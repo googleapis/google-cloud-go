@@ -22,6 +22,7 @@ package apihubpb
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,41 +35,44 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ApiHub_CreateApi_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/CreateApi"
-	ApiHub_GetApi_FullMethodName            = "/google.cloud.apihub.v1.ApiHub/GetApi"
-	ApiHub_ListApis_FullMethodName          = "/google.cloud.apihub.v1.ApiHub/ListApis"
-	ApiHub_UpdateApi_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/UpdateApi"
-	ApiHub_DeleteApi_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/DeleteApi"
-	ApiHub_CreateVersion_FullMethodName     = "/google.cloud.apihub.v1.ApiHub/CreateVersion"
-	ApiHub_GetVersion_FullMethodName        = "/google.cloud.apihub.v1.ApiHub/GetVersion"
-	ApiHub_ListVersions_FullMethodName      = "/google.cloud.apihub.v1.ApiHub/ListVersions"
-	ApiHub_UpdateVersion_FullMethodName     = "/google.cloud.apihub.v1.ApiHub/UpdateVersion"
-	ApiHub_DeleteVersion_FullMethodName     = "/google.cloud.apihub.v1.ApiHub/DeleteVersion"
-	ApiHub_CreateSpec_FullMethodName        = "/google.cloud.apihub.v1.ApiHub/CreateSpec"
-	ApiHub_GetSpec_FullMethodName           = "/google.cloud.apihub.v1.ApiHub/GetSpec"
-	ApiHub_GetSpecContents_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/GetSpecContents"
-	ApiHub_ListSpecs_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/ListSpecs"
-	ApiHub_UpdateSpec_FullMethodName        = "/google.cloud.apihub.v1.ApiHub/UpdateSpec"
-	ApiHub_DeleteSpec_FullMethodName        = "/google.cloud.apihub.v1.ApiHub/DeleteSpec"
-	ApiHub_GetApiOperation_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/GetApiOperation"
-	ApiHub_ListApiOperations_FullMethodName = "/google.cloud.apihub.v1.ApiHub/ListApiOperations"
-	ApiHub_GetDefinition_FullMethodName     = "/google.cloud.apihub.v1.ApiHub/GetDefinition"
-	ApiHub_CreateDeployment_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/CreateDeployment"
-	ApiHub_GetDeployment_FullMethodName     = "/google.cloud.apihub.v1.ApiHub/GetDeployment"
-	ApiHub_ListDeployments_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/ListDeployments"
-	ApiHub_UpdateDeployment_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/UpdateDeployment"
-	ApiHub_DeleteDeployment_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/DeleteDeployment"
-	ApiHub_CreateAttribute_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/CreateAttribute"
-	ApiHub_GetAttribute_FullMethodName      = "/google.cloud.apihub.v1.ApiHub/GetAttribute"
-	ApiHub_UpdateAttribute_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/UpdateAttribute"
-	ApiHub_DeleteAttribute_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/DeleteAttribute"
-	ApiHub_ListAttributes_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/ListAttributes"
-	ApiHub_SearchResources_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/SearchResources"
-	ApiHub_CreateExternalApi_FullMethodName = "/google.cloud.apihub.v1.ApiHub/CreateExternalApi"
-	ApiHub_GetExternalApi_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/GetExternalApi"
-	ApiHub_UpdateExternalApi_FullMethodName = "/google.cloud.apihub.v1.ApiHub/UpdateExternalApi"
-	ApiHub_DeleteExternalApi_FullMethodName = "/google.cloud.apihub.v1.ApiHub/DeleteExternalApi"
-	ApiHub_ListExternalApis_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/ListExternalApis"
+	ApiHub_CreateApi_FullMethodName          = "/google.cloud.apihub.v1.ApiHub/CreateApi"
+	ApiHub_GetApi_FullMethodName             = "/google.cloud.apihub.v1.ApiHub/GetApi"
+	ApiHub_ListApis_FullMethodName           = "/google.cloud.apihub.v1.ApiHub/ListApis"
+	ApiHub_UpdateApi_FullMethodName          = "/google.cloud.apihub.v1.ApiHub/UpdateApi"
+	ApiHub_DeleteApi_FullMethodName          = "/google.cloud.apihub.v1.ApiHub/DeleteApi"
+	ApiHub_CreateVersion_FullMethodName      = "/google.cloud.apihub.v1.ApiHub/CreateVersion"
+	ApiHub_GetVersion_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/GetVersion"
+	ApiHub_ListVersions_FullMethodName       = "/google.cloud.apihub.v1.ApiHub/ListVersions"
+	ApiHub_UpdateVersion_FullMethodName      = "/google.cloud.apihub.v1.ApiHub/UpdateVersion"
+	ApiHub_DeleteVersion_FullMethodName      = "/google.cloud.apihub.v1.ApiHub/DeleteVersion"
+	ApiHub_CreateSpec_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/CreateSpec"
+	ApiHub_GetSpec_FullMethodName            = "/google.cloud.apihub.v1.ApiHub/GetSpec"
+	ApiHub_GetSpecContents_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/GetSpecContents"
+	ApiHub_ListSpecs_FullMethodName          = "/google.cloud.apihub.v1.ApiHub/ListSpecs"
+	ApiHub_UpdateSpec_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/UpdateSpec"
+	ApiHub_DeleteSpec_FullMethodName         = "/google.cloud.apihub.v1.ApiHub/DeleteSpec"
+	ApiHub_CreateApiOperation_FullMethodName = "/google.cloud.apihub.v1.ApiHub/CreateApiOperation"
+	ApiHub_GetApiOperation_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/GetApiOperation"
+	ApiHub_ListApiOperations_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/ListApiOperations"
+	ApiHub_UpdateApiOperation_FullMethodName = "/google.cloud.apihub.v1.ApiHub/UpdateApiOperation"
+	ApiHub_DeleteApiOperation_FullMethodName = "/google.cloud.apihub.v1.ApiHub/DeleteApiOperation"
+	ApiHub_GetDefinition_FullMethodName      = "/google.cloud.apihub.v1.ApiHub/GetDefinition"
+	ApiHub_CreateDeployment_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/CreateDeployment"
+	ApiHub_GetDeployment_FullMethodName      = "/google.cloud.apihub.v1.ApiHub/GetDeployment"
+	ApiHub_ListDeployments_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/ListDeployments"
+	ApiHub_UpdateDeployment_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/UpdateDeployment"
+	ApiHub_DeleteDeployment_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/DeleteDeployment"
+	ApiHub_CreateAttribute_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/CreateAttribute"
+	ApiHub_GetAttribute_FullMethodName       = "/google.cloud.apihub.v1.ApiHub/GetAttribute"
+	ApiHub_UpdateAttribute_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/UpdateAttribute"
+	ApiHub_DeleteAttribute_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/DeleteAttribute"
+	ApiHub_ListAttributes_FullMethodName     = "/google.cloud.apihub.v1.ApiHub/ListAttributes"
+	ApiHub_SearchResources_FullMethodName    = "/google.cloud.apihub.v1.ApiHub/SearchResources"
+	ApiHub_CreateExternalApi_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/CreateExternalApi"
+	ApiHub_GetExternalApi_FullMethodName     = "/google.cloud.apihub.v1.ApiHub/GetExternalApi"
+	ApiHub_UpdateExternalApi_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/UpdateExternalApi"
+	ApiHub_DeleteExternalApi_FullMethodName  = "/google.cloud.apihub.v1.ApiHub/DeleteExternalApi"
+	ApiHub_ListExternalApis_FullMethodName   = "/google.cloud.apihub.v1.ApiHub/ListExternalApis"
 )
 
 // ApiHubClient is the client API for ApiHub service.
@@ -83,7 +87,7 @@ type ApiHubClient interface {
 	// List API resources in the API hub.
 	ListApis(ctx context.Context, in *ListApisRequest, opts ...grpc.CallOption) (*ListApisResponse, error)
 	// Update an API resource in the API hub. The following fields in the
-	// [API][] can be updated:
+	// [API][google.cloud.apihub.v1.Api] can be updated:
 	//
 	// * [display_name][google.cloud.apihub.v1.Api.display_name]
 	// * [description][google.cloud.apihub.v1.Api.description]
@@ -93,6 +97,7 @@ type ApiHubClient interface {
 	// * [team][google.cloud.apihub.v1.Api.team]
 	// * [business_unit][google.cloud.apihub.v1.Api.business_unit]
 	// * [maturity_level][google.cloud.apihub.v1.Api.maturity_level]
+	// * [api_style][google.cloud.apihub.v1.Api.api_style]
 	// * [attributes][google.cloud.apihub.v1.Api.attributes]
 	//
 	// The
@@ -190,10 +195,38 @@ type ApiHubClient interface {
 	// Deleting a spec will also delete the associated operations from the
 	// version.
 	DeleteSpec(ctx context.Context, in *DeleteSpecRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Create an apiOperation in an API version.
+	// An apiOperation can be created only if the version has no apiOperations
+	// which were created by parsing a spec.
+	CreateApiOperation(ctx context.Context, in *CreateApiOperationRequest, opts ...grpc.CallOption) (*ApiOperation, error)
 	// Get details about a particular operation in API version.
 	GetApiOperation(ctx context.Context, in *GetApiOperationRequest, opts ...grpc.CallOption) (*ApiOperation, error)
 	// List operations in an API version.
 	ListApiOperations(ctx context.Context, in *ListApiOperationsRequest, opts ...grpc.CallOption) (*ListApiOperationsResponse, error)
+	// Update an operation in an API version. The following fields in the
+	// [ApiOperation resource][google.cloud.apihub.v1.ApiOperation] can be
+	// updated:
+	//
+	// * [details.description][ApiOperation.details.description]
+	// * [details.documentation][ApiOperation.details.documentation]
+	// * [details.http_operation.path][ApiOperation.details.http_operation.path.path]
+	// * [details.http_operation.method][ApiOperation.details.http_operation.method]
+	// * [details.deprecated][ApiOperation.details.deprecated]
+	// * [attributes][google.cloud.apihub.v1.ApiOperation.attributes]
+	//
+	// The
+	// [update_mask][google.cloud.apihub.v1.UpdateApiOperationRequest.update_mask]
+	// should be used to specify the fields being updated.
+	//
+	// An operation can be updated only if the operation was created via
+	// [CreateApiOperation][google.cloud.apihub.v1.ApiHub.CreateApiOperation] API.
+	// If the operation was created by parsing the spec, then it can be edited by
+	// updating the spec.
+	UpdateApiOperation(ctx context.Context, in *UpdateApiOperationRequest, opts ...grpc.CallOption) (*ApiOperation, error)
+	// Delete an operation in an API version and we can delete only the
+	// operations created via create API. If the operation was created by parsing
+	// the spec, then it can be deleted by editing or deleting the spec.
+	DeleteApiOperation(ctx context.Context, in *DeleteApiOperationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Get details about a definition in an API version.
 	GetDefinition(ctx context.Context, in *GetDefinitionRequest, opts ...grpc.CallOption) (*Definition, error)
 	// Create a deployment resource in the API hub.
@@ -217,7 +250,11 @@ type ApiHubClient interface {
 	// * [slo][google.cloud.apihub.v1.Deployment.slo]
 	// * [environment][google.cloud.apihub.v1.Deployment.environment]
 	// * [attributes][google.cloud.apihub.v1.Deployment.attributes]
-	//
+	// * [source_project] [google.cloud.apihub.v1.Deployment.source_project]
+	// * [source_environment]
+	// [google.cloud.apihub.v1.Deployment.source_environment]
+	// * [management_url][google.cloud.apihub.v1.Deployment.management_url]
+	// * [source_uri][google.cloud.apihub.v1.Deployment.source_uri]
 	// The
 	// [update_mask][google.cloud.apihub.v1.UpdateDeploymentRequest.update_mask]
 	// should be used to specify the fields being updated.
@@ -443,6 +480,15 @@ func (c *apiHubClient) DeleteSpec(ctx context.Context, in *DeleteSpecRequest, op
 	return out, nil
 }
 
+func (c *apiHubClient) CreateApiOperation(ctx context.Context, in *CreateApiOperationRequest, opts ...grpc.CallOption) (*ApiOperation, error) {
+	out := new(ApiOperation)
+	err := c.cc.Invoke(ctx, ApiHub_CreateApiOperation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiHubClient) GetApiOperation(ctx context.Context, in *GetApiOperationRequest, opts ...grpc.CallOption) (*ApiOperation, error) {
 	out := new(ApiOperation)
 	err := c.cc.Invoke(ctx, ApiHub_GetApiOperation_FullMethodName, in, out, opts...)
@@ -455,6 +501,24 @@ func (c *apiHubClient) GetApiOperation(ctx context.Context, in *GetApiOperationR
 func (c *apiHubClient) ListApiOperations(ctx context.Context, in *ListApiOperationsRequest, opts ...grpc.CallOption) (*ListApiOperationsResponse, error) {
 	out := new(ListApiOperationsResponse)
 	err := c.cc.Invoke(ctx, ApiHub_ListApiOperations_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubClient) UpdateApiOperation(ctx context.Context, in *UpdateApiOperationRequest, opts ...grpc.CallOption) (*ApiOperation, error) {
+	out := new(ApiOperation)
+	err := c.cc.Invoke(ctx, ApiHub_UpdateApiOperation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiHubClient) DeleteApiOperation(ctx context.Context, in *DeleteApiOperationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ApiHub_DeleteApiOperation_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -626,7 +690,7 @@ type ApiHubServer interface {
 	// List API resources in the API hub.
 	ListApis(context.Context, *ListApisRequest) (*ListApisResponse, error)
 	// Update an API resource in the API hub. The following fields in the
-	// [API][] can be updated:
+	// [API][google.cloud.apihub.v1.Api] can be updated:
 	//
 	// * [display_name][google.cloud.apihub.v1.Api.display_name]
 	// * [description][google.cloud.apihub.v1.Api.description]
@@ -636,6 +700,7 @@ type ApiHubServer interface {
 	// * [team][google.cloud.apihub.v1.Api.team]
 	// * [business_unit][google.cloud.apihub.v1.Api.business_unit]
 	// * [maturity_level][google.cloud.apihub.v1.Api.maturity_level]
+	// * [api_style][google.cloud.apihub.v1.Api.api_style]
 	// * [attributes][google.cloud.apihub.v1.Api.attributes]
 	//
 	// The
@@ -733,10 +798,38 @@ type ApiHubServer interface {
 	// Deleting a spec will also delete the associated operations from the
 	// version.
 	DeleteSpec(context.Context, *DeleteSpecRequest) (*emptypb.Empty, error)
+	// Create an apiOperation in an API version.
+	// An apiOperation can be created only if the version has no apiOperations
+	// which were created by parsing a spec.
+	CreateApiOperation(context.Context, *CreateApiOperationRequest) (*ApiOperation, error)
 	// Get details about a particular operation in API version.
 	GetApiOperation(context.Context, *GetApiOperationRequest) (*ApiOperation, error)
 	// List operations in an API version.
 	ListApiOperations(context.Context, *ListApiOperationsRequest) (*ListApiOperationsResponse, error)
+	// Update an operation in an API version. The following fields in the
+	// [ApiOperation resource][google.cloud.apihub.v1.ApiOperation] can be
+	// updated:
+	//
+	// * [details.description][ApiOperation.details.description]
+	// * [details.documentation][ApiOperation.details.documentation]
+	// * [details.http_operation.path][ApiOperation.details.http_operation.path.path]
+	// * [details.http_operation.method][ApiOperation.details.http_operation.method]
+	// * [details.deprecated][ApiOperation.details.deprecated]
+	// * [attributes][google.cloud.apihub.v1.ApiOperation.attributes]
+	//
+	// The
+	// [update_mask][google.cloud.apihub.v1.UpdateApiOperationRequest.update_mask]
+	// should be used to specify the fields being updated.
+	//
+	// An operation can be updated only if the operation was created via
+	// [CreateApiOperation][google.cloud.apihub.v1.ApiHub.CreateApiOperation] API.
+	// If the operation was created by parsing the spec, then it can be edited by
+	// updating the spec.
+	UpdateApiOperation(context.Context, *UpdateApiOperationRequest) (*ApiOperation, error)
+	// Delete an operation in an API version and we can delete only the
+	// operations created via create API. If the operation was created by parsing
+	// the spec, then it can be deleted by editing or deleting the spec.
+	DeleteApiOperation(context.Context, *DeleteApiOperationRequest) (*emptypb.Empty, error)
 	// Get details about a definition in an API version.
 	GetDefinition(context.Context, *GetDefinitionRequest) (*Definition, error)
 	// Create a deployment resource in the API hub.
@@ -760,7 +853,11 @@ type ApiHubServer interface {
 	// * [slo][google.cloud.apihub.v1.Deployment.slo]
 	// * [environment][google.cloud.apihub.v1.Deployment.environment]
 	// * [attributes][google.cloud.apihub.v1.Deployment.attributes]
-	//
+	// * [source_project] [google.cloud.apihub.v1.Deployment.source_project]
+	// * [source_environment]
+	// [google.cloud.apihub.v1.Deployment.source_environment]
+	// * [management_url][google.cloud.apihub.v1.Deployment.management_url]
+	// * [source_uri][google.cloud.apihub.v1.Deployment.source_uri]
 	// The
 	// [update_mask][google.cloud.apihub.v1.UpdateDeploymentRequest.update_mask]
 	// should be used to specify the fields being updated.
@@ -886,11 +983,20 @@ func (UnimplementedApiHubServer) UpdateSpec(context.Context, *UpdateSpecRequest)
 func (UnimplementedApiHubServer) DeleteSpec(context.Context, *DeleteSpecRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSpec not implemented")
 }
+func (UnimplementedApiHubServer) CreateApiOperation(context.Context, *CreateApiOperationRequest) (*ApiOperation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateApiOperation not implemented")
+}
 func (UnimplementedApiHubServer) GetApiOperation(context.Context, *GetApiOperationRequest) (*ApiOperation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApiOperation not implemented")
 }
 func (UnimplementedApiHubServer) ListApiOperations(context.Context, *ListApiOperationsRequest) (*ListApiOperationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListApiOperations not implemented")
+}
+func (UnimplementedApiHubServer) UpdateApiOperation(context.Context, *UpdateApiOperationRequest) (*ApiOperation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateApiOperation not implemented")
+}
+func (UnimplementedApiHubServer) DeleteApiOperation(context.Context, *DeleteApiOperationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteApiOperation not implemented")
 }
 func (UnimplementedApiHubServer) GetDefinition(context.Context, *GetDefinitionRequest) (*Definition, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDefinition not implemented")
@@ -1243,6 +1349,24 @@ func _ApiHub_DeleteSpec_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiHub_CreateApiOperation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateApiOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubServer).CreateApiOperation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHub_CreateApiOperation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubServer).CreateApiOperation(ctx, req.(*CreateApiOperationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiHub_GetApiOperation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetApiOperationRequest)
 	if err := dec(in); err != nil {
@@ -1275,6 +1399,42 @@ func _ApiHub_ListApiOperations_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiHubServer).ListApiOperations(ctx, req.(*ListApiOperationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHub_UpdateApiOperation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateApiOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubServer).UpdateApiOperation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHub_UpdateApiOperation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubServer).UpdateApiOperation(ctx, req.(*UpdateApiOperationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiHub_DeleteApiOperation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteApiOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiHubServer).DeleteApiOperation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiHub_DeleteApiOperation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiHubServer).DeleteApiOperation(ctx, req.(*DeleteApiOperationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1657,12 +1817,24 @@ var ApiHub_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiHub_DeleteSpec_Handler,
 		},
 		{
+			MethodName: "CreateApiOperation",
+			Handler:    _ApiHub_CreateApiOperation_Handler,
+		},
+		{
 			MethodName: "GetApiOperation",
 			Handler:    _ApiHub_GetApiOperation_Handler,
 		},
 		{
 			MethodName: "ListApiOperations",
 			Handler:    _ApiHub_ListApiOperations_Handler,
+		},
+		{
+			MethodName: "UpdateApiOperation",
+			Handler:    _ApiHub_UpdateApiOperation_Handler,
+		},
+		{
+			MethodName: "DeleteApiOperation",
+			Handler:    _ApiHub_DeleteApiOperation_Handler,
 		},
 		{
 			MethodName: "GetDefinition",

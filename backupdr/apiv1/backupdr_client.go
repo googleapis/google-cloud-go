@@ -48,43 +48,50 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListManagementServers       []gax.CallOption
-	GetManagementServer         []gax.CallOption
-	CreateManagementServer      []gax.CallOption
-	DeleteManagementServer      []gax.CallOption
-	CreateBackupVault           []gax.CallOption
-	ListBackupVaults            []gax.CallOption
-	FetchUsableBackupVaults     []gax.CallOption
-	GetBackupVault              []gax.CallOption
-	UpdateBackupVault           []gax.CallOption
-	DeleteBackupVault           []gax.CallOption
-	ListDataSources             []gax.CallOption
-	GetDataSource               []gax.CallOption
-	UpdateDataSource            []gax.CallOption
-	ListBackups                 []gax.CallOption
-	GetBackup                   []gax.CallOption
-	UpdateBackup                []gax.CallOption
-	DeleteBackup                []gax.CallOption
-	RestoreBackup               []gax.CallOption
-	CreateBackupPlan            []gax.CallOption
-	GetBackupPlan               []gax.CallOption
-	ListBackupPlans             []gax.CallOption
-	DeleteBackupPlan            []gax.CallOption
-	CreateBackupPlanAssociation []gax.CallOption
-	GetBackupPlanAssociation    []gax.CallOption
-	ListBackupPlanAssociations  []gax.CallOption
-	DeleteBackupPlanAssociation []gax.CallOption
-	TriggerBackup               []gax.CallOption
-	InitializeService           []gax.CallOption
-	GetLocation                 []gax.CallOption
-	ListLocations               []gax.CallOption
-	GetIamPolicy                []gax.CallOption
-	SetIamPolicy                []gax.CallOption
-	TestIamPermissions          []gax.CallOption
-	CancelOperation             []gax.CallOption
-	DeleteOperation             []gax.CallOption
-	GetOperation                []gax.CallOption
-	ListOperations              []gax.CallOption
+	ListManagementServers                      []gax.CallOption
+	GetManagementServer                        []gax.CallOption
+	CreateManagementServer                     []gax.CallOption
+	DeleteManagementServer                     []gax.CallOption
+	CreateBackupVault                          []gax.CallOption
+	ListBackupVaults                           []gax.CallOption
+	FetchUsableBackupVaults                    []gax.CallOption
+	GetBackupVault                             []gax.CallOption
+	UpdateBackupVault                          []gax.CallOption
+	DeleteBackupVault                          []gax.CallOption
+	ListDataSources                            []gax.CallOption
+	GetDataSource                              []gax.CallOption
+	UpdateDataSource                           []gax.CallOption
+	ListBackups                                []gax.CallOption
+	GetBackup                                  []gax.CallOption
+	UpdateBackup                               []gax.CallOption
+	DeleteBackup                               []gax.CallOption
+	RestoreBackup                              []gax.CallOption
+	CreateBackupPlan                           []gax.CallOption
+	UpdateBackupPlan                           []gax.CallOption
+	GetBackupPlan                              []gax.CallOption
+	ListBackupPlans                            []gax.CallOption
+	DeleteBackupPlan                           []gax.CallOption
+	GetBackupPlanRevision                      []gax.CallOption
+	ListBackupPlanRevisions                    []gax.CallOption
+	CreateBackupPlanAssociation                []gax.CallOption
+	UpdateBackupPlanAssociation                []gax.CallOption
+	GetBackupPlanAssociation                   []gax.CallOption
+	ListBackupPlanAssociations                 []gax.CallOption
+	FetchBackupPlanAssociationsForResourceType []gax.CallOption
+	DeleteBackupPlanAssociation                []gax.CallOption
+	TriggerBackup                              []gax.CallOption
+	GetDataSourceReference                     []gax.CallOption
+	FetchDataSourceReferencesForResourceType   []gax.CallOption
+	InitializeService                          []gax.CallOption
+	GetLocation                                []gax.CallOption
+	ListLocations                              []gax.CallOption
+	GetIamPolicy                               []gax.CallOption
+	SetIamPolicy                               []gax.CallOption
+	TestIamPermissions                         []gax.CallOption
+	CancelOperation                            []gax.CallOption
+	DeleteOperation                            []gax.CallOption
+	GetOperation                               []gax.CallOption
+	ListOperations                             []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -255,15 +262,22 @@ func defaultCallOptions() *CallOptions {
 		RestoreBackup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateBackupPlan:            []gax.CallOption{},
-		GetBackupPlan:               []gax.CallOption{},
-		ListBackupPlans:             []gax.CallOption{},
-		DeleteBackupPlan:            []gax.CallOption{},
-		CreateBackupPlanAssociation: []gax.CallOption{},
-		GetBackupPlanAssociation:    []gax.CallOption{},
-		ListBackupPlanAssociations:  []gax.CallOption{},
-		DeleteBackupPlanAssociation: []gax.CallOption{},
-		TriggerBackup:               []gax.CallOption{},
+		CreateBackupPlan:                           []gax.CallOption{},
+		UpdateBackupPlan:                           []gax.CallOption{},
+		GetBackupPlan:                              []gax.CallOption{},
+		ListBackupPlans:                            []gax.CallOption{},
+		DeleteBackupPlan:                           []gax.CallOption{},
+		GetBackupPlanRevision:                      []gax.CallOption{},
+		ListBackupPlanRevisions:                    []gax.CallOption{},
+		CreateBackupPlanAssociation:                []gax.CallOption{},
+		UpdateBackupPlanAssociation:                []gax.CallOption{},
+		GetBackupPlanAssociation:                   []gax.CallOption{},
+		ListBackupPlanAssociations:                 []gax.CallOption{},
+		FetchBackupPlanAssociationsForResourceType: []gax.CallOption{},
+		DeleteBackupPlanAssociation:                []gax.CallOption{},
+		TriggerBackup:                              []gax.CallOption{},
+		GetDataSourceReference:                     []gax.CallOption{},
+		FetchDataSourceReferencesForResourceType:   []gax.CallOption{},
 		InitializeService: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -430,15 +444,22 @@ func defaultRESTCallOptions() *CallOptions {
 		RestoreBackup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateBackupPlan:            []gax.CallOption{},
-		GetBackupPlan:               []gax.CallOption{},
-		ListBackupPlans:             []gax.CallOption{},
-		DeleteBackupPlan:            []gax.CallOption{},
-		CreateBackupPlanAssociation: []gax.CallOption{},
-		GetBackupPlanAssociation:    []gax.CallOption{},
-		ListBackupPlanAssociations:  []gax.CallOption{},
-		DeleteBackupPlanAssociation: []gax.CallOption{},
-		TriggerBackup:               []gax.CallOption{},
+		CreateBackupPlan:                           []gax.CallOption{},
+		UpdateBackupPlan:                           []gax.CallOption{},
+		GetBackupPlan:                              []gax.CallOption{},
+		ListBackupPlans:                            []gax.CallOption{},
+		DeleteBackupPlan:                           []gax.CallOption{},
+		GetBackupPlanRevision:                      []gax.CallOption{},
+		ListBackupPlanRevisions:                    []gax.CallOption{},
+		CreateBackupPlanAssociation:                []gax.CallOption{},
+		UpdateBackupPlanAssociation:                []gax.CallOption{},
+		GetBackupPlanAssociation:                   []gax.CallOption{},
+		ListBackupPlanAssociations:                 []gax.CallOption{},
+		FetchBackupPlanAssociationsForResourceType: []gax.CallOption{},
+		DeleteBackupPlanAssociation:                []gax.CallOption{},
+		TriggerBackup:                              []gax.CallOption{},
+		GetDataSourceReference:                     []gax.CallOption{},
+		FetchDataSourceReferencesForResourceType:   []gax.CallOption{},
 		InitializeService: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -496,18 +517,27 @@ type internalClient interface {
 	RestoreBackupOperation(name string) *RestoreBackupOperation
 	CreateBackupPlan(context.Context, *backupdrpb.CreateBackupPlanRequest, ...gax.CallOption) (*CreateBackupPlanOperation, error)
 	CreateBackupPlanOperation(name string) *CreateBackupPlanOperation
+	UpdateBackupPlan(context.Context, *backupdrpb.UpdateBackupPlanRequest, ...gax.CallOption) (*UpdateBackupPlanOperation, error)
+	UpdateBackupPlanOperation(name string) *UpdateBackupPlanOperation
 	GetBackupPlan(context.Context, *backupdrpb.GetBackupPlanRequest, ...gax.CallOption) (*backupdrpb.BackupPlan, error)
 	ListBackupPlans(context.Context, *backupdrpb.ListBackupPlansRequest, ...gax.CallOption) *BackupPlanIterator
 	DeleteBackupPlan(context.Context, *backupdrpb.DeleteBackupPlanRequest, ...gax.CallOption) (*DeleteBackupPlanOperation, error)
 	DeleteBackupPlanOperation(name string) *DeleteBackupPlanOperation
+	GetBackupPlanRevision(context.Context, *backupdrpb.GetBackupPlanRevisionRequest, ...gax.CallOption) (*backupdrpb.BackupPlanRevision, error)
+	ListBackupPlanRevisions(context.Context, *backupdrpb.ListBackupPlanRevisionsRequest, ...gax.CallOption) *BackupPlanRevisionIterator
 	CreateBackupPlanAssociation(context.Context, *backupdrpb.CreateBackupPlanAssociationRequest, ...gax.CallOption) (*CreateBackupPlanAssociationOperation, error)
 	CreateBackupPlanAssociationOperation(name string) *CreateBackupPlanAssociationOperation
+	UpdateBackupPlanAssociation(context.Context, *backupdrpb.UpdateBackupPlanAssociationRequest, ...gax.CallOption) (*UpdateBackupPlanAssociationOperation, error)
+	UpdateBackupPlanAssociationOperation(name string) *UpdateBackupPlanAssociationOperation
 	GetBackupPlanAssociation(context.Context, *backupdrpb.GetBackupPlanAssociationRequest, ...gax.CallOption) (*backupdrpb.BackupPlanAssociation, error)
 	ListBackupPlanAssociations(context.Context, *backupdrpb.ListBackupPlanAssociationsRequest, ...gax.CallOption) *BackupPlanAssociationIterator
+	FetchBackupPlanAssociationsForResourceType(context.Context, *backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest, ...gax.CallOption) *BackupPlanAssociationIterator
 	DeleteBackupPlanAssociation(context.Context, *backupdrpb.DeleteBackupPlanAssociationRequest, ...gax.CallOption) (*DeleteBackupPlanAssociationOperation, error)
 	DeleteBackupPlanAssociationOperation(name string) *DeleteBackupPlanAssociationOperation
 	TriggerBackup(context.Context, *backupdrpb.TriggerBackupRequest, ...gax.CallOption) (*TriggerBackupOperation, error)
 	TriggerBackupOperation(name string) *TriggerBackupOperation
+	GetDataSourceReference(context.Context, *backupdrpb.GetDataSourceReferenceRequest, ...gax.CallOption) (*backupdrpb.DataSourceReference, error)
+	FetchDataSourceReferencesForResourceType(context.Context, *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, ...gax.CallOption) *DataSourceReferenceIterator
 	InitializeService(context.Context, *backupdrpb.InitializeServiceRequest, ...gax.CallOption) (*InitializeServiceOperation, error)
 	InitializeServiceOperation(name string) *InitializeServiceOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -718,6 +748,17 @@ func (c *Client) CreateBackupPlanOperation(name string) *CreateBackupPlanOperati
 	return c.internalClient.CreateBackupPlanOperation(name)
 }
 
+// UpdateBackupPlan update a BackupPlan.
+func (c *Client) UpdateBackupPlan(ctx context.Context, req *backupdrpb.UpdateBackupPlanRequest, opts ...gax.CallOption) (*UpdateBackupPlanOperation, error) {
+	return c.internalClient.UpdateBackupPlan(ctx, req, opts...)
+}
+
+// UpdateBackupPlanOperation returns a new UpdateBackupPlanOperation from a given name.
+// The name must be that of a previously created UpdateBackupPlanOperation, possibly from a different process.
+func (c *Client) UpdateBackupPlanOperation(name string) *UpdateBackupPlanOperation {
+	return c.internalClient.UpdateBackupPlanOperation(name)
+}
+
 // GetBackupPlan gets details of a single BackupPlan.
 func (c *Client) GetBackupPlan(ctx context.Context, req *backupdrpb.GetBackupPlanRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlan, error) {
 	return c.internalClient.GetBackupPlan(ctx, req, opts...)
@@ -739,6 +780,16 @@ func (c *Client) DeleteBackupPlanOperation(name string) *DeleteBackupPlanOperati
 	return c.internalClient.DeleteBackupPlanOperation(name)
 }
 
+// GetBackupPlanRevision gets details of a single BackupPlanRevision.
+func (c *Client) GetBackupPlanRevision(ctx context.Context, req *backupdrpb.GetBackupPlanRevisionRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlanRevision, error) {
+	return c.internalClient.GetBackupPlanRevision(ctx, req, opts...)
+}
+
+// ListBackupPlanRevisions lists BackupPlanRevisions in a given project and location.
+func (c *Client) ListBackupPlanRevisions(ctx context.Context, req *backupdrpb.ListBackupPlanRevisionsRequest, opts ...gax.CallOption) *BackupPlanRevisionIterator {
+	return c.internalClient.ListBackupPlanRevisions(ctx, req, opts...)
+}
+
 // CreateBackupPlanAssociation create a BackupPlanAssociation
 func (c *Client) CreateBackupPlanAssociation(ctx context.Context, req *backupdrpb.CreateBackupPlanAssociationRequest, opts ...gax.CallOption) (*CreateBackupPlanAssociationOperation, error) {
 	return c.internalClient.CreateBackupPlanAssociation(ctx, req, opts...)
@@ -750,6 +801,17 @@ func (c *Client) CreateBackupPlanAssociationOperation(name string) *CreateBackup
 	return c.internalClient.CreateBackupPlanAssociationOperation(name)
 }
 
+// UpdateBackupPlanAssociation update a BackupPlanAssociation.
+func (c *Client) UpdateBackupPlanAssociation(ctx context.Context, req *backupdrpb.UpdateBackupPlanAssociationRequest, opts ...gax.CallOption) (*UpdateBackupPlanAssociationOperation, error) {
+	return c.internalClient.UpdateBackupPlanAssociation(ctx, req, opts...)
+}
+
+// UpdateBackupPlanAssociationOperation returns a new UpdateBackupPlanAssociationOperation from a given name.
+// The name must be that of a previously created UpdateBackupPlanAssociationOperation, possibly from a different process.
+func (c *Client) UpdateBackupPlanAssociationOperation(name string) *UpdateBackupPlanAssociationOperation {
+	return c.internalClient.UpdateBackupPlanAssociationOperation(name)
+}
+
 // GetBackupPlanAssociation gets details of a single BackupPlanAssociation.
 func (c *Client) GetBackupPlanAssociation(ctx context.Context, req *backupdrpb.GetBackupPlanAssociationRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlanAssociation, error) {
 	return c.internalClient.GetBackupPlanAssociation(ctx, req, opts...)
@@ -758,6 +820,11 @@ func (c *Client) GetBackupPlanAssociation(ctx context.Context, req *backupdrpb.G
 // ListBackupPlanAssociations lists BackupPlanAssociations in a given project and location.
 func (c *Client) ListBackupPlanAssociations(ctx context.Context, req *backupdrpb.ListBackupPlanAssociationsRequest, opts ...gax.CallOption) *BackupPlanAssociationIterator {
 	return c.internalClient.ListBackupPlanAssociations(ctx, req, opts...)
+}
+
+// FetchBackupPlanAssociationsForResourceType list BackupPlanAssociations for a given resource type.
+func (c *Client) FetchBackupPlanAssociationsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest, opts ...gax.CallOption) *BackupPlanAssociationIterator {
+	return c.internalClient.FetchBackupPlanAssociationsForResourceType(ctx, req, opts...)
 }
 
 // DeleteBackupPlanAssociation deletes a single BackupPlanAssociation.
@@ -780,6 +847,16 @@ func (c *Client) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerBacku
 // The name must be that of a previously created TriggerBackupOperation, possibly from a different process.
 func (c *Client) TriggerBackupOperation(name string) *TriggerBackupOperation {
 	return c.internalClient.TriggerBackupOperation(name)
+}
+
+// GetDataSourceReference gets details of a single DataSourceReference.
+func (c *Client) GetDataSourceReference(ctx context.Context, req *backupdrpb.GetDataSourceReferenceRequest, opts ...gax.CallOption) (*backupdrpb.DataSourceReference, error) {
+	return c.internalClient.GetDataSourceReference(ctx, req, opts...)
+}
+
+// FetchDataSourceReferencesForResourceType fetch DataSourceReferences for a given project, location and resource type.
+func (c *Client) FetchDataSourceReferencesForResourceType(ctx context.Context, req *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
+	return c.internalClient.FetchDataSourceReferencesForResourceType(ctx, req, opts...)
 }
 
 // InitializeService initializes the service related config for a project.
@@ -1544,6 +1621,26 @@ func (c *gRPCClient) CreateBackupPlan(ctx context.Context, req *backupdrpb.Creat
 	}, nil
 }
 
+func (c *gRPCClient) UpdateBackupPlan(ctx context.Context, req *backupdrpb.UpdateBackupPlanRequest, opts ...gax.CallOption) (*UpdateBackupPlanOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_plan.name", url.QueryEscape(req.GetBackupPlan().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupPlan[0:len((*c.CallOptions).UpdateBackupPlan):len((*c.CallOptions).UpdateBackupPlan)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateBackupPlan, req, settings.GRPC, c.logger, "UpdateBackupPlan")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupPlanOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetBackupPlan(ctx context.Context, req *backupdrpb.GetBackupPlanRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlan, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1628,6 +1725,70 @@ func (c *gRPCClient) DeleteBackupPlan(ctx context.Context, req *backupdrpb.Delet
 	}, nil
 }
 
+func (c *gRPCClient) GetBackupPlanRevision(ctx context.Context, req *backupdrpb.GetBackupPlanRevisionRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlanRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupPlanRevision[0:len((*c.CallOptions).GetBackupPlanRevision):len((*c.CallOptions).GetBackupPlanRevision)], opts...)
+	var resp *backupdrpb.BackupPlanRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetBackupPlanRevision, req, settings.GRPC, c.logger, "GetBackupPlanRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBackupPlanRevisions(ctx context.Context, req *backupdrpb.ListBackupPlanRevisionsRequest, opts ...gax.CallOption) *BackupPlanRevisionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackupPlanRevisions[0:len((*c.CallOptions).ListBackupPlanRevisions):len((*c.CallOptions).ListBackupPlanRevisions)], opts...)
+	it := &BackupPlanRevisionIterator{}
+	req = proto.Clone(req).(*backupdrpb.ListBackupPlanRevisionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanRevision, string, error) {
+		resp := &backupdrpb.ListBackupPlanRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListBackupPlanRevisions, req, settings.GRPC, c.logger, "ListBackupPlanRevisions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupPlanRevisions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) CreateBackupPlanAssociation(ctx context.Context, req *backupdrpb.CreateBackupPlanAssociationRequest, opts ...gax.CallOption) (*CreateBackupPlanAssociationOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1644,6 +1805,26 @@ func (c *gRPCClient) CreateBackupPlanAssociation(ctx context.Context, req *backu
 		return nil, err
 	}
 	return &CreateBackupPlanAssociationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateBackupPlanAssociation(ctx context.Context, req *backupdrpb.UpdateBackupPlanAssociationRequest, opts ...gax.CallOption) (*UpdateBackupPlanAssociationOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_plan_association.name", url.QueryEscape(req.GetBackupPlanAssociation().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupPlanAssociation[0:len((*c.CallOptions).UpdateBackupPlanAssociation):len((*c.CallOptions).UpdateBackupPlanAssociation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateBackupPlanAssociation, req, settings.GRPC, c.logger, "UpdateBackupPlanAssociation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupPlanAssociationOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1712,6 +1893,52 @@ func (c *gRPCClient) ListBackupPlanAssociations(ctx context.Context, req *backup
 	return it
 }
 
+func (c *gRPCClient) FetchBackupPlanAssociationsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest, opts ...gax.CallOption) *BackupPlanAssociationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchBackupPlanAssociationsForResourceType[0:len((*c.CallOptions).FetchBackupPlanAssociationsForResourceType):len((*c.CallOptions).FetchBackupPlanAssociationsForResourceType)], opts...)
+	it := &BackupPlanAssociationIterator{}
+	req = proto.Clone(req).(*backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanAssociation, string, error) {
+		resp := &backupdrpb.FetchBackupPlanAssociationsForResourceTypeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchBackupPlanAssociationsForResourceType, req, settings.GRPC, c.logger, "FetchBackupPlanAssociationsForResourceType")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupPlanAssociations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) DeleteBackupPlanAssociation(ctx context.Context, req *backupdrpb.DeleteBackupPlanAssociationRequest, opts ...gax.CallOption) (*DeleteBackupPlanAssociationOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1750,6 +1977,70 @@ func (c *gRPCClient) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerB
 	return &TriggerBackupOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) GetDataSourceReference(ctx context.Context, req *backupdrpb.GetDataSourceReferenceRequest, opts ...gax.CallOption) (*backupdrpb.DataSourceReference, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDataSourceReference[0:len((*c.CallOptions).GetDataSourceReference):len((*c.CallOptions).GetDataSourceReference)], opts...)
+	var resp *backupdrpb.DataSourceReference
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetDataSourceReference, req, settings.GRPC, c.logger, "GetDataSourceReference")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FetchDataSourceReferencesForResourceType(ctx context.Context, req *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchDataSourceReferencesForResourceType[0:len((*c.CallOptions).FetchDataSourceReferencesForResourceType):len((*c.CallOptions).FetchDataSourceReferencesForResourceType)], opts...)
+	it := &DataSourceReferenceIterator{}
+	req = proto.Clone(req).(*backupdrpb.FetchDataSourceReferencesForResourceTypeRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
+		resp := &backupdrpb.FetchDataSourceReferencesForResourceTypeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchDataSourceReferencesForResourceType, req, settings.GRPC, c.logger, "FetchDataSourceReferencesForResourceType")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDataSourceReferences(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) InitializeService(ctx context.Context, req *backupdrpb.InitializeServiceRequest, opts ...gax.CallOption) (*InitializeServiceOperation, error) {
@@ -2549,6 +2840,9 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *backupdrpb.Upda
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
+	if req.GetForceUpdateAccessRestriction() {
+		params.Add("forceUpdateAccessRestriction", fmt.Sprintf("%v", req.GetForceUpdateAccessRestriction()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3272,6 +3566,76 @@ func (c *restClient) CreateBackupPlan(ctx context.Context, req *backupdrpb.Creat
 	}, nil
 }
 
+// UpdateBackupPlan update a BackupPlan.
+func (c *restClient) UpdateBackupPlan(ctx context.Context, req *backupdrpb.UpdateBackupPlanRequest, opts ...gax.CallOption) (*UpdateBackupPlanOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupPlan()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupPlan().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_plan.name", url.QueryEscape(req.GetBackupPlan().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupPlan")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBackupPlanOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetBackupPlan gets details of a single BackupPlan.
 func (c *restClient) GetBackupPlan(ctx context.Context, req *backupdrpb.GetBackupPlanRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlan, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -3462,6 +3826,134 @@ func (c *restClient) DeleteBackupPlan(ctx context.Context, req *backupdrpb.Delet
 	}, nil
 }
 
+// GetBackupPlanRevision gets details of a single BackupPlanRevision.
+func (c *restClient) GetBackupPlanRevision(ctx context.Context, req *backupdrpb.GetBackupPlanRevisionRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlanRevision, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupPlanRevision[0:len((*c.CallOptions).GetBackupPlanRevision):len((*c.CallOptions).GetBackupPlanRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &backupdrpb.BackupPlanRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupPlanRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackupPlanRevisions lists BackupPlanRevisions in a given project and location.
+func (c *restClient) ListBackupPlanRevisions(ctx context.Context, req *backupdrpb.ListBackupPlanRevisionsRequest, opts ...gax.CallOption) *BackupPlanRevisionIterator {
+	it := &BackupPlanRevisionIterator{}
+	req = proto.Clone(req).(*backupdrpb.ListBackupPlanRevisionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanRevision, string, error) {
+		resp := &backupdrpb.ListBackupPlanRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupPlanRevisions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupPlanRevisions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateBackupPlanAssociation create a BackupPlanAssociation
 func (c *restClient) CreateBackupPlanAssociation(ctx context.Context, req *backupdrpb.CreateBackupPlanAssociationRequest, opts ...gax.CallOption) (*CreateBackupPlanAssociationOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -3521,6 +4013,76 @@ func (c *restClient) CreateBackupPlanAssociation(ctx context.Context, req *backu
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &CreateBackupPlanAssociationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateBackupPlanAssociation update a BackupPlanAssociation.
+func (c *restClient) UpdateBackupPlanAssociation(ctx context.Context, req *backupdrpb.UpdateBackupPlanAssociationRequest, opts ...gax.CallOption) (*UpdateBackupPlanAssociationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupPlanAssociation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupPlanAssociation().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_plan_association.name", url.QueryEscape(req.GetBackupPlanAssociation().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupPlanAssociation")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBackupPlanAssociationOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3625,6 +4187,91 @@ func (c *restClient) ListBackupPlanAssociations(ctx context.Context, req *backup
 			httpReq.Header = headers
 
 			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupPlanAssociations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupPlanAssociations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// FetchBackupPlanAssociationsForResourceType list BackupPlanAssociations for a given resource type.
+func (c *restClient) FetchBackupPlanAssociationsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest, opts ...gax.CallOption) *BackupPlanAssociationIterator {
+	it := &BackupPlanAssociationIterator{}
+	req = proto.Clone(req).(*backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanAssociation, string, error) {
+		resp := &backupdrpb.FetchBackupPlanAssociationsForResourceTypeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupPlanAssociations:fetchForResourceType", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("resourceType", fmt.Sprintf("%v", req.GetResourceType()))
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchBackupPlanAssociationsForResourceType")
 			if err != nil {
 				return err
 			}
@@ -3770,6 +4417,141 @@ func (c *restClient) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerB
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// GetDataSourceReference gets details of a single DataSourceReference.
+func (c *restClient) GetDataSourceReference(ctx context.Context, req *backupdrpb.GetDataSourceReferenceRequest, opts ...gax.CallOption) (*backupdrpb.DataSourceReference, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDataSourceReference[0:len((*c.CallOptions).GetDataSourceReference):len((*c.CallOptions).GetDataSourceReference)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &backupdrpb.DataSourceReference{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataSourceReference")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchDataSourceReferencesForResourceType fetch DataSourceReferences for a given project, location and resource type.
+func (c *restClient) FetchDataSourceReferencesForResourceType(ctx context.Context, req *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
+	it := &DataSourceReferenceIterator{}
+	req = proto.Clone(req).(*backupdrpb.FetchDataSourceReferencesForResourceTypeRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
+		resp := &backupdrpb.FetchDataSourceReferencesForResourceTypeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dataSourceReferences:fetchForResourceType", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("resourceType", fmt.Sprintf("%v", req.GetResourceType()))
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchDataSourceReferencesForResourceType")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDataSourceReferences(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // InitializeService initializes the service related config for a project.
@@ -4574,6 +5356,42 @@ func (c *gRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 func (c *restClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateBackupPlanOperation returns a new UpdateBackupPlanOperation from a given name.
+// The name must be that of a previously created UpdateBackupPlanOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupPlanOperation(name string) *UpdateBackupPlanOperation {
+	return &UpdateBackupPlanOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateBackupPlanOperation returns a new UpdateBackupPlanOperation from a given name.
+// The name must be that of a previously created UpdateBackupPlanOperation, possibly from a different process.
+func (c *restClient) UpdateBackupPlanOperation(name string) *UpdateBackupPlanOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupPlanOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateBackupPlanAssociationOperation returns a new UpdateBackupPlanAssociationOperation from a given name.
+// The name must be that of a previously created UpdateBackupPlanAssociationOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupPlanAssociationOperation(name string) *UpdateBackupPlanAssociationOperation {
+	return &UpdateBackupPlanAssociationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateBackupPlanAssociationOperation returns a new UpdateBackupPlanAssociationOperation from a given name.
+// The name must be that of a previously created UpdateBackupPlanAssociationOperation, possibly from a different process.
+func (c *restClient) UpdateBackupPlanAssociationOperation(name string) *UpdateBackupPlanAssociationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupPlanAssociationOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

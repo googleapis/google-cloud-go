@@ -1,5 +1,31 @@
 # Changes
 
+## [1.38.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.38.0...securitycenter/v1.38.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **securitycenter:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.37.0...securitycenter/v1.38.0) (2025-09-11)
+
+
+### Features
+
+* **securitycenter:** Add GCE to DeploymentPlatform enum ([d73f912](https://github.com/googleapis/google-cloud-go/commit/d73f9123be77bb3278f48d510cd0fb22feb605bc))
+
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.36.2...securitycenter/v1.37.0) (2025-07-09)
+
+
+### Features
+
+* **securitycenter:** Add AffectedResources proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add AiModel proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add ChokePoint proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add IpRules proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add Job proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+* **securitycenter:** Add Network proto ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
+
 ## [1.36.2](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.36.1...securitycenter/v1.36.2) (2025-04-15)
 
 

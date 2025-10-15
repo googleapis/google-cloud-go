@@ -239,7 +239,8 @@ type internalContentClient interface {
 // ContentClient is a client for interacting with Cloud Dataplex API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// ContentService manages Notebook and SQL Scripts for Dataplex.
+// ContentService manages Notebook and SQL Scripts for Dataplex Universal
+// Catalog.
 type ContentClient struct {
 	// The internal transport-dependent client.
 	internalClient internalContentClient
@@ -385,7 +386,8 @@ type contentGRPCClient struct {
 // NewContentClient creates a new content service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// ContentService manages Notebook and SQL Scripts for Dataplex.
+// ContentService manages Notebook and SQL Scripts for Dataplex Universal
+// Catalog.
 func NewContentClient(ctx context.Context, opts ...option.ClientOption) (*ContentClient, error) {
 	clientOpts := defaultContentGRPCClientOptions()
 	if newContentClientHook != nil {
@@ -461,7 +463,8 @@ type contentRESTClient struct {
 
 // NewContentRESTClient creates a new content service rest client.
 //
-// ContentService manages Notebook and SQL Scripts for Dataplex.
+// ContentService manages Notebook and SQL Scripts for Dataplex Universal
+// Catalog.
 func NewContentRESTClient(ctx context.Context, opts ...option.ClientOption) (*ContentClient, error) {
 	clientOpts := append(defaultContentRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

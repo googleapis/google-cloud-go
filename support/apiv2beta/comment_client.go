@@ -45,6 +45,7 @@ var newCommentClientHook clientHook
 type CommentCallOptions struct {
 	ListComments  []gax.CallOption
 	CreateComment []gax.CallOption
+	GetComment    []gax.CallOption
 }
 
 func defaultCommentGRPCClientOptions() []option.ClientOption {
@@ -79,6 +80,7 @@ func defaultCommentCallOptions() *CommentCallOptions {
 		CreateComment: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GetComment: []gax.CallOption{},
 	}
 }
 
@@ -98,6 +100,7 @@ func defaultCommentRESTCallOptions() *CommentCallOptions {
 		CreateComment: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GetComment: []gax.CallOption{},
 	}
 }
 
@@ -108,6 +111,7 @@ type internalCommentClient interface {
 	Connection() *grpc.ClientConn
 	ListComments(context.Context, *supportpb.ListCommentsRequest, ...gax.CallOption) *CommentIterator
 	CreateComment(context.Context, *supportpb.CreateCommentRequest, ...gax.CallOption) (*supportpb.Comment, error)
+	GetComment(context.Context, *supportpb.GetCommentRequest, ...gax.CallOption) (*supportpb.Comment, error)
 }
 
 // CommentClient is a client for interacting with Google Cloud Support API.
@@ -155,6 +159,11 @@ func (c *CommentClient) ListComments(ctx context.Context, req *supportpb.ListCom
 // The comment must have the following fields set: body.
 func (c *CommentClient) CreateComment(ctx context.Context, req *supportpb.CreateCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	return c.internalClient.CreateComment(ctx, req, opts...)
+}
+
+// GetComment retrieve a comment.
+func (c *CommentClient) GetComment(ctx context.Context, req *supportpb.GetCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
+	return c.internalClient.GetComment(ctx, req, opts...)
 }
 
 // commentGRPCClient is a client for interacting with Google Cloud Support API over gRPC transport.
@@ -374,6 +383,24 @@ func (c *commentGRPCClient) CreateComment(ctx context.Context, req *supportpb.Cr
 	return resp, nil
 }
 
+func (c *commentGRPCClient) GetComment(ctx context.Context, req *supportpb.GetCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetComment[0:len((*c.CallOptions).GetComment):len((*c.CallOptions).GetComment)], opts...)
+	var resp *supportpb.Comment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.commentClient.GetComment, req, settings.GRPC, c.logger, "GetComment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // ListComments list all the comments associated with a case.
 func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	it := &CommentIterator{}
@@ -495,6 +522,56 @@ func (c *commentRESTClient) CreateComment(ctx context.Context, req *supportpb.Cr
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateComment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetComment retrieve a comment.
+func (c *commentRESTClient) GetComment(ctx context.Context, req *supportpb.GetCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetComment[0:len((*c.CallOptions).GetComment):len((*c.CallOptions).GetComment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &supportpb.Comment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetComment")
 		if err != nil {
 			return err
 		}

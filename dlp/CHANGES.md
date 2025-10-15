@@ -1,5 +1,32 @@
 # Changes
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.27.0) (2025-10-13)
+
+### Features
+
+* Cloud Storage discovery filters based on tag filters ([c79db96](https://github.com/googleapis/google-cloud-go/commit/c79db96ce252ecae47e7436ba1a9455c96ff2629))
+* inspect and deid templates in RedactImage ([c79db96](https://github.com/googleapis/google-cloud-go/commit/c79db96ce252ecae47e7436ba1a9455c96ff2629))
+* publish DlpJob findings to Dataplex Universal Catalog ([c79db96](https://github.com/googleapis/google-cloud-go/commit/c79db96ce252ecae47e7436ba1a9455c96ff2629))
+* store DlpJob findings in a Cloud Storage bucket ([c79db96](https://github.com/googleapis/google-cloud-go/commit/c79db96ce252ecae47e7436ba1a9455c96ff2629))
+
+### Documentation
+
+* clarify List*DataProfiles APIs supports filter by profile_last_generated ([c79db96](https://github.com/googleapis/google-cloud-go/commit/c79db96ce252ecae47e7436ba1a9455c96ff2629))
+* clarify ListProjectDataProfiles API supports filter by project_id ([c79db96](https://github.com/googleapis/google-cloud-go/commit/c79db96ce252ecae47e7436ba1a9455c96ff2629))
+* clarify filter syntax for List* APIs ([c79db96](https://github.com/googleapis/google-cloud-go/commit/c79db96ce252ecae47e7436ba1a9455c96ff2629))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.26.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.25.0) (2025-09-12)
+
+### Features
+
+* [dlp] add LocationSupport,Domain,DocumentFallbackLocation
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.23.0...dlp/v1.24.0) (2025-06-25)
 
 

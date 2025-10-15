@@ -132,6 +132,7 @@ var generateList = []string{
 	"google.golang.org/genproto/googleapis/firebase/fcm/connection/v1alpha1",
 	"google.golang.org/genproto/googleapis/assistant/embedded/v1alpha2",
 	"google.golang.org/genproto/googleapis/apps/card/v1",
+	"google.golang.org/genproto/googleapis/cloud/audit",
 }
 
 // Regen regenerates the genproto repository.

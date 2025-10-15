@@ -21,20 +21,17 @@
 package policysimulatorpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1448,7 +1445,7 @@ var file_google_cloud_policysimulator_v1_simulator_proto_rawDesc = []byte{
 	0x41, 0x2e, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74,
 	0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
-	0x42, 0xf2, 0x01, 0x0a, 0x23, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x42, 0xef, 0x01, 0x0a, 0x23, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x73, 0x69, 0x6d, 0x75,
 	0x6c, 0x61, 0x74, 0x6f, 0x72, 0x2e, 0x76, 0x31, 0x42, 0x0e, 0x53, 0x69, 0x6d, 0x75, 0x6c, 0x61,
 	0x74, 0x6f, 0x72, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4d, 0x63, 0x6c, 0x6f, 0x75,
@@ -1456,14 +1453,14 @@ var file_google_cloud_policysimulator_v1_simulator_proto_rawDesc = []byte{
 	0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x73, 0x69, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x2f,
 	0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x73, 0x69, 0x6d, 0x75,
 	0x6c, 0x61, 0x74, 0x6f, 0x72, 0x70, 0x62, 0x3b, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x73, 0x69,
-	0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xaa, 0x02, 0x1f, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x50, 0x6f, 0x6c, 0x69,
-	0x63, 0x79, 0x53, 0x69, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x2e, 0x56, 0x31, 0xca, 0x02,
-	0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x50, 0x6f,
-	0x6c, 0x69, 0x63, 0x79, 0x53, 0x69, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x5c, 0x56, 0x31,
-	0xea, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x3a, 0x3a, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x53, 0x69, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f,
-	0x72, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x70, 0x62, 0xaa, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x53,
+	0x69, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1f, 0x47, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x50, 0x6f, 0x6c, 0x69, 0x63,
+	0x79, 0x53, 0x69, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x22,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x50,
+	0x6f, 0x6c, 0x69, 0x63, 0x79, 0x53, 0x69, 0x6d, 0x75, 0x6c, 0x61, 0x74, 0x6f, 0x72, 0x3a, 0x3a,
+	0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1571,168 +1568,4 @@ func file_google_cloud_policysimulator_v1_simulator_proto_init() {
 	file_google_cloud_policysimulator_v1_simulator_proto_rawDesc = nil
 	file_google_cloud_policysimulator_v1_simulator_proto_goTypes = nil
 	file_google_cloud_policysimulator_v1_simulator_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// SimulatorClient is the client API for Simulator service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type SimulatorClient interface {
-	// Gets the specified [Replay][google.cloud.policysimulator.v1.Replay]. Each
-	// `Replay` is available for at least 7 days.
-	GetReplay(ctx context.Context, in *GetReplayRequest, opts ...grpc.CallOption) (*Replay, error)
-	// Creates and starts a [Replay][google.cloud.policysimulator.v1.Replay] using
-	// the given [ReplayConfig][google.cloud.policysimulator.v1.ReplayConfig].
-	CreateReplay(ctx context.Context, in *CreateReplayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Lists the results of running a
-	// [Replay][google.cloud.policysimulator.v1.Replay].
-	ListReplayResults(ctx context.Context, in *ListReplayResultsRequest, opts ...grpc.CallOption) (*ListReplayResultsResponse, error)
-}
-
-type simulatorClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSimulatorClient(cc grpc.ClientConnInterface) SimulatorClient {
-	return &simulatorClient{cc}
-}
-
-func (c *simulatorClient) GetReplay(ctx context.Context, in *GetReplayRequest, opts ...grpc.CallOption) (*Replay, error) {
-	out := new(Replay)
-	err := c.cc.Invoke(ctx, "/google.cloud.policysimulator.v1.Simulator/GetReplay", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *simulatorClient) CreateReplay(ctx context.Context, in *CreateReplayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.policysimulator.v1.Simulator/CreateReplay", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *simulatorClient) ListReplayResults(ctx context.Context, in *ListReplayResultsRequest, opts ...grpc.CallOption) (*ListReplayResultsResponse, error) {
-	out := new(ListReplayResultsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.policysimulator.v1.Simulator/ListReplayResults", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// SimulatorServer is the server API for Simulator service.
-type SimulatorServer interface {
-	// Gets the specified [Replay][google.cloud.policysimulator.v1.Replay]. Each
-	// `Replay` is available for at least 7 days.
-	GetReplay(context.Context, *GetReplayRequest) (*Replay, error)
-	// Creates and starts a [Replay][google.cloud.policysimulator.v1.Replay] using
-	// the given [ReplayConfig][google.cloud.policysimulator.v1.ReplayConfig].
-	CreateReplay(context.Context, *CreateReplayRequest) (*longrunningpb.Operation, error)
-	// Lists the results of running a
-	// [Replay][google.cloud.policysimulator.v1.Replay].
-	ListReplayResults(context.Context, *ListReplayResultsRequest) (*ListReplayResultsResponse, error)
-}
-
-// UnimplementedSimulatorServer can be embedded to have forward compatible implementations.
-type UnimplementedSimulatorServer struct {
-}
-
-func (*UnimplementedSimulatorServer) GetReplay(context.Context, *GetReplayRequest) (*Replay, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method GetReplay not implemented")
-}
-func (*UnimplementedSimulatorServer) CreateReplay(context.Context, *CreateReplayRequest) (*longrunningpb.Operation, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method CreateReplay not implemented")
-}
-func (*UnimplementedSimulatorServer) ListReplayResults(context.Context, *ListReplayResultsRequest) (*ListReplayResultsResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListReplayResults not implemented")
-}
-
-func RegisterSimulatorServer(s *grpc.Server, srv SimulatorServer) {
-	s.RegisterService(&_Simulator_serviceDesc, srv)
-}
-
-func _Simulator_GetReplay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetReplayRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SimulatorServer).GetReplay(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.policysimulator.v1.Simulator/GetReplay",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimulatorServer).GetReplay(ctx, req.(*GetReplayRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Simulator_CreateReplay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateReplayRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SimulatorServer).CreateReplay(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.policysimulator.v1.Simulator/CreateReplay",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimulatorServer).CreateReplay(ctx, req.(*CreateReplayRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Simulator_ListReplayResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListReplayResultsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SimulatorServer).ListReplayResults(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.policysimulator.v1.Simulator/ListReplayResults",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimulatorServer).ListReplayResults(ctx, req.(*ListReplayResultsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Simulator_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.policysimulator.v1.Simulator",
-	HandlerType: (*SimulatorServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetReplay",
-			Handler:    _Simulator_GetReplay_Handler,
-		},
-		{
-			MethodName: "CreateReplay",
-			Handler:    _Simulator_CreateReplay_Handler,
-		},
-		{
-			MethodName: "ListReplayResults",
-			Handler:    _Simulator_ListReplayResults_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/policysimulator/v1/simulator.proto",
 }

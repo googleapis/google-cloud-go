@@ -66,10 +66,9 @@ func (l *PubServer) Start(ctx context.Context, req *pb.StartRequest) (*pb.StartR
 func (l *PubServer) init(c *pubsub.Client, topicName string, msgSize, batchSize int32, batchDur time.Duration, ordered bool) {
 	topic := c.Topic(topicName)
 	topic.PublishSettings = pubsub.PublishSettings{
-		DelayThreshold:    batchDur,
-		CountThreshold:    950,
-		ByteThreshold:     9500000,
-		BufferedByteLimit: 2e9,
+		DelayThreshold: batchDur,
+		CountThreshold: 950,
+		ByteThreshold:  9500000,
 	}
 	topic.EnableMessageOrdering = ordered
 

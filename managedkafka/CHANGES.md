@@ -1,4 +1,25 @@
-# Changelog
+# Changes
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.8.0...managedkafka/v0.8.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **managedkafka:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.7.0...managedkafka/v0.8.0) (2025-08-14)
+
+
+### Features
+
+* **managedkafka:** New clients ([#12710](https://github.com/googleapis/google-cloud-go/issues/12710)) ([d6571b9](https://github.com/googleapis/google-cloud-go/commit/d6571b9b9db84929336a45b7ddf61278b2a58b13))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.6.0...managedkafka/v0.7.0) (2025-07-09)
+
+
+### Features
+
+* **managedkafka:** Update libraries and clients for Managed Kafka ([98ba6f0](https://github.com/googleapis/google-cloud-go/commit/98ba6f06e69685bca510ca85c12124434f9ba1e8))
 
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.5.2...managedkafka/v0.6.0) (2025-05-29)
 

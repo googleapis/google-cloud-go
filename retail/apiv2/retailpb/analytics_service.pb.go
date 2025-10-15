@@ -22,11 +22,7 @@ package retailpb
 
 import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -135,92 +131,4 @@ func file_google_cloud_retail_v2_analytics_service_proto_init() {
 	file_google_cloud_retail_v2_analytics_service_proto_rawDesc = nil
 	file_google_cloud_retail_v2_analytics_service_proto_goTypes = nil
 	file_google_cloud_retail_v2_analytics_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// AnalyticsServiceClient is the client API for AnalyticsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AnalyticsServiceClient interface {
-	// Exports analytics metrics.
-	//
-	// `Operation.response` is of type `ExportAnalyticsMetricsResponse`.
-	// `Operation.metadata` is of type `ExportMetadata`.
-	ExportAnalyticsMetrics(ctx context.Context, in *ExportAnalyticsMetricsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-}
-
-type analyticsServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAnalyticsServiceClient(cc grpc.ClientConnInterface) AnalyticsServiceClient {
-	return &analyticsServiceClient{cc}
-}
-
-func (c *analyticsServiceClient) ExportAnalyticsMetrics(ctx context.Context, in *ExportAnalyticsMetricsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2.AnalyticsService/ExportAnalyticsMetrics", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AnalyticsServiceServer is the server API for AnalyticsService service.
-type AnalyticsServiceServer interface {
-	// Exports analytics metrics.
-	//
-	// `Operation.response` is of type `ExportAnalyticsMetricsResponse`.
-	// `Operation.metadata` is of type `ExportMetadata`.
-	ExportAnalyticsMetrics(context.Context, *ExportAnalyticsMetricsRequest) (*longrunningpb.Operation, error)
-}
-
-// UnimplementedAnalyticsServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedAnalyticsServiceServer struct {
-}
-
-func (*UnimplementedAnalyticsServiceServer) ExportAnalyticsMetrics(context.Context, *ExportAnalyticsMetricsRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ExportAnalyticsMetrics not implemented")
-}
-
-func RegisterAnalyticsServiceServer(s *grpc.Server, srv AnalyticsServiceServer) {
-	s.RegisterService(&_AnalyticsService_serviceDesc, srv)
-}
-
-func _AnalyticsService_ExportAnalyticsMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExportAnalyticsMetricsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsServiceServer).ExportAnalyticsMetrics(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.retail.v2.AnalyticsService/ExportAnalyticsMetrics",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsServiceServer).ExportAnalyticsMetrics(ctx, req.(*ExportAnalyticsMetricsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _AnalyticsService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.retail.v2.AnalyticsService",
-	HandlerType: (*AnalyticsServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ExportAnalyticsMetrics",
-			Handler:    _AnalyticsService_ExportAnalyticsMetrics_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/retail/v2/analytics_service.proto",
 }

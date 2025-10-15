@@ -5,6 +5,70 @@
   "protoPackage": "google.cloud.aiplatform.v1",
   "libraryPackage": "cloud.google.com/go/aiplatform/apiv1",
   "services": {
+    "DataFoundryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataFoundryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateSyntheticData": {
+              "methods": [
+                "GenerateSyntheticData"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DatasetService": {
       "clients": {
         "grpc": {
@@ -555,9 +619,19 @@
                 "DeleteOperation"
               ]
             },
+            "FeatureViewDirectWrite": {
+              "methods": [
+                "FeatureViewDirectWrite"
+              ]
+            },
             "FetchFeatureValues": {
               "methods": [
                 "FetchFeatureValues"
+              ]
+            },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
               ]
             },
             "GetIamPolicy": {

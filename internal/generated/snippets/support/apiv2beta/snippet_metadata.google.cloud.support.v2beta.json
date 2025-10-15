@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/support/apiv2beta",
-    "version": "1.3.0",
+    "version": "1.4.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "cloudsupport_v2beta_generated_CaseAttachmentService_GetAttachment_sync",
+      "title": "cloudsupport GetAttachment Sample",
+      "description": "GetAttachment retrieve an attachment.",
+      "file": "CaseAttachmentClient/GetAttachment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAttachment",
+        "fullName": "google.cloud.support.v2beta.CaseAttachmentClient.GetAttachment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "supportpb.GetAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*supportpb.Attachment",
+        "client": {
+          "shortName": "CaseAttachmentClient",
+          "fullName": "google.cloud.support.v2beta.CaseAttachmentClient"
+        },
+        "method": {
+          "shortName": "GetAttachment",
+          "fullName": "google.cloud.support.v2beta.CaseAttachmentService.GetAttachment",
+          "service": {
+            "shortName": "CaseAttachmentService",
+            "fullName": "google.cloud.support.v2beta.CaseAttachmentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "cloudsupport_v2beta_generated_CaseAttachmentService_ListAttachments_sync",
       "title": "cloudsupport ListAttachments Sample",
@@ -456,6 +502,52 @@
         "method": {
           "shortName": "CreateComment",
           "fullName": "google.cloud.support.v2beta.CommentService.CreateComment",
+          "service": {
+            "shortName": "CommentService",
+            "fullName": "google.cloud.support.v2beta.CommentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsupport_v2beta_generated_CommentService_GetComment_sync",
+      "title": "cloudsupport GetComment Sample",
+      "description": "GetComment retrieve a comment.",
+      "file": "CommentClient/GetComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetComment",
+        "fullName": "google.cloud.support.v2beta.CommentClient.GetComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "supportpb.GetCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*supportpb.Comment",
+        "client": {
+          "shortName": "CommentClient",
+          "fullName": "google.cloud.support.v2beta.CommentClient"
+        },
+        "method": {
+          "shortName": "GetComment",
+          "fullName": "google.cloud.support.v2beta.CommentService.GetComment",
           "service": {
             "shortName": "CommentService",
             "fullName": "google.cloud.support.v2beta.CommentService"
