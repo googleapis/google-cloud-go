@@ -8,36 +8,28 @@ modules:
   - bigquery
   - bigtable
   - certificatemanager
-  - cloudbuild
   - compute
   - configdelivery
   - containeranalysis
-  - datacatalog
   - dataqna
   - datastore
-  - datastream
-  - dialogflow
   - errorreporting
   - firestore
   - geminidataanalytics
   - grafeas
-  - iam
   - kms
   - licensemanager
   - locationfinder
   - logging
-  - monitoring
   - orgpolicy
   - profiler
   - pubsub/v2
   - pubsub
-  - run
   - servicecontrol
   - servicemanagement
   - serviceusage
   - spanner
   - storage
-  - vmmigration
 
 manual-clients:
   - api-shortname: bigquery
@@ -254,36 +246,9 @@ service-configs:
   - input-directory: google/cloud/configdelivery/v1beta
     service-config: configdelivery_v1beta.yaml
     import-path: cloud.google.com/go/configdelivery/apiv1beta
-  - input-directory: google/cloud/datacatalog/lineage/v1
-    service-config: datalineage_v1.yaml
-    import-path: cloud.google.com/go/datacatalog/lineage/apiv1
-  - input-directory: google/cloud/datacatalog/v1
-    service-config: datacatalog_v1.yaml
-    import-path: cloud.google.com/go/datacatalog/apiv1
-  - input-directory: google/cloud/datacatalog/v1beta1
-    service-config: datacatalog_v1beta1.yaml
-    import-path: cloud.google.com/go/datacatalog/apiv1beta1
   - input-directory: google/cloud/dataqna/v1alpha
     service-config: dataqna_v1alpha.yaml
     import-path: cloud.google.com/go/dataqna/apiv1alpha
-  - input-directory: google/cloud/datastream/v1
-    service-config: datastream_v1.yaml
-    import-path: cloud.google.com/go/datastream/apiv1
-  - input-directory: google/cloud/datastream/v1alpha1
-    service-config: datastream_v1alpha1.yaml
-    import-path: cloud.google.com/go/datastream/apiv1alpha1
-  - input-directory: google/cloud/dialogflow/cx/v3
-    service-config: dialogflow_v3.yaml
-    import-path: cloud.google.com/go/dialogflow/cx/apiv3
-  - input-directory: google/cloud/dialogflow/cx/v3beta1
-    service-config: dialogflow_v3beta1.yaml
-    import-path: cloud.google.com/go/dialogflow/cx/apiv3beta1
-  - input-directory: google/cloud/dialogflow/v2
-    service-config: dialogflow_v2.yaml
-    import-path: cloud.google.com/go/dialogflow/apiv2
-  - input-directory: google/cloud/dialogflow/v2beta1
-    service-config: dialogflow_v2beta1.yaml
-    import-path: cloud.google.com/go/dialogflow/apiv2beta1
   - input-directory: google/cloud/geminidataanalytics/v1beta
     service-config: geminidataanalytics_v1beta.yaml
     import-path: cloud.google.com/go/geminidataanalytics/apiv1beta
@@ -305,9 +270,6 @@ service-configs:
   - input-directory: google/cloud/orgpolicy/v2
     service-config: orgpolicy_v2.yaml
     import-path: cloud.google.com/go/orgpolicy/apiv2
-  - input-directory: google/cloud/run/v2
-    service-config: run_v2.yaml
-    import-path: cloud.google.com/go/run/apiv2
   - input-directory: google/api/servicecontrol/v1
     service-config: servicecontrol.yaml
     import-path: cloud.google.com/go/servicecontrol/apiv1
@@ -320,9 +282,6 @@ service-configs:
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
     import-path: cloud.google.com/go/errorreporting/apiv1beta1
-  - input-directory: google/cloud/vmmigration/v1
-    service-config: vmmigration_v1.yaml
-    import-path: cloud.google.com/go/vmmigration/apiv1
   - input-directory: google/datastore/admin/v1
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/admin/apiv1
@@ -330,12 +289,6 @@ service-configs:
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/apiv1
     release-level-override: stable
-  - input-directory: google/devtools/cloudbuild/v1
-    service-config: cloudbuild_v1.yaml
-    import-path: cloud.google.com/go/cloudbuild/apiv1/v2
-  - input-directory: google/devtools/cloudbuild/v2
-    service-config: cloudbuild_v2.yaml
-    import-path: cloud.google.com/go/cloudbuild/apiv2
   - input-directory: google/devtools/containeranalysis/v1beta1
     service-config: containeranalysis_v1beta1.yaml
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
@@ -345,33 +298,9 @@ service-configs:
   - input-directory: google/firestore/v1
     service-config: firestore_v1.yaml
     import-path: cloud.google.com/go/firestore/apiv1
-  - input-directory: google/iam/credentials/v1
-    service-config: iamcredentials_v1.yaml
-    import-path: cloud.google.com/go/iam/credentials/apiv1
-  - input-directory: google/iam/v1
-    service-config: iam_meta_api.yaml
-    import-path: cloud.google.com/go/iam/apiv1
-  - input-directory: google/iam/v2
-    service-config: iam_v2.yaml
-    import-path: cloud.google.com/go/iam/apiv2
-  - input-directory: google/iam/v3
-    service-config: iam_v3.yaml
-    import-path: cloud.google.com/go/iam/apiv3
-  - input-directory: google/iam/v3beta
-    service-config: iam_v3beta.yaml
-    import-path: cloud.google.com/go/iam/apiv3beta
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/monitoring/dashboard/v1
-    service-config: monitoring.yaml
-    import-path: cloud.google.com/go/monitoring/dashboard/apiv1
-  - input-directory: google/monitoring/metricsscope/v1
-    service-config: monitoring.yaml
-    import-path: cloud.google.com/go/monitoring/metricsscope/apiv1
-  - input-directory: google/monitoring/v3
-    service-config: monitoring.yaml
-    import-path: cloud.google.com/go/monitoring/apiv3/v2
   - input-directory: google/pubsub/v1
     service-config: pubsub_v1.yaml
     import-path: cloud.google.com/go/pubsub/v2/apiv1
@@ -405,6 +334,14 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - vmmigration
+  - run
+  - monitoring
+  - iam
+  - dialogflow
+  - datastream
+  - datacatalog
+  - cloudbuild
   - workstations
   - workflows
   - websecurityscanner
