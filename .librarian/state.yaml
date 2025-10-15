@@ -995,15 +995,15 @@ libraries:
     preserve_regex: []
     remove_regex:
       - ^internal/generated/snippets/cloudbuild/
-      - ^cloudbuild/apiv1/[^/]*_client\.go$
-      - ^cloudbuild/apiv1/[^/]*_client_example_go123_test\.go$
-      - ^cloudbuild/apiv1/[^/]*_client_example_test\.go$
-      - ^cloudbuild/apiv1/auxiliary\.go$
-      - ^cloudbuild/apiv1/auxiliary_go123\.go$
-      - ^cloudbuild/apiv1/doc\.go$
-      - ^cloudbuild/apiv1/gapic_metadata\.json$
-      - ^cloudbuild/apiv1/helpers\.go$
-      - ^cloudbuild/apiv1/cloudbuildpb/.*$
+      - ^cloudbuild/apiv1/v2/[^/]*_client\.go$
+      - ^cloudbuild/apiv1/v2/[^/]*_client_example_go123_test\.go$
+      - ^cloudbuild/apiv1/v2/[^/]*_client_example_test\.go$
+      - ^cloudbuild/apiv1/v2/auxiliary\.go$
+      - ^cloudbuild/apiv1/v2/auxiliary_go123\.go$
+      - ^cloudbuild/apiv1/v2/doc\.go$
+      - ^cloudbuild/apiv1/v2/gapic_metadata\.json$
+      - ^cloudbuild/apiv1/v2/helpers\.go$
+      - ^cloudbuild/apiv1/v2/cloudbuildpb/.*$
       - ^cloudbuild/apiv2/[^/]*_client\.go$
       - ^cloudbuild/apiv2/[^/]*_client_example_go123_test\.go$
       - ^cloudbuild/apiv2/[^/]*_client_example_test\.go$
@@ -1238,6 +1238,7 @@ libraries:
       - ^compute/apiv1beta/computepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/compute/
+      - compute/metadata
     tag_format: '{id}/v{version}'
   - id: compute/metadata
     version: 0.9.0
@@ -1368,7 +1369,8 @@ libraries:
     source_roots:
       - datacatalog
       - internal/generated/snippets/datacatalog
-    preserve_regex: []
+    preserve_regex:
+      - ^datacatalog/apiv1/iam_policy_client\.go$
     remove_regex:
       - ^internal/generated/snippets/datacatalog/
       - ^datacatalog/apiv1/[^/]*_client\.go$
@@ -1567,7 +1569,8 @@ libraries:
     source_roots:
       - datastream
       - internal/generated/snippets/datastream
-    preserve_regex: []
+    preserve_regex:
+      - ^datastream/apiv1/iam_policy_client\.go$
     remove_regex:
       - ^internal/generated/snippets/datastream/
       - ^datastream/apiv1/[^/]*_client\.go$
@@ -2792,15 +2795,15 @@ libraries:
     preserve_regex: []
     remove_regex:
       - ^internal/generated/snippets/monitoring/
-      - ^monitoring/apiv3/[^/]*_client\.go$
-      - ^monitoring/apiv3/[^/]*_client_example_go123_test\.go$
-      - ^monitoring/apiv3/[^/]*_client_example_test\.go$
-      - ^monitoring/apiv3/auxiliary\.go$
-      - ^monitoring/apiv3/auxiliary_go123\.go$
-      - ^monitoring/apiv3/doc\.go$
-      - ^monitoring/apiv3/gapic_metadata\.json$
-      - ^monitoring/apiv3/helpers\.go$
-      - ^monitoring/apiv3/monitoringpb/.*$
+      - ^monitoring/apiv3/v2/[^/]*_client\.go$
+      - ^monitoring/apiv3/v2/[^/]*_client_example_go123_test\.go$
+      - ^monitoring/apiv3/v2/[^/]*_client_example_test\.go$
+      - ^monitoring/apiv3/v2/auxiliary\.go$
+      - ^monitoring/apiv3/v2/auxiliary_go123\.go$
+      - ^monitoring/apiv3/v2/doc\.go$
+      - ^monitoring/apiv3/v2/gapic_metadata\.json$
+      - ^monitoring/apiv3/v2/helpers\.go$
+      - ^monitoring/apiv3/v2/monitoringpb/.*$
       - ^monitoring/dashboard/apiv1/[^/]*_client\.go$
       - ^monitoring/dashboard/apiv1/[^/]*_client_example_go123_test\.go$
       - ^monitoring/dashboard/apiv1/[^/]*_client_example_test\.go$
@@ -3644,7 +3647,8 @@ libraries:
     source_roots:
       - run
       - internal/generated/snippets/run
-    preserve_regex: []
+    preserve_regex:
+      - ^run/apiv2/locations_client\.go$
     remove_regex:
       - ^internal/generated/snippets/run/
       - ^run/apiv2/[^/]*_client\.go$
@@ -4813,7 +4817,8 @@ libraries:
     source_roots:
       - vmmigration
       - internal/generated/snippets/vmmigration
-    preserve_regex: []
+    preserve_regex:
+      - ^vmmigration/apiv1/iam_policy_client\.go$
     remove_regex:
       - ^internal/generated/snippets/vmmigration/
       - ^vmmigration/apiv1/[^/]*_client\.go$
