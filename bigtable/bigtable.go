@@ -33,6 +33,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -55,6 +56,8 @@ const (
 	queryExpiredViolationType        = "PREPARED_QUERY_EXPIRED"
 	preparedQueryExpireEarlyDuration = time.Second
 	methodNameReadRows               = "ReadRows"
+	// Cannot extract extract d.GRPCConnPoolSize as DialSettings is in internal grpc pacakage
+	defaultBigtableConnPoolSize = 10
 
 	// For routing cookie
 	cookiePrefix = "x-goog-cbt-cookie-"
@@ -156,11 +159,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// TODO(b/372244283): Remove after b/358175516 has been fixed
 	o = append(o, internaloption.EnableAsyncRefreshDryRun(metricsTracerFactory.newAsyncRefreshErrHandler()))
 
-	connPool, err := gtransport.DialPool(ctx, o...)
-	if err != nil {
-		return nil, err
-	}
-
 	disableRetryInfo := false
 
 	// If DISABLE_RETRY_INFO=1, library does not base retry decision and back off time on server returned RetryInfo value.
@@ -172,6 +170,23 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		retryOption = clientOnlyRetryOption
 		executeQueryRetryOption = clientOnlyExecuteQueryRetryOption
 	}
+
+	var connPool gtransport.ConnPool
+	var connPoolErr error
+	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
+	if enableBigtableConnPool {
+		connPool, connPoolErr = btransport.NewBigtableChannelPool(defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), func() (*grpc.ClientConn, error) {
+			return gtransport.Dial(ctx, o...)
+		})
+	} else {
+		// use to regular ConnPool
+		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
+	}
+
+	if connPoolErr != nil {
+		return nil, connPoolErr
+	}
+
 	return &Client{
 		connPool:                connPool,
 		client:                  btpb.NewBigtableClient(connPool),
