@@ -2,6 +2,26 @@
 
 
 
+## [0.124.0](https://github.com/googleapis/google-cloud-go/compare/v0.123.0...v0.124.0) (2025-10-16)
+
+
+### Features
+
+* **client:** Enable routing cookie and attempt headers for enhanced retries ([#12964](https://github.com/googleapis/google-cloud-go/issues/12964)) ([96cfd47](https://github.com/googleapis/google-cloud-go/commit/96cfd47ad729d3507c192e5a73e7473e7c6e7c5a)), refs [#12658](https://github.com/googleapis/google-cloud-go/issues/12658)
+* **internal/librariangen:** Add nested protos config to repo-config.yaml ([#13158](https://github.com/googleapis/google-cloud-go/issues/13158)) ([2c37c8b](https://github.com/googleapis/google-cloud-go/commit/2c37c8b81cbdf798bc4e57b0e92bf6dfe336c1b7))
+* **internal/librariangen:** Make repo-config.yaml optional ([#13038](https://github.com/googleapis/google-cloud-go/issues/13038)) ([800b556](https://github.com/googleapis/google-cloud-go/commit/800b55692e4bcae7fe3736e1a4231687eb687af7))
+* **internal/librariangen:** Support for "whole repo" libraries ([#12976](https://github.com/googleapis/google-cloud-go/issues/12976)) ([4ff4e77](https://github.com/googleapis/google-cloud-go/commit/4ff4e7764ebd1644335d95d744094ae4f7a11c8b))
+* **stategen:** Populate release_exclude_paths for snippets ([#12942](https://github.com/googleapis/google-cloud-go/issues/12942)) ([b25be45](https://github.com/googleapis/google-cloud-go/commit/b25be45eb7bf565b491586749de00ed9aa0fbdab))
+
+
+### Bug Fixes
+
+* **internal/librariangen:** Handle multi-versioned modules and root module ([#13013](https://github.com/googleapis/google-cloud-go/issues/13013)) ([b0fad5f](https://github.com/googleapis/google-cloud-go/commit/b0fad5f0d3e7eb110dc8e429e844f154cf234e0c))
+* **internal/librariangen:** Use TagFormat as the CLI does ([#13012](https://github.com/googleapis/google-cloud-go/issues/13012)) ([d24b0f8](https://github.com/googleapis/google-cloud-go/commit/d24b0f8ea0a4e9b9b28895d41de2e67b03c94d32))
+* **internal/stategen:** Be more conservative about removing OwlBot lines ([#13106](https://github.com/googleapis/google-cloud-go/issues/13106)) ([7663fdc](https://github.com/googleapis/google-cloud-go/commit/7663fdce3663478cf9fe02f265c4abdb27775b61))
+* **internal/stategen:** Match input directories more carefully in OwlBot ([#13057](https://github.com/googleapis/google-cloud-go/issues/13057)) ([f9efee1](https://github.com/googleapis/google-cloud-go/commit/f9efee1c2f3e7a1cf3ab9d8cd3c2fd5cd2a53325))
+* **internal/stategen:** Write state.yaml with the same code as librarian CLI ([#12955](https://github.com/googleapis/google-cloud-go/issues/12955)) ([0464d0b](https://github.com/googleapis/google-cloud-go/commit/0464d0beed74e91c158f08672f8742d453a62320))
+
 ## [0.123.0](https://github.com/googleapis/google-cloud-go/compare/v0.122.0...v0.123.0) (2025-09-18)
 
 
