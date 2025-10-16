@@ -53,11 +53,11 @@ type API struct {
 
 // Change represents a single commit change for a library.
 type Change struct {
-	Type             string `json:"type"`
-	Subject          string `json:"subject"`
-	Body             string `json:"body"`
-	PiperCLNumber    string `json:"piper_cl_number"`
-	CommitHash string `json:"commit_hash"`
+	Type          string `json:"type"`
+	Subject       string `json:"subject"`
+	Body          string `json:"body"`
+	PiperCLNumber string `json:"piper_cl_number"`
+	CommitHash    string `json:"commit_hash"`
 }
 
 // ParseLibrary reads a file from the given path and unmarshals
