@@ -1,6 +1,43 @@
 # Changes
 
 
+## [1.107.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.106.0...aiplatform/v1.107.0) (2025-10-15)
+
+
+### Features
+
+* **aiplatform:** Add aspect_ratio and image_config for v1 version ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** Add support for Inline source based deployment ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** Add support for Inline source based deployment ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `package_spec` in message `.google.cloud.aiplatform.v1.ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** A comment for field `package_spec` in message `.google.cloud.aiplatform.v1beta1.ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** A comment for message `ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** A comment for message `ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+
+## [1.106.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.105.0...aiplatform/v1.106.0) (2025-10-14)
+
+
+### Features
+
+* **aiplatform:** Add aspect_ratio and image_config for v1beta1 version ([#13118](https://github.com/googleapis/google-cloud-go/issues/13118)) ([486bd40](https://github.com/googleapis/google-cloud-go/commit/486bd406336fe91eae7c9040f2496ebfc8aee342))
+
+## [1.105.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.104.0...aiplatform/v1.105.0) (2025-10-13)
+
+
+### Features
+
+* **aiplatform:** A new field `initial_replica_count` is added to message `.google.cloud.aiplatform.v1beta1.DedicatedResources` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **aiplatform:** A new field `scale_to_zero_spec` is added to message `.google.cloud.aiplatform.v1beta1.DedicatedResources` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **aiplatform:** A new message `ScaleToZeroSpec` is added ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **aiplatform:** Add additional proto fields and GenerateFetchAccessToken API ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **aiplatform:** Add JAILBREAK as a new Prompt block reason in PredictionService ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **aiplatform:** Add JAILBREAK category to SafetySettings for prediction service ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **aiplatform:** Add JAILBREAK category to SafetySettings for prediction service ([#13084](https://github.com/googleapis/google-cloud-go/issues/13084)) ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+
 ## [1.104.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.103.0...aiplatform/v1.104.0) (2025-10-07)
 
 

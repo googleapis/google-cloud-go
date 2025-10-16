@@ -1,5 +1,11 @@
 # Changes
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/chronicle%2Fv0.2.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/chronicle/v0.1.0...chronicle/v0.1.1) (2025-05-21)
 
 

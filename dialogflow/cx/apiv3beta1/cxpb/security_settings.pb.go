@@ -21,13 +21,14 @@
 package cxpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -893,6 +894,9 @@ type SecuritySettings_AudioExportSettings struct {
 	// storage.buckets.setIamPolicy.
 	GcsBucket string `protobuf:"bytes,1,opt,name=gcs_bucket,json=gcsBucket,proto3" json:"gcs_bucket,omitempty"`
 	// Filename pattern for exported audio.
+	// {conversation} and {timestamp} are placeholders that will be replaced
+	// with the conversation ID and epoch micros of the conversation.
+	// For example, "{conversation}/recording_{timestamp}.mulaw".
 	AudioExportPattern string `protobuf:"bytes,2,opt,name=audio_export_pattern,json=audioExportPattern,proto3" json:"audio_export_pattern,omitempty"`
 	// Enable audio redaction if it is true.
 	// Note that this only redacts end-user audio data;

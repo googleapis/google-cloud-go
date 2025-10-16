@@ -21,6 +21,9 @@
 package gsuiteaddonspb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_type "google.golang.org/genproto/googleapis/apps/script/type"
 	calendar "google.golang.org/genproto/googleapis/apps/script/type/calendar"
@@ -33,8 +36,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (

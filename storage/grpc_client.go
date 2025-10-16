@@ -952,14 +952,24 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 }
 func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
 	s := callSettings(c.settings, opts...)
-	obj := req.dstObject.attrs.toProtoObject("")
+
+	var dst *storagepb.Object
+	// If the destination object attributes are not set, do not include them
+	// in the request. This indicates that the object attributes should be
+	// copied from the source object.
+	if req.dstObject.attrs.isZero() {
+		dst = nil
+	} else {
+		dst = req.dstObject.attrs.toProtoObject("")
+	}
+
 	call := &storagepb.RewriteObjectRequest{
 		SourceBucket:              bucketResourceName(globalProjectAlias, req.srcObject.bucket),
 		SourceObject:              req.srcObject.name,
 		RewriteToken:              req.token,
 		DestinationBucket:         bucketResourceName(globalProjectAlias, req.dstObject.bucket),
 		DestinationName:           req.dstObject.name,
-		Destination:               obj,
+		Destination:               dst,
 		DestinationKmsKey:         req.dstObject.keyName,
 		DestinationPredefinedAcl:  req.predefinedACL,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(req.dstObject.encryptionKey),

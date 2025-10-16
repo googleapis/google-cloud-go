@@ -23,5 +23,11 @@ libraries:
     release_blocked: true
   - id: "longrunning"
     release_blocked: true
+  - id: "pubsub"
+    release_blocked: true
+  - id: "pubsub/v2"
+    release_blocked: true
+  - id: "pubsublite"
+    release_blocked: true
   - id: "root-module"
     release_blocked: true
