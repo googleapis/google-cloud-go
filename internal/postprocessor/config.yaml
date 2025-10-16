@@ -6,7 +6,6 @@ modules:
   - bigquery
   - bigtable
   - compute
-  - containeranalysis
   - datastore
   - errorreporting
   - firestore
@@ -226,9 +225,6 @@ service-configs:
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/apiv1
     release-level-override: stable
-  - input-directory: google/devtools/containeranalysis/v1beta1
-    service-config: containeranalysis_v1beta1.yaml
-    import-path: cloud.google.com/go/containeranalysis/apiv1beta1
   - input-directory: google/firestore/admin/v1
     service-config: firestore_v1.yaml
     import-path: cloud.google.com/go/firestore/apiv1/admin
@@ -259,15 +255,12 @@ service-configs:
   - input-directory: google/storage/v2
     service-config: storage_v2.yaml
     import-path: cloud.google.com/go/storage/internal/apiv2
-  - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
-    service-config: ../containeranalysis_v1beta1.yaml
-    import-path: cloud.google.com/go/containeranalysis/apiv1beta1
-    rel-path: /containeranalysis/apiv1beta1
 
 skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - containeranalysis
   - geminidataanalytics
   - locationfinder
   - configdelivery

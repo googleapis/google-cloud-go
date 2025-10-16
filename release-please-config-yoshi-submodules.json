@@ -6,9 +6,6 @@
         "compute": {
             "component": "compute"
         },
-        "containeranalysis": {
-            "component": "containeranalysis"
-        },
         "licensemanager": {
             "component": "licensemanager"
         },

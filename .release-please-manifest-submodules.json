@@ -1,5 +1,4 @@
 {
-    "compute": "1.49.1",
     "containeranalysis": "0.14.2",
     "licensemanager": "0.1.1",
     "spanner/benchmarks": "0.1.0"

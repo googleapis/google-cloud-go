@@ -26,7 +26,6 @@ deep-remove-regex:
   - /bigtable/apiv2/
   - /compute/apiv1
   - /compute/apiv1beta
-  - /containeranalysis/apiv1beta1/
   - /datastore/admin/apiv1/
   - /datastore/apiv1/
   # - /errorreporting/apiv1beta1/
@@ -55,7 +54,6 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/v2/apiv2/
   - /internal/generated/snippets/compute/apiv1
   - /internal/generated/snippets/compute/apiv1beta
-  - /internal/generated/snippets/containeranalysis/apiv1beta1/
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets//devicestreaming/apiv1/
@@ -95,7 +93,6 @@ deep-preserve-regex:
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
   - /storage/internal/apiv2/metadata.go
-  - /containeranalysis/apiv1beta1/grafeas/.*
   # Must preserve these even though they aren't generated anymore
   - /compute/apiv1/smoke_test.go
 
@@ -148,8 +145,6 @@ deep-copy-regex:
   - source: /google/cloud/compute/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/compute/v1beta/cloud.google.com/go
-    dest: /
-  - source: /google/devtools/containeranalysis/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
     dest: /

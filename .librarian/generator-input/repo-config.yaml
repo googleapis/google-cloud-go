@@ -27,6 +27,15 @@ modules:
       - path: google/cloud/tasks/v2beta3
         client_directory: apiv2beta3
 
+  - name: containeranalysis
+    apis:
+      # Note: we *don't* currently generate/copy grafeas/grafeaspb/grafeas.pb.go
+      # See https://github.com/googleapis/google-cloud-go/issues/13176 for
+      # more details.
+      - path: google/devtools/containeranalysis/v1beta1
+        nested_protos:
+          - grafeas/grafeas.proto
+
   - name: dataproc
     module_path_version: v2
 
