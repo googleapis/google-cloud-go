@@ -1320,6 +1320,41 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/config/
     tag_format: '{id}/v{version}'
+  - id: configdelivery
+    version: 0.1.1
+    last_generated_commit: fef700942b6a3ef8bbaf253306a0a652a1858552
+    apis:
+      - path: google/cloud/configdelivery/v1
+        service_config: configdelivery_v1.yaml
+      - path: google/cloud/configdelivery/v1beta
+        service_config: configdelivery_v1beta.yaml
+    source_roots:
+      - configdelivery
+      - internal/generated/snippets/configdelivery
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/configdelivery/
+      - ^configdelivery/apiv1/[^/]*_client\.go$
+      - ^configdelivery/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^configdelivery/apiv1/[^/]*_client_example_test\.go$
+      - ^configdelivery/apiv1/auxiliary\.go$
+      - ^configdelivery/apiv1/auxiliary_go123\.go$
+      - ^configdelivery/apiv1/doc\.go$
+      - ^configdelivery/apiv1/gapic_metadata\.json$
+      - ^configdelivery/apiv1/helpers\.go$
+      - ^configdelivery/apiv1/configdeliverypb/.*$
+      - ^configdelivery/apiv1beta/[^/]*_client\.go$
+      - ^configdelivery/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^configdelivery/apiv1beta/[^/]*_client_example_test\.go$
+      - ^configdelivery/apiv1beta/auxiliary\.go$
+      - ^configdelivery/apiv1beta/auxiliary_go123\.go$
+      - ^configdelivery/apiv1beta/doc\.go$
+      - ^configdelivery/apiv1beta/gapic_metadata\.json$
+      - ^configdelivery/apiv1beta/helpers\.go$
+      - ^configdelivery/apiv1beta/configdeliverypb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/configdelivery/
+    tag_format: '{id}/v{version}'
   - id: contactcenterinsights
     version: 1.17.4
     last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
@@ -2087,6 +2122,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
+  - id: geminidataanalytics
+    version: 0.2.1
+    last_generated_commit: fef700942b6a3ef8bbaf253306a0a652a1858552
+    apis:
+      - path: google/cloud/geminidataanalytics/v1beta
+        service_config: geminidataanalytics_v1beta.yaml
+    source_roots:
+      - geminidataanalytics
+      - internal/generated/snippets/geminidataanalytics
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/geminidataanalytics/
+      - ^geminidataanalytics/apiv1beta/[^/]*_client\.go$
+      - ^geminidataanalytics/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^geminidataanalytics/apiv1beta/[^/]*_client_example_test\.go$
+      - ^geminidataanalytics/apiv1beta/auxiliary\.go$
+      - ^geminidataanalytics/apiv1beta/auxiliary_go123\.go$
+      - ^geminidataanalytics/apiv1beta/doc\.go$
+      - ^geminidataanalytics/apiv1beta/gapic_metadata\.json$
+      - ^geminidataanalytics/apiv1beta/helpers\.go$
+      - ^geminidataanalytics/apiv1beta/geminidataanalyticspb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/geminidataanalytics/
+    tag_format: '{id}/v{version}'
   - id: gkebackup
     version: 1.8.1
     last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
@@ -2504,6 +2563,30 @@ libraries:
       - ^lifesciences/apiv2beta/lifesciencespb/.*$
     release_exclude_paths:
       - internal/generated/snippets/lifesciences/
+    tag_format: '{id}/v{version}'
+  - id: locationfinder
+    version: 0.1.1
+    last_generated_commit: fef700942b6a3ef8bbaf253306a0a652a1858552
+    apis:
+      - path: google/cloud/locationfinder/v1
+        service_config: cloudlocationfinder_v1.yaml
+    source_roots:
+      - locationfinder
+      - internal/generated/snippets/locationfinder
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/locationfinder/
+      - ^locationfinder/apiv1/[^/]*_client\.go$
+      - ^locationfinder/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^locationfinder/apiv1/[^/]*_client_example_test\.go$
+      - ^locationfinder/apiv1/auxiliary\.go$
+      - ^locationfinder/apiv1/auxiliary_go123\.go$
+      - ^locationfinder/apiv1/doc\.go$
+      - ^locationfinder/apiv1/gapic_metadata\.json$
+      - ^locationfinder/apiv1/helpers\.go$
+      - ^locationfinder/apiv1/locationfinderpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/locationfinder/
     tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.7.0

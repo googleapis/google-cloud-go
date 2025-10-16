@@ -6,14 +6,11 @@ modules:
   - bigquery
   - bigtable
   - compute
-  - configdelivery
   - containeranalysis
   - datastore
   - errorreporting
   - firestore
-  - geminidataanalytics
   - licensemanager
-  - locationfinder
   - logging
   - profiler
   - spanner
@@ -216,21 +213,9 @@ service-configs:
   - input-directory: google/cloud/compute/v1beta
     service-config: compute_v1beta.yaml
     import-path: cloud.google.com/go/compute/apiv1beta
-  - input-directory: google/cloud/configdelivery/v1
-    service-config: configdelivery_v1.yaml
-    import-path: cloud.google.com/go/configdelivery/apiv1
-  - input-directory: google/cloud/configdelivery/v1beta
-    service-config: configdelivery_v1beta.yaml
-    import-path: cloud.google.com/go/configdelivery/apiv1beta
-  - input-directory: google/cloud/geminidataanalytics/v1beta
-    service-config: geminidataanalytics_v1beta.yaml
-    import-path: cloud.google.com/go/geminidataanalytics/apiv1beta
   - input-directory: google/cloud/licensemanager/v1
     service-config: licensemanager_v1.yaml
     import-path: cloud.google.com/go/licensemanager/apiv1
-  - input-directory: google/cloud/locationfinder/v1
-    service-config: cloudlocationfinder_v1.yaml
-    import-path: cloud.google.com/go/locationfinder/apiv1
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
     import-path: cloud.google.com/go/errorreporting/apiv1beta1
@@ -283,6 +268,9 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - geminidataanalytics
+  - locationfinder
+  - configdelivery
   - serviceusage
   - servicemanagement
   - servicecontrol

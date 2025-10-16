@@ -26,15 +26,12 @@ deep-remove-regex:
   - /bigtable/apiv2/
   - /compute/apiv1
   - /compute/apiv1beta
-  - /configdelivery/apiv1/
-  - /configdelivery/apiv1beta/
   - /containeranalysis/apiv1beta1/
   - /datastore/admin/apiv1/
   - /datastore/apiv1/
   # - /errorreporting/apiv1beta1/
   - /firestore/apiv1/
   - /firestore/apiv1/admin/
-  - /geminidataanalytics/apiv1beta/
   # START snippets
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1/
@@ -58,8 +55,6 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/v2/apiv2/
   - /internal/generated/snippets/compute/apiv1
   - /internal/generated/snippets/compute/apiv1beta
-  - /internal/generated/snippets/configdelivery/apiv1/
-  - /internal/generated/snippets/configdelivery/apiv1beta/
   - /internal/generated/snippets/containeranalysis/apiv1beta1/
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets//developerconnect/apiv1/
@@ -67,9 +62,7 @@ deep-remove-regex:
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/firestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/admin/
-  - /internal/generated/snippets/geminidataanalytics/apiv1beta/
   - /internal/generated/snippets/licensemanager/apiv1/
-  - /internal/generated/snippets/locationfinder/apiv1/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/spanner/adapter/apiv1/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
@@ -78,7 +71,6 @@ deep-remove-regex:
   - /internal/generated/snippets/storage/control/apiv2/
   # END snippets
   - /licensemanager/apiv1/
-  - /locationfinder/apiv1/
   - /logging/apiv2/
   - /spanner/adapter/apiv1/
   - /spanner/admin/database/apiv1/
@@ -157,10 +149,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/compute/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/configdelivery/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/configdelivery/v1beta/cloud.google.com/go
-    dest: /
   - source: /google/devtools/containeranalysis/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
@@ -174,11 +162,7 @@ deep-copy-regex:
     dest: /
   - source: /google/firestore/admin/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/geminidataanalytics/v1beta/cloud.google.com/go
-    dest: /
   - source: /google/cloud/licensemanager/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/locationfinder/v1/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
     dest: /

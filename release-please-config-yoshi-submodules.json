@@ -6,20 +6,11 @@
         "compute": {
             "component": "compute"
         },
-        "configdelivery": {
-            "component": "configdelivery"
-        },
         "containeranalysis": {
             "component": "containeranalysis"
         },
-        "geminidataanalytics": {
-            "component": "geminidataanalytics"
-        },
         "licensemanager": {
             "component": "licensemanager"
-        },
-        "locationfinder": {
-            "component": "locationfinder"
         },
         "spanner/benchmarks": {
             "component": "spanner/benchmarks"
