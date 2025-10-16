@@ -4022,7 +4022,7 @@ libraries:
       - internal/generated/snippets/scheduler/
     tag_format: '{id}/v{version}'
   - id: secretmanager
-    version: 1.15.1
+    version: 1.16.0
     last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
     apis:
       - path: google/cloud/secretmanager/v1
