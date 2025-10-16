@@ -40,7 +40,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := visionai.NewLiveVideoAnalyticsClient(ctx)
+//	c, err := visionai.NewHealthCheckClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -54,16 +54,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &visionaipb.BatchRunProcessRequest{
+//	req := &visionaipb.HealthCheckRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/visionai/apiv1/visionaipb#BatchRunProcessRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/visionai/apiv1/visionaipb#HealthCheckRequest.
 //	}
-//	op, err := c.BatchRunProcess(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.HealthCheck(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -72,7 +67,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewLiveVideoAnalyticsClient is used for authentication requests and
+// The ctx passed to NewHealthCheckClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
