@@ -2,7 +2,6 @@ docker:
   image: gcr.io/cloud-devrel-public-resources/owlbot-go:latest
 
 deep-remove-regex:
-  - /accessapproval/apiv1/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
   - /bigquery/analyticshub/apiv1/
@@ -27,13 +26,11 @@ deep-remove-regex:
   - /bigquery/v2/apiv2/
   - /bigtable/admin/apiv2/
   - /bigtable/apiv2/
-  - /certificatemanager/apiv1/
   - /compute/apiv1
   - /compute/apiv1beta
   - /configdelivery/apiv1/
   - /configdelivery/apiv1beta/
   - /containeranalysis/apiv1beta1/
-  - /dataqna/apiv1alpha/
   - /datastore/admin/apiv1/
   - /datastore/apiv1/
   # - /errorreporting/apiv1beta1/
@@ -41,7 +38,6 @@ deep-remove-regex:
   - /firestore/apiv1/admin/
   - /geminidataanalytics/apiv1beta/
   # START snippets
-  - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
@@ -64,13 +60,11 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/storage/apiv1beta1/
   - /internal/generated/snippets/bigquery/storage/apiv1beta2/
   - /internal/generated/snippets/bigquery/v2/apiv2/
-  - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/compute/apiv1
   - /internal/generated/snippets/compute/apiv1beta
   - /internal/generated/snippets/configdelivery/apiv1/
   - /internal/generated/snippets/configdelivery/apiv1beta/
   - /internal/generated/snippets/containeranalysis/apiv1beta1/
-  - /internal/generated/snippets/dataqna/apiv1alpha/
   - /internal/generated/snippets/datastore/admin/apiv1/
   - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets//devicestreaming/apiv1/
@@ -78,31 +72,18 @@ deep-remove-regex:
   - /internal/generated/snippets/firestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/geminidataanalytics/apiv1beta/
-  - /internal/generated/snippets/kms/apiv1/
-  - /internal/generated/snippets/kms/inventory/apiv1/
   - /internal/generated/snippets/licensemanager/apiv1/
   - /internal/generated/snippets/locationfinder/apiv1/
   - /internal/generated/snippets/logging/apiv2/
-  - /internal/generated/snippets/orgpolicy/apiv2/
-  - /internal/generated/snippets/servicecontrol/apiv1/
-  - /internal/generated/snippets/servicemanagement/apiv1/
-  - /internal/generated/snippets/serviceusage/apiv1/
   - /internal/generated/snippets/spanner/adapter/apiv1/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
   - /internal/generated/snippets/spanner/apiv1/
   - /internal/generated/snippets/storage/control/apiv2/
   # END snippets
-  - /kms/apiv1/
-  - /kms/inventory/apiv1/
   - /licensemanager/apiv1/
   - /locationfinder/apiv1/
   - /logging/apiv2/
-  - /orgpolicy/apiv1/
-  - /orgpolicy/apiv2/
-  - /servicecontrol/apiv1/
-  - /servicemanagement/apiv1/
-  - /serviceusage/apiv1/
   - /spanner/adapter/apiv1/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
@@ -115,8 +96,6 @@ deep-preserve-regex:
   - /.*/info.go
   - /.*/path_funcs.go
   - /.*/version.go
-  - /kms/apiv1/iam.go
-  - /kms/apiv1/iam_example_test.go
   - /logging/apiv2/WriteLogEntries_smoke_test.go
   # TODO(#7336): Remove these networkconnectivity lines once breaking change is handled.
   - /spanner/admin/database/apiv1/backup.go
@@ -133,8 +112,6 @@ deep-preserve-regex:
   - /compute/apiv1/smoke_test.go
 
 deep-copy-regex:
-  - source: /google/cloud/accessapproval/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/aiplatform/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
@@ -184,8 +161,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/v2/cloud.google.com/go
     dest: /
-  - source: /google/cloud/certificatemanager/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/compute/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/compute/v1beta/cloud.google.com/go
@@ -195,8 +170,6 @@ deep-copy-regex:
   - source: /google/cloud/configdelivery/v1beta/cloud.google.com/go
     dest: /
   - source: /google/devtools/containeranalysis/v1beta1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
     dest: /
@@ -211,25 +184,11 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/geminidataanalytics/v1beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/kms/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/kms/inventory/v1/cloud.google.com/go
-    dest: /
   - source: /google/cloud/licensemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/locationfinder/v1/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/orgpolicy/v2/cloud.google.com/go
-    dest: /
-  - source: /google/api/servicecontrol/v1/cloud.google.com/go
-    dest: /
-  - source: /google/api/servicemanagement/v1/cloud.google.com/go
-    dest: /
-  - source: /google/api/serviceusage/v1/cloud.google.com/go
     dest: /
   - source: /google/spanner/adapter/v1/cloud.google.com/go
     dest: /

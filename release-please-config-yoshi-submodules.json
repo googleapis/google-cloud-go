@@ -3,14 +3,8 @@
     "include-component-in-tag": true,
     "tag-separator": "/",
     "packages": {
-        "accessapproval": {
-            "component": "accessapproval"
-        },
         "aiplatform": {
             "component": "aiplatform"
-        },
-        "certificatemanager": {
-            "component": "certificatemanager"
         },
         "compute": {
             "component": "compute"
@@ -21,35 +15,14 @@
         "containeranalysis": {
             "component": "containeranalysis"
         },
-        "dataqna": {
-            "component": "dataqna"
-        },
         "geminidataanalytics": {
             "component": "geminidataanalytics"
-        },
-        "grafeas": {
-            "component": "grafeas"
-        },
-        "kms": {
-            "component": "kms"
         },
         "licensemanager": {
             "component": "licensemanager"
         },
         "locationfinder": {
             "component": "locationfinder"
-        },
-        "orgpolicy": {
-            "component": "orgpolicy"
-        },
-        "servicecontrol": {
-            "component": "servicecontrol"
-        },
-        "servicemanagement": {
-            "component": "servicemanagement"
-        },
-        "serviceusage": {
-            "component": "serviceusage"
         },
         "spanner/benchmarks": {
             "component": "spanner/benchmarks"

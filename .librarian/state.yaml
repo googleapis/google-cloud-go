@@ -1,5 +1,29 @@
 image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
 libraries:
+  - id: accessapproval
+    version: 1.8.8
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/cloud/accessapproval/v1
+        service_config: accessapproval_v1.yaml
+    source_roots:
+      - accessapproval
+      - internal/generated/snippets/accessapproval
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/accessapproval/
+      - ^accessapproval/apiv1/[^/]*_client\.go$
+      - ^accessapproval/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^accessapproval/apiv1/[^/]*_client_example_test\.go$
+      - ^accessapproval/apiv1/auxiliary\.go$
+      - ^accessapproval/apiv1/auxiliary_go123\.go$
+      - ^accessapproval/apiv1/doc\.go$
+      - ^accessapproval/apiv1/gapic_metadata\.json$
+      - ^accessapproval/apiv1/helpers\.go$
+      - ^accessapproval/apiv1/accessapprovalpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/accessapproval/
+    tag_format: '{id}/v{version}'
   - id: accesscontextmanager
     version: 1.9.7
     last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
@@ -874,6 +898,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/capacityplanner/
     tag_format: '{id}/v{version}'
+  - id: certificatemanager
+    version: 1.9.6
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/cloud/certificatemanager/v1
+        service_config: certificatemanager_v1.yaml
+    source_roots:
+      - certificatemanager
+      - internal/generated/snippets/certificatemanager
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/certificatemanager/
+      - ^certificatemanager/apiv1/[^/]*_client\.go$
+      - ^certificatemanager/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^certificatemanager/apiv1/[^/]*_client_example_test\.go$
+      - ^certificatemanager/apiv1/auxiliary\.go$
+      - ^certificatemanager/apiv1/auxiliary_go123\.go$
+      - ^certificatemanager/apiv1/doc\.go$
+      - ^certificatemanager/apiv1/gapic_metadata\.json$
+      - ^certificatemanager/apiv1/helpers\.go$
+      - ^certificatemanager/apiv1/certificatemanagerpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/certificatemanager/
+    tag_format: '{id}/v{version}'
   - id: channel
     version: 1.20.0
     last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
@@ -1487,6 +1535,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
+  - id: dataqna
+    version: 0.9.8
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/cloud/dataqna/v1alpha
+        service_config: dataqna_v1alpha.yaml
+    source_roots:
+      - dataqna
+      - internal/generated/snippets/dataqna
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/dataqna/
+      - ^dataqna/apiv1alpha/[^/]*_client\.go$
+      - ^dataqna/apiv1alpha/[^/]*_client_example_go123_test\.go$
+      - ^dataqna/apiv1alpha/[^/]*_client_example_test\.go$
+      - ^dataqna/apiv1alpha/auxiliary\.go$
+      - ^dataqna/apiv1alpha/auxiliary_go123\.go$
+      - ^dataqna/apiv1alpha/doc\.go$
+      - ^dataqna/apiv1alpha/gapic_metadata\.json$
+      - ^dataqna/apiv1alpha/helpers\.go$
+      - ^dataqna/apiv1alpha/dataqnapb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/dataqna/
+    tag_format: '{id}/v{version}'
   - id: datastream
     version: 1.15.1
     last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
@@ -2087,6 +2159,24 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/gkemulticloud/
     tag_format: '{id}/v{version}'
+  - id: grafeas
+    version: 0.3.17
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis: []
+    source_roots:
+      - grafeas
+    preserve_regex: []
+    remove_regex:
+      - ^grafeas/apiv1/[^/]*_client\.go$
+      - ^grafeas/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^grafeas/apiv1/[^/]*_client_example_test\.go$
+      - ^grafeas/apiv1/auxiliary\.go$
+      - ^grafeas/apiv1/auxiliary_go123\.go$
+      - ^grafeas/apiv1/doc\.go$
+      - ^grafeas/apiv1/gapic_metadata\.json$
+      - ^grafeas/apiv1/helpers\.go$
+      - ^grafeas/apiv1/grafeaspb/.*$
+    tag_format: '{id}/v{version}'
   - id: gsuiteaddons
     version: 1.7.8
     last_generated_commit: a9ebc23947a515fab3de97ff326c86fc8f03fae1
@@ -2274,6 +2364,41 @@ libraries:
       - ^iot/apiv1/iotpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/iot/
+    tag_format: '{id}/v{version}'
+  - id: kms
+    version: 1.23.2
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/cloud/kms/v1
+        service_config: cloudkms_v1.yaml
+      - path: google/cloud/kms/inventory/v1
+        service_config: kmsinventory_v1.yaml
+    source_roots:
+      - kms
+      - internal/generated/snippets/kms
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/kms/
+      - ^kms/apiv1/[^/]*_client\.go$
+      - ^kms/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^kms/apiv1/[^/]*_client_example_test\.go$
+      - ^kms/apiv1/auxiliary\.go$
+      - ^kms/apiv1/auxiliary_go123\.go$
+      - ^kms/apiv1/doc\.go$
+      - ^kms/apiv1/gapic_metadata\.json$
+      - ^kms/apiv1/helpers\.go$
+      - ^kms/apiv1/kmspb/.*$
+      - ^kms/inventory/apiv1/[^/]*_client\.go$
+      - ^kms/inventory/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^kms/inventory/apiv1/[^/]*_client_example_test\.go$
+      - ^kms/inventory/apiv1/auxiliary\.go$
+      - ^kms/inventory/apiv1/auxiliary_go123\.go$
+      - ^kms/inventory/apiv1/doc\.go$
+      - ^kms/inventory/apiv1/gapic_metadata\.json$
+      - ^kms/inventory/apiv1/helpers\.go$
+      - ^kms/inventory/apiv1/inventorypb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/kms/
     tag_format: '{id}/v{version}'
   - id: language
     version: 1.14.6
@@ -3070,6 +3195,41 @@ libraries:
       - ^orchestration/airflow/service/apiv1/servicepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/orchestration/
+    tag_format: '{id}/v{version}'
+  - id: orgpolicy
+    version: 1.15.1
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/cloud/orgpolicy/v1
+        service_config: ""
+      - path: google/cloud/orgpolicy/v2
+        service_config: orgpolicy_v2.yaml
+    source_roots:
+      - orgpolicy
+      - internal/generated/snippets/orgpolicy
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/orgpolicy/
+      - ^orgpolicy/apiv1/[^/]*_client\.go$
+      - ^orgpolicy/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^orgpolicy/apiv1/[^/]*_client_example_test\.go$
+      - ^orgpolicy/apiv1/auxiliary\.go$
+      - ^orgpolicy/apiv1/auxiliary_go123\.go$
+      - ^orgpolicy/apiv1/doc\.go$
+      - ^orgpolicy/apiv1/gapic_metadata\.json$
+      - ^orgpolicy/apiv1/helpers\.go$
+      - ^orgpolicy/apiv1/orgpolicypb/.*$
+      - ^orgpolicy/apiv2/[^/]*_client\.go$
+      - ^orgpolicy/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^orgpolicy/apiv2/[^/]*_client_example_test\.go$
+      - ^orgpolicy/apiv2/auxiliary\.go$
+      - ^orgpolicy/apiv2/auxiliary_go123\.go$
+      - ^orgpolicy/apiv2/doc\.go$
+      - ^orgpolicy/apiv2/gapic_metadata\.json$
+      - ^orgpolicy/apiv2/helpers\.go$
+      - ^orgpolicy/apiv2/orgpolicypb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/orgpolicy/
     tag_format: '{id}/v{version}'
   - id: osconfig
     version: 1.15.1
@@ -3963,6 +4123,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/securityposture/
     tag_format: '{id}/v{version}'
+  - id: servicecontrol
+    version: 1.14.6
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/api/servicecontrol/v1
+        service_config: servicecontrol.yaml
+    source_roots:
+      - servicecontrol
+      - internal/generated/snippets/servicecontrol
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/servicecontrol/
+      - ^servicecontrol/apiv1/[^/]*_client\.go$
+      - ^servicecontrol/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^servicecontrol/apiv1/[^/]*_client_example_test\.go$
+      - ^servicecontrol/apiv1/auxiliary\.go$
+      - ^servicecontrol/apiv1/auxiliary_go123\.go$
+      - ^servicecontrol/apiv1/doc\.go$
+      - ^servicecontrol/apiv1/gapic_metadata\.json$
+      - ^servicecontrol/apiv1/helpers\.go$
+      - ^servicecontrol/apiv1/servicecontrolpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/servicecontrol/
+    tag_format: '{id}/v{version}'
   - id: servicedirectory
     version: 1.12.7
     last_generated_commit: db61975fe3b3edabed32fda8056d08e79a93a59e
@@ -4021,6 +4205,54 @@ libraries:
       - ^servicehealth/apiv1/servicehealthpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/servicehealth/
+    tag_format: '{id}/v{version}'
+  - id: servicemanagement
+    version: 1.10.7
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/api/servicemanagement/v1
+        service_config: servicemanagement_v1.yaml
+    source_roots:
+      - servicemanagement
+      - internal/generated/snippets/servicemanagement
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/servicemanagement/
+      - ^servicemanagement/apiv1/[^/]*_client\.go$
+      - ^servicemanagement/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^servicemanagement/apiv1/[^/]*_client_example_test\.go$
+      - ^servicemanagement/apiv1/auxiliary\.go$
+      - ^servicemanagement/apiv1/auxiliary_go123\.go$
+      - ^servicemanagement/apiv1/doc\.go$
+      - ^servicemanagement/apiv1/gapic_metadata\.json$
+      - ^servicemanagement/apiv1/helpers\.go$
+      - ^servicemanagement/apiv1/servicemanagementpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/servicemanagement/
+    tag_format: '{id}/v{version}'
+  - id: serviceusage
+    version: 1.9.7
+    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    apis:
+      - path: google/api/serviceusage/v1
+        service_config: serviceusage_v1.yaml
+    source_roots:
+      - serviceusage
+      - internal/generated/snippets/serviceusage
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/serviceusage/
+      - ^serviceusage/apiv1/[^/]*_client\.go$
+      - ^serviceusage/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^serviceusage/apiv1/[^/]*_client_example_test\.go$
+      - ^serviceusage/apiv1/auxiliary\.go$
+      - ^serviceusage/apiv1/auxiliary_go123\.go$
+      - ^serviceusage/apiv1/doc\.go$
+      - ^serviceusage/apiv1/gapic_metadata\.json$
+      - ^serviceusage/apiv1/helpers\.go$
+      - ^serviceusage/apiv1/serviceusagepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/serviceusage/
     tag_format: '{id}/v{version}'
   - id: shell
     version: 1.8.7
