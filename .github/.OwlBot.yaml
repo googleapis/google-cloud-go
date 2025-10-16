@@ -3,8 +3,6 @@ docker:
 
 deep-remove-regex:
   - /accessapproval/apiv1/
-  - /aiplatform/apiv1/
-  - /aiplatform/apiv1beta1/
   - /bigquery/analyticshub/apiv1/
   - /bigquery/biglake/apiv1/
   - /bigquery/biglake/apiv1alpha1/
@@ -42,8 +40,6 @@ deep-remove-regex:
   - /geminidataanalytics/apiv1beta/
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
-  - /internal/generated/snippets/aiplatform/apiv1/
-  - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1alpha1/
@@ -134,10 +130,6 @@ deep-preserve-regex:
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/aiplatform/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
     dest: /
   # Just copy the bigtable protos for now
   - source: /google/bigtable/admin/v2/cloud.google.com/go/bigtable/admin/apiv2/adminpb
