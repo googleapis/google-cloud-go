@@ -1,5 +1,4 @@
 modules:
-  - aiplatform
   # List the bigquery/v2 module before the bigquery module so that the contents
   # are processed using the correct inner module boundary.
   # More info: https://github.com/googleapis/google-cloud-go/issues/12452
@@ -143,12 +142,6 @@ manual-clients:
     library-type: GAPIC_MANUAL
 
 service-configs:
-  - input-directory: google/cloud/aiplatform/v1
-    service-config: aiplatform_v1.yaml
-    import-path: cloud.google.com/go/aiplatform/apiv1
-  - input-directory: google/cloud/aiplatform/v1beta1
-    service-config: aiplatform_v1beta1.yaml
-    import-path: cloud.google.com/go/aiplatform/apiv1beta1
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
@@ -299,6 +292,7 @@ skip-module-scan-paths:
   - dataqna
   - certificatemanager
   - accessapproval
+  - aiplatform
   - vmmigration
   - run
   - monitoring

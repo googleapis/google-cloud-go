@@ -1,5 +1,4 @@
 {
-    "aiplatform": "1.107.0",
     "compute": "1.49.0",
     "configdelivery": "0.1.1",
     "containeranalysis": "0.14.2",

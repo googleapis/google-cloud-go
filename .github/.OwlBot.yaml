@@ -2,8 +2,6 @@ docker:
   image: gcr.io/cloud-devrel-public-resources/owlbot-go:latest
 
 deep-remove-regex:
-  - /aiplatform/apiv1/
-  - /aiplatform/apiv1beta1/
   - /bigquery/analyticshub/apiv1/
   - /bigquery/biglake/apiv1/
   - /bigquery/biglake/apiv1alpha1/
@@ -38,8 +36,6 @@ deep-remove-regex:
   - /firestore/apiv1/admin/
   - /geminidataanalytics/apiv1beta/
   # START snippets
-  - /internal/generated/snippets/aiplatform/apiv1/
-  - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1alpha1/
@@ -112,10 +108,6 @@ deep-preserve-regex:
   - /compute/apiv1/smoke_test.go
 
 deep-copy-regex:
-  - source: /google/cloud/aiplatform/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
-    dest: /
   # Just copy the bigtable protos for now
   - source: /google/bigtable/admin/v2/cloud.google.com/go/bigtable/admin/apiv2/adminpb
     dest: /bigtable/admin/apiv2/adminpb
