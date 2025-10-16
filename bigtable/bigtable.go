@@ -58,6 +58,9 @@ const (
 	methodNameReadRows               = "ReadRows"
 	// Cannot extract extract d.GRPCConnPoolSize as DialSettings is in internal grpc pacakage
 	defaultBigtableConnPoolSize = 10
+
+	// For routing cookie
+	cookiePrefix = "x-goog-cbt-cookie-"
 )
 
 var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
@@ -127,6 +130,13 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if err != nil {
 		return nil, err
 	}
+	// for otel metrics
+	if metricsTracerFactory.enabled {
+		if len(metricsTracerFactory.clientOpts) > 0 {
+			o = append(o, metricsTracerFactory.clientOpts...)
+		}
+	}
+
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
 	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(sharedLatencyStatsHandler)))
@@ -406,6 +416,7 @@ type Table struct {
 // and enabled on the client
 func (c *Client) newFeatureFlags() metadata.MD {
 	ff := btpb.FeatureFlags{
+		RoutingCookie:            true,
 		ReverseScans:             true,
 		LastScannedRowResponses:  true,
 		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
@@ -2289,15 +2300,37 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 	mt.setMethod(method)
 
 	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
+		op := &mt.currOp
+		// Inject cookie and attempt information
+		md := metadata.New(nil)
+		for k, v := range op.cookies {
+			md.Append(k, v)
+		}
+
+		existingMD, _ := metadata.FromOutgoingContext(ctx)
+		finalMD := metadata.Join(existingMD, md)
+		newCtx := metadata.NewOutgoingContext(ctx, finalMD)
+
 		mt.recordAttemptStart()
 
 		// f makes calls to CBT service
-		err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
 		// Record attempt specific metrics
 		mt.recordAttemptCompletion(attemptHeaderMD, attempTrailerMD, err)
+
+		extractCookies(attemptHeaderMD, op)
+		extractCookies(attempTrailerMD, op)
 		return err
 	}
 
 	return gax.Invoke(ctx, callWrapper, opts...)
+}
+
+func extractCookies(md metadata.MD, op *opTracer) {
+	for k, v := range md {
+		if strings.HasPrefix(k, cookiePrefix) {
+			op.cookies[k] = v[len(v)-1]
+		}
+	}
 }

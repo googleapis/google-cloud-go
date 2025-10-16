@@ -25,20 +25,6 @@ func TestLoadConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	li := p.config.GoogleapisToImportPath["google/cloud/alloydb/connectors/v1"]
-	if got, want := li.ImportPath, "cloud.google.com/go/alloydb/connectors/apiv1"; got != want {
-		t.Errorf("got %v, want %v", got, want)
-	}
-	if got, want := li.ServiceConfig, "connectors_v1.yaml"; got != want {
-		t.Errorf("got %v, want %v", got, want)
-	}
-	if got, want := li.RelPath, "/alloydb/connectors/apiv1"; got != want {
-		t.Errorf("got %v, want %v", got, want)
-	}
-	if got, want := li.ReleaseLevel, "preview"; got != want {
-		t.Errorf("got %v, want %v", got, want)
-	}
-
 	wantSkipPath := "bigquery/v2"
 	found := false
 	for _, p := range p.config.SkipModuleScanPaths {

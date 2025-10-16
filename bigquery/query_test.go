@@ -362,12 +362,28 @@ func TestQuery(t *testing.T) {
 			src: &QueryConfig{
 				Q:                "query string",
 				Reservation:      "reservation/1",
+				MaxSlots:         111,
 				DefaultProjectID: "def-project-id",
 				DefaultDatasetID: "def-dataset-id",
 			},
 			want: func() *bq.Job {
 				j := defaultQueryJob()
 				j.Configuration.Reservation = "reservation/1"
+				j.Configuration.MaxSlots = 111
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+				Continuous:       true,
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.Continuous = true
 				return j
 			}(),
 		},
@@ -474,6 +490,7 @@ func TestProbeFastPath(t *testing.T) {
 					"key": "val",
 				},
 				Reservation: "reservation/1",
+				MaxSlots:    222,
 			},
 			wantReq: &bq.QueryRequest{
 				Query:          "foo",
@@ -495,6 +512,7 @@ func TestProbeFastPath(t *testing.T) {
 					UseInt64Timestamp: true,
 				},
 				Reservation: "reservation/1",
+				MaxSlots:    222,
 			},
 		},
 		{
@@ -519,6 +537,14 @@ func TestProbeFastPath(t *testing.T) {
 			inCfg: QueryConfig{
 				Q:                   "foo",
 				SchemaUpdateOptions: []string{"bar"},
+			},
+			wantErr: true,
+		},
+		{
+			// fail, continuous query
+			inCfg: QueryConfig{
+				Q:          "foo",
+				Continuous: true,
 			},
 			wantErr: true,
 		},

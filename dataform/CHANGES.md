@@ -1,4 +1,11 @@
-# Changelog
+# Changes
+
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.12.0...dataform/v0.12.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **dataform:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
 
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.11.2...dataform/v0.12.0) (2025-05-21)
 

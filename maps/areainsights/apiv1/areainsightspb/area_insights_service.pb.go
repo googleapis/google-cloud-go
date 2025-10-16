@@ -21,16 +21,13 @@
 package areainsightspb
 
 import (
-	context "context"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	latlng "google.golang.org/genproto/googleapis/type/latlng"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	latlng "google.golang.org/genproto/googleapis/type/latlng"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -1363,102 +1360,4 @@ func file_google_maps_areainsights_v1_area_insights_service_proto_init() {
 	file_google_maps_areainsights_v1_area_insights_service_proto_rawDesc = nil
 	file_google_maps_areainsights_v1_area_insights_service_proto_goTypes = nil
 	file_google_maps_areainsights_v1_area_insights_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// AreaInsightsClient is the client API for AreaInsights service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AreaInsightsClient interface {
-	// This method lets you retrieve insights about areas using a variety of
-	// filter such as: area, place type, operating status, price level
-	// and ratings. Currently "count" and "places" insights are supported. With
-	// "count" insights you can answer questions such as "How many restaurant are
-	// located in California that are operational, are inexpensive and have an
-	// average rating of at least 4 stars" (see `insight` enum for more details).
-	// With "places" insights, you can determine which places match the
-	// requested filter. Clients can then use those place resource names to fetch
-	// more details about each individual place using the Places API.
-	ComputeInsights(ctx context.Context, in *ComputeInsightsRequest, opts ...grpc.CallOption) (*ComputeInsightsResponse, error)
-}
-
-type areaInsightsClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAreaInsightsClient(cc grpc.ClientConnInterface) AreaInsightsClient {
-	return &areaInsightsClient{cc}
-}
-
-func (c *areaInsightsClient) ComputeInsights(ctx context.Context, in *ComputeInsightsRequest, opts ...grpc.CallOption) (*ComputeInsightsResponse, error) {
-	out := new(ComputeInsightsResponse)
-	err := c.cc.Invoke(ctx, "/google.maps.areainsights.v1.AreaInsights/ComputeInsights", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AreaInsightsServer is the server API for AreaInsights service.
-type AreaInsightsServer interface {
-	// This method lets you retrieve insights about areas using a variety of
-	// filter such as: area, place type, operating status, price level
-	// and ratings. Currently "count" and "places" insights are supported. With
-	// "count" insights you can answer questions such as "How many restaurant are
-	// located in California that are operational, are inexpensive and have an
-	// average rating of at least 4 stars" (see `insight` enum for more details).
-	// With "places" insights, you can determine which places match the
-	// requested filter. Clients can then use those place resource names to fetch
-	// more details about each individual place using the Places API.
-	ComputeInsights(context.Context, *ComputeInsightsRequest) (*ComputeInsightsResponse, error)
-}
-
-// UnimplementedAreaInsightsServer can be embedded to have forward compatible implementations.
-type UnimplementedAreaInsightsServer struct {
-}
-
-func (*UnimplementedAreaInsightsServer) ComputeInsights(context.Context, *ComputeInsightsRequest) (*ComputeInsightsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ComputeInsights not implemented")
-}
-
-func RegisterAreaInsightsServer(s *grpc.Server, srv AreaInsightsServer) {
-	s.RegisterService(&_AreaInsights_serviceDesc, srv)
-}
-
-func _AreaInsights_ComputeInsights_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ComputeInsightsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AreaInsightsServer).ComputeInsights(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.maps.areainsights.v1.AreaInsights/ComputeInsights",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AreaInsightsServer).ComputeInsights(ctx, req.(*ComputeInsightsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _AreaInsights_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.maps.areainsights.v1.AreaInsights",
-	HandlerType: (*AreaInsightsServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ComputeInsights",
-			Handler:    _AreaInsights_ComputeInsights_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/maps/areainsights/v1/area_insights_service.proto",
 }

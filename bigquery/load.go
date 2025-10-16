@@ -117,6 +117,15 @@ type LoadConfig struct {
 	// format is
 	// `projects/{project}/locations/{location}/reservations/{reservation}`.
 	Reservation string
+
+	// A target limit on the rate of slot consumption by this query. If set to a
+	// value > 0, BigQuery will attempt to limit the rate of slot consumption by
+	// this query to keep it below the configured limit, even if the query is
+	// eligible for more slots based on fair scheduling. The unused slots will be
+	// available for other jobs and queries to use.
+	//
+	// Note: This feature is not yet generally available.
+	MaxSlots int32
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -148,6 +157,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 	}
 	media := l.Src.populateLoadConfig(config.Load)
 	config.Reservation = l.Reservation
+	config.MaxSlots = int64(l.MaxSlots)
 	return config, media
 }
 
@@ -169,6 +179,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		CreateSession:               q.Load.CreateSession,
 		ColumnNameCharacterMap:      ColumnNameCharacterMap(q.Load.ColumnNameCharacterMap),
 		Reservation:                 q.Reservation,
+		MaxSlots:                    int32(q.MaxSlots),
 	}
 	if q.JobTimeoutMs > 0 {
 		lc.JobTimeout = time.Duration(q.JobTimeoutMs) * time.Millisecond

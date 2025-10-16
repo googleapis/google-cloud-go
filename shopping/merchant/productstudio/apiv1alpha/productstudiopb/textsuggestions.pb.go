@@ -21,16 +21,13 @@
 package productstudiopb
 
 import (
-	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -940,92 +937,4 @@ func file_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto_i
 	file_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto_rawDesc = nil
 	file_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto_goTypes = nil
 	file_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// TextSuggestionsServiceClient is the client API for TextSuggestionsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type TextSuggestionsServiceClient interface {
-	// GenerateProductTextSuggestions generates a set of candidate text
-	// completions (e.g., product titles, descriptions) based on provided product
-	// information. This endpoint leverages GenAI models to create suggestions for
-	// improving existing product text or generating new content.
-	GenerateProductTextSuggestions(ctx context.Context, in *GenerateProductTextSuggestionsRequest, opts ...grpc.CallOption) (*GenerateProductTextSuggestionsResponse, error)
-}
-
-type textSuggestionsServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewTextSuggestionsServiceClient(cc grpc.ClientConnInterface) TextSuggestionsServiceClient {
-	return &textSuggestionsServiceClient{cc}
-}
-
-func (c *textSuggestionsServiceClient) GenerateProductTextSuggestions(ctx context.Context, in *GenerateProductTextSuggestionsRequest, opts ...grpc.CallOption) (*GenerateProductTextSuggestionsResponse, error) {
-	out := new(GenerateProductTextSuggestionsResponse)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.productstudio.v1alpha.TextSuggestionsService/GenerateProductTextSuggestions", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// TextSuggestionsServiceServer is the server API for TextSuggestionsService service.
-type TextSuggestionsServiceServer interface {
-	// GenerateProductTextSuggestions generates a set of candidate text
-	// completions (e.g., product titles, descriptions) based on provided product
-	// information. This endpoint leverages GenAI models to create suggestions for
-	// improving existing product text or generating new content.
-	GenerateProductTextSuggestions(context.Context, *GenerateProductTextSuggestionsRequest) (*GenerateProductTextSuggestionsResponse, error)
-}
-
-// UnimplementedTextSuggestionsServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedTextSuggestionsServiceServer struct {
-}
-
-func (*UnimplementedTextSuggestionsServiceServer) GenerateProductTextSuggestions(context.Context, *GenerateProductTextSuggestionsRequest) (*GenerateProductTextSuggestionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateProductTextSuggestions not implemented")
-}
-
-func RegisterTextSuggestionsServiceServer(s *grpc.Server, srv TextSuggestionsServiceServer) {
-	s.RegisterService(&_TextSuggestionsService_serviceDesc, srv)
-}
-
-func _TextSuggestionsService_GenerateProductTextSuggestions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateProductTextSuggestionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TextSuggestionsServiceServer).GenerateProductTextSuggestions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.productstudio.v1alpha.TextSuggestionsService/GenerateProductTextSuggestions",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TextSuggestionsServiceServer).GenerateProductTextSuggestions(ctx, req.(*GenerateProductTextSuggestionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _TextSuggestionsService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.productstudio.v1alpha.TextSuggestionsService",
-	HandlerType: (*TextSuggestionsServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GenerateProductTextSuggestions",
-			Handler:    _TextSuggestionsService_GenerateProductTextSuggestions_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/productstudio/v1alpha/textsuggestions.proto",
 }

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.15.0...texttospeech/v1.15.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **texttospeech:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.14.0...texttospeech/v1.15.0) (2025-09-22)
+
+
+### Features
+
+* **texttospeech:** Add Gemini TTS Multispeaker API fields ([#12925](https://github.com/googleapis/google-cloud-go/issues/12925)) ([1364374](https://github.com/googleapis/google-cloud-go/commit/136437493967c63802f44281e88dd5f973ff3f50))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.13.0...texttospeech/v1.14.0) (2025-09-04)
 
 

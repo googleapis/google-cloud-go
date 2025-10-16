@@ -39,6 +39,12 @@ func (it *CapacityCommitmentIterator) All() iter.Seq2[*reservationpb.CapacityCom
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ReservationGroupIterator) All() iter.Seq2[*reservationpb.ReservationGroup, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ReservationIterator) All() iter.Seq2[*reservationpb.Reservation, error] {
 	return iterator.RangeAdapter(it.Next)
 }

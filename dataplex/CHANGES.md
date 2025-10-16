@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.27.0...dataplex/v1.27.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **dataplex:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.26.0...dataplex/v1.27.0) (2025-09-11)
 
 

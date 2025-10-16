@@ -40,8 +40,9 @@ type ConfigProvider interface {
 }
 
 // Build constructs the full protoc command arguments for a given API.
-func Build(lib *request.Request, api *request.API, apiServiceDir string, config ConfigProvider, sourceDir, outputDir string) ([]string, error) {
-	// Gather all .proto files in the API's source directory.
+func Build(lib *request.Library, api *request.API, config ConfigProvider, sourceDir, outputDir string, nestedProtos []string) ([]string, error) {
+	// Gather all .proto files in the API's source directory (but not in subdirectories).
+	apiServiceDir := filepath.Join(sourceDir, api.Path)
 	entries, err := os.ReadDir(apiServiceDir)
 	if err != nil {
 		return nil, fmt.Errorf("librariangen: failed to read API source directory %s: %w", apiServiceDir, err)
@@ -54,6 +55,10 @@ func Build(lib *request.Request, api *request.API, apiServiceDir string, config 
 		}
 	}
 
+	for _, nestedProto := range nestedProtos {
+		protoFiles = append(protoFiles, filepath.Join(apiServiceDir, nestedProto))
+
+	}
 	if len(protoFiles) == 0 {
 		return nil, fmt.Errorf("librariangen: no .proto files found in %s", apiServiceDir)
 	}

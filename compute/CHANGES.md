@@ -1,5 +1,28 @@
 # Changes
 
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.48.0...compute/v1.49.0) (2025-10-13)
+
+
+### Features
+
+* **compute:** Update Compute Engine v1 API to revision 20250916 ([#1107](https://github.com/googleapis/google-cloud-go/issues/1107)) ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **compute:** Update Compute Engine v1beta API to revision 20250916 ([#1106](https://github.com/googleapis/google-cloud-go/issues/1106)) ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.47.0...compute/v1.48.0) (2025-09-30)
+
+
+### Features
+
+* **compute:** Update Compute Engine v1 API to revision 20250909 ([#12936](https://github.com/googleapis/google-cloud-go/issues/12936)) ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+* **compute:** Update Compute Engine v1beta API to revision 20250909 ([2a37bd3](https://github.com/googleapis/google-cloud-go/commit/2a37bd3a8dbfebe64d46f3214b84b80cd69ae4e0))
+
+## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.46.0...compute/v1.47.0) (2025-09-16)
+
+
+### Features
+
+* **compute:** Update Compute Engine v1 API to revision 20250902 ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
 ## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.45.0...compute/v1.46.0) (2025-09-11)
 
 
@@ -545,3 +568,4 @@ Compute metadata has been moved to its own module.
 
 This is the first tag to carve out compute as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

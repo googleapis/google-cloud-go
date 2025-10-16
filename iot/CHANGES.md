@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/iot/v1.8.6...iot/v1.8.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* **iot:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/iot/v1.8.5...iot/v1.8.6) (2025-04-15)
 
 

@@ -21,16 +21,13 @@
 package publishingpb
 
 import (
-	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -602,162 +599,4 @@ func file_google_cloud_eventarc_publishing_v1_publisher_proto_init() {
 	file_google_cloud_eventarc_publishing_v1_publisher_proto_rawDesc = nil
 	file_google_cloud_eventarc_publishing_v1_publisher_proto_goTypes = nil
 	file_google_cloud_eventarc_publishing_v1_publisher_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// PublisherClient is the client API for Publisher service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type PublisherClient interface {
-	// Publish events to a ChannelConnection in a partner's project.
-	PublishChannelConnectionEvents(ctx context.Context, in *PublishChannelConnectionEventsRequest, opts ...grpc.CallOption) (*PublishChannelConnectionEventsResponse, error)
-	// Publish events to a subscriber's channel.
-	PublishEvents(ctx context.Context, in *PublishEventsRequest, opts ...grpc.CallOption) (*PublishEventsResponse, error)
-	// Publish events to a message bus.
-	Publish(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublishResponse, error)
-}
-
-type publisherClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewPublisherClient(cc grpc.ClientConnInterface) PublisherClient {
-	return &publisherClient{cc}
-}
-
-func (c *publisherClient) PublishChannelConnectionEvents(ctx context.Context, in *PublishChannelConnectionEventsRequest, opts ...grpc.CallOption) (*PublishChannelConnectionEventsResponse, error) {
-	out := new(PublishChannelConnectionEventsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.eventarc.publishing.v1.Publisher/PublishChannelConnectionEvents", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *publisherClient) PublishEvents(ctx context.Context, in *PublishEventsRequest, opts ...grpc.CallOption) (*PublishEventsResponse, error) {
-	out := new(PublishEventsResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.eventarc.publishing.v1.Publisher/PublishEvents", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *publisherClient) Publish(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublishResponse, error) {
-	out := new(PublishResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.eventarc.publishing.v1.Publisher/Publish", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// PublisherServer is the server API for Publisher service.
-type PublisherServer interface {
-	// Publish events to a ChannelConnection in a partner's project.
-	PublishChannelConnectionEvents(context.Context, *PublishChannelConnectionEventsRequest) (*PublishChannelConnectionEventsResponse, error)
-	// Publish events to a subscriber's channel.
-	PublishEvents(context.Context, *PublishEventsRequest) (*PublishEventsResponse, error)
-	// Publish events to a message bus.
-	Publish(context.Context, *PublishRequest) (*PublishResponse, error)
-}
-
-// UnimplementedPublisherServer can be embedded to have forward compatible implementations.
-type UnimplementedPublisherServer struct {
-}
-
-func (*UnimplementedPublisherServer) PublishChannelConnectionEvents(context.Context, *PublishChannelConnectionEventsRequest) (*PublishChannelConnectionEventsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PublishChannelConnectionEvents not implemented")
-}
-func (*UnimplementedPublisherServer) PublishEvents(context.Context, *PublishEventsRequest) (*PublishEventsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PublishEvents not implemented")
-}
-func (*UnimplementedPublisherServer) Publish(context.Context, *PublishRequest) (*PublishResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
-}
-
-func RegisterPublisherServer(s *grpc.Server, srv PublisherServer) {
-	s.RegisterService(&_Publisher_serviceDesc, srv)
-}
-
-func _Publisher_PublishChannelConnectionEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PublishChannelConnectionEventsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PublisherServer).PublishChannelConnectionEvents(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.eventarc.publishing.v1.Publisher/PublishChannelConnectionEvents",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PublisherServer).PublishChannelConnectionEvents(ctx, req.(*PublishChannelConnectionEventsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Publisher_PublishEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PublishEventsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PublisherServer).PublishEvents(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.eventarc.publishing.v1.Publisher/PublishEvents",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PublisherServer).PublishEvents(ctx, req.(*PublishEventsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Publisher_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PublishRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PublisherServer).Publish(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.eventarc.publishing.v1.Publisher/Publish",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PublisherServer).Publish(ctx, req.(*PublishRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Publisher_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.eventarc.publishing.v1.Publisher",
-	HandlerType: (*PublisherServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "PublishChannelConnectionEvents",
-			Handler:    _Publisher_PublishChannelConnectionEvents_Handler,
-		},
-		{
-			MethodName: "PublishEvents",
-			Handler:    _Publisher_PublishEvents_Handler,
-		},
-		{
-			MethodName: "Publish",
-			Handler:    _Publisher_Publish_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/cloud/eventarc/publishing/v1/publisher.proto",
 }

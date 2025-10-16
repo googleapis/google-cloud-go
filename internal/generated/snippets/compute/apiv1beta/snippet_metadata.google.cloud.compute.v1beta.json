@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1beta",
-    "version": "1.46.0",
+    "version": "1.49.0",
     "language": "GO",
     "apis": [
       {
@@ -22232,7 +22232,7 @@
     {
       "regionTag": "compute_v1beta_generated_Projects_MoveDisk_sync",
       "title": "compute MoveDisk Sample",
-      "description": "MoveDisk moves a persistent disk from one zone to another.",
+      "description": "MoveDisk starting September 29, 2025, you can't use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in [Change the location of a disk](https: //{$universe.dns_names.final_documentation_domain}/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.",
       "file": "ProjectsClient/MoveDisk/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26002,6 +26002,328 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all HealthSource resources (all regional) available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "RegionHealthSourcesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionHealthSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthSourcesScopedListPairIterator",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.AggregatedList",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified HealthSource in the given region",
+      "file": "RegionHealthSourcesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.Delete",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified HealthSource resource in the given region.",
+      "file": "RegionHealthSourcesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.HealthSource",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.Get",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert create a HealthSource in the specified project in the given region using the parameters that are included in the request.",
+      "file": "RegionHealthSourcesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.Insert",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the HealthSources for a project in the given region.",
+      "file": "RegionHealthSourcesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionHealthSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthSourceIterator",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.List",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch updates the specified regional HealthSource resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+      "file": "RegionHealthSourcesClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.Patch",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionHealthSourcesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.TestIamPermissions",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_RegionInstanceGroupManagerResizeRequests_Cancel_sync",
       "title": "compute Cancel Sample",
       "description": "Cancel cancels the specified resize request. Cancelled resize request no longer waits for the resources to be provisioned. Cancel is only possible for requests that are in accepted state.",
@@ -29636,6 +29958,604 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_AddAssociation_sync",
+      "title": "compute AddAssociation Sample",
+      "description": "AddAssociation inserts an association for the specified network policy.",
+      "file": "RegionNetworkPoliciesClient/AddAssociation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddAssociation",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.AddAssociation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddAssociationRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "AddAssociation",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.AddAssociation",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_AddTrafficClassificationRule_sync",
+      "title": "compute AddTrafficClassificationRule Sample",
+      "description": "AddTrafficClassificationRule inserts a rule into a network policy.",
+      "file": "RegionNetworkPoliciesClient/AddTrafficClassificationRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddTrafficClassificationRule",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.AddTrafficClassificationRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddTrafficClassificationRuleRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "AddTrafficClassificationRule",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.AddTrafficClassificationRule",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of network policies. To prevent failure, it's recommended that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "RegionNetworkPoliciesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionNetworkPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkPoliciesScopedListPairIterator",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.AggregatedList",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified policy.",
+      "file": "RegionNetworkPoliciesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.Delete",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified network policy.",
+      "file": "RegionNetworkPoliciesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.NetworkPolicy",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.Get",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_GetAssociation_sync",
+      "title": "compute GetAssociation Sample",
+      "description": "GetAssociation gets an association with the specified name.",
+      "file": "RegionNetworkPoliciesClient/GetAssociation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAssociation",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.GetAssociation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetAssociationRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.NetworkPolicyAssociation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "GetAssociation",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.GetAssociation",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_GetTrafficClassificationRule_sync",
+      "title": "compute GetTrafficClassificationRule Sample",
+      "description": "GetTrafficClassificationRule gets a rule of the specified priority.",
+      "file": "RegionNetworkPoliciesClient/GetTrafficClassificationRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTrafficClassificationRule",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.GetTrafficClassificationRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetTrafficClassificationRuleRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.NetworkPolicyTrafficClassificationRule",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "GetTrafficClassificationRule",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.GetTrafficClassificationRule",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new policy in the specified project using the data included in the request.",
+      "file": "RegionNetworkPoliciesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.Insert",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists all the policies that have been configured for the specified project in the given region.",
+      "file": "RegionNetworkPoliciesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionNetworkPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkPolicyIterator",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.List",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patches the specified policy with the data included in the request.",
+      "file": "RegionNetworkPoliciesClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.Patch",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_PatchTrafficClassificationRule_sync",
+      "title": "compute PatchTrafficClassificationRule Sample",
+      "description": "PatchTrafficClassificationRule patches a rule of the specified priority.",
+      "file": "RegionNetworkPoliciesClient/PatchTrafficClassificationRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchTrafficClassificationRule",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.PatchTrafficClassificationRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchTrafficClassificationRuleRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "PatchTrafficClassificationRule",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.PatchTrafficClassificationRule",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_RemoveAssociation_sync",
+      "title": "compute RemoveAssociation Sample",
+      "description": "RemoveAssociation removes an association for the specified network policy.",
+      "file": "RegionNetworkPoliciesClient/RemoveAssociation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveAssociation",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.RemoveAssociation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RemoveAssociationRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "RemoveAssociation",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.RemoveAssociation",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionNetworkPolicies_RemoveTrafficClassificationRule_sync",
+      "title": "compute RemoveTrafficClassificationRule Sample",
+      "description": "RemoveTrafficClassificationRule deletes a rule of the specified priority.",
+      "file": "RegionNetworkPoliciesClient/RemoveTrafficClassificationRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveTrafficClassificationRule",
+        "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient.RemoveTrafficClassificationRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RemoveTrafficClassificationRuleRegionNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPoliciesClient"
+        },
+        "method": {
+          "shortName": "RemoveTrafficClassificationRule",
+          "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies.RemoveTrafficClassificationRule",
+          "service": {
+            "shortName": "RegionNetworkPolicies",
+            "fullName": "google.cloud.compute.v1beta.RegionNetworkPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_RegionNotificationEndpoints_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified NotificationEndpoint in the given region",
@@ -33208,6 +34128,52 @@
         "method": {
           "shortName": "PerformMaintenance",
           "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks.PerformMaintenance",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_ReservationSubBlocks_ReportFaulty_sync",
+      "title": "compute ReportFaulty Sample",
+      "description": "ReportFaulty allows customers to report a faulty subBlock.",
+      "file": "ReservationSubBlocksClient/ReportFaulty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportFaulty",
+        "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient.ReportFaulty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ReportFaultyReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "ReportFaulty",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks.ReportFaulty",
           "service": {
             "shortName": "ReservationSubBlocks",
             "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks"

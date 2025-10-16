@@ -30,6 +30,11 @@
                 "CreateCluster"
               ]
             },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
@@ -248,6 +253,11 @@
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
+              ]
+            },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
               ]
             },
             "CreateInstance": {

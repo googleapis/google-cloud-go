@@ -21,16 +21,13 @@
 package accountspb
 
 import (
-	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -587,164 +584,4 @@ func file_google_shopping_merchant_accounts_v1_accountrelationships_proto_init()
 	file_google_shopping_merchant_accounts_v1_accountrelationships_proto_rawDesc = nil
 	file_google_shopping_merchant_accounts_v1_accountrelationships_proto_goTypes = nil
 	file_google_shopping_merchant_accounts_v1_accountrelationships_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// AccountRelationshipsServiceClient is the client API for AccountRelationshipsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AccountRelationshipsServiceClient interface {
-	// Retrieve an account relationship.
-	GetAccountRelationship(ctx context.Context, in *GetAccountRelationshipRequest, opts ...grpc.CallOption) (*AccountRelationship, error)
-	// Updates the account relationship. Executing this method requires admin
-	// access.
-	UpdateAccountRelationship(ctx context.Context, in *UpdateAccountRelationshipRequest, opts ...grpc.CallOption) (*AccountRelationship, error)
-	// List account relationships for the specified account.
-	ListAccountRelationships(ctx context.Context, in *ListAccountRelationshipsRequest, opts ...grpc.CallOption) (*ListAccountRelationshipsResponse, error)
-}
-
-type accountRelationshipsServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAccountRelationshipsServiceClient(cc grpc.ClientConnInterface) AccountRelationshipsServiceClient {
-	return &accountRelationshipsServiceClient{cc}
-}
-
-func (c *accountRelationshipsServiceClient) GetAccountRelationship(ctx context.Context, in *GetAccountRelationshipRequest, opts ...grpc.CallOption) (*AccountRelationship, error) {
-	out := new(AccountRelationship)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.accounts.v1.AccountRelationshipsService/GetAccountRelationship", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountRelationshipsServiceClient) UpdateAccountRelationship(ctx context.Context, in *UpdateAccountRelationshipRequest, opts ...grpc.CallOption) (*AccountRelationship, error) {
-	out := new(AccountRelationship)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.accounts.v1.AccountRelationshipsService/UpdateAccountRelationship", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountRelationshipsServiceClient) ListAccountRelationships(ctx context.Context, in *ListAccountRelationshipsRequest, opts ...grpc.CallOption) (*ListAccountRelationshipsResponse, error) {
-	out := new(ListAccountRelationshipsResponse)
-	err := c.cc.Invoke(ctx, "/google.shopping.merchant.accounts.v1.AccountRelationshipsService/ListAccountRelationships", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AccountRelationshipsServiceServer is the server API for AccountRelationshipsService service.
-type AccountRelationshipsServiceServer interface {
-	// Retrieve an account relationship.
-	GetAccountRelationship(context.Context, *GetAccountRelationshipRequest) (*AccountRelationship, error)
-	// Updates the account relationship. Executing this method requires admin
-	// access.
-	UpdateAccountRelationship(context.Context, *UpdateAccountRelationshipRequest) (*AccountRelationship, error)
-	// List account relationships for the specified account.
-	ListAccountRelationships(context.Context, *ListAccountRelationshipsRequest) (*ListAccountRelationshipsResponse, error)
-}
-
-// UnimplementedAccountRelationshipsServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedAccountRelationshipsServiceServer struct {
-}
-
-func (*UnimplementedAccountRelationshipsServiceServer) GetAccountRelationship(context.Context, *GetAccountRelationshipRequest) (*AccountRelationship, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAccountRelationship not implemented")
-}
-func (*UnimplementedAccountRelationshipsServiceServer) UpdateAccountRelationship(context.Context, *UpdateAccountRelationshipRequest) (*AccountRelationship, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccountRelationship not implemented")
-}
-func (*UnimplementedAccountRelationshipsServiceServer) ListAccountRelationships(context.Context, *ListAccountRelationshipsRequest) (*ListAccountRelationshipsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListAccountRelationships not implemented")
-}
-
-func RegisterAccountRelationshipsServiceServer(s *grpc.Server, srv AccountRelationshipsServiceServer) {
-	s.RegisterService(&_AccountRelationshipsService_serviceDesc, srv)
-}
-
-func _AccountRelationshipsService_GetAccountRelationship_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAccountRelationshipRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountRelationshipsServiceServer).GetAccountRelationship(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.accounts.v1.AccountRelationshipsService/GetAccountRelationship",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountRelationshipsServiceServer).GetAccountRelationship(ctx, req.(*GetAccountRelationshipRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccountRelationshipsService_UpdateAccountRelationship_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateAccountRelationshipRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountRelationshipsServiceServer).UpdateAccountRelationship(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.accounts.v1.AccountRelationshipsService/UpdateAccountRelationship",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountRelationshipsServiceServer).UpdateAccountRelationship(ctx, req.(*UpdateAccountRelationshipRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccountRelationshipsService_ListAccountRelationships_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListAccountRelationshipsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountRelationshipsServiceServer).ListAccountRelationships(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.merchant.accounts.v1.AccountRelationshipsService/ListAccountRelationships",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountRelationshipsServiceServer).ListAccountRelationships(ctx, req.(*ListAccountRelationshipsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _AccountRelationshipsService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.merchant.accounts.v1.AccountRelationshipsService",
-	HandlerType: (*AccountRelationshipsServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetAccountRelationship",
-			Handler:    _AccountRelationshipsService_GetAccountRelationship_Handler,
-		},
-		{
-			MethodName: "UpdateAccountRelationship",
-			Handler:    _AccountRelationshipsService_UpdateAccountRelationship_Handler,
-		},
-		{
-			MethodName: "ListAccountRelationships",
-			Handler:    _AccountRelationshipsService_ListAccountRelationships_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/merchant/accounts/v1/accountrelationships.proto",
 }
