@@ -1255,6 +1255,7 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 		ObjectAttrs: ObjectAttrs{Name: o.object},
 		ChunkSize:   googleapi.DefaultUploadChunkSize,
 		Append:      o.c.grpcAppendableUploads,
+		SendCRC32C:  true,
 	}
 }
 
