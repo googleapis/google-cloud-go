@@ -6,9 +6,6 @@
         "accessapproval": {
             "component": "accessapproval"
         },
-        "aiplatform": {
-            "component": "aiplatform"
-        },
         "certificatemanager": {
             "component": "certificatemanager"
         },
