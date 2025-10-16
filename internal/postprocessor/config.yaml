@@ -1,30 +1,21 @@
 modules:
-  - accessapproval
   # List the bigquery/v2 module before the bigquery module so that the contents
   # are processed using the correct inner module boundary.
   # More info: https://github.com/googleapis/google-cloud-go/issues/12452
   - bigquery/v2
   - bigquery
   - bigtable
-  - certificatemanager
   - compute
   - configdelivery
   - containeranalysis
-  - dataqna
   - datastore
   - errorreporting
   - firestore
   - geminidataanalytics
-  - grafeas
-  - kms
   - licensemanager
   - locationfinder
   - logging
-  - orgpolicy
   - profiler
-  - servicecontrol
-  - servicemanagement
-  - serviceusage
   - spanner
   - storage
 
@@ -151,9 +142,6 @@ manual-clients:
     library-type: GAPIC_MANUAL
 
 service-configs:
-  - input-directory: google/cloud/accessapproval/v1
-    service-config: accessapproval_v1.yaml
-    import-path: cloud.google.com/go/accessapproval/apiv1
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
@@ -222,9 +210,6 @@ service-configs:
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
     release-level-override: stable
-  - input-directory: google/cloud/certificatemanager/v1
-    service-config: certificatemanager_v1.yaml
-    import-path: cloud.google.com/go/certificatemanager/apiv1
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
     import-path: cloud.google.com/go/compute/apiv1
@@ -237,39 +222,15 @@ service-configs:
   - input-directory: google/cloud/configdelivery/v1beta
     service-config: configdelivery_v1beta.yaml
     import-path: cloud.google.com/go/configdelivery/apiv1beta
-  - input-directory: google/cloud/dataqna/v1alpha
-    service-config: dataqna_v1alpha.yaml
-    import-path: cloud.google.com/go/dataqna/apiv1alpha
   - input-directory: google/cloud/geminidataanalytics/v1beta
     service-config: geminidataanalytics_v1beta.yaml
     import-path: cloud.google.com/go/geminidataanalytics/apiv1beta
-  - input-directory: google/cloud/kms/v1
-    service-config: cloudkms_v1.yaml
-    import-path: cloud.google.com/go/kms/apiv1
-  - input-directory: google/cloud/kms/inventory/v1
-    service-config: kmsinventory_v1.yaml
-    import-path: cloud.google.com/go/kms/inventory/apiv1
   - input-directory: google/cloud/licensemanager/v1
     service-config: licensemanager_v1.yaml
     import-path: cloud.google.com/go/licensemanager/apiv1
   - input-directory: google/cloud/locationfinder/v1
     service-config: cloudlocationfinder_v1.yaml
     import-path: cloud.google.com/go/locationfinder/apiv1
-  - input-directory: google/cloud/orgpolicy/v1
-    service-config:
-    import-path: cloud.google.com/go/orgpolicy/apiv1
-  - input-directory: google/cloud/orgpolicy/v2
-    service-config: orgpolicy_v2.yaml
-    import-path: cloud.google.com/go/orgpolicy/apiv2
-  - input-directory: google/api/servicecontrol/v1
-    service-config: servicecontrol.yaml
-    import-path: cloud.google.com/go/servicecontrol/apiv1
-  - input-directory: google/api/servicemanagement/v1
-    service-config: servicemanagement_v1.yaml
-    import-path: cloud.google.com/go/servicemanagement/apiv1
-  - input-directory: google/api/serviceusage/v1
-    service-config: serviceusage_v1.yaml
-    import-path: cloud.google.com/go/serviceusage/apiv1
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
     import-path: cloud.google.com/go/errorreporting/apiv1beta1
@@ -322,6 +283,15 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - serviceusage
+  - servicemanagement
+  - servicecontrol
+  - orgpolicy
+  - kms
+  - grafeas
+  - dataqna
+  - certificatemanager
+  - accessapproval
   - aiplatform
   - vmmigration
   - run
