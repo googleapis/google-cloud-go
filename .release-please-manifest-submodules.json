@@ -1,9 +1,6 @@
 {
     "compute": "1.49.0",
-    "configdelivery": "0.1.1",
     "containeranalysis": "0.14.2",
-    "geminidataanalytics": "0.2.1",
     "licensemanager": "0.1.1",
-    "locationfinder": "0.1.1",
     "spanner/benchmarks": "0.1.0"
 }
