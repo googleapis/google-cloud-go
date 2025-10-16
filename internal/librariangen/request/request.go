@@ -57,7 +57,7 @@ type Change struct {
 	Subject          string `json:"subject"`
 	Body             string `json:"body"`
 	PiperCLNumber    string `json:"piper_cl_number"`
-	SourceCommitHash string `json:"source_commit_hash"`
+	CommitHash string `json:"commit_hash"`
 }
 
 // ParseLibrary reads a file from the given path and unmarshals
