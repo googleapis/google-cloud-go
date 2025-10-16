@@ -3173,6 +3173,7 @@ libraries:
       - ^oslogin/apiv1beta/gapic_metadata\.json$
       - ^oslogin/apiv1beta/helpers\.go$
       - ^oslogin/apiv1beta/osloginpb/.*$
+      - ^oslogin/common/commonpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/oslogin/
     tag_format: '{id}/v{version}'
@@ -4355,6 +4356,7 @@ libraries:
       - ^shopping/merchant/reviews/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/reviews/apiv1beta/helpers\.go$
       - ^shopping/merchant/reviews/apiv1beta/reviewspb/.*$
+      - ^shopping/type/typepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
