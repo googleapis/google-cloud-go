@@ -101,6 +101,7 @@ use (
 	./internal/generated/snippets
 	./internal/godocfx
 	./internal/librariangen
+	./internal/migrationcandidates
 	./internal/postprocessor
 	./internal/protoveneer
 	./internal/stategen
