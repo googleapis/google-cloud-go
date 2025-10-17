@@ -1,6 +1,16 @@
 # Changes
 
 
+## [1.57.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.57.0...storage/v1.57.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* **storage:** Copy metadata when using Copier with grpc ([#12919](https://github.com/googleapis/google-cloud-go/issues/12919)) ([57a2e80](https://github.com/googleapis/google-cloud-go/commit/57a2e804f690ec8d4c55fd1c73b0dafd5cff46e5))
+* **storage:** Remove default timeout for gRPC operations ([#13022](https://github.com/googleapis/google-cloud-go/issues/13022)) ([b94c3ba](https://github.com/googleapis/google-cloud-go/commit/b94c3ba69994d9c56ae8f302449dd8df6f287296))
+* **storage:** Skip download of file outside of target dir ([#12945](https://github.com/googleapis/google-cloud-go/issues/12945)) ([6259aee](https://github.com/googleapis/google-cloud-go/commit/6259aeec393d0d996961cac38396daa57ad1a290))
+* **storage:** Upgrade gRPC service registration func ([8fffca2](https://github.com/googleapis/google-cloud-go/commit/8fffca2819fa3dc858c213aa0c503e0df331b084))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.56.1...storage/v1.57.0) (2025-09-23)
 
 
@@ -912,4 +922,3 @@
 
 This is the first tag to carve out storage as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-

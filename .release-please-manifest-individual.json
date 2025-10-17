@@ -7,6 +7,6 @@
   "logging": "1.13.0",
   "profiler": "0.4.3",
   "spanner": "1.86.0",
-  "storage": "1.57.0",
+  "storage": "1.57.1",
   "vertexai": "0.15.0"
 }
