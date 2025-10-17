@@ -246,7 +246,27 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 		return fmt.Errorf("loading postprocessor config: %w", err)
 	}
 	importPrefix := "cloud.google.com/go/" + moduleName + "/"
-	modulePathFragment := "/" + moduleName + "/"
+	// These are designed to match lines conservatively against the root
+	// of the repo and the root of the generated snippets. For example,
+	// when removing deep-remove-regex entries for the module "iam"
+	// want to remove all of:
+	//
+	// - /iam/apiv1/
+	// - /iam/apiv2/
+	// - /iam/apiv3/
+	// - /iam/apiv3beta/
+	// - /iam/credentials/apiv1/
+	// - /internal/generated/snippets/iam/apiv1/
+	// - /internal/generated/snippets/iam/apiv2/
+	// - /internal/generated/snippets/iam/apiv3/
+	// - /internal/generated/snippets/iam/apiv3beta/
+	// - /internal/generated/snippets/iam/credentials/apiv1
+	//
+	// ... but we *don't* want to remove:
+	// - /policytroubleshooter/iam/apiv3/
+	// - /internal/generated/snippets/policytroubleshooter/iam/apiv3/
+	modulePathFragment := " /" + moduleName + "/"
+	snippetsPathFragment := "/snippets/" + moduleName + "/"
 
 	lines := strings.Split(string(fileBytes), "\n")
 	var newLines []string
@@ -269,8 +289,8 @@ func cleanupOwlBotYaml(repoRoot, moduleName string) error {
 			}
 		}
 
-		if strings.Contains(line, modulePathFragment) {
-			// Remove any non-source line containing the module name.
+		if strings.Contains(line, modulePathFragment) || strings.Contains(line, snippetsPathFragment) {
+			// Remove any non-source line containing the module path or snippets path.
 			continue
 		}
 		newLines = append(newLines, line)

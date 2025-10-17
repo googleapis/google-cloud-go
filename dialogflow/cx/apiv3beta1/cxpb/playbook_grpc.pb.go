@@ -22,6 +22,8 @@ package cxpb
 
 import (
 	context "context"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,15 +36,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Playbooks_CreatePlaybook_FullMethodName        = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybook"
-	Playbooks_DeletePlaybook_FullMethodName        = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybook"
-	Playbooks_ListPlaybooks_FullMethodName         = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybooks"
-	Playbooks_GetPlaybook_FullMethodName           = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybook"
-	Playbooks_UpdatePlaybook_FullMethodName        = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/UpdatePlaybook"
-	Playbooks_CreatePlaybookVersion_FullMethodName = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybookVersion"
-	Playbooks_GetPlaybookVersion_FullMethodName    = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybookVersion"
-	Playbooks_ListPlaybookVersions_FullMethodName  = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybookVersions"
-	Playbooks_DeletePlaybookVersion_FullMethodName = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybookVersion"
+	Playbooks_CreatePlaybook_FullMethodName         = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybook"
+	Playbooks_DeletePlaybook_FullMethodName         = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybook"
+	Playbooks_ListPlaybooks_FullMethodName          = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybooks"
+	Playbooks_GetPlaybook_FullMethodName            = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybook"
+	Playbooks_ExportPlaybook_FullMethodName         = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/ExportPlaybook"
+	Playbooks_ImportPlaybook_FullMethodName         = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/ImportPlaybook"
+	Playbooks_UpdatePlaybook_FullMethodName         = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/UpdatePlaybook"
+	Playbooks_CreatePlaybookVersion_FullMethodName  = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybookVersion"
+	Playbooks_GetPlaybookVersion_FullMethodName     = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybookVersion"
+	Playbooks_RestorePlaybookVersion_FullMethodName = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/RestorePlaybookVersion"
+	Playbooks_ListPlaybookVersions_FullMethodName   = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybookVersions"
+	Playbooks_DeletePlaybookVersion_FullMethodName  = "/google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybookVersion"
 )
 
 // PlaybooksClient is the client API for Playbooks service.
@@ -57,12 +62,22 @@ type PlaybooksClient interface {
 	ListPlaybooks(ctx context.Context, in *ListPlaybooksRequest, opts ...grpc.CallOption) (*ListPlaybooksResponse, error)
 	// Retrieves the specified Playbook.
 	GetPlaybook(ctx context.Context, in *GetPlaybookRequest, opts ...grpc.CallOption) (*Playbook, error)
+	// Exports the specified playbook to a binary file.
+	//
+	// Note that resources (e.g. examples, tools) that the playbook
+	// references will also be exported.
+	ExportPlaybook(ctx context.Context, in *ExportPlaybookRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Imports the specified playbook to the specified agent from a binary file.
+	ImportPlaybook(ctx context.Context, in *ImportPlaybookRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified Playbook.
 	UpdatePlaybook(ctx context.Context, in *UpdatePlaybookRequest, opts ...grpc.CallOption) (*Playbook, error)
 	// Creates a version for the specified Playbook.
 	CreatePlaybookVersion(ctx context.Context, in *CreatePlaybookVersionRequest, opts ...grpc.CallOption) (*PlaybookVersion, error)
 	// Retrieves the specified version of the Playbook.
 	GetPlaybookVersion(ctx context.Context, in *GetPlaybookVersionRequest, opts ...grpc.CallOption) (*PlaybookVersion, error)
+	// Retrieves the specified version of the Playbook and stores it as the
+	// current playbook draft, returning the playbook with resources updated.
+	RestorePlaybookVersion(ctx context.Context, in *RestorePlaybookVersionRequest, opts ...grpc.CallOption) (*RestorePlaybookVersionResponse, error)
 	// Lists versions for the specified Playbook.
 	ListPlaybookVersions(ctx context.Context, in *ListPlaybookVersionsRequest, opts ...grpc.CallOption) (*ListPlaybookVersionsResponse, error)
 	// Deletes the specified version of the Playbook.
@@ -113,6 +128,24 @@ func (c *playbooksClient) GetPlaybook(ctx context.Context, in *GetPlaybookReques
 	return out, nil
 }
 
+func (c *playbooksClient) ExportPlaybook(ctx context.Context, in *ExportPlaybookRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Playbooks_ExportPlaybook_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *playbooksClient) ImportPlaybook(ctx context.Context, in *ImportPlaybookRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Playbooks_ImportPlaybook_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *playbooksClient) UpdatePlaybook(ctx context.Context, in *UpdatePlaybookRequest, opts ...grpc.CallOption) (*Playbook, error) {
 	out := new(Playbook)
 	err := c.cc.Invoke(ctx, Playbooks_UpdatePlaybook_FullMethodName, in, out, opts...)
@@ -134,6 +167,15 @@ func (c *playbooksClient) CreatePlaybookVersion(ctx context.Context, in *CreateP
 func (c *playbooksClient) GetPlaybookVersion(ctx context.Context, in *GetPlaybookVersionRequest, opts ...grpc.CallOption) (*PlaybookVersion, error) {
 	out := new(PlaybookVersion)
 	err := c.cc.Invoke(ctx, Playbooks_GetPlaybookVersion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *playbooksClient) RestorePlaybookVersion(ctx context.Context, in *RestorePlaybookVersionRequest, opts ...grpc.CallOption) (*RestorePlaybookVersionResponse, error) {
+	out := new(RestorePlaybookVersionResponse)
+	err := c.cc.Invoke(ctx, Playbooks_RestorePlaybookVersion_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -170,12 +212,22 @@ type PlaybooksServer interface {
 	ListPlaybooks(context.Context, *ListPlaybooksRequest) (*ListPlaybooksResponse, error)
 	// Retrieves the specified Playbook.
 	GetPlaybook(context.Context, *GetPlaybookRequest) (*Playbook, error)
+	// Exports the specified playbook to a binary file.
+	//
+	// Note that resources (e.g. examples, tools) that the playbook
+	// references will also be exported.
+	ExportPlaybook(context.Context, *ExportPlaybookRequest) (*longrunningpb.Operation, error)
+	// Imports the specified playbook to the specified agent from a binary file.
+	ImportPlaybook(context.Context, *ImportPlaybookRequest) (*longrunningpb.Operation, error)
 	// Updates the specified Playbook.
 	UpdatePlaybook(context.Context, *UpdatePlaybookRequest) (*Playbook, error)
 	// Creates a version for the specified Playbook.
 	CreatePlaybookVersion(context.Context, *CreatePlaybookVersionRequest) (*PlaybookVersion, error)
 	// Retrieves the specified version of the Playbook.
 	GetPlaybookVersion(context.Context, *GetPlaybookVersionRequest) (*PlaybookVersion, error)
+	// Retrieves the specified version of the Playbook and stores it as the
+	// current playbook draft, returning the playbook with resources updated.
+	RestorePlaybookVersion(context.Context, *RestorePlaybookVersionRequest) (*RestorePlaybookVersionResponse, error)
 	// Lists versions for the specified Playbook.
 	ListPlaybookVersions(context.Context, *ListPlaybookVersionsRequest) (*ListPlaybookVersionsResponse, error)
 	// Deletes the specified version of the Playbook.
@@ -198,6 +250,12 @@ func (UnimplementedPlaybooksServer) ListPlaybooks(context.Context, *ListPlaybook
 func (UnimplementedPlaybooksServer) GetPlaybook(context.Context, *GetPlaybookRequest) (*Playbook, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPlaybook not implemented")
 }
+func (UnimplementedPlaybooksServer) ExportPlaybook(context.Context, *ExportPlaybookRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportPlaybook not implemented")
+}
+func (UnimplementedPlaybooksServer) ImportPlaybook(context.Context, *ImportPlaybookRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ImportPlaybook not implemented")
+}
 func (UnimplementedPlaybooksServer) UpdatePlaybook(context.Context, *UpdatePlaybookRequest) (*Playbook, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePlaybook not implemented")
 }
@@ -206,6 +264,9 @@ func (UnimplementedPlaybooksServer) CreatePlaybookVersion(context.Context, *Crea
 }
 func (UnimplementedPlaybooksServer) GetPlaybookVersion(context.Context, *GetPlaybookVersionRequest) (*PlaybookVersion, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPlaybookVersion not implemented")
+}
+func (UnimplementedPlaybooksServer) RestorePlaybookVersion(context.Context, *RestorePlaybookVersionRequest) (*RestorePlaybookVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RestorePlaybookVersion not implemented")
 }
 func (UnimplementedPlaybooksServer) ListPlaybookVersions(context.Context, *ListPlaybookVersionsRequest) (*ListPlaybookVersionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPlaybookVersions not implemented")
@@ -297,6 +358,42 @@ func _Playbooks_GetPlaybook_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Playbooks_ExportPlaybook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportPlaybookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlaybooksServer).ExportPlaybook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Playbooks_ExportPlaybook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlaybooksServer).ExportPlaybook(ctx, req.(*ExportPlaybookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Playbooks_ImportPlaybook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImportPlaybookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlaybooksServer).ImportPlaybook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Playbooks_ImportPlaybook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlaybooksServer).ImportPlaybook(ctx, req.(*ImportPlaybookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Playbooks_UpdatePlaybook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePlaybookRequest)
 	if err := dec(in); err != nil {
@@ -347,6 +444,24 @@ func _Playbooks_GetPlaybookVersion_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PlaybooksServer).GetPlaybookVersion(ctx, req.(*GetPlaybookVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Playbooks_RestorePlaybookVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestorePlaybookVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlaybooksServer).RestorePlaybookVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Playbooks_RestorePlaybookVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlaybooksServer).RestorePlaybookVersion(ctx, req.(*RestorePlaybookVersionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -411,6 +526,14 @@ var Playbooks_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Playbooks_GetPlaybook_Handler,
 		},
 		{
+			MethodName: "ExportPlaybook",
+			Handler:    _Playbooks_ExportPlaybook_Handler,
+		},
+		{
+			MethodName: "ImportPlaybook",
+			Handler:    _Playbooks_ImportPlaybook_Handler,
+		},
+		{
 			MethodName: "UpdatePlaybook",
 			Handler:    _Playbooks_UpdatePlaybook_Handler,
 		},
@@ -421,6 +544,10 @@ var Playbooks_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPlaybookVersion",
 			Handler:    _Playbooks_GetPlaybookVersion_Handler,
+		},
+		{
+			MethodName: "RestorePlaybookVersion",
+			Handler:    _Playbooks_RestorePlaybookVersion_Handler,
 		},
 		{
 			MethodName: "ListPlaybookVersions",

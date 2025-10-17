@@ -100,7 +100,7 @@ type Change struct {
 	// The Changelist number in piper associated with this change.
 	ClNum string `yaml:"piper_cl_number" json:"piper_cl_number"`
 	// The commit hash in the source repository associated with this change.
-	CommitHash string `yaml:"source_commit_hash" json:"source_commit_hash"`
+	CommitHash string `yaml:"commit_hash" json:"commit_hash"`
 }
 
 // GitHubBranch is the representation of a repository branch as returned by the GitHub

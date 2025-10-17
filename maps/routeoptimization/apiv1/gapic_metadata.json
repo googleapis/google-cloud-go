@@ -24,6 +24,16 @@
               "methods": [
                 "OptimizeTours"
               ]
+            },
+            "OptimizeToursLongRunning": {
+              "methods": [
+                "OptimizeToursLongRunning"
+              ]
+            },
+            "OptimizeToursUri": {
+              "methods": [
+                "OptimizeToursUri"
+              ]
             }
           }
         },
@@ -43,6 +53,16 @@
             "OptimizeTours": {
               "methods": [
                 "OptimizeTours"
+              ]
+            },
+            "OptimizeToursLongRunning": {
+              "methods": [
+                "OptimizeToursLongRunning"
+              ]
+            },
+            "OptimizeToursUri": {
+              "methods": [
+                "OptimizeToursUri"
               ]
             }
           }

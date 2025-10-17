@@ -22,6 +22,7 @@ package aiplatformpb
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -37,6 +38,7 @@ const (
 	FeatureOnlineStoreService_StreamingFetchFeatureValues_FullMethodName = "/google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService/StreamingFetchFeatureValues"
 	FeatureOnlineStoreService_SearchNearestEntities_FullMethodName       = "/google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService/SearchNearestEntities"
 	FeatureOnlineStoreService_FeatureViewDirectWrite_FullMethodName      = "/google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService/FeatureViewDirectWrite"
+	FeatureOnlineStoreService_GenerateFetchAccessToken_FullMethodName    = "/google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService/GenerateFetchAccessToken"
 )
 
 // FeatureOnlineStoreServiceClient is the client API for FeatureOnlineStoreService service.
@@ -57,6 +59,9 @@ type FeatureOnlineStoreServiceClient interface {
 	// feature view. Requests may not have a one-to-one mapping to responses and
 	// responses may be returned out-of-order to reduce latency.
 	FeatureViewDirectWrite(ctx context.Context, opts ...grpc.CallOption) (FeatureOnlineStoreService_FeatureViewDirectWriteClient, error)
+	// RPC to generate an access token for the given feature view. FeatureViews
+	// under the same FeatureOnlineStore share the same access token.
+	GenerateFetchAccessToken(ctx context.Context, in *GenerateFetchAccessTokenRequest, opts ...grpc.CallOption) (*GenerateFetchAccessTokenResponse, error)
 }
 
 type featureOnlineStoreServiceClient struct {
@@ -147,6 +152,15 @@ func (x *featureOnlineStoreServiceFeatureViewDirectWriteClient) Recv() (*Feature
 	return m, nil
 }
 
+func (c *featureOnlineStoreServiceClient) GenerateFetchAccessToken(ctx context.Context, in *GenerateFetchAccessTokenRequest, opts ...grpc.CallOption) (*GenerateFetchAccessTokenResponse, error) {
+	out := new(GenerateFetchAccessTokenResponse)
+	err := c.cc.Invoke(ctx, FeatureOnlineStoreService_GenerateFetchAccessToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FeatureOnlineStoreServiceServer is the server API for FeatureOnlineStoreService service.
 // All implementations should embed UnimplementedFeatureOnlineStoreServiceServer
 // for forward compatibility
@@ -165,6 +179,9 @@ type FeatureOnlineStoreServiceServer interface {
 	// feature view. Requests may not have a one-to-one mapping to responses and
 	// responses may be returned out-of-order to reduce latency.
 	FeatureViewDirectWrite(FeatureOnlineStoreService_FeatureViewDirectWriteServer) error
+	// RPC to generate an access token for the given feature view. FeatureViews
+	// under the same FeatureOnlineStore share the same access token.
+	GenerateFetchAccessToken(context.Context, *GenerateFetchAccessTokenRequest) (*GenerateFetchAccessTokenResponse, error)
 }
 
 // UnimplementedFeatureOnlineStoreServiceServer should be embedded to have forward compatible implementations.
@@ -182,6 +199,9 @@ func (UnimplementedFeatureOnlineStoreServiceServer) SearchNearestEntities(contex
 }
 func (UnimplementedFeatureOnlineStoreServiceServer) FeatureViewDirectWrite(FeatureOnlineStoreService_FeatureViewDirectWriteServer) error {
 	return status.Errorf(codes.Unimplemented, "method FeatureViewDirectWrite not implemented")
+}
+func (UnimplementedFeatureOnlineStoreServiceServer) GenerateFetchAccessToken(context.Context, *GenerateFetchAccessTokenRequest) (*GenerateFetchAccessTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateFetchAccessToken not implemented")
 }
 
 // UnsafeFeatureOnlineStoreServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -283,6 +303,24 @@ func (x *featureOnlineStoreServiceFeatureViewDirectWriteServer) Recv() (*Feature
 	return m, nil
 }
 
+func _FeatureOnlineStoreService_GenerateFetchAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateFetchAccessTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeatureOnlineStoreServiceServer).GenerateFetchAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeatureOnlineStoreService_GenerateFetchAccessToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeatureOnlineStoreServiceServer).GenerateFetchAccessToken(ctx, req.(*GenerateFetchAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FeatureOnlineStoreService_ServiceDesc is the grpc.ServiceDesc for FeatureOnlineStoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -297,6 +335,10 @@ var FeatureOnlineStoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchNearestEntities",
 			Handler:    _FeatureOnlineStoreService_SearchNearestEntities_Handler,
+		},
+		{
+			MethodName: "GenerateFetchAccessToken",
+			Handler:    _FeatureOnlineStoreService_GenerateFetchAccessToken_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
