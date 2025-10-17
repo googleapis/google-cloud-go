@@ -3961,6 +3961,37 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/retail/
     tag_format: '{id}/v{version}'
+  - id: root-module
+    version: 0.123.0
+    last_generated_commit: 3990e05b25dcaf7ba8d6baa4255d9b012a3a6a4f
+    apis: []
+    source_roots:
+      - civil
+      - httpreplay
+      - internal
+      - rpcreplay
+    preserve_regex: []
+    remove_regex: []
+    release_exclude_paths:
+      - internal/actions
+      - internal/aliasfix
+      - internal/aliasgen
+      - internal/carver
+      - internal/examples
+      - internal/gapicgen
+      - internal/generated
+      - internal/godocfx
+      - internal/kokoro
+      - internal/leakcheck
+      - internal/librariangen
+      - internal/postprocessor
+      - internal/pretty
+      - internal/protoveneer
+      - internal/stategen
+      - internal/testutil
+      - internal/tracecontext
+      - internal/version
+    tag_format: 'v{version}'
   - id: run
     version: 1.12.1
     last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
