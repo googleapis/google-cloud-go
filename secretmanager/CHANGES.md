@@ -6,48 +6,7 @@
 
 ### Features
 
-* A new field `initial_replica_count` is added to message `.google.cloud.aiplatform.v1beta1.DedicatedResources` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* A new field `scale_to_zero_spec` is added to message `.google.cloud.aiplatform.v1beta1.DedicatedResources` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* A new message `ScaleToZeroSpec` is added ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Add JAILBREAK as a new Prompt block reason in PredictionService PiperOrigin-RevId: 817715315 ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Add JAILBREAK category to SafetySettings for prediction service (#13084) ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Add JAILBREAK category to SafetySettings for prediction service PiperOrigin-RevId: 817714487 ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Add ToolVersion APIs ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Add generators in fulfillment for v3beta and v3 ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Add parameters to adjust LLM input and output token limit and temperature in v3beta1 API ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Return Vertex search document metadata with a datastore response ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Update Compute Engine v1 API to revision 20250916 (#1107) ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Update Compute Engine v1beta API to revision 20250916 (#1106) ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* add Event action to Examples ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* add Import/Export playbook functionality to client lib ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* add RestorePlaybookVersion functionality to client lib ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* add additional proto fields and GenerateFetchAccessToken API PiperOrigin-RevId: 817715744 ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* add input and output parameters for Flows ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* add prompt security settings to the SDK ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* add routine and task (existing) playbook types ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* enable unified tracing API ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* support using secret manager to manage tool/webhook credentials ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-
-### Bug Fixes
-
-* An existing message `Action` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing message `AgentUtterance` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing message `FlowInvocation` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing message `PlaybookInput` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing message `PlaybookInvocation` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing message `PlaybookOutput` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing message `ToolUse` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing message `UserUtterance` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* An existing value `JSON` is removed from enum `DataFormat` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* upgrade gRPC service registration func ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* upgrade gRPC service registration func An update to Go gRPC Protobuf generation will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go service files. This change should affect very few client library users. See release notes advisories in https://togithub.com/googleapis/google-cloud-go/pull/11025. ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-
-### Documentation
-
-* A comment for field `flow` in message `.google.cloud.dialogflow.cx.v3beta1.FlowInvocation` is changed ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* A comment for message `FlowInvocation` is changed ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* A comment for message `PlaybookInvocation` is changed ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
-* Update environment documentation to add support for ToolVersions ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* Conditionally enable AllowHardBoundTokens ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
 
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.15.0...secretmanager/v1.15.1) (2025-10-07)
 
