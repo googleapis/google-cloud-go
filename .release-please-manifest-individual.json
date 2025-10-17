@@ -6,7 +6,7 @@
   "firestore": "1.19.0",
   "logging": "1.13.0",
   "profiler": "0.4.3",
-  "spanner": "1.86.0",
+  "spanner": "1.86.1",
   "storage": "1.57.0",
   "vertexai": "0.15.0"
 }
