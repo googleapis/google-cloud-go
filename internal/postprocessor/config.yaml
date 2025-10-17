@@ -5,7 +5,6 @@ modules:
   - bigquery/v2
   - bigquery
   - bigtable
-  - compute
   - containeranalysis
   - datastore
   - errorreporting
@@ -207,12 +206,6 @@ service-configs:
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
     release-level-override: stable
-  - input-directory: google/cloud/compute/v1
-    service-config: compute_v1.yaml
-    import-path: cloud.google.com/go/compute/apiv1
-  - input-directory: google/cloud/compute/v1beta
-    service-config: compute_v1beta.yaml
-    import-path: cloud.google.com/go/compute/apiv1beta
   - input-directory: google/cloud/licensemanager/v1
     service-config: licensemanager_v1.yaml
     import-path: cloud.google.com/go/licensemanager/apiv1
@@ -268,6 +261,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - compute
   - geminidataanalytics
   - locationfinder
   - configdelivery
