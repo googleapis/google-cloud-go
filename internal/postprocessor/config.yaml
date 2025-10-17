@@ -9,7 +9,6 @@ modules:
   - datastore
   - errorreporting
   - firestore
-  - licensemanager
   - logging
   - profiler
   - spanner
@@ -206,9 +205,6 @@ service-configs:
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
     release-level-override: stable
-  - input-directory: google/cloud/licensemanager/v1
-    service-config: licensemanager_v1.yaml
-    import-path: cloud.google.com/go/licensemanager/apiv1
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
     import-path: cloud.google.com/go/errorreporting/apiv1beta1
@@ -261,6 +257,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - licensemanager
   - compute
   - geminidataanalytics
   - locationfinder

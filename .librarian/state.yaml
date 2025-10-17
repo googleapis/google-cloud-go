@@ -2578,6 +2578,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/language/
     tag_format: '{id}/v{version}'
+  - id: licensemanager
+    version: 0.1.1
+    last_generated_commit: 3322511885371d2b2253f209ccc3aa60d4100cfd
+    apis:
+      - path: google/cloud/licensemanager/v1
+        service_config: licensemanager_v1.yaml
+    source_roots:
+      - licensemanager
+      - internal/generated/snippets/licensemanager
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/licensemanager/
+      - ^licensemanager/apiv1/[^/]*_client\.go$
+      - ^licensemanager/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^licensemanager/apiv1/[^/]*_client_example_test\.go$
+      - ^licensemanager/apiv1/auxiliary\.go$
+      - ^licensemanager/apiv1/auxiliary_go123\.go$
+      - ^licensemanager/apiv1/doc\.go$
+      - ^licensemanager/apiv1/gapic_metadata\.json$
+      - ^licensemanager/apiv1/helpers\.go$
+      - ^licensemanager/apiv1/licensemanagerpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/licensemanager/
+    tag_format: '{id}/v{version}'
   - id: lifesciences
     version: 0.10.7
     last_generated_commit: 3322511885371d2b2253f209ccc3aa60d4100cfd
