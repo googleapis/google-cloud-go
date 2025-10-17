@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go:latest
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:a272fe1ca4fba0c579426dd16fdbb0cac7795fae318292696aa59f801598d431
 libraries:
   - id: accessapproval
     version: 1.8.8
