@@ -44,9 +44,11 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	OptimizeTours      []gax.CallOption
-	BatchOptimizeTours []gax.CallOption
-	GetOperation       []gax.CallOption
+	OptimizeTours            []gax.CallOption
+	BatchOptimizeTours       []gax.CallOption
+	OptimizeToursLongRunning []gax.CallOption
+	OptimizeToursUri         []gax.CallOption
+	GetOperation             []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -78,8 +80,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		BatchOptimizeTours: []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
+		BatchOptimizeTours:       []gax.CallOption{},
+		OptimizeToursLongRunning: []gax.CallOption{},
+		OptimizeToursUri:         []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
 	}
 }
 
@@ -96,8 +100,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		BatchOptimizeTours: []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
+		BatchOptimizeTours:       []gax.CallOption{},
+		OptimizeToursLongRunning: []gax.CallOption{},
+		OptimizeToursUri:         []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
 	}
 }
 
@@ -109,6 +115,10 @@ type internalClient interface {
 	OptimizeTours(context.Context, *routeoptimizationpb.OptimizeToursRequest, ...gax.CallOption) (*routeoptimizationpb.OptimizeToursResponse, error)
 	BatchOptimizeTours(context.Context, *routeoptimizationpb.BatchOptimizeToursRequest, ...gax.CallOption) (*BatchOptimizeToursOperation, error)
 	BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation
+	OptimizeToursLongRunning(context.Context, *routeoptimizationpb.OptimizeToursRequest, ...gax.CallOption) (*OptimizeToursLongRunningOperation, error)
+	OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation
+	OptimizeToursUri(context.Context, *routeoptimizationpb.OptimizeToursUriRequest, ...gax.CallOption) (*OptimizeToursUriOperation, error)
+	OptimizeToursUriOperation(name string) *OptimizeToursUriOperation
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -226,6 +236,73 @@ func (c *Client) BatchOptimizeTours(ctx context.Context, req *routeoptimizationp
 // The name must be that of a previously created BatchOptimizeToursOperation, possibly from a different process.
 func (c *Client) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	return c.internalClient.BatchOptimizeToursOperation(name)
+}
+
+// OptimizeToursLongRunning this is a variant of the
+// OptimizeTours
+// method designed for
+// optimizations with large timeout values. It should be preferred over the
+// OptimizeTours method for optimizations that take longer than
+// a few minutes.
+//
+// The returned [long-running operation][google.longrunning.Operation] (LRO)
+// will have a name of the format
+// <parent>/operations/<operation_id> and can be used to track
+// progress of the computation. The
+// metadata field type is
+// OptimizeToursLongRunningMetadata.
+// The response field type is
+// OptimizeToursResponse,
+// if successful.
+//
+// Experimental: See
+// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
+// for more details.
+func (c *Client) OptimizeToursLongRunning(ctx context.Context, req *routeoptimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*OptimizeToursLongRunningOperation, error) {
+	return c.internalClient.OptimizeToursLongRunning(ctx, req, opts...)
+}
+
+// OptimizeToursLongRunningOperation returns a new OptimizeToursLongRunningOperation from a given name.
+// The name must be that of a previously created OptimizeToursLongRunningOperation, possibly from a different process.
+func (c *Client) OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation {
+	return c.internalClient.OptimizeToursLongRunningOperation(name)
+}
+
+// OptimizeToursUri this is a variant of the
+// OptimizeToursLongRunning
+// method designed for optimizations with large timeout values and large
+// input/output sizes.
+//
+// The client specifies the URI of the OptimizeToursRequest stored
+// in Google Cloud Storage and the server writes the OptimizeToursResponse
+// to a client-specified Google Cloud Storage URI.
+//
+// This method should be preferred over the OptimizeTours method for
+// optimizations that take longer than a few minutes and input/output sizes
+// that are larger than 8MB, though it can be used for shorter and smaller
+// optimizations as well.
+//
+// The returned [long-running operation][google.longrunning.Operation] (LRO)
+// will have a name of the format
+// <parent>/operations/<operation_id> and can be used to track
+// progress of the computation. The
+// metadata field type is
+// OptimizeToursLongRunningMetadata.
+// The response field type is
+// OptimizeToursUriResponse,
+// if successful.
+//
+// Experimental: See
+// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
+// for more details.
+func (c *Client) OptimizeToursUri(ctx context.Context, req *routeoptimizationpb.OptimizeToursUriRequest, opts ...gax.CallOption) (*OptimizeToursUriOperation, error) {
+	return c.internalClient.OptimizeToursUri(ctx, req, opts...)
+}
+
+// OptimizeToursUriOperation returns a new OptimizeToursUriOperation from a given name.
+// The name must be that of a previously created OptimizeToursUriOperation, possibly from a different process.
+func (c *Client) OptimizeToursUriOperation(name string) *OptimizeToursUriOperation {
+	return c.internalClient.OptimizeToursUriOperation(name)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -510,6 +587,46 @@ func (c *gRPCClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	}, nil
 }
 
+func (c *gRPCClient) OptimizeToursLongRunning(ctx context.Context, req *routeoptimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*OptimizeToursLongRunningOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).OptimizeToursLongRunning[0:len((*c.CallOptions).OptimizeToursLongRunning):len((*c.CallOptions).OptimizeToursLongRunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.OptimizeToursLongRunning, req, settings.GRPC, c.logger, "OptimizeToursLongRunning")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &OptimizeToursLongRunningOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) OptimizeToursUri(ctx context.Context, req *routeoptimizationpb.OptimizeToursUriRequest, opts ...gax.CallOption) (*OptimizeToursUriOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).OptimizeToursUri[0:len((*c.CallOptions).OptimizeToursUri):len((*c.CallOptions).OptimizeToursUri)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.OptimizeToursUri, req, settings.GRPC, c.logger, "OptimizeToursUri")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &OptimizeToursUriOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -677,6 +794,169 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	}, nil
 }
 
+// OptimizeToursLongRunning this is a variant of the
+// OptimizeTours
+// method designed for
+// optimizations with large timeout values. It should be preferred over the
+// OptimizeTours method for optimizations that take longer than
+// a few minutes.
+//
+// The returned [long-running operation][google.longrunning.Operation] (LRO)
+// will have a name of the format
+// <parent>/operations/<operation_id> and can be used to track
+// progress of the computation. The
+// metadata field type is
+// OptimizeToursLongRunningMetadata.
+// The response field type is
+// OptimizeToursResponse,
+// if successful.
+//
+// Experimental: See
+// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
+// for more details.
+func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeoptimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*OptimizeToursLongRunningOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:optimizeToursLongRunning", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "OptimizeToursLongRunning")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &OptimizeToursLongRunningOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// OptimizeToursUri this is a variant of the
+// OptimizeToursLongRunning
+// method designed for optimizations with large timeout values and large
+// input/output sizes.
+//
+// The client specifies the URI of the OptimizeToursRequest stored
+// in Google Cloud Storage and the server writes the OptimizeToursResponse
+// to a client-specified Google Cloud Storage URI.
+//
+// This method should be preferred over the OptimizeTours method for
+// optimizations that take longer than a few minutes and input/output sizes
+// that are larger than 8MB, though it can be used for shorter and smaller
+// optimizations as well.
+//
+// The returned [long-running operation][google.longrunning.Operation] (LRO)
+// will have a name of the format
+// <parent>/operations/<operation_id> and can be used to track
+// progress of the computation. The
+// metadata field type is
+// OptimizeToursLongRunningMetadata.
+// The response field type is
+// OptimizeToursUriResponse,
+// if successful.
+//
+// Experimental: See
+// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request (at https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request)
+// for more details.
+func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizationpb.OptimizeToursUriRequest, opts ...gax.CallOption) (*OptimizeToursUriOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:OptimizeToursUri", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "OptimizeToursUri")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &OptimizeToursUriOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -740,6 +1020,42 @@ func (c *gRPCClient) BatchOptimizeToursOperation(name string) *BatchOptimizeTour
 func (c *restClient) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchOptimizeToursOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// OptimizeToursLongRunningOperation returns a new OptimizeToursLongRunningOperation from a given name.
+// The name must be that of a previously created OptimizeToursLongRunningOperation, possibly from a different process.
+func (c *gRPCClient) OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation {
+	return &OptimizeToursLongRunningOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// OptimizeToursLongRunningOperation returns a new OptimizeToursLongRunningOperation from a given name.
+// The name must be that of a previously created OptimizeToursLongRunningOperation, possibly from a different process.
+func (c *restClient) OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &OptimizeToursLongRunningOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// OptimizeToursUriOperation returns a new OptimizeToursUriOperation from a given name.
+// The name must be that of a previously created OptimizeToursUriOperation, possibly from a different process.
+func (c *gRPCClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOperation {
+	return &OptimizeToursUriOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// OptimizeToursUriOperation returns a new OptimizeToursUriOperation from a given name.
+// The name must be that of a previously created OptimizeToursUriOperation, possibly from a different process.
+func (c *restClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &OptimizeToursUriOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
