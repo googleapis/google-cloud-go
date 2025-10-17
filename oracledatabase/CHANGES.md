@@ -1,4 +1,11 @@
-# Changelog
+# Changes
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.5.0...oracledatabase/v0.5.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **oracledatabase:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
 
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.4.1...oracledatabase/v0.5.0) (2025-04-30)
 

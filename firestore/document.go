@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -25,6 +26,16 @@ import (
 	"google.golang.org/grpc/status"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
+
+// FieldNotFoundError is returned by DocumentSnapshot.DataAt and
+// DocumentSnapshot.DataAtPath when the given field does not exist.
+type FieldNotFoundError struct {
+	Path string
+}
+
+func (e *FieldNotFoundError) Error() string {
+	return fmt.Sprintf("firestore: no field %q", e.Path)
+}
 
 // A DocumentSnapshot contains document data and metadata.
 type DocumentSnapshot struct {
@@ -152,10 +163,10 @@ func (d *DocumentSnapshot) DataAtPath(fp FieldPath) (interface{}, error) {
 
 // valueAtPath returns the value of m referred to by fp.
 func valueAtPath(fp FieldPath, m map[string]*pb.Value) (*pb.Value, error) {
-	for _, k := range fp[:len(fp)-1] {
+	for i, k := range fp[:len(fp)-1] {
 		v := m[k]
 		if v == nil {
-			return nil, fmt.Errorf("firestore: no field %q", k)
+			return nil, &FieldNotFoundError{Path: strings.Join(fp[:i+1], ".")}
 		}
 		mv := v.GetMapValue()
 		if mv == nil {
@@ -166,7 +177,7 @@ func valueAtPath(fp FieldPath, m map[string]*pb.Value) (*pb.Value, error) {
 	k := fp[len(fp)-1]
 	v := m[k]
 	if v == nil {
-		return nil, fmt.Errorf("firestore: no field %q", k)
+		return nil, &FieldNotFoundError{Path: strings.Join(fp, ".")}
 	}
 	return v, nil
 }

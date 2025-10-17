@@ -102,6 +102,21 @@ var (
 
 type transactionInProgressKey struct{}
 
+// isAborted checks if an error from a transaction operation
+// indicates that the entire transaction should be retried.
+func isAborted(err error) bool {
+	s, ok := status.FromError(err)
+	if !ok {
+		return false // Not a gRPC error
+	}
+	switch s.Code() {
+	case codes.Aborted:
+		return true
+	default:
+		return false
+	}
+}
+
 // RunTransaction runs f in a transaction. f should use the transaction it is given
 // for all Firestore operations. For any operation requiring a context, f should use
 // the context it is passed, not the first argument to RunTransaction.
@@ -162,41 +177,42 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			return err
 		}
 		t.id = res.Transaction
+
 		err = f(context.WithValue(ctx, transactionInProgressKey{}, 1), t)
 		// Read after write can only be checked client-side, so we make sure to check
 		// even if the user does not.
 		if err == nil && t.readAfterWrite {
 			err = errReadAfterWrite
 		}
-		if err != nil {
-			t.rollback()
-			// Prefer f's returned error to rollback error.
-			return err
-		}
-		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.Commit")
-		commitResponse, err = t.c.c.Commit(t.ctx, &pb.CommitRequest{
-			Database:    t.c.path(),
-			Writes:      t.writes,
-			Transaction: t.id,
-		})
-		trace.EndSpan(t.ctx, err)
 
-		// on success, handle the commit response
 		if err == nil {
-			for _, opt := range opts {
-				opt.handleCommitResponse(commitResponse)
+			t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.Commit")
+			commitResponse, err = t.c.c.Commit(t.ctx, &pb.CommitRequest{
+				Database:    t.c.path(),
+				Writes:      t.writes,
+				Transaction: t.id,
+			})
+			trace.EndSpan(t.ctx, err)
+
+			// on success, handle the commit response
+			if err == nil {
+				for _, opt := range opts {
+					opt.handleCommitResponse(commitResponse)
+				}
+				return nil
 			}
 		}
 
-		// If a read-write transaction returns Aborted, retry.
-		// On success or other failures, return here.
-		if t.readOnly || status.Code(err) != codes.Aborted {
-			// According to the Firestore team, we should not roll back here
-			// if err != nil. But spanner does.
-			// See https://code.googlesource.com/gocloud/+/master/spanner/transaction.go#740.
+		// At this point, `err` is non-nil. It came from `f` or `Commit`.
+		t.rollback()
+
+		// If not a retryable error, or if read-only, return now.
+		// (We've already rolled back).
+		if t.readOnly || !isAborted(err) {
 			return err
 		}
 
+		// It's a retryable error, so continue to backoff and retry logic.
 		if txOpts == nil {
 			// txOpts can only be nil if is the first retry of a read-write transaction.
 			// (It is only set here and in the body of "if t.readOnly" above.)
@@ -207,6 +223,9 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 					ReadWrite: &pb.TransactionOptions_ReadWrite{RetryTransaction: t.id},
 				},
 			}
+		} else if rw := txOpts.GetReadWrite(); rw != nil {
+			// Update transaction ID for read-write retries.
+			rw.RetryTransaction = t.id
 		}
 		// Use exponential backoff to avoid contention with other running
 		// transactions.
@@ -218,11 +237,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 		// Reset state for the next attempt.
 		t.writes = nil
 	}
-	// If we run out of retries, return the last error we saw (which should
-	// be the Aborted from Commit, or a context error).
-	if err != nil {
-		t.rollback()
-	}
+
 	return err
 }
 

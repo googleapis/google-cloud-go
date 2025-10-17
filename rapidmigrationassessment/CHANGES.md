@@ -1,5 +1,12 @@
-# Changelog
+# Changes
 
+
+## [1.1.8](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.1.7...rapidmigrationassessment/v1.1.8) (2025-09-22)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
 
 ## [1.1.7](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.1.6...rapidmigrationassessment/v1.1.7) (2025-04-15)
 

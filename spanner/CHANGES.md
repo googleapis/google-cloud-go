@@ -1,5 +1,17 @@
 # Changes
 
+## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.85.1...spanner/v1.86.0) (2025-09-26)
+
+
+### Features
+
+* **spanner:** Support "readOnly" column tag parsing for Go struct operations ([#12895](https://github.com/googleapis/google-cloud-go/issues/12895)) ([003abca](https://github.com/googleapis/google-cloud-go/commit/003abca9172082ad1f2fbcc9b37639f389ade8ee))
+
+
+### Bug Fixes
+
+* **spanner:** Use fresh context for rollback ([#12897](https://github.com/googleapis/google-cloud-go/issues/12897)) ([99c7eeb](https://github.com/googleapis/google-cloud-go/commit/99c7eeb6ff95af9c967c78764069f752d3c26d34))
+
 ## [1.85.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.85.0...spanner/v1.85.1) (2025-09-12)
 
 
@@ -1532,3 +1544,4 @@
 
 This is the first tag to carve out spanner as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.7](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.10.6...lifesciences/v0.10.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* **lifesciences:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [0.10.6](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.10.5...lifesciences/v0.10.6) (2025-04-15)
 
 

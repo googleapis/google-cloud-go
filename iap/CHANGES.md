@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/iap/v1.11.2...iap/v1.11.3) (2025-09-18)
+
+
+### Bug Fixes
+
+* **iap:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.11.1...iap/v1.11.2) (2025-05-29)
 
 

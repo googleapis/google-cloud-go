@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.7](https://github.com/googleapis/google-cloud-go/compare/domains/v0.10.6...domains/v0.10.7) (2025-09-16)
+
+
+### Bug Fixes
+
+* **domains:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [0.10.6](https://github.com/googleapis/google-cloud-go/compare/domains/v0.10.5...domains/v0.10.6) (2025-04-15)
 
 

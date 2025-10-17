@@ -1,4 +1,11 @@
-# Changelog
+# Changes
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.3.0...privilegedaccessmanager/v0.3.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **privilegedaccessmanager:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
 
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.2.5...privilegedaccessmanager/v0.3.0) (2025-07-31)
 

@@ -43,6 +43,7 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 			path:           dbPath,
 			parentPath:     dbPath + "/documents",
 			allDescendants: true,
+			readSettings:   &readSettings{},
 		},
 	}
 }

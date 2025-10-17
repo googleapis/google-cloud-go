@@ -21,15 +21,12 @@
 package retailpb
 
 import (
-	context "context"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -1404,119 +1401,4 @@ func file_google_cloud_retail_v2_conversational_search_service_proto_init() {
 	file_google_cloud_retail_v2_conversational_search_service_proto_rawDesc = nil
 	file_google_cloud_retail_v2_conversational_search_service_proto_goTypes = nil
 	file_google_cloud_retail_v2_conversational_search_service_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// ConversationalSearchServiceClient is the client API for ConversationalSearchService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ConversationalSearchServiceClient interface {
-	// Performs a conversational search.
-	//
-	// This feature is only available for users who have Conversational Search
-	// enabled.
-	ConversationalSearch(ctx context.Context, in *ConversationalSearchRequest, opts ...grpc.CallOption) (ConversationalSearchService_ConversationalSearchClient, error)
-}
-
-type conversationalSearchServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewConversationalSearchServiceClient(cc grpc.ClientConnInterface) ConversationalSearchServiceClient {
-	return &conversationalSearchServiceClient{cc}
-}
-
-func (c *conversationalSearchServiceClient) ConversationalSearch(ctx context.Context, in *ConversationalSearchRequest, opts ...grpc.CallOption) (ConversationalSearchService_ConversationalSearchClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_ConversationalSearchService_serviceDesc.Streams[0], "/google.cloud.retail.v2.ConversationalSearchService/ConversationalSearch", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &conversationalSearchServiceConversationalSearchClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type ConversationalSearchService_ConversationalSearchClient interface {
-	Recv() (*ConversationalSearchResponse, error)
-	grpc.ClientStream
-}
-
-type conversationalSearchServiceConversationalSearchClient struct {
-	grpc.ClientStream
-}
-
-func (x *conversationalSearchServiceConversationalSearchClient) Recv() (*ConversationalSearchResponse, error) {
-	m := new(ConversationalSearchResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// ConversationalSearchServiceServer is the server API for ConversationalSearchService service.
-type ConversationalSearchServiceServer interface {
-	// Performs a conversational search.
-	//
-	// This feature is only available for users who have Conversational Search
-	// enabled.
-	ConversationalSearch(*ConversationalSearchRequest, ConversationalSearchService_ConversationalSearchServer) error
-}
-
-// UnimplementedConversationalSearchServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedConversationalSearchServiceServer struct {
-}
-
-func (*UnimplementedConversationalSearchServiceServer) ConversationalSearch(*ConversationalSearchRequest, ConversationalSearchService_ConversationalSearchServer) error {
-	return status.Errorf(codes.Unimplemented, "method ConversationalSearch not implemented")
-}
-
-func RegisterConversationalSearchServiceServer(s *grpc.Server, srv ConversationalSearchServiceServer) {
-	s.RegisterService(&_ConversationalSearchService_serviceDesc, srv)
-}
-
-func _ConversationalSearchService_ConversationalSearch_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ConversationalSearchRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ConversationalSearchServiceServer).ConversationalSearch(m, &conversationalSearchServiceConversationalSearchServer{stream})
-}
-
-type ConversationalSearchService_ConversationalSearchServer interface {
-	Send(*ConversationalSearchResponse) error
-	grpc.ServerStream
-}
-
-type conversationalSearchServiceConversationalSearchServer struct {
-	grpc.ServerStream
-}
-
-func (x *conversationalSearchServiceConversationalSearchServer) Send(m *ConversationalSearchResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-var _ConversationalSearchService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.retail.v2.ConversationalSearchService",
-	HandlerType: (*ConversationalSearchServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "ConversationalSearch",
-			Handler:       _ConversationalSearchService_ConversationalSearch_Handler,
-			ServerStreams: true,
-		},
-	},
-	Metadata: "google/cloud/retail/v2/conversational_search_service.proto",
 }

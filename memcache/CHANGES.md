@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/memcache/v1.11.6...memcache/v1.11.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* **memcache:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/memcache/v1.11.5...memcache/v1.11.6) (2025-04-15)
 
 

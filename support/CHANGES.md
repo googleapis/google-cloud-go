@@ -1,5 +1,12 @@
-# Changelog
+# Changes
 
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/support/v1.4.0...support/v1.4.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **support:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
 
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/support/v1.3.0...support/v1.4.0) (2025-08-12)
 

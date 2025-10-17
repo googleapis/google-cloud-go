@@ -17,16 +17,3 @@
 //go:build go1.23
 
 package capacityplanner
-
-import (
-	"iter"
-
-	capacityplannerpb "cloud.google.com/go/capacityplanner/apiv1beta/capacityplannerpb"
-	"github.com/googleapis/gax-go/v2/iterator"
-)
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *CapacityPlanIterator) All() iter.Seq2[*capacityplannerpb.CapacityPlan, error] {
-	return iterator.RangeAdapter(it.Next)
-}

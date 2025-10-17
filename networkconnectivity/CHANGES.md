@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.19.0...networkconnectivity/v1.19.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.18.0...networkconnectivity/v1.19.0) (2025-09-11)
 
 

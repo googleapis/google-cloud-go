@@ -186,6 +186,8 @@ type metricInfo struct {
 type builtinMetricsTracerFactory struct {
 	enabled bool
 
+	clientOpts []option.ClientOption
+
 	// To be called on client close
 	shutdown func()
 
@@ -241,7 +243,30 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		return disabledMetricsTracerFactory, nil
 	}
 	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
-	tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
+	// Enable Otel metrics collection
+	otelContext, err := newOtelMetricsContext(ctx, metricsConfig{
+		project:         project,
+		instance:        instance,
+		appProfile:      appProfile,
+		clientName:      clientName,
+		clientUID:       clientUID,
+		interval:        defaultSamplePeriod,
+		customExporter:  nil,
+		manualReader:    nil,
+		disableExporter: false,
+		resourceOpts:    nil,
+	})
+
+	// the error from newOtelMetricsContext is silently ignored since metrics are not critical to client creation.
+	if err == nil {
+		tracerFactory.clientOpts = otelContext.clientOpts
+	}
+	tracerFactory.shutdown = func() {
+		if otelContext != nil {
+			otelContext.close()
+		}
+		meterProvider.Shutdown(ctx)
+	}
 
 	// Create meter and instruments
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
@@ -432,6 +457,9 @@ type opTracer struct {
 	currAttempt attemptTracer
 
 	appBlockingLatency float64
+
+	// For routing cookie and gRPC attempt number
+	cookies map[string]string
 }
 
 func (o *opTracer) setStartTime(t time.Time) {
@@ -499,13 +527,19 @@ func (a *attemptTracer) setServerLatencyErr(err error) {
 }
 
 func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context, tableName string, isStreaming bool) builtinMetricsTracer {
-	if !tf.enabled {
-		return builtinMetricsTracer{builtInEnabled: false}
-	}
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
-	currOpTracer := opTracer{}
+	currOpTracer := opTracer{
+		cookies: make(map[string]string),
+	}
 	currOpTracer.setStartTime(time.Now())
+
+	if !tf.enabled {
+		return builtinMetricsTracer{
+			builtInEnabled: false,
+			currOp:         currOpTracer,
+		}
+	}
 
 	return builtinMetricsTracer{
 		ctx:            ctx,
