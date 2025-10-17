@@ -62,7 +62,6 @@ deep-remove-regex:
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/firestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/admin/
-  - /internal/generated/snippets/licensemanager/apiv1/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/spanner/adapter/apiv1/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
@@ -70,7 +69,6 @@ deep-remove-regex:
   - /internal/generated/snippets/spanner/apiv1/
   - /internal/generated/snippets/storage/control/apiv2/
   # END snippets
-  - /licensemanager/apiv1/
   - /logging/apiv2/
   - /spanner/adapter/apiv1/
   - /spanner/admin/database/apiv1/
@@ -161,8 +159,6 @@ deep-copy-regex:
   - source: /google/firestore/v1/cloud.google.com/go
     dest: /
   - source: /google/firestore/admin/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/licensemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
     dest: /

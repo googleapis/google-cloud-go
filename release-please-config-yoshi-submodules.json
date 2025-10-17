@@ -9,9 +9,6 @@
         "containeranalysis": {
             "component": "containeranalysis"
         },
-        "licensemanager": {
-            "component": "licensemanager"
-        },
         "spanner/benchmarks": {
             "component": "spanner/benchmarks"
         }
