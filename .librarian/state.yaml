@@ -1252,6 +1252,41 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
+  - id: compute
+    version: 1.49.1
+    last_generated_commit: 3322511885371d2b2253f209ccc3aa60d4100cfd
+    apis:
+      - path: google/cloud/compute/v1
+        service_config: compute_v1.yaml
+      - path: google/cloud/compute/v1beta
+        service_config: compute_v1beta.yaml
+    source_roots:
+      - compute
+      - internal/generated/snippets/compute
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/compute/
+      - ^compute/apiv1/[^/]*_client\.go$
+      - ^compute/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^compute/apiv1/[^/]*_client_example_test\.go$
+      - ^compute/apiv1/auxiliary\.go$
+      - ^compute/apiv1/auxiliary_go123\.go$
+      - ^compute/apiv1/doc\.go$
+      - ^compute/apiv1/gapic_metadata\.json$
+      - ^compute/apiv1/helpers\.go$
+      - ^compute/apiv1/computepb/.*$
+      - ^compute/apiv1beta/[^/]*_client\.go$
+      - ^compute/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^compute/apiv1beta/[^/]*_client_example_test\.go$
+      - ^compute/apiv1beta/auxiliary\.go$
+      - ^compute/apiv1beta/auxiliary_go123\.go$
+      - ^compute/apiv1beta/doc\.go$
+      - ^compute/apiv1beta/gapic_metadata\.json$
+      - ^compute/apiv1beta/helpers\.go$
+      - ^compute/apiv1beta/computepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/compute/
+    tag_format: '{id}/v{version}'
   - id: compute/metadata
     version: 0.9.0
     last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
@@ -3991,7 +4026,7 @@ libraries:
       - internal/testutil
       - internal/tracecontext
       - internal/version
-    tag_format: 'v{version}'
+    tag_format: v{version}
   - id: run
     version: 1.12.1
     last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
