@@ -47,8 +47,12 @@ type Library struct {
 
 // API corresponds to a single API definition within a librarian request/response.
 type API struct {
-	Path          string `json:"path,omitempty"`
+	// Path is the directory to the API definition in protos, within googleapis (e.g. google/cloud/functions/v2)
+	Path string `json:"path,omitempty"`
+	// ServiceConfig is the name of the service config file, relative to Path.
 	ServiceConfig string `json:"service_config,omitempty"`
+	// Status is the status of the API: "new" or "existing". This is only used in the configure command.
+	Status string `json:"status,omitempty"`
 }
 
 // Change represents a single commit change for a library.
