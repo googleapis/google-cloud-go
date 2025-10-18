@@ -4,7 +4,7 @@
   "datastore": "1.20.0",
   "errorreporting": "0.3.2",
   "firestore": "1.19.0",
-  "logging": "1.13.0",
+  "logging": "1.13.1",
   "profiler": "0.4.3",
   "spanner": "1.86.0",
   "storage": "1.57.0",
