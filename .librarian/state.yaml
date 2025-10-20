@@ -4973,7 +4973,7 @@ libraries:
       - ^storage/internal/apiv2/doc\.go$
       - ^storage/internal/apiv2/gapic_metadata\.json$
       - ^storage/internal/apiv2/helpers\.go$
-      - ^storage/internal/apiv2/internalpb/.*$
+      - ^storage/internal/apiv2/storagepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/storage/
       - storage/internal/benchmarks
