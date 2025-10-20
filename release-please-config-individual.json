@@ -24,9 +24,6 @@
     "spanner": {
       "component": "spanner"
     },
-    "storage": {
-      "component": "storage"
-    },
     "vertexai": {
       "component": "vertexai"
     }

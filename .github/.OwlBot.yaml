@@ -54,7 +54,6 @@ deep-remove-regex:
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
   - /internal/generated/snippets/spanner/apiv1/
-  - /internal/generated/snippets/storage/control/apiv2/
   # END snippets
   - /logging/apiv2/
   - /spanner/adapter/apiv1/
@@ -62,8 +61,6 @@ deep-remove-regex:
   - /spanner/admin/instance/apiv1/
   - /spanner/apiv1/
   - /spanner/executor/apiv1/
-  - /storage/control/apiv2/
-  - /storage/internal/apiv2/
 
 deep-preserve-regex:
   - /.*/info.go
@@ -79,7 +76,6 @@ deep-preserve-regex:
   - /spanner/admin/database/apiv1/mock_test.go
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
-  - /storage/internal/apiv2/metadata.go
   # Must preserve these even though they aren't generated anymore
 
 deep-copy-regex:
@@ -140,7 +136,3 @@ deep-copy-regex:
     dest: /
   - source: /google/spanner/executor/v1/cloud.google.com/go
     dest: /
-  - source: /google/storage/control/v2/cloud.google.com/go/
-    dest: /
-  - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
-    dest: /storage/internal/apiv2

@@ -9,7 +9,6 @@ modules:
   - logging
   - profiler
   - spanner
-  - storage
 
 manual-clients:
   - api-shortname: bigquery
@@ -223,17 +222,12 @@ service-configs:
   - input-directory: google/spanner/executor/v1
     service-config: spanner_cloud_executor.yaml
     import-path: cloud.google.com/go/spanner/executor/apiv1
-  - input-directory: google/storage/control/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/control/apiv2
-  - input-directory: google/storage/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/internal/apiv2
 
 skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - storage
   - datastore
   - firestore
   - containeranalysis
@@ -411,7 +405,6 @@ skip-module-scan-paths:
   - logging
   - profiler
   - spanner
-  - storage
   - vertexai
   # unreleased modules
   - spanner/test/opentelemetry/test
