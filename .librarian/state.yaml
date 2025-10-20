@@ -4894,6 +4894,13 @@ libraries:
       - ^spanner/executor/apiv1/executorpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/spanner/
+      - spanner/benchmarks
+      - spanner/internal/benchwrapper
+      - spanner/internal/testutil
+      - spanner/kokoro
+      - spanner/spannertest
+      - spanner/test
+      - spanner/testdata
     tag_format: '{id}/v{version}'
   - id: speech
     version: 1.28.1
