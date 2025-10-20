@@ -4976,6 +4976,8 @@ libraries:
       - ^storage/internal/apiv2/internalpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/storage/
+      - storage/internal/benchmarks
+      - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
     version: 0.1.1
