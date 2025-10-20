@@ -30,10 +30,10 @@ const (
 
 // ChangeInfo represents a change and its associated metadata.
 type ChangeInfo struct {
-	Body             string
-	Title            string
-	GoogleapisHash   string
-	AffectedPackages []string
+	Body           string
+	Title          string
+	GoogleapisHash string
+	AffectedProtos []string
 }
 
 // FormatChanges turns a slice of changes into formatted string that will match
@@ -79,10 +79,10 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 		}
 
 		sb.WriteString(fmt.Sprintf("%s\n", body))
-		if len(c.AffectedPackages) > 0 {
-			sb.WriteString("  Affected Packages:\n")
-			for _, pkg := range c.AffectedPackages {
-				sb.WriteString(fmt.Sprintf("  - %s\n", pkg))
+		if len(c.AffectedProtos) > 0 {
+			sb.WriteString("  Affected protos:\n")
+			for _, proto := range c.AffectedProtos {
+				sb.WriteString(fmt.Sprintf("  - %s\n", proto))
 			}
 		}
 		sb.WriteString("\n")
@@ -96,7 +96,7 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
-func ParseChangeInfo(googleapisDir string, hashes []string, affectedPkgs map[string][]string) ([]*ChangeInfo, error) {
+func ParseChangeInfo(googleapisDir string, hashes []string, affectedProtos map[string][]string) ([]*ChangeInfo, error) {
 	var changes []*ChangeInfo
 	for _, hash := range hashes {
 		// Get commit title and body
@@ -117,10 +117,10 @@ func ParseChangeInfo(googleapisDir string, hashes []string, affectedPkgs map[str
 		body = fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", body, hash)
 
 		changes = append(changes, &ChangeInfo{
-			Title:            title,
-			Body:             body,
-			GoogleapisHash:   hash,
-			AffectedPackages: affectedPkgs[hash],
+			Title:          title,
+			Body:           body,
+			GoogleapisHash: hash,
+			AffectedProtos: affectedProtos[hash],
 		})
 	}
 	return changes, nil

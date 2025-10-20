@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/git"
@@ -70,13 +71,14 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 	if err != nil {
 		return nil, err
 	}
-	affectedPkgs := make(map[string][]string)
+	affectedProtos := make(map[string][]string)
 	var relevantCommits []string
 	for _, commit := range commits {
 		files, err := git.FilesChanged(googleapisDir, commit)
 		if err != nil {
 			return nil, err
 		}
+		protos := make(map[string]struct{})
 		for _, file := range files {
 			if !strings.HasSuffix(file, ".proto") {
 				continue
@@ -93,15 +95,19 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 				}
 			}
 			if onWatchlist {
-				if _, ok := affectedPkgs[commit]; !ok {
+				if _, ok := affectedProtos[commit]; !ok {
 					relevantCommits = append(relevantCommits, commit)
 				}
-				affectedPkgs[commit] = append(affectedPkgs[commit], pkg)
+				protos[file] = struct{}{}
 			}
 		}
+		for proto := range protos {
+			affectedProtos[commit] = append(affectedProtos[commit], proto)
+		}
+		sort.Strings(affectedProtos[commit])
 	}
 
-	changes, err := git.ParseChangeInfo(googleapisDir, relevantCommits, affectedPkgs)
+	changes, err := git.ParseChangeInfo(googleapisDir, relevantCommits, affectedProtos)
 	if err != nil {
 		return nil, err
 	}

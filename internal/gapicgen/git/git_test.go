@@ -69,10 +69,10 @@ func TestFormatChanges(t *testing.T) {
 			want:       "",
 		},
 		{
-			name:       "affected packages",
-			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar", AffectedPackages: []string{"cloud.google.com/go/foo", "cloud.google.com/go/bar"}}},
+			name:       "affected protos",
+			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar", AffectedProtos: []string{"foo.proto", "bar.proto"}}},
 			onlyGapics: false,
-			want:       "\nChanges:\n\nfix: foo\n  bar\n  Affected Packages:\n  - cloud.google.com/go/foo\n  - cloud.google.com/go/bar\n\n",
+			want:       "\nChanges:\n\nfix: foo\n  bar\n  Affected protos:\n  - foo.proto\n  - bar.proto\n\n",
 		},
 	}
 
