@@ -926,9 +926,12 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: ds.Ref.Path}}
 		} else {
 			var val *pb.Value
-			var err error
 			if len(ord.fieldPath) > 0 {
+				var err error
 				val, err = valueAtPath(ord.fieldPath, ds.proto.Fields)
+				if err != nil {
+					return nil, err
+				}
 			} else {
 				// parse the field reference field path so we can use it to look up
 				fp, err := parseDotSeparatedString(ord.fieldReference.FieldPath)
@@ -936,9 +939,9 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 					return nil, err
 				}
 				val, err = valueAtPath(fp, ds.proto.Fields)
-			}
-			if err != nil {
-				return nil, err
+				if err != nil {
+					return nil, err
+				}
 			}
 			vals[i] = val
 		}

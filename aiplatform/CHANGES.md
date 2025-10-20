@@ -1,6 +1,30 @@
 # Changes
 
 
+## [1.107.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.106.0...aiplatform/v1.107.0) (2025-10-15)
+
+
+### Features
+
+* **aiplatform:** Add aspect_ratio and image_config for v1 version ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** Add support for Inline source based deployment ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** Add support for Inline source based deployment ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `package_spec` in message `.google.cloud.aiplatform.v1.ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** A comment for field `package_spec` in message `.google.cloud.aiplatform.v1beta1.ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** A comment for message `ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+* **aiplatform:** A comment for message `ReasoningEngineSpec` is changed ([cb7e6c0](https://github.com/googleapis/google-cloud-go/commit/cb7e6c00fba87706d6c03989f7670eb8042090e8))
+
+## [1.106.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.105.0...aiplatform/v1.106.0) (2025-10-14)
+
+
+### Features
+
+* **aiplatform:** Add aspect_ratio and image_config for v1beta1 version ([#13118](https://github.com/googleapis/google-cloud-go/issues/13118)) ([486bd40](https://github.com/googleapis/google-cloud-go/commit/486bd406336fe91eae7c9040f2496ebfc8aee342))
+
 ## [1.105.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.104.0...aiplatform/v1.105.0) (2025-10-13)
 
 

@@ -152,7 +152,7 @@ func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Library
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to parse BUILD.bazel for %s: %w", apiServiceDir, err)
 		}
-		args, err := protoc.Build(generateReq, &api, apiServiceDir, bazelConfig, cfg.SourceDir, cfg.OutputDir)
+		args, err := protoc.Build(generateReq, &api, bazelConfig, cfg.SourceDir, cfg.OutputDir, apiConfig.NestedProtos)
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to build protoc command for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.49.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.49.0...compute/v1.49.1) (2025-10-16)
+
+
+### Bug Fixes
+
+* **compute:** Upgrade gRPC service registration func ([#13163](https://github.com/googleapis/google-cloud-go/issues/13163)) ([136f25f](https://github.com/googleapis/google-cloud-go/commit/136f25fe785017cae749eb338d8412d48cdbbe8c))
+
 ## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.48.0...compute/v1.49.0) (2025-10-13)
 
 
