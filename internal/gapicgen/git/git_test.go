@@ -68,6 +68,12 @@ func TestFormatChanges(t *testing.T) {
 			onlyGapics: true,
 			want:       "",
 		},
+		{
+			name:       "affected packages",
+			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar", AffectedPackages: []string{"cloud.google.com/go/foo", "cloud.google.com/go/bar"}}},
+			onlyGapics: false,
+			want:       "\nChanges:\n\nfix: foo\n  bar\n  Affected Packages:\n  - cloud.google.com/go/foo\n  - cloud.google.com/go/bar\n\n",
+		},
 	}
 
 	for _, tc := range tests {

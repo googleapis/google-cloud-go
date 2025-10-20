@@ -30,9 +30,10 @@ const (
 
 // ChangeInfo represents a change and its associated metadata.
 type ChangeInfo struct {
-	Body           string
-	Title          string
-	GoogleapisHash string
+	Body             string
+	Title            string
+	GoogleapisHash   string
+	AffectedPackages []string
 }
 
 // FormatChanges turns a slice of changes into formatted string that will match
@@ -73,11 +74,18 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 		if truncate {
 			startBody := strings.Index(body, "PiperOrigin-RevId")
 			if startBody != -1 {
-				body = fmt.Sprintf("  %s", body[startBody:])
+				body = "  " + body[startBody:]
 			}
 		}
 
-		sb.WriteString(fmt.Sprintf("%s\n\n", body))
+		sb.WriteString(fmt.Sprintf("%s\n", body))
+		if len(c.AffectedPackages) > 0 {
+			sb.WriteString("  Affected Packages:\n")
+			for _, pkg := range c.AffectedPackages {
+				sb.WriteString(fmt.Sprintf("  - %s\n", pkg))
+			}
+		}
+		sb.WriteString("\n")
 	}
 	// If the buffer is empty except for the "Changes:" text return an empty
 	// string.
@@ -88,7 +96,7 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
-func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, error) {
+func ParseChangeInfo(googleapisDir string, hashes []string, affectedPkgs map[string][]string) ([]*ChangeInfo, error) {
 	var changes []*ChangeInfo
 	for _, hash := range hashes {
 		// Get commit title and body
@@ -109,9 +117,10 @@ func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, erro
 		body = fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", body, hash)
 
 		changes = append(changes, &ChangeInfo{
-			Title:          title,
-			Body:           body,
-			GoogleapisHash: hash,
+			Title:            title,
+			Body:             body,
+			GoogleapisHash:   hash,
+			AffectedPackages: affectedPkgs[hash],
 		})
 	}
 	return changes, nil
@@ -182,9 +191,9 @@ func DeepClone(repo, dir string) error {
 	return err
 }
 
-// filesChanged returns a list of files changed in a commit for the provdied
+// FilesChanged returns a list of files changed in a commit for the provdied
 // hash in the given gitDir.
-func filesChanged(gitDir, hash string) ([]string, error) {
+func FilesChanged(gitDir, hash string) ([]string, error) {
 	c := execv.Command("git", "show", "--pretty=format:", "--name-only", hash)
 	c.Dir = gitDir
 	b, err := c.Output()
