@@ -191,7 +191,7 @@ func DeepClone(repo, dir string) error {
 	return err
 }
 
-// FilesChanged returns a list of files changed in a commit for the provdied
+// FilesChanged returns a list of files changed in a commit for the provided
 // hash in the given gitDir.
 func FilesChanged(gitDir, hash string) ([]string, error) {
 	c := execv.Command("git", "show", "--pretty=format:", "--name-only", hash)
