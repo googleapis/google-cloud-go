@@ -27,9 +27,6 @@
     "profiler": {
       "component": "profiler"
     },
-    "spanner": {
-      "component": "spanner"
-    },
     "storage": {
       "component": "storage"
     },
