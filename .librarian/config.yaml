@@ -21,6 +21,10 @@ libraries:
     release_blocked: true
   - id: "compute/metadata"
     release_blocked: true
+  - id: "datastore"
+    release_blocked: true
+  - id: "firestore"
+    release_blocked: true
   - id: "longrunning"
     release_blocked: true
   - id: "pubsub"
