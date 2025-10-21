@@ -265,6 +265,9 @@ type openWriterParams struct {
 	// sendCRC32C - see `Writer.SendCRC32C`.
 	// Optional.
 	sendCRC32C bool
+	// disableCRC32C - see `Writer.DisableCRC32C`.
+	// Optional.
+	disableCRC32C bool
 	// append - Write with appendable object semantics.
 	// Optional.
 	append bool

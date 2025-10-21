@@ -171,6 +171,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 		flushSupported:        params.append,
 		sendCRC32C:            params.sendCRC32C,
+		disableCRC32C:         params.disableCRC32C,
 		forceOneShot:          params.chunkSize <= 0,
 		forceEmptyContentType: params.forceEmptyContentType,
 		append:                params.append,
@@ -244,6 +245,7 @@ type gRPCWriter struct {
 
 	flushSupported        bool
 	sendCRC32C            bool
+	disableCRC32C         bool
 	forceOneShot          bool
 	forceEmptyContentType bool
 	append                bool
@@ -788,14 +790,13 @@ func completion(r *storagepb.BidiWriteObjectResponse) *gRPCBidiWriteCompletion {
 	}
 }
 
-func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool, objectChecksums *storagepb.ObjectChecksums) *storagepb.BidiWriteObjectRequest {
+func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool, checksumOfBuf *uint32, objectChecksums *storagepb.ObjectChecksums) *storagepb.BidiWriteObjectRequest {
 	var data *storagepb.BidiWriteObjectRequest_ChecksummedData
 	if buf != nil {
-		checksumOfBuf := crc32.Checksum(buf, crc32cTable)
 		data = &storagepb.BidiWriteObjectRequest_ChecksummedData{
 			ChecksummedData: &storagepb.ChecksummedData{
 				Content: buf,
-				Crc32C:  &checksumOfBuf,
+				Crc32C:  checksumOfBuf,
 			},
 		}
 	}
@@ -810,21 +811,30 @@ func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool, o
 	return req
 }
 
-func updateAndGetChecksums(buf []byte, oldChecksum uint32, finishWrite bool, sendCRC32C bool, attrs *ObjectAttrs) (*storagepb.ObjectChecksums, uint32) {
+func updateAndGetChecksums(buf []byte, oldChecksum uint32, finishWrite bool, sendCRC32C, disableCRC32C bool, attrs *ObjectAttrs) (*storagepb.ObjectChecksums, *uint32, uint32) {
+	// do not calculate checksum if disableCRC32C is set
+	if disableCRC32C {
+		if finishWrite {
+			return toProtoChecksums(sendCRC32C, attrs), nil, oldChecksum
+		}
+		return nil, nil, oldChecksum
+	}
+
+	checksumOfBuf := crc32.Checksum(buf, crc32cTable)
 	newChecksumWithBuf := crc32.Update(oldChecksum, crc32cTable, buf)
 
 	if !finishWrite {
-		return nil, newChecksumWithBuf
+		return nil, &checksumOfBuf, newChecksumWithBuf
 	}
 
 	// send user's checksum if available on last write op
 	if sendCRC32C {
-		return toProtoChecksums(sendCRC32C, attrs), newChecksumWithBuf
+		return toProtoChecksums(sendCRC32C, attrs), &checksumOfBuf, newChecksumWithBuf
 	}
 
 	return &storagepb.ObjectChecksums{
 		Crc32C: proto.Uint32(newChecksumWithBuf),
-	}, newChecksumWithBuf
+	}, &checksumOfBuf, newChecksumWithBuf
 }
 
 type gRPCBidiWriteBufferSender interface {
@@ -855,7 +865,7 @@ type gRPCOneshotBidiWriteBufferSender struct {
 	bucket           string
 	firstMessage     *storagepb.BidiWriteObjectRequest
 	streamErr        error
-	checksumSettings func() (bool, *ObjectAttrs)
+	checksumSettings func() (bool, bool, *ObjectAttrs)
 	setTotalChecksum func(uint32)
 	totalChecksum    func() uint32
 }
@@ -868,8 +878,8 @@ func (w *gRPCWriter) totalChecksum() uint32 {
 	return w.totalCheckSum
 }
 
-func (w *gRPCWriter) checksumSettings() (bool, *ObjectAttrs) {
-	return w.sendCRC32C, w.attrs
+func (w *gRPCWriter) checksumSettings() (bool, bool, *ObjectAttrs) {
+	return w.sendCRC32C, w.disableCRC32C, w.attrs
 }
 
 func (w *gRPCWriter) newGRPCOneshotBidiWriteBufferSender() *gRPCOneshotBidiWriteBufferSender {
@@ -929,11 +939,11 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 				continue
 			}
 
-			sendCrc32C, attrs := s.checksumSettings()
-			checksums, newChecksum := updateAndGetChecksums(r.buf, s.totalChecksum(), r.finishWrite, sendCrc32C, attrs)
+			sendCrc32C, disableCrc32c, attrs := s.checksumSettings()
+			checksums, checksumOfBuf, newChecksum := updateAndGetChecksums(r.buf, s.totalChecksum(), r.finishWrite, sendCrc32C, disableCrc32c, attrs)
 			s.setTotalChecksum(newChecksum)
 
-			req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite, checksums)
+			req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite, checksumOfBuf, checksums)
 			if firstSend {
 				proto.Merge(req, s.firstMessage)
 				firstSend = false
@@ -976,7 +986,7 @@ type gRPCResumableBidiWriteBufferSender struct {
 
 	startWriteRequest *storagepb.StartResumableWriteRequest
 	upid              string
-	checksumSettings  func() (bool, *ObjectAttrs)
+	checksumSettings  func() (bool, bool, *ObjectAttrs)
 	setTotalChecksum  func(uint32)
 	totalChecksum     func() uint32
 
@@ -1057,11 +1067,12 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 							continue
 						}
 
-						sendCrc32C, attrs := s.checksumSettings()
-						checksums, newChecksum := updateAndGetChecksums(r.buf, s.totalChecksum(), r.finishWrite, sendCrc32C, attrs)
+						sendCrc32C, disableCrc32c, attrs := s.checksumSettings()
+						checksums, checksumOfBuf, newChecksum := updateAndGetChecksums(r.buf, s.totalChecksum(), r.finishWrite, sendCrc32C, disableCrc32c, attrs)
 						s.setTotalChecksum(newChecksum)
 
-						req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite, checksums)
+						req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite, checksumOfBuf, checksums)
+
 						if firstSend {
 							req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
 							firstSend = false
@@ -1371,7 +1382,9 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeHandleRedirectionError(err error)
 func (s *gRPCAppendBidiWriteBufferSender) send(stream storagepb.Storage_BidiWriteObjectClient, buf []byte, offset int64, flush, finishWrite, sendFirstMessage bool) error {
 	finalizeObject := finishWrite && s.finalizeOnClose
 	flush = flush || finishWrite
-	req := bidiWriteObjectRequest(buf, offset, flush, finalizeObject, nil)
+
+	//TODO(b/453869602): implement default checksumming for appendable writes
+	req := bidiWriteObjectRequest(buf, offset, flush, finalizeObject, nil, nil)
 	if finalizeObject {
 		// appendable objects pass checksums on the finalize message only
 		req.ObjectChecksums = s.objectChecksums
