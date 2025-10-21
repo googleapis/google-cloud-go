@@ -252,28 +252,28 @@ func Sqrt(numericExprOrField any) Expr {
 
 // TimestampAdd creates an expression that adds a specified amount of time to a timestamp.
 // - timestamp can be a field path string, [FieldPath] or [Expr].
-// - unit can be a constant or an [Expr]. Valid units include "microsecond", "millisecond", "second", "minute", "hour" and "day".
-// - amount can be a constant or an [Expr].
+// - unit can be a string or an [Expr]. Valid units include "microsecond", "millisecond", "second", "minute", "hour" and "day".
+// - amount can be an int, int32, int64 or [Expr].
 //
 // Example:
 //
 //	// Add 5 hours to the value of the 'last_updated' field.
 //	TimestampAdd("last_updated", "hour", 5)
 func TimestampAdd(timestamp, unit, amount any) Expr {
-	return newBaseFunction("timestamp_add", []Expr{toExprOrField(timestamp), toExprOrField(unit), toExprOrField(amount)})
+	return newBaseFunction("timestamp_add", []Expr{toExprOrField(timestamp), toExprOrString(unit), toExprOrInt64(amount)})
 }
 
 // TimestampSubtract creates an expression that subtracts a specified amount of time from a timestamp.
 // - timestamp can be a field path string, [FieldPath] or [Expr].
-// - unit can be a constant or an [Expr]. Valid units include "microsecond", "millisecond", "second", "minute", "hour" and "day".
-// - amount can be a constant or an [Expr].
+// - unit can be a string or an [Expr]. Valid units include "microsecond", "millisecond", "second", "minute", "hour" and "day".
+// - amount can be an int, int32, int64 or [Expr].
 //
 // Example:
 //
 //	// Subtract 10 days from the value of the 'last_updated' field.
 //	TimestampSubtract("last_updated", "day", 10)
 func TimestampSubtract(timestamp, unit, amount any) Expr {
-	return newBaseFunction("timestamp_subtract", []Expr{toExprOrField(timestamp), toExprOrField(unit), toExprOrField(amount)})
+	return newBaseFunction("timestamp_subtract", []Expr{toExprOrField(timestamp), toExprOrString(unit), toExprOrInt64(amount)})
 }
 
 // TimestampToUnixMicros creates an expression that converts a timestamp expression to the number of microseconds since

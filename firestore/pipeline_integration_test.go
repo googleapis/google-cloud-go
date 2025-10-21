@@ -21,17 +21,18 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestIntegration_PipelineQueries(t *testing.T) {
 	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
 		t.Skip("Skipping pipeline queries tests since the firestore edition of", testParams[databaseIDKey].(string), "database is not enterprise")
 	}
-	// t.Run("pq_Timestamp", pq_Timestamp)
-	// t.Run("pq_Arithmetic", pq_Arithmetic)
-	// t.Run("pq_Aggregate", pq_Aggregate)
-	// t.Run("pq_Comparison", pq_Comparison)
-	// t.Run("pq_Sort", pq_Sort)
+	t.Run("pq_Timestamp", pq_Timestamp)
+	t.Run("pq_Arithmetic", pq_Arithmetic)
+	t.Run("pq_Aggregate", pq_Aggregate)
+	t.Run("pq_Comparison", pq_Comparison)
+	t.Run("pq_Sort", pq_Sort)
 }
 
 func pq_Sort(t *testing.T) {
@@ -128,7 +129,10 @@ func pq_Timestamp(t *testing.T) {
 	now := time.Now()
 	docRef1 := coll.NewDoc()
 	h.mustCreate(docRef1, map[string]interface{}{
-		"timestamp": now,
+		"timestamp":   now,
+		"unixMicros":  now.UnixNano() / 1000,
+		"unixMillis":  now.UnixNano() / 1e6,
+		"unixSeconds": now.Unix(),
 	})
 	defer deleteDocuments([]*DocumentRef{docRef1})
 
@@ -138,102 +142,95 @@ func pq_Timestamp(t *testing.T) {
 		want     map[string]interface{}
 	}{
 		{
-			name: "TimestampAdd year",
-			pipeline: client.Pipeline().
-				Collection(coll.ID).
-				AddFields(TimestampAdd("timestamp", "year", 1).As("timestamp_plus_year")),
-			want: map[string]interface{}{"timestamp_plus_year": now.AddDate(1, 0, 0)},
-		},
-		{
-			name: "TimestampAdd month",
-			pipeline: client.Pipeline().
-				Collection(coll.ID).
-				AddFields(TimestampAdd("timestamp", "month", 1).As("timestamp_plus_month")),
-			want: map[string]interface{}{"timestamp_plus_month": now.AddDate(0, 1, 0)},
-		},
-		{
 			name: "TimestampAdd day",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(TimestampAdd("timestamp", "day", 1).As("timestamp_plus_day")),
-			want: map[string]interface{}{"timestamp_plus_day": now.AddDate(0, 0, 1)},
+				Select(TimestampAdd("timestamp", "day", 1).As("timestamp_plus_day")),
+			want: map[string]interface{}{"timestamp_plus_day": now.AddDate(0, 0, 1).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampAdd hour",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(TimestampAdd("timestamp", "hour", 1).As("timestamp_plus_hour")),
-			want: map[string]interface{}{"timestamp_plus_hour": now.Add(time.Hour)},
+				Select(TimestampAdd("timestamp", "hour", 1).As("timestamp_plus_hour")),
+			want: map[string]interface{}{"timestamp_plus_hour": now.Add(time.Hour).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampAdd minute",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(TimestampAdd("timestamp", "minute", 1).As("timestamp_plus_minute")),
-			want: map[string]interface{}{"timestamp_plus_minute": now.Add(time.Minute)},
+				Select(TimestampAdd("timestamp", "minute", 1).As("timestamp_plus_minute")),
+			want: map[string]interface{}{"timestamp_plus_minute": now.Add(time.Minute).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampAdd second",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(TimestampAdd("timestamp", "second", 1).As("timestamp_plus_second")),
-			want: map[string]interface{}{"timestamp_plus_second": now.Add(time.Second)},
+				Select(TimestampAdd("timestamp", "second", 1).As("timestamp_plus_second")),
+			want: map[string]interface{}{"timestamp_plus_second": now.Add(time.Second).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampSubtract",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(TimestampSubtract("timestamp", "hour", 1).As("timestamp_minus_hour")),
-			want: map[string]interface{}{"timestamp_minus_hour": now.Add(-time.Hour)},
+				Select(TimestampSubtract("timestamp", "hour", 1).As("timestamp_minus_hour")),
+			want: map[string]interface{}{"timestamp_minus_hour": now.Add(-time.Hour).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampToUnixMicros",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(FieldOf("timestamp").TimestampToUnixMicros().As("timestamp_micros")),
+				Select(FieldOf("timestamp").TimestampToUnixMicros().As("timestamp_micros")),
 			want: map[string]interface{}{"timestamp_micros": now.UnixNano() / 1000},
 		},
 		{
 			name: "TimestampToUnixMillis",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(FieldOf("timestamp").TimestampToUnixMillis().As("timestamp_millis")),
+				Select(FieldOf("timestamp").TimestampToUnixMillis().As("timestamp_millis")),
 			want: map[string]interface{}{"timestamp_millis": now.UnixNano() / 1e6},
 		},
 		{
 			name: "TimestampToUnixSeconds",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(FieldOf("timestamp").TimestampToUnixSeconds().As("timestamp_seconds")),
+				Select(FieldOf("timestamp").TimestampToUnixSeconds().As("timestamp_seconds")),
 			want: map[string]interface{}{"timestamp_seconds": now.Unix()},
 		},
 		{
-			name: "UnixMicrosToTimestamp",
+			name: "UnixMicrosToTimestamp - constant",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(UnixMicrosToTimestamp(now.UnixNano() / 1000).As("timestamp_from_micros")),
-			want: map[string]interface{}{"timestamp_from_micros": now},
+				Select(UnixMicrosToTimestamp(ConstantOf(now.UnixNano() / 1000)).As("timestamp_from_micros")),
+			want: map[string]interface{}{"timestamp_from_micros": now.Truncate(time.Microsecond)},
+		},
+		{
+			name: "UnixMicrosToTimestamp - fieldname",
+			pipeline: client.Pipeline().
+				Collection(coll.ID).
+				Select(UnixMicrosToTimestamp("unixMicros").As("timestamp_from_micros")),
+			want: map[string]interface{}{"timestamp_from_micros": now.Truncate(time.Microsecond)},
 		},
 		{
 			name: "UnixMillisToTimestamp",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(UnixMillisToTimestamp(now.UnixNano() / 1e6).As("timestamp_from_millis")),
-			want: map[string]interface{}{"timestamp_from_millis": now},
+				Select(UnixMillisToTimestamp(ConstantOf(now.UnixNano() / 1e6)).As("timestamp_from_millis")),
+			want: map[string]interface{}{"timestamp_from_millis": now.Truncate(time.Millisecond)},
 		},
 		{
 			name: "UnixSecondsToTimestamp",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(UnixSecondsToTimestamp(now.Unix()).As("timestamp_from_seconds")),
-			want: map[string]interface{}{"timestamp_from_seconds": now},
+				Select(UnixSecondsToTimestamp("unixSeconds").As("timestamp_from_seconds")),
+			want: map[string]interface{}{"timestamp_from_seconds": now.Truncate(time.Second)},
 		},
 		{
 			name: "CurrentTimestamp",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				AddFields(CurrentTimestamp().As("current_timestamp")),
-			want: map[string]interface{}{"current_timestamp": time.Now()},
+				Select(CurrentTimestamp().As("current_timestamp")),
+			want: map[string]interface{}{"current_timestamp": time.Now().Truncate(time.Microsecond)},
 		},
 	}
 
@@ -254,7 +251,12 @@ func pq_Timestamp(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Data: %v", err)
 			}
-			if diff := testutil.Diff(got, test.want); diff != "" {
+
+			margin := 0 * time.Microsecond
+			if test.name == "CurrentTimestamp" {
+				margin = 5 * time.Second
+			}
+			if diff := testutil.Diff(got, test.want, cmpopts.EquateApproxTime(margin)); diff != "" {
 				t.Errorf("got: %v, want: %v, diff: %s", got, test.want, diff)
 			}
 		})

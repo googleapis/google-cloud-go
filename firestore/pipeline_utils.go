@@ -45,6 +45,28 @@ func toExprOrField(val any) Expr {
 	}
 }
 
+func toExprOrInt64(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case int, int32, int64:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int32, int64 or Expr, but got %T", val)}
+	}
+}
+
+func toExprOrString(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case string:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
+	}
+}
+
 // leftRightToBaseFunction is a helper for creating binary functions like Add or Eq.
 // It ensures the left operand is a field-like expression and the right is a constant-like expression.
 func leftRightToBaseFunction(name string, left, right any) *baseFunction {
