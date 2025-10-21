@@ -103,6 +103,27 @@ func (p *Pipeline) Limit(limit int) *Pipeline {
 	return p.append(newLimitStage(limit))
 }
 
+// Sort sorts the documents by the given fields and directions.
+func (p *Pipeline) Sort(orders ...Ordering) *Pipeline {
+	return p.append(newSortStage(orders...))
+}
+
+// Offset skips the first `offset` number of documents from the results of previous stages.
+//
+// This stage is useful for implementing pagination in your pipelines, allowing you to retrieve
+// results in chunks. It is typically used in conjunction with [*Pipeline.Limit] to control the
+// size of each page.
+//
+// Example:
+// Retrieve the second page of 20 results
+//
+//	  client.Pipeline().Collection("books").
+//		  .Offset(20)   // Skip the first 20 results
+//		  .Limit(20)    // Take the next 20 results
+func (p *Pipeline) Offset(offset int) *Pipeline {
+	return p.append(newOffsetStage(offset))
+}
+
 // Select selects or creates a set of fields from the outputs of previous stages.
 // The selected fields are defined using field path string, [FieldPath] or [Selectable] expressions.
 // [Selectable] expressions can be:
@@ -214,7 +235,7 @@ func (p *Pipeline) Aggregate(accumulators ...*AliasedAggregate) *Pipeline {
 //
 //		// Calculate the average rating for each genre.
 //		client.Pipeline().Collection("books").
-//	        AggregateWithSpec(NewAggregateSpec(Avg("rating").As("avg_rating")).WithGroups("genre"))
+//	        AggregateWithSpec(NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre"))
 func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
 	aggStage, err := newAggregateStage(spec)
 	if err != nil {

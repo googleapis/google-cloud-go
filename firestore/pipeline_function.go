@@ -59,7 +59,7 @@ func newBaseFunction(name string, params []Expr) *baseFunction {
 
 // Add creates an expression that adds two expressions together, returning it as an Expr.
 // - left can be a field path string, [FieldPath] or [Expr].
-// - right can be a constant or an [Expr].
+// - right can be a numeric constant or a numeric [Expr].
 //
 // Example:
 //
@@ -228,12 +228,6 @@ func Pow(left, right any) Expr {
 	return leftRightToBaseFunction("pow", left, right)
 }
 
-// Rand creates an expression that return a pseudo-random number of type double in the range of [0, 1),
-// inclusive of 0 and exclusive of 1.
-func Rand() Expr {
-	return newBaseFunction("rand", []Expr{})
-}
-
 // Round creates an expression that rounds the input field or expression to nearest integer.
 // - numericExprOrField can be a field path string, [FieldPath] or an [Expr] that returns a number when evaluated.
 //
@@ -254,4 +248,74 @@ func Round(numericExprOrField any) Expr {
 //	Sqrt("age")
 func Sqrt(numericExprOrField any) Expr {
 	return newBaseFunction("sqrt", []Expr{toExprOrField(numericExprOrField)})
+}
+
+// TimestampAdd creates an expression that adds a specified amount of time to a timestamp.
+// - timestamp can be a field path string, [FieldPath] or [Expr].
+// - unit can be a constant or an [Expr]. Valid units include "microsecond", "millisecond", "second", "minute", "hour" and "day".
+// - amount can be a constant or an [Expr].
+//
+// Example:
+//
+//	// Add 5 hours to the value of the 'last_updated' field.
+//	TimestampAdd("last_updated", "hour", 5)
+func TimestampAdd(timestamp, unit, amount any) Expr {
+	return newBaseFunction("timestamp_add", []Expr{toExprOrField(timestamp), toExprOrField(unit), toExprOrField(amount)})
+}
+
+// TimestampSubtract creates an expression that subtracts a specified amount of time from a timestamp.
+// - timestamp can be a field path string, [FieldPath] or [Expr].
+// - unit can be a constant or an [Expr]. Valid units include "microsecond", "millisecond", "second", "minute", "hour" and "day".
+// - amount can be a constant or an [Expr].
+//
+// Example:
+//
+//	// Subtract 10 days from the value of the 'last_updated' field.
+//	TimestampSubtract("last_updated", "day", 10)
+func TimestampSubtract(timestamp, unit, amount any) Expr {
+	return newBaseFunction("timestamp_subtract", []Expr{toExprOrField(timestamp), toExprOrField(unit), toExprOrField(amount)})
+}
+
+// TimestampToUnixMicros creates an expression that converts a timestamp expression to the number of microseconds since
+// the Unix epoch (1970-01-01 00:00:00 UTC).
+// - timestamp can be a field path string, [FieldPath] or [Expr].
+func TimestampToUnixMicros(timestamp any) Expr {
+	return newBaseFunction("timestamp_to_unix_micros", []Expr{toExprOrField(timestamp)})
+}
+
+// TimestampToUnixMillis creates an expression that converts a timestamp expression to the number of milliseconds since
+// the Unix epoch (1970-01-01 00:00:00 UTC).
+// - timestamp can be a field path string, [FieldPath] or [Expr].
+func TimestampToUnixMillis(timestamp any) Expr {
+	return newBaseFunction("timestamp_to_unix_millis", []Expr{toExprOrField(timestamp)})
+}
+
+// TimestampToUnixSeconds creates an expression that converts a timestamp expression to the number of seconds since
+// the Unix epoch (1970-01-01 00:00:00 UTC).
+// - timestamp can be a field path string, [FieldPath] or [Expr].
+func TimestampToUnixSeconds(timestamp any) Expr {
+	return newBaseFunction("timestamp_to_unix_seconds", []Expr{toExprOrField(timestamp)})
+}
+
+// UnixMicrosToTimestamp creates an expression that converts a Unix timestamp in microseconds to a Firestore timestamp.
+// - micros can be a field path string, [FieldPath] or [Expr].
+func UnixMicrosToTimestamp(micros any) Expr {
+	return newBaseFunction("unix_micros_to_timestamp", []Expr{toExprOrField(micros)})
+}
+
+// UnixMillisToTimestamp creates an expression that converts a Unix timestamp in milliseconds to a Firestore timestamp.
+// - millis can be a field path string, [FieldPath] or [Expr].
+func UnixMillisToTimestamp(millis any) Expr {
+	return newBaseFunction("unix_millis_to_timestamp", []Expr{toExprOrField(millis)})
+}
+
+// UnixSecondsToTimestamp creates an expression that converts a Unix timestamp in seconds to a Firestore timestamp.
+// - seconds can be a field path string, [FieldPath] or [Expr].
+func UnixSecondsToTimestamp(seconds any) Expr {
+	return newBaseFunction("unix_seconds_to_timestamp", []Expr{toExprOrField(seconds)})
+}
+
+// CurrentTimestamp creates an expression that returns the current timestamp.
+func CurrentTimestamp() Expr {
+	return newBaseFunction("current_timestamp", []Expr{})
 }

@@ -108,6 +108,64 @@ func TestPipeline_Limit(t *testing.T) {
 	}
 }
 
+func TestPipeline_Sort(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Sort(Ordering{Expr: FieldOf("age"), Direction: OrderingDesc})
+
+	if p.err != nil {
+		t.Fatalf("Pipeline.Sort() returned error: %v", p.err)
+	}
+	if len(p.stages) != 2 {
+		t.Fatalf("Expected 2 stages, got %d", len(p.stages))
+	}
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantSortStage := &pb.Pipeline_Stage{
+		Name: "sort",
+		Args: []*pb.Value{
+			{
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{
+								ValueType: &pb.Value_ArrayValue{
+									ArrayValue: &pb.ArrayValue{
+										Values: []*pb.Value{
+											{
+												ValueType: &pb.Value_StringValue{
+													StringValue: "$age",
+												},
+											},
+											{
+												ValueType: &pb.Value_StringValue{
+													StringValue: "descending",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	if diff := cmp.Diff(wantSortStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for sort stage (-want +got):\n%s", diff)
+	}
+}
+
 func TestPipeline_ToExecutePipelineRequest(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
