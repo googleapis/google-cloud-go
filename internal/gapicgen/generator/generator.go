@@ -52,7 +52,7 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 		var err error
 		changes, err = gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
 		if err != nil {
-			return nil, fmt.Errorf("error gathering commit info")
+			return nil, fmt.Errorf("error gathering commit info: %w", err)
 		}
 		if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
 			return nil, err
@@ -80,6 +80,9 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 		}
 		protos := make(map[string]struct{})
 		for _, file := range files {
+			if file == "" {
+				continue
+			}
 			if !strings.HasSuffix(file, ".proto") {
 				continue
 			}
