@@ -152,12 +152,12 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 		for _, subj := range subjects {
 			change := subjectsMap[subj]
 			var commitLink string
-			if change.SourceCommitHash != "" {
-				shortHash := change.SourceCommitHash
+			if change.CommitHash != "" {
+				shortHash := change.CommitHash
 				if len(shortHash) > 7 {
 					shortHash = shortHash[:7]
 				}
-				commitURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/commit/%s", change.SourceCommitHash)
+				commitURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/commit/%s", change.CommitHash)
 				commitLink = fmt.Sprintf("([%s](%s))", shortHash, commitURL)
 			}
 

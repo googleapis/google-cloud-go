@@ -1,5 +1,12 @@
 # Changes
 
+## [0.3.17](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.16...grafeas/v0.3.17) (2025-10-15)
+
+
+### Bug Fixes
+
+* **grafeas:** Upgrade to Go 1.24 ([fc134e0](https://github.com/googleapis/google-cloud-go/commit/fc134e09b9928b07b362fe8ae8b292210546793d))
+
 ## [0.3.16](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.15...grafeas/v0.3.16) (2025-04-15)
 
 

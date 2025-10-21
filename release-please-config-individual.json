@@ -12,14 +12,8 @@
     "bigtable": {
       "component": "bigtable"
     },
-    "datastore": {
-      "component": "datastore"
-    },
     "errorreporting": {
       "component": "errorreporting"
-    },
-    "firestore": {
-      "component": "firestore"
     },
     "logging": {
       "component": "logging"

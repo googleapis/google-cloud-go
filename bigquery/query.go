@@ -168,6 +168,9 @@ type QueryConfig struct {
 	//
 	// Note: This feature is not yet generally available.
 	MaxSlots int32
+
+	// Whether to run the query as continuous or a regular query.
+	Continuous bool
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -184,6 +187,7 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		DestinationEncryptionConfiguration: qc.DestinationEncryptionConfig.toBQ(),
 		SchemaUpdateOptions:                qc.SchemaUpdateOptions,
 		CreateSession:                      qc.CreateSession,
+		Continuous:                         qc.Continuous,
 	}
 	if len(qc.TableDefinitions) > 0 {
 		qconf.TableDefinitions = make(map[string]bq.ExternalDataConfiguration)
@@ -271,6 +275,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 		DestinationEncryptionConfig: bqToEncryptionConfig(qq.DestinationEncryptionConfiguration),
 		SchemaUpdateOptions:         qq.SchemaUpdateOptions,
 		CreateSession:               qq.CreateSession,
+		Continuous:                  qq.Continuous,
 	}
 	qc.UseStandardSQL = !qc.UseLegacySQL
 	qc.Reservation = q.Reservation
@@ -478,6 +483,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		q.QueryConfig.DestinationEncryptionConfig != nil ||
 		q.QueryConfig.SchemaUpdateOptions != nil ||
 		q.QueryConfig.JobTimeout != 0 ||
+		q.QueryConfig.Continuous ||
 		// User has defined the jobID generation behavior
 		q.JobIDConfig.JobID != "" {
 		return nil, fmt.Errorf("QueryConfig incompatible with fastPath")

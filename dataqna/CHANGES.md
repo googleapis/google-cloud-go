@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.8](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.9.7...dataqna/v0.9.8) (2025-10-15)
+
+
+### Bug Fixes
+
+* **dataqna:** Include gapic_metadata.json in Go GAPIC assembly rule ([fc134e0](https://github.com/googleapis/google-cloud-go/commit/fc134e09b9928b07b362fe8ae8b292210546793d))
+
 ## [0.9.7](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.9.6...dataqna/v0.9.7) (2025-05-06)
 
 

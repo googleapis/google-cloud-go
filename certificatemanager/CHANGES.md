@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.9.5...certificatemanager/v1.9.6) (2025-10-15)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Upgrade gRPC service registration func ([fc134e0](https://github.com/googleapis/google-cloud-go/commit/fc134e09b9928b07b362fe8ae8b292210546793d))
+
 ## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.9.4...certificatemanager/v1.9.5) (2025-04-15)
 
 
