@@ -21,6 +21,7 @@ package generator
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -86,7 +87,18 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 			if !strings.HasSuffix(file, ".proto") {
 				continue
 			}
-			pkg, err := goPkg(filepath.Join(googleapisDir, file))
+			content, err := git.GetFileContentAtCommit(googleapisDir, commit, file)
+			if err != nil {
+				// It's possible the file was deleted in this commit, so we check the parent.
+				originalErr := err
+				content, err = git.GetFileContentAtCommit(googleapisDir, commit+"^", file)
+				if err != nil {
+					// We don't want to fail here, just log the error and continue.
+					log.Printf("could not get content for %s at commit %s (%v) or its parent (%v)", file, commit, originalErr, err)
+					continue
+				}
+			}
+			pkg, err := parseGoPkg(content)
 			if err != nil {
 				return nil, err
 			}
