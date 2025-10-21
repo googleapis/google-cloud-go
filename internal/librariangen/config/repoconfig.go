@@ -64,6 +64,11 @@ type APIConfig struct {
 	// DisableGAPIC is a flag to disable GAPIC generation for an API, overriding
 	// settings from the BUILD.bazel file.
 	DisableGAPIC bool `yaml:"disable_gapic"`
+	// NestedProtos lists any nested proto files (under Path) that should be included
+	// in generation. Currently, only proto files *directly* under Path (as opposed to
+	// in subdirectories) are passed to protoc; this setting allows selected nested
+	// protos to be included as well.
+	NestedProtos []string `yaml:"nested_protos"`
 	// ModuleName is the name of the module this API config belongs to.
 	// This is only exported for ease of testing, and is not expected to be
 	// present in the YAML file. It is populated when the APIConfig is returned
