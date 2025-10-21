@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"cloud.google.com/go/storage/experimental"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -1033,4 +1034,48 @@ func ExampleGenerateSignedPostPolicyV4() {
 		// TODO: handle error.
 	}
 	_ = res
+}
+
+func ExampleMultiRangeDownloader() {
+	ctx := context.Background()
+	// NewMultiRangeDownloader is only available on gRPC.
+	client, err := storage.NewGRPCClient(ctx, experimental.WithGRPCBidiReads())
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer client.Close()
+
+	obj := client.Bucket("my-bucket").Object("my-object")
+
+	// The MultiRangeDownloader is the most asynchronous method for downloading
+	// ranges. A callback is invoked for each downloaded range.
+	mrd, err := obj.NewMultiRangeDownloader(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	var rangeErr error
+	// Callback registered by user to be called upon completion of a range.
+	callback := func(offset, length int64, err error) {
+		if err != nil {
+			rangeErr = err
+		}
+	}
+
+	// User creates an io.Writer (e.g. a buffer) and adds it to the reader
+	// with a particular range.
+	b := new(bytes.Buffer)
+	mrd.Add(b, 0, 100, callback)
+
+	// Wait for downloads to complete before closing the stream.
+	mrd.Wait()
+	if err := mrd.Close(); err != nil {
+		// TODO: handle stream close error if any
+	}
+
+	if rangeErr != nil {
+		// TODO: handle error from the range download.
+	}
+
+	fmt.Printf("Downloaded %d bytes: %s\n", b.Len(), b.String())
 }
