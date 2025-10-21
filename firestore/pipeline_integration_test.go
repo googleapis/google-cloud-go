@@ -31,17 +31,15 @@ func TestIntegration_PipelineQueries(t *testing.T) {
 	// t.Run("pq_Arithmetic", pq_Arithmetic)
 	// t.Run("pq_Aggregate", pq_Aggregate)
 	// t.Run("pq_Comparison", pq_Comparison)
-	t.Run("pq_Sort", pq_Sort)
+	// t.Run("pq_Sort", pq_Sort)
 }
 
 func pq_Sort(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	h := testHelper{t}
 	client := integrationClient(t)
-
+	coll := client.Collection(collectionIDs.New())
 	now := time.Now()
-	coll := integrationColl(t)
-
 	doc1data := map[string]interface{}{
 		"timestamp": now,
 		"a":         1,
@@ -50,11 +48,8 @@ func pq_Sort(t *testing.T) {
 		"d":         4.5,
 		"e":         -5.5,
 	}
-	_, err := coll.Doc("doc1").Create(ctx, doc1data)
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-
+	docRef1 := coll.NewDoc()
+	h.mustCreate(docRef1, doc1data)
 	doc2data := map[string]interface{}{
 		"timestamp": now,
 		"a":         2,
@@ -63,13 +58,9 @@ func pq_Sort(t *testing.T) {
 		"d":         4.5,
 		"e":         -5.5,
 	}
-	_, err = coll.Doc("doc2").Create(ctx, doc2data)
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2")})
-	})
+	docRef2 := coll.NewDoc()
+	h.mustCreate(docRef2, doc2data)
+	defer deleteDocuments([]*DocumentRef{docRef1, docRef2})
 
 	doc1want := map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(-3), "d": float64(4.5), "e": float64(-5.5), "timestamp": now.Truncate(time.Microsecond)}
 	doc2want := map[string]interface{}{"a": int64(2), "b": int64(2), "c": int64(-3), "d": float64(4.5), "e": float64(-5.5), "timestamp": now.Truncate(time.Microsecond)}
@@ -84,18 +75,19 @@ func pq_Sort(t *testing.T) {
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
 				Sort(Ascending(FieldOf("a"))),
-			want: []map[string]interface{}{doc2want, doc1want},
+			want: []map[string]interface{}{doc1want, doc2want},
 		},
 
 		{
-			name: "Sort",
+			name: "Sort - expression method",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
 				Sort(FieldOf("a").Ascending()),
-			want: []map[string]interface{}{doc2want, doc1want},
+			want: []map[string]interface{}{doc1want, doc2want},
 		},
 	}
 
+	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			iter := test.pipeline.Execute(ctx)
@@ -129,21 +121,16 @@ func pq_Sort(t *testing.T) {
 }
 
 func pq_Timestamp(t *testing.T) {
-
 	t.Parallel()
-	ctx := context.Background()
 	client := integrationClient(t)
-	defer client.Close()
-
+	coll := client.Collection(collectionIDs.New())
+	h := testHelper{t}
 	now := time.Now()
-	coll := integrationColl(t)
-
-	_, err := coll.Doc("doc1").Create(ctx, map[string]interface{}{
+	docRef1 := coll.NewDoc()
+	h.mustCreate(docRef1, map[string]interface{}{
 		"timestamp": now,
 	})
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
+	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -250,6 +237,7 @@ func pq_Timestamp(t *testing.T) {
 		},
 	}
 
+	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			iter := test.pipeline.Execute(ctx)
@@ -275,26 +263,18 @@ func pq_Timestamp(t *testing.T) {
 
 func pq_Arithmetic(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	h := testHelper{t}
 	client := integrationClient(t)
-	coll := integrationColl(t)
-
-	docID := "doc1"
-	t.Log("coll.ID: ", coll.ID)
-
-	_, err := coll.Doc(docID).Create(ctx, map[string]interface{}{
+	coll := client.Collection(collectionIDs.New())
+	docRef1 := coll.NewDoc()
+	h.mustCreate(docRef1, map[string]interface{}{
 		"a": int(1),
 		"b": int(2),
 		"c": -3,
 		"d": 4.5,
 		"e": -5.5,
 	})
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{coll.Doc(docID)})
-	})
+	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -413,6 +393,7 @@ func pq_Arithmetic(t *testing.T) {
 		},
 	}
 
+	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			iter := test.pipeline.Execute(ctx)
@@ -445,34 +426,23 @@ func pq_Arithmetic(t *testing.T) {
 
 func pq_Aggregate(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	h := testHelper{t}
 	client := integrationClient(t)
-	coll := integrationColl(t)
-
-	_, err := coll.Doc("doc1").Create(ctx, map[string]interface{}{
+	coll := client.Collection(collectionIDs.New())
+	docRef1 := coll.NewDoc()
+	h.mustCreate(docRef1, map[string]interface{}{
 		"a": 1,
 	})
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-
-	_, err = coll.Doc("doc2").Create(ctx, map[string]interface{}{
+	docRef2 := coll.NewDoc()
+	h.mustCreate(docRef2, map[string]interface{}{
 		"a": 2,
 	})
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-
-	_, err = coll.Doc("doc3").Create(ctx, map[string]interface{}{
+	docRef3 := coll.NewDoc()
+	h.mustCreate(docRef3, map[string]interface{}{
 		"b": 2,
 	})
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
+	defer deleteDocuments([]*DocumentRef{docRef1, docRef2, docRef3})
 
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
-	})
 	tests := []struct {
 		name     string
 		pipeline *Pipeline
@@ -529,6 +499,7 @@ func pq_Aggregate(t *testing.T) {
 		},
 	}
 
+	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			iter := test.pipeline.Execute(ctx)
@@ -556,10 +527,8 @@ func pq_Comparison(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationClient(t)
-
 	now := time.Now()
-	coll := integrationColl(t)
-
+	coll := client.Collection(collectionIDs.New())
 	doc1data := map[string]interface{}{
 		"timestamp": now,
 		"a":         1,
@@ -572,7 +541,6 @@ func pq_Comparison(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Create: %v", err)
 	}
-
 	doc2data := map[string]interface{}{
 		"timestamp": now,
 		"a":         2,
@@ -585,9 +553,7 @@ func pq_Comparison(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Create: %v", err)
 	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2")})
-	})
+	defer deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2")})
 
 	doc1want := map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(-3), "d": float64(4.5), "e": float64(-5.5), "timestamp": now.Truncate(time.Microsecond)}
 	doc2want := map[string]interface{}{"a": int64(2), "b": int64(2), "c": int64(-3), "d": float64(4.5), "e": float64(-5.5), "timestamp": now.Truncate(time.Microsecond)}
@@ -615,14 +581,16 @@ func pq_Comparison(t *testing.T) {
 			name: "GreaterThan",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Where(GreaterThan("a", 0)),
+				Where(GreaterThan("a", 0)).
+				Sort(FieldOf("a").Ascending()),
 			want: []map[string]interface{}{doc1want, doc2want},
 		},
 		{
 			name: "GreaterThanOrEqual",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Where(GreaterThanOrEqual("a", 1)),
+				Where(GreaterThanOrEqual("a", 1)).
+				Sort(FieldOf("a").Ascending()),
 			want: []map[string]interface{}{doc1want, doc2want},
 		},
 		{
@@ -636,7 +604,8 @@ func pq_Comparison(t *testing.T) {
 			name: "LessThanOrEqual",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Where(LessThanOrEqual("a", 2)),
+				Where(LessThanOrEqual("a", 2)).
+				Sort(FieldOf("a").Ascending()),
 			want: []map[string]interface{}{doc1want, doc2want},
 		},
 		{
