@@ -50,6 +50,7 @@ const (
 	PredictionService_GenerateContent_FullMethodName        = "/google.cloud.aiplatform.v1beta1.PredictionService/GenerateContent"
 	PredictionService_StreamGenerateContent_FullMethodName  = "/google.cloud.aiplatform.v1beta1.PredictionService/StreamGenerateContent"
 	PredictionService_ChatCompletions_FullMethodName        = "/google.cloud.aiplatform.v1beta1.PredictionService/ChatCompletions"
+	PredictionService_EmbedContent_FullMethodName           = "/google.cloud.aiplatform.v1beta1.PredictionService/EmbedContent"
 )
 
 // PredictionServiceClient is the client API for PredictionService service.
@@ -112,6 +113,8 @@ type PredictionServiceClient interface {
 	StreamGenerateContent(ctx context.Context, in *GenerateContentRequest, opts ...grpc.CallOption) (PredictionService_StreamGenerateContentClient, error)
 	// Exposes an OpenAI-compatible endpoint for chat completions.
 	ChatCompletions(ctx context.Context, in *ChatCompletionsRequest, opts ...grpc.CallOption) (PredictionService_ChatCompletionsClient, error)
+	// Embed content with multimodal inputs.
+	EmbedContent(ctx context.Context, in *EmbedContentRequest, opts ...grpc.CallOption) (*EmbedContentResponse, error)
 }
 
 type predictionServiceClient struct {
@@ -437,6 +440,15 @@ func (x *predictionServiceChatCompletionsClient) Recv() (*httpbody.HttpBody, err
 	return m, nil
 }
 
+func (c *predictionServiceClient) EmbedContent(ctx context.Context, in *EmbedContentRequest, opts ...grpc.CallOption) (*EmbedContentResponse, error) {
+	out := new(EmbedContentResponse)
+	err := c.cc.Invoke(ctx, PredictionService_EmbedContent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PredictionServiceServer is the server API for PredictionService service.
 // All implementations should embed UnimplementedPredictionServiceServer
 // for forward compatibility
@@ -497,6 +509,8 @@ type PredictionServiceServer interface {
 	StreamGenerateContent(*GenerateContentRequest, PredictionService_StreamGenerateContentServer) error
 	// Exposes an OpenAI-compatible endpoint for chat completions.
 	ChatCompletions(*ChatCompletionsRequest, PredictionService_ChatCompletionsServer) error
+	// Embed content with multimodal inputs.
+	EmbedContent(context.Context, *EmbedContentRequest) (*EmbedContentResponse, error)
 }
 
 // UnimplementedPredictionServiceServer should be embedded to have forward compatible implementations.
@@ -547,6 +561,9 @@ func (UnimplementedPredictionServiceServer) StreamGenerateContent(*GenerateConte
 }
 func (UnimplementedPredictionServiceServer) ChatCompletions(*ChatCompletionsRequest, PredictionService_ChatCompletionsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ChatCompletions not implemented")
+}
+func (UnimplementedPredictionServiceServer) EmbedContent(context.Context, *EmbedContentRequest) (*EmbedContentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EmbedContent not implemented")
 }
 
 // UnsafePredictionServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -874,6 +891,24 @@ func (x *predictionServiceChatCompletionsServer) Send(m *httpbody.HttpBody) erro
 	return x.ServerStream.SendMsg(m)
 }
 
+func _PredictionService_EmbedContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmbedContentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PredictionServiceServer).EmbedContent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PredictionService_EmbedContent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PredictionServiceServer).EmbedContent(ctx, req.(*EmbedContentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PredictionService_ServiceDesc is the grpc.ServiceDesc for PredictionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -908,6 +943,10 @@ var PredictionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateContent",
 			Handler:    _PredictionService_GenerateContent_Handler,
+		},
+		{
+			MethodName: "EmbedContent",
+			Handler:    _PredictionService_EmbedContent_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

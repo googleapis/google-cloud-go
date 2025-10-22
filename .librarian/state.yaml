@@ -131,7 +131,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.107.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -1419,7 +1419,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: container
     version: 1.44.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/container/v1
         service_config: container_v1.yaml
@@ -1667,6 +1667,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
+  - id: dataqna
+    version: 0.9.8
+    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    apis:
+      - path: google/cloud/dataqna/v1alpha
+        service_config: dataqna_v1alpha.yaml
+    source_roots:
+      - dataqna
+      - internal/generated/snippets/dataqna
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/dataqna/
+      - ^dataqna/apiv1alpha/[^/]*_client\.go$
+      - ^dataqna/apiv1alpha/[^/]*_client_example_go123_test\.go$
+      - ^dataqna/apiv1alpha/[^/]*_client_example_test\.go$
+      - ^dataqna/apiv1alpha/auxiliary\.go$
+      - ^dataqna/apiv1alpha/auxiliary_go123\.go$
+      - ^dataqna/apiv1alpha/doc\.go$
+      - ^dataqna/apiv1alpha/gapic_metadata\.json$
+      - ^dataqna/apiv1alpha/helpers\.go$
+      - ^dataqna/apiv1alpha/dataqnapb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/dataqna/
+    tag_format: '{id}/v{version}'
   - id: datastore
     version: 1.21.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -1701,30 +1725,6 @@ libraries:
       - ^datastore/apiv1/datastorepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/datastore/
-  - id: dataqna
-    version: 0.9.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
-    apis:
-      - path: google/cloud/dataqna/v1alpha
-        service_config: dataqna_v1alpha.yaml
-    source_roots:
-      - dataqna
-      - internal/generated/snippets/dataqna
-    preserve_regex: []
-    remove_regex:
-      - ^internal/generated/snippets/dataqna/
-      - ^dataqna/apiv1alpha/[^/]*_client\.go$
-      - ^dataqna/apiv1alpha/[^/]*_client_example_go123_test\.go$
-      - ^dataqna/apiv1alpha/[^/]*_client_example_test\.go$
-      - ^dataqna/apiv1alpha/auxiliary\.go$
-      - ^dataqna/apiv1alpha/auxiliary_go123\.go$
-      - ^dataqna/apiv1alpha/doc\.go$
-      - ^dataqna/apiv1alpha/gapic_metadata\.json$
-      - ^dataqna/apiv1alpha/helpers\.go$
-      - ^dataqna/apiv1alpha/dataqnapb/.*$
-    release_exclude_paths:
-      - internal/generated/snippets/dataqna/
-    tag_format: '{id}/v{version}'
   - id: datastream
     version: 1.15.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -2876,7 +2876,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maps
     version: 1.24.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/maps/addressvalidation/v1
         service_config: addressvalidation_v1.yaml
@@ -3423,7 +3423,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oracledatabase
     version: 0.5.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/cloud/oracledatabase/v1
         service_config: oracledatabase_v1.yaml
