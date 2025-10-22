@@ -357,11 +357,14 @@ func TestPipelineResult_NoResults(t *testing.T) {
 	}
 
 	data, err := pr.Data()
-	if err == nil {
-		t.Errorf("pr.Data() for non-existent result err: got nil, want %v", err)
+	if err != nil {
+		t.Errorf("pr.Data() for non-existent result err: got %v, want nil", err)
 	}
-	if data != nil {
-		t.Errorf("pr.Data() for non-existent result: got %v, want nil. Err: got", data)
+	if data == nil {
+		t.Errorf("pr.Data() for non-existent result: got nil, want non-nil empty map")
+	}
+	if len(data) != 0 {
+		t.Errorf("pr.Data() for non-existent result: got map with %d elements, want empty map", len(data))
 	}
 
 	type MyStruct struct{ Foo string }
