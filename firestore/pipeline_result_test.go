@@ -245,6 +245,11 @@ func TestPipelineResultIterator_GetAll(t *testing.T) {
 	if data["id"].(int64) != 1 {
 		t.Errorf("first result id: got %v, want: 1", data["id"])
 	}
+
+	data, err = allResults[1].Data()
+	if err != nil {
+		t.Fatalf("Data: %v", err)
+	}
 	if data["id"].(int64) != 2 {
 		t.Errorf("second result id: got %v, want: 2", data["id"])
 	}
