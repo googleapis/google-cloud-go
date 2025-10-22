@@ -16,7 +16,6 @@ package configure
 
 import (
 	"encoding/json"
-	"log/slog"
 	"os"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
@@ -26,11 +25,7 @@ import (
 func saveResponse(response *request.Library, path string) error {
 	b, err := json.MarshalIndent(response, "", "  ")
 	if err != nil {
-		slog.Error("failed to marshal response", "error", err)
 		return err
 	}
-	if err := os.WriteFile(path, b, 0644); err != nil {
-		slog.Error("failed to write response", "error", err)
-	}
-	return err
+	return os.WriteFile(path, b, 0644)
 }
