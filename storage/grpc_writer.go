@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -54,7 +55,9 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 	case w.writesChan <- cmd:
 		// update fullObjectChecksum on every write and send it on finalWrite
 		if !w.disableCRC32C {
+			w.checksumMutex.Lock()
 			w.fullObjectChecksum = crc32.Update(w.fullObjectChecksum, crc32cTable, p)
+			w.checksumMutex.Unlock()
 		}
 		// write command successfully delivered to sender. We no longer own cmd.
 		break
@@ -246,6 +249,7 @@ type gRPCWriter struct {
 	setTakeoverOffset func(int64)
 
 	fullObjectChecksum uint32
+	checksumMutex      sync.RWMutex
 
 	flushSupported        bool
 	sendCRC32C            bool
@@ -818,14 +822,14 @@ func bidiWriteObjectRequest(buf []byte, offset int64, flush, finishWrite bool, c
 	return req
 }
 
-// getFinalChecksums determines what checksum information to include in the final
+// getObjectChecksums determines what checksum information to include in the final
 // gRPC request
 //
 // function returns a populated ObjectChecksums only when finishWrite is true
 // If CRC32C is disabled, it returns the user-provided checksum if available.
 // If CRC32C is enabled, it returns the user-provided checksum if available,
 // or the computed checksum of the entire object.
-func getFinalChecksums(fullObjectChecksum uint32, finishWrite bool, sendCRC32C, disableCRC32C bool, attrs *ObjectAttrs) *storagepb.ObjectChecksums {
+func getObjectChecksums(fullObjectChecksum uint32, finishWrite bool, sendCRC32C, disableCRC32C bool, attrs *ObjectAttrs) *storagepb.ObjectChecksums {
 	if !finishWrite {
 		return nil
 	}
@@ -894,6 +898,8 @@ func (w *gRPCWriter) newGRPCOneshotBidiWriteBufferSender() *gRPCOneshotBidiWrite
 			return w.sendCRC32C, w.disableCRC32C, w.attrs
 		},
 		fullObjectChecksum: func() uint32 {
+			w.checksumMutex.RLock()
+			defer w.checksumMutex.RUnlock()
 			return w.fullObjectChecksum
 		},
 	}
@@ -940,8 +946,11 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 			if !disableCrc32c {
 				checksumOfBuf = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
 			}
-
-			objectChecksums := getFinalChecksums(s.fullObjectChecksum(), r.finishWrite, sendCrc32C, disableCrc32c, attrs)
+			var fullChecksum uint32
+			if r.finishWrite {
+				fullChecksum = s.fullObjectChecksum()
+			}
+			objectChecksums := getObjectChecksums(fullChecksum, r.finishWrite, sendCrc32C, disableCrc32c, attrs)
 			req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite, checksumOfBuf, objectChecksums)
 
 			if firstSend {
@@ -1009,6 +1018,8 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 			return w.sendCRC32C, w.disableCRC32C, w.attrs
 		},
 		fullObjectChecksum: func() uint32 {
+			w.checksumMutex.RLock()
+			defer w.checksumMutex.RUnlock()
 			return w.fullObjectChecksum
 		},
 	}
@@ -1075,8 +1086,11 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						if !disableCrc32c {
 							checksumOfBuf = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
 						}
-
-						objectChecksums := getFinalChecksums(s.fullObjectChecksum(), r.finishWrite, sendCrc32C, disableCrc32c, attrs)
+						var fullChecksum uint32
+						if r.finishWrite {
+							fullChecksum = s.fullObjectChecksum()
+						}
+						objectChecksums := getObjectChecksums(fullChecksum, r.finishWrite, sendCrc32C, disableCrc32c, attrs)
 						req := bidiWriteObjectRequest(r.buf, r.offset, r.flush, r.finishWrite, checksumOfBuf, objectChecksums)
 
 						if firstSend {
