@@ -52,6 +52,20 @@ type Writer struct {
 	// point, the checksum will be ignored.
 	SendCRC32C bool
 
+	// DisableCRC32C disables the automatic CRC32C checksum calculation and
+	// validation that is performed by default.
+	//
+	// By default, a CRC32C checksum is computed for the data being written and
+	// sent to the server. Setting this field to true disables the
+	// automatic checksum calculation.
+	//
+	// However, user-provided checksums will still be sent if SendCRC32C is set to true
+	// and Writer's CRC32C is populated
+	//
+	// Note: DisableCRC32C must be set to true BEFORE the first call to
+	// Writer.Write().
+	DisableCRC32C bool
+
 	// ChunkSize controls the maximum number of bytes of the object that the
 	// Writer will attempt to send to the server in a single request. Objects
 	// smaller than the size will be sent in a single request, while larger
@@ -286,6 +300,7 @@ func (w *Writer) openWriter() (err error) {
 		appendGen:            w.o.gen,
 		encryptionKey:        w.o.encryptionKey,
 		sendCRC32C:           w.SendCRC32C,
+		disableCRC32C:        w.DisableCRC32C,
 		append:               w.Append,
 		finalizeOnClose:      w.FinalizeOnClose,
 		donec:                w.donec,
