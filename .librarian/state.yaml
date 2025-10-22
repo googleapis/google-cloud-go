@@ -73,7 +73,7 @@ libraries:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
   - id: ai
-    version: 0.13.0
+    version: 0.14.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/ai/generativelanguage/v1
@@ -130,7 +130,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.107.0
+    version: 1.108.0
     last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/cloud/aiplatform/v1
@@ -1418,7 +1418,7 @@ libraries:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
   - id: container
-    version: 1.44.1
+    version: 1.45.0
     last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/container/v1
@@ -1891,7 +1891,7 @@ libraries:
       - internal/generated/snippets/dialogflow/
     tag_format: '{id}/v{version}'
   - id: discoveryengine
-    version: 1.21.1
+    version: 1.22.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/discoveryengine/v1
@@ -2875,7 +2875,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.24.0
+    version: 1.25.0
     last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/maps/addressvalidation/v1
@@ -3422,7 +3422,7 @@ libraries:
       - internal/generated/snippets/optimization/
     tag_format: '{id}/v{version}'
   - id: oracledatabase
-    version: 0.5.1
+    version: 0.6.0
     last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/cloud/oracledatabase/v1
@@ -5133,7 +5133,7 @@ libraries:
       - internal/generated/snippets/telcoautomation/
     tag_format: '{id}/v{version}'
   - id: texttospeech
-    version: 1.15.1
+    version: 1.16.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/texttospeech/v1
