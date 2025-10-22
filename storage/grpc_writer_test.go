@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGetFinalChecksums(t *testing.T) {
+func TestGetObjectChecksums(t *testing.T) {
 	tests := []struct {
 		name               string
 		fullObjectChecksum uint32
@@ -77,7 +77,7 @@ func TestGetFinalChecksums(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := getFinalChecksums(tt.fullObjectChecksum, tt.finishWrite, tt.sendCRC32C, tt.disableCRC32C, tt.attrs)
+			got := getObjectChecksums(tt.fullObjectChecksum, tt.finishWrite, tt.sendCRC32C, tt.disableCRC32C, tt.attrs)
 			if !proto.Equal(got, tt.want) {
 				t.Errorf("getFinalChecksums() = %v, want %v", got, tt.want)
 			}
