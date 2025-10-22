@@ -99,10 +99,11 @@ func TestConfig_Validate(t *testing.T) {
 
 func TestFindLibraryToConfigure(t *testing.T) {
 	tests := []struct {
-		name    string
-		req     *Request
-		wantID  string
-		wantErr bool
+		name     string
+		req      *Request
+		wantID   string
+		wantPath string
+		wantErr  bool
 	}{
 		{
 			name: "valid new library",
@@ -135,7 +136,8 @@ func TestFindLibraryToConfigure(t *testing.T) {
 					},
 				},
 			},
-			wantID: "new",
+			wantID:   "new",
+			wantPath: "a/b/c",
 		},
 		{
 			name: "valid updated library",
@@ -174,7 +176,8 @@ func TestFindLibraryToConfigure(t *testing.T) {
 					},
 				},
 			},
-			wantID: "updated",
+			wantID:   "updated",
+			wantPath: "e/f/g",
 		},
 		{
 			name: "invalid no new APIs",
@@ -250,7 +253,7 @@ func TestFindLibraryToConfigure(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			lib, err := findLibraryToConfigure(tt.req)
+			lib, api, err := findLibraryAndAPIToConfigure(tt.req)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("findLibraryToConfigure error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -258,6 +261,9 @@ func TestFindLibraryToConfigure(t *testing.T) {
 			// picking the right struct).
 			if tt.wantID != "" && lib.ID != tt.wantID {
 				t.Errorf("mismatched ID, got=%s, want=%s", lib.ID, tt.wantID)
+			}
+			if tt.wantPath != "" && api.Path != tt.wantPath {
+				t.Errorf("mismatched API path, got=%s, want=%s", api.Path, tt.wantPath)
 			}
 		})
 	}
