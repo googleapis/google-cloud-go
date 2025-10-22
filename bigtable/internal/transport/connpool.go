@@ -57,7 +57,6 @@ const primeRPCTimeout = 10 * time.Second
 
 var errNoConnections = fmt.Errorf("bigtable_connpool: no connections available in the pool")
 var _ gtransport.ConnPool = &BigtableChannelPool{}
-var _ grpc.ClientConn = &BigtableConn{}
 
 // BigtableConn wraps grpc.ClientConn to add Bigtable specific methods.
 type BigtableConn struct {
@@ -127,7 +126,7 @@ type BigtableChannelPool struct {
 	// Mutex is only used for selecting the least loaded connection.
 	// The load array itself is manipulated using atomic operations.
 	mu         sync.Mutex
-	dial       func() (*grpc.ClientConn, error)
+	dial       func() (*BigtableConn, error)
 	strategy   btopt.LoadBalancingStrategy
 	rrIndex    uint64              // For round-robin selection
 	selectFunc func() (int, error) // Stored function for connection selection
