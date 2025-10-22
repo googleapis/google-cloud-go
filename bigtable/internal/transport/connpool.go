@@ -97,31 +97,141 @@ func NewBigtableConn(conn *grpc.ClientConn, instanceName, appProfileId string) *
 	}
 }
 
-// Health Check related types
+// probeResult stores a single health check outcome.
 type probeResult struct {
 	t          time.Time
 	successful bool
 }
 
-type connEntry struct {
-	conn *BigtableConn // Changed to BigtableConn
-	load int64
-
-	// Health Check Fields
-	mu               sync.Mutex
+// connHealthState holds the health monitoring state for a single connection.
+type connHealthState struct {
+	mu               sync.Mutex // Guards fields below
 	probeHistory     []probeResult
 	successfulProbes int
 	failedProbes     int
 	lastProbeTime    time.Time
 }
 
+// addProbeResult records a new probe outcome and prunes old history.
+func (chs *connHealthState) addProbeResult(successful bool) {
+	chs.mu.Lock()
+	defer chs.mu.Unlock()
+
+	now := time.Now()
+	chs.lastProbeTime = now
+	chs.probeHistory = append(chs.probeHistory, probeResult{t: now, successful: successful})
+
+	if successful {
+		chs.successfulProbes++
+	} else {
+		chs.failedProbes++
+	}
+	chs.pruneHistoryLocked()
+}
+
+// pruneHistoryLocked removes probe results older than WindowDuration. Assumes chs.mu is held.
+func (chs *connHealthState) pruneHistoryLocked() {
+	windowStart := time.Now().Add(-WindowDuration)
+	firstValid := 0
+	for firstValid < len(chs.probeHistory) && chs.probeHistory[firstValid].t.Before(windowStart) {
+		result := chs.probeHistory[firstValid]
+		if result.successful {
+			chs.successfulProbes--
+		} else {
+			chs.failedProbes--
+		}
+		firstValid++
+	}
+	if firstValid > 0 {
+		chs.probeHistory = chs.probeHistory[firstValid:]
+	}
+}
+
+// isHealthy reports if the connection is currently considered healthy based on probe history.
+func (chs *connHealthState) isHealthy() bool {
+	chs.mu.Lock()
+	defer chs.mu.Unlock()
+	totalProbes := chs.successfulProbes + chs.failedProbes
+	if totalProbes < MinProbesForEval {
+		return true // Not enough data to make a judgment
+	}
+	failureRate := float64(chs.failedProbes) / float64(totalProbes) * 100.0
+	return failureRate < float64(FailurePercentThresh)
+}
+
+// getFailedProbes returns the number of failed probes in the current window.
+func (chs *connHealthState) getFailedProbes() int {
+	chs.mu.Lock()
+	defer chs.mu.Unlock()
+	return chs.failedProbes
+}
+
+// connEntry represents a single connection in the pool.
+type connEntry struct {
+	conn   *BigtableConn
+	load   int64
+	health connHealthState // Embedded health state
+}
+
+// ChannelHealthMonitor manages the overall health checking process for a pool of connections.
+type ChannelHealthMonitor struct {
+	ticker           *time.Ticker
+	done             chan struct{}
+	evictionMu       sync.Mutex // Guards lastEvictionTime
+	lastEvictionTime time.Time
+}
+
+// NewChannelHealthMonitor creates a new ChannelHealthMonitor.
+func NewChannelHealthMonitor() *ChannelHealthMonitor {
+	return &ChannelHealthMonitor{
+		done: make(chan struct{}),
+	}
+}
+
+// Start begins the periodic health checking loop. It takes functions to probe all connections
+// and to evict unhealthy ones.
+func (chm *ChannelHealthMonitor) Start(probeAll func(), evictUnhealthy func()) {
+	chm.ticker = time.NewTicker(ProbeInterval)
+	go func() {
+		for {
+			select {
+			case <-chm.ticker.C:
+				probeAll()
+				evictUnhealthy()
+			case <-chm.done:
+				chm.ticker.Stop()
+				return
+			}
+		}
+	}()
+}
+
+// Stop terminates the health checking loop.
+func (chm *ChannelHealthMonitor) Stop() {
+	if chm.done != nil {
+		close(chm.done)
+		chm.done = nil // Prevent reentrance
+	}
+}
+
+// AllowEviction checks if enough time has passed since the last eviction.
+func (chm *ChannelHealthMonitor) AllowEviction() bool {
+	chm.evictionMu.Lock()
+	defer chm.evictionMu.Unlock()
+	return time.Since(chm.lastEvictionTime) >= MinEvictionInterval
+}
+
+// RecordEviction updates the last eviction time to the current time.
+func (chm *ChannelHealthMonitor) RecordEviction() {
+	chm.evictionMu.Lock()
+	defer chm.evictionMu.Unlock()
+	chm.lastEvictionTime = time.Now()
+}
+
 // BigtableChannelPool implements ConnPool and routes requests to the connection
 // pool according to load balancing strategy.
-//
-// To benefit from automatic load tracking, use the Invoke and NewStream methods
-// directly on the BigtableChannelPool instance.
 type BigtableChannelPool struct {
-	conns []*connEntry // Changed to connEntry
+	conns []*connEntry
 
 	// Mutex is only used for selecting the least loaded connection.
 	// The load array itself is manipulated using atomic operations.
@@ -131,14 +241,10 @@ type BigtableChannelPool struct {
 	rrIndex    uint64              // For round-robin selection
 	selectFunc func() (int, error) // Stored function for connection selection
 
-	// Health Checker Fields
-	healthCheckTicker *time.Ticker
-	healthCheckDone   chan struct{}
-	// for dailing
-	dialMu           sync.Mutex
-	lastEvictionTime time.Time
-	// for eviction
-	evictionMu sync.Mutex
+	// Health Checker instance
+	healthMonitor *ChannelHealthMonitor
+	// dialMu protects the dial operation during connection replacement.
+	dialMu sync.Mutex
 }
 
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
@@ -151,9 +257,10 @@ func NewBigtableChannelPool(connPoolSize int, strategy btopt.LoadBalancingStrate
 		return nil, fmt.Errorf("bigtable_connpool: dial function cannot be nil")
 	}
 	pool := &BigtableChannelPool{
-		dial:     dial,
-		strategy: strategy,
-		rrIndex:  0,
+		dial:          dial,
+		strategy:      strategy,
+		rrIndex:       0,
+		healthMonitor: NewChannelHealthMonitor(),
 	}
 
 	// Set the selection function based on the strategy
@@ -175,33 +282,12 @@ func NewBigtableChannelPool(connPoolSize int, strategy btopt.LoadBalancingStrate
 		pool.conns = append(pool.conns, &connEntry{conn: conn, load: 0})
 	}
 
-	pool.healthCheckDone = make(chan struct{})
 	pool.startHealthChecker()
 	return pool, nil
-
 }
 
 func (p *BigtableChannelPool) startHealthChecker() {
-	p.healthCheckTicker = time.NewTicker(ProbeInterval)
-	go func() {
-		for {
-			select {
-			case <-p.healthCheckTicker.C:
-				p.runProbes()
-				p.detectAndEvictUnhealthy()
-			case <-p.healthCheckDone:
-				p.healthCheckTicker.Stop()
-				return
-			}
-		}
-	}()
-}
-
-func (p *BigtableChannelPool) stopHealthChecker() {
-	if p.healthCheckDone != nil {
-		close(p.healthCheckDone)
-		p.healthCheckDone = nil // Prevent reentrance
-	}
+	p.healthMonitor.Start(p.runProbes, p.detectAndEvictUnhealthy)
 }
 
 // Num returns the number of connections in the pool.
@@ -211,7 +297,7 @@ func (p *BigtableChannelPool) Num() int {
 
 // Close closes all connections in the pool.
 func (p *BigtableChannelPool) Close() error {
-	p.stopHealthChecker()
+	p.healthMonitor.Stop()
 
 	var errs multiError
 	for _, entry := range p.conns {
@@ -225,125 +311,69 @@ func (p *BigtableChannelPool) Close() error {
 	return errs
 }
 
+// runProbes executes a Prime check on all connections concurrently.
 func (p *BigtableChannelPool) runProbes() {
 	var wg sync.WaitGroup
-	for i, entry := range p.conns {
+	for _, entry := range p.conns {
 		wg.Add(1)
-		go func(idx int, e *connEntry) {
+		go func(e *connEntry) {
 			defer wg.Done()
-			p.probeConnection(idx, e)
-		}(i, entry)
+			ctx, cancel := context.WithTimeout(context.Background(), ProbeTimeout)
+			defer cancel()
+			err := e.conn.Prime(ctx)
+			e.health.addProbeResult(err == nil)
+		}(entry)
 	}
 	wg.Wait()
 }
 
-func (p *BigtableChannelPool) probeConnection(idx int, entry *connEntry) {
-	ctx, cancel := context.WithTimeout(context.Background(), ProbeTimeout) // USE CONSTANT
-	defer cancel()
-
-	startTime := time.Now()
-	err := entry.conn.Prime(ctx)
-	successful := err == nil
-	entry.mu.Lock()
-	defer entry.mu.Unlock()
-
-	entry.lastProbeTime = startTime
-	entry.probeHistory = append(entry.probeHistory, probeResult{t: startTime, successful: successful})
-
-	if successful {
-		entry.successfulProbes++
-	} else {
-		entry.failedProbes++
-	}
-	p.pruneHistoryLocked(entry)
-}
-
-// pruneHistoryLocked assumes entry.mu is held.
-func (p *BigtableChannelPool) pruneHistoryLocked(entry *connEntry) {
-	windowStart := time.Now().Add(-WindowDuration)
-	// Find the index of the first element within the window.
-	firstValid := 0
-	for firstValid < len(entry.probeHistory) && entry.probeHistory[firstValid].t.Before(windowStart) {
-		result := entry.probeHistory[firstValid]
-		if result.successful {
-			entry.successfulProbes--
-		} else {
-			entry.failedProbes--
-		}
-		firstValid++
-	}
-	if firstValid > 0 {
-		entry.probeHistory = entry.probeHistory[firstValid:]
-	}
-}
-
-// isHealthy reports if the connection is currently considered healthy.
-func (e *connEntry) isHealthy() bool {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	return e.isHealthyLocked()
-}
-
-// isHealthyLocked assumes e.mu is already held.
-func (e *connEntry) isHealthyLocked() bool {
-	totalProbes := e.successfulProbes + e.failedProbes
-	if totalProbes < MinProbesForEval {
-		return true // Not enough data to make a judgment
-	}
-
-	failureRate := float64(e.failedProbes) / float64(totalProbes) * 100.0
-	return failureRate < float64(FailurePercentThresh)
-}
-
+// detectAndEvictUnhealthy checks connection health and evicts the worst unhealthy one if allowed.
 func (p *BigtableChannelPool) detectAndEvictUnhealthy() {
-	p.evictionMu.Lock()
-	if time.Since(p.lastEvictionTime) < MinEvictionInterval {
-		p.evictionMu.Unlock()
-		return
+	if !p.healthMonitor.AllowEviction() {
+		return // Too soon since the last eviction.
 	}
-	p.evictionMu.Unlock()
 
-	var unhealthyIndices []int
 	numConns := len(p.conns)
 	if numConns == 0 {
 		return
 	}
+
+	var unhealthyIndices []int
 	for i, entry := range p.conns {
-		if !entry.isHealthy() { // isHealthy() locks internally
+		if !entry.health.isHealthy() { // isHealthy() locks internally
 			unhealthyIndices = append(unhealthyIndices, i)
 		}
 	}
 
 	if len(unhealthyIndices) == 0 {
-		return
+		return // All connections are healthy.
 	}
 
 	unhealthyPercent := float64(len(unhealthyIndices)) / float64(numConns) * 100.0
 	if unhealthyPercent >= float64(PoolwideBadThreshPercent) {
 		fmt.Printf("bigtable_connpool: Circuit breaker tripped, %d%% unhealthy, not evicting\n", int(unhealthyPercent))
-		return
+		return // Too many unhealthy connections, don't evict.
 	}
 
+	// Find the connection with the most failed probes among the unhealthy ones.
 	worstIdx := -1
 	maxFailed := -1
 	for _, idx := range unhealthyIndices {
 		entry := p.conns[idx]
-		entry.mu.Lock()
-		if entry.failedProbes > maxFailed {
-			maxFailed = entry.failedProbes
+		failed := entry.health.getFailedProbes() // getFailedProbes() locks internally
+		if failed > maxFailed {
+			maxFailed = failed
 			worstIdx = idx
 		}
-		entry.mu.Unlock()
 	}
 
 	if worstIdx != -1 {
-		p.evictionMu.Lock()
-		p.lastEvictionTime = time.Now()
-		p.evictionMu.Unlock()
+		p.healthMonitor.RecordEviction() // Record eviction time *before* replacing.
 		p.replaceConnection(worstIdx)
 	}
 }
 
+// replaceConnection closes the connection at the given index and dials a new one.
 func (p *BigtableChannelPool) replaceConnection(idx int) {
 	p.dialMu.Lock()
 	defer p.dialMu.Unlock()
@@ -354,20 +384,24 @@ func (p *BigtableChannelPool) replaceConnection(idx int) {
 
 	oldEntry := p.conns[idx]
 	fmt.Printf("bigtable_connpool: Evicting connection at index %d\n", idx)
+	// Close the old connection asynchronously.
 	go oldEntry.conn.Close()
 
+	// Dial a new connection.
 	newConn, err := p.dial()
 	if err != nil {
 		fmt.Printf("bigtable_connpool: Failed to redial connection at index %d: %v\n", idx, err)
+		// Consider marking this index as still bad or having a fallback.
 		return
 	}
 
+	// Replace the old entry with a new one, including a fresh health state.
 	newEntry := &connEntry{
-		conn: newConn,
+		conn:   newConn,
+		load:   0,                 // New connection starts with zero load.
+		health: connHealthState{}, // Initialize a new, clean health state.
 	}
 	p.conns[idx] = newEntry
-	// Atomically reset load for the new connection index
-	atomic.StoreInt64(&oldEntry.load, 0)
 	fmt.Printf("bigtable_connpool: Replaced connection at index %d\n", idx)
 }
 
@@ -443,8 +477,6 @@ func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (int, error) {
 	idx1 := rand.Intn(numConns)
 	idx2 := rand.Intn(numConns)
 	// Simple way to ensure they are different for small numConns.
-	// For very large numConns, the chance of collision is low,
-	// but a loop is safer.
 	for idx2 == idx1 {
 		idx2 = rand.Intn(numConns)
 	}
@@ -497,12 +529,6 @@ func (p *BigtableChannelPool) selectLeastLoaded() (int, error) {
 }
 
 // refCountedStream wraps a grpc.ClientStream to decrement the load count when the stream is done.
-// refCountedStream in this BigtableConnectionPool is to hook into the stream's lifecycle
-// to decrement the load counter (s.pool.load[s.connIndex]) when the stream is no longer usable.
-// This is primarily detected by errors occurring during SendMsg or RecvMsg (including io.EOF on RecvMsg).
-
-// Another option would have been to use grpc.OnFinish for streams is about the timing of when the load should be considered "finished".
-// The grpc.OnFinish callback is executed only when the entire stream is fully closed and the final status is determined.
 type refCountedStream struct {
 	grpc.ClientStream
 	pool      *BigtableChannelPool

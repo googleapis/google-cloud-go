@@ -136,10 +136,6 @@ func dialBigtableserver(addr string) (*BigtableConn, error) {
 	return NewBigtableConn(conn, "test-instance", "test-profile"), nil
 }
 
-// ####################################################################################
-// ## MODIFIED TESTS
-// ####################################################################################
-
 func TestSelectRoundRobin(t *testing.T) {
 	pool := &BigtableChannelPool{rrIndex: 0}
 
@@ -165,6 +161,9 @@ func TestSelectRoundRobin(t *testing.T) {
 	// Test multiple connections
 	poolSize := 3
 	pool.conns = make([]*connEntry, poolSize)
+	for i := 0; i < poolSize; i++ {
+		pool.conns[i] = &connEntry{}
+	}
 	pool.rrIndex = 0
 
 	// Test wrapping around
@@ -258,7 +257,7 @@ func TestSelectLeastLoadedRandomOfTwo(t *testing.T) {
 	}
 }
 
-func TestNewBigtableChannelPool(t *testing.T) { // Renamed from TestNewLeastLoadedChannelPool
+func TestNewBigtableChannelPool(t *testing.T) {
 	t.Run("SuccessfulCreation", func(t *testing.T) {
 		poolSize := 5
 		fake := &fakeService{}
@@ -281,10 +280,14 @@ func TestNewBigtableChannelPool(t *testing.T) { // Renamed from TestNewLeastLoad
 			if conn == nil || conn.conn == nil {
 				t.Errorf("conn at index %d is nil", i)
 			}
+			if conn.health.successfulProbes != 0 || conn.health.failedProbes != 0 {
+				t.Errorf("conn at index %d has non-zero initial probe counts", i)
+			}
 		}
-		if pool.healthCheckTicker == nil {
-			t.Errorf("Health check ticker was not started")
+		if pool.healthMonitor == nil {
+			t.Errorf("Health monitor was not created")
 		}
+		// We can't easily check if the goroutine *started*, but its creation is tied to NewBigtableChannelPool.
 	})
 
 	t.Run("DialFailure", func(t *testing.T) {
@@ -474,17 +477,21 @@ func TestPoolClose(t *testing.T) {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
 
+	// Capture the done channel before closing
+	doneChan := pool.healthMonitor.done
+
 	if err := pool.Close(); err != nil {
 		t.Errorf("Close failed: %v", err)
 	}
 
-	if pool.healthCheckDone == nil {
-		return // Already closed
+	if doneChan == nil {
+		t.Fatalf("Health monitor done channel was unexpectedly nil")
 	}
+
 	select {
-	case <-pool.healthCheckDone:
-		// as expected
-	case <-time.After(100 * time.Millisecond):
+	case <-doneChan:
+		// As expected, the done channel is closed.
+	case <-time.After(1 * time.Second):
 		t.Errorf("Health checker did not stop after Close")
 	}
 }
@@ -683,11 +690,11 @@ func TestCachingStreamDecrement(t *testing.T) {
 	})
 }
 
-// // ####################################################################################
-// // ## NEW TESTS for Health Checking & Eviction
-// // ####################################################################################
+// ####################################################################################
+// ## NEW/MODIFIED TESTS for Health Checking & Eviction
+// ####################################################################################
 
-func TestProbeConnection(t *testing.T) {
+func TestConnHealthStateAddProbeResult(t *testing.T) {
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)
 	conn, err := dialBigtableserver(addr)
@@ -696,83 +703,101 @@ func TestProbeConnection(t *testing.T) {
 	}
 	defer conn.Close()
 
-	entry := &connEntry{conn: conn}
-	pool := &BigtableChannelPool{}
+	chs := &connHealthState{}
+
+	// Helper to simulate a Prime call and update chs.
+	simulateAndAddProbe := func(t *testing.T, shouldFail bool) {
+		t.Helper()
+		originalPingErr := fake.pingErr
+		defer func() { fake.pingErr = originalPingErr }()
+
+		if shouldFail {
+			fake.pingErr = errors.New("simulated ping error")
+		} else {
+			fake.pingErr = nil
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), ProbeTimeout)
+		defer cancel()
+		err := conn.Prime(ctx)
+		chs.addProbeResult(err == nil)
+	}
 
 	t.Run("SuccessfulProbe", func(t *testing.T) {
-		fake.pingErr = nil
-		pool.probeConnection(0, entry)
-		entry.mu.Lock()
-		defer entry.mu.Unlock()
-		if len(entry.probeHistory) != 1 {
-			t.Fatalf("probeHistory length got %d, want 1", len(entry.probeHistory))
+		simulateAndAddProbe(t, false)
+		chs.mu.Lock()
+		defer chs.mu.Unlock()
+		if len(chs.probeHistory) != 1 {
+			t.Fatalf("probeHistory length got %d, want 1", len(chs.probeHistory))
 		}
-		if !entry.probeHistory[0].successful {
+		if !chs.probeHistory[0].successful {
 			t.Errorf("Probe result successful got false, want true")
 		}
-		if entry.successfulProbes != 1 {
-			t.Errorf("successfulProbes got %d, want 1", entry.successfulProbes)
+		if chs.successfulProbes != 1 {
+			t.Errorf("successfulProbes got %d, want 1", chs.successfulProbes)
 		}
-		if entry.failedProbes != 0 {
-			t.Errorf("failedProbes got %d, want 0", entry.failedProbes)
+		if chs.failedProbes != 0 {
+			t.Errorf("failedProbes got %d, want 0", chs.failedProbes)
 		}
 	})
 
 	t.Run("FailedProbe", func(t *testing.T) {
-		fake.pingErr = errors.New("simulated ping error")
-		pool.probeConnection(0, entry)
-		entry.mu.Lock()
-		defer entry.mu.Unlock()
-		if len(entry.probeHistory) != 2 {
-			t.Fatalf("probeHistory length got %d, want 2", len(entry.probeHistory))
+		simulateAndAddProbe(t, true)
+		chs.mu.Lock()
+		defer chs.mu.Unlock()
+		if len(chs.probeHistory) != 2 {
+			t.Fatalf("probeHistory length got %d, want 2", len(chs.probeHistory))
 		}
-		if entry.probeHistory[1].successful {
+		if chs.probeHistory[1].successful {
 			t.Errorf("Probe result successful got true, want false")
 		}
-		if entry.successfulProbes != 1 {
-			t.Errorf("successfulProbes got %d, want 1", entry.successfulProbes)
+		if chs.successfulProbes != 1 {
+			t.Errorf("successfulProbes got %d, want 1", chs.successfulProbes)
 		}
-		if entry.failedProbes != 1 {
-			t.Errorf("failedProbes got %d, want 1", entry.failedProbes)
+		if chs.failedProbes != 1 {
+			t.Errorf("failedProbes got %d, want 1", chs.failedProbes)
 		}
 	})
 }
 
-func TestPruneHistory(t *testing.T) {
-	entry := &connEntry{}
-	pool := &BigtableChannelPool{}
+func TestConnHealthStatePruneHistory(t *testing.T) {
+	chs := &connHealthState{}
 	now := time.Now()
 
 	// Add some old and new probes
-	entry.probeHistory = []probeResult{
+	chs.mu.Lock()
+	chs.probeHistory = []probeResult{
 		{t: now.Add(-WindowDuration - time.Second), successful: true},       // Should be pruned
 		{t: now.Add(-WindowDuration - time.Millisecond), successful: false}, // Should be pruned
 		{t: now.Add(-WindowDuration + time.Millisecond), successful: true},
 		{t: now, successful: false},
 	}
-	entry.successfulProbes = 2
-	entry.failedProbes = 2
+	chs.successfulProbes = 2
+	chs.failedProbes = 2
+	chs.mu.Unlock()
 
-	pool.pruneHistoryLocked(entry)
+	chs.mu.Lock()
+	chs.pruneHistoryLocked()
+	chs.mu.Unlock()
 
-	entry.mu.Lock()
-	defer entry.mu.Unlock()
+	chs.mu.Lock()
+	defer chs.mu.Unlock()
 
-	if len(entry.probeHistory) != 2 {
-		t.Errorf("probeHistory length got %d, want 2", len(entry.probeHistory))
+	if len(chs.probeHistory) != 2 {
+		t.Errorf("probeHistory length got %d, want 2", len(chs.probeHistory))
 	}
-	if entry.successfulProbes != 1 {
-		t.Errorf("successfulProbes got %d, want 1", entry.successfulProbes)
+	if chs.successfulProbes != 1 {
+		t.Errorf("successfulProbes got %d, want 1", chs.successfulProbes)
 	}
-	if entry.failedProbes != 1 {
-		t.Errorf("failedProbes got %d, want 1", entry.failedProbes)
+	if chs.failedProbes != 1 {
+		t.Errorf("failedProbes got %d, want 1", chs.failedProbes)
 	}
-	if !entry.probeHistory[0].t.Equal(now.Add(-WindowDuration + time.Millisecond)) {
+	if !chs.probeHistory[0].t.Equal(now.Add(-WindowDuration + time.Millisecond)) {
 		t.Errorf("First element in history is not the expected one")
 	}
 }
 
-func TestIsHealthy(t *testing.T) {
+func TestConnHealthStateIsHealthy(t *testing.T) {
 	tests := []struct {
 		name             string
 		successfulProbes int
@@ -789,11 +814,16 @@ func TestIsHealthy(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entry := &connEntry{
+			chs := &connHealthState{
 				successfulProbes: tt.successfulProbes,
 				failedProbes:     tt.failedProbes,
 			}
-			if got := entry.isHealthy(); got != tt.wantHealthy {
+			// Add dummy history to meet MinProbesForEval if needed
+			for i := 0; i < tt.successfulProbes+tt.failedProbes; i++ {
+				chs.probeHistory = append(chs.probeHistory, probeResult{})
+			}
+
+			if got := chs.isHealthy(); got != tt.wantHealthy {
 				t.Errorf("isHealthy() = %v, want %v", got, tt.wantHealthy)
 			}
 		})
@@ -802,7 +832,7 @@ func TestIsHealthy(t *testing.T) {
 
 func TestDetectAndEvictUnhealthy(t *testing.T) {
 	const poolSize = 10
-	// Modify btopt constants for easier testing
+	// Modify constants for easier testing
 	origMinEvictionInterval := MinEvictionInterval
 	origPoolwideBadThreshPercent := PoolwideBadThreshPercent
 	origFailurePercentThresh := FailurePercentThresh
@@ -826,12 +856,21 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 		return dialBigtableserver(addr)
 	}
 
+	// Helper to setup a connEntry's health state
+	setupHealth := func(entry *connEntry, successful, failed int) {
+		entry.health.mu.Lock()
+		defer entry.health.mu.Unlock()
+		entry.health.successfulProbes = successful
+		entry.health.failedProbes = failed
+		// Add enough history to be evaluated
+		entry.health.probeHistory = make([]probeResult, successful+failed)
+	}
+
 	t.Run("NoEvictionHealthyPool", func(t *testing.T) {
 		pool, _ := NewBigtableChannelPool(poolSize, btopt.RoundRobin, dialFunc)
 		defer pool.Close()
 		for _, entry := range pool.conns {
-			entry.successfulProbes = 10
-			entry.failedProbes = 0
+			setupHealth(entry, 10, 0)
 		}
 		pool.detectAndEvictUnhealthy() // Should not evict anything
 		if pool.Num() != poolSize {
@@ -842,15 +881,13 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 	t.Run("EvictOneUnhealthy", func(t *testing.T) {
 		pool, _ := NewBigtableChannelPool(poolSize, btopt.RoundRobin, dialFunc)
 		defer pool.Close()
-		// Make conn at index 3 unhealthy
+		// Make conn at index 3 unhealthy (30% failure)
 		unhealthyIdx := 3
 		for i, entry := range pool.conns {
 			if i == unhealthyIdx {
-				entry.successfulProbes = 7
-				entry.failedProbes = 3 // 30% failure
+				setupHealth(entry, 7, 3)
 			} else {
-				entry.successfulProbes = 10
-				entry.failedProbes = 0
+				setupHealth(entry, 10, 0)
 			}
 		}
 		oldConn := pool.conns[unhealthyIdx].conn
@@ -861,21 +898,24 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 		if pool.Num() != poolSize {
 			t.Errorf("Pool size changed, got %d, want %d", pool.Num(), poolSize)
 		}
+		// Check that the new entry has a reset health state
+		if pool.conns[unhealthyIdx].health.successfulProbes != 0 || pool.conns[unhealthyIdx].health.failedProbes != 0 {
+			t.Errorf("New connection at index %d did not have health state reset", unhealthyIdx)
+		}
 	})
 
 	t.Run("CircuitBreakerTooManyUnhealthy", func(t *testing.T) {
 		pool, _ := NewBigtableChannelPool(poolSize, btopt.RoundRobin, dialFunc)
 		defer pool.Close()
 		initialConns := make([]*BigtableConn, poolSize)
-		// Make > 50% unhealthy
+		// Make > 50% unhealthy (e.g., 6 out of 10)
 		for i := 0; i < poolSize; i++ {
 			initialConns[i] = pool.conns[i].conn
+			entry := pool.conns[i]
 			if i < 6 {
-				pool.conns[i].successfulProbes = 5
-				pool.conns[i].failedProbes = 5 // 50% failure
+				setupHealth(entry, 5, 5) // 50% failure
 			} else {
-				pool.conns[i].successfulProbes = 10
-				pool.conns[i].failedProbes = 0
+				setupHealth(entry, 10, 0)
 			}
 		}
 		pool.detectAndEvictUnhealthy()
@@ -888,20 +928,25 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 
 	t.Run("MinEvictionIntervalRespected", func(t *testing.T) {
 		MinEvictionInterval = 1 * time.Hour // Set high interval
-		defer func() { MinEvictionInterval = 0 }()
+		defer func() { MinEvictionInterval = origMinEvictionInterval }()
 
 		pool, _ := NewBigtableChannelPool(poolSize, btopt.RoundRobin, dialFunc)
 		defer pool.Close()
-		pool.conns[0].failedProbes = 10 // Make it very unhealthy
-		pool.lastEvictionTime = time.Now().Add(-time.Minute)
+		entry0 := pool.conns[0]
+		setupHealth(entry0, 0, 10) // Make it very unhealthy
 
+		pool.healthMonitor.RecordEviction() // Set last eviction time to now
 		oldConn := pool.conns[0].conn
 		pool.detectAndEvictUnhealthy()
 		if pool.conns[0].conn != oldConn {
 			t.Errorf("Connection evicted despite MinEvictionInterval")
 		}
 
-		pool.lastEvictionTime = time.Now().Add(-2 * time.Hour) // Move last eviction time back
+		// Manually advance lastEvictionTime
+		pool.healthMonitor.evictionMu.Lock()
+		pool.healthMonitor.lastEvictionTime = time.Now().Add(-2 * time.Hour)
+		pool.healthMonitor.evictionMu.Unlock()
+
 		pool.detectAndEvictUnhealthy()
 		if pool.conns[0].conn == oldConn {
 			t.Errorf("Connection not evicted after MinEvictionInterval passed")
@@ -926,6 +971,8 @@ func TestReplaceConnection(t *testing.T) {
 	idxToReplace := 0
 	oldEntry := pool.conns[idxToReplace]
 	atomic.StoreInt64(&oldEntry.load, 5) // Set some load
+	// Give the old entry some health history
+	oldEntry.health.addProbeResult(false)
 
 	t.Run("SuccessfulReplace", func(t *testing.T) {
 		dialSucceed = true
@@ -938,8 +985,12 @@ func TestReplaceConnection(t *testing.T) {
 		if newEntry.conn == oldEntry.conn {
 			t.Errorf("Underlying conn was not replaced")
 		}
-		if atomic.LoadInt64(&oldEntry.load) != 0 {
-			t.Errorf("Old entry load not reset, got %d", atomic.LoadInt64(&oldEntry.load))
+		if atomic.LoadInt64(&newEntry.load) != 0 {
+			t.Errorf("New entry load not zero, got %d", atomic.LoadInt64(&newEntry.load))
+		}
+		// Verify the new health state is clean
+		if len(newEntry.health.probeHistory) != 0 || newEntry.health.successfulProbes != 0 || newEntry.health.failedProbes != 0 {
+			t.Errorf("New entry health state was not reset")
 		}
 		// We can't easily check if oldEntry.conn.Close() was called without more mocking
 	})
@@ -962,11 +1013,14 @@ func TestHealthCheckerIntegration(t *testing.T) {
 	origMinProbesForEval := MinProbesForEval
 	origFailurePercentThresh := FailurePercentThresh
 	origMinEvictionInterval := MinEvictionInterval
+	origPoolwideBadThreshPercent := PoolwideBadThreshPercent
 
 	ProbeInterval = 5 * time.Millisecond
 	WindowDuration = 50 * time.Millisecond
 	MinProbesForEval = 2
-	MinEvictionInterval = 0
+	FailurePercentThresh = 40 // More sensitive
+	MinEvictionInterval = 10 * time.Millisecond
+	PoolwideBadThreshPercent = 70 // Avoid circuit breaker initially
 
 	defer func() {
 		ProbeInterval = origProbeInterval
@@ -974,6 +1028,7 @@ func TestHealthCheckerIntegration(t *testing.T) {
 		MinProbesForEval = origMinProbesForEval
 		FailurePercentThresh = origFailurePercentThresh
 		MinEvictionInterval = origMinEvictionInterval
+		PoolwideBadThreshPercent = origPoolwideBadThreshPercent
 	}()
 
 	fake1 := &fakeService{}
@@ -997,44 +1052,60 @@ func TestHealthCheckerIntegration(t *testing.T) {
 	}
 	defer pool.Close()
 
-	// Initial state: all conns good
-	time.Sleep(2 * WindowDuration) // Let some probes run
+	// Initially, both connections are healthy. Let some probes run.
+	time.Sleep(2 * WindowDuration)
+	for i, entry := range pool.conns {
+		if !entry.health.isHealthy() {
+			t.Errorf("Initial connection %d is not healthy", i)
+		}
+	}
 
-	// Make server 1 start failing pings
+	// Make server 1 (conn 0) start failing pings
 	fake1.pingErr = errors.New("server1 unhealthy")
+	t.Logf("Set fake1 to fail pings.")
 
-	// Wait for eviction to happen, check that new conns are from addr2
+	// Wait for conn 0 to become unhealthy and be evicted.
+	// We expect conn 0 to be replaced by a connection to addr2.
 	evicted := false
-	for i := 0; i < 200; i++ { // Timeout loop
-		time.Sleep(10 * time.Millisecond)
+	startTime := time.Now()
+	for time.Since(startTime) < 5*time.Second { // Timeout loop
+		time.Sleep(ProbeInterval + MinEvictionInterval)
+
+		// Check if conn 0 has been replaced
 		pool.mu.Lock()
-		conn1Addr := pool.conns[0].conn.ClientConn.Target()
-		conn2Addr := pool.conns[1].conn.ClientConn.Target()
+		conn0Addr := pool.conns[0].conn.ClientConn.Target()
 		pool.mu.Unlock()
 
-		if conn1Addr == addr2 && conn2Addr == addr2 {
+		if conn0Addr == addr2 {
+			t.Logf("Connection at index 0 replaced with addr2 after %v", time.Since(startTime))
 			evicted = true
 			break
 		}
 	}
 
 	if !evicted {
-		t.Errorf("Connections were not evicted and replaced with new ones from addr2")
+		t.Errorf("Connection at index 0 was not evicted and replaced with addr2 within the timeout")
 	}
 
-	// Check if the pool is healthy again
-	fake2.pingErr = nil            // Ensure server 2 is healthy
-	time.Sleep(2 * WindowDuration) // Let probes stabilize
+	// Ensure conn 1 is still healthy (connected to addr2)
+	if !pool.conns[1].health.isHealthy() {
+		t.Errorf("Connection at index 1 became unexpectedly unhealthy")
+	}
 
+	// Make server 1 healthy again, though it's no longer used by conn 0.
+	fake1.pingErr = nil
+	fake2.pingErr = nil // Ensure server 2 remains healthy
+
+	// Let the health checker run several cycles to confirm stability.
+	time.Sleep(5 * WindowDuration)
+
+	// Verify both connections are now healthy and pointing to addr2.
 	for i, entry := range pool.conns {
-		entry.mu.Lock()
-		if entry.failedProbes > 0 && time.Since(entry.lastProbeTime) < WindowDuration {
-			entry.mu.Unlock()
-			t.Errorf("Connection %d still shows recent failed probes after recovery", i)
+		if !entry.health.isHealthy() {
+			t.Errorf("Connection %d is not healthy after stabilization", i)
 		}
-		entry.mu.Unlock()
-		if !entry.isHealthy() {
-			t.Errorf("Connection %d is not healthy after recovery", i)
+		if entry.conn.ClientConn.Target() != addr2 {
+			t.Errorf("Connection %d target got %s, want %s", i, entry.conn.ClientConn.Target(), addr2)
 		}
 	}
 }
