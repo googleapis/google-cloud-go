@@ -2384,6 +2384,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/gkemulticloud/
     tag_format: '{id}/v{version}'
+  - id: gkerecommender
+    version: 0.0.0
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    apis:
+      - path: google/cloud/gkerecommender/v1
+        service_config: gkerecommender_v1.yaml
+    source_roots:
+      - gkerecommender
+      - internal/generated/
+      - internal/generated/snippets/gkerecommender
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/gkerecommender/
+      - ^apiv1/[^/]*_client\.go$
+      - ^apiv1/[^/]*_client_example_go123_test\.go$
+      - ^apiv1/[^/]*_client_example_test\.go$
+      - ^apiv1/auxiliary\.go$
+      - ^apiv1/auxiliary_go123\.go$
+      - ^apiv1/doc\.go$
+      - ^apiv1/gapic_metadata\.json$
+      - ^apiv1/helpers\.go$
+      - ^apiv1/gkerecommenderpb/.*$
+    tag_format: '{id}/v{version}'
   - id: grafeas
     version: 0.3.17
     last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
