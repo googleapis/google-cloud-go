@@ -53,14 +53,11 @@ type Writer struct {
 	SendCRC32C bool
 
 	// DisableCRC32C disables the automatic CRC32C checksum calculation and
-	// validation that is performed by default.
+	// validation that is performed by the writer.
 	//
-	// By default, a CRC32C checksum is computed for the data being written and
-	// sent to the server. Setting this field to true disables the
-	// automatic checksum calculation.
-	//
-	// However, user-provided checksums will still be sent if SendCRC32C is set to true
-	// and Writer's CRC32C is populated
+	// This does not prevent a user-provided checksum from being sent. If
+	// SendCRC32C is true and the Writer's CRC32C field is populated, that
+	// checksum will be sent to GCS for validation
 	//
 	// Note: DisableCRC32C must be set to true BEFORE the first call to
 	// Writer.Write().

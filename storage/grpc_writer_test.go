@@ -24,7 +24,7 @@ import (
 func TestGetObjectChecksums(t *testing.T) {
 	tests := []struct {
 		name               string
-		fullObjectChecksum uint32
+		fullObjectChecksum func() uint32
 		finishWrite        bool
 		sendCRC32C         bool
 		disableCRC32C      bool
@@ -64,7 +64,7 @@ func TestGetObjectChecksums(t *testing.T) {
 		},
 		{
 			name:               "CRC32C enabled, no user-provided checksum",
-			fullObjectChecksum: 456,
+			fullObjectChecksum: func() uint32 { return 456 },
 			finishWrite:        true,
 			sendCRC32C:         false,
 			disableCRC32C:      false,
@@ -79,7 +79,7 @@ func TestGetObjectChecksums(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := getObjectChecksums(tt.fullObjectChecksum, tt.finishWrite, tt.sendCRC32C, tt.disableCRC32C, tt.attrs)
 			if !proto.Equal(got, tt.want) {
-				t.Errorf("getFinalChecksums() = %v, want %v", got, tt.want)
+				t.Errorf("getObjectChecksums() = %v, want %v", got, tt.want)
 			}
 		})
 	}
