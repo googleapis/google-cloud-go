@@ -4896,6 +4896,81 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
+  - id: spanner
+    version: 1.86.1
+    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    apis:
+      - path: google/spanner/adapter/v1
+        service_config: spanner.yaml
+      - path: google/spanner/admin/database/v1
+        service_config: spanner.yaml
+      - path: google/spanner/admin/instance/v1
+        service_config: spanner.yaml
+      - path: google/spanner/v1
+        service_config: spanner.yaml
+      - path: google/spanner/executor/v1
+        service_config: spanner_cloud_executor.yaml
+    source_roots:
+      - spanner
+      - internal/generated/snippets/spanner
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/spanner/
+      - ^spanner/adapter/apiv1/[^/]*_client\.go$
+      - ^spanner/adapter/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/adapter/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/adapter/apiv1/auxiliary\.go$
+      - ^spanner/adapter/apiv1/auxiliary_go123\.go$
+      - ^spanner/adapter/apiv1/doc\.go$
+      - ^spanner/adapter/apiv1/gapic_metadata\.json$
+      - ^spanner/adapter/apiv1/helpers\.go$
+      - ^spanner/adapter/apiv1/adapterpb/.*$
+      - ^spanner/admin/database/apiv1/[^/]*_client\.go$
+      - ^spanner/admin/database/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/admin/database/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/admin/database/apiv1/auxiliary\.go$
+      - ^spanner/admin/database/apiv1/auxiliary_go123\.go$
+      - ^spanner/admin/database/apiv1/doc\.go$
+      - ^spanner/admin/database/apiv1/gapic_metadata\.json$
+      - ^spanner/admin/database/apiv1/helpers\.go$
+      - ^spanner/admin/database/apiv1/databasepb/.*$
+      - ^spanner/admin/instance/apiv1/[^/]*_client\.go$
+      - ^spanner/admin/instance/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/admin/instance/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/admin/instance/apiv1/auxiliary\.go$
+      - ^spanner/admin/instance/apiv1/auxiliary_go123\.go$
+      - ^spanner/admin/instance/apiv1/doc\.go$
+      - ^spanner/admin/instance/apiv1/gapic_metadata\.json$
+      - ^spanner/admin/instance/apiv1/helpers\.go$
+      - ^spanner/admin/instance/apiv1/instancepb/.*$
+      - ^spanner/apiv1/[^/]*_client\.go$
+      - ^spanner/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/apiv1/auxiliary\.go$
+      - ^spanner/apiv1/auxiliary_go123\.go$
+      - ^spanner/apiv1/doc\.go$
+      - ^spanner/apiv1/gapic_metadata\.json$
+      - ^spanner/apiv1/helpers\.go$
+      - ^spanner/apiv1/spannerpb/.*$
+      - ^spanner/executor/apiv1/[^/]*_client\.go$
+      - ^spanner/executor/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/executor/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/executor/apiv1/auxiliary\.go$
+      - ^spanner/executor/apiv1/auxiliary_go123\.go$
+      - ^spanner/executor/apiv1/doc\.go$
+      - ^spanner/executor/apiv1/gapic_metadata\.json$
+      - ^spanner/executor/apiv1/helpers\.go$
+      - ^spanner/executor/apiv1/executorpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/spanner/
+      - spanner/benchmarks
+      - spanner/internal/benchwrapper
+      - spanner/internal/testutil
+      - spanner/kokoro
+      - spanner/spannertest
+      - spanner/test
+      - spanner/testdata
+    tag_format: '{id}/v{version}'
   - id: speech
     version: 1.28.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
