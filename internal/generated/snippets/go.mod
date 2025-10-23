@@ -566,3 +566,5 @@ replace cloud.google.com/go/geminidataanalytics => ../../../geminidataanalytics
 replace cloud.google.com/go/capacityplanner => ../../../capacityplanner
 
 replace cloud.google.com/go/locationfinder => ../../../locationfinder
+
+replace cloud.google.com/go/gkerecommender => ../../../gkerecommender
