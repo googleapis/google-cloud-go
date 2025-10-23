@@ -19,5 +19,5 @@ package {{.Package}}
 import "{{.ModuleRootInternal}}"
 
 func init() {
-    versionClient = internal.Version
+	versionClient = internal.Version
 }
