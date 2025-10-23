@@ -97,7 +97,7 @@ func TestConfig_Validate(t *testing.T) {
 	}
 }
 
-func TestFindLibraryToConfigure(t *testing.T) {
+func TestFindLibraryAndAPIToConfigure(t *testing.T) {
 	tests := []struct {
 		name     string
 		req      *Request

@@ -145,6 +145,9 @@ func saveConfigureResp(resp *request.Library, librarianDir string) error {
 	return nil
 }
 
+// findLibraryAndAPIToConfigure examines a request, and finds a single library
+// containing a single new API, returning both of them. An error is returned
+// if there is not exactly one library containing exactly one new API.
 func findLibraryAndAPIToConfigure(req *Request) (*request.Library, *request.API, error) {
 	var library *request.Library
 	var api *request.API
@@ -314,6 +317,10 @@ func goModInit(ctx context.Context, modulePath, moduleDir string) error {
 	return execvRun(ctx, args, moduleDir)
 }
 
+// goModEditReplaceInSnippets copies internal/generated/snippets/go.mod from
+// cfg.RepoDir to cfg.OutputDir, then runs go mod edit to replace the specified
+// modulePath with relativeDir which is expected to the location of the module
+// relative to internal/generated/snippets
 func goModEditReplaceInSnippets(ctx context.Context, cfg *Config, modulePath, relativeDir string) error {
 	outputSnippetsDir := filepath.Join(cfg.OutputDir, "internal", "generated", "snippets")
 	if err := os.MkdirAll(outputSnippetsDir, 0755); err != nil {
@@ -324,6 +331,8 @@ func goModEditReplaceInSnippets(ctx context.Context, cfg *Config, modulePath, re
 	return execvRun(ctx, args, outputSnippetsDir)
 }
 
+// copyRepoFileToOutput copies a single file (identified via path)
+// from cfg.RepoDir to cfg.OutputDir.
 func copyRepoFileToOutput(cfg *Config, path string) error {
 	src := filepath.Join(cfg.RepoDir, path)
 	dst := filepath.Join(cfg.OutputDir, path)
