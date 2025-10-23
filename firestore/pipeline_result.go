@@ -92,6 +92,9 @@ func (p *PipelineResult) Data() (map[string]any, error) {
 	if p == nil {
 		return nil, status.Errorf(codes.NotFound, "result does not exist")
 	}
+	if p.proto == nil {
+		return nil, status.Errorf(codes.NotFound, "document does not exist")
+	}
 	m, err := createMapFromValueMap(p.proto.Fields, p.c)
 	// Any error here is a bug in the client.
 	if err != nil {
@@ -105,6 +108,9 @@ func (p *PipelineResult) Data() (map[string]any, error) {
 // This is similar to [DocumentSnapshot.DataTo]
 func (p *PipelineResult) DataTo(v any) error {
 	if p == nil {
+		return status.Errorf(codes.NotFound, "document does not exist")
+	}
+	if p.proto == nil {
 		return status.Errorf(codes.NotFound, "document does not exist")
 	}
 	return setFromProtoValue(v, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: p.proto.Fields}}}, p.c)
@@ -215,6 +221,9 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		}
 
 		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+
+		// bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(req)
+		// fmt.Println(string(bytes))
 		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 		if err != nil {
 			return nil, err

@@ -72,8 +72,12 @@ type Expr interface {
 
 	// Aggregators
 	Sum() AggregateFunction
-	Avg() AggregateFunction
+	Average() AggregateFunction
 	Count() AggregateFunction
+
+	// Ordering
+	Ascending() Ordering
+	Descending() Ordering
 
 	// As assigns an alias to an expression.
 	// Aliases are useful for renaming fields in the output of a stage.
@@ -117,10 +121,13 @@ func (b *baseExpr) LessThanOrEqual(other any) BooleanExpr    { return LessThanOr
 func (b *baseExpr) Equivalent(other any) BooleanExpr         { return Equivalent(b, other) }
 
 // Aggregation operations
-func (b *baseExpr) Sum() AggregateFunction   { return Sum(b) }
-func (b *baseExpr) Avg() AggregateFunction   { return Avg(b) }
-func (b *baseExpr) Count() AggregateFunction { return Count(b) }
+func (b *baseExpr) Sum() AggregateFunction     { return Sum(b) }
+func (b *baseExpr) Average() AggregateFunction { return Average(b) }
+func (b *baseExpr) Count() AggregateFunction   { return Count(b) }
 
+// Ordering
+func (b *baseExpr) Ascending() Ordering  { return Ascending(b) }
+func (b *baseExpr) Descending() Ordering { return Descending(b) }
 func (b *baseExpr) As(alias string) Selectable {
 	return newAliasedExpr(b, alias)
 }

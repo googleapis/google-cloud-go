@@ -113,6 +113,7 @@ func TestStreamPipelineResultIterator_Next(t *testing.T) {
 				RecvErrors:    tc.errors,
 				ContextVal:    ctx,
 			}
+
 			iter := &streamPipelineResultIterator{
 				ctx:          ctx,
 				cancel:       func() {},
@@ -245,6 +246,10 @@ func TestPipelineResultIterator_GetAll(t *testing.T) {
 	if data["id"].(int64) != 1 {
 		t.Errorf("first result id: got %v, want: 1", data["id"])
 	}
+	data, err = allResults[1].Data()
+	if err != nil {
+		t.Fatalf("Data: %v", err)
+	}
 	if data["id"].(int64) != 2 {
 		t.Errorf("second result id: got %v, want: 2", data["id"])
 	}
@@ -269,11 +274,12 @@ func TestPipelineResult_DataExtraction(t *testing.T) {
 			"stringProp": {ValueType: &pb.Value_StringValue{StringValue: "hello"}},
 			"intProp":    {ValueType: &pb.Value_IntegerValue{IntegerValue: 123}},
 			"boolProp":   {ValueType: &pb.Value_BooleanValue{BooleanValue: true}},
-			"mapProp": {ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{
-				Fields: map[string]*pb.Value{
-					"nestedString": {ValueType: &pb.Value_StringValue{StringValue: "world"}},
-				},
-			}}},
+			"mapProp": {
+				ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"nestedString": {ValueType: &pb.Value_StringValue{StringValue: "world"}},
+					},
+				}}},
 		},
 	}
 	execTimeProto := timestamppb.New(now.Add(time.Second))
@@ -358,10 +364,13 @@ func TestPipelineResult_NoResults(t *testing.T) {
 
 	data, err := pr.Data()
 	if err == nil {
-		t.Errorf("pr.Data() for non-existent result err: got nil, want %v", err)
+		t.Errorf("pr.Data() for non-existent result err: got nil, want non-nil")
+	}
+	if s, ok := status.FromError(err); !ok || s.Code() != codes.NotFound {
+		t.Errorf("pr.Data() error: got %v, want a NotFound error", err)
 	}
 	if data != nil {
-		t.Errorf("pr.Data() for non-existent result: got %v, want nil. Err: got", data)
+		t.Errorf("pr.Data() for non-existent result: got %v, want nil", data)
 	}
 
 	type MyStruct struct{ Foo string }
