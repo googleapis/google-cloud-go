@@ -1,5 +1,12 @@
 # Changes
 
+## [1.86.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.86.0...spanner/v1.86.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* **spanner:** Upgrade gRPC service registration func ([8fffca2](https://github.com/googleapis/google-cloud-go/commit/8fffca2819fa3dc858c213aa0c503e0df331b084))
+
 ## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.85.1...spanner/v1.86.0) (2025-09-26)
 
 
@@ -1544,4 +1551,3 @@
 
 This is the first tag to carve out spanner as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
