@@ -3643,10 +3643,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to iterate: %v", err)
 		}
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
 		}
+		data := doc.Data()
 		if dr, ok := data["doubled_rating"]; !ok || dr.(float64) != data["rating"].(float64)*2 {
 			t.Errorf("got doubled_rating %v, want %v", dr, data["rating"].(float64)*2)
 		}
@@ -3658,10 +3658,11 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to iterate: %v", err)
 		}
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
 		}
+		data := doc.Data()
 		if data["total_books"] != int64(10) {
 			t.Errorf("got %d total_books, want 10", data["total_books"])
 		}
@@ -3780,11 +3781,16 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Errorf("got %d documents, want 2", len(results))
 		}
 		// Check if the results are sorted by distance
-		dist1, err := results[0].Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+
+		if !results[0].Exists() {
+			t.Fatalf("results[0] Exists: got: false, want: true")
 		}
-		dist2, err := results[1].Data()
+		dist1 := results[0].Data()
+
+		if !results[1].Exists() {
+			t.Fatalf("results[1] Exists: got: false, want: true")
+		}
+		dist2 := results[1].Data()
 		if err != nil {
 			t.Fatalf("Failed to get data: %v", err)
 		}
@@ -3814,10 +3820,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to iterate: %v", err)
 		}
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
 		}
+		data := doc.Data()
 		if data["title"] != "The Great Gatsby" {
 			t.Errorf("got title %q, want 'The Great Gatsby'", data["title"])
 		}
@@ -3832,10 +3838,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to iterate: %v", err)
 		}
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
 		}
+		data := doc.Data()
 		if _, ok := data["genre"]; ok {
 			t.Error("unexpected 'genre' field")
 		}
@@ -3866,10 +3872,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to iterate: %v", err)
 		}
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
 		}
+		data := doc.Data()
 		want := map[string]interface{}{"a": int64(1), "b": int64(2)}
 		if diff := testutil.Diff(data, want); diff != "" {
 			t.Errorf("got: %v, want: %v, diff +want -got: %s", data, want, diff)
@@ -3888,10 +3894,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 				if err != nil {
 					t.Fatalf("Failed to iterate: %v", err)
 				}
-				data, err := doc.Data()
-				if err != nil {
-					t.Fatalf("Failed to get data: %v", err)
+				if !doc.Exists() {
+					t.Fatalf("Exists: got: false, want: true")
 				}
+				data := doc.Data()
 				got = append(got, data)
 			}
 			if len(got) != 5 {
@@ -3910,10 +3916,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 				if err != nil {
 					t.Fatalf("Failed to iterate: %v", err)
 				}
-				data, err := doc.Data()
-				if err != nil {
-					t.Fatalf("Failed to get data: %v", err)
+				if !doc.Exists() {
+					t.Fatalf("Exists: got: false, want: true")
 				}
+				data := doc.Data()
 				got = append(got, data)
 			}
 			if len(got) >= 10 {
@@ -3931,10 +3937,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to iterate: %v", err)
 		}
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
 		}
+		data := doc.Data()
 		if _, ok := data["title"]; !ok {
 			t.Error("missing 'title' field")
 		}
@@ -3959,10 +3965,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to iterate: %v", err)
 		}
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
 		}
+		data := doc.Data()
 		if data["title"] != "The Lord of the Rings" {
 			t.Errorf("got title %q, want 'The Lord of the Rings'", data["title"])
 		}
@@ -4013,10 +4019,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Failed to iterate: %v", err)
 			}
-			data, err := doc.Data()
-			if err != nil {
-				t.Fatalf("Failed to get data: %v", err)
+			if !doc.Exists() {
+				t.Fatalf("Exists: got: false, want: true")
 			}
+			data := doc.Data()
 			got = append(got, data)
 		}
 		want := []map[string]interface{}{
@@ -4051,10 +4057,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Failed to iterate: %v", err)
 			}
-			data, err := doc.Data()
-			if err != nil {
-				t.Fatalf("Failed to get data: %v", err)
+			if !doc.Exists() {
+				t.Fatalf("Exists: got: false, want: true")
 			}
+			data := doc.Data()
 			got = append(got, data)
 		}
 		want := []map[string]interface{}{
@@ -4088,7 +4094,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Failed to iterate: %v", err)
 			}
-			data, err := doc.Data()
+			if !doc.Exists() {
+				t.Fatalf("Exists: got: false, want: true")
+			}
+			data := doc.Data()
 			if err != nil {
 				t.Fatalf("Failed to get data: %v", err)
 			}

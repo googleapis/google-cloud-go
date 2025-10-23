@@ -152,10 +152,7 @@ func TestStreamPipelineResultIterator_Next(t *testing.T) {
 					t.Fatalf("Result count mismatch for data check: expected %d, got %d", len(tc.wantData), len(results))
 				}
 				for i, pr := range results {
-					data, err := pr.Data()
-					if err != nil {
-						t.Fatalf("Data: %v", err)
-					}
+					data := pr.Data()
 					if diff := cmp.Diff(tc.wantData[i], data); diff != "" {
 						t.Errorf("Data mismatch for result %d (-want +got):\n%s", i, diff)
 					}
@@ -239,18 +236,12 @@ func TestPipelineResultIterator_GetAll(t *testing.T) {
 		t.Errorf("results from GetAll(): got %d, want: 2", len(allResults))
 	}
 
-	data, err := allResults[0].Data()
-	if err != nil {
-		t.Fatalf("Data: %v", err)
-	}
+	data := allResults[0].Data()
 	if data["id"].(int64) != 1 {
 		t.Errorf("first result id: got %v, want: 1", data["id"])
 	}
 
-	data, err = allResults[1].Data()
-	if err != nil {
-		t.Fatalf("Data: %v", err)
-	}
+	data = allResults[1].Data()
 	if data["id"].(int64) != 2 {
 		t.Errorf("second result id: got %v, want: 2", data["id"])
 	}
@@ -292,11 +283,7 @@ func TestPipelineResult_DataExtraction(t *testing.T) {
 	}
 
 	// Test Data()
-	dataMap, err := pr.Data()
-	if err != nil {
-		t.Fatalf("Data: %+v", err)
-	}
-
+	dataMap := pr.Data()
 	if dataMap["stringProp"].(string) != "hello" {
 		t.Errorf("stringProp: got %v, want 'hello'", dataMap["stringProp"])
 	}
@@ -363,12 +350,9 @@ func TestPipelineResult_NoResults(t *testing.T) {
 		t.Fatalf("newPipelineResult: %v", err)
 	}
 
-	data, err := pr.Data()
-	if err != nil {
-		t.Errorf("pr.Data() for non-existent result err: got %v, want nil", err)
-	}
-	if data == nil {
-		t.Errorf("pr.Data() for non-existent result: got nil, want non-nil empty map")
+	data := pr.Data()
+	if data != nil {
+		t.Errorf("pr.Data() for non-existent result: got non-nil empty map, want nil")
 	}
 	if len(data) != 0 {
 		t.Errorf("pr.Data() for non-existent result: got map with %d elements, want empty map", len(data))
@@ -376,10 +360,9 @@ func TestPipelineResult_NoResults(t *testing.T) {
 
 	type MyStruct struct{ Foo string }
 	var s MyStruct
-	err = pr.DataTo(&s) // Should behave like populating from an empty map
-	if err != nil {
-		// DataTo on a non-existent PipelineResult should not error out but result in a zero-valued struct.
-		t.Fatalf("pr.DataTo(&s) on non-existent result failed: %v", err)
+	err = pr.DataTo(&s)
+	if err == nil || status.Code(err) != codes.NotFound {
+		t.Fatalf("pr.DataTo(&s) on non-existent result failed: %v status.Code(err): %v", err, status.Code(err))
 	}
 	if s.Foo != "" {
 		t.Errorf("Struct Foo for non-existent result: got %q, want \"\"", s.Foo)

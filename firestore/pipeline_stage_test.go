@@ -23,8 +23,14 @@ import (
 )
 
 func TestPipelineStages(t *testing.T) {
-	docRef1 := &DocumentRef{Path: "projects/projectID/databases/(default)/documents/collection/doc1"}
-	docRef2 := &DocumentRef{Path: "projects/projectID/databases/(default)/documents/collection/doc2"}
+	docRef1 := &DocumentRef{
+		Path:      "projects/projectID/databases/(default)/documents/collection/doc1",
+		shortPath: "collection/doc1",
+	}
+	docRef2 := &DocumentRef{
+		Path:      "projects/projectID/databases/(default)/documents/collection/doc2",
+		shortPath: "collection/doc2",
+	}
 
 	testcases := []struct {
 		desc  string
@@ -61,8 +67,8 @@ func TestPipelineStages(t *testing.T) {
 			want: &pb.Pipeline_Stage{
 				Name: "documents",
 				Args: []*pb.Value{
-					{ValueType: &pb.Value_ReferenceValue{ReferenceValue: docRef1.Path}},
-					{ValueType: &pb.Value_ReferenceValue{ReferenceValue: docRef2.Path}},
+					{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/collection/doc1"}},
+					{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/collection/doc2"}},
 				},
 			},
 		},
@@ -142,7 +148,7 @@ func TestSelectStage(t *testing.T) {
 		t.Fatalf("toProto() failed: %v", err)
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
-			t.Errorf("toProto() returned diff (-got +want): %s", diff)
+		t.Errorf("toProto() returned diff (-got +want): %s", diff)
 	}
 }
 
