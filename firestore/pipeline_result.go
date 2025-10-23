@@ -92,7 +92,11 @@ func (p *PipelineResult) Data() (map[string]any, error) {
 	if p == nil {
 		return nil, status.Errorf(codes.NotFound, "result does not exist")
 	}
-	m, err := createMapFromValueMap(p.proto.Fields, p.c)
+	var fields map[string]*pb.Value
+	if p.proto != nil {
+		fields = p.proto.Fields
+	}
+	m, err := createMapFromValueMap(fields, p.c)
 	// Any error here is a bug in the client.
 	if err != nil {
 		panic(fmt.Sprintf("firestore: %v", err))
@@ -107,7 +111,11 @@ func (p *PipelineResult) DataTo(v any) error {
 	if p == nil {
 		return status.Errorf(codes.NotFound, "document does not exist")
 	}
-	return setFromProtoValue(v, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: p.proto.Fields}}}, p.c)
+	var fields map[string]*pb.Value
+	if p.proto != nil {
+		fields = p.proto.Fields
+	}
+	return setFromProtoValue(v, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: fields}}}, p.c)
 }
 
 // PipelineResultIterator is an iterator over PipelineResults from a pipeline execution.
