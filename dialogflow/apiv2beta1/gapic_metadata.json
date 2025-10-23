@@ -1285,6 +1285,110 @@
         }
       }
     },
+    "GeneratorEvaluations": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GeneratorEvaluationsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGeneratorEvaluation": {
+              "methods": [
+                "CreateGeneratorEvaluation"
+              ]
+            },
+            "DeleteGeneratorEvaluation": {
+              "methods": [
+                "DeleteGeneratorEvaluation"
+              ]
+            },
+            "GetGeneratorEvaluation": {
+              "methods": [
+                "GetGeneratorEvaluation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGeneratorEvaluations": {
+              "methods": [
+                "ListGeneratorEvaluations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GeneratorEvaluationsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGeneratorEvaluation": {
+              "methods": [
+                "CreateGeneratorEvaluation"
+              ]
+            },
+            "DeleteGeneratorEvaluation": {
+              "methods": [
+                "DeleteGeneratorEvaluation"
+              ]
+            },
+            "GetGeneratorEvaluation": {
+              "methods": [
+                "GetGeneratorEvaluation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGeneratorEvaluations": {
+              "methods": [
+                "ListGeneratorEvaluations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Generators": {
       "clients": {
         "grpc": {
@@ -1657,6 +1761,11 @@
                 "AnalyzeContent"
               ]
             },
+            "BidiStreamingAnalyzeContent": {
+              "methods": [
+                "BidiStreamingAnalyzeContent"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -1745,6 +1854,11 @@
             "AnalyzeContent": {
               "methods": [
                 "AnalyzeContent"
+              ]
+            },
+            "BidiStreamingAnalyzeContent": {
+              "methods": [
+                "BidiStreamingAnalyzeContent"
               ]
             },
             "CancelOperation": {
@@ -2241,6 +2355,120 @@
             "UpdateSipTrunk": {
               "methods": [
                 "UpdateSipTrunk"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Tools": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ToolsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ToolsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
               ]
             }
           }
