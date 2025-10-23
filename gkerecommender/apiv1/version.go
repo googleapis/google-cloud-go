@@ -19,5 +19,5 @@ package gkerecommender
 import "cloud.google.com/go/gkerecommender/internal"
 
 func init() {
-    versionClient = internal.Version
+	versionClient = internal.Version
 }
