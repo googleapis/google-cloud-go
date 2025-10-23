@@ -7,9 +7,15 @@
 # despite several subdirectories being tools which don't need
 # to be releasesd as such; those are listed as released exclusion
 # paths in state.yaml.
-global_files_allowlist:
-  - path: "CHANGES.md"
-    permissions: "read-write"
+
+# This is temporarily commented out as we only create CHANGES.md
+# in the output directory when releasing the root module - but
+# librarian expects it to be present for all releases. See
+# https://github.com/googleapis/librarian/issues/2627 for more
+# details and discussion.
+# global_files_allowlist:
+#  - path: "CHANGES.md"
+#    permissions: "read-write"
 
 # All libraries with handwritten code (core, hybrid and handwritten)
 # libraries have "release_blocked: true" so that releases are
@@ -20,6 +26,10 @@ libraries:
   - id: "auth/oauth2adapt"
     release_blocked: true
   - id: "compute/metadata"
+    release_blocked: true
+  - id: "datastore"
+    release_blocked: true
+  - id: "firestore"
     release_blocked: true
   - id: "longrunning"
     release_blocked: true

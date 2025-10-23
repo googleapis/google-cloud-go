@@ -68,6 +68,12 @@ func TestFormatChanges(t *testing.T) {
 			onlyGapics: true,
 			want:       "",
 		},
+		{
+			name:       "affected protos",
+			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar", AffectedProtos: []string{"foo.proto", "bar.proto"}}},
+			onlyGapics: false,
+			want:       "\nChanges:\n\nfix: foo\n  bar\n  Affected protos:\n  - foo.proto\n  - bar.proto\n\n",
+		},
 	}
 
 	for _, tc := range tests {

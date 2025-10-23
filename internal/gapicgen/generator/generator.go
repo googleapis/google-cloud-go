@@ -21,8 +21,11 @@ package generator
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/git"
 )
@@ -50,7 +53,7 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 		var err error
 		changes, err = gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
 		if err != nil {
-			return nil, fmt.Errorf("error gathering commit info")
+			return nil, fmt.Errorf("error gathering commit info: %w", err)
 		}
 		if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
 			return nil, err
@@ -69,7 +72,57 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 	if err != nil {
 		return nil, err
 	}
-	changes, err := git.ParseChangeInfo(googleapisDir, commits)
+	affectedProtos := make(map[string][]string)
+	var relevantCommits []string
+	for _, commit := range commits {
+		files, err := git.FilesChanged(googleapisDir, commit)
+		if err != nil {
+			return nil, err
+		}
+		protos := make(map[string]struct{})
+		for _, file := range files {
+			if file == "" {
+				continue
+			}
+			if !strings.HasSuffix(file, ".proto") {
+				continue
+			}
+			content, err := git.GetFileContentAtCommit(googleapisDir, commit, file)
+			if err != nil {
+				// It's possible the file was deleted in this commit, so we check the parent.
+				originalErr := err
+				content, err = git.GetFileContentAtCommit(googleapisDir, commit+"^", file)
+				if err != nil {
+					// We don't want to fail here, just log the error and continue.
+					log.Printf("could not get content for %s at commit %s (%v) or its parent (%v)", file, commit, originalErr, err)
+					continue
+				}
+			}
+			pkg, err := parseGoPkg(content)
+			if err != nil {
+				return nil, err
+			}
+			var onWatchlist bool
+			for _, watchedPkg := range generateList {
+				if pkg == watchedPkg {
+					onWatchlist = true
+					break
+				}
+			}
+			if onWatchlist {
+				if _, ok := affectedProtos[commit]; !ok {
+					relevantCommits = append(relevantCommits, commit)
+				}
+				protos[file] = struct{}{}
+			}
+		}
+		for proto := range protos {
+			affectedProtos[commit] = append(affectedProtos[commit], proto)
+		}
+		sort.Strings(affectedProtos[commit])
+	}
+
+	changes, err := git.ParseChangeInfo(googleapisDir, relevantCommits, affectedProtos)
 	if err != nil {
 		return nil, err
 	}

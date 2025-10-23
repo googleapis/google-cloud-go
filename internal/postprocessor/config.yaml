@@ -5,9 +5,7 @@ modules:
   - bigquery/v2
   - bigquery
   - bigtable
-  - datastore
   - errorreporting
-  - firestore
   - logging
   - profiler
   - storage
@@ -206,19 +204,6 @@ service-configs:
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
     import-path: cloud.google.com/go/errorreporting/apiv1beta1
-  - input-directory: google/datastore/admin/v1
-    service-config: datastore_v1.yaml
-    import-path: cloud.google.com/go/datastore/admin/apiv1
-  - input-directory: google/datastore/v1
-    service-config: datastore_v1.yaml
-    import-path: cloud.google.com/go/datastore/apiv1
-    release-level-override: stable
-  - input-directory: google/firestore/admin/v1
-    service-config: firestore_v1.yaml
-    import-path: cloud.google.com/go/firestore/apiv1/admin
-  - input-directory: google/firestore/v1
-    service-config: firestore_v1.yaml
-    import-path: cloud.google.com/go/firestore/apiv1
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
@@ -234,6 +219,8 @@ skip-module-scan-paths:
   - .
   # Librarian released modules
   - spanner
+  - datastore
+  - firestore
   - containeranalysis
   - geminidataanalytics
   - locationfinder
@@ -405,9 +392,7 @@ skip-module-scan-paths:
   - bigquery
   - bigquery/v2
   - bigtable
-  - datastore
   - errorreporting
-  - firestore
   - logging
   - profiler
   - storage
