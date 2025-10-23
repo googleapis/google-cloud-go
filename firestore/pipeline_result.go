@@ -96,6 +96,7 @@ func (p *PipelineResult) Data() (map[string]any, error) {
 		return nil, status.Errorf(codes.NotFound, "document does not exist")
 	}
 	m, err := createMapFromValueMap(p.proto.Fields, p.c)
+
 	// Any error here is a bug in the client.
 	if err != nil {
 		panic(fmt.Sprintf("firestore: %v", err))

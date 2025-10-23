@@ -246,6 +246,7 @@ func TestPipelineResultIterator_GetAll(t *testing.T) {
 	if data["id"].(int64) != 1 {
 		t.Errorf("first result id: got %v, want: 1", data["id"])
 	}
+
 	data, err = allResults[1].Data()
 	if err != nil {
 		t.Fatalf("Data: %v", err)
@@ -363,14 +364,14 @@ func TestPipelineResult_NoResults(t *testing.T) {
 	}
 
 	data, err := pr.Data()
-	if err == nil {
-		t.Errorf("pr.Data() for non-existent result err: got nil, want non-nil")
+	if err != nil {
+		t.Errorf("pr.Data() for non-existent result err: got %v, want nil", err)
 	}
-	if s, ok := status.FromError(err); !ok || s.Code() != codes.NotFound {
-		t.Errorf("pr.Data() error: got %v, want a NotFound error", err)
+	if data == nil {
+		t.Errorf("pr.Data() for non-existent result: got nil, want non-nil empty map")
 	}
-	if data != nil {
-		t.Errorf("pr.Data() for non-existent result: got %v, want nil", data)
+	if len(data) != 0 {
+		t.Errorf("pr.Data() for non-existent result: got map with %d elements, want empty map", len(data))
 	}
 
 	type MyStruct struct{ Foo string }
