@@ -1076,25 +1076,8 @@ libraries:
       - ^bigquery/v2/apiv2/doc\.go$
       - ^bigquery/v2/apiv2/gapic_metadata\.json$
       - ^bigquery/v2/apiv2/helpers\.go$
+      - ^bigquery/v2/apiv2/bigquerypb/.*$
       - ^bigquery/v2/apiv2/v2pb/.*$
-      - ^bigquery/v2/apiv2_client/[^/]*_client\.go$
-      - ^bigquery/v2/apiv2_client/[^/]*_client_example_go123_test\.go$
-      - ^bigquery/v2/apiv2_client/[^/]*_client_example_test\.go$
-      - ^bigquery/v2/apiv2_client/auxiliary\.go$
-      - ^bigquery/v2/apiv2_client/auxiliary_go123\.go$
-      - ^bigquery/v2/apiv2_client/doc\.go$
-      - ^bigquery/v2/apiv2_client/gapic_metadata\.json$
-      - ^bigquery/v2/apiv2_client/helpers\.go$
-      - ^bigquery/v2/apiv2_client/v2pb/.*$
-      - ^bigquery/v2/apiv2_smoketests/[^/]*_client\.go$
-      - ^bigquery/v2/apiv2_smoketests/[^/]*_client_example_go123_test\.go$
-      - ^bigquery/v2/apiv2_smoketests/[^/]*_client_example_test\.go$
-      - ^bigquery/v2/apiv2_smoketests/auxiliary\.go$
-      - ^bigquery/v2/apiv2_smoketests/auxiliary_go123\.go$
-      - ^bigquery/v2/apiv2_smoketests/doc\.go$
-      - ^bigquery/v2/apiv2_smoketests/gapic_metadata\.json$
-      - ^bigquery/v2/apiv2_smoketests/helpers\.go$
-      - ^bigquery/v2/apiv2_smoketests/v2pb/.*$
     release_exclude_paths:
       - internal/generated/snippets/bigquery/
     tag_format: '{id}/v{version}'
