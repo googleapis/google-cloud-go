@@ -1,7 +1,13 @@
-# Changelog
+# Changes
 
 
 
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudcontrolspartner%2Fv1.5.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
 
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudcontrolspartner/v1.3.2...cloudcontrolspartner/v1.4.0) (2025-05-06)
 

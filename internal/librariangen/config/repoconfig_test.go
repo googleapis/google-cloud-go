@@ -37,6 +37,8 @@ modules:
     apis:
       - path: google/monitoring/v3
         client_directory: apiv3/v2
+        nested_protos:
+          - nested/x.proto
   - name: recaptchaenterprise
     module_path_version: v2
 `
@@ -71,6 +73,7 @@ modules:
 					{
 						Path:            "google/monitoring/v3",
 						ClientDirectory: "apiv3/v2",
+						NestedProtos:    []string{"nested/x.proto"},
 					},
 				},
 			},
@@ -86,15 +89,19 @@ modules:
 		t.Fatalf("LoadRepoConfig() failed: %v", err)
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("Transform() mismatch (-want +got):\n%s", diff)
+		t.Errorf("LoadRepoConfig() mismatch (-want +got):\n%s", diff)
 	}
 }
 
 func TestLoadRepoConfig_NotFound(t *testing.T) {
 	tempDir := t.TempDir()
-	_, err := LoadRepoConfig(tempDir)
-	if err == nil {
-		t.Error("LoadRepoConfig() succeeded, want error")
+	got, err := LoadRepoConfig(tempDir)
+	if err != nil {
+		t.Fatalf("LoadRepoConfig() failed: %v", err)
+	}
+	want := &RepoConfig{}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("LoadRepoConfig() mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -133,7 +140,7 @@ func TestGetModuleConfig(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			got := config.GetModuleConfig(test.moduleName)
 			if diff := cmp.Diff(test.want, got); diff != "" {
-				t.Errorf("Transform() mismatch (-want +got):\n%s", diff)
+				t.Errorf("GetModuleConfig() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

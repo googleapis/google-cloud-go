@@ -21,6 +21,10 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestGenerateInternalVersionFile(t *testing.T) {
@@ -62,4 +66,202 @@ func TestGenerateInternalVersionFile(t *testing.T) {
 		}
 	}
 	t.Errorf("could not find Version constant in version.go")
+}
+
+func TestUpdateSnippetsMetadata(t *testing.T) {
+	testdata := []struct {
+		name         string
+		lib          *request.Library
+		moduleConfig *config.ModuleConfig
+		files        map[string]string
+		want         map[string]string
+		wantErr      bool
+	}{
+		{
+			name: "version placeholder",
+			lib: &request.Library{
+				ID:      "secretmanager",
+				Version: "2.3.4",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/secretmanager/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "secretmanager",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/secretmanager/v1",
+						ProtoPackage: "google.cloud.secretmanager.v1",
+					},
+				},
+			},
+			files: map[string]string{
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{"version":"$VERSION"}}`,
+			},
+			want: map[string]string{
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{"version":"2.3.4"}}`,
+			},
+		},
+		{
+			name: "existing version",
+			lib: &request.Library{
+				ID:      "workflows",
+				Version: "5.6.7",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/workflows/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "workflows",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/workflows/v1",
+						ProtoPackage: "google.cloud.workflows.v1",
+					},
+				},
+			},
+			files: map[string]string{
+				"internal/generated/snippets/workflows/apiv1/snippet_metadata.google.cloud.workflows.v1.json": `{"clientLibrary":{"version":"1.2.3"}}`,
+			},
+			want: map[string]string{
+				"internal/generated/snippets/workflows/apiv1/snippet_metadata.google.cloud.workflows.v1.json": `{"clientLibrary":{"version":"5.6.7"}}`,
+			},
+		},
+		{
+			name: "file not found",
+			lib: &request.Library{
+				ID:      "secretmanager",
+				Version: "2.3.4",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/secretmanager/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "secretmanager",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/secretmanager/v1",
+						ProtoPackage: "google.cloud.secretmanager.v1",
+					},
+				},
+			},
+			files: map[string]string{},
+			want:  map[string]string{},
+		},
+		{
+			name: "no version string",
+			lib: &request.Library{
+				ID:      "secretmanager",
+				Version: "2.3.4",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/secretmanager/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "secretmanager",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/secretmanager/v1",
+						ProtoPackage: "google.cloud.secretmanager.v1",
+					},
+				},
+			},
+			files: map[string]string{
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{}}`,
+			},
+			want:    map[string]string{},
+			wantErr: true,
+		},
+		{
+			name: "multiple api versions and a sub-API",
+			lib: &request.Library{
+				ID:      "secretmanager",
+				Version: "1.0.0",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/secretmanager/v1",
+					},
+					{
+						Path: "google/cloud/secretmanager/v2",
+					},
+					{
+						Path: "google/cloud/secretmanager/subapi/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "secretmanager",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/secretmanager/v1",
+						ProtoPackage: "google.cloud.secretmanager.v1",
+					},
+					{
+						Path:         "google/cloud/secretmanager/v2",
+						ProtoPackage: "google.cloud.secretmanager.v2",
+					},
+					{
+						Path:         "google/cloud/secretmanager/subapi/v1",
+						ProtoPackage: "google.cloud.secretmanager.subapi.v1",
+					},
+				},
+			},
+			files: map[string]string{
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"$VERSION"}}`,
+				"internal/generated/snippets/secretmanager/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"0.1.0"}}`,
+				"internal/generated/snippets/secretmanager/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"0.1.0"}}`,
+			},
+			want: map[string]string{
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
+				"internal/generated/snippets/secretmanager/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
+				"internal/generated/snippets/secretmanager/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"1.0.0"}}`,
+			},
+		},
+	}
+
+	for _, tc := range testdata {
+		t.Run(tc.name, func(t *testing.T) {
+			sourceDir := t.TempDir()
+			destDir := t.TempDir()
+
+			for path, content := range tc.files {
+				fullPath := filepath.Join(sourceDir, path)
+				if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
+					t.Fatalf("failed to create directory: %v", err)
+				}
+				if err := os.WriteFile(fullPath, []byte(content), 0644); err != nil {
+					t.Fatalf("failed to write file: %v", err)
+				}
+			}
+
+			if err := UpdateSnippetsMetadata(tc.lib, sourceDir, destDir, tc.moduleConfig); (err != nil) != tc.wantErr {
+				t.Errorf("UpdateSnippetsMetadata() error = %v, wantErr %v", err, tc.wantErr)
+			}
+
+			got := make(map[string]string)
+			for path := range tc.want {
+				content, err := os.ReadFile(filepath.Join(destDir, path))
+				if err != nil {
+					// If the file is not found, it's a valid case for some tests.
+					if os.IsNotExist(err) {
+						continue
+					}
+					t.Fatalf("failed to read file: %v", err)
+				}
+				got[path] = string(content)
+			}
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Errorf("UpdateSnippetsMetadata() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
 }

@@ -1,6 +1,18 @@
 # Changes
 
 
+## [0.16.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.15.6...gkehub/v0.16.0) (2025-09-12)
+
+
+### Features
+
+* **gkehub:** Add `k8s_git_version` field ([#12863](https://github.com/googleapis/google-cloud-go/issues/12863)) ([1501b23](https://github.com/googleapis/google-cloud-go/commit/1501b23474a07187a8d064f6db7e9a6c2e0bbc74))
+
+
+### Documentation
+
+* **gkehub:** Correct comment for `k8s_version` field ([1501b23](https://github.com/googleapis/google-cloud-go/commit/1501b23474a07187a8d064f6db7e9a6c2e0bbc74))
+
 ## [0.15.6](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.15.5...gkehub/v0.15.6) (2025-04-15)
 
 

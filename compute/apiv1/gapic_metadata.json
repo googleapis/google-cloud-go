@@ -68,6 +68,11 @@
               "methods": [
                 "SetLabels"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -214,6 +219,11 @@
             "Get": {
               "methods": [
                 "Get"
+              ]
+            },
+            "GetEffectiveSecurityPolicies": {
+              "methods": [
+                "GetEffectiveSecurityPolicies"
               ]
             },
             "GetHealth": {
@@ -662,6 +672,11 @@
             "SetLabels": {
               "methods": [
                 "SetLabels"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -1182,6 +1197,11 @@
               "methods": [
                 "SetNamedPorts"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -1265,6 +1285,11 @@
                 "AddAccessConfig"
               ]
             },
+            "AddNetworkInterface": {
+              "methods": [
+                "AddNetworkInterface"
+              ]
+            },
             "AddResourcePolicies": {
               "methods": [
                 "AddResourcePolicies"
@@ -1293,6 +1318,11 @@
             "DeleteAccessConfig": {
               "methods": [
                 "DeleteAccessConfig"
+              ]
+            },
+            "DeleteNetworkInterface": {
+              "methods": [
+                "DeleteNetworkInterface"
               ]
             },
             "DetachDisk": {
@@ -2449,6 +2479,95 @@
         }
       }
     },
+    "OrganizationSecurityPolicies": {
+      "clients": {
+        "rest": {
+          "libraryClient": "OrganizationSecurityPoliciesClient",
+          "rpcs": {
+            "AddAssociation": {
+              "methods": [
+                "AddAssociation"
+              ]
+            },
+            "AddRule": {
+              "methods": [
+                "AddRule"
+              ]
+            },
+            "CopyRules": {
+              "methods": [
+                "CopyRules"
+              ]
+            },
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "GetAssociation": {
+              "methods": [
+                "GetAssociation"
+              ]
+            },
+            "GetRule": {
+              "methods": [
+                "GetRule"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "ListAssociations": {
+              "methods": [
+                "ListAssociations"
+              ]
+            },
+            "ListPreconfiguredExpressionSets": {
+              "methods": [
+                "ListPreconfiguredExpressionSets"
+              ]
+            },
+            "Move": {
+              "methods": [
+                "Move"
+              ]
+            },
+            "Patch": {
+              "methods": [
+                "Patch"
+              ]
+            },
+            "PatchRule": {
+              "methods": [
+                "PatchRule"
+              ]
+            },
+            "RemoveAssociation": {
+              "methods": [
+                "RemoveAssociation"
+              ]
+            },
+            "RemoveRule": {
+              "methods": [
+                "RemoveRule"
+              ]
+            }
+          }
+        }
+      }
+    },
     "PacketMirrorings": {
       "clients": {
         "rest": {
@@ -2487,6 +2606,30 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PreviewFeatures": {
+      "clients": {
+        "rest": {
+          "libraryClient": "PreviewFeaturesClient",
+          "rpcs": {
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Update": {
+              "methods": [
+                "Update"
               ]
             }
           }
@@ -3141,6 +3284,11 @@
               "methods": [
                 "SetNamedPorts"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -3787,6 +3935,11 @@
             "PerformMaintenance": {
               "methods": [
                 "PerformMaintenance"
+              ]
+            },
+            "ReportFaulty": {
+              "methods": [
+                "ReportFaulty"
               ]
             }
           }
@@ -4631,6 +4784,11 @@
               "methods": [
                 "SetSecurityPolicy"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -4699,6 +4857,11 @@
             "SetSecurityPolicy": {
               "methods": [
                 "SetSecurityPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }

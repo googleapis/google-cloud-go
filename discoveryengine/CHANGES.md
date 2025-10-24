@@ -1,6 +1,20 @@
-# Changelog
+# Changes
 
 
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.22.0) (2025-10-22)
+
+### Bug Fixes
+
+* Add labels for additional Sessions identification 
+* Include AssistAnswer as a part of the Session 
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.21.0...discoveryengine/v1.21.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
 
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.20.0...discoveryengine/v1.21.0) (2025-09-11)
 

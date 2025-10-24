@@ -167,7 +167,7 @@ func gitFilesChanges(dir string) ([]string, error) {
 	}
 
 	c := exec.Command("git", args...)
-	logg.Printf(c.String())
+	logg.Printf("%s", c.String())
 
 	c.Dir = dir
 	b, err := c.Output()
@@ -181,7 +181,7 @@ func gitFilesChanges(dir string) ([]string, error) {
 
 func touchModule(root, mod string) error {
 	c := exec.Command("echo")
-	logg.Printf(c.String())
+	logg.Printf("%s", c.String())
 
 	f, err := os.OpenFile(path.Join(root, mod, "CHANGES.md"), os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {

@@ -1,5 +1,12 @@
-# Changelog
+# Changes
 
+
+## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.3...parallelstore/v0.11.4) (2025-09-18)
+
+
+### Bug Fixes
+
+* **parallelstore:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
 
 ## [0.11.3](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.2...parallelstore/v0.11.3) (2025-06-04)
 

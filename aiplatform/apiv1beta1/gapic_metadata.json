@@ -1632,6 +1632,11 @@
                 "FetchFeatureValues"
               ]
             },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -1705,6 +1710,11 @@
             "FetchFeatureValues": {
               "methods": [
                 "FetchFeatureValues"
+              ]
+            },
+            "GenerateFetchAccessToken": {
+              "methods": [
+                "GenerateFetchAccessToken"
               ]
             },
             "GetIamPolicy": {
@@ -6162,6 +6172,11 @@
                 "DirectRawPredict"
               ]
             },
+            "EmbedContent": {
+              "methods": [
+                "EmbedContent"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
@@ -6290,6 +6305,11 @@
             "DirectRawPredict": {
               "methods": [
                 "DirectRawPredict"
+              ]
+            },
+            "EmbedContent": {
+              "methods": [
+                "EmbedContent"
               ]
             },
             "Explain": {

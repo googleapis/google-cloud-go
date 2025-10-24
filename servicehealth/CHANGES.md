@@ -1,5 +1,12 @@
-# Changelog
+# Changes
 
+
+## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.2.3...servicehealth/v1.2.4) (2025-09-22)
+
+
+### Bug Fixes
+
+* **servicehealth:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
 
 ## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.2.2...servicehealth/v1.2.3) (2025-04-15)
 

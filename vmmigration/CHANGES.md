@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.9.0...vmmigration/v1.9.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* **vmmigration:** Upgrade gRPC service registration func ([3637617](https://github.com/googleapis/google-cloud-go/commit/36376171b889310bb1e9ce57be208983b210b816))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.8.6...vmmigration/v1.9.0) (2025-09-11)
 
 

@@ -1,5 +1,36 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/eventarc%2Fv1.17.0) (2025-10-10)
+
+### Documentation
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
+### Documentation
+
+* Update comment in Eventarc Publishing API ([16a694c](https://github.com/googleapis/google-cloud-go/commit/16a694cb1ef37b01f7b798dbe754f1fc9d26d643))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.16.0...eventarc/v1.16.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **eventarc:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.5...eventarc/v1.16.0) (2025-09-16)
+
+
+### Features
+
+* **eventarc:** Add new fields to Eventarc resources ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
+
+### Documentation
+
+* **eventarc:** Correct some comments ([ae768e5](https://github.com/googleapis/google-cloud-go/commit/ae768e514ff4f145d855292512605bd79a75c3c9))
+
 ## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.4...eventarc/v1.15.5) (2025-04-15)
 
 

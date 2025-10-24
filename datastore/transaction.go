@@ -229,57 +229,22 @@ func (t *Transaction) beginTransaction() (txnID []byte, err error) {
 
 // beginLaterTransaction makes BeginTransaction rpc if transaction has not yet started
 func (t *Transaction) beginLaterTransaction() (err error) {
-	if t.state != transactionStateNotStarted {
-		return nil
-	}
-
-	// Obtain state lock since the state needs to be updated
-	// after transaction has started
 	t.stateLock.Lock()
-	defer t.stateLock.Unlock()
 	if t.state != transactionStateNotStarted {
+		t.stateLock.Unlock()
 		return nil
 	}
 
 	txnID, err := t.beginTransaction()
 	if err != nil {
+		t.stateLock.Unlock()
 		return err
 	}
 
-	t.setToInProgress(txnID)
-	return nil
-}
-
-// Acquires state lock if transaction has not started. No-op otherwise
-// The returned function unlocks the state if it was locked.
-//
-// Usage:
-//
-//	func (t *Transaction) someFunction() {
-//		...
-//		if t != nil {
-//			defer t.stateLockDeferUnlock()()
-//		}
-//		....
-//	}
-//
-// This ensures that state is locked before any of the following lines are exexcuted
-// The lock will be released after 'someFunction' ends
-func (t *Transaction) stateLockDeferUnlock() func() {
-	if t.state == transactionStateNotStarted {
-		t.stateLock.Lock()
-		// Check whether state changed while waiting to acquire lock
-		if t.state == transactionStateNotStarted {
-			return func() { t.stateLock.Unlock() }
-		}
-		t.stateLock.Unlock()
-	}
-	return func() {}
-}
-
-func (t *Transaction) setToInProgress(id []byte) {
-	t.id = id
+	t.id = txnID
 	t.state = transactionStateInProgress
+	t.stateLock.Unlock()
+	return nil
 }
 
 // backoffBeforeRetry returns:
@@ -332,7 +297,8 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		if err != nil {
 			return nil, err
 		}
-		t.setToInProgress(txnID)
+		t.id = txnID
+		t.state = transactionStateInProgress
 	}
 
 	return t, nil
@@ -449,9 +415,12 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Commit")
 	defer func() { trace.EndSpan(t.ctx, err) }()
 
+	t.stateLock.Lock()
 	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
 		return nil, errExpiredTransaction
 	}
+	t.stateLock.Unlock()
 
 	err = t.beginLaterTransaction()
 	if err != nil {
@@ -473,7 +442,9 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 		return nil, err
 	}
 
+	t.stateLock.Lock()
 	t.state = transactionStateExpired
+	t.stateLock.Unlock()
 
 	c = &Commit{}
 	// Copy any newly minted keys into the returned keys.
@@ -548,6 +519,9 @@ func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
 		return nil, errTxnClientReadTime
 	}
 
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+
 	var opts *pb.ReadOptions
 	switch t.state {
 	case transactionStateExpired:
@@ -571,10 +545,6 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 	t.ctx = trace.StartSpan(t.ctx, spanName)
 	defer func() { trace.EndSpan(t.ctx, err) }()
 
-	if t != nil {
-		defer t.stateLockDeferUnlock()()
-	}
-
 	opts, err := t.parseReadOptions()
 	if err != nil {
 		return err
@@ -582,8 +552,13 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 
 	txnID, err := t.client.get(t.ctx, keys, dst, opts)
 
-	if txnID != nil && err == nil {
-		t.setToInProgress(txnID)
+	if txnID != nil {
+		t.stateLock.Lock()
+		if t.state == transactionStateNotStarted {
+			t.id = txnID
+			t.state = transactionStateInProgress
+		}
+		t.stateLock.Unlock()
 	}
 	return t.client.processFieldMismatchError(err)
 }

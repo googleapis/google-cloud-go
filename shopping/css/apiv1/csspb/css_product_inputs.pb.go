@@ -21,19 +21,16 @@
 package csspb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	typepb "cloud.google.com/go/shopping/type/typepb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -630,184 +627,4 @@ func file_google_shopping_css_v1_css_product_inputs_proto_init() {
 	file_google_shopping_css_v1_css_product_inputs_proto_rawDesc = nil
 	file_google_shopping_css_v1_css_product_inputs_proto_goTypes = nil
 	file_google_shopping_css_v1_css_product_inputs_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// CssProductInputsServiceClient is the client API for CssProductInputsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type CssProductInputsServiceClient interface {
-	// Uploads a CssProductInput to your CSS Center account. If an
-	// input with the same contentLanguage, identity, feedLabel and feedId already
-	// exists, this method replaces that entry.
-	//
-	// After inserting, updating, or deleting a CSS Product input, it may
-	// take several minutes before the processed CSS Product can be retrieved.
-	InsertCssProductInput(ctx context.Context, in *InsertCssProductInputRequest, opts ...grpc.CallOption) (*CssProductInput, error)
-	// Updates the existing Css Product input in your CSS Center account.
-	//
-	// After inserting, updating, or deleting a CSS Product input, it may take
-	// several minutes before the processed Css Product can be retrieved.
-	UpdateCssProductInput(ctx context.Context, in *UpdateCssProductInputRequest, opts ...grpc.CallOption) (*CssProductInput, error)
-	// Deletes a CSS Product input from your CSS Center account.
-	//
-	// After a delete it may take several minutes until the input is no longer
-	// available.
-	DeleteCssProductInput(ctx context.Context, in *DeleteCssProductInputRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-}
-
-type cssProductInputsServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewCssProductInputsServiceClient(cc grpc.ClientConnInterface) CssProductInputsServiceClient {
-	return &cssProductInputsServiceClient{cc}
-}
-
-func (c *cssProductInputsServiceClient) InsertCssProductInput(ctx context.Context, in *InsertCssProductInputRequest, opts ...grpc.CallOption) (*CssProductInput, error) {
-	out := new(CssProductInput)
-	err := c.cc.Invoke(ctx, "/google.shopping.css.v1.CssProductInputsService/InsertCssProductInput", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *cssProductInputsServiceClient) UpdateCssProductInput(ctx context.Context, in *UpdateCssProductInputRequest, opts ...grpc.CallOption) (*CssProductInput, error) {
-	out := new(CssProductInput)
-	err := c.cc.Invoke(ctx, "/google.shopping.css.v1.CssProductInputsService/UpdateCssProductInput", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *cssProductInputsServiceClient) DeleteCssProductInput(ctx context.Context, in *DeleteCssProductInputRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/google.shopping.css.v1.CssProductInputsService/DeleteCssProductInput", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// CssProductInputsServiceServer is the server API for CssProductInputsService service.
-type CssProductInputsServiceServer interface {
-	// Uploads a CssProductInput to your CSS Center account. If an
-	// input with the same contentLanguage, identity, feedLabel and feedId already
-	// exists, this method replaces that entry.
-	//
-	// After inserting, updating, or deleting a CSS Product input, it may
-	// take several minutes before the processed CSS Product can be retrieved.
-	InsertCssProductInput(context.Context, *InsertCssProductInputRequest) (*CssProductInput, error)
-	// Updates the existing Css Product input in your CSS Center account.
-	//
-	// After inserting, updating, or deleting a CSS Product input, it may take
-	// several minutes before the processed Css Product can be retrieved.
-	UpdateCssProductInput(context.Context, *UpdateCssProductInputRequest) (*CssProductInput, error)
-	// Deletes a CSS Product input from your CSS Center account.
-	//
-	// After a delete it may take several minutes until the input is no longer
-	// available.
-	DeleteCssProductInput(context.Context, *DeleteCssProductInputRequest) (*emptypb.Empty, error)
-}
-
-// UnimplementedCssProductInputsServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedCssProductInputsServiceServer struct {
-}
-
-func (*UnimplementedCssProductInputsServiceServer) InsertCssProductInput(context.Context, *InsertCssProductInputRequest) (*CssProductInput, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InsertCssProductInput not implemented")
-}
-func (*UnimplementedCssProductInputsServiceServer) UpdateCssProductInput(context.Context, *UpdateCssProductInputRequest) (*CssProductInput, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateCssProductInput not implemented")
-}
-func (*UnimplementedCssProductInputsServiceServer) DeleteCssProductInput(context.Context, *DeleteCssProductInputRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteCssProductInput not implemented")
-}
-
-func RegisterCssProductInputsServiceServer(s *grpc.Server, srv CssProductInputsServiceServer) {
-	s.RegisterService(&_CssProductInputsService_serviceDesc, srv)
-}
-
-func _CssProductInputsService_InsertCssProductInput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InsertCssProductInputRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CssProductInputsServiceServer).InsertCssProductInput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.css.v1.CssProductInputsService/InsertCssProductInput",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CssProductInputsServiceServer).InsertCssProductInput(ctx, req.(*InsertCssProductInputRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CssProductInputsService_UpdateCssProductInput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCssProductInputRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CssProductInputsServiceServer).UpdateCssProductInput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.css.v1.CssProductInputsService/UpdateCssProductInput",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CssProductInputsServiceServer).UpdateCssProductInput(ctx, req.(*UpdateCssProductInputRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CssProductInputsService_DeleteCssProductInput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteCssProductInputRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CssProductInputsServiceServer).DeleteCssProductInput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.shopping.css.v1.CssProductInputsService/DeleteCssProductInput",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CssProductInputsServiceServer).DeleteCssProductInput(ctx, req.(*DeleteCssProductInputRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _CssProductInputsService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.shopping.css.v1.CssProductInputsService",
-	HandlerType: (*CssProductInputsServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "InsertCssProductInput",
-			Handler:    _CssProductInputsService_InsertCssProductInput_Handler,
-		},
-		{
-			MethodName: "UpdateCssProductInput",
-			Handler:    _CssProductInputsService_UpdateCssProductInput_Handler,
-		},
-		{
-			MethodName: "DeleteCssProductInput",
-			Handler:    _CssProductInputsService_DeleteCssProductInput_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "google/shopping/css/v1/css_product_inputs.proto",
 }

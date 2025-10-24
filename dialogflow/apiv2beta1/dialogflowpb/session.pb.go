@@ -21,20 +21,17 @@
 package dialogflowpb
 
 import (
-	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -110,8 +107,6 @@ const (
 	StreamingRecognitionResult_MESSAGE_TYPE_UNSPECIFIED StreamingRecognitionResult_MessageType = 0
 	// Message contains a (possibly partial) transcript.
 	StreamingRecognitionResult_TRANSCRIPT StreamingRecognitionResult_MessageType = 1
-	// Message contains DTMF digits.
-	StreamingRecognitionResult_DTMF_DIGITS StreamingRecognitionResult_MessageType = 3
 	// This event indicates that the server has detected the end of the user's
 	// speech utterance and expects no additional speech. Therefore, the server
 	// will not process additional audio (although it may subsequently return
@@ -120,6 +115,8 @@ const (
 	// until the server closes the gRPC connection. This message is only sent if
 	// `single_utterance` was set to `true`, and is not used otherwise.
 	StreamingRecognitionResult_END_OF_SINGLE_UTTERANCE StreamingRecognitionResult_MessageType = 2
+	// Message contains DTMF digits.
+	StreamingRecognitionResult_DTMF_DIGITS StreamingRecognitionResult_MessageType = 3
 	// Message contains DTMF digits. Before a message with DTMF_DIGITS is sent,
 	// a message with PARTIAL_DTMF_DIGITS may be sent with DTMF digits collected
 	// up to the time of sending, which represents an intermediate result.
@@ -131,15 +128,15 @@ var (
 	StreamingRecognitionResult_MessageType_name = map[int32]string{
 		0: "MESSAGE_TYPE_UNSPECIFIED",
 		1: "TRANSCRIPT",
-		3: "DTMF_DIGITS",
 		2: "END_OF_SINGLE_UTTERANCE",
+		3: "DTMF_DIGITS",
 		4: "PARTIAL_DTMF_DIGITS",
 	}
 	StreamingRecognitionResult_MessageType_value = map[string]int32{
 		"MESSAGE_TYPE_UNSPECIFIED": 0,
 		"TRANSCRIPT":               1,
-		"DTMF_DIGITS":              3,
 		"END_OF_SINGLE_UTTERANCE":  2,
+		"DTMF_DIGITS":              3,
 		"PARTIAL_DTMF_DIGITS":      4,
 	}
 )
@@ -2622,10 +2619,10 @@ var file_google_cloud_dialogflow_v2beta1_session_proto_rawDesc = []byte{
 	0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x18, 0x4d, 0x45, 0x53, 0x53, 0x41, 0x47, 0x45,
 	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
 	0x44, 0x10, 0x00, 0x12, 0x0e, 0x0a, 0x0a, 0x54, 0x52, 0x41, 0x4e, 0x53, 0x43, 0x52, 0x49, 0x50,
-	0x54, 0x10, 0x01, 0x12, 0x0f, 0x0a, 0x0b, 0x44, 0x54, 0x4d, 0x46, 0x5f, 0x44, 0x49, 0x47, 0x49,
-	0x54, 0x53, 0x10, 0x03, 0x12, 0x1b, 0x0a, 0x17, 0x45, 0x4e, 0x44, 0x5f, 0x4f, 0x46, 0x5f, 0x53,
-	0x49, 0x4e, 0x47, 0x4c, 0x45, 0x5f, 0x55, 0x54, 0x54, 0x45, 0x52, 0x41, 0x4e, 0x43, 0x45, 0x10,
-	0x02, 0x12, 0x17, 0x0a, 0x13, 0x50, 0x41, 0x52, 0x54, 0x49, 0x41, 0x4c, 0x5f, 0x44, 0x54, 0x4d,
+	0x54, 0x10, 0x01, 0x12, 0x1b, 0x0a, 0x17, 0x45, 0x4e, 0x44, 0x5f, 0x4f, 0x46, 0x5f, 0x53, 0x49,
+	0x4e, 0x47, 0x4c, 0x45, 0x5f, 0x55, 0x54, 0x54, 0x45, 0x52, 0x41, 0x4e, 0x43, 0x45, 0x10, 0x02,
+	0x12, 0x0f, 0x0a, 0x0b, 0x44, 0x54, 0x4d, 0x46, 0x5f, 0x44, 0x49, 0x47, 0x49, 0x54, 0x53, 0x10,
+	0x03, 0x12, 0x17, 0x0a, 0x13, 0x50, 0x41, 0x52, 0x54, 0x49, 0x41, 0x4c, 0x5f, 0x44, 0x54, 0x4d,
 	0x46, 0x5f, 0x44, 0x49, 0x47, 0x49, 0x54, 0x53, 0x10, 0x04, 0x22, 0x44, 0x0a, 0x09, 0x54, 0x65,
 	0x78, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x6c,
@@ -2892,211 +2889,4 @@ func file_google_cloud_dialogflow_v2beta1_session_proto_init() {
 	file_google_cloud_dialogflow_v2beta1_session_proto_rawDesc = nil
 	file_google_cloud_dialogflow_v2beta1_session_proto_goTypes = nil
 	file_google_cloud_dialogflow_v2beta1_session_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// SessionsClient is the client API for Sessions service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type SessionsClient interface {
-	// Processes a natural language query and returns structured, actionable data
-	// as a result. This method is not idempotent, because it may cause contexts
-	// and session entity types to be updated, which in turn might affect
-	// results of future queries.
-	//
-	// If you might use
-	// [Agent Assist](https://cloud.google.com/dialogflow/docs/#aa)
-	// or other CCAI products now or in the future, consider using
-	// [AnalyzeContent][google.cloud.dialogflow.v2beta1.Participants.AnalyzeContent]
-	// instead of `DetectIntent`. `AnalyzeContent` has additional
-	// functionality for Agent Assist and other CCAI products.
-	//
-	// Note: Always use agent versions for production traffic.
-	// See [Versions and
-	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
-	DetectIntent(ctx context.Context, in *DetectIntentRequest, opts ...grpc.CallOption) (*DetectIntentResponse, error)
-	// Processes a natural language query in audio format in a streaming fashion
-	// and returns structured, actionable data as a result. This method is only
-	// available via the gRPC API (not REST).
-	//
-	// If you might use
-	// [Agent Assist](https://cloud.google.com/dialogflow/docs/#aa)
-	// or other CCAI products now or in the future, consider using
-	// [StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent]
-	// instead of `StreamingDetectIntent`. `StreamingAnalyzeContent` has
-	// additional functionality for Agent Assist and other CCAI products.
-	//
-	// Note: Always use agent versions for production traffic.
-	// See [Versions and
-	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
-	StreamingDetectIntent(ctx context.Context, opts ...grpc.CallOption) (Sessions_StreamingDetectIntentClient, error)
-}
-
-type sessionsClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSessionsClient(cc grpc.ClientConnInterface) SessionsClient {
-	return &sessionsClient{cc}
-}
-
-func (c *sessionsClient) DetectIntent(ctx context.Context, in *DetectIntentRequest, opts ...grpc.CallOption) (*DetectIntentResponse, error) {
-	out := new(DetectIntentResponse)
-	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Sessions/DetectIntent", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *sessionsClient) StreamingDetectIntent(ctx context.Context, opts ...grpc.CallOption) (Sessions_StreamingDetectIntentClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Sessions_serviceDesc.Streams[0], "/google.cloud.dialogflow.v2beta1.Sessions/StreamingDetectIntent", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &sessionsStreamingDetectIntentClient{stream}
-	return x, nil
-}
-
-type Sessions_StreamingDetectIntentClient interface {
-	Send(*StreamingDetectIntentRequest) error
-	Recv() (*StreamingDetectIntentResponse, error)
-	grpc.ClientStream
-}
-
-type sessionsStreamingDetectIntentClient struct {
-	grpc.ClientStream
-}
-
-func (x *sessionsStreamingDetectIntentClient) Send(m *StreamingDetectIntentRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *sessionsStreamingDetectIntentClient) Recv() (*StreamingDetectIntentResponse, error) {
-	m := new(StreamingDetectIntentResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// SessionsServer is the server API for Sessions service.
-type SessionsServer interface {
-	// Processes a natural language query and returns structured, actionable data
-	// as a result. This method is not idempotent, because it may cause contexts
-	// and session entity types to be updated, which in turn might affect
-	// results of future queries.
-	//
-	// If you might use
-	// [Agent Assist](https://cloud.google.com/dialogflow/docs/#aa)
-	// or other CCAI products now or in the future, consider using
-	// [AnalyzeContent][google.cloud.dialogflow.v2beta1.Participants.AnalyzeContent]
-	// instead of `DetectIntent`. `AnalyzeContent` has additional
-	// functionality for Agent Assist and other CCAI products.
-	//
-	// Note: Always use agent versions for production traffic.
-	// See [Versions and
-	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
-	DetectIntent(context.Context, *DetectIntentRequest) (*DetectIntentResponse, error)
-	// Processes a natural language query in audio format in a streaming fashion
-	// and returns structured, actionable data as a result. This method is only
-	// available via the gRPC API (not REST).
-	//
-	// If you might use
-	// [Agent Assist](https://cloud.google.com/dialogflow/docs/#aa)
-	// or other CCAI products now or in the future, consider using
-	// [StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent]
-	// instead of `StreamingDetectIntent`. `StreamingAnalyzeContent` has
-	// additional functionality for Agent Assist and other CCAI products.
-	//
-	// Note: Always use agent versions for production traffic.
-	// See [Versions and
-	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
-	StreamingDetectIntent(Sessions_StreamingDetectIntentServer) error
-}
-
-// UnimplementedSessionsServer can be embedded to have forward compatible implementations.
-type UnimplementedSessionsServer struct {
-}
-
-func (*UnimplementedSessionsServer) DetectIntent(context.Context, *DetectIntentRequest) (*DetectIntentResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method DetectIntent not implemented")
-}
-func (*UnimplementedSessionsServer) StreamingDetectIntent(Sessions_StreamingDetectIntentServer) error {
-	return status1.Errorf(codes.Unimplemented, "method StreamingDetectIntent not implemented")
-}
-
-func RegisterSessionsServer(s *grpc.Server, srv SessionsServer) {
-	s.RegisterService(&_Sessions_serviceDesc, srv)
-}
-
-func _Sessions_DetectIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DetectIntentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SessionsServer).DetectIntent(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.cloud.dialogflow.v2beta1.Sessions/DetectIntent",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SessionsServer).DetectIntent(ctx, req.(*DetectIntentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Sessions_StreamingDetectIntent_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SessionsServer).StreamingDetectIntent(&sessionsStreamingDetectIntentServer{stream})
-}
-
-type Sessions_StreamingDetectIntentServer interface {
-	Send(*StreamingDetectIntentResponse) error
-	Recv() (*StreamingDetectIntentRequest, error)
-	grpc.ServerStream
-}
-
-type sessionsStreamingDetectIntentServer struct {
-	grpc.ServerStream
-}
-
-func (x *sessionsStreamingDetectIntentServer) Send(m *StreamingDetectIntentResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *sessionsStreamingDetectIntentServer) Recv() (*StreamingDetectIntentRequest, error) {
-	m := new(StreamingDetectIntentRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-var _Sessions_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "google.cloud.dialogflow.v2beta1.Sessions",
-	HandlerType: (*SessionsServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "DetectIntent",
-			Handler:    _Sessions_DetectIntent_Handler,
-		},
-	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "StreamingDetectIntent",
-			Handler:       _Sessions_StreamingDetectIntent_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "google/cloud/dialogflow/v2beta1/session.proto",
 }

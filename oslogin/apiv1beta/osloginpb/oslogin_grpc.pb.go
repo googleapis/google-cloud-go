@@ -21,8 +21,9 @@
 package osloginpb
 
 import (
-	commonpb "cloud.google.com/go/oslogin/common/commonpb"
 	context "context"
+
+	commonpb "cloud.google.com/go/oslogin/common/commonpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

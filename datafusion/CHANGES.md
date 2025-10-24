@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.8.6...datafusion/v1.8.7) (2025-09-16)
+
+
+### Bug Fixes
+
+* **datafusion:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.8.5...datafusion/v1.8.6) (2025-04-15)
 
 

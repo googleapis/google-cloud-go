@@ -37,7 +37,7 @@ var (
 	postProcess  = postprocessor.PostProcess
 	bazelParse   = bazel.Parse
 	execvRun     = execv.Run
-	requestParse = request.Parse
+	requestParse = request.ParseLibrary
 )
 
 // Config holds the internal librariangen configuration for the generate command.
@@ -118,7 +118,7 @@ func Generate(ctx context.Context, cfg *Config) error {
 		return fmt.Errorf("librariangen: failed to flatten output: %w", err)
 	}
 
-	if err := applyModuleVersion(cfg.OutputDir, moduleConfig.GetModulePath()); err != nil {
+	if err := applyModuleVersion(cfg.OutputDir, generateReq.ID, moduleConfig.GetModulePath()); err != nil {
 		return fmt.Errorf("librariangen: failed to apply module version to output directories: %w", err)
 	}
 
@@ -132,6 +132,9 @@ func Generate(ctx context.Context, cfg *Config) error {
 			return fmt.Errorf("librariangen: post-processing failed: %w", err)
 		}
 	}
+	if err := deleteOutputPaths(cfg.OutputDir, moduleConfig.DeleteGenerationOutputPaths); err != nil {
+		return fmt.Errorf("librariangen: failed to delete paths specified in delete_generation_output_paths: %w", err)
+	}
 
 	slog.Debug("librariangen: generate command finished")
 	return nil
@@ -140,7 +143,7 @@ func Generate(ctx context.Context, cfg *Config) error {
 // invokeProtoc handles the protoc GAPIC generation logic for the 'generate' CLI command.
 // It reads a request file, and for each API specified, it invokes protoc
 // to generate the client library. It returns the module path and the path to the service YAML.
-func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Request, moduleConfig *config.ModuleConfig) error {
+func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Library, moduleConfig *config.ModuleConfig) error {
 	for _, api := range generateReq.APIs {
 		apiServiceDir := filepath.Join(cfg.SourceDir, api.Path)
 		slog.Info("processing api", "service_dir", apiServiceDir)
@@ -152,7 +155,7 @@ func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Request
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to parse BUILD.bazel for %s: %w", apiServiceDir, err)
 		}
-		args, err := protoc.Build(generateReq, &api, apiServiceDir, bazelConfig, cfg.SourceDir, cfg.OutputDir)
+		args, err := protoc.Build(generateReq, &api, bazelConfig, cfg.SourceDir, cfg.OutputDir, apiConfig.NestedProtos)
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to build protoc command for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
@@ -166,7 +169,7 @@ func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Request
 // readGenerateReq reads generate-request.json from the librarian-tool input directory.
 // The request file tells librariangen which library and APIs to generate.
 // It is prepared by the Librarian tool and mounted at /librarian.
-func readGenerateReq(librarianDir string) (*request.Request, error) {
+func readGenerateReq(librarianDir string) (*request.Library, error) {
 	reqPath := filepath.Join(librarianDir, "generate-request.json")
 	slog.Debug("librariangen: reading generate request", "path", reqPath)
 
@@ -214,11 +217,18 @@ func flattenOutput(outputDir string) error {
 }
 
 // applyModuleVersion reorganizes the (already flattened) output directory
-// appropriately for versioned modules. For a module path of the form cloud.google.com/go/{id}/{version},
-// we expect to find /output/{id}/{version} and /output/internal/generated/snippets/{id}/{version}.
-// The content of these directories are be moved into /output/{id} and
-// /output/internal/generated/snippets/{id}
-func applyModuleVersion(outputDir, modulePath string) error {
+// appropriately for versioned modules. For a module path of the form
+// cloud.google.com/go/{module-id}/{version}, we expect to find
+// /output/{id}/{version} and /output/internal/generated/snippets/{module-id}/{version}.
+// In most cases, we only support a single major version of the module, rooted at
+// /{module-id} in the repository, so the content of these directories are moved into
+// /output/{module-id} and /output/internal/generated/snippets/{id}.
+//
+// However, when we need to support multiple major versions, we use {module-id}/{version}
+// as the *library* ID (in the state file etc). That indicates that the module is rooted
+// in that versioned directory (e.g. "pubsub/v2"). In that case, the flattened code is
+// already in the right place, so this function doesn't need to do anything.
+func applyModuleVersion(outputDir, libraryID, modulePath string) error {
 	parts := strings.Split(modulePath, "/")
 	// Just cloud.google.com/go/xyz
 	if len(parts) == 3 {
@@ -231,6 +241,10 @@ func applyModuleVersion(outputDir, modulePath string) error {
 	id := parts[2]
 	// e.g. v2
 	version := parts[3]
+
+	if libraryID == id+"/"+version {
+		return nil
+	}
 
 	srcDir := filepath.Join(outputDir, id)
 	srcVersionDir := filepath.Join(srcDir, version)
@@ -265,6 +279,23 @@ func moveFiles(sourceDir, targetDir string) error {
 		slog.Debug("librariangen: moving file", "from", oldPath, "to", newPath)
 		if err := os.Rename(oldPath, newPath); err != nil {
 			return fmt.Errorf("librariangen: failed to move %s to %s: %w", oldPath, newPath, err)
+		}
+	}
+	return nil
+}
+
+// deleteOutputPaths deletes the specified paths, which may be files
+// or directories, relative to the output directory. This is an emergency
+// escape hatch for situations where files are generated that we don't want
+// to include, such as the internal/generated/snippets/storage/internal directory.
+// This is configured in repo-config.yaml at the library level, with the key
+// delete_generation_output_paths.
+func deleteOutputPaths(outputDir string, pathsToDelete []string) error {
+	for _, path := range pathsToDelete {
+		// This is so rare that it's useful to be able to validate it easily.
+		slog.Info("deleting output path", "path", path)
+		if err := os.RemoveAll(filepath.Join(outputDir, path)); err != nil {
+			return err
 		}
 	}
 	return nil

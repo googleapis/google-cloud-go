@@ -2,6 +2,34 @@
 
 
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.25.0) (2025-10-22)
+
+### Features
+
+* Add moved_place and moved_place_id to Place 
+* add OptimizeToursLongRunning method 
+* add OptimizeToursUri method 
+* add experimental Load Costs feature 
+* add experimental U-turn Avoidance feature 
+
+### Documentation
+
+* A comment for enum `TravelMode` is changed 
+* A comment for field `duration_distance_matrices` in message `.google.maps.routeoptimization.v1.ShipmentModel` is changed 
+* A comment for field `place_id` in message `.google.maps.routeoptimization.v1.Waypoint` is changed 
+* A comment for field `precedence_rules` in message `.google.maps.routeoptimization.v1.ShipmentModel` is changed 
+* Change comments in some fields in Places API 
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.24.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
+### Bug Fixes
+
+* upgrade gRPC service registration func (#13014) ([b80fb13](https://github.com/googleapis/google-cloud-go/commit/b80fb13fbee3f0e2a152337304e9cf8f7762cb72))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.22.0...maps/v1.23.0) (2025-08-18)
 
 
@@ -561,3 +589,4 @@
 
 * **maps/addressvalidation:** Start generating apiv1 ([#7012](https://github.com/googleapis/google-cloud-go/issues/7012)) ([3e88250](https://github.com/googleapis/google-cloud-go/commit/3e882501ea196ff4f122989e5726bfd4c72e5133))
 * **maps/routing:** Start generating apiv2 ([#7056](https://github.com/googleapis/google-cloud-go/issues/7056)) ([1b7993d](https://github.com/googleapis/google-cloud-go/commit/1b7993d6931cf33bab07124da4180eeb3faffe7e))
+

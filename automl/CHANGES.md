@@ -1,5 +1,11 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/automl%2Fv1.15.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
 ## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/automl/v1.14.6...automl/v1.14.7) (2025-04-15)
 
 

@@ -1,5 +1,52 @@
 # Changes
 
+## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.69.1...dialogflow/v1.70.0) (2025-10-13)
+
+
+### Features
+
+* **dialogflow/cx:** Add Event action to Examples ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add generators in fulfillment for v3beta and v3 ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add Import/Export playbook functionality to client lib ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add input and output parameters for Flows ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add parameters to adjust LLM input and output token limit and temperature in v3beta1 API ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add prompt security settings to the SDK ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add RestorePlaybookVersion functionality to client lib ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add routine and task (existing) playbook types ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Add ToolVersion APIs ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Enable unified tracing API ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Return Vertex search document metadata with a datastore response ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Support using secret manager to manage tool/webhook credentials ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** An existing message `Action` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing message `AgentUtterance` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing message `FlowInvocation` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing message `PlaybookInput` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing message `PlaybookInvocation` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing message `PlaybookOutput` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing message `ToolUse` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing message `UserUtterance` is moved from `google/cloud/dialogflow/cx/v3beta1/example.proto` to `google/cloud/dialogflow/cx/v3beta1/trace.proto` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** An existing value `JSON` is removed from enum `DataFormat` ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Upgrade gRPC service registration func ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+
+
+### Documentation
+
+* **dialogflow/cx:** A comment for field `flow` in message `.google.cloud.dialogflow.cx.v3beta1.FlowInvocation` is changed ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** A comment for message `FlowInvocation` is changed ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** A comment for message `PlaybookInvocation` is changed ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+* **dialogflow/cx:** Update environment documentation to add support for ToolVersions ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+
+## [1.69.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.69.0...dialogflow/v1.69.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **dialogflow:** Upgrade gRPC service registration func ([617bb68](https://github.com/googleapis/google-cloud-go/commit/617bb68f41d785126666b9cea1be9fd2d6271515))
+
 ## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.68.2...dialogflow/v1.69.0) (2025-07-09)
 
 

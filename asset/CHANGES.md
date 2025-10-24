@@ -1,5 +1,11 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/asset%2Fv1.22.0) (2025-10-10)
+
+### Features
+
+* Upgrade to Go 1.24 (#12781) ([4f1129c](https://github.com/googleapis/google-cloud-go/commit/4f1129c))
+
 ## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.21.0...asset/v1.21.1) (2025-05-13)
 
 

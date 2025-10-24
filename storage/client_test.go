@@ -1397,6 +1397,63 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 	})
 }
 
+func TestWriterRetryAttrsEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+		data := generateRandomBytes(20 * MiB)
+
+		vc := &Client{tc: client}
+
+		// Setup retry test.
+		instructions := map[string][]string{"storage.objects.insert": {"return-503-after-4097K"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		w := vc.Bucket(bucket).Object(objName).If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		w.Append = true
+		w.ChunkSize = 8 * MiB
+
+		if _, err := w.Flush(); err != nil {
+			t.Fatalf("flush at 0b: %v", err)
+		}
+
+		if _, err := w.Write(data); err != nil {
+			t.Fatalf("writing data: got %v; want ok", err)
+		}
+
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+
+		if gotAttrs := w.Attrs(); gotAttrs == nil || gotAttrs.Name != objName {
+			t.Fatalf("w.Attrs(): got %v, want attrs for object %v", gotAttrs, objName)
+		}
+
+		// Download object and check data
+		r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
+		defer r.Close()
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(data)
+		got, err := io.ReadAll(r)
+		if n := len(got); n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
+		}
+		if !bytes.Equal(got, data) {
+			t.Fatalf("got data did not match uploaded data")
+		}
+	})
+}
+
 // Tests small flush (under 512 bytes) to verify that logic avoiding
 // content type sniffing works as expected in this case.
 func TestWriterSmallFlushEmulated(t *testing.T) {
@@ -3073,28 +3130,28 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 	// Test multiple download paths.
 	testCases := []struct {
 		name         string
-		downloadFunc func(obj *ObjectHandle) ([]byte, error)
+		downloadFunc func(ctx context.Context, obj *ObjectHandle) ([]byte, error)
 	}{
 		{
 			name: "Reader.Read",
-			downloadFunc: func(obj *ObjectHandle) ([]byte, error) {
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 				r, err := obj.NewReader(ctx)
-				defer r.Close()
 				if err != nil {
 					return nil, err
 				}
+				defer r.Close()
 				gotContents, err := io.ReadAll(r)
 				return gotContents, err
 			},
 		},
 		{
 			name: "Reader.WriteTo",
-			downloadFunc: func(obj *ObjectHandle) ([]byte, error) {
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 				r, err := obj.NewReader(ctx)
-				defer r.Close()
 				if err != nil {
 					return nil, err
 				}
+				defer r.Close()
 				buf := bytes.NewBuffer([]byte{})
 				_, err = r.WriteTo(buf)
 				return buf.Bytes(), err
@@ -3102,8 +3159,11 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 		},
 		{
 			name: "MultiRangeDownloader 3MiB ranges",
-			downloadFunc: func(obj *ObjectHandle) ([]byte, error) {
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 				mrd, err := obj.NewMultiRangeDownloader(ctx)
+				if err != nil {
+					return nil, err
+				}
 				var bufs []*bytes.Buffer
 				var currOff int64
 				var increment int64 = 3 * MiB
@@ -3125,8 +3185,11 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 			}},
 		{
 			name: "MultiRangeDownloader 256k ranges",
-			downloadFunc: func(obj *ObjectHandle) ([]byte, error) {
+			downloadFunc: func(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 				mrd, err := obj.NewMultiRangeDownloader(ctx)
+				if err != nil {
+					return nil, err
+				}
 				var bufs []*bytes.Buffer
 				var currOff int64
 				var increment int64 = 256 * 1024
@@ -3147,19 +3210,49 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 				return b, err
 			}},
 	}
+	retryCases := []struct {
+		name         string
+		instructions map[string][]string
+	}{
+		{
+			name:         "no retry",
+			instructions: nil,
+		},
+		{
+			name:         "retry at 0 bytes",
+			instructions: map[string][]string{"storage.objects.get": {"return-503"}},
+		},
+		{
+			name:         "retry at 256k",
+			instructions: map[string][]string{"storage.objects.get": {"return-broken-stream-after-256K"}},
+		},
+		{
+			name:         "retry at 4MiB",
+			instructions: map[string][]string{"storage.objects.get": {"return-503-after-4097K"}},
+		},
+	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotContents, err := tc.downloadFunc(obj)
-			if err != nil {
-				t.Fatalf("downloading content: %v", err)
-			}
-			if !bytes.Equal(gotContents, contents) {
-				t.Errorf("downloaded bytes did not match; got %v bytes, want %v", len(gotContents), len(contents))
-			}
-			allocs, frees := bp.getAllocsAndFrees()
-			if allocs != frees {
-				t.Errorf("download: alloc'd bytes %v not equal to freed bytes %v", allocs, frees)
+			for _, rc := range retryCases {
+				t.Run(rc.name, func(t *testing.T) {
+					testCtx := ctx
+					if rc.instructions != nil {
+						testID := createRetryTest(t, client.tc, rc.instructions)
+						testCtx = callctx.SetHeaders(testCtx, "x-retry-test-id", testID)
+					}
+					gotContents, err := tc.downloadFunc(testCtx, obj)
+					if err != nil {
+						t.Fatalf("downloading content: %v", err)
+					}
+					if !bytes.Equal(gotContents, contents) {
+						t.Errorf("downloaded bytes did not match; got %v bytes, want %v", len(gotContents), len(contents))
+					}
+					allocs, frees := bp.getAllocsAndFrees()
+					if allocs != frees {
+						t.Errorf("download: alloc'd bytes %v not equal to freed bytes %v", allocs, frees)
+					}
+				})
 			}
 		})
 	}

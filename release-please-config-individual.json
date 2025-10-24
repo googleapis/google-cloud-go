@@ -5,12 +5,6 @@
   "separate-pull-requests": true,
   "tag-separator": "/",
   "packages": {
-    "auth": {
-      "component": "auth"
-    },
-    "auth/oauth2adapt": {
-      "component": "auth/oauth2adapt"
-    },
     "bigquery": {
       "component": "bigquery",
       "exclude-paths": ["bigquery/v2"]
@@ -18,33 +12,14 @@
     "bigtable": {
       "component": "bigtable"
     },
-    "datastore": {
-      "component": "datastore"
-    },
     "errorreporting": {
       "component": "errorreporting"
-    },
-    "firestore": {
-      "component": "firestore"
     },
     "logging": {
       "component": "logging"
     },
     "profiler": {
       "component": "profiler"
-    },
-    "pubsub": {
-      "component": "pubsub",
-      "exclude-paths": ["pubsub/v2"]
-    },
-    "pubsub/v2": {
-      "component": "pubsub/v2"
-    },
-    "pubsublite": {
-      "component": "pubsublite"
-    },
-    "spanner": {
-      "component": "spanner"
     },
     "storage": {
       "component": "storage"

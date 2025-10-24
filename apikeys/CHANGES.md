@@ -1,4 +1,4 @@
-# Changelog
+# Changes
 
 
 ## [1.2.7](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.6...apikeys/v1.2.7) (2025-06-04)

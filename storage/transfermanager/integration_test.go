@@ -28,6 +28,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -452,6 +453,209 @@ func TestIntegration_DownloadDirectoryError(t *testing.T) {
 			if err != nil {
 				t.Errorf("os.Stat: %v", err)
 			}
+		}
+	})
+}
+
+// TestIntegration_DownloadDirectorySkippedFiles tests that an error is returned if any
+// object download escapes target directory
+func TestIntegration_DownloadDirectoryWithSkippedFiles(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
+		localDir := t.TempDir()
+		callbackMu := sync.Mutex{}
+		numCallbacks := 0
+		numErrors := 0
+		illegalObjs := []string{
+			"../objA",
+			"../objB",
+		}
+
+		b := c.Bucket(tb.bucket)
+		for _, obj := range illegalObjs {
+			size := randomInt64(minObjectSize, maxObjectSize)
+			_, err := generateFileInGCS(ctx, b.Object(obj), size)
+			if err != nil {
+				t.Errorf("could not create file in GCS: %v for obj %s", err, obj)
+			}
+		}
+		t.Cleanup(func() {
+			for _, obj := range illegalObjs {
+				if err := b.Object(obj).Delete(ctx); err != nil {
+					t.Errorf("failed to delete object in cleanup for %s: %v", obj, err)
+				}
+			}
+		})
+		d, err := NewDownloader(c, WithWorkers(8), WithPartSize(maxObjectSize/2))
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			OnObjectDownload: func(got *DownloadOutput) {
+				callbackMu.Lock()
+				numCallbacks++
+				if got.Err != nil {
+					numErrors++
+				}
+				callbackMu.Unlock()
+
+				if slices.Contains(illegalObjs, got.Object) {
+					if got.Err == nil {
+						t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
+					}
+				} else if got.Err != nil {
+					t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
+				}
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadDirectory: %v", err)
+		}
+
+		results, err := d.WaitAndClose()
+		if err == nil {
+			t.Errorf("expected error but did got nil: %v", err)
+		}
+
+		if len(results) != len(tb.objects)+len(illegalObjs) {
+			t.Errorf("expected to receive %d results, got %d results", len(tb.objects), len(results))
+		}
+		if numCallbacks != len(tb.objects)+len(illegalObjs) {
+			t.Errorf("expected to receive %d callbacks, got %d", len(tb.objects), numCallbacks)
+		}
+		if numErrors != len(illegalObjs) {
+			t.Errorf("expected to receive %d errors, got %d", numErrors, len(illegalObjs))
+		}
+
+		for _, got := range results {
+			if slices.Contains(illegalObjs, got.Object) {
+				if got.Err == nil {
+					t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
+				}
+				// verify that file path has not been created
+				if _, err := os.Stat(filepath.Join(localDir, got.Object)); err == nil {
+					t.Errorf("Expected error but got nil for object %v: %v", got.Object, err)
+				}
+			} else {
+				if got.Err != nil {
+					t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
+				}
+				// verify that file path has been created
+				if _, err := os.Stat(filepath.Join(localDir, got.Object)); err != nil {
+					t.Errorf("Unexpected error for object %v: %v", got.Object, err)
+				}
+			}
+
+		}
+	})
+}
+
+func TestIntegration_DownloadDirectoryWithSkippedFilesAsync(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
+		localDir := t.TempDir()
+		illegalObjs := []string{
+			"../objA",
+			"../objB",
+		}
+		b := c.Bucket(tb.bucket)
+		for _, obj := range illegalObjs {
+			size := randomInt64(minObjectSize, maxObjectSize)
+			_, err := generateFileInGCS(ctx, b.Object(obj), size)
+			if err != nil {
+				t.Errorf("could not create file in GCS: %v for obj %s", err, obj)
+			}
+		}
+		t.Cleanup(func() {
+			for _, obj := range illegalObjs {
+				if err := b.Object(obj).Delete(ctx); err != nil {
+					t.Errorf("failed to delete object in cleanup for %s: %v", obj, err)
+				}
+			}
+		})
+		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(maxObjectSize/2), WithCallbacks())
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+		objectDownloaded := make(chan bool)
+		objectSkipped := make(chan bool)
+		done := make(chan bool)
+
+		trackObjectsDownloaded := func(objectsDownloadedCount, objectSkippedCount *int) {
+			for {
+				select {
+				case <-done:
+					return
+				case <-objectDownloaded:
+					*objectsDownloadedCount++
+				case <-objectSkipped:
+					*objectSkippedCount++
+				}
+			}
+		}
+
+		objectsDownloadedCount := 0
+		objectSkippedCount := 0
+		go trackObjectsDownloaded(&objectsDownloadedCount, &objectSkippedCount)
+
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			OnObjectDownload: func(got *DownloadOutput) {
+				if got.Err != nil {
+					objectSkipped <- true
+				} else {
+					objectDownloaded <- true
+				}
+
+				if slices.Contains(illegalObjs, got.Object) {
+					if got.Err == nil {
+						t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
+					}
+				} else if got.Err != nil {
+					t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
+				}
+			},
+			Callback: func(outs []DownloadOutput) {
+				if len(outs) != len(tb.objects)+len(illegalObjs) {
+					t.Errorf("expected to receive %d results, got %d results", len(tb.objects)+len(illegalObjs), len(outs))
+				}
+
+				for _, got := range outs {
+					if slices.Contains(illegalObjs, got.Object) {
+						if got.Err == nil {
+							t.Errorf("Expected error but got nil for object %v: %v", got.Object, got.Err)
+						}
+						// verify that file path has not been created
+						if _, err := os.Stat(filepath.Join(localDir, got.Object)); err == nil {
+							t.Errorf("Expected error but got nil for object %v: %v", got.Object, err)
+						}
+					} else {
+						if got.Err != nil {
+							t.Errorf("Unexpected error for object %v: %v", got.Object, got.Err)
+						}
+						// verify that file path has been created
+						if _, err := os.Stat(filepath.Join(localDir, got.Object)); err != nil {
+							t.Errorf("Unexpected error for object %v: %v", got.Object, err)
+						}
+					}
+				}
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadDirectory: %v", err)
+		}
+
+		_, err = d.WaitAndClose()
+		if err == nil {
+			t.Errorf("expected error but did got nil: %v", err)
+		}
+		done <- true
+
+		if want, got := len(tb.objects), objectsDownloadedCount; want != got {
+			t.Errorf("expected to receive %d callbacks, got %d", want, got)
+		}
+		if objectSkippedCount != len(illegalObjs) {
+			t.Errorf("expected to receive %d errors, got %d", objectSkippedCount, len(illegalObjs))
 		}
 	})
 }

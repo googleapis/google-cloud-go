@@ -17,15 +17,13 @@ package postprocessor
 import (
 	"context"
 	_ "embed"
-	"errors"
 	"fmt"
 	"log/slog"
-	"os"
-	"path/filepath"
-	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/configure"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/module"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
@@ -39,7 +37,7 @@ var (
 //
 //  1. Modify the generated snippets to specify the current version
 //  2. Run `goimports` to format the code.
-func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
+func PostProcess(ctx context.Context, req *request.Library, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
 	slog.Debug("librariangen: starting post-processing", "directory", moduleDir)
 
 	if len(req.APIs) == 0 {
@@ -51,12 +49,30 @@ func PostProcess(ctx context.Context, req *request.Request, outputDir, moduleDir
 		return fmt.Errorf("librariangen: no version for API: %s (required for post-processing)", req.ID)
 	}
 
-	if err := updateSnippetsMetadata(req, outputDir, moduleConfig); err != nil {
+	if err := module.UpdateSnippetsMetadata(req, outputDir, outputDir, moduleConfig); err != nil {
 		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
 	if err := goimports(ctx, moduleDir); err != nil {
 		return fmt.Errorf("librariangen: failed to run 'goimports': %w", err)
+	}
+
+	// If we have a single API, and it's new, then this must be the first time generating this library.
+	// We run go mod init and go mod tidy *only* this time. We can only run this once because once go.mod and go.sum have
+	// been created, Librarian should refuse to copy it over unless the old version is deleted first...
+	// and we *don't* want to run it every time (partly because generate shouldn't be updating dependencies,
+	// and partly because there might be handwritten code in the library, which generate can't "see").
+	// When configuring the first generated API for a library, we assume the whole library is new.
+	//
+	// We can't even run "go mod init" from configure and just "go mod tidy" here, as files written
+	// by the configure command aren't available during generate.
+	if len(req.APIs) == 1 && req.APIs[0].Status == configure.NewAPIStatus {
+		if err := goModInit(ctx, moduleDir); err != nil {
+			return fmt.Errorf("librariangen: failed to run 'go mod init': %w", err)
+		}
+		if err := goModTidy(ctx, moduleDir); err != nil {
+			return fmt.Errorf("librariangen: failed to run 'go mod tidy': %w", err)
+		}
 	}
 
 	slog.Debug("librariangen: post-processing finished successfully")
@@ -73,41 +89,16 @@ func goimports(ctx context.Context, dir string) error {
 	return execvRun(ctx, args, dir)
 }
 
-// updateSnippetsMetadata updates all snippet files to populate the $VERSION placeholder.
-func updateSnippetsMetadata(req *request.Request, outputDir string, moduleConfig *config.ModuleConfig) error {
-	moduleName := req.ID
-	version := req.Version
+// goModInit runs "go mod init" on a directory to initialize the module.
+func goModInit(ctx context.Context, dir string) error {
+	slog.Debug("librariangen: running go mod init", "directory", dir)
+	args := []string{"go", "mod", "init"}
+	return execvRun(ctx, args, dir)
+}
 
-	slog.Debug("librariangen: updating snippets metadata")
-	snpDir := filepath.Join(outputDir, "internal", "generated", "snippets", moduleName)
-
-	for _, api := range req.APIs {
-		apiConfig := moduleConfig.GetAPIConfig(api.Path)
-		clientDirName, err := apiConfig.GetClientDirectory()
-		if err != nil {
-			return err
-		}
-
-		snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
-		path := filepath.Join(snpDir, clientDirName, snippetFile)
-		slog.Debug("librariangen: updating snippet metadata file", "path", path)
-		read, err := os.ReadFile(path)
-		if err != nil {
-			// If the snippet metadata doesn't exist, that's probably because this API path
-			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
-			if errors.Is(err, os.ErrNotExist) {
-				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", path)
-				continue
-			}
-			return err
-		}
-		if strings.Contains(string(read), "$VERSION") {
-			s := strings.Replace(string(read), "$VERSION", version, 1)
-			err = os.WriteFile(path, []byte(s), 0)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+// goModTidy runs "go mod tidy" on a directory to add appropriate dependencies.
+func goModTidy(ctx context.Context, dir string) error {
+	slog.Debug("librariangen: running go mod tidy", "directory", dir)
+	args := []string{"go", "mod", "tidy"}
+	return execvRun(ctx, args, dir)
 }

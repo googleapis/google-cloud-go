@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.8](https://github.com/googleapis/google-cloud-go/compare/accessapproval/v1.8.7...accessapproval/v1.8.8) (2025-10-15)
+
+
+### Bug Fixes
+
+* **accessapproval:** Include gapic_metadata.json in Go GAPIC assembly rule ([fc134e0](https://github.com/googleapis/google-cloud-go/commit/fc134e09b9928b07b362fe8ae8b292210546793d))
+
 ## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/accessapproval/v1.8.6...accessapproval/v1.8.7) (2025-06-04)
 
 

@@ -775,9 +775,7 @@ func (c *usageRESTClient) QueryReservations(ctx context.Context, req *capacitypl
 	if req.GetAggregationMethod() != 0 {
 		params.Add("aggregationMethod", fmt.Sprintf("%v", req.GetAggregationMethod()))
 	}
-	if req.GetCloudResourceType() != "" {
-		params.Add("cloudResourceType", fmt.Sprintf("%v", req.GetCloudResourceType()))
-	}
+	params.Add("cloudResourceType", fmt.Sprintf("%v", req.GetCloudResourceType()))
 	if req.GetEndDate().GetDay() != 0 {
 		params.Add("endDate.day", fmt.Sprintf("%v", req.GetEndDate().GetDay()))
 	}
@@ -838,12 +836,8 @@ func (c *usageRESTClient) QueryReservations(ctx context.Context, req *capacitypl
 	if req.GetOwnershipType() != 0 {
 		params.Add("ownershipType", fmt.Sprintf("%v", req.GetOwnershipType()))
 	}
-	if req.GetReservationDataLevel() != 0 {
-		params.Add("reservationDataLevel", fmt.Sprintf("%v", req.GetReservationDataLevel()))
-	}
-	if req.GetReservationType() != 0 {
-		params.Add("reservationType", fmt.Sprintf("%v", req.GetReservationType()))
-	}
+	params.Add("reservationDataLevel", fmt.Sprintf("%v", req.GetReservationDataLevel()))
+	params.Add("reservationType", fmt.Sprintf("%v", req.GetReservationType()))
 	if req.GetShareType() != 0 {
 		params.Add("shareType", fmt.Sprintf("%v", req.GetShareType()))
 	}

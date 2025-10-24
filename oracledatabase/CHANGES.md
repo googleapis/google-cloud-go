@@ -1,4 +1,21 @@
-# Changelog
+# Changes
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/oracledatabase%2Fv0.6.0) (2025-10-22)
+
+### Features
+
+* Expand Oracle Database v1 API to add support for Exadata Exascale (`ExadbVmCluster`, `ExascaleDbStorageVault`), Base Database (`DbSystem`, `Database`, `PluggableDatabase`), and Networking (`OdbNetwork`, `OdbSubnet`). Adds enhancements for Autonomous Database, including Update, Switchover, and Failover operations, CMEK support, and improved disaster recovery fields. Also includes new helper resources for versions and configurations 
+
+### Bug Fixes
+
+* upgrade gRPC service registration func An update to Go gRPC Protobuf generation will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go service files. This change should affect very few client library users. See release notes advisories in https://togithub.com/googleapis/google-cloud-go/pull/11025. 
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.5.0...oracledatabase/v0.5.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **oracledatabase:** Upgrade gRPC service registration func ([a10ecc9](https://github.com/googleapis/google-cloud-go/commit/a10ecc9b3c22e320e9a32dedef7248b42465cd49))
 
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.4.1...oracledatabase/v0.5.0) (2025-04-30)
 

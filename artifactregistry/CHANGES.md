@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.17.1...artifactregistry/v1.17.2) (2025-10-07)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.17.0...artifactregistry/v1.17.1) (2025-04-15)
 
 

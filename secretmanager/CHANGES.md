@@ -2,6 +2,19 @@
 
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0) (2025-10-16)
+
+### Features
+
+* Conditionally enable AllowHardBoundTokens ([ddc086c](https://github.com/googleapis/google-cloud-go/commit/ddc086c9e374b6c48b5f6ddfefd20a5eadd488ac))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.15.0...secretmanager/v1.15.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **secretmanager:** Upgrade gRPC service registration func ([bc93e83](https://github.com/googleapis/google-cloud-go/commit/bc93e83f566ff1ea7682d785f40f2422c3ad0ed6))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.7...secretmanager/v1.15.0) (2025-06-17)
 
 

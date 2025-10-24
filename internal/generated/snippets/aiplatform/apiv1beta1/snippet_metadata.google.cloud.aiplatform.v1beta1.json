@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.101.0",
+    "version": "1.108.0",
     "language": "GO",
     "apis": [
       {
@@ -7012,6 +7012,52 @@
         "method": {
           "shortName": "FetchFeatureValues",
           "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.FetchFeatureValues",
+          "service": {
+            "shortName": "FeatureOnlineStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureOnlineStoreService_GenerateFetchAccessToken_sync",
+      "title": "aiplatform GenerateFetchAccessToken Sample",
+      "description": "GenerateFetchAccessToken rPC to generate an access token for the given feature view. FeatureViews\nunder the same FeatureOnlineStore share the same access token.",
+      "file": "FeatureOnlineStoreClient/GenerateFetchAccessToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateFetchAccessToken",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreClient.GenerateFetchAccessToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GenerateFetchAccessTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.GenerateFetchAccessTokenResponse",
+        "client": {
+          "shortName": "FeatureOnlineStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreClient"
+        },
+        "method": {
+          "shortName": "GenerateFetchAccessToken",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.GenerateFetchAccessToken",
           "service": {
             "shortName": "FeatureOnlineStoreService",
             "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService"
@@ -26461,6 +26507,52 @@
         "method": {
           "shortName": "DirectRawPredict",
           "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.DirectRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_EmbedContent_sync",
+      "title": "aiplatform EmbedContent Sample",
+      "description": "EmbedContent embed content with multimodal inputs.",
+      "file": "PredictionClient/EmbedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EmbedContent",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.EmbedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.EmbedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.EmbedContentResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "EmbedContent",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.EmbedContent",
           "service": {
             "shortName": "PredictionService",
             "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
