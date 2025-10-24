@@ -25,6 +25,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -1054,28 +1055,36 @@ func ExampleMultiRangeDownloader() {
 		// TODO: handle error.
 	}
 
-	var rangeErr error
+	var rangeErrs []error
+	var mu sync.Mutex
 	// Callback registered by user to be called upon completion of a range.
 	callback := func(offset, length int64, err error) {
 		if err != nil {
-			rangeErr = err
+			mu.Lock()
+			defer mu.Unlock()
+			rangeErrs = append(rangeErrs, err)
 		}
 	}
 
-	// User creates an io.Writer (e.g. a buffer) and adds it to the reader
-	// with a particular range.
-	b := new(bytes.Buffer)
-	mrd.Add(b, 0, 100, callback)
+	// User creates an io.Writer (e.g. a buffer) and adds it to the
+	// MultiRangeDownloader with a particular range. Data will be downloaded
+	// into the buffer.
+	b1 := new(bytes.Buffer)
+	mrd.Add(b1, 0, 100, callback)
+	b2 := new(bytes.Buffer)
+	mrd.Add(b2, 200, 100, callback)
 
-	// Wait for downloads to complete before closing the stream.
+	// Wait for all downloads to complete.
 	mrd.Wait()
 	if err := mrd.Close(); err != nil {
-		// TODO: handle stream close error if any
+		// TODO: handle error on close.
 	}
 
-	if rangeErr != nil {
+	if len(rangeErrs) > 0 {
 		// TODO: handle error from the range download.
+		log.Printf("received errors: %s", errors.Join(rangeErrs...))
 	}
 
-	fmt.Printf("Downloaded %d bytes: %s\n", b.Len(), b.String())
+	fmt.Printf("Downloaded %d bytes to first buffer: %s\n", b1.Len(), b1.String())
+	fmt.Printf("Downloaded %d bytes to second buffer: %s\n", b2.Len(), b2.String())
 }
