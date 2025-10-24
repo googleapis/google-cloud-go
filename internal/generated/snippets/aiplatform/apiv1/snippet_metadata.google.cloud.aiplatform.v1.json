@@ -22211,6 +22211,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_PredictionService_EmbedContent_sync",
+      "title": "aiplatform EmbedContent Sample",
+      "description": "EmbedContent embed content with multimodal inputs.",
+      "file": "PredictionClient/EmbedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EmbedContent",
+        "fullName": "google.cloud.aiplatform.v1.PredictionClient.EmbedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.EmbedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.EmbedContentResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1.PredictionClient"
+        },
+        "method": {
+          "shortName": "EmbedContent",
+          "fullName": "google.cloud.aiplatform.v1.PredictionService.EmbedContent",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_PredictionService_Explain_sync",
       "title": "aiplatform Explain Sample",
       "description": "Explain perform an online explanation.\n\nIf\n[deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]\nis specified, the corresponding DeployModel must have\n[explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]\npopulated. If\n[deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]\nis not specified, all DeployedModels must have\n[explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]\npopulated.",
