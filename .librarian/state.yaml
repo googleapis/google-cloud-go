@@ -5314,6 +5314,15 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
+  - id: vertexai
+    version: 0.15.0
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    apis: []
+    source_roots:
+      - vertexai
+    preserve_regex: []
+    remove_regex: []
+    tag_format: '{id}/v{version}'
   - id: video
     version: 1.27.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
