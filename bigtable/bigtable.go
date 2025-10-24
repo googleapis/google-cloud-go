@@ -118,16 +118,6 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 	return NewClientWithConfig(ctx, project, instance, ClientConfig{}, opts...)
 }
 
-// logf logs the given message to the given logger, or the standard logger if
-// the given logger is nil.
-func logf(logger *log.Logger, format string, v ...interface{}) {
-	if logger == nil {
-		log.Printf(format, v...)
-	} else {
-		logger.Printf(format, v...)
-	}
-}
-
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
 	metricsProvider := config.MetricsProvider
