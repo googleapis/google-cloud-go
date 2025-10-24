@@ -107,4 +107,3 @@ deep-copy-regex:
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
     dest: /
-
