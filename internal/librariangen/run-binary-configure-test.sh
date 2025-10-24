@@ -25,6 +25,16 @@
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
+# --- Cleanup ---
+# The TEST_DIR and BINARY_PATH variables are defined later in the script.
+# A trap is used to ensure that cleanup happens regardless of script success or failure.
+cleanup() {
+  echo "Cleaning up..."
+  rm -rf "$TEST_DIR"
+  rm -f "$BINARY_PATH"
+}
+trap cleanup EXIT INT TERM
+
 LIBRARIANGEN_GOTOOLCHAIN=local
 LIBRARIANGEN_LOG=librariangen.log
 echo "Cleaning up from last time: rm -f $LIBRARIANGEN_LOG"
@@ -36,10 +46,6 @@ echo "--- Tool Versions ---"
 echo "Go: $(GOWORK=off GOTOOLCHAIN=${LIBRARIANGEN_GOTOOLCHAIN} go version)"
 echo "---------------------"
 ) >> "$LIBRARIANGEN_LOG" 2>&1
-
-echo "Cleaning up from last time..."
-rm -rf "$TEST_DIR"
-rm -f "$BINARY_PATH"
 
 # --- Setup ---
 
@@ -74,8 +80,6 @@ REPO_DIR="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
 
 # The compiled binary will be placed in the current directory.
 BINARY_PATH="./librariangen"
-echo "Cleaning up from last time: rm -f $BINARY_PATH"
-rm -f "$BINARY_PATH"
 
 # --- Prepare Inputs ---
 
@@ -135,12 +139,6 @@ echo "Generated files are available for inspection in: $OUTPUT_DIR"
 echo "Verifying output by comparing with the goldens repository..."
 echo "The script will modify files in your local goldens clone."
 
-# Use a cached version of google-cloud-go if available.
-if [ ! -d "$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR" ]; then
-  echo "Error: LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR is not set or not a directory."
-  echo "Please set it to the path of your local google-cloud-go clone."
-  exit 1
-fi
 echo "Using cached google-cloud-go from $LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
 GEN_DIR="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
 
