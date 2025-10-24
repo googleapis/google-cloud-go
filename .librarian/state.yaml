@@ -131,7 +131,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.108.0
-    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -983,7 +983,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chat
     version: 0.15.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/chat/v1
         service_config: chat_v1.yaml
@@ -1621,7 +1621,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.27.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dataplex/v1
         service_config: dataplex_v1.yaml
@@ -1835,7 +1835,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dialogflow
     version: 1.70.0
-    last_generated_commit: b61fb21bbac838de7f55cf2c60d371a47fc2799e
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -3574,7 +3574,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oslogin
     version: 1.14.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/oslogin/v1
         service_config: oslogin_v1.yaml
