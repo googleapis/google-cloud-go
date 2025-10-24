@@ -23,7 +23,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -54,9 +53,7 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 		return 0, w.streamResult
 	case w.writesChan <- cmd:
 		// update fullObjectChecksum on every write and send it on finalWrite
-		if !w.disableCRC32C {
-			w.checksumMutex.Lock()
-			defer w.checksumMutex.Unlock()
+		if !w.disableAutoChecksum {
 			w.fullObjectChecksum = crc32.Update(w.fullObjectChecksum, crc32cTable, p)
 		}
 		// write command successfully delivered to sender. We no longer own cmd.
@@ -178,7 +175,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 		flushSupported:        params.append,
 		sendCRC32C:            params.sendCRC32C,
-		disableCRC32C:         params.disableCRC32C,
+		disableAutoChecksum:   params.disableAutoChecksum,
 		forceOneShot:          params.chunkSize <= 0,
 		forceEmptyContentType: params.forceEmptyContentType,
 		append:                params.append,
@@ -249,11 +246,10 @@ type gRPCWriter struct {
 	setTakeoverOffset func(int64)
 
 	fullObjectChecksum uint32
-	checksumMutex      sync.RWMutex
 
 	flushSupported        bool
 	sendCRC32C            bool
-	disableCRC32C         bool
+	disableAutoChecksum   bool
 	forceOneShot          bool
 	forceEmptyContentType bool
 	append                bool
@@ -822,6 +818,14 @@ func bidiWriteObjectRequest(r gRPCBidiWriteRequest, bufChecksum *uint32, objectC
 	return req
 }
 
+type getObjectChecksumsParams struct {
+	fullObjectChecksum  func() uint32
+	finishWrite         bool
+	sendCRC32C          bool
+	disableAutoChecksum bool
+	attrs               *ObjectAttrs
+}
+
 // getObjectChecksums determines what checksum information to include in the final
 // gRPC request
 //
@@ -829,20 +833,20 @@ func bidiWriteObjectRequest(r gRPCBidiWriteRequest, bufChecksum *uint32, objectC
 // If CRC32C is disabled, it returns the user-provided checksum if available.
 // If CRC32C is enabled, it returns the user-provided checksum if available,
 // or the computed checksum of the entire object.
-func getObjectChecksums(fullObjectChecksum func() uint32, finishWrite, sendCRC32C, disableCRC32C bool, attrs *ObjectAttrs) *storagepb.ObjectChecksums {
-	if !finishWrite {
+func getObjectChecksums(params *getObjectChecksumsParams) *storagepb.ObjectChecksums {
+	if !params.finishWrite {
 		return nil
 	}
 
 	// send user's checksum on last write op if available
-	if sendCRC32C {
-		return toProtoChecksums(sendCRC32C, attrs)
+	if params.sendCRC32C {
+		return toProtoChecksums(params.sendCRC32C, params.attrs)
 	}
-	if disableCRC32C {
+	if params.disableAutoChecksum {
 		return nil
 	}
 	return &storagepb.ObjectChecksums{
-		Crc32C: proto.Uint32(fullObjectChecksum()),
+		Crc32C: proto.Uint32(params.fullObjectChecksum()),
 	}
 }
 
@@ -888,18 +892,12 @@ func (w *gRPCWriter) newGRPCOneshotBidiWriteBufferSender() *gRPCOneshotBidiWrite
 				WriteObjectSpec: w.spec,
 			},
 			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
-			// For a non-resumable upload, checksums must be sent in this message.
-			// TODO: Currently the checksums are only sent on the first message
-			// of the stream, but in the future, we must also support sending it
-			// on the *last* message of the stream (instead of the first).
-			ObjectChecksums: toProtoChecksums(w.sendCRC32C, w.attrs),
+			ObjectChecksums:           toProtoChecksums(w.sendCRC32C, w.attrs),
 		},
 		checksumSettings: func() (bool, bool, *ObjectAttrs) {
-			return w.sendCRC32C, w.disableCRC32C, w.attrs
+			return w.sendCRC32C, w.disableAutoChecksum, w.attrs
 		},
 		fullObjectChecksum: func() uint32 {
-			w.checksumMutex.RLock()
-			defer w.checksumMutex.RUnlock()
 			return w.fullObjectChecksum
 		},
 	}
@@ -941,12 +939,18 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 				continue
 			}
 
-			sendCrc32C, disableCrc32c, attrs := s.checksumSettings()
+			sendCrc32C, disableAutoChecksum, attrs := s.checksumSettings()
 			var bufChecksum *uint32
-			if !disableCrc32c {
+			if !disableAutoChecksum {
 				bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
 			}
-			objectChecksums := getObjectChecksums(s.fullObjectChecksum, r.finishWrite, sendCrc32C, disableCrc32c, attrs)
+			objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
+				fullObjectChecksum:  s.fullObjectChecksum,
+				finishWrite:         r.finishWrite,
+				sendCRC32C:          sendCrc32C,
+				disableAutoChecksum: disableAutoChecksum,
+				attrs:               attrs,
+			})
 			req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
 
 			if firstSend {
@@ -1005,17 +1009,12 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 		startWriteRequest: &storagepb.StartResumableWriteRequest{
 			WriteObjectSpec:           w.spec,
 			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
-			// TODO: Currently the checksums are only sent on the request to initialize
-			// the upload, but in the future, we must also support sending it
-			// on the *last* message of the stream.
-			ObjectChecksums: toProtoChecksums(w.sendCRC32C, w.attrs),
+			ObjectChecksums:           toProtoChecksums(w.sendCRC32C, w.attrs),
 		},
 		checksumSettings: func() (bool, bool, *ObjectAttrs) {
-			return w.sendCRC32C, w.disableCRC32C, w.attrs
+			return w.sendCRC32C, w.disableAutoChecksum, w.attrs
 		},
 		fullObjectChecksum: func() uint32 {
-			w.checksumMutex.RLock()
-			defer w.checksumMutex.RUnlock()
 			return w.fullObjectChecksum
 		},
 	}
@@ -1077,12 +1076,18 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 							continue
 						}
 
-						sendCrc32C, disableCrc32c, attrs := s.checksumSettings()
+						sendCrc32C, disableAutoChecksum, attrs := s.checksumSettings()
 						var bufChecksum *uint32
-						if !disableCrc32c {
+						if !disableAutoChecksum {
 							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
 						}
-						objectChecksums := getObjectChecksums(s.fullObjectChecksum, r.finishWrite, sendCrc32C, disableCrc32c, attrs)
+						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
+							fullObjectChecksum:  s.fullObjectChecksum,
+							finishWrite:         r.finishWrite,
+							sendCRC32C:          sendCrc32C,
+							disableAutoChecksum: disableAutoChecksum,
+							attrs:               attrs,
+						})
 						req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
 
 						if firstSend {

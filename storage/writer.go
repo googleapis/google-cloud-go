@@ -52,16 +52,18 @@ type Writer struct {
 	// point, the checksum will be ignored.
 	SendCRC32C bool
 
-	// DisableCRC32C disables the automatic CRC32C checksum calculation and
-	// validation that is performed by the writer.
+	// DisableAutoChecksum disables the automatic CRC32C checksum calculation and
+	// validation (both chunk-wise and full object checksum) that is performed
+	// by the writer.
 	//
-	// This does not prevent a user-provided checksum from being sent. If
-	// SendCRC32C is true and the Writer's CRC32C field is populated, that
-	// checksum will be sent to GCS for validation
+	// However, This does not prevent a user-provided full-object checksum from being sent.
+	// If SendCRC32C is true and the Writer's CRC32C field is populated, that
+	// checksum will be sent to GCS for validation by the gRPC writer on final write.
 	//
-	// Note: DisableCRC32C must be set to true BEFORE the first call to
-	// Writer.Write().
-	DisableCRC32C bool
+	// Note: DisableAutoChecksum must be set to true BEFORE the first call to
+	// Writer.Write(). This flag Works only with gRPC writer.
+	// Does not work with appendable writes with unfinalized objects
+	DisableAutoChecksum bool
 
 	// ChunkSize controls the maximum number of bytes of the object that the
 	// Writer will attempt to send to the server in a single request. Objects
@@ -297,7 +299,7 @@ func (w *Writer) openWriter() (err error) {
 		appendGen:            w.o.gen,
 		encryptionKey:        w.o.encryptionKey,
 		sendCRC32C:           w.SendCRC32C,
-		disableCRC32C:        w.DisableCRC32C,
+		disableAutoChecksum:  w.DisableAutoChecksum,
 		append:               w.Append,
 		finalizeOnClose:      w.FinalizeOnClose,
 		donec:                w.donec,

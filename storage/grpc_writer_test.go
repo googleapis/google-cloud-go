@@ -23,13 +23,13 @@ import (
 
 func TestGetObjectChecksums(t *testing.T) {
 	tests := []struct {
-		name               string
-		fullObjectChecksum func() uint32
-		finishWrite        bool
-		sendCRC32C         bool
-		disableCRC32C      bool
-		attrs              *ObjectAttrs
-		want               *storagepb.ObjectChecksums
+		name                string
+		fullObjectChecksum  func() uint32
+		finishWrite         bool
+		sendCRC32C          bool
+		disableAutoChecksum bool
+		attrs               *ObjectAttrs
+		want                *storagepb.ObjectChecksums
 	}{
 		{
 			name:        "finishWrite is false",
@@ -46,29 +46,29 @@ func TestGetObjectChecksums(t *testing.T) {
 			},
 		},
 		{
-			name:          "disableCRC32C is true and sendCRC32C is true",
-			finishWrite:   true,
-			sendCRC32C:    true,
-			disableCRC32C: true,
-			attrs:         &ObjectAttrs{CRC32C: 123},
+			name:                "disableCRC32C is true and sendCRC32C is true",
+			finishWrite:         true,
+			sendCRC32C:          true,
+			disableAutoChecksum: true,
+			attrs:               &ObjectAttrs{CRC32C: 123},
 			want: &storagepb.ObjectChecksums{
 				Crc32C: proto.Uint32(123),
 			},
 		},
 		{
-			name:          "disableCRC32C is true and sendCRC32C is false",
-			finishWrite:   true,
-			sendCRC32C:    false,
-			disableCRC32C: true,
-			want:          nil,
+			name:                "disableCRC32C is true and sendCRC32C is false",
+			finishWrite:         true,
+			sendCRC32C:          false,
+			disableAutoChecksum: true,
+			want:                nil,
 		},
 		{
-			name:               "CRC32C enabled, no user-provided checksum",
-			fullObjectChecksum: func() uint32 { return 456 },
-			finishWrite:        true,
-			sendCRC32C:         false,
-			disableCRC32C:      false,
-			attrs:              &ObjectAttrs{},
+			name:                "CRC32C enabled, no user-provided checksum",
+			fullObjectChecksum:  func() uint32 { return 456 },
+			finishWrite:         true,
+			sendCRC32C:          false,
+			disableAutoChecksum: false,
+			attrs:               &ObjectAttrs{},
 			want: &storagepb.ObjectChecksums{
 				Crc32C: proto.Uint32(456),
 			},
@@ -77,7 +77,13 @@ func TestGetObjectChecksums(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := getObjectChecksums(tt.fullObjectChecksum, tt.finishWrite, tt.sendCRC32C, tt.disableCRC32C, tt.attrs)
+			got := getObjectChecksums(&getObjectChecksumsParams{
+				fullObjectChecksum:  tt.fullObjectChecksum,
+				finishWrite:         tt.finishWrite,
+				sendCRC32C:          tt.sendCRC32C,
+				disableAutoChecksum: tt.disableAutoChecksum,
+				attrs:               tt.attrs,
+			})
 			if !proto.Equal(got, tt.want) {
 				t.Errorf("getObjectChecksums() = %v, want %v", got, tt.want)
 			}
