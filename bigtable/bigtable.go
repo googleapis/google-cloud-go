@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/url"
 	"os"
 	"strconv"
@@ -80,6 +81,7 @@ type Client struct {
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	enableDirectAccess      bool
+	logger                  *log.Logger
 }
 
 // ClientConfig has configurations for the client.
@@ -94,6 +96,10 @@ type ClientConfig struct {
 	//
 	// TODO: support user provided meter provider
 	MetricsProvider MetricsProvider
+
+	// Logger is the logger to use for this client. If it is nil, all logging
+	// will be directed to the standard logger.
+	Logger *log.Logger
 }
 
 // MetricsProvider is a wrapper for built in metrics meter provider
@@ -110,6 +116,16 @@ func (NoopMetricsProvider) isMetricsProvider() {}
 // The default ClientConfig will be used.
 func NewClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*Client, error) {
 	return NewClientWithConfig(ctx, project, instance, ClientConfig{}, opts...)
+}
+
+// logf logs the given message to the given logger, or the standard logger if
+// the given logger is nil.
+func logf(logger *log.Logger, format string, v ...interface{}) {
+	if logger == nil {
+		log.Printf(format, v...)
+	} else {
+		logger.Printf(format, v...)
+	}
 }
 
 // NewClientWithConfig creates a new client with the given config.
@@ -188,7 +204,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 		// Initialize the BigtableChannelPool with the updated dialFunc.
 		// btransport is assumed to be the package where BigtableChannelPool resides.
-		connPool, connPoolErr = btransport.NewBigtableChannelPool(defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), dialFunc)
+		connPool, connPoolErr = btransport.NewBigtableChannelPool(ctx, defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), dialFunc, config.Logger)
 	} else {
 		// use to regular ConnPool
 		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
@@ -209,6 +225,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		retryOption:             retryOption,
 		executeQueryRetryOption: executeQueryRetryOption,
 		enableDirectAccess:      enableDirectAccess,
+		logger:                  config.Logger,
 	}, nil
 }
 

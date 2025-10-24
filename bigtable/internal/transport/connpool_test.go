@@ -28,8 +28,13 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"google.golang.org/api/option"
+	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 
 	testgrpc "google.golang.org/grpc/interop/grpc_testing"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
@@ -101,7 +106,7 @@ func (s *fakeService) getCallCount() int {
 	return s.callCount
 }
 
-func setupTestServer(t *testing.T, service *fakeService) string {
+func setupTestServer(t testing.TB, service *fakeService) string {
 	t.Helper()
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -227,7 +232,7 @@ func TestNewBigtableChannelPool(t *testing.T) {
 		addr := setupTestServer(t, fake)
 		dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc)
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 		if err != nil {
 			t.Fatalf("NewBigtableChannelPool failed: %v", err)
 		}
@@ -260,7 +265,7 @@ func TestNewBigtableChannelPool(t *testing.T) {
 			return dialBigtableserver(addr)
 		}
 
-		_, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc)
+		_, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 		if err == nil {
 			t.Errorf("NewBigtableChannelPool should have failed due to dial error")
 		}
@@ -282,7 +287,7 @@ func TestPoolInvoke(t *testing.T) {
 			addr := setupTestServer(t, fake)
 			dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-			pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc)
+			pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, nil)
 			if err != nil {
 				t.Fatalf("Failed to create pool: %v", err)
 			}
@@ -324,7 +329,7 @@ func TestPoolNewStream(t *testing.T) {
 			addr := setupTestServer(t, fake)
 			dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-			pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc)
+			pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, nil)
 			if err != nil {
 				t.Fatalf("Failed to create pool: %v", err)
 			}
@@ -414,7 +419,7 @@ func TestPoolClose(t *testing.T) {
 	addr := setupTestServer(t, fake)
 	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc)
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -448,7 +453,7 @@ func TestMultipleStreamsSingleConn(t *testing.T) {
 	addr := setupTestServer(t, fake)
 	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc)
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -475,7 +480,7 @@ func TestCachingStreamDecrement(t *testing.T) {
 	addr := setupTestServer(t, fake)
 	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc)
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -498,10 +503,6 @@ func TestCachingStreamDecrement(t *testing.T) {
 		}
 	})
 }
-
-// ####################################################################################
-// ## Health Checking & Eviction Tests
-// ####################################################################################
 
 func TestConnHealthStateAddProbeResult(t *testing.T) {
 	chs := &connHealthState{}
@@ -565,7 +566,7 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 	}
 
 	t.Run("EvictOneUnhealthy", func(t *testing.T) {
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc)
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
@@ -589,7 +590,7 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 	})
 
 	t.Run("CircuitBreakerTooManyUnhealthy", func(t *testing.T) {
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc)
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
@@ -627,7 +628,7 @@ func TestReplaceConnection(t *testing.T) {
 		return dialBigtableserver(addr)
 	}
 
-	pool, _ := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc)
+	pool, _ := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil)
 	defer pool.Close()
 
 	idxToReplace := 0
@@ -677,7 +678,7 @@ func TestHealthCheckerIntegration(t *testing.T) {
 		return dialBigtableserver(addr)
 	}
 
-	pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc)
+	pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -701,5 +702,168 @@ func TestHealthCheckerIntegration(t *testing.T) {
 	}
 	if pool.getConns()[1].conn.ClientConn.Target() != addr2 {
 		t.Errorf("Connection 1 target changed unexpectedly")
+	}
+}
+
+func createBenchmarkFake() *fakeService {
+	return &fakeService{delay: 1 * time.Microsecond} // Simulate a tiny bit of work
+}
+
+func setupBenchmarkPool(b *testing.B, strategy btopt.LoadBalancingStrategy, poolSize int, serverAddr string) *BigtableChannelPool {
+	b.Helper()
+
+	dialFunc := func() (*BigtableConn, error) {
+		return dialBigtableserver(serverAddr)
+	}
+
+	ctx := context.Background()
+	pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, nil)
+	if err != nil {
+		b.Fatalf("Failed to create pool: %v", err)
+	}
+	pool.healthMonitor.Stop()
+
+	b.Cleanup(func() {
+		pool.Close()
+	})
+	return pool
+}
+
+func BenchmarkPoolInvoke(b *testing.B) {
+	fake := createBenchmarkFake()
+	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkPoolInvoke
+
+	strategies := []btopt.LoadBalancingStrategy{
+		btopt.RoundRobin,
+		btopt.LeastInFlight,
+		btopt.PowerOfTwoLeastInFlight,
+	}
+	poolSizes := []int{1, 8, 64}
+
+	req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("benchmark")}}
+	ctx := context.Background()
+
+	for _, size := range poolSizes {
+		for _, strategy := range strategies {
+			b.Run(fmt.Sprintf("%s_PoolSize%d", strategy, size), func(b *testing.B) {
+				pool := setupBenchmarkPool(b, strategy, size, serverAddr)
+
+				b.ResetTimer()
+				b.RunParallel(func(pb *testing.PB) {
+					for pb.Next() {
+						res := &testpb.SimpleResponse{}
+
+						err := pool.Invoke(ctx, "/grpc.testing.BenchmarkService/UnaryCall", req, res)
+						if err != nil {
+							b.Fatalf("Invoke failed: %v", err) // Fail fast
+						}
+					}
+				})
+			})
+		}
+	}
+	// --- Standard gtransport.DialPool ---
+	for _, size := range poolSizes {
+		b.Run(fmt.Sprintf("StandardPool_Size%d", size), func(b *testing.B) {
+			stdPool, err := gtransport.DialPool(ctx,
+				option.WithEndpoint(serverAddr),
+				option.WithGRPCConnectionPool(size),
+				option.WithoutAuthentication(),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				option.WithGRPCDialOption(grpc.WithBlock()),
+			)
+			if err != nil {
+				b.Fatalf("gtransport.DialPool failed: %v", err)
+			}
+			b.Cleanup(func() { stdPool.Close() })
+
+			client := testgrpc.NewBenchmarkServiceClient(stdPool)
+			b.ResetTimer()
+			b.RunParallel(func(pb *testing.PB) {
+				for pb.Next() {
+					// No need to allocate res for the generated client,
+					// it returns the response.
+					if _, err := client.UnaryCall(ctx, req); err != nil {
+						b.Fatalf("UnaryCall failed: %v", err)
+					}
+				}
+			})
+		})
+	}
+}
+
+func BenchmarkPoolNewStream(b *testing.B) {
+	fake := createBenchmarkFake()
+	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkPoolNewStream
+
+	strategies := []btopt.LoadBalancingStrategy{
+		btopt.RoundRobin,
+		btopt.LeastInFlight,
+		btopt.PowerOfTwoLeastInFlight,
+	}
+	poolSizes := []int{1, 8, 64}
+	ctx := context.Background()
+
+	for _, size := range poolSizes {
+		for _, strategy := range strategies {
+			b.Run(fmt.Sprintf("%s_PoolSize%d", strategy, size), func(b *testing.B) {
+				pool := setupBenchmarkPool(b, strategy, size, serverAddr)
+
+				b.ResetTimer()
+				b.RunParallel(func(pb *testing.PB) {
+					for pb.Next() {
+						stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+						if err != nil {
+							b.Fatalf("NewStream failed: %v", err)
+						}
+						req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("a")}}
+						if err := stream.SendMsg(req); err != nil {
+							// Check if it's a connection-level error
+							st, ok := status.FromError(err)
+							if ok && st.Code() == codes.Unavailable {
+								b.Fatalf("SendMsg failed with Unavailable: %v", err)
+							}
+							// Otherwise, log non-fatal stream errors
+							b.Logf("SendMsg failed: %v", err)
+						}
+						stream.CloseSend()
+					}
+				})
+			})
+		}
+	}
+}
+
+func BenchmarkSelectionStrategies(b *testing.B) {
+	fake := createBenchmarkFake()
+	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkSelectionStrategies
+
+	poolSizes := []int{1, 8, 64, 256}
+
+	for _, size := range poolSizes {
+		b.Run(fmt.Sprintf("PoolSize%d", size), func(b *testing.B) {
+			// Create pools for each strategy for this size
+			poolRR := setupBenchmarkPool(b, btopt.RoundRobin, size, serverAddr)
+			poolLIF := setupBenchmarkPool(b, btopt.LeastInFlight, size, serverAddr)
+			poolP2 := setupBenchmarkPool(b, btopt.PowerOfTwoLeastInFlight, size, serverAddr)
+
+			b.Run("RoundRobin", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					poolRR.selectRoundRobin()
+				}
+			})
+
+			b.Run("LeastInFlight", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					poolLIF.selectLeastLoaded()
+				}
+			})
+
+			b.Run("PowerOfTwoLeastInFlight", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					poolP2.selectLeastLoadedRandomOfTwo()
+				}
+			})
+		})
 	}
 }

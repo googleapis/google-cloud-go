@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"sync"
 	"sync/atomic"
@@ -80,6 +81,8 @@ func (bc *BigtableConn) Prime(ctx context.Context) error {
 		Name:         bc.instanceName,
 		AppProfileId: bc.appProfile,
 	}
+
+	// TODO(plumb feature flags and metadata headers)
 
 	// Use a timeout for the prime operation
 	primeCtx, cancel := context.WithTimeout(ctx, primeRPCTimeout)
@@ -244,6 +247,8 @@ type BigtableChannelPool struct {
 
 	poolCtx    context.Context    // Context for the pool's background tasks
 	poolCancel context.CancelFunc // Function to cancel the poolCtx
+
+	logger *log.Logger // logging events
 }
 
 // getConns safely loads the current slice of connections.
@@ -256,7 +261,7 @@ func (p *BigtableChannelPool) getConns() []*connEntry {
 }
 
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
-func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error)) (*BigtableChannelPool, error) {
+func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), logger *log.Logger) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
@@ -273,6 +278,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		healthMonitor: NewChannelHealthMonitor(),
 		poolCtx:       poolCtx,
 		poolCancel:    poolCancel,
+		logger:        logger,
 	}
 
 	// Set the selection function based on the strategy
@@ -298,6 +304,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		default:
 		}
 
+		// TODO Dial the initial connections in parallel using goroutines and a sync.WaitGroup
 		conn, err := dial()
 		if err != nil {
 			// Manually close connections created so far in this loop
@@ -308,6 +315,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 			return nil, err
 		}
 		initialConns[i] = &connEntry{conn: conn, load: 0}
+		// TODO prime the connection
 	}
 	pool.conns.Store(initialConns)
 
@@ -398,7 +406,7 @@ func (p *BigtableChannelPool) detectAndEvictUnhealthy() {
 
 	unhealthyPercent := float64(len(unhealthyIndices)) / float64(numConns) * 100.0
 	if unhealthyPercent >= float64(PoolwideBadThreshPercent) {
-		fmt.Printf("bigtable_connpool: Circuit breaker tripped, %d%% unhealthy, not evicting\n", int(unhealthyPercent))
+		btopt.Debugf(p.logger, "bigtable_connpool: Circuit breaker tripped, %d%% unhealthy, not evicting\n", int(unhealthyPercent))
 		return // Too many unhealthy connections, don't evict.
 	}
 
@@ -432,16 +440,16 @@ func (p *BigtableChannelPool) replaceConnection(idx int) {
 	}
 
 	oldEntry := currentConns[idx]
-	fmt.Printf("bigtable_connpool: Evicting connection at index %d\n", idx)
+	btopt.Debugf(p.logger, "bigtable_connpool: Evicting connection at index %d\n", idx)
 	select {
 	case <-p.poolCtx.Done():
-		fmt.Printf("bigtable_connpool: Pool context done, skipping redial: %v\n", p.poolCtx.Err())
+		btopt.Debugf(p.logger, "bigtable_connpool: Pool context done, skipping redial: %v\n", p.poolCtx.Err())
 		return
 	default:
 	}
 	newConn, err := p.dial()
 	if err != nil {
-		fmt.Printf("bigtable_connpool: Failed to redial connection at index %d: %v\n", idx, err)
+		btopt.Debugf(p.logger, "bigtable_connpool: Failed to redial connection at index %d: %v\n", idx, err)
 		return
 	}
 
@@ -457,11 +465,12 @@ func (p *BigtableChannelPool) replaceConnection(idx int) {
 	newConns[idx] = newEntry
 	p.conns.Store(newConns)
 
-	fmt.Printf("bigtable_connpool: Replaced connection at index %d\n", idx)
+	btopt.Debugf(p.logger, "bigtable_connpool: Replaced connection at index %d\n", idx)
 
 	go func() {
+		// TODO Implement graceful draining
 		if err := oldEntry.conn.Close(); err != nil {
-			fmt.Printf("bigtable_connpool: Error closing evicted connection at index %d: %v\n", idx, err)
+			btopt.Debugf(p.logger, "bigtable_connpool: Error closing evicted connection at index %d: %v\n", idx, err)
 		}
 	}()
 }
