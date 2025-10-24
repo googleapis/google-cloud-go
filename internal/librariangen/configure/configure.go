@@ -220,12 +220,12 @@ func configureLibrary(ctx context.Context, cfg *Config, library *request.Library
 		if err := module.GenerateInternalVersionFile(moduleRoot, library.Version); err != nil {
 			return nil, err
 		}
-		if err := goModInit(ctx, moduleConfig.GetModulePath(), moduleRoot); err != nil {
-			return nil, err
-		}
 		if err := goModEditReplaceInSnippets(ctx, cfg, moduleConfig.GetModulePath(), "../../../"+library.ID); err != nil {
 			return nil, err
 		}
+		// The postprocessor for the generate command will run "go mod init" and "go mod tidy"
+		// - because it has the source code at that point. It *won't* have the version files we've
+		// created here though. That's okay so long as our version.go files don't have any dependencies.
 	}
 
 	// Whether it's a new library or not, generate a version file for the new client directory.
@@ -308,13 +308,6 @@ func generateClientVersionFile(cfg *Config, moduleConfig *config.ModuleConfig, a
 	}
 	defer f.Close()
 	return t.Execute(f, versionData)
-}
-
-// goModInit initializes a go.mod file in the given directory.
-func goModInit(ctx context.Context, modulePath, moduleDir string) error {
-	slog.Info("librariangen: running go mod init", "directory", moduleDir, "modulePath", modulePath)
-	args := []string{"go", "mod", "init", modulePath}
-	return execvRun(ctx, args, moduleDir)
 }
 
 // goModEditReplaceInSnippets copies internal/generated/snippets/go.mod from
