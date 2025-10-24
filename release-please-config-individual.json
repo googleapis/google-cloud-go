@@ -21,9 +21,6 @@
     "profiler": {
       "component": "profiler"
     },
-    "spanner": {
-      "component": "spanner"
-    },
     "vertexai": {
       "component": "vertexai"
     }

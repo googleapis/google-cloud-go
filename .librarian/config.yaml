@@ -17,6 +17,11 @@
 #  - path: "CHANGES.md"
 #    permissions: "read-write"
 
+global_files_allowlist:
+ # Paths (currently just one) that need to modified during configure
+ - path: "internal/generated/snippets/go.mod"
+   permissions: "read-write"
+
 # All libraries with handwritten code (core, hybrid and handwritten)
 # libraries have "release_blocked: true" so that releases are
 # explicitly initiated
