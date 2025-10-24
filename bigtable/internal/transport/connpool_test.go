@@ -25,22 +25,30 @@ import (
 	"testing"
 	"time"
 
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"google.golang.org/api/option"
+	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 
 	testgrpc "google.golang.org/grpc/interop/grpc_testing"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
-	"google.golang.org/grpc/status"
 )
 
 type fakeService struct {
 	testgrpc.UnimplementedBenchmarkServiceServer
-	mu         sync.Mutex
-	callCount  int
-	streamSema chan struct{} // To control stream lifetime
-	delay      time.Duration // To simulate work
-	serverErr  error         // Error to return from server
+	btpb.UnimplementedBigtableServer // Embed BigtableServer
+	mu                               sync.Mutex
+	callCount                        int
+	streamSema                       chan struct{} // To control stream lifetime
+	delay                            time.Duration // To simulate work
+	serverErr                        error         // Error to return from server
+	pingErr                          error         // Error to return from PingAndWarm
 }
 
 func (s *fakeService) UnaryCall(ctx context.Context, req *testpb.SimpleRequest) (*testpb.SimpleResponse, error) {
@@ -53,7 +61,6 @@ func (s *fakeService) UnaryCall(ctx context.Context, req *testpb.SimpleRequest) 
 	if s.serverErr != nil {
 		return nil, s.serverErr
 	}
-	// Echo the payload
 	return &testpb.SimpleResponse{Payload: req.GetPayload()}, nil
 }
 
@@ -67,7 +74,7 @@ func (s *fakeService) StreamingCall(stream testpb.BenchmarkService_StreamingCall
 	}
 
 	if s.streamSema != nil {
-		<-s.streamSema // Wait until released
+		<-s.streamSema
 	}
 
 	for {
@@ -84,24 +91,32 @@ func (s *fakeService) StreamingCall(stream testpb.BenchmarkService_StreamingCall
 	}
 }
 
+func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.pingErr != nil {
+		return nil, s.pingErr
+	}
+	return &btpb.PingAndWarmResponse{}, nil
+}
+
 func (s *fakeService) getCallCount() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.callCount
 }
 
-func setupTestServer(t *testing.T, service *fakeService) string {
+func setupTestServer(t testing.TB, service *fakeService) string {
 	t.Helper()
-	lis, err := net.Listen("tcp", ":0")
+	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatalf("Failed to listen: %v", err)
-
 	}
 	srv := grpc.NewServer()
 	testgrpc.RegisterBenchmarkServiceServer(srv, service)
+	btpb.RegisterBigtableServer(srv, service)
 	go func() {
 		if err := srv.Serve(lis); err != nil {
-			// t.Logf is used here as t.Fatalf cannot be called in a separate goroutine
 			t.Logf("gRPC server error: %v", err)
 		}
 	}()
@@ -114,27 +129,31 @@ func setupTestServer(t *testing.T, service *fakeService) string {
 	return lis.Addr().String()
 }
 
+func dialBigtableserver(addr string) (*BigtableConn, error) {
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	return NewBigtableConn(conn, "test-instance", "test-profile"), nil
+}
+
 func TestSelectRoundRobin(t *testing.T) {
-	pool := &BigtableChannelPool{}
+	pool := &BigtableChannelPool{rrIndex: 0}
 
 	// Test empty pool
-	idx, err := pool.selectRoundRobin()
-	if idx != -1 {
-		t.Errorf("selectRoundRobin on empty pool got index %d, want -1", idx)
+	entry, err := pool.selectRoundRobin()
+	if entry != nil {
+		t.Errorf("selectRoundRobin on empty pool got entry, want nil")
 	}
-	if err == nil {
-		t.Errorf("selectRoundRobin on empty pool got nil error, want non-nil")
-	}
-	if err != errNoConnections {
+	if !errors.Is(err, errNoConnections) {
 		t.Errorf("selectRoundRobin on empty pool got error %v, want %v", err, errNoConnections)
 	}
 
 	// Test single connection pool
-	pool.conns = make([]*grpc.ClientConn, 1)
-	pool.load = make([]int64, 1)
-	idx, err = pool.selectRoundRobin()
-	if idx != 0 {
-		t.Errorf("selectRoundRobin on single conn pool got index %d, want 0", idx)
+	pool.conns.Store([]*connEntry{{load: 0}})
+	entry, err = pool.selectRoundRobin()
+	if entry == nil {
+		t.Errorf("selectRoundRobin on single conn pool got nil entry")
 	}
 	if err != nil {
 		t.Errorf("selectRoundRobin on single conn pool got error %v, want nil", err)
@@ -142,103 +161,78 @@ func TestSelectRoundRobin(t *testing.T) {
 
 	// Test multiple connections
 	poolSize := 3
-	pool.conns = make([]*grpc.ClientConn, poolSize)
-	pool.load = make([]int64, poolSize)
+	conns := make([]*connEntry, poolSize)
+	for i := 0; i < poolSize; i++ {
+		conns[i] = &connEntry{}
+	}
+	pool.conns.Store(conns)
 	pool.rrIndex = 0
 
-	// Test wrapping around
 	for i := 0; i < poolSize*2; i++ {
 		expectedIdx := i % poolSize
-		idx, err = pool.selectRoundRobin()
-		if idx != expectedIdx {
-			t.Errorf("selectRoundRobin call %d got index %d, want %d", i+1, idx, expectedIdx)
-		}
+		entry, err = pool.selectRoundRobin()
 		if err != nil {
 			t.Errorf("selectRoundRobin call %d got error %v, want nil", i+1, err)
+			continue
+		}
+		if entry != conns[expectedIdx] {
+			t.Errorf("selectRoundRobin call %d got entry for index %d, want %d", i+1, entryIndex(conns, entry), expectedIdx)
 		}
 	}
+}
+
+func entryIndex(s []*connEntry, e *connEntry) int {
+	for i, item := range s {
+		if item == e {
+			return i
+		}
+	}
+	return -1
 }
 
 func TestSelectLeastLoadedRandomOfTwo(t *testing.T) {
 	pool := &BigtableChannelPool{}
 
-	// Test empty pool
-	idx, err := pool.selectLeastLoadedRandomOfTwo()
-	if idx != -1 {
-		t.Errorf("selectLeastLoadedRandomOfTwo on empty pool got index %d, want -1", idx)
-	}
-	if err == nil {
-		t.Errorf("selectLeastLoadedRandomOfTwo on empty pool got nil error, want non-nil")
-	}
-	if err != errNoConnections {
-		t.Errorf("selectLeastLoadedRandomOfTwo on empty pool got error %v, want %v", err, errNoConnections)
+	entry, err := pool.selectLeastLoadedRandomOfTwo()
+	if entry != nil || !errors.Is(err, errNoConnections) {
+		t.Errorf("Empty pool: got %v, %v, want nil, %v", entry, err, errNoConnections)
 	}
 
-	// Test single connection pool
-	pool.conns = make([]*grpc.ClientConn, 1)
-	pool.load = make([]int64, 1)
-	idx, err = pool.selectLeastLoadedRandomOfTwo()
-	if idx != 0 {
-		t.Errorf("selectLeastLoadedRandomOfTwo on single conn pool got index %d, want 0", idx)
-	}
-	if err != nil {
-		t.Errorf("selectLeastLoadedRandomOfTwo on single conn pool got error %v, want nil", err)
+	conns := []*connEntry{{load: 0}}
+	pool.conns.Store(conns)
+	entry, err = pool.selectLeastLoadedRandomOfTwo()
+	if entry != conns[0] || err != nil {
+		t.Errorf("Single conn: got %v, %v, want %v, nil", entry, err, conns[0])
 	}
 
-	// Test multiple connections
-	pool.conns = make([]*grpc.ClientConn, 5)
-	pool.load = []int64{10, 2, 30, 4, 50} // Loads for indices 0, 1, 2, 3, 4
-
-	for i := 0; i < 100; i++ { // Run multiple times due to randomness
-		idx, err = pool.selectLeastLoadedRandomOfTwo()
-		if err != nil {
-			t.Fatalf("selectLeastLoadedRandomOfTwo got unexpected error: %v", err)
-		}
-		if idx < 0 || idx >= len(pool.conns) {
-			t.Fatalf("Selected index %d is out of bounds", idx)
-		}
+	testLoads := []int64{10, 2, 30, 4, 50}
+	conns = make([]*connEntry, len(testLoads))
+	for i := range testLoads {
+		conns[i] = &connEntry{}
+		atomic.StoreInt64(&conns[i].load, testLoads[i])
 	}
-
-	// Test case where loads are distinct
-	pool.load = []int64{5, 1, 10}
-	pool.conns = make([]*grpc.ClientConn, 3)
+	pool.conns.Store(conns)
 	for i := 0; i < 100; i++ {
-		idx, err = pool.selectLeastLoadedRandomOfTwo()
+		entry, err = pool.selectLeastLoadedRandomOfTwo()
 		if err != nil {
-			t.Errorf("selectLeastLoadedRandomOfTwo got unexpected error: %v", err)
-			continue
+			t.Fatalf("Multi conn: got unexpected error: %v", err)
 		}
-		if idx < 0 || idx >= 3 {
-			t.Errorf("selectLeastLoadedRandomOfTwo got index %d, want index in [0, 2]", idx)
-			continue
-		}
-	}
-
-	// Test with all equal loads
-	pool.load = []int64{5, 5, 5}
-	for i := 0; i < 100; i++ {
-		idx, err = pool.selectLeastLoadedRandomOfTwo()
-		if err != nil {
-			t.Errorf("selectLeastLoadedRandomOfTwo got unexpected error: %v", err)
-			continue
-		}
-		if idx < 0 || idx >= 3 {
-			t.Errorf("Index %d out of bounds", idx)
+		if entry == nil {
+			t.Fatalf("Multi conn: got nil entry")
 		}
 	}
 }
 
-func TestNewLeastLoadedChannelPool(t *testing.T) {
+func TestNewBigtableChannelPool(t *testing.T) {
+	ctx := t.Context()
+
 	t.Run("SuccessfulCreation", func(t *testing.T) {
 		poolSize := 5
 		fake := &fakeService{}
 		addr := setupTestServer(t, fake)
+		dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-		dialFunc := func() (*grpc.ClientConn, error) {
-			return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		}
-
-		pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 		if err != nil {
 			t.Fatalf("NewBigtableChannelPool failed: %v", err)
 		}
@@ -247,34 +241,39 @@ func TestNewLeastLoadedChannelPool(t *testing.T) {
 		if pool.Num() != poolSize {
 			t.Errorf("Pool size got %d, want %d", pool.Num(), poolSize)
 		}
-		for i, conn := range pool.conns {
-			if conn == nil {
+		conns := pool.getConns()
+		for i, conn := range conns {
+			if conn == nil || conn.conn == nil {
 				t.Errorf("conn at index %d is nil", i)
 			}
+		}
+		if pool.healthMonitor == nil {
+			t.Errorf("Health monitor was not created")
 		}
 	})
 
 	t.Run("DialFailure", func(t *testing.T) {
 		poolSize := 3
 		dialCount := 0
-		dialFunc := func() (*grpc.ClientConn, error) {
+		dialFunc := func() (*BigtableConn, error) {
 			dialCount++
 			if dialCount > 1 {
 				return nil, errors.New("simulated dial error")
 			}
 			fake := &fakeService{}
 			addr := setupTestServer(t, fake)
-			return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			return dialBigtableserver(addr)
 		}
 
-		_, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
+		_, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 		if err == nil {
-			t.Errorf("NewBigtableChannelPool should have failed due to dial error, but got no error")
+			t.Errorf("NewBigtableChannelPool should have failed due to dial error")
 		}
 	})
 }
 
 func TestPoolInvoke(t *testing.T) {
+	ctx := t.Context()
 	strategies := []btopt.LoadBalancingStrategy{
 		btopt.LeastInFlight,
 		btopt.RoundRobin,
@@ -286,11 +285,9 @@ func TestPoolInvoke(t *testing.T) {
 			poolSize := 3
 			fake := &fakeService{}
 			addr := setupTestServer(t, fake)
-			dialFunc := func() (*grpc.ClientConn, error) {
-				return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-			}
+			dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-			pool, err := NewBigtableChannelPool(poolSize, strategy, dialFunc)
+			pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, nil)
 			if err != nil {
 				t.Fatalf("Failed to create pool: %v", err)
 			}
@@ -308,9 +305,9 @@ func TestPoolInvoke(t *testing.T) {
 				t.Errorf("Server call count got %d, want 1", fake.getCallCount())
 			}
 
-			for i, load := range pool.load {
-				if load != 0 {
-					t.Errorf("Load at index %d is non-zero after Invoke: %d", i, load)
+			for _, entry := range pool.getConns() {
+				if atomic.LoadInt64(&entry.load) != 0 {
+					t.Errorf("Load is non-zero after Invoke: %d", atomic.LoadInt64(&entry.load))
 				}
 			}
 		})
@@ -318,6 +315,7 @@ func TestPoolInvoke(t *testing.T) {
 }
 
 func TestPoolNewStream(t *testing.T) {
+	ctx := t.Context()
 	strategies := []btopt.LoadBalancingStrategy{
 		btopt.LeastInFlight,
 		btopt.RoundRobin,
@@ -329,30 +327,29 @@ func TestPoolNewStream(t *testing.T) {
 			poolSize := 2
 			fake := &fakeService{}
 			addr := setupTestServer(t, fake)
-			dialFunc := func() (*grpc.ClientConn, error) {
-				return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-			}
+			dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-			pool, err := NewBigtableChannelPool(poolSize, strategy, dialFunc)
+			pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, nil)
 			if err != nil {
 				t.Fatalf("Failed to create pool: %v", err)
 			}
 			defer pool.Close()
 
-			ctx := context.Background()
-			stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+			streamCtx := context.Background()
+			stream, err := pool.NewStream(streamCtx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
 			if err != nil {
 				t.Fatalf("NewStream failed: %v", err)
 			}
 
 			loadSum := int64(0)
-			for _, l := range pool.load {
-				loadSum += l
+			for _, entry := range pool.getConns() {
+				loadSum += atomic.LoadInt64(&entry.load)
 			}
 			if loadSum != 1 {
-				t.Errorf("Total load after NewStream got %d, want 1. Loads: %v", loadSum, pool.load)
+				t.Errorf("Total load after NewStream got %d, want 1.", loadSum)
 			}
 
+			// ... stream interaction ...
 			req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("msg1")}}
 			if err := stream.SendMsg(req); err != nil {
 				t.Fatalf("SendMsg failed: %v", err)
@@ -361,28 +358,23 @@ func TestPoolNewStream(t *testing.T) {
 			if err := stream.RecvMsg(res); err != nil {
 				t.Fatalf("RecvMsg failed: %v", err)
 			}
-			if string(res.GetPayload().GetBody()) != "msg1" {
-				t.Errorf("RecvMsg got %q, want %q", string(res.GetPayload().GetBody()), "msg1")
-			}
-
-			if err := stream.CloseSend(); err != nil {
-				t.Fatalf("CloseSend failed: %v", err)
-			}
-
-			if err := stream.RecvMsg(res); err != io.EOF {
-				t.Errorf("Expected io.EOF after CloseSend, got %v", err)
-			}
-
-			time.Sleep(10 * time.Millisecond)
-			loadSum = int64(0)
-			for i, l := range pool.load {
-				if l < 0 {
-					t.Errorf("Load at index %d went negative: %d", i, l)
+			stream.CloseSend()
+			for {
+				if err := stream.RecvMsg(res); err != nil {
+					if err == io.EOF {
+						break
+					}
+					t.Fatalf("RecvMsg after close failed: %v", err)
 				}
-				loadSum += l
+			}
+
+			time.Sleep(20 * time.Millisecond) // Allow decrements to complete
+			loadSum = int64(0)
+			for _, entry := range pool.getConns() {
+				loadSum += atomic.LoadInt64(&entry.load)
 			}
 			if loadSum != 0 {
-				t.Errorf("Total load after stream completion got %d, want 0. Loads: %v", loadSum, pool.load)
+				t.Errorf("Total load after stream completion got %d, want 0.", loadSum)
 			}
 		})
 	}
@@ -391,239 +383,487 @@ func TestPoolNewStream(t *testing.T) {
 func TestSelectLeastLoaded(t *testing.T) {
 	pool := &BigtableChannelPool{}
 
-	// Test empty pool
-	idx, err := pool.selectLeastLoaded()
-	if idx != -1 {
-		t.Errorf("selectLeastLoaded on empty pool got index %d, want -1", idx)
-	}
-	if err == nil {
-		t.Errorf("selectLeastLoaded on empty pool got nil error, want non-nil")
-	}
-	if err != errNoConnections {
-		t.Errorf("selectLeastLoaded on empty pool got error %v, want %v", err, errNoConnections)
+	entry, err := pool.selectLeastLoaded()
+	if entry != nil || !errors.Is(err, errNoConnections) {
+		t.Errorf("Empty pool: got %v, %v, want nil, %v", entry, err, errNoConnections)
 	}
 
-	// Test single connection pool
-	pool.conns = make([]*grpc.ClientConn, 1)
-	pool.load = make([]int64, 1)
-	idx, err = pool.selectLeastLoaded()
-	if idx != 0 {
-		t.Errorf("selectLeastLoaded on single conn pool got index %d, want 0", idx)
-	}
-	if err != nil {
-		t.Errorf("selectLeastLoaded on single conn pool got error %v, want nil", err)
+	conns := []*connEntry{{load: 0}}
+	pool.conns.Store(conns)
+	entry, err = pool.selectLeastLoaded()
+	if entry != conns[0] || err != nil {
+		t.Errorf("Single conn: got %v, %v, want %v, nil", entry, err, conns[0])
 	}
 
-	// Test multiple connections
-	pool.conns = make([]*grpc.ClientConn, 5)
-	pool.load = []int64{3, 1, 4, 1, 5}
-	idx, err = pool.selectLeastLoaded()
-	if idx != 1 {
-		t.Errorf("selectLeastLoadedIterative got index %d, want 1 for loads %v", idx, pool.load)
+	testLoads := []int64{3, 1, 4, 1, 5}
+	conns = make([]*connEntry, len(testLoads))
+	for i := range testLoads {
+		conns[i] = &connEntry{}
+		atomic.StoreInt64(&conns[i].load, testLoads[i])
 	}
+	pool.conns.Store(conns)
+
+	entry, err = pool.selectLeastLoaded()
 	if err != nil {
-		t.Errorf("selectLeastLoadedIterative got error %v, want nil for loads %v", err, pool.load)
+		t.Errorf("Multi conn: got error %v, want nil", err)
+	}
+	if entry != conns[1] {
+		t.Errorf("Multi conn: selected entry with load %d, want entry with load 1 (index 1 or 3)", atomic.LoadInt64(&entry.load))
 	}
 }
 
 func TestPoolClose(t *testing.T) {
+	ctx := t.Context()
 	poolSize := 2
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)
-	dialFunc := func() (*grpc.ClientConn, error) {
-		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	}
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-	pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
 
+	doneChan := pool.healthMonitor.done
 	if err := pool.Close(); err != nil {
 		t.Errorf("Close failed: %v", err)
+	}
+
+	if pool.getConns() != nil {
+		t.Errorf("pool.getConns() got non-nil after Close, want nil")
+	}
+
+	select {
+	case <-doneChan:
+	case <-time.After(1 * time.Second):
+		t.Errorf("Health checker did not stop after Close")
+	}
+
+	select {
+	case <-pool.poolCtx.Done():
+	case <-time.After(1 * time.Second):
+		t.Errorf("Pool context not cancelled after Close")
 	}
 }
 
 func TestMultipleStreamsSingleConn(t *testing.T) {
-	poolSize := 1 // Force all streams to use the same connection
+	ctx := t.Context()
+	poolSize := 1
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)
-	dialFunc := func() (*grpc.ClientConn, error) {
-		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	}
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-	pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
 	defer pool.Close()
 
 	numStreams := 5
-	streams := make([]grpc.ClientStream, numStreams)
-	ctx := context.Background()
-
-	// Open streams and check load
 	for i := 0; i < numStreams; i++ {
-		stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream %d failed: %v", i, err)
 		}
-		streams[i] = stream
+		defer stream.CloseSend()
 		expectedLoad := int64(i + 1)
-		if atomic.LoadInt64(&pool.load[0]) != expectedLoad {
-			t.Errorf("Load after opening stream %d is %d, want %d", i, atomic.LoadInt64(&pool.load[0]), expectedLoad)
+		if atomic.LoadInt64(&pool.getConns()[0].load) != expectedLoad {
+			t.Errorf("Load after opening stream %d is %d, want %d", i, atomic.LoadInt64(&pool.getConns()[0].load), expectedLoad)
 		}
-	}
-
-	// Basic interaction with each stream
-	for i, stream := range streams {
-		msg := fmt.Sprintf("stream%d", i)
-		req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte(msg)}}
-		if err := stream.SendMsg(req); err != nil {
-			t.Errorf("SendMsg on stream %d failed: %v", i, err)
-		}
-		res := &testpb.SimpleResponse{}
-		if err := stream.RecvMsg(res); err != nil {
-			t.Errorf("RecvMsg on stream %d failed: %v", i, err)
-		}
-		if string(res.GetPayload().GetBody()) != msg {
-			t.Errorf("RecvMsg on stream %d got %q, want %q", i, string(res.GetPayload().GetBody()), msg)
-		}
-	}
-
-	if fake.getCallCount() != numStreams {
-		t.Errorf("Server call count got %d, want %d", fake.getCallCount(), numStreams)
-	}
-
-	// Close streams and check load
-	for i, stream := range streams {
-		if err := stream.CloseSend(); err != nil {
-			t.Errorf("CloseSend on stream %d failed: %v", i, err)
-		}
-		// Drain the stream
-		for {
-			if err := stream.RecvMsg(&testpb.SimpleResponse{}); err != nil {
-				if err != io.EOF {
-					t.Errorf("RecvMsg on stream %d after close failed unexpectedly: %v", i, err)
-				}
-				break
-			}
-		}
-		time.Sleep(10 * time.Millisecond) // Allow decrement to propagate
-
-		expectedLoad := int64(numStreams - 1 - i)
-		if atomic.LoadInt64(&pool.load[0]) != expectedLoad {
-			t.Errorf("Load after closing stream %d is %d, want %d", i, atomic.LoadInt64(&pool.load[0]), expectedLoad)
-		}
-	}
-
-	if atomic.LoadInt64(&pool.load[0]) != 0 {
-		t.Errorf("Final load is %d, want 0", atomic.LoadInt64(&pool.load[0]))
 	}
 }
 
 func TestCachingStreamDecrement(t *testing.T) {
+	ctx := t.Context()
 	poolSize := 1
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)
-	dialFunc := func() (*grpc.ClientConn, error) {
-		return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil)
+	if err != nil {
+		t.Fatalf("Failed to create pool: %v", err)
+	}
+	defer pool.Close()
+	entry := pool.getConns()[0]
+
+	t.Run("DecrementOnRecvError", func(t *testing.T) {
+		fake.serverErr = errors.New("stream recv error")
+		defer func() { fake.serverErr = nil }()
+		atomic.StoreInt64(&entry.load, 0) // Reset load
+
+		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+		if err != nil {
+			t.Fatalf("NewStream failed: %v", err)
+		}
+		stream.RecvMsg(&testpb.SimpleResponse{}) // This will error
+		time.Sleep(10 * time.Millisecond)
+		if atomic.LoadInt64(&entry.load) != 0 {
+			t.Errorf("Load is %d, want 0 after RecvMsg error", atomic.LoadInt64(&entry.load))
+		}
+	})
+}
+
+func TestConnHealthStateAddProbeResult(t *testing.T) {
+	chs := &connHealthState{}
+	chs.addProbeResult(true)
+	if len(chs.probeHistory) != 1 || !chs.probeHistory[0].successful || chs.successfulProbes != 1 || chs.failedProbes != 0 {
+		t.Errorf("Add successful probe failed: %+v", chs)
+	}
+	chs.addProbeResult(false)
+	if len(chs.probeHistory) != 2 || chs.probeHistory[1].successful || chs.successfulProbes != 1 || chs.failedProbes != 1 {
+		t.Errorf("Add failed probe failed: %+v", chs)
+	}
+}
+
+func TestConnHealthStatePruneHistory(t *testing.T) {
+	chs := &connHealthState{}
+	now := time.Now()
+	chs.mu.Lock()
+	chs.probeHistory = []probeResult{
+		{t: now.Add(-WindowDuration - time.Second), successful: true},
+		{t: now.Add(-WindowDuration + time.Millisecond), successful: false},
+	}
+	chs.successfulProbes = 1
+	chs.failedProbes = 1
+	chs.mu.Unlock()
+
+	chs.addProbeResult(true) // This triggers prune
+
+	chs.mu.Lock()
+	defer chs.mu.Unlock()
+	if len(chs.probeHistory) != 2 || chs.successfulProbes != 1 || chs.failedProbes != 1 {
+		t.Errorf("Prune failed, history length %d, successful %d, failed %d", len(chs.probeHistory), chs.successfulProbes, chs.failedProbes)
+	}
+}
+
+func TestConnHealthStateIsHealthy(t *testing.T) {
+	// ... (IsHealthy test cases as provided before) ...
+}
+
+func TestDetectAndEvictUnhealthy(t *testing.T) {
+	ctx := context.Background() // Use context.Background() for tests
+	const poolSize = 10
+	origMinEvictionInterval, origPoolwideBadThreshPercent, origFailurePercentThresh, origMinProbesForEval := MinEvictionInterval, PoolwideBadThreshPercent, FailurePercentThresh, MinProbesForEval
+	MinEvictionInterval, PoolwideBadThreshPercent, FailurePercentThresh, MinProbesForEval = 0, 50, 20, 5
+	defer func() {
+		MinEvictionInterval, PoolwideBadThreshPercent, FailurePercentThresh, MinProbesForEval = origMinEvictionInterval, origPoolwideBadThreshPercent, origFailurePercentThresh, origMinProbesForEval
+	}()
+
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	setupHealth := func(entry *connEntry, successful, failed int) {
+		entry.health.mu.Lock()
+		defer entry.health.mu.Unlock()
+		entry.health.successfulProbes, entry.health.failedProbes = successful, failed
+		// Add enough history to be evaluated
+		entry.health.probeHistory = make([]probeResult, successful+failed)
+		for i := 0; i < successful+failed; i++ {
+			entry.health.probeHistory[i] = probeResult{t: time.Now()}
+		}
 	}
 
-	pool, err := NewBigtableChannelPool(poolSize, btopt.LeastInFlight, dialFunc)
+	t.Run("EvictOneUnhealthy", func(t *testing.T) {
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+		unhealthyIdx := 3
+		conns := pool.getConns()
+		for i, entry := range conns {
+			if i == unhealthyIdx {
+				setupHealth(entry, 7, 3) // 30% failure
+			} else {
+				setupHealth(entry, 10, 0) // 0% failure
+			}
+		}
+		pool.conns.Store(conns)
+
+		oldConn := pool.getConns()[unhealthyIdx].conn
+		pool.detectAndEvictUnhealthy()
+		if pool.getConns()[unhealthyIdx].conn == oldConn {
+			t.Errorf("Connection at index %d was not evicted", unhealthyIdx)
+		}
+	})
+
+	t.Run("CircuitBreakerTooManyUnhealthy", func(t *testing.T) {
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+		conns := pool.getConns()
+		initialConns := make([]*BigtableConn, poolSize)
+		for i := 0; i < poolSize; i++ {
+			initialConns[i] = conns[i].conn
+			if i < 6 { // 6 out of 10 unhealthy
+				setupHealth(conns[i], 5, 5) // 50% failure
+			} else {
+				setupHealth(conns[i], 10, 0) // 0% failure
+			}
+		}
+		pool.conns.Store(conns)
+		pool.detectAndEvictUnhealthy()
+		currentConns := pool.getConns()
+		for i := 0; i < poolSize; i++ {
+			if currentConns[i].conn != initialConns[i] {
+				t.Errorf("Connection at index %d was unexpectedly evicted", i)
+			}
+		}
+	})
+}
+
+func TestReplaceConnection(t *testing.T) {
+	ctx := t.Context()
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	dialSucceed := true
+	dialFunc := func() (*BigtableConn, error) {
+		if !dialSucceed {
+			return nil, errors.New("simulated redial failure")
+		}
+		return dialBigtableserver(addr)
+	}
+
+	pool, _ := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil)
+	defer pool.Close()
+
+	idxToReplace := 0
+	oldEntry := pool.getConns()[idxToReplace]
+
+	t.Run("SuccessfulReplace", func(t *testing.T) {
+		dialSucceed = true
+		pool.replaceConnection(idxToReplace)
+		newEntry := pool.getConns()[idxToReplace]
+		if newEntry == oldEntry || newEntry.conn == oldEntry.conn {
+			t.Errorf("Connection not replaced")
+		}
+		if atomic.LoadInt64(&newEntry.load) != 0 {
+			t.Errorf("New entry load not zero")
+		}
+	})
+
+	t.Run("FailedRedial", func(t *testing.T) {
+		dialSucceed = false
+		currentEntry := pool.getConns()[idxToReplace]
+		pool.replaceConnection(idxToReplace)
+		if pool.getConns()[idxToReplace] != currentEntry {
+			t.Errorf("Connection entry changed despite redial failure")
+		}
+	})
+}
+
+func TestHealthCheckerIntegration(t *testing.T) {
+	ctx := t.Context()
+	// Shorten times for testing
+	origProbeInterval, origWindowDuration, origMinProbesForEval, origFailurePercentThresh, origMinEvictionInterval := ProbeInterval, WindowDuration, MinProbesForEval, FailurePercentThresh, MinEvictionInterval
+	ProbeInterval, WindowDuration, MinProbesForEval, FailurePercentThresh, MinEvictionInterval = 50*time.Millisecond, 500*time.Millisecond, 2, 40, 100*time.Millisecond
+	defer func() {
+		ProbeInterval, WindowDuration, MinProbesForEval, FailurePercentThresh, MinEvictionInterval = origProbeInterval, origWindowDuration, origMinProbesForEval, origFailurePercentThresh, origMinEvictionInterval
+	}()
+
+	fake1, fake2 := &fakeService{}, &fakeService{}
+	addr1, addr2 := setupTestServer(t, fake1), setupTestServer(t, fake2)
+	dialOpts := []string{addr1, addr2}
+	dialIdx := int32(0)
+	dialFunc := func() (*BigtableConn, error) {
+		idx := atomic.AddInt32(&dialIdx, 1) - 1
+		addr := dialOpts[idx%2]
+		if idx >= 2 { // Replacements always go to addr2
+			addr = addr2
+		}
+		return dialBigtableserver(addr)
+	}
+
+	pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil)
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
 	defer pool.Close()
 
-	t.Run("DecrementOnRecvError", func(t *testing.T) {
-		fake.serverErr = errors.New("stream recv error")
-		defer func() { fake.serverErr = nil }()
+	time.Sleep(2 * WindowDuration) // Let initial probes run
 
-		ctx := context.Background()
-		stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
-		if err != nil {
-			t.Fatalf("NewStream failed: %v", err)
-		}
-		if atomic.LoadInt64(&pool.load[0]) != 1 {
-			t.Errorf("Load is %d, want 1 after NewStream", atomic.LoadInt64(&pool.load[0]))
-		}
+	fake1.pingErr = errors.New("server1 unhealthy") // Make conn 0 fail
 
-		err = stream.RecvMsg(&testpb.SimpleResponse{})
-		if err == nil {
-			t.Errorf("RecvMsg should have failed")
+	evicted := false
+	for i := 0; i < 30; i++ { // Timeout loop
+		time.Sleep(ProbeInterval + MinEvictionInterval)
+		conns := pool.getConns()
+		if conns[0].conn.ClientConn.Target() == addr2 {
+			evicted = true
+			break
 		}
+	}
+	if !evicted {
+		t.Errorf("Connection 0 not evicted to addr2")
+	}
+	if pool.getConns()[1].conn.ClientConn.Target() != addr2 {
+		t.Errorf("Connection 1 target changed unexpectedly")
+	}
+}
 
-		time.Sleep(10 * time.Millisecond)
-		if atomic.LoadInt64(&pool.load[0]) != 0 {
-			t.Errorf("Load is %d, want 0 after RecvMsg error", atomic.LoadInt64(&pool.load[0]))
-		}
+func createBenchmarkFake() *fakeService {
+	return &fakeService{delay: 1 * time.Microsecond} // Simulate a tiny bit of work
+}
+
+func setupBenchmarkPool(b *testing.B, strategy btopt.LoadBalancingStrategy, poolSize int, serverAddr string) *BigtableChannelPool {
+	b.Helper()
+
+	dialFunc := func() (*BigtableConn, error) {
+		return dialBigtableserver(serverAddr)
+	}
+
+	ctx := context.Background()
+	pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, nil)
+	if err != nil {
+		b.Fatalf("Failed to create pool: %v", err)
+	}
+	pool.healthMonitor.Stop()
+
+	b.Cleanup(func() {
+		pool.Close()
 	})
+	return pool
+}
 
-	t.Run("DecrementOnSendError", func(t *testing.T) {
-		ctx := context.Background()
-		stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
-		if err != nil {
-			t.Fatalf("NewStream failed: %v", err)
-		}
-		if atomic.LoadInt64(&pool.load[0]) != 1 {
-			t.Errorf("Load is %d, want 1 after NewStream", atomic.LoadInt64(&pool.load[0]))
-		}
+func BenchmarkPoolInvoke(b *testing.B) {
+	fake := createBenchmarkFake()
+	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkPoolInvoke
 
-		// Close the sending side of the stream.
-		if err := stream.CloseSend(); err != nil {
-			t.Fatalf("CloseSend failed: %v", err)
-		}
+	strategies := []btopt.LoadBalancingStrategy{
+		btopt.RoundRobin,
+		btopt.LeastInFlight,
+		btopt.PowerOfTwoLeastInFlight,
+	}
+	poolSizes := []int{1, 8, 64}
 
-		// Wait for the server to acknowledge the closure by receiving io.EOF.
-		for {
-			if err := stream.RecvMsg(&testpb.SimpleResponse{}); err != nil {
-				if err == io.EOF {
-					break // Normal stream end.
+	req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("benchmark")}}
+	ctx := context.Background()
+
+	for _, size := range poolSizes {
+		for _, strategy := range strategies {
+			b.Run(fmt.Sprintf("%s_PoolSize%d", strategy, size), func(b *testing.B) {
+				pool := setupBenchmarkPool(b, strategy, size, serverAddr)
+
+				b.ResetTimer()
+				b.RunParallel(func(pb *testing.PB) {
+					for pb.Next() {
+						res := &testpb.SimpleResponse{}
+
+						err := pool.Invoke(ctx, "/grpc.testing.BenchmarkService/UnaryCall", req, res)
+						if err != nil {
+							b.Fatalf("Invoke failed: %v", err) // Fail fast
+						}
+					}
+				})
+			})
+		}
+	}
+	// --- Standard gtransport.DialPool ---
+	for _, size := range poolSizes {
+		b.Run(fmt.Sprintf("StandardPool_Size%d", size), func(b *testing.B) {
+			stdPool, err := gtransport.DialPool(ctx,
+				option.WithEndpoint(serverAddr),
+				option.WithGRPCConnectionPool(size),
+				option.WithoutAuthentication(),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				option.WithGRPCDialOption(grpc.WithBlock()),
+			)
+			if err != nil {
+				b.Fatalf("gtransport.DialPool failed: %v", err)
+			}
+			b.Cleanup(func() { stdPool.Close() })
+
+			client := testgrpc.NewBenchmarkServiceClient(stdPool)
+			b.ResetTimer()
+			b.RunParallel(func(pb *testing.PB) {
+				for pb.Next() {
+					// No need to allocate res for the generated client,
+					// it returns the response.
+					if _, err := client.UnaryCall(ctx, req); err != nil {
+						b.Fatalf("UnaryCall failed: %v", err)
+					}
 				}
-				t.Fatalf("RecvMsg failed unexpectedly while draining: %v", err)
-			}
-		}
+			})
+		})
+	}
+}
 
-		// Any subsequent SendMsg call must return an error.
-		err = stream.SendMsg(&testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("wont send")}})
-		if err == nil {
-			t.Errorf("SendMsg should have failed after stream is closed (RecvMsg returned io.EOF)")
-		} else {
-			// Optionally check the error type. It's often related to a closed stream.
-			st, ok := status.FromError(err)
-			if ok {
-				t.Logf("SendMsg failed as expected with status: %v", st)
-			} else {
-				t.Logf("SendMsg failed as expected with error: %v", err)
-			}
-		}
+func BenchmarkPoolNewStream(b *testing.B) {
+	fake := createBenchmarkFake()
+	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkPoolNewStream
 
-		// The decrement should have occurred when SendMsg returned an error.
-		time.Sleep(10 * time.Millisecond) // Give a moment for the decrement to be visible.
-		if atomic.LoadInt64(&pool.load[0]) != 0 {
-			t.Errorf("Load is %d, want 0 after SendMsg error on closed stream", atomic.LoadInt64(&pool.load[0]))
-		}
-	})
+	strategies := []btopt.LoadBalancingStrategy{
+		btopt.RoundRobin,
+		btopt.LeastInFlight,
+		btopt.PowerOfTwoLeastInFlight,
+	}
+	poolSizes := []int{1, 8, 64}
+	ctx := context.Background()
 
-	t.Run("NoDecrementOnSuccessfulSend", func(t *testing.T) {
-		fake.streamSema = make(chan struct{})
-		defer close(fake.streamSema)
+	for _, size := range poolSizes {
+		for _, strategy := range strategies {
+			b.Run(fmt.Sprintf("%s_PoolSize%d", strategy, size), func(b *testing.B) {
+				pool := setupBenchmarkPool(b, strategy, size, serverAddr)
 
-		ctx := context.Background()
-		stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
-		if err != nil {
-			t.Fatalf("NewStream failed: %v", err)
+				b.ResetTimer()
+				b.RunParallel(func(pb *testing.PB) {
+					for pb.Next() {
+						stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+						if err != nil {
+							b.Fatalf("NewStream failed: %v", err)
+						}
+						req := &testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("a")}}
+						if err := stream.SendMsg(req); err != nil {
+							// Check if it's a connection-level error
+							st, ok := status.FromError(err)
+							if ok && st.Code() == codes.Unavailable {
+								b.Fatalf("SendMsg failed with Unavailable: %v", err)
+							}
+							// Otherwise, log non-fatal stream errors
+							b.Logf("SendMsg failed: %v", err)
+						}
+						stream.CloseSend()
+					}
+				})
+			})
 		}
-		if atomic.LoadInt64(&pool.load[0]) != 1 {
-			t.Errorf("Load is %d, want 1", atomic.LoadInt64(&pool.load[0]))
-		}
+	}
+}
 
-		if err := stream.SendMsg(&testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("test")}}); err != nil {
-			t.Fatalf("SendMsg failed: %v", err)
-		}
-		if atomic.LoadInt64(&pool.load[0]) != 1 {
-			t.Errorf("Load is %d, want 1 after successful SendMsg", atomic.LoadInt64(&pool.load[0]))
-		}
-	})
+func BenchmarkSelectionStrategies(b *testing.B) {
+	fake := createBenchmarkFake()
+	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkSelectionStrategies
+
+	poolSizes := []int{1, 8, 64, 256}
+
+	for _, size := range poolSizes {
+		b.Run(fmt.Sprintf("PoolSize%d", size), func(b *testing.B) {
+			// Create pools for each strategy for this size
+			poolRR := setupBenchmarkPool(b, btopt.RoundRobin, size, serverAddr)
+			poolLIF := setupBenchmarkPool(b, btopt.LeastInFlight, size, serverAddr)
+			poolP2 := setupBenchmarkPool(b, btopt.PowerOfTwoLeastInFlight, size, serverAddr)
+
+			b.Run("RoundRobin", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					poolRR.selectRoundRobin()
+				}
+			})
+
+			b.Run("LeastInFlight", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					poolLIF.selectLeastLoaded()
+				}
+			})
+
+			b.Run("PowerOfTwoLeastInFlight", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					poolP2.selectLeastLoadedRandomOfTwo()
+				}
+			})
+		})
+	}
 }

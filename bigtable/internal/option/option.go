@@ -20,6 +20,7 @@ package option
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -200,4 +201,28 @@ func EnableBigtableConnectionPool() bool {
 		return false
 	}
 	return enableBigtableConnPool
+}
+
+// Logf logs the given message to the given logger, or the standard logger if
+// the given logger is nil.
+func Logf(logger *log.Logger, format string, v ...interface{}) {
+	if logger == nil {
+		log.Printf(format, v...)
+	} else {
+		logger.Printf(format, v...)
+	}
+}
+
+var Debug = os.Getenv("CBT_ENABLE_DEBUG") == "true"
+
+// Debugf logs the given message *only if* the global Debug flag is true.
+// It reuses Logf to handle the nil logger logic and prepends "DEBUG: "
+// to the message.
+func Debugf(logger *log.Logger, format string, v ...interface{}) {
+	// Only log if the Debug flag is set
+	if Debug {
+		// Prepend "DEBUG: " to the format string
+		debugFormat := "DEBUG: " + format
+		Logf(logger, debugFormat, v...)
+	}
 }
