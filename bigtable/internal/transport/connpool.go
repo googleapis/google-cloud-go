@@ -190,13 +190,13 @@ func NewChannelHealthMonitor() *ChannelHealthMonitor {
 
 // Start begins the periodic health checking loop. It takes functions to probe all connections
 // and to evict unhealthy ones.
-func (chm *ChannelHealthMonitor) Start(probeAll func(), evictUnhealthy func()) {
+func (chm *ChannelHealthMonitor) Start(ctx context.Context, probeAll func(context.Context), evictUnhealthy func()) {
 	chm.ticker = time.NewTicker(ProbeInterval)
 	go func() {
 		for {
 			select {
 			case <-chm.ticker.C:
-				probeAll()
+				probeAll(ctx)
 				evictUnhealthy()
 			case <-chm.done:
 				chm.ticker.Stop()
@@ -231,24 +231,32 @@ func (chm *ChannelHealthMonitor) RecordEviction() {
 // BigtableChannelPool implements ConnPool and routes requests to the connection
 // pool according to load balancing strategy.
 type BigtableChannelPool struct {
-	conns []*connEntry
+	conns atomic.Value // Stores []*connEntry
 
-	// Mutex is only used for selecting the least loaded connection.
-	// The load array itself is manipulated using atomic operations.
-	mu         sync.Mutex
 	dial       func() (*BigtableConn, error)
 	strategy   btopt.LoadBalancingStrategy
-	rrIndex    uint64              // For round-robin selection
-	selectFunc func() (int, error) // Stored function for connection selection
+	rrIndex    uint64                     // For round-robin selection
+	selectFunc func() (*connEntry, error) // returns *connEntry
 
 	// Health Checker instance
 	healthMonitor *ChannelHealthMonitor
-	// dialMu protects the dial operation during connection replacement.
-	dialMu sync.Mutex
+	dialMu        sync.Mutex // Serializes dial/replace operations
+
+	poolCtx    context.Context    // Context for the pool's background tasks
+	poolCancel context.CancelFunc // Function to cancel the poolCtx
+}
+
+// getConns safely loads the current slice of connections.
+func (p *BigtableChannelPool) getConns() []*connEntry {
+	val := p.conns.Load()
+	if val == nil {
+		return nil
+	}
+	return val.([]*connEntry)
 }
 
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
-func NewBigtableChannelPool(connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error)) (*BigtableChannelPool, error) {
+func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error)) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
@@ -256,11 +264,15 @@ func NewBigtableChannelPool(connPoolSize int, strategy btopt.LoadBalancingStrate
 	if dial == nil {
 		return nil, fmt.Errorf("bigtable_connpool: dial function cannot be nil")
 	}
+	poolCtx, poolCancel := context.WithCancel(ctx)
+
 	pool := &BigtableChannelPool{
 		dial:          dial,
 		strategy:      strategy,
 		rrIndex:       0,
 		healthMonitor: NewChannelHealthMonitor(),
+		poolCtx:       poolCtx,
+		poolCancel:    poolCancel,
 	}
 
 	// Set the selection function based on the strategy
@@ -273,36 +285,52 @@ func NewBigtableChannelPool(connPoolSize int, strategy btopt.LoadBalancingStrate
 		pool.selectFunc = pool.selectRoundRobin
 	}
 
+	initialConns := make([]*connEntry, connPoolSize)
+
 	for i := 0; i < connPoolSize; i++ {
+		// Check for context cancellation during initial dialing
+		select {
+		case <-pool.poolCtx.Done():
+			defer pool.Close()
+			return nil, pool.poolCtx.Err()
+		default:
+		}
 		conn, err := dial()
 		if err != nil {
 			defer pool.Close()
 			return nil, err
 		}
-		pool.conns = append(pool.conns, &connEntry{conn: conn, load: 0})
+		initialConns[i] = &connEntry{conn: conn, load: 0}
 	}
+	pool.conns.Store(initialConns)
 
 	pool.startHealthChecker()
 	return pool, nil
 }
 
 func (p *BigtableChannelPool) startHealthChecker() {
-	p.healthMonitor.Start(p.runProbes, p.detectAndEvictUnhealthy)
+	p.healthMonitor.Start(p.poolCtx, p.runProbes, p.detectAndEvictUnhealthy)
 }
 
 // Num returns the number of connections in the pool.
 func (p *BigtableChannelPool) Num() int {
-	return len(p.conns)
+	return len(p.getConns())
 }
 
 // Close closes all connections in the pool.
 func (p *BigtableChannelPool) Close() error {
+	p.poolCancel() // Cancel the context for background tasks
 	p.healthMonitor.Stop()
 
+	conns := p.getConns()
 	var errs multiError
-	for _, entry := range p.conns {
-		if err := entry.conn.Close(); err != nil {
-			errs = append(errs, err)
+
+	p.conns.Store(([]*connEntry)(nil)) // Mark as closed
+	if conns != nil {
+		for _, entry := range conns {
+			if err := entry.conn.Close(); err != nil {
+				errs = append(errs, err)
+			}
 		}
 	}
 	if len(errs) == 0 {
@@ -312,15 +340,26 @@ func (p *BigtableChannelPool) Close() error {
 }
 
 // runProbes executes a Prime check on all connections concurrently.
-func (p *BigtableChannelPool) runProbes() {
+func (p *BigtableChannelPool) runProbes(ctx context.Context) {
+	conns := p.getConns()
+
 	var wg sync.WaitGroup
-	for _, entry := range p.conns {
+	for _, entry := range conns {
 		wg.Add(1)
 		go func(e *connEntry) {
 			defer wg.Done()
-			ctx, cancel := context.WithTimeout(context.Background(), ProbeTimeout)
+			// Derive the probe context from the passed-in context
+			probeCtx, cancel := context.WithTimeout(ctx, ProbeTimeout)
 			defer cancel()
-			err := e.conn.Prime(ctx)
+			// Check if context was already done before priming
+			select {
+			case <-probeCtx.Done():
+				e.health.addProbeResult(false) // Count as failure if context is done
+				return
+			default:
+			}
+
+			err := e.conn.Prime(probeCtx)
 			e.health.addProbeResult(err == nil)
 		}(entry)
 	}
@@ -333,13 +372,14 @@ func (p *BigtableChannelPool) detectAndEvictUnhealthy() {
 		return // Too soon since the last eviction.
 	}
 
-	numConns := len(p.conns)
+	conns := p.getConns()
+	numConns := len(conns)
 	if numConns == 0 {
 		return
 	}
 
 	var unhealthyIndices []int
-	for i, entry := range p.conns {
+	for i, entry := range conns {
 		if !entry.health.isHealthy() { // isHealthy() locks internally
 			unhealthyIndices = append(unhealthyIndices, i)
 		}
@@ -359,7 +399,7 @@ func (p *BigtableChannelPool) detectAndEvictUnhealthy() {
 	worstIdx := -1
 	maxFailed := -1
 	for _, idx := range unhealthyIndices {
-		entry := p.conns[idx]
+		entry := conns[idx]                      // Safe, using snapshot
 		failed := entry.health.getFailedProbes() // getFailedProbes() locks internally
 		if failed > maxFailed {
 			maxFailed = failed
@@ -375,44 +415,57 @@ func (p *BigtableChannelPool) detectAndEvictUnhealthy() {
 
 // replaceConnection closes the connection at the given index and dials a new one.
 func (p *BigtableChannelPool) replaceConnection(idx int) {
-	p.dialMu.Lock()
+	p.dialMu.Lock() // 	p.dialMu.Lock() // Serialize replacements
 	defer p.dialMu.Unlock()
 
-	if idx < 0 || idx >= len(p.conns) {
+	currentConns := p.getConns()
+
+	if idx < 0 || idx >= len(currentConns) {
 		return // Should not happen
 	}
 
-	oldEntry := p.conns[idx]
+	oldEntry := currentConns[idx]
 	fmt.Printf("bigtable_connpool: Evicting connection at index %d\n", idx)
-	// Close the old connection asynchronously.
-	go oldEntry.conn.Close()
-
-	// Dial a new connection.
+	select {
+	case <-p.poolCtx.Done():
+		fmt.Printf("bigtable_connpool: Pool context done, skipping redial: %v\n", p.poolCtx.Err())
+		return
+	default:
+	}
 	newConn, err := p.dial()
 	if err != nil {
 		fmt.Printf("bigtable_connpool: Failed to redial connection at index %d: %v\n", idx, err)
-		// Consider marking this index as still bad or having a fallback.
 		return
 	}
 
-	// Replace the old entry with a new one, including a fresh health state.
 	newEntry := &connEntry{
 		conn:   newConn,
-		load:   0,                 // New connection starts with zero load.
-		health: connHealthState{}, // Initialize a new, clean health state.
+		load:   0,
+		health: connHealthState{},
 	}
-	p.conns[idx] = newEntry
+
+	// Copy-on-write
+	newConns := make([]*connEntry, len(currentConns))
+	copy(newConns, currentConns)
+	newConns[idx] = newEntry
+	p.conns.Store(newConns)
+
 	fmt.Printf("bigtable_connpool: Replaced connection at index %d\n", idx)
+
+	go func() {
+		if err := oldEntry.conn.Close(); err != nil {
+			fmt.Printf("bigtable_connpool: Error closing evicted connection at index %d: %v\n", idx, err)
+		}
+	}()
 }
 
 // Invoke selects the least loaded connection and calls Invoke on it.
 // This method provides automatic load tracking.
 func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	index, err := p.selectFunc()
+	entry, err := p.selectFunc()
 	if err != nil {
 		return err
 	}
-	entry := p.conns[index]
 	atomic.AddInt64(&entry.load, 1)
 	defer atomic.AddInt64(&entry.load, -1)
 	return entry.conn.Invoke(ctx, method, args, reply, opts...)
@@ -428,112 +481,103 @@ func (p *BigtableChannelPool) Conn() *grpc.ClientConn {
 }
 
 func (p *BigtableChannelPool) GetBigtableConn() *BigtableConn {
-	index, err := p.selectFunc()
+	entry, err := p.selectFunc()
 	if err != nil {
-		// no conn available
 		return nil
 	}
-	return p.conns[index].conn
+	return entry.conn
 }
 
 // NewStream selects the least loaded connection and calls NewStream on it.
 // This method provides automatic load tracking via a wrapped stream.
 func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	index, err := p.selectFunc()
+	entry, err := p.selectFunc()
 	if err != nil {
 		return nil, err
 	}
-	entry := p.conns[index]
 
 	atomic.AddInt64(&entry.load, 1)
-
 	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
-
 	if err != nil {
-		atomic.AddInt64(&entry.load, -1) // Decrement if stream creation failed
+		atomic.AddInt64(&entry.load, -1)
 		return nil, err
 	}
 
-	// Wrap the stream to decrement load when the stream finishes.
 	return &refCountedStream{
 		ClientStream: stream,
-		pool:         p,
-		connIndex:    index,
+		entry:        entry, // Store the entry itself
 		once:         sync.Once{},
 	}, nil
 }
 
 // selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two
-func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (int, error) {
-	numConns := p.Num()
+func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (*connEntry, error) {
+	conns := p.getConns()
+	numConns := len(conns)
 	if numConns == 0 {
-		return -1, errNoConnections
+		return nil, errNoConnections
 	}
 	if numConns == 1 {
-		return 0, nil
+		return conns[0], nil
 	}
 
-	// Pick two distinct random indices
 	idx1 := rand.Intn(numConns)
 	idx2 := rand.Intn(numConns)
-	// Simple way to ensure they are different for small numConns.
 	for idx2 == idx1 {
 		idx2 = rand.Intn(numConns)
 	}
 
-	load1 := atomic.LoadInt64(&p.conns[idx1].load)
-	load2 := atomic.LoadInt64(&p.conns[idx2].load)
+	entry1 := conns[idx1]
+	entry2 := conns[idx2]
+	load1 := atomic.LoadInt64(&entry1.load)
+	load2 := atomic.LoadInt64(&entry2.load)
 
 	if load1 <= load2 {
-		return idx1, nil
+		return entry1, nil
 	}
-	return idx2, nil
+	return entry2, nil
 }
 
-func (p *BigtableChannelPool) selectRoundRobin() (int, error) {
-	numConns := p.Num()
+func (p *BigtableChannelPool) selectRoundRobin() (*connEntry, error) {
+	conns := p.getConns()
+	numConns := len(conns)
 	if numConns == 0 {
-		return -1, errNoConnections
+		return nil, errNoConnections
 	}
 	if numConns == 1 {
-		return 0, nil
+		return conns[0], nil
 	}
 
-	// Atomically increment and get the next index
 	nextIndex := atomic.AddUint64(&p.rrIndex, 1) - 1
-	return int(nextIndex % uint64(numConns)), nil
+	return conns[int(nextIndex%uint64(numConns))], nil
 }
 
 // selectLeastLoaded returns the index of the connection with the minimum load.
-func (p *BigtableChannelPool) selectLeastLoaded() (int, error) {
-	numConns := p.Num()
-
+func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
+	conns := p.getConns()
+	numConns := len(conns)
 	if numConns == 0 {
-		return -1, errNoConnections
+		return nil, errNoConnections
 	}
 
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
 	minIndex := 0
-	minLoad := atomic.LoadInt64(&p.conns[0].load)
+	minLoad := atomic.LoadInt64(&conns[0].load)
 
-	for i := 1; i < p.Num(); i++ {
-		currentLoad := atomic.LoadInt64(&p.conns[i].load)
+	for i := 1; i < numConns; i++ {
+		currentLoad := atomic.LoadInt64(&conns[i].load)
 		if currentLoad < minLoad {
 			minLoad = currentLoad
 			minIndex = i
 		}
 	}
-	return minIndex, nil
+	return conns[minIndex], nil
 }
 
 // refCountedStream wraps a grpc.ClientStream to decrement the load count when the stream is done.
 type refCountedStream struct {
 	grpc.ClientStream
-	pool      *BigtableChannelPool
-	connIndex int
-	once      sync.Once
+	entry *connEntry // Reference to the connection entry
+	once  sync.Once
 }
 
 // SendMsg calls the embedded stream's SendMsg method.
@@ -557,8 +601,7 @@ func (s *refCountedStream) RecvMsg(m interface{}) error {
 // decrementLoad ensures the load count is decremented exactly once.
 func (s *refCountedStream) decrementLoad() {
 	s.once.Do(func() {
-		entry := s.pool.conns[s.connIndex]
-		atomic.AddInt64(&entry.load, -1)
+		atomic.AddInt64(&s.entry.load, -1)
 	})
 }
 
