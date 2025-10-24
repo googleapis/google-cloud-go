@@ -849,7 +849,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: bigquery
     version: 1.71.0
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/cloud/bigquery/analyticshub/v1
         service_config: analyticshub_v1.yaml
@@ -1079,6 +1079,9 @@ libraries:
       - ^bigquery/v2/apiv2/bigquerypb/.*$
       - ^bigquery/v2/apiv2/v2pb/.*$
     release_exclude_paths:
+      - bigquery/benchmarks/
+      - bigquery/storage/managedwriter/testdata/
+      - bigquery/v2/apiv2_smoketests/
       - internal/generated/snippets/bigquery/
     tag_format: '{id}/v{version}'
   - id: billing
