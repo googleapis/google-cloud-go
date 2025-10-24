@@ -1,6 +1,5 @@
 # Default owner for all directories not owned by others
 
-*                       @googleapis/yoshi-go-admins
 *                       @googleapis/cloud-sdk-librarian-team # Librarian team access for merging Librarian PRs
 *                       @googleapis/cloud-sdk-go-eng
 
