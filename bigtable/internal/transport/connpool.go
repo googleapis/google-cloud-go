@@ -177,6 +177,7 @@ type connEntry struct {
 type ChannelHealthMonitor struct {
 	ticker           *time.Ticker
 	done             chan struct{}
+	stopOnce         sync.Once  // Add sync.Once
 	evictionMu       sync.Mutex // Guards lastEvictionTime
 	lastEvictionTime time.Time
 }
@@ -208,10 +209,9 @@ func (chm *ChannelHealthMonitor) Start(ctx context.Context, probeAll func(contex
 
 // Stop terminates the health checking loop.
 func (chm *ChannelHealthMonitor) Stop() {
-	if chm.done != nil {
+	chm.stopOnce.Do(func() {
 		close(chm.done)
-		chm.done = nil // Prevent reentrance
-	}
+	})
 }
 
 // AllowEviction checks if enough time has passed since the last eviction.
@@ -286,18 +286,25 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	}
 
 	initialConns := make([]*connEntry, connPoolSize)
-
 	for i := 0; i < connPoolSize; i++ {
-		// Check for context cancellation during initial dialing
 		select {
 		case <-pool.poolCtx.Done():
-			defer pool.Close()
+			// Manually close connections created so far in this loop
+			for j := 0; j < i; j++ {
+				initialConns[j].conn.Close()
+			}
+			pool.poolCancel() // Ensure context is cancelled
 			return nil, pool.poolCtx.Err()
 		default:
 		}
+
 		conn, err := dial()
 		if err != nil {
-			defer pool.Close()
+			// Manually close connections created so far in this loop
+			for j := 0; j < i; j++ {
+				initialConns[j].conn.Close()
+			}
+			pool.poolCancel() // Ensure context is cancelled
 			return nil, err
 		}
 		initialConns[i] = &connEntry{conn: conn, load: 0}
