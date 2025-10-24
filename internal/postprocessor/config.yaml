@@ -8,7 +8,6 @@ modules:
   - errorreporting
   - logging
   - profiler
-  - storage
 
 manual-clients:
   - api-shortname: bigquery
@@ -207,17 +206,12 @@ service-configs:
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/storage/control/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/control/apiv2
-  - input-directory: google/storage/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/internal/apiv2
 
 skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - storage
   - spanner
   - datastore
   - firestore
@@ -395,7 +389,6 @@ skip-module-scan-paths:
   - errorreporting
   - logging
   - profiler
-  - storage
   - vertexai
   # unreleased modules
   - spanner/test/opentelemetry/test

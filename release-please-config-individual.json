@@ -21,9 +21,6 @@
     "profiler": {
       "component": "profiler"
     },
-    "storage": {
-      "component": "storage"
-    },
     "vertexai": {
       "component": "vertexai"
     }
