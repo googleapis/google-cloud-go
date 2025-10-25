@@ -272,6 +272,8 @@ func (w *Writer) openWriter() (err error) {
 	}
 
 	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist)
+	// Specified generation takeovers are also idempotent
+	isIdempotent = isIdempotent || w.Append && w.o.gen > 0
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
 	params := &openWriterParams{
 		ctx:                  w.ctx,
