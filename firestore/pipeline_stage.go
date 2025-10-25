@@ -36,18 +36,24 @@ func errInvalidArg(v any, expected ...string) error {
 }
 
 const (
-	stageNameAddFields    = "add_fields"
-	stageNameAggregate    = "aggregate"
-	stageNameDistinct     = "distinct"
-	stageNameDocuments    = "documents"
-	stageNameFindNearest  = "find_nearest"
-	stageNameRemoveFields = "remove_fields"
-	stageNameReplace      = "replace_with"
-	stageNameSample       = "sample"
-	stageNameSelect       = "select"
-	stageNameUnion        = "union"
-	stageNameUnnest       = "unnest"
-	stageNameWhere        = "where"
+	stageNameAddFields       = "add_fields"
+	stageNameAggregate       = "aggregate"
+	stageNameCollection      = "collection"
+	stageNameCollectionGroup = "collection_group"
+	stageNameDatabase        = "database"
+	stageNameDistinct        = "distinct"
+	stageNameDocuments       = "documents"
+	stageNameFindNearest     = "find_nearest"
+	stageNameLimit           = "limit"
+	stageNameOffset          = "offset"
+	stageNameRemoveFields    = "remove_fields"
+	stageNameReplace         = "replace_with"
+	stageNameSample          = "sample"
+	stageNameSelect          = "select"
+	stageNameSort            = "sort"
+	stageNameUnion           = "union"
+	stageNameUnnest          = "unnest"
+	stageNameWhere           = "where"
 )
 
 // internal interface for pipeline stages.
@@ -67,7 +73,7 @@ func newInputStageCollection(path string) *inputStageCollection {
 	}
 	return &inputStageCollection{path: path}
 }
-func (s *inputStageCollection) name() string { return "collection" }
+func (s *inputStageCollection) name() string { return stageNameCollection }
 func (s *inputStageCollection) toProto() (*pb.Pipeline_Stage, error) {
 	arg := &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.path}}
 	return &pb.Pipeline_Stage{
@@ -85,7 +91,7 @@ type inputStageCollectionGroup struct {
 func newInputStageCollectionGroup(ancestor, collectionID string) *inputStageCollectionGroup {
 	return &inputStageCollectionGroup{ancestor: ancestor, collectionID: collectionID}
 }
-func (s *inputStageCollectionGroup) name() string { return "collection_group" }
+func (s *inputStageCollectionGroup) name() string { return stageNameCollectionGroup }
 func (s *inputStageCollectionGroup) toProto() (*pb.Pipeline_Stage, error) {
 	ancestor := &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.ancestor}}
 	collectionID := &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s.collectionID}}
@@ -101,7 +107,7 @@ type inputStageDatabase struct{}
 func newInputStageDatabase() *inputStageDatabase {
 	return &inputStageDatabase{}
 }
-func (s *inputStageDatabase) name() string { return "database" }
+func (s *inputStageDatabase) name() string { return stageNameDatabase }
 func (s *inputStageDatabase) toProto() (*pb.Pipeline_Stage, error) {
 	return &pb.Pipeline_Stage{
 		Name: s.name(),
@@ -261,7 +267,7 @@ type limitStage struct {
 func newLimitStage(limit int) *limitStage {
 	return &limitStage{limit: limit}
 }
-func (s *limitStage) name() string { return "limit" }
+func (s *limitStage) name() string { return stageNameLimit }
 func (s *limitStage) toProto() (*pb.Pipeline_Stage, error) {
 	arg := &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(s.limit)}}
 	return &pb.Pipeline_Stage{
@@ -277,7 +283,7 @@ type offsetStage struct {
 func newOffsetStage(offset int) *offsetStage {
 	return &offsetStage{offset: offset}
 }
-func (s *offsetStage) name() string { return "offset" }
+func (s *offsetStage) name() string { return stageNameOffset }
 func (s *offsetStage) toProto() (*pb.Pipeline_Stage, error) {
 	arg := &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(s.offset)}}
 	return &pb.Pipeline_Stage{
@@ -393,7 +399,7 @@ type sortStage struct {
 func newSortStage(orders ...Ordering) *sortStage {
 	return &sortStage{orders: orders}
 }
-func (s *sortStage) name() string { return "sort" }
+func (s *sortStage) name() string { return stageNameSort }
 func (s *sortStage) toProto() (*pb.Pipeline_Stage, error) {
 	sortOrders := make([]*pb.Value, len(s.orders))
 	for i, so := range s.orders {

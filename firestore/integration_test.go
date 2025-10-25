@@ -3574,58 +3574,99 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	client := integrationClient(t)
 	coll := integrationColl(t)
 	h := testHelper{t}
+	type Author struct {
+		Name    string `firestore:"name"`
+		Country string `firestore:"country"`
+	}
 	type Book struct {
-		Title  string `firestore:"title"`
-		Author struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		} `firestore:"author"`
+		Title     string `firestore:"title"`
+		Author    `firestore:"author"`
 		Genre     string   `firestore:"genre"`
 		Published int      `firestore:"published"`
 		Rating    float64  `firestore:"rating"`
 		Tags      []string `firestore:"tags"`
 	}
 	books := []Book{
-		{Title: "The Hitchhiker's Guide to the Galaxy", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Douglas Adams", Country: "UK"}, Genre: "Science Fiction", Published: 1979, Rating: 4.2, Tags: []string{"comedy", "space", "adventure"}},
-		{Title: "Pride and Prejudice", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Jane Austen", Country: "UK"}, Genre: "Romance", Published: 1813, Rating: 4.5, Tags: []string{"classic", "social commentary", "love"}},
-		{Title: "One Hundred Years of Solitude", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Gabriel García Márquez", Country: "Colombia"}, Genre: "Magical Realism", Published: 1967, Rating: 4.3, Tags: []string{"family", "history", "fantasy"}},
-		{Title: "The Lord of the Rings", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "J.R.R. Tolkien", Country: "UK"}, Genre: "Fantasy", Published: 1954, Rating: 4.7, Tags: []string{"adventure", "magic", "epic"}},
-		{Title: "The Handmaid's Tale", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Margaret Atwood", Country: "Canada"}, Genre: "Dystopian", Published: 1985, Rating: 4.1, Tags: []string{"feminism", "totalitarianism", "resistance"}},
-		{Title: "Crime and Punishment", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Fyodor Dostoevsky", Country: "Russia"}, Genre: "Psychological Thriller", Published: 1866, Rating: 4.3, Tags: []string{"philosophy", "crime", "redemption"}},
-		{Title: "To Kill a Mockingbird", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Harper Lee", Country: "USA"}, Genre: "Southern Gothic", Published: 1960, Rating: 4.2, Tags: []string{"racism", "injustice", "coming-of-age"}},
-		{Title: "1984", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "George Orwell", Country: "UK"}, Genre: "Dystopian", Published: 1949, Rating: 4.2, Tags: []string{"surveillance", "totalitarianism", "propaganda"}},
-		{Title: "The Great Gatsby", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "F. Scott Fitzgerald", Country: "USA"}, Genre: "Modernist", Published: 1925, Rating: 4.0, Tags: []string{"wealth", "american dream", "love"}},
-		{Title: "Dune", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Frank Herbert", Country: "USA"}, Genre: "Science Fiction", Published: 1965, Rating: 4.6, Tags: []string{"politics", "desert", "ecology"}},
+		{
+			Title:     "The Hitchhiker's Guide to the Galaxy",
+			Author:    Author{Name: "Douglas Adams", Country: "UK"},
+			Genre:     "Science Fiction",
+			Published: 1979,
+			Rating:    4.2,
+			Tags:      []string{"comedy", "space", "adventure"},
+		},
+		{
+			Title:     "Pride and Prejudice",
+			Author:    Author{Name: "Jane Austen", Country: "UK"},
+			Genre:     "Romance",
+			Published: 1813,
+			Rating:    4.5,
+			Tags:      []string{"classic", "social commentary", "love"},
+		},
+		{
+			Title:     "One Hundred Years of Solitude",
+			Author:    Author{Name: "Gabriel García Márquez", Country: "Colombia"},
+			Genre:     "Magical Realism",
+			Published: 1967,
+			Rating:    4.3,
+			Tags:      []string{"family", "history", "fantasy"},
+		},
+		{
+			Title:     "The Lord of the Rings",
+			Author:    Author{Name: "J.R.R. Tolkien", Country: "UK"},
+			Genre:     "Fantasy",
+			Published: 1954,
+			Rating:    4.7,
+			Tags:      []string{"adventure", "magic", "epic"},
+		},
+		{
+			Title:     "The Handmaid's Tale",
+			Author:    Author{Name: "Margaret Atwood", Country: "Canada"},
+			Genre:     "Dystopian",
+			Published: 1985,
+			Rating:    4.1,
+			Tags:      []string{"feminism", "totalitarianism", "resistance"},
+		},
+		{
+			Title:     "Crime and Punishment",
+			Author:    Author{Name: "Fyodor Dostoevsky", Country: "Russia"},
+			Genre:     "Psychological Thriller",
+			Published: 1866,
+			Rating:    4.3,
+			Tags:      []string{"philosophy", "crime", "redemption"},
+		},
+		{
+			Title:     "To Kill a Mockingbird",
+			Author:    Author{Name: "Harper Lee", Country: "USA"},
+			Genre:     "Southern Gothic",
+			Published: 1960,
+			Rating:    4.2,
+			Tags:      []string{"racism", "injustice", "coming-of-age"},
+		},
+		{
+			Title:     "1984",
+			Author:    Author{Name: "George Orwell", Country: "UK"},
+			Genre:     "Dystopian",
+			Published: 1949,
+			Rating:    4.2,
+			Tags:      []string{"surveillance", "totalitarianism", "propaganda"},
+		},
+		{
+			Title:     "The Great Gatsby",
+			Author:    Author{Name: "F. Scott Fitzgerald", Country: "USA"},
+			Genre:     "Modernist",
+			Published: 1925,
+			Rating:    4.0,
+			Tags:      []string{"wealth", "american dream", "love"},
+		},
+		{
+			Title:     "Dune",
+			Author:    Author{Name: "Frank Herbert", Country: "USA"},
+			Genre:     "Science Fiction",
+			Published: 1965,
+			Rating:    4.6,
+			Tags:      []string{"politics", "desert", "ecology"},
+		},
 	}
 	var docRefs []*DocumentRef
 	for _, b := range books {
@@ -4124,6 +4165,139 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 		if len(results) != 4 {
 			t.Errorf("got %d documents, want 4", len(results))
+		}
+	})
+	t.Run("WithReadOptions", func(t *testing.T) {
+		doc1 := coll.NewDoc()
+		wr, err := doc1.Create(ctx, map[string]interface{}{"a": 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+		readTime := wr.UpdateTime
+
+		// Let a little time pass to ensure the next write has a later timestamp.
+		time.Sleep(1 * time.Millisecond)
+
+		doc2 := coll.NewDoc()
+		_, err = doc2.Create(ctx, map[string]interface{}{"a": 2})
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{doc1, doc2})
+		})
+
+		iter := client.Pipeline().Collection(coll.ID).WithReadOptions(ReadTime(readTime)).Execute(ctx)
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		// The result should only contain the documents that existed at the readTime.
+		// The books created at the beginning of the test should be there.
+		var found bool
+		for _, r := range res {
+			if r.Ref.ID == doc1.ID {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("did not find doc1 in the results")
+		}
+		for _, r := range res {
+			if r.Ref.ID == doc2.ID {
+				t.Errorf("found doc2 in the results, but it should not be there")
+				break
+			}
+		}
+	})
+
+	t.Run("WithTransaction", func(t *testing.T) {
+		doc1 := coll.NewDoc()
+		_, err := doc1.Create(ctx, map[string]interface{}{"a": 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+		doc2 := coll.NewDoc()
+		_, err = doc2.Create(ctx, map[string]interface{}{"a": 2})
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{doc1, doc2})
+		})
+
+		err = client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			// Delete doc2 and update doc1
+			err := tx.Delete(doc2)
+			if err != nil {
+				return err
+			}
+			err = tx.Update(doc1, []Update{{Path: "a", Value: 3}})
+			if err != nil {
+				return err
+			}
+
+			// The pipeline should see the changes.
+			iter := tx.Execute(client.Pipeline().Collection(coll.ID))
+			res, err := iter.GetAll()
+			if err != nil {
+				return err
+			}
+			var foundDoc1, foundDoc2 bool
+			var valDoc1 int64
+			for _, r := range res {
+				if r.Ref.ID == doc1.ID {
+					foundDoc1 = true
+					data := r.Data()
+					valDoc1 = data["a"].(int64)
+				}
+				if r.Ref.ID == doc2.ID {
+					foundDoc2 = true
+				}
+			}
+
+			if !foundDoc1 {
+				return fmt.Errorf("did not find doc1 in the results")
+			}
+			if foundDoc2 {
+				return fmt.Errorf("found doc2 in the results, but it should have been deleted")
+			}
+			if valDoc1 != 3 {
+				return fmt.Errorf("got a=%d, want 3", valDoc1)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// After the transaction, the changes should be visible.
+		iter := client.Pipeline().Collection(coll.ID).Execute(ctx)
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		var foundDoc1, foundDoc2 bool
+		var valDoc1 int64
+		for _, r := range res {
+			if r.Ref.ID == doc1.ID {
+				foundDoc1 = true
+				data := r.Data()
+				valDoc1 = data["a"].(int64)
+			}
+			if r.Ref.ID == doc2.ID {
+				foundDoc2 = true
+			}
+		}
+		if !foundDoc1 {
+			t.Errorf("did not find doc1 in the results")
+		}
+		if foundDoc2 {
+			t.Errorf("found doc2 in the results, but it should have been deleted")
+		}
+		if valDoc1 != 3 {
+			t.Errorf("got a=%d, want 3", valDoc1)
 		}
 	})
 }

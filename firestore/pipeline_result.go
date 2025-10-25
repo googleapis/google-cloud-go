@@ -223,8 +223,6 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 
 		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
 
-		// bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(req)
-		// fmt.Println(string(bytes))
 		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 		if err != nil {
 			return nil, err

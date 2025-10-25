@@ -36,20 +36,22 @@ import (
 // Instead, Firestore only guarantees that the result is the same as if the chained stages were
 // executed in order.
 type Pipeline struct {
-	c      *Client
-	stages []pipelineStage
-	err    error
+	c            *Client
+	stages       []pipelineStage
+	readSettings *readSettings
+	tx           *Transaction
+	err          error
 }
 
 func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 	return &Pipeline{
-		c:      client,
-		stages: []pipelineStage{initialStage},
+		c:            client,
+		stages:       []pipelineStage{initialStage},
+		readSettings: &readSettings{},
 	}
 }
 
 // Execute executes the pipeline and returns an iterator for streaming the results.
-// TODO: Accept PipelineOptions
 func (p *Pipeline) Execute(ctx context.Context) *PipelineResultIterator {
 	ctx = withResourceHeader(ctx, p.c.path())
 	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(p.c.path()))
@@ -69,7 +71,11 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 		PipelineType: &pb.ExecutePipelineRequest_StructuredPipeline{
 			StructuredPipeline: &pb.StructuredPipeline{Pipeline: pipelinePb},
 		},
-		// TODO: Add consistencyselector
+	}
+	if p.tx != nil {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_Transaction{Transaction: p.tx.id}
+	} else if rt, hasOpts := parseReadTime(p.c, p.readSettings); hasOpts {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_ReadTime{ReadTime: rt}
 	}
 	return req, nil
 }
@@ -89,17 +95,38 @@ func (p *Pipeline) toProto() (*pb.Pipeline, error) {
 	return &pb.Pipeline{Stages: protoStages}, nil
 }
 
+func (p *Pipeline) copy() *Pipeline {
+	newP := &Pipeline{
+		c:            p.c,
+		stages:       make([]pipelineStage, len(p.stages)),
+		readSettings: &readSettings{},
+		tx:           p.tx,
+		err:          p.err,
+	}
+	copy(newP.stages, p.stages)
+	if p.readSettings != nil {
+		*newP.readSettings = *p.readSettings
+	}
+	return newP
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// such as ReadTime.
+func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
+	newP := p.copy()
+	for _, opt := range opts {
+		opt.apply(newP.readSettings)
+	}
+	return newP
+}
+
 // append creates a new Pipeline by adding a stage to the current one.
 func (p *Pipeline) append(s pipelineStage) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	newP := &Pipeline{
-		c:      p.c,
-		stages: make([]pipelineStage, len(p.stages)+1),
-	}
-	copy(newP.stages, p.stages)
-	newP.stages[len(p.stages)] = s
+	newP := p.copy()
+	newP.stages = append(newP.stages, s)
 	return newP
 }
 
@@ -317,11 +344,11 @@ type UnnestOptions struct {
 // Each output document is a copy of the input document, but the array field is replaced by an element from the array.
 // The `fieldOrSelectable` parameter specifies the array field to unnest. It can be a string representing the field path or a [Selectable] expression.
 // If a [Selectable] is provided, the alias of the selectable will be used as the new field name.
-func (p *Pipeline) Unnest(fieldpathsOrSelectables any) *Pipeline {
+func (p *Pipeline) Unnest(fieldpathsOrSelectable any) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newUnnestStageFromAny(fieldpathsOrSelectables)
+	stage, err := newUnnestStageFromAny(fieldpathsOrSelectable)
 	if err != nil {
 		p.err = err
 		return p
