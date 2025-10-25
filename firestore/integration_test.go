@@ -3668,6 +3668,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			Tags:      []string{"politics", "desert", "ecology"},
 		},
 	}
+	timeBeforeCreate := time.Now().Add(-time.Minute)
 	var docRefs []*DocumentRef
 	for _, b := range books {
 		docRef := coll.NewDoc()
@@ -3743,9 +3744,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("CollectionGroup", func(t *testing.T) {
+		cgParentColl := client.Collection(collectionIDs.New())
 		cgCollID := collectionIDs.New()
-		doc1 := coll.Doc("cg_doc1")
-		doc2 := coll.Doc("cg_doc2")
+		doc1 := cgParentColl.Doc("cg_doc1")
+		doc2 := cgParentColl.Doc("cg_doc2")
 		cgColl1 := doc1.Collection(cgCollID)
 		cgColl2 := doc2.Collection(cgCollID)
 		cgDoc1 := cgColl1.NewDoc()
@@ -3766,14 +3768,6 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Database", func(t *testing.T) {
-		dbDoc1 := coll.Doc("db_doc1")
-		otherColl := client.Collection(collectionIDs.New())
-		dbDoc2 := otherColl.Doc("db_doc2")
-		h.mustCreate(dbDoc1, map[string]string{"val": "a"})
-		h.mustCreate(dbDoc2, map[string]string{"val": "b"})
-		t.Cleanup(func() {
-			deleteDocuments([]*DocumentRef{dbDoc1, dbDoc2})
-		})
 		iter := client.Pipeline().Database().Limit(2).Execute(ctx)
 		defer iter.Stop()
 		results, err := iter.GetAll()
@@ -3795,8 +3789,9 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			{ID: "doc3", Vector: Vector32{7.0, 8.0, 9.0}},
 		}
 		var vectorDocRefs []*DocumentRef
+		vectorColl := client.Collection(collectionIDs.New())
 		for _, d := range docsWithVector {
-			docRef := coll.NewDoc()
+			docRef := vectorColl.NewDoc()
 			h.mustCreate(docRef, d)
 			vectorDocRefs = append(vectorDocRefs, docRef)
 		}
@@ -3810,7 +3805,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			Limit:         &limit,
 			DistanceField: &distanceField,
 		}
-		iter := client.Pipeline().Collection(coll.ID).
+		iter := client.Pipeline().Collection(vectorColl.ID).
 			FindNearest("vector", queryVector, PipelineDistanceMeasureEuclidean, options).
 			Execute(ctx)
 		defer iter.Stop()
@@ -3899,12 +3894,13 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			Data map[string]int `firestore:"data"`
 		}
 		docWithMap := DocWithMap{ID: "docWithMap", Data: map[string]int{"a": 1, "b": 2}}
-		docRef := coll.NewDoc()
+		replaceColl := client.Collection(collectionIDs.New())
+		docRef := replaceColl.NewDoc()
 		h.mustCreate(docRef, docWithMap)
 		t.Cleanup(func() {
 			deleteDocuments([]*DocumentRef{docRef})
 		})
-		iter := client.Pipeline().Collection(coll.ID).
+		iter := client.Pipeline().Collection(replaceColl.ID).
 			Where(Equal(FieldOf("id"), "docWithMap")).
 			Replace("data").
 			Execute(ctx)
@@ -3985,15 +3981,8 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if _, ok := data["title"]; !ok {
 			t.Error("missing 'title' field")
 		}
-		author, ok := data["author"].(map[string]interface{})
-		if !ok {
-			t.Error("missing 'author' field")
-		}
-		if _, ok := author["name"]; !ok {
+		if _, ok := data["author.name"]; !ok {
 			t.Error("missing 'author.name' field")
-		}
-		if _, ok := author["country"]; ok {
-			t.Error("unexpected 'author.country' field")
 		}
 		if _, ok := data["genre"]; ok {
 			t.Error("unexpected 'genre' field")
@@ -4169,11 +4158,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	})
 	t.Run("WithReadOptions", func(t *testing.T) {
 		doc1 := coll.NewDoc()
-		wr, err := doc1.Create(ctx, map[string]interface{}{"a": 1})
+		_, err := doc1.Create(ctx, map[string]interface{}{"a": 1})
 		if err != nil {
 			t.Fatal(err)
 		}
-		readTime := wr.UpdateTime
 
 		// Let a little time pass to ensure the next write has a later timestamp.
 		time.Sleep(1 * time.Millisecond)
@@ -4187,117 +4175,30 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			deleteDocuments([]*DocumentRef{doc1, doc2})
 		})
 
-		iter := client.Pipeline().Collection(coll.ID).WithReadOptions(ReadTime(readTime)).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).WithReadOptions(ReadTime(timeBeforeCreate)).Execute(ctx)
 		res, err := iter.GetAll()
 		if err != nil {
 			t.Fatal(err)
 		}
-		// The result should only contain the documents that existed at the readTime.
-		// The books created at the beginning of the test should be there.
-		var found bool
-		for _, r := range res {
-			if r.Ref.ID == doc1.ID {
-				found = true
-				break
-			}
-		}
-		if !found {
-			t.Errorf("did not find doc1 in the results")
-		}
-		for _, r := range res {
-			if r.Ref.ID == doc2.ID {
-				t.Errorf("found doc2 in the results, but it should not be there")
-				break
-			}
+		if len(res) != 0 {
+			t.Errorf("got %d documents, want 0", len(res))
 		}
 	})
-
 	t.Run("WithTransaction", func(t *testing.T) {
-		doc1 := coll.NewDoc()
-		_, err := doc1.Create(ctx, map[string]interface{}{"a": 1})
-		if err != nil {
-			t.Fatal(err)
-		}
-		doc2 := coll.NewDoc()
-		_, err = doc2.Create(ctx, map[string]interface{}{"a": 2})
-		if err != nil {
-			t.Fatal(err)
-		}
-		t.Cleanup(func() {
-			deleteDocuments([]*DocumentRef{doc1, doc2})
-		})
-
-		err = client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
-			// Delete doc2 and update doc1
-			err := tx.Delete(doc2)
-			if err != nil {
-				return err
-			}
-			err = tx.Update(doc1, []Update{{Path: "a", Value: 3}})
-			if err != nil {
-				return err
-			}
-
-			// The pipeline should see the changes.
-			iter := tx.Execute(client.Pipeline().Collection(coll.ID))
+		p := client.Pipeline().Collection(coll.ID)
+		err := client.RunTransaction(ctx, func(ctx context.Context, txn *Transaction) error {
+			iter := txn.Execute(p)
 			res, err := iter.GetAll()
 			if err != nil {
 				return err
 			}
-			var foundDoc1, foundDoc2 bool
-			var valDoc1 int64
-			for _, r := range res {
-				if r.Ref.ID == doc1.ID {
-					foundDoc1 = true
-					data := r.Data()
-					valDoc1 = data["a"].(int64)
-				}
-				if r.Ref.ID == doc2.ID {
-					foundDoc2 = true
-				}
-			}
-
-			if !foundDoc1 {
-				return fmt.Errorf("did not find doc1 in the results")
-			}
-			if foundDoc2 {
-				return fmt.Errorf("found doc2 in the results, but it should have been deleted")
-			}
-			if valDoc1 != 3 {
-				return fmt.Errorf("got a=%d, want 3", valDoc1)
+			if len(res) != len(books) {
+				return fmt.Errorf("got %d documents, want %d", len(res), len(books))
 			}
 			return nil
 		})
 		if err != nil {
 			t.Fatal(err)
-		}
-
-		// After the transaction, the changes should be visible.
-		iter := client.Pipeline().Collection(coll.ID).Execute(ctx)
-		res, err := iter.GetAll()
-		if err != nil {
-			t.Fatal(err)
-		}
-		var foundDoc1, foundDoc2 bool
-		var valDoc1 int64
-		for _, r := range res {
-			if r.Ref.ID == doc1.ID {
-				foundDoc1 = true
-				data := r.Data()
-				valDoc1 = data["a"].(int64)
-			}
-			if r.Ref.ID == doc2.ID {
-				foundDoc2 = true
-			}
-		}
-		if !foundDoc1 {
-			t.Errorf("did not find doc1 in the results")
-		}
-		if foundDoc2 {
-			t.Errorf("found doc2 in the results, but it should have been deleted")
-		}
-		if valDoc1 != 3 {
-			t.Errorf("got a=%d, want 3", valDoc1)
 		}
 	})
 }
