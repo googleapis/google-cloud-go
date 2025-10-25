@@ -156,7 +156,7 @@ func initIntegrationTest() {
 			},
 		},
 	}
-	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
+	copts := append(ti.CallOptions()) //, option.WithTokenSource(ts))
 	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
@@ -517,6 +517,7 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("create time %s != update time %s", ds.CreateTime, ds.UpdateTime)
 	}
 	got := ds.Data()
+	t.Logf("TestIntegration_Get got: %+v", got)
 	if want := wantIntegrationTestMap; !testEqual(got, want) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}

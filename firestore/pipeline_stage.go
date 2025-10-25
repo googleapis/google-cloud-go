@@ -25,7 +25,33 @@ const (
 	stageNameSelect    = "select"
 	stageNameWhere     = "where"
 	stageNameAggregate = "aggregate"
+	stageNameSort      = "sort"
 )
+
+// OrderingDirection is the sort direction for pipeline result ordering.
+type OrderingDirection string
+
+const (
+	// OrderingAsc sorts results from smallest to largest.
+	OrderingAsc OrderingDirection = OrderingDirection("ascending")
+
+	// OrderingDesc sorts results from largest to smallest.
+	OrderingDesc OrderingDirection = OrderingDirection("descending")
+)
+
+// Ordering specifies the field and direction for sorting.
+type Ordering struct {
+	Expr      Expr
+	Direction OrderingDirection
+}
+
+func Ascending(expr Expr) Ordering {
+	return Ordering{Expr: expr, Direction: OrderingAsc}
+}
+
+func Descending(expr Expr) Ordering {
+	return Ordering{Expr: expr, Direction: OrderingDesc}
+}
 
 // internal interface for pipeline stages.
 type pipelineStage interface {
@@ -98,6 +124,58 @@ func (s *limitStage) toProto() (*pb.Pipeline_Stage, error) {
 	return &pb.Pipeline_Stage{
 		Name: s.name(),
 		Args: []*pb.Value{arg},
+	}, nil
+}
+
+type offsetStage struct {
+	offset int
+}
+
+func newOffsetStage(offset int) *offsetStage {
+	return &offsetStage{offset: offset}
+}
+func (s *offsetStage) name() string { return "offset" }
+func (s *offsetStage) toProto() (*pb.Pipeline_Stage, error) {
+	arg := &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(s.offset)}}
+	return &pb.Pipeline_Stage{
+		Name: s.name(),
+		Args: []*pb.Value{arg},
+	}, nil
+}
+
+type sortStage struct {
+	orders []Ordering
+}
+
+func newSortStage(orders ...Ordering) *sortStage {
+	return &sortStage{orders: orders}
+}
+func (s *sortStage) name() string { return stageNameSort }
+func (s *sortStage) toProto() (*pb.Pipeline_Stage, error) {
+	sortOrders := make([]*pb.Value, len(s.orders))
+	for i, so := range s.orders {
+		fieldPb, err := so.Expr.toProto()
+		if err != nil {
+			return nil, err
+		}
+		sortOrders[i] = &pb.Value{
+			ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"direction": {
+							ValueType: &pb.Value_StringValue{
+								StringValue: string(so.Direction),
+							},
+						},
+						"expression": fieldPb,
+					},
+				},
+			},
+		}
+	}
+	return &pb.Pipeline_Stage{
+		Name: s.name(),
+		Args: sortOrders,
 	}, nil
 }
 
