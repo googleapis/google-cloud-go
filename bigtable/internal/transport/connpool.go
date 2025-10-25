@@ -26,6 +26,8 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/alts"
+	"google.golang.org/grpc/peer"
 
 	"google.golang.org/grpc/status"
 
@@ -54,7 +56,11 @@ var (
 	MinEvictionInterval = 1 * time.Minute
 )
 
-const primeRPCTimeout = 10 * time.Second
+const (
+	primeRPCTimeout     = 10 * time.Second
+	unaryLoadFactor     = 1
+	streamingLoadFactor = 2
+)
 
 var errNoConnections = fmt.Errorf("bigtable_connpool: no connections available in the pool")
 var _ gtransport.ConnPool = &BigtableChannelPool{}
@@ -67,12 +73,12 @@ type BigtableConn struct {
 }
 
 // Prime sends a PingAndWarm request to warm up the connection.
-func (bc *BigtableConn) Prime(ctx context.Context) error {
+func (bc *BigtableConn) Prime(ctx context.Context) (bool, error) {
 	if bc.instanceName == "" {
-		return status.Error(codes.FailedPrecondition, "bigtable: instanceName is required for conn:Prime operation")
+		return false, status.Error(codes.FailedPrecondition, "bigtable: instanceName is required for conn:Prime operation")
 	}
 	if bc.appProfile == "" {
-		return status.Error(codes.FailedPrecondition, "bigtable: appProfile is required for conn:Prime operation")
+		return false, status.Error(codes.FailedPrecondition, "bigtable: appProfile is required for conn:Prime operation")
 
 	}
 
@@ -82,14 +88,23 @@ func (bc *BigtableConn) Prime(ctx context.Context) error {
 		AppProfileId: bc.appProfile,
 	}
 
-	// TODO(plumb feature flags and metadata headers)
-
 	// Use a timeout for the prime operation
 	primeCtx, cancel := context.WithTimeout(ctx, primeRPCTimeout)
 	defer cancel()
 
-	_, err := client.PingAndWarm(primeCtx, req)
-	return err
+	var p peer.Peer
+	_, err := client.PingAndWarm(primeCtx, req, grpc.Peer(&p))
+	if err != nil {
+		return false, err
+	}
+
+	isALTS := false
+	if p.AuthInfo != nil {
+		if _, ok := p.AuthInfo.(alts.AuthInfo); ok {
+			isALTS = true
+		}
+	}
+	return isALTS, nil
 }
 
 func NewBigtableConn(conn *grpc.ClientConn, instanceName, appProfileId string) *BigtableConn {
@@ -171,9 +186,22 @@ func (chs *connHealthState) getFailedProbes() int {
 
 // connEntry represents a single connection in the pool.
 type connEntry struct {
-	conn   *BigtableConn
-	load   int64
-	health connHealthState // Embedded health state
+	conn          *BigtableConn
+	unaryLoad     int32           // In-flight unary requests
+	streamingLoad int32           // Active streams
+	health        connHealthState // Embedded health state
+	altsUsed      int32           // Set to 1 atomically if ALTS is used, 0 otherwise.
+}
+
+func (e *connEntry) calculateWeightedLoad() int32 {
+	unary := atomic.LoadInt32(&e.unaryLoad)
+	streaming := atomic.LoadInt32(&e.streamingLoad)
+	return (unaryLoadFactor * unary) + (streamingLoadFactor * streaming)
+}
+
+// IsALTSUsed reports whether the connection is using ALTS.
+func (e *connEntry) IsALTSUsed() bool {
+	return atomic.LoadInt32(&e.altsUsed) == 1
 }
 
 // ChannelHealthMonitor manages the overall health checking process for a pool of connections.
@@ -314,8 +342,20 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 			pool.poolCancel() // Ensure context is cancelled
 			return nil, err
 		}
-		initialConns[i] = &connEntry{conn: conn, load: 0}
-		// TODO prime the connection
+		entry := &connEntry{conn: conn, unaryLoad: 0, streamingLoad: 0}
+		initialConns[i] = entry // TODO prime the connection
+		// Prime the new connection in a non-blocking goroutine to warm it up.
+		// We pass the conn object as an argument to avoid closing over the loop variable.
+		go func(e *connEntry) {
+			primeCtx, cancel := context.WithTimeout(pool.poolCtx, primeRPCTimeout)
+			defer cancel()
+			isALTS, err := e.conn.Prime(primeCtx)
+			if err != nil {
+				btopt.Debugf(pool.logger, "bigtable_connpool: failed to prime initial connection: %v\n", err)
+			} else if isALTS {
+				atomic.StoreInt32(&e.altsUsed, 1)
+			}
+		}(entry)
 	}
 	pool.conns.Store(initialConns)
 
@@ -373,8 +413,8 @@ func (p *BigtableChannelPool) runProbes(ctx context.Context) {
 				return
 			default:
 			}
-
-			err := e.conn.Prime(probeCtx)
+			// don't update conn  isAlts used entry for now.
+			_, err := e.conn.Prime(probeCtx)
 			e.health.addProbeResult(err == nil)
 		}(entry)
 	}
@@ -454,10 +494,22 @@ func (p *BigtableChannelPool) replaceConnection(idx int) {
 	}
 
 	newEntry := &connEntry{
-		conn:   newConn,
-		load:   0,
-		health: connHealthState{},
+		conn:          newConn,
+		unaryLoad:     0,
+		streamingLoad: 0,
+		health:        connHealthState{},
 	}
+
+	go func() {
+		primeCtx, cancel := context.WithTimeout(p.poolCtx, primeRPCTimeout)
+		defer cancel()
+		isALTS, err := newConn.Prime(primeCtx)
+		if err != nil {
+			btopt.Debugf(p.logger, "bigtable_connpool: failed to prime replacement connection at index %d: %v\n", idx, err)
+		} else if isALTS {
+			atomic.StoreInt32(&newEntry.altsUsed, 1)
+		}
+	}()
 
 	// Copy-on-write
 	newConns := make([]*connEntry, len(currentConns))
@@ -477,13 +529,14 @@ func (p *BigtableChannelPool) replaceConnection(idx int) {
 
 // Invoke selects the least loaded connection and calls Invoke on it.
 // This method provides automatic load tracking.
+// Load is tracked as a unary call.
 func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
 	entry, err := p.selectFunc()
 	if err != nil {
 		return err
 	}
-	atomic.AddInt64(&entry.load, 1)
-	defer atomic.AddInt64(&entry.load, -1)
+	atomic.AddInt32(&entry.unaryLoad, 1)
+	defer atomic.AddInt32(&entry.unaryLoad, -1)
 	return entry.conn.Invoke(ctx, method, args, reply, opts...)
 }
 
@@ -512,10 +565,10 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 		return nil, err
 	}
 
-	atomic.AddInt64(&entry.load, 1)
+	atomic.AddInt32(&entry.streamingLoad, 1)
 	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
 	if err != nil {
-		atomic.AddInt64(&entry.load, -1)
+		atomic.AddInt32(&entry.streamingLoad, -1)
 		return nil, err
 	}
 
@@ -545,8 +598,8 @@ func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (*connEntry, error)
 
 	entry1 := conns[idx1]
 	entry2 := conns[idx2]
-	load1 := atomic.LoadInt64(&entry1.load)
-	load2 := atomic.LoadInt64(&entry2.load)
+	load1 := entry1.calculateWeightedLoad()
+	load2 := entry2.calculateWeightedLoad()
 
 	if load1 <= load2 {
 		return entry1, nil
@@ -577,10 +630,10 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 	}
 
 	minIndex := 0
-	minLoad := atomic.LoadInt64(&conns[0].load)
+	minLoad := conns[0].calculateWeightedLoad()
 
 	for i := 1; i < numConns; i++ {
-		currentLoad := atomic.LoadInt64(&conns[i].load)
+		currentLoad := conns[i].calculateWeightedLoad()
 		if currentLoad < minLoad {
 			minLoad = currentLoad
 			minIndex = i
@@ -590,6 +643,12 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 }
 
 // refCountedStream wraps a grpc.ClientStream to decrement the load count when the stream is done.
+// refCountedStream in this BigtableConnectionPool is to hook into the stream's lifecycle
+// to decrement the load counter (s.pool.load[s.connIndex]) when the stream is no longer usable.
+// This is primarily detected by errors occurring during SendMsg or RecvMsg (including io.EOF on RecvMsg).
+
+// Another option would have been to use grpc.OnFinish for streams is about the timing of when the load should be considered "finished".
+// The grpc.OnFinish callback is executed only when the entire stream is fully closed and the final status is determined.
 type refCountedStream struct {
 	grpc.ClientStream
 	entry *connEntry // Reference to the connection entry
@@ -617,7 +676,7 @@ func (s *refCountedStream) RecvMsg(m interface{}) error {
 // decrementLoad ensures the load count is decremented exactly once.
 func (s *refCountedStream) decrementLoad() {
 	s.once.Do(func() {
-		atomic.AddInt64(&s.entry.load, -1)
+		atomic.AddInt32(&s.entry.streamingLoad, -1)
 	})
 }
 

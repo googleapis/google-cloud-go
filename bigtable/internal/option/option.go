@@ -205,7 +205,7 @@ func EnableBigtableConnectionPool() bool {
 
 // Logf logs the given message to the given logger, or the standard logger if
 // the given logger is nil.
-func Logf(logger *log.Logger, format string, v ...interface{}) {
+func logf(logger *log.Logger, format string, v ...interface{}) {
 	if logger == nil {
 		log.Printf(format, v...)
 	} else {
@@ -223,6 +223,6 @@ func Debugf(logger *log.Logger, format string, v ...interface{}) {
 	if Debug {
 		// Prepend "DEBUG: " to the format string
 		debugFormat := "DEBUG: " + format
-		Logf(logger, debugFormat, v...)
+		logf(logger, debugFormat, v...)
 	}
 }
