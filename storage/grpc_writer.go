@@ -1238,6 +1238,7 @@ func (s *gRPCAppendTakeoverBidiWriteBufferSender) connect(ctx context.Context, c
 			return
 		}
 
+		s.maybeUpdateFirstMessage(resp)
 		s.setTakeoverOffset(c.flushOffset)
 		s.takeoverReported = true
 		cs.completions <- *c
