@@ -511,3 +511,12 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 	}
 	return p.append(stage)
 }
+
+// Raw adds a raw stage to the pipeline.
+// This is useful for using stages that are not yet implemented in the SDK.
+func (p *Pipeline) Raw(stage *RawStage) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	return p.append(stage)
+}
