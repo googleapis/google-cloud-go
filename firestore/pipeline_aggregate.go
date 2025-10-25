@@ -108,18 +108,18 @@ func Sum(fieldOrExpr any) AggregateFunction {
 	return newBaseAggregateFunction("sum", fieldOrExpr)
 }
 
-// Avg creates an aggregation that calculates the average (mean) of values from an expression or a field's values
+// Average creates an aggregation that calculates the average (mean) of values from an expression or a field's values
 // across multiple stage inputs.
 // fieldOrExpr can be a field path string, [FieldPath] or [Expr]
 // Example:
 //
 //		// Calculate the average age of users
-//		Avg(FieldOf("info.age")).As("averageAge")       // FieldOf returns Expr
-//		Avg(FieldOfPath("info.age")).As("averageAge") // FieldOfPath returns Expr
-//	    Avg("info.age").As("averageAge")              // String implicitly becomes FieldOf(...).As(...)
-//	    Avg(FieldPath([]string{"info", "age"})).As("averageAge")
-func Avg(fieldOrExpr any) AggregateFunction {
-	return newBaseAggregateFunction("avg", fieldOrExpr)
+//		Average(FieldOf("info.age")).As("averageAge")       // FieldOf returns Expr
+//		Average(FieldOfPath("info.age")).As("averageAge") // FieldOfPath returns Expr
+//	    Average("info.age").As("averageAge")              // String implicitly becomes FieldOf(...).As(...)
+//	    Average(FieldPath([]string{"info", "age"})).As("averageAge")
+func Average(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("average", fieldOrExpr)
 }
 
 // Count creates an aggregation that counts the number of stage inputs with valid evaluations of the

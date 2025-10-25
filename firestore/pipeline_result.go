@@ -83,39 +83,38 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 	return pr, nil
 }
 
+// Exists reports whether the PipelineResult represents an  document.
+// Even if Exists returns false, the rest of the fields are valid.
+func (p *PipelineResult) Exists() bool {
+	return p.proto != nil
+}
+
 // Data returns the PipelineResult's fields as a map.
 // It is equivalent to
 //
 //	var m map[string]any
 //	p.DataTo(&m)
-func (p *PipelineResult) Data() (map[string]any, error) {
-	if p == nil {
-		return nil, status.Errorf(codes.NotFound, "result does not exist")
+func (p *PipelineResult) Data() map[string]any {
+	if p == nil || !p.Exists() {
+		return nil
 	}
-	var fields map[string]*pb.Value
-	if p.proto != nil {
-		fields = p.proto.Fields
-	}
-	m, err := createMapFromValueMap(fields, p.c)
+	m, err := createMapFromValueMap(p.proto.Fields, p.c)
+
 	// Any error here is a bug in the client.
 	if err != nil {
 		panic(fmt.Sprintf("firestore: %v", err))
 	}
-	return m, nil
+	return m
 }
 
 // DataTo uses the PipelineResult's fields to populate v, which can be a pointer to a
 // map[string]any or a pointer to a struct.
 // This is similar to [DocumentSnapshot.DataTo]
 func (p *PipelineResult) DataTo(v any) error {
-	if p == nil {
+	if p == nil || !p.Exists() {
 		return status.Errorf(codes.NotFound, "document does not exist")
 	}
-	var fields map[string]*pb.Value
-	if p.proto != nil {
-		fields = p.proto.Fields
-	}
-	return setFromProtoValue(v, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: fields}}}, p.c)
+	return setFromProtoValue(v, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: p.proto.Fields}}}, p.c)
 }
 
 // PipelineResultIterator is an iterator over PipelineResults from a pipeline execution.
@@ -223,6 +222,7 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		}
 
 		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+
 		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 		if err != nil {
 			return nil, err

@@ -55,3 +55,7 @@ func (ps *PipelineSource) CollectionGroupWithAncestor(ancestor, collectionID str
 func (ps *PipelineSource) Database() *Pipeline {
 	return newPipeline(ps.client, newInputStageDatabase())
 }
+
+func (ps *PipelineSource) Documents(refs ...*DocumentRef) *Pipeline {
+	return newPipeline(ps.client, newInputStageDocuments(refs...))
+}
