@@ -16,7 +16,9 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"sync"
@@ -24,6 +26,8 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/alts"
@@ -54,6 +58,9 @@ var (
 	PoolwideBadThreshPercent = 70
 	// MinEvictionInterval is the minimum time that must pass between eviction of unhealthy channels.
 	MinEvictionInterval = 1 * time.Minute
+
+	// MetricReportingInterval is the interval at which pool metrics are reported.
+	MetricReportingInterval = 1 * time.Minute
 )
 
 const (
@@ -191,6 +198,8 @@ type connEntry struct {
 	streamingLoad int32           // Active streams
 	health        connHealthState // Embedded health state
 	altsUsed      int32           // Set to 1 atomically if ALTS is used, 0 otherwise.
+	errorCount    int64           // Errors since the last metric report
+
 }
 
 func (e *connEntry) calculateWeightedLoad() int32 {
@@ -199,8 +208,8 @@ func (e *connEntry) calculateWeightedLoad() int32 {
 	return (unaryLoadFactor * unary) + (streamingLoadFactor * streaming)
 }
 
-// IsALTSUsed reports whether the connection is using ALTS.
-func (e *connEntry) IsALTSUsed() bool {
+// isALTSUsed reports whether the connection is using ALTS.
+func (e *connEntry) isALTSUsed() bool {
 	return atomic.LoadInt32(&e.altsUsed) == 1
 }
 
@@ -277,6 +286,12 @@ type BigtableChannelPool struct {
 	poolCancel context.CancelFunc // Function to cancel the poolCtx
 
 	logger *log.Logger // logging events
+
+	// OpenTelemetry MeterProvider for custom metrics
+	meterProvider metric.MeterProvider
+	// OpenTelemetry metric instruments
+	outstandingRPCsHistogram         metric.Float64Histogram
+	perConnectionErrorCountHistogram metric.Float64Histogram
 }
 
 // getConns safely loads the current slice of connections.
@@ -289,7 +304,7 @@ func (p *BigtableChannelPool) getConns() []*connEntry {
 }
 
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
-func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), logger *log.Logger) (*BigtableChannelPool, error) {
+func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), logger *log.Logger, mp metric.MeterProvider) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
@@ -307,6 +322,29 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		poolCtx:       poolCtx,
 		poolCancel:    poolCancel,
 		logger:        logger,
+		meterProvider: mp,
+	}
+
+	// Initialize metrics
+	if pool.meterProvider != nil {
+		meter := pool.meterProvider.Meter("bigtable.googleapis.com/internal/client/")
+		var err error
+		pool.outstandingRPCsHistogram, err = meter.Float64Histogram(
+			"connection_pool/outstanding_rpcs",
+			metric.WithDescription("A distribution of the number of outstanding RPCs per connection in the client pool, sampled periodically."),
+			metric.WithUnit("1"),
+		)
+		if err != nil {
+			// Log error but don't fail pool creation
+			btopt.Debugf(logger, "bigtable_connpool: failed to create outstanding_rpcs histogram: %v\n", err)
+			pool.outstandingRPCsHistogram = nil // Ensure it's nil if creation failed
+		}
+
+		pool.perConnectionErrorCountHistogram, err = meter.Float64Histogram(
+			"per_connection_error_count",
+			metric.WithDescription("Distribution of counts of channels per 'error count per minute'."),
+			metric.WithUnit("1"),
+		)
 	}
 
 	// Set the selection function based on the strategy
@@ -360,7 +398,66 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	pool.conns.Store(initialConns)
 
 	pool.startHealthChecker()
+	pool.startMetricsReporter()
 	return pool, nil
+}
+
+func (p *BigtableChannelPool) startMetricsReporter() {
+	if p.outstandingRPCsHistogram == nil && p.perConnectionErrorCountHistogram == nil {
+		return // Metrics not enabled or failed to initialize
+	}
+
+	go func() {
+		ticker := time.NewTicker(MetricReportingInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				p.snapshotAndRecordMetrics(p.poolCtx)
+			case <-p.poolCtx.Done():
+				return
+			}
+		}
+	}()
+}
+
+func (p *BigtableChannelPool) snapshotAndRecordMetrics(ctx context.Context) {
+	conns := p.getConns()
+	if len(conns) == 0 {
+		return
+	}
+
+	lbPolicy := p.strategy.String()
+
+	for _, entry := range conns {
+		transportType := "CLOUDPATH"
+		if entry.isALTSUsed() {
+			transportType = "DIRECTPATH"
+		}
+
+		// Common attributes for this connection
+		baseAttrs := []attribute.KeyValue{
+			attribute.String("transport_type", transportType),
+			attribute.String("lb_policy", lbPolicy),
+		}
+
+		// Record distribution sample for unary load
+		unaryAttrs := attribute.NewSet(append(baseAttrs, attribute.Bool("streaming", false))...)
+		unaryLoad := atomic.LoadInt32(&entry.unaryLoad)
+		p.outstandingRPCsHistogram.Record(ctx, float64(unaryLoad), metric.WithAttributeSet(unaryAttrs))
+
+		// Record distribution sample for streaming load
+		streamingAttrs := attribute.NewSet(append(baseAttrs, attribute.Bool("streaming", true))...)
+		streamingLoad := atomic.LoadInt32(&entry.streamingLoad)
+		p.outstandingRPCsHistogram.Record(ctx, float64(streamingLoad), metric.WithAttributeSet(streamingAttrs))
+
+		// Record per-connection error count for the interval
+		if p.perConnectionErrorCountHistogram != nil {
+			// Atomically get the current error count and reset it to 0
+			errorCount := atomic.SwapInt64(&entry.errorCount, 0)
+			p.perConnectionErrorCountHistogram.Record(ctx, float64(errorCount), metric.WithAttributeSet(attribute.NewSet()))
+		}
+	}
 }
 
 func (p *BigtableChannelPool) startHealthChecker() {
@@ -537,7 +634,13 @@ func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args in
 	}
 	atomic.AddInt32(&entry.unaryLoad, 1)
 	defer atomic.AddInt32(&entry.unaryLoad, -1)
-	return entry.conn.Invoke(ctx, method, args, reply, opts...)
+
+	err = entry.conn.Invoke(ctx, method, args, reply, opts...)
+	if err != nil {
+		atomic.AddInt64(&entry.errorCount, 1)
+	}
+	return err
+
 }
 
 // Conn provides connbased on selectfunc()
@@ -568,6 +671,7 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 	atomic.AddInt32(&entry.streamingLoad, 1)
 	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
 	if err != nil {
+		atomic.AddInt64(&entry.errorCount, 1)
 		atomic.AddInt32(&entry.streamingLoad, -1)
 		return nil, err
 	}
@@ -659,6 +763,7 @@ type refCountedStream struct {
 func (s *refCountedStream) SendMsg(m interface{}) error {
 	err := s.ClientStream.SendMsg(m)
 	if err != nil {
+		atomic.AddInt64(&s.entry.errorCount, 1)
 		s.decrementLoad()
 	}
 	return err
@@ -668,6 +773,10 @@ func (s *refCountedStream) SendMsg(m interface{}) error {
 func (s *refCountedStream) RecvMsg(m interface{}) error {
 	err := s.ClientStream.RecvMsg(m)
 	if err != nil { // io.EOF is also an error, indicating stream end.
+		// io.EOF is a normal stream termination, not an error to be counted.
+		if !errors.Is(err, io.EOF) {
+			atomic.AddInt64(&s.entry.errorCount, 1)
+		}
 		s.decrementLoad()
 	}
 	return err
