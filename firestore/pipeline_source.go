@@ -43,6 +43,7 @@ func (ps *PipelineSource) Database() *Pipeline {
 	return newPipeline(ps.client, newInputStageDatabase())
 }
 
+// Documents creates a new [Pipeline] that operates on a specific set of Firestore documents.
 func (ps *PipelineSource) Documents(refs ...*DocumentRef) *Pipeline {
 	return newPipeline(ps.client, newInputStageDocuments(refs...))
 }

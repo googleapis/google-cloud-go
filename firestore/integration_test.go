@@ -3941,15 +3941,11 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if _, ok := data["title"]; !ok {
 			t.Error("missing 'title' field")
 		}
-		author, ok := data["author"].(map[string]interface{})
-		if !ok {
-			t.Error("missing 'author' field")
-		}
-		if _, ok := author["name"]; !ok {
+		if _, ok := data["author.name"]; !ok {
 			t.Error("missing 'author.name' field")
 		}
-		if _, ok := author["country"]; ok {
-			t.Error("unexpected 'author.country' field")
+		if _, ok := data["author"]; ok {
+			t.Error("unexpected 'author' field")
 		}
 		if _, ok := data["genre"]; ok {
 			t.Error("unexpected 'genre' field")
