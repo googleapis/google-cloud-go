@@ -194,7 +194,16 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 		// Initialize the BigtableChannelPool with the updated dialFunc.
 		// btransport is assumed to be the package where BigtableChannelPool resides.
-		connPool, connPoolErr = btransport.NewBigtableChannelPool(ctx, defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), dialFunc, config.Logger)
+		connPool, connPoolErr = btransport.NewBigtableChannelPool(
+			ctx,
+			defaultBigtableConnPoolSize,
+			btopt.BigtableLoadBalancingStrategy(),
+			dialFunc,
+			config.Logger,
+			nil,
+			btransport.WithHealthCheckConfig(btransport.DefaultHealthCheckConfig()),
+			btransport.WithDynamicChannelPool(btransport.DynamicChannelPoolConfig{}),
+		)
 	} else {
 		// use to regular ConnPool
 		connPool, connPoolErr = gtransport.DialPool(ctx, o...)

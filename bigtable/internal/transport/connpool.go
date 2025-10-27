@@ -20,7 +20,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"math/rand"
+	"sort"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -40,28 +42,62 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Constants for Channel Pool Health Checking
-var (
+// HealthCheckConfig holds the parameters for channel pool health checking.
+type HealthCheckConfig struct {
+	// Enabled for toggle
+	Enabled bool
 	// ProbeInterval is the interval at which channel health is probed.
-	ProbeInterval = 30 * time.Second
+	ProbeInterval time.Duration
 	// ProbeTimeout is the deadline for each individual health check probe RPC.
-	ProbeTimeout = 1 * time.Second
+	ProbeTimeout time.Duration
 	// WindowDuration is the duration over which probe results are kept for health evaluation.
-	WindowDuration = 5 * time.Minute
+	WindowDuration time.Duration
 	// MinProbesForEval is the minimum number of probes required before a channel's health is evaluated.
-	MinProbesForEval = 4
+	MinProbesForEval int
 	// FailurePercentThresh is the percentage of failed probes within the window duration
 	// that will cause a channel to be considered unhealthy.
-	FailurePercentThresh = 60
+	FailurePercentThresh int
 	// PoolwideBadThreshPercent is the "circuit breaker" threshold. If this percentage
 	// of channels in the pool are unhealthy, no evictions will occur.
-	PoolwideBadThreshPercent = 70
+	PoolwideBadThreshPercent int
 	// MinEvictionInterval is the minimum time that must pass between eviction of unhealthy channels.
-	MinEvictionInterval = 1 * time.Minute
+	MinEvictionInterval time.Duration
+}
 
+func DefaultDynamicChannelPoolConfig(initialConns int) DynamicChannelPoolConfig {
+	return DynamicChannelPoolConfig{
+		Enabled:              true, // Enabled by default
+		MinConns:             10,
+		MaxConns:             200,
+		AvgLoadHighThreshold: 50, // Example thresholds, these likely need tuning
+		AvgLoadLowThreshold:  10,
+		MinScalingInterval:   1 * time.Minute,
+		CheckInterval:        30 * time.Second,
+		MaxRemoveConns:       2, // Cap for removals
+	}
+}
+
+func DefaultHealthCheckConfig() HealthCheckConfig {
+	return HealthCheckConfig{
+		Enabled:                  true,
+		ProbeInterval:            30 * time.Second,
+		ProbeTimeout:             1 * time.Second,
+		WindowDuration:           5 * time.Minute,
+		MinProbesForEval:         4,
+		FailurePercentThresh:     60,
+		PoolwideBadThreshPercent: 70,
+		MinEvictionInterval:      1 * time.Minute,
+	}
+}
+
+// Constants for Channel Pool Health Checking
+var (
 	// MetricReportingInterval is the interval at which pool metrics are reported.
 	MetricReportingInterval = 1 * time.Minute
 )
+
+// BigtableChannelPool options
+type BigtableChannelPoolOption func(*BigtableChannelPool)
 
 const (
 	primeRPCTimeout     = 10 * time.Second
@@ -138,7 +174,7 @@ type connHealthState struct {
 }
 
 // addProbeResult records a new probe outcome and prunes old history.
-func (chs *connHealthState) addProbeResult(successful bool) {
+func (chs *connHealthState) addProbeResult(successful bool, windowDuration time.Duration) {
 	chs.mu.Lock()
 	defer chs.mu.Unlock()
 
@@ -151,12 +187,12 @@ func (chs *connHealthState) addProbeResult(successful bool) {
 	} else {
 		chs.failedProbes++
 	}
-	chs.pruneHistoryLocked()
+	chs.pruneHistoryLocked(windowDuration)
 }
 
 // pruneHistoryLocked removes probe results older than WindowDuration. Assumes chs.mu is held.
-func (chs *connHealthState) pruneHistoryLocked() {
-	windowStart := time.Now().Add(-WindowDuration)
+func (chs *connHealthState) pruneHistoryLocked(windowDuration time.Duration) {
+	windowStart := time.Now().Add(-windowDuration)
 	firstValid := 0
 	for firstValid < len(chs.probeHistory) && chs.probeHistory[firstValid].t.Before(windowStart) {
 		result := chs.probeHistory[firstValid]
@@ -173,15 +209,15 @@ func (chs *connHealthState) pruneHistoryLocked() {
 }
 
 // isHealthy reports if the connection is currently considered healthy based on probe history.
-func (chs *connHealthState) isHealthy() bool {
+func (chs *connHealthState) isHealthy(minProbesForEval int, failurePercentThresh int) bool {
 	chs.mu.Lock()
 	defer chs.mu.Unlock()
 	totalProbes := chs.successfulProbes + chs.failedProbes
-	if totalProbes < MinProbesForEval {
+	if totalProbes < minProbesForEval {
 		return true // Not enough data to make a judgment
 	}
 	failureRate := float64(chs.failedProbes) / float64(totalProbes) * 100.0
-	return failureRate < float64(FailurePercentThresh)
+	return failureRate < float64(failurePercentThresh)
 }
 
 // getFailedProbes returns the number of failed probes in the current window.
@@ -215,32 +251,53 @@ func (e *connEntry) isALTSUsed() bool {
 
 // ChannelHealthMonitor manages the overall health checking process for a pool of connections.
 type ChannelHealthMonitor struct {
+	config           HealthCheckConfig
+	pool             *BigtableChannelPool
 	ticker           *time.Ticker
 	done             chan struct{}
 	stopOnce         sync.Once  // Add sync.Once
 	evictionMu       sync.Mutex // Guards lastEvictionTime
 	lastEvictionTime time.Time
+	evictionDone     chan struct{} // Notification for test
+
 }
 
 // NewChannelHealthMonitor creates a new ChannelHealthMonitor.
-func NewChannelHealthMonitor() *ChannelHealthMonitor {
+func NewChannelHealthMonitor(config HealthCheckConfig, pool *BigtableChannelPool) *ChannelHealthMonitor {
 	return &ChannelHealthMonitor{
-		done: make(chan struct{}),
+		config:       config,
+		pool:         pool,
+		done:         make(chan struct{}),
+		evictionDone: make(chan struct{}, 1), // Buffered, non-blocking send
+
 	}
 }
 
 // Start begins the periodic health checking loop. It takes functions to probe all connections
 // and to evict unhealthy ones.
-func (chm *ChannelHealthMonitor) Start(ctx context.Context, probeAll func(context.Context), evictUnhealthy func()) {
-	chm.ticker = time.NewTicker(ProbeInterval)
+func (chm *ChannelHealthMonitor) Start(ctx context.Context) {
+	if !chm.config.Enabled {
+		return
+	}
+	chm.ticker = time.NewTicker(chm.config.ProbeInterval)
 	go func() {
+		defer chm.ticker.Stop()
 		for {
 			select {
 			case <-chm.ticker.C:
-				probeAll(ctx)
-				evictUnhealthy()
+				chm.pool.runProbes(ctx, chm.config)
+
+				// Check if the eviction method returned true
+				if chm.pool.detectAndEvictUnhealthy(chm.config, chm.AllowEviction, chm.RecordEviction) {
+					// The notification logic now lives here, inside the monitor.
+					select {
+					case chm.evictionDone <- struct{}{}:
+					default: // Don't block if the channel is full or nil
+					}
+				}
 			case <-chm.done:
-				chm.ticker.Stop()
+				return
+			case <-ctx.Done():
 				return
 			}
 		}
@@ -249,16 +306,18 @@ func (chm *ChannelHealthMonitor) Start(ctx context.Context, probeAll func(contex
 
 // Stop terminates the health checking loop.
 func (chm *ChannelHealthMonitor) Stop() {
-	chm.stopOnce.Do(func() {
-		close(chm.done)
-	})
+	if chm.config.Enabled {
+		chm.stopOnce.Do(func() {
+			close(chm.done)
+		})
+	}
 }
 
 // AllowEviction checks if enough time has passed since the last eviction.
 func (chm *ChannelHealthMonitor) AllowEviction() bool {
 	chm.evictionMu.Lock()
 	defer chm.evictionMu.Unlock()
-	return time.Since(chm.lastEvictionTime) >= MinEvictionInterval
+	return time.Since(chm.lastEvictionTime) >= chm.config.MinEvictionInterval
 }
 
 // RecordEviction updates the last eviction time to the current time.
@@ -266,6 +325,148 @@ func (chm *ChannelHealthMonitor) RecordEviction() {
 	chm.evictionMu.Lock()
 	defer chm.evictionMu.Unlock()
 	chm.lastEvictionTime = time.Now()
+}
+
+// DynamicChannelPoolConfig holds the parameters for dynamic channel pool scaling.
+type DynamicChannelPoolConfig struct {
+	Enabled              bool          // Whether dynamic scaling is enabled.
+	MinConns             int           // Minimum number of connections in the pool.
+	MaxConns             int           // Maximum number of connections in the pool.
+	AvgLoadHighThreshold int32         // Average weighted load per connection to trigger scale-up.
+	AvgLoadLowThreshold  int32         // Average weighted load per connection to trigger scale-down.
+	MinScalingInterval   time.Duration // Minimum time between scaling operations (both up and down).
+	CheckInterval        time.Duration // How often to check if scaling is needed.
+	MaxRemoveConns       int           // Maximum number of connections to remove at once.
+}
+
+// DynamicScaleMonitor manages the dynamic scaling of the connection pool.
+type DynamicScaleMonitor struct {
+	config          DynamicChannelPoolConfig
+	pool            *BigtableChannelPool
+	lastScalingTime time.Time
+	mu              sync.Mutex // Protects lastScalingTime and a scaling operation
+	ticker          *time.Ticker
+	done            chan struct{}
+	stopOnce        sync.Once
+}
+
+// NewDynamicScaleMonitor creates a new DynamicScaleMonitor.
+func NewDynamicScaleMonitor(config DynamicChannelPoolConfig, pool *BigtableChannelPool) *DynamicScaleMonitor {
+	return &DynamicScaleMonitor{
+		config: config,
+		pool:   pool,
+		done:   make(chan struct{}),
+	}
+}
+
+// Start begins the periodic scaling check loop.
+func (dsm *DynamicScaleMonitor) Start(ctx context.Context) {
+	if !dsm.config.Enabled {
+		return
+	}
+	dsm.ticker = time.NewTicker(dsm.config.CheckInterval)
+	go func() {
+		for {
+			select {
+			case <-dsm.ticker.C:
+				dsm.evaluateAndScale()
+			case <-dsm.done:
+				dsm.ticker.Stop()
+				return
+			case <-ctx.Done(): // Stop when the pool context is done
+				dsm.ticker.Stop()
+				return
+			}
+		}
+	}()
+}
+
+// Stop terminates the scaling check loop.
+func (dsm *DynamicScaleMonitor) Stop() {
+	if !dsm.config.Enabled {
+		return
+	}
+	dsm.stopOnce.Do(func() {
+		close(dsm.done)
+	})
+}
+
+func (dsm *DynamicScaleMonitor) evaluateAndScale() {
+	dsm.mu.Lock()
+	defer dsm.mu.Unlock()
+
+	if time.Since(dsm.lastScalingTime) < dsm.config.MinScalingInterval {
+		return // Too soon since last scaling operation
+	}
+
+	conns := dsm.pool.getConns()
+	numConns := len(conns)
+	if numConns == 0 {
+		if dsm.config.MinConns > 0 {
+			btopt.Debugf(dsm.pool.logger, "bigtable_connpool: WARNING: Pool empty, attempting to scale up to MinConns\n")
+			if dsm.pool.addConnections(dsm.config.MinConns) {
+				dsm.lastScalingTime = time.Now()
+			}
+		}
+		return
+	}
+
+	var totalWeightedLoad int32
+	for _, entry := range conns {
+		totalWeightedLoad += entry.calculateWeightedLoad()
+	}
+	avgLoad := totalWeightedLoad / int32(numConns)
+
+	targetLoad := (dsm.config.AvgLoadLowThreshold + dsm.config.AvgLoadHighThreshold) / 2
+	if targetLoad == 0 {
+		targetLoad = 1
+	} // Avoid division by zero
+
+	if avgLoad >= dsm.config.AvgLoadHighThreshold && numConns < dsm.config.MaxConns {
+		// Scale Up
+		desiredConns := int(math.Ceil(float64(totalWeightedLoad) / float64(targetLoad)))
+		addCount := desiredConns - numConns
+		if addCount < 1 {
+			addCount = 1 // Add at least one
+		}
+		if numConns+addCount > dsm.config.MaxConns {
+			addCount = dsm.config.MaxConns - numConns
+		}
+
+		if addCount > 0 {
+			btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Scaling up: AvgLoad=%d, CurrentSize=%d, Adding=%d\n", avgLoad, numConns, addCount)
+			if dsm.pool.addConnections(addCount) {
+				dsm.lastScalingTime = time.Now()
+			}
+		}
+	} else if avgLoad <= dsm.config.AvgLoadLowThreshold && numConns > dsm.config.MinConns {
+		// Scale Down
+		desiredConns := int(math.Ceil(float64(totalWeightedLoad) / float64(targetLoad)))
+		if desiredConns < dsm.config.MinConns {
+			desiredConns = dsm.config.MinConns
+		}
+		removeCount := numConns - desiredConns
+		if removeCount < 1 && numConns > dsm.config.MinConns {
+			removeCount = 1 // Try to remove at least one if needed.
+		}
+
+		// Enforce the maximum number of connections to remove at once.
+		if removeCount > dsm.config.MaxRemoveConns {
+			removeCount = dsm.config.MaxRemoveConns
+		}
+
+		// Ensure we don't go below MinConns.
+		if numConns-removeCount < dsm.config.MinConns {
+			removeCount = numConns - dsm.config.MinConns
+		}
+
+		if removeCount > 0 {
+			btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Scaling down: AvgLoad=%d, CurrentSize=%d, Removing=%d\n", avgLoad, numConns, removeCount)
+			if dsm.pool.removeConnections(removeCount) {
+				dsm.lastScalingTime = time.Now()
+			}
+		}
+	}
 }
 
 // BigtableChannelPool implements ConnPool and routes requests to the connection
@@ -279,8 +480,9 @@ type BigtableChannelPool struct {
 	selectFunc func() (*connEntry, error) // returns *connEntry
 
 	// Health Checker instance
+	hcConfig      HealthCheckConfig
 	healthMonitor *ChannelHealthMonitor
-	dialMu        sync.Mutex // Serializes dial/replace operations
+	dialMu        sync.Mutex // Serializes dial/replace/resize operations
 
 	poolCtx    context.Context    // Context for the pool's background tasks
 	poolCancel context.CancelFunc // Function to cancel the poolCtx
@@ -292,6 +494,25 @@ type BigtableChannelPool struct {
 	// OpenTelemetry metric instruments
 	outstandingRPCsHistogram         metric.Float64Histogram
 	perConnectionErrorCountHistogram metric.Float64Histogram
+
+	// Dynamic Channel Pool fields
+	// Dynamic Channel Pool Monitor
+	dynamicConfig  DynamicChannelPoolConfig // Keep the config for options
+	dynamicMonitor *DynamicScaleMonitor
+}
+
+// WithHealthCheckConfig sets the health check configuration for the pool.
+func WithHealthCheckConfig(hcConfig HealthCheckConfig) BigtableChannelPoolOption {
+	return func(p *BigtableChannelPool) {
+		p.hcConfig = hcConfig
+	}
+}
+
+// WithDynamicChannelPool sets the dynamic channel pool configuration.
+func WithDynamicChannelPool(config DynamicChannelPoolConfig) BigtableChannelPoolOption {
+	return func(p *BigtableChannelPool) {
+		p.dynamicConfig = config
+	}
 }
 
 // getConns safely loads the current slice of connections.
@@ -304,7 +525,7 @@ func (p *BigtableChannelPool) getConns() []*connEntry {
 }
 
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
-func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), logger *log.Logger, mp metric.MeterProvider) (*BigtableChannelPool, error) {
+func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), logger *log.Logger, mp metric.MeterProvider, opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
@@ -318,7 +539,6 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		dial:          dial,
 		strategy:      strategy,
 		rrIndex:       0,
-		healthMonitor: NewChannelHealthMonitor(),
 		poolCtx:       poolCtx,
 		poolCancel:    poolCancel,
 		logger:        logger,
@@ -345,6 +565,51 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 			metric.WithDescription("Distribution of counts of channels per 'error count per minute'."),
 			metric.WithUnit("1"),
 		)
+		if err != nil {
+			pool.perConnectionErrorCountHistogram = nil
+		}
+	}
+
+	for _, opt := range opts {
+		opt(pool)
+	}
+
+	// Validate dynamic config if enabled
+	if pool.hcConfig.Enabled {
+		pool.healthMonitor = NewChannelHealthMonitor(pool.hcConfig, pool)
+	}
+
+	// Validate dynamic config if enabled
+	if pool.dynamicConfig.Enabled {
+		if pool.dynamicConfig.MinConns <= 0 {
+			pool.dynamicConfig.MinConns = 10
+			btopt.Debugf(pool.logger, "bigtable_connpool: DynamicChannelPoolConfig.MinConns must be positive, adjusted to 1\n")
+		}
+		if pool.dynamicConfig.MaxConns < pool.dynamicConfig.MinConns {
+			pool.dynamicConfig.MaxConns = pool.dynamicConfig.MinConns
+			btopt.Debugf(pool.logger, "bigtable_connpool: DynamicChannelPoolConfig.MaxConns was less than MinConns, adjusted to %d\n", pool.dynamicConfig.MaxConns)
+		}
+		if connPoolSize < pool.dynamicConfig.MinConns || connPoolSize > pool.dynamicConfig.MaxConns {
+			pool.poolCancel()
+			return nil, fmt.Errorf("bigtable_connpool: initial connPoolSize (%d) must be between DynamicChannelPoolConfig.MinConns (%d) and MaxConns (%d)", connPoolSize, pool.dynamicConfig.MinConns, pool.dynamicConfig.MaxConns)
+		}
+		if pool.dynamicConfig.AvgLoadLowThreshold >= pool.dynamicConfig.AvgLoadHighThreshold {
+			pool.poolCancel()
+			return nil, fmt.Errorf("bigtable_connpool: DynamicChannelPoolConfig.AvgLoadLowThreshold (%d) must be less than AvgLoadHighThreshold (%d)", pool.dynamicConfig.AvgLoadLowThreshold, pool.dynamicConfig.AvgLoadHighThreshold)
+		}
+		if pool.dynamicConfig.CheckInterval <= 0 {
+			pool.poolCancel()
+			return nil, fmt.Errorf("bigtable_connpool: DynamicChannelPoolConfig.CheckInterval must be positive")
+		}
+		if pool.dynamicConfig.MinScalingInterval < 0 {
+			pool.poolCancel()
+			return nil, fmt.Errorf("bigtable_connpool: DynamicChannelPoolConfig.MinScalingInterval cannot be negative")
+		}
+		if pool.dynamicConfig.MaxRemoveConns <= 0 {
+			pool.dynamicConfig.MaxRemoveConns = 1
+			btopt.Debugf(pool.logger, "bigtable_connpool: DynamicChannelPoolConfig.MaxRemoveConns must be positive, adjusted to 1\n")
+		}
+		pool.dynamicMonitor = NewDynamicScaleMonitor(pool.dynamicConfig, pool)
 	}
 
 	// Set the selection function based on the strategy
@@ -399,6 +664,10 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 	pool.startHealthChecker()
 	pool.startMetricsReporter()
+
+	if pool.dynamicMonitor != nil {
+		pool.dynamicMonitor.Start(pool.poolCtx)
+	}
 	return pool, nil
 }
 
@@ -461,7 +730,9 @@ func (p *BigtableChannelPool) snapshotAndRecordMetrics(ctx context.Context) {
 }
 
 func (p *BigtableChannelPool) startHealthChecker() {
-	p.healthMonitor.Start(p.poolCtx, p.runProbes, p.detectAndEvictUnhealthy)
+	if p.hcConfig.Enabled {
+		p.healthMonitor.Start(p.poolCtx)
+	}
 }
 
 // Num returns the number of connections in the pool.
@@ -472,7 +743,13 @@ func (p *BigtableChannelPool) Num() int {
 // Close closes all connections in the pool.
 func (p *BigtableChannelPool) Close() error {
 	p.poolCancel() // Cancel the context for background tasks
-	p.healthMonitor.Stop()
+	if p.healthMonitor != nil {
+		p.healthMonitor.Stop()
+	}
+
+	if p.dynamicMonitor != nil {
+		p.dynamicMonitor.Stop()
+	}
 
 	conns := p.getConns()
 	var errs multiError
@@ -492,59 +769,59 @@ func (p *BigtableChannelPool) Close() error {
 }
 
 // runProbes executes a Prime check on all connections concurrently.
-func (p *BigtableChannelPool) runProbes(ctx context.Context) {
+func (p *BigtableChannelPool) runProbes(ctx context.Context, hcConfig HealthCheckConfig) {
 	conns := p.getConns()
 
 	var wg sync.WaitGroup
 	for _, entry := range conns {
 		wg.Add(1)
-		go func(e *connEntry) {
+		go func(e *connEntry, cfg HealthCheckConfig) {
 			defer wg.Done()
 			// Derive the probe context from the passed-in context
-			probeCtx, cancel := context.WithTimeout(ctx, ProbeTimeout)
+			probeCtx, cancel := context.WithTimeout(ctx, cfg.ProbeTimeout)
 			defer cancel()
 			// Check if context was already done before priming
 			select {
 			case <-probeCtx.Done():
-				e.health.addProbeResult(false) // Count as failure if context is done
+				e.health.addProbeResult(false, cfg.WindowDuration) // Count as failure if context is done
 				return
 			default:
 			}
 			// don't update conn  isAlts used entry for now.
 			_, err := e.conn.Prime(probeCtx)
-			e.health.addProbeResult(err == nil)
-		}(entry)
+			e.health.addProbeResult(err == nil, cfg.WindowDuration)
+		}(entry, hcConfig)
 	}
 	wg.Wait()
 }
 
 // detectAndEvictUnhealthy checks connection health and evicts the worst unhealthy one if allowed.
-func (p *BigtableChannelPool) detectAndEvictUnhealthy() {
-	if !p.healthMonitor.AllowEviction() {
-		return // Too soon since the last eviction.
+func (p *BigtableChannelPool) detectAndEvictUnhealthy(hcConfig HealthCheckConfig, allowEviction func() bool, recordEviction func()) bool {
+	if !allowEviction() {
+		return false // Too soon since the last eviction.
 	}
 
 	conns := p.getConns()
 	numConns := len(conns)
 	if numConns == 0 {
-		return
+		return false
 	}
 
 	var unhealthyIndices []int
 	for i, entry := range conns {
-		if !entry.health.isHealthy() { // isHealthy() locks internally
+		if !entry.health.isHealthy(hcConfig.MinProbesForEval, hcConfig.FailurePercentThresh) { // isHealthy() locks internally
 			unhealthyIndices = append(unhealthyIndices, i)
 		}
 	}
 
 	if len(unhealthyIndices) == 0 {
-		return // All connections are healthy.
+		return false // All connections are healthy.
 	}
 
 	unhealthyPercent := float64(len(unhealthyIndices)) / float64(numConns) * 100.0
-	if unhealthyPercent >= float64(PoolwideBadThreshPercent) {
+	if unhealthyPercent >= float64(hcConfig.PoolwideBadThreshPercent) {
 		btopt.Debugf(p.logger, "bigtable_connpool: Circuit breaker tripped, %d%% unhealthy, not evicting\n", int(unhealthyPercent))
-		return // Too many unhealthy connections, don't evict.
+		return false // Too many unhealthy connections, don't evict.
 	}
 
 	// Find the connection with the most failed probes among the unhealthy ones.
@@ -560,9 +837,12 @@ func (p *BigtableChannelPool) detectAndEvictUnhealthy() {
 	}
 
 	if worstIdx != -1 {
-		p.healthMonitor.RecordEviction() // Record eviction time *before* replacing.
+		recordEviction() // Record eviction time *before* replacing. // Record eviction time *before* replacing.
 		p.replaceConnection(worstIdx)
+		return true // Eviction happened
 	}
+
+	return false
 }
 
 // replaceConnection closes the connection at the given index and dials a new one.
@@ -787,6 +1067,134 @@ func (s *refCountedStream) decrementLoad() {
 	s.once.Do(func() {
 		atomic.AddInt32(&s.entry.streamingLoad, -1)
 	})
+}
+
+// addConnections returns true if the pool size changed.
+func (p *BigtableChannelPool) addConnections(n int) bool {
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
+
+	currentConns := p.getConns()
+	numCurrent := len(currentConns)
+	if numCurrent >= p.dynamicConfig.MaxConns {
+		return false
+	}
+
+	if numCurrent+n > p.dynamicConfig.MaxConns {
+		n = p.dynamicConfig.MaxConns - numCurrent
+	}
+
+	if n <= 0 {
+		return false
+	}
+
+	newEntries := make([]*connEntry, n)
+	for i := 0; i < n; i++ {
+		select {
+		case <-p.poolCtx.Done():
+			btopt.Debugf(p.logger, "bigtable_connpool: Context done, aborting addConnections: %v\n", p.poolCtx.Err())
+			return false // Pool is closing
+		default:
+		}
+
+		conn, err := p.dial()
+		if err != nil {
+			btopt.Debugf(p.logger, "bigtable_connpool: Failed to dial new connection for scale up: %v\n", err)
+			n = i
+			break
+		}
+		entry := &connEntry{conn: conn}
+		newEntries[i] = entry
+		go func(e *connEntry) {
+			primeCtx, cancel := context.WithTimeout(p.poolCtx, primeRPCTimeout)
+			defer cancel()
+			isALTS, err := e.conn.Prime(primeCtx)
+			if err != nil {
+				btopt.Debugf(p.logger, "bigtable_connpool: failed to prime new connection: %v\n", err)
+			} else if isALTS {
+				atomic.StoreInt32(&e.altsUsed, 1)
+			}
+		}(entry)
+	}
+
+	if n == 0 {
+		return false
+	}
+
+	newConns := make([]*connEntry, numCurrent+n)
+	copy(newConns, currentConns)
+	copy(newConns[numCurrent:], newEntries[:n])
+	p.conns.Store(newConns)
+	btopt.Debugf(p.logger, "bigtable_connpool: Added %d connections, new size: %d\n", n, len(newConns))
+	return true
+}
+
+type entryWithLoad struct {
+	entry *connEntry
+	load  int32
+	index int
+}
+
+// removeConnections returns true if the pool size changed.
+func (p *BigtableChannelPool) removeConnections(n int) bool {
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
+
+	currentConns := p.getConns()
+	numCurrent := len(currentConns)
+
+	if n <= 0 || numCurrent <= p.dynamicConfig.MinConns {
+		return false
+	}
+
+	// Cap the number of connections to remove.
+	if n > p.dynamicConfig.MaxRemoveConns {
+		n = p.dynamicConfig.MaxRemoveConns
+	}
+
+	// Ensure we don't go below MinConns.
+	if numCurrent-n < p.dynamicConfig.MinConns {
+		n = numCurrent - p.dynamicConfig.MinConns
+	}
+
+	if n <= 0 {
+		return false
+	}
+
+	entries := make([]entryWithLoad, numCurrent)
+	for i, entry := range currentConns {
+		entries[i] = entryWithLoad{entry: entry, load: entry.calculateWeightedLoad(), index: i}
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].load < entries[j].load
+	})
+
+	toRemove := make(map[int]bool)
+	removedConns := make([]*BigtableConn, 0, n)
+	for i := 0; i < n; i++ {
+		toRemove[entries[i].index] = true
+		removedConns = append(removedConns, entries[i].entry.conn)
+	}
+
+	newConns := make([]*connEntry, 0, numCurrent-n)
+	for i, entry := range currentConns {
+		if !toRemove[i] {
+			newConns = append(newConns, entry)
+		}
+	}
+
+	p.conns.Store(newConns)
+	btopt.Debugf(p.logger, "bigtable_connpool: Removed %d connections, new size: %d\n", n, len(newConns))
+
+	for _, conn := range removedConns {
+		go func(c *BigtableConn) {
+			if err := c.Close(); err != nil {
+				btopt.Debugf(p.logger, "bigtable_connpool: Error closing removed connection: %v\n", err)
+			}
+		}(conn)
+	}
+	return true
 }
 
 type multiError []error

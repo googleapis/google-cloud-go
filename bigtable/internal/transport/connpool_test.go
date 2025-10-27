@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net"
 	"strings"
 	"sync"
@@ -54,8 +55,34 @@ type fakeService struct {
 	delay                            time.Duration // To simulate work
 	serverErr                        error         // Error to return from server
 	pingErr                          error         // Error to return from PingAndWarm
-	streamRecvErr                    error         // Error to return from stream.Recv()
-	streamSendErr                    error         // Error to return from stream.Send()
+	pingErrMu                        sync.Mutex    // Protects pingErr
+
+	streamRecvErr error // Error to return from stream.Recv()
+	streamSendErr error // Error to return from stream.Send()
+}
+
+func (s *fakeService) setPingErr(err error) {
+	s.pingErrMu.Lock()
+	defer s.pingErrMu.Unlock()
+	s.pingErr = err
+}
+
+func (s *fakeService) setDelay(duration time.Duration) {
+	s.pingErrMu.Lock()
+	defer s.pingErrMu.Unlock()
+	s.delay = duration
+}
+
+func (s *fakeService) getDelay() time.Duration {
+	s.pingErrMu.Lock()
+	defer s.pingErrMu.Unlock()
+	return s.delay
+}
+
+func (s *fakeService) getPingErr() error {
+	s.pingErrMu.Lock()
+	defer s.pingErrMu.Unlock()
+	return s.pingErr
 }
 
 func (s *fakeService) UnaryCall(ctx context.Context, req *testpb.SimpleRequest) (*testpb.SimpleResponse, error) {
@@ -110,9 +137,11 @@ func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequ
 	s.pingCount++
 	defer s.mu.Unlock()
 
-	if s.delay > 0 {
+	delay := s.getDelay()
+
+	if delay > 0 {
 		select {
-		case <-time.After(s.delay):
+		case <-time.After(delay):
 			// Delay finished
 		case <-ctx.Done():
 			// Context cancelled during delay
@@ -125,8 +154,8 @@ func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequ
 		return nil, err
 	}
 
-	if s.pingErr != nil {
-		return nil, s.pingErr
+	if err := s.getPingErr(); err != nil {
+		return nil, err
 	}
 	return &btpb.PingAndWarmResponse{}, nil
 }
@@ -141,6 +170,12 @@ func (s *fakeService) getPingCount() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.pingCount
+}
+
+func (s *fakeService) setPingCount(count int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.pingCount = count
 }
 
 func setupTestServer(t testing.TB, service *fakeService) string {
@@ -289,7 +324,7 @@ func TestBigtableConn_Prime(t *testing.T) {
 			t.Fatalf("Failed to dial: %v", err)
 		}
 		defer conn.Close()
-		fake.pingCount = 0
+		fake.setPingCount(0)
 		isALTS, err := conn.Prime(ctx)
 		if err != nil {
 			t.Errorf("Prime() failed: %v", err)
@@ -342,8 +377,8 @@ func TestBigtableConn_Prime(t *testing.T) {
 			}
 			defer conn.Close()
 
-			fake.pingErr = tc.pingErr
-			defer func() { fake.pingErr = nil }()
+			fake.setPingErr(tc.pingErr)
+			defer func() { fake.setPingErr(nil) }()
 
 			_, err = conn.Prime(ctx)
 			if err == nil {
@@ -373,7 +408,7 @@ func TestBigtableConn_Prime(t *testing.T) {
 		origDelay := fake.delay
 		fake.delay = 20 * time.Second // Longer than primeRPCTimeout
 		defer func() {
-			fake.delay = origDelay
+			fake.setDelay(origDelay)
 		}()
 
 		primeCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond) // Shorter than primeRPCTimeout
@@ -469,8 +504,12 @@ func TestNewBigtableChannelPool(t *testing.T) {
 				t.Errorf("conn at index %d isALTSUsed() got true, want false", i)
 			}
 		}
-		if pool.healthMonitor == nil {
-			t.Errorf("Health monitor was not created")
+		if pool.healthMonitor != nil {
+			t.Errorf("Health monitor was  created")
+		}
+
+		if pool.dynamicMonitor != nil {
+			t.Errorf("Dynamic monitor was  created")
 		}
 	})
 
@@ -736,7 +775,7 @@ func TestPoolClose(t *testing.T) {
 	addr := setupTestServer(t, fake)
 	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
-	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil, nil)
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil, nil, WithHealthCheckConfig(DefaultHealthCheckConfig()))
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -951,11 +990,12 @@ func TestCachingStreamDecrement(t *testing.T) {
 
 func TestConnHealthStateAddProbeResult(t *testing.T) {
 	chs := &connHealthState{}
-	chs.addProbeResult(true)
+	config := DefaultHealthCheckConfig()
+	chs.addProbeResult(true, config.WindowDuration)
 	if len(chs.probeHistory) != 1 || !chs.probeHistory[0].successful || chs.successfulProbes != 1 || chs.failedProbes != 0 {
 		t.Errorf("Add successful probe failed: %+v", chs)
 	}
-	chs.addProbeResult(false)
+	chs.addProbeResult(false, config.WindowDuration)
 	if len(chs.probeHistory) != 2 || chs.probeHistory[1].successful || chs.successfulProbes != 1 || chs.failedProbes != 1 {
 		t.Errorf("Add failed probe failed: %+v", chs)
 	}
@@ -963,17 +1003,18 @@ func TestConnHealthStateAddProbeResult(t *testing.T) {
 
 func TestConnHealthStatePruneHistory(t *testing.T) {
 	chs := &connHealthState{}
+	config := DefaultHealthCheckConfig()
 	now := time.Now()
 	chs.mu.Lock()
 	chs.probeHistory = []probeResult{
-		{t: now.Add(-WindowDuration - time.Second), successful: true},
-		{t: now.Add(-WindowDuration + time.Millisecond), successful: false},
+		{t: now.Add(-config.WindowDuration - time.Second), successful: true},
+		{t: now.Add(-config.WindowDuration + time.Millisecond), successful: false},
 	}
 	chs.successfulProbes = 1
 	chs.failedProbes = 1
 	chs.mu.Unlock()
 
-	chs.addProbeResult(true) // This triggers prune
+	chs.addProbeResult(true, config.WindowDuration) // This triggers prune
 
 	chs.mu.Lock()
 	defer chs.mu.Unlock()
@@ -983,17 +1024,46 @@ func TestConnHealthStatePruneHistory(t *testing.T) {
 }
 
 func TestChannelHealthMonitor_Stop(t *testing.T) {
-	chm := NewChannelHealthMonitor()
-	// Test double stop
-	chm.Stop()
-	chm.Stop()
-	// Check if channel is closed
-	select {
-	case <-chm.done:
-		// Expected
-	default:
-		t.Errorf("chm.done not closed after Stop()")
-	}
+	t.Run("Enabled", func(t *testing.T) {
+		config := DefaultHealthCheckConfig()
+		if !config.Enabled {
+			t.Fatal("DefaultHealthCheckConfig.Enabled should be true for this test")
+		}
+
+		// The pool can be nil for this unit test since Stop() doesn't use it.
+		chm := NewChannelHealthMonitor(config, nil)
+
+		// Test double stop
+		chm.Stop()
+		chm.Stop() // The sync.Once should prevent a panic on double close
+
+		// Check if channel is closed
+		select {
+		case <-chm.done:
+			// Expected
+		default:
+			t.Errorf("chm.done not closed after Stop()")
+		}
+	})
+
+	t.Run("Disabled", func(t *testing.T) {
+		config := DefaultHealthCheckConfig()
+		config.Enabled = false // Explicitly disable
+
+		chm := NewChannelHealthMonitor(config, nil)
+
+		chm.Stop()
+		chm.Stop()
+
+		// Check that the channel is NOT closed, since the monitor should
+		// have returned immediately.
+		select {
+		case <-chm.done:
+			t.Errorf("chm.done was closed, but monitor was disabled")
+		default:
+			// Expected
+		}
+	})
 }
 
 func TestRunProbesWhenContextDone(t *testing.T) {
@@ -1001,7 +1071,7 @@ func TestRunProbesWhenContextDone(t *testing.T) {
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)
 	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
-	pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil, nil)
+	pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil, nil, WithHealthCheckConfig(DefaultHealthCheckConfig()))
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
@@ -1010,7 +1080,7 @@ func TestRunProbesWhenContextDone(t *testing.T) {
 	probeCtx, cancel := context.WithCancel(ctx)
 	cancel() // Immediately cancel
 
-	pool.runProbes(probeCtx)
+	pool.runProbes(probeCtx, pool.hcConfig)
 
 	conns := pool.getConns()
 	for i, entry := range conns {
@@ -1023,14 +1093,11 @@ func TestRunProbesWhenContextDone(t *testing.T) {
 }
 
 func TestConnHealthStateIsHealthy(t *testing.T) {
-	origMinProbesForEval := MinProbesForEval
-	origFailurePercentThresh := FailurePercentThresh
-	MinProbesForEval = 3
-	FailurePercentThresh = 50
-	defer func() {
-		MinProbesForEval = origMinProbesForEval
-		FailurePercentThresh = origFailurePercentThresh
-	}()
+	config := HealthCheckConfig{
+		MinProbesForEval:     3,
+		FailurePercentThresh: 50,
+		// Other fields don't matter for this test
+	}
 
 	tests := []struct {
 		name       string
@@ -1051,10 +1118,10 @@ func TestConnHealthStateIsHealthy(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			chs := &connHealthState{}
 			for _, r := range tc.results {
-				chs.addProbeResult(r)
+				chs.addProbeResult(r, time.Minute) // WindowDuration doesn't impact isHealthy logic itself
 			}
 
-			if got := chs.isHealthy(); got != tc.isHealthy {
+			if got := chs.isHealthy(config.MinProbesForEval, config.FailurePercentThresh); got != tc.isHealthy {
 				t.Errorf("isHealthy() got %v, want %v", got, tc.isHealthy)
 			}
 			if chs.successfulProbes != tc.numSuccess {
@@ -1073,11 +1140,17 @@ func TestConnHealthStateIsHealthy(t *testing.T) {
 func TestDetectAndEvictUnhealthy(t *testing.T) {
 	ctx := context.Background() // Use context.Background() for tests
 	const poolSize = 10
-	origMinEvictionInterval, origPoolwideBadThreshPercent, origFailurePercentThresh, origMinProbesForEval := MinEvictionInterval, PoolwideBadThreshPercent, FailurePercentThresh, MinProbesForEval
-	MinEvictionInterval, PoolwideBadThreshPercent, FailurePercentThresh, MinProbesForEval = 0, 50, 20, 5
-	defer func() {
-		MinEvictionInterval, PoolwideBadThreshPercent, FailurePercentThresh, MinProbesForEval = origMinEvictionInterval, origPoolwideBadThreshPercent, origFailurePercentThresh, origMinProbesForEval
-	}()
+
+	testConfig := HealthCheckConfig{
+		Enabled:                  true,
+		ProbeInterval:            30 * time.Second,
+		ProbeTimeout:             1 * time.Second,
+		WindowDuration:           5 * time.Minute,
+		MinProbesForEval:         5,
+		FailurePercentThresh:     20,
+		PoolwideBadThreshPercent: 50,
+		MinEvictionInterval:      0, // Allow immediate eviction for test
+	}
 
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)
@@ -1095,7 +1168,7 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 	}
 
 	t.Run("EvictOneUnhealthy", func(t *testing.T) {
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil, nil)
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil, nil, WithHealthCheckConfig(testConfig))
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
@@ -1112,14 +1185,16 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 		pool.conns.Store(conns)
 
 		oldConn := pool.getConns()[unhealthyIdx].conn
-		pool.detectAndEvictUnhealthy()
+		if !pool.detectAndEvictUnhealthy(pool.hcConfig, pool.healthMonitor.AllowEviction, pool.healthMonitor.RecordEviction) {
+			t.Errorf("Connection was not evicted")
+		}
 		if pool.getConns()[unhealthyIdx].conn == oldConn {
 			t.Errorf("Connection at index %d was not evicted", unhealthyIdx)
 		}
 	})
 
 	t.Run("CircuitBreakerTooManyUnhealthy", func(t *testing.T) {
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil, nil)
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, nil, nil, WithHealthCheckConfig(testConfig))
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
@@ -1135,12 +1210,8 @@ func TestDetectAndEvictUnhealthy(t *testing.T) {
 			}
 		}
 		pool.conns.Store(conns)
-		pool.detectAndEvictUnhealthy()
-		currentConns := pool.getConns()
-		for i := 0; i < poolSize; i++ {
-			if currentConns[i].conn != initialConns[i] {
-				t.Errorf("Connection at index %d was unexpectedly evicted", i)
-			}
+		if pool.detectAndEvictUnhealthy(pool.hcConfig, pool.healthMonitor.AllowEviction, pool.healthMonitor.RecordEviction) {
+			t.Errorf("Connection was evicted")
 		}
 	})
 }
@@ -1260,12 +1331,16 @@ func TestReplaceConnection(t *testing.T) {
 func TestHealthCheckerIntegration(t *testing.T) {
 	ctx := context.Background()
 	// Shorten times for testing
-	origProbeInterval, origWindowDuration, origMinProbesForEval, origFailurePercentThresh, origMinEvictionInterval := ProbeInterval, WindowDuration, MinProbesForEval, FailurePercentThresh, MinEvictionInterval
-	ProbeInterval, WindowDuration, MinProbesForEval, FailurePercentThresh, MinEvictionInterval = 50*time.Millisecond, 500*time.Millisecond, 2, 40, 100*time.Millisecond
-	defer func() {
-		ProbeInterval, WindowDuration, MinProbesForEval, FailurePercentThresh, MinEvictionInterval = origProbeInterval, origWindowDuration, origMinProbesForEval, origFailurePercentThresh, origMinEvictionInterval
-	}()
-
+	testHCConfig := HealthCheckConfig{
+		Enabled:                  true,
+		ProbeInterval:            50 * time.Millisecond,
+		ProbeTimeout:             1 * time.Second, // Keep timeout reasonable
+		WindowDuration:           500 * time.Millisecond,
+		MinProbesForEval:         2,
+		FailurePercentThresh:     40,
+		PoolwideBadThreshPercent: 70, // Or as needed
+		MinEvictionInterval:      100 * time.Millisecond,
+	}
 	fake1, fake2 := &fakeService{}, &fakeService{}
 	addr1, addr2 := setupTestServer(t, fake1), setupTestServer(t, fake2)
 	dialOpts := []string{addr1, addr2}
@@ -1280,35 +1355,38 @@ func TestHealthCheckerIntegration(t *testing.T) {
 		return dialBigtableserver(addr)
 	}
 
-	pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil, nil)
+	pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, nil, nil, WithHealthCheckConfig(testHCConfig))
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
 	defer pool.Close()
 
-	time.Sleep(2 * WindowDuration) // Let initial probes run
+	time.Sleep(2 * testHCConfig.WindowDuration) // Let initial probes run
 
-	fake1.pingErr = errors.New("server1 unhealthy") // Make conn 0 fail
+	fake1.setPingErr(errors.New("server1 unhealthy")) // Make conn 0 fail;
 
 	evicted := false
-	for i := 0; i < 60; i++ { // Timeout loop (increased iterations)
-		time.Sleep(ProbeInterval) // Wait for a probe cycle
-		if pool.healthMonitor.AllowEviction() {
-			pool.detectAndEvictUnhealthy()
-		}
+	// Check frequently for a limited time
+	maxWait := 5 * time.Second
+	checkInterval := testHCConfig.ProbeInterval * 2
+	numChecks := int(maxWait / checkInterval)
+
+	for i := 0; i < numChecks; i++ {
+		time.Sleep(checkInterval)
 		conns := pool.getConns()
-		if conns[0].conn.ClientConn.Target() == addr2 {
+		if len(conns) > 0 && conns[0].conn.ClientConn.Target() == addr2 {
 			evicted = true
 			break
 		}
 	}
 	if !evicted {
-		t.Errorf("Connection 0 not evicted to addr2")
+		t.Errorf("Connection 0 not evicted to addr2 within %s", maxWait)
 	}
-	if pool.getConns()[1].conn.ClientConn.Target() != addr2 {
+	if len(pool.getConns()) > 1 && pool.getConns()[1].conn.ClientConn.Target() != addr2 {
 		t.Errorf("Connection 1 target changed unexpectedly")
 	}
 }
+
 func findMetric(rm metricdata.ResourceMetrics, name string) (metricdata.Metrics, bool) {
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
@@ -1401,7 +1479,6 @@ func TestMetricsExporting(t *testing.T) {
 	if !ok {
 		t.Fatalf("Metric connection_pool/outstanding_rpcs is not a Histogram[float64]: %T", outstandingRPCs.Data)
 	}
-	fmt.Println(hist)
 
 	// Expected: poolSize * 2 data points (unary and streaming for each connection)
 	if len(hist.DataPoints) != 2 {
@@ -1473,6 +1550,332 @@ func TestMetricsExporting(t *testing.T) {
 	for _, entry := range pool.getConns() {
 		if atomic.LoadInt64(&entry.errorCount) != 0 {
 			t.Errorf("entry.errorCount is %d after metric collection, want 0", atomic.LoadInt64(&entry.errorCount))
+		}
+	}
+}
+
+func setConnLoads(conns []*connEntry, unary, stream int32) {
+	for _, entry := range conns {
+		atomic.StoreInt32(&entry.unaryLoad, unary)
+		atomic.StoreInt32(&entry.streamingLoad, stream)
+	}
+}
+
+func TestDynamicChannelScaling(t *testing.T) {
+	ctx := context.Background()
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	baseConfig := DynamicChannelPoolConfig{
+		Enabled:              true,
+		MinConns:             2,
+		MaxConns:             10,
+		AvgLoadHighThreshold: 10,               // Scale up if avg load >= 10
+		AvgLoadLowThreshold:  3,                // Scale down if avg load <= 3
+		MinScalingInterval:   0,                // Disable time throttling for most tests
+		CheckInterval:        10 * time.Second, // Not directly used by calling evaluateAndScale
+		MaxRemoveConns:       3,
+	}
+	targetLoadFactor := float64(baseConfig.AvgLoadLowThreshold+baseConfig.AvgLoadHighThreshold) / 2.0
+
+	tests := []struct {
+		name        string
+		initialSize int
+		configOpt   func(*DynamicChannelPoolConfig)
+		setLoad     func(conns []*connEntry)
+		wantSize    int
+	}{
+		{
+			name:        "ScaleUp",
+			initialSize: 3,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 12, 0) // Avg load 12 > 10
+			},
+			// Total load = 3 * 12 = 36. Desired = ceil(36 / 6.5) = 6
+			wantSize: 6,
+		},
+		{
+			name:        "ScaleUpCappedAtMax",
+			initialSize: 8,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 20, 0) // Avg load 20 > 10
+			},
+			// Total load = 8 * 20 = 160. Desired = ceil(160 / 6.5) = 25. Capped at MaxConns = 10
+			wantSize: 10,
+		},
+		{
+			name:        "ScaleDown",
+			initialSize: 9,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 1, 0) // Avg load 1 < 3
+			},
+			// Total load = 9 * 1 = 9. Desired = ceil(9 / 6.5) = 2.
+			wantSize: 6,
+		},
+		{
+			name:        "ScaleDownCappedAtMin",
+			initialSize: 3,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 1, 0) // Avg load 1 < 3
+			},
+			// Total load = 3 * 1 = 3. Desired = ceil(3 / 6.5) = 1. Capped at MinConns = 2
+			wantSize: 2,
+		},
+		{
+			name:        "ScaleDownLimitedByMaxRemove",
+			initialSize: 10,
+			configOpt: func(cfg *DynamicChannelPoolConfig) {
+				cfg.MaxRemoveConns = 2
+			},
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 0, 0) // Avg load 0 < 3
+			},
+			// Total load = 0. Desired = 2 (MinConns). removeCount = 10 - 2 = 8. Limited by MaxRemoveConns = 2.
+			wantSize: 10 - 2,
+		},
+		{
+			name:        "NoScaleUp",
+			initialSize: 5,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 7, 0) // 3 < Avg load 7 < 10
+			},
+			wantSize: 5,
+		},
+		{
+			name:        "NoScaleDown",
+			initialSize: 5,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 5, 1) // Weighted load 5*1 + 1*2 = 7.  3 < 7 < 10
+			},
+			wantSize: 5,
+		},
+		{
+			name:        "ScaleUpAddAtLeastOne",
+			initialSize: 2,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 10, 0) // Avg load 10, right at threshold.
+			},
+			// Total load = 20. Desired = ceil(20 / 6.5) = 4. Add 2.
+			wantSize: 4,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			config := baseConfig
+			if tc.configOpt != nil {
+				tc.configOpt(&config)
+			}
+
+			pool, err := NewBigtableChannelPool(ctx, tc.initialSize, btopt.RoundRobin, dialFunc, nil, nil, WithDynamicChannelPool(config))
+			if err != nil {
+				t.Fatalf("Failed to create pool: %v", err)
+			}
+			defer pool.Close()
+
+			if tc.setLoad != nil {
+				tc.setLoad(pool.getConns())
+			}
+
+			// Capture the load for debugging
+			var totalLoad int32
+			conns := pool.getConns()
+			for _, entry := range conns {
+				totalLoad += entry.calculateWeightedLoad()
+			}
+			avgLoad := float64(totalLoad) / float64(len(conns))
+			desiredConns := int(math.Ceil(float64(totalLoad) / targetLoadFactor))
+			t.Logf("Initial size: %d, Avg load: %.2f, Total load: %d, Target desired conns: %d", tc.initialSize, avgLoad, totalLoad, desiredConns)
+
+			pool.dynamicMonitor.evaluateAndScale()
+
+			if gotSize := pool.Num(); gotSize != tc.wantSize {
+				t.Errorf("evaluateAndScale() resulted in pool size %d, want %d", gotSize, tc.wantSize)
+			}
+		})
+	}
+
+	t.Run("MinScalingInterval", func(t *testing.T) {
+		config := baseConfig
+		config.MinScalingInterval = 5 * time.Minute
+		initialSize := 3
+
+		pool, err := NewBigtableChannelPool(ctx, initialSize, btopt.RoundRobin, dialFunc, nil, nil, WithDynamicChannelPool(config))
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		// Set load to trigger scale up
+		setConnLoads(pool.getConns(), 15, 0)
+
+		// 1. Simulate recent scaling
+		pool.dynamicMonitor.mu.Lock()
+		pool.dynamicMonitor.lastScalingTime = time.Now()
+		pool.dynamicMonitor.mu.Unlock()
+
+		pool.dynamicMonitor.evaluateAndScale()
+		if gotSize := pool.Num(); gotSize != initialSize {
+			t.Errorf("Pool size changed to %d, want %d (should be throttled)", gotSize, initialSize)
+		}
+
+		// 2. Allow scaling again by moving lastScalingTime to the past
+		pool.dynamicMonitor.mu.Lock()
+		pool.dynamicMonitor.lastScalingTime = time.Now().Add(-10 * time.Minute)
+		pool.dynamicMonitor.mu.Unlock()
+
+		pool.dynamicMonitor.evaluateAndScale()
+		if gotSize := pool.Num(); gotSize == initialSize {
+			t.Errorf("Pool size %d, want > %d (should have scaled up)", gotSize, initialSize)
+		} else {
+			t.Logf("Scaled up to %d connections", gotSize)
+		}
+	})
+
+	t.Run("EmptyPoolScaleUp", func(t *testing.T) {
+		config := baseConfig
+		// Pool creation requires size > 0. So, create and then manually empty it.
+		pool, err := NewBigtableChannelPool(ctx, config.MinConns, btopt.RoundRobin, dialFunc, nil, nil, WithDynamicChannelPool(config))
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		// Manually empty the pool to test the zero-connection code path
+		pool.conns.Store(([]*connEntry)(nil))
+
+		pool.dynamicMonitor.evaluateAndScale()
+		if gotSize := pool.Num(); gotSize != config.MinConns {
+			t.Errorf("Pool size after empty scale-up is %d, want %d", gotSize, config.MinConns)
+		}
+	})
+}
+
+func TestDynamicScalingAndHealthCheckingInteraction(t *testing.T) {
+	ctx := context.Background()
+
+	healthyFake := &fakeService{}
+	unhealthyFake := &fakeService{}
+	healthyAddr := setupTestServer(t, healthyFake)
+	unhealthyAddr := setupTestServer(t, unhealthyFake)
+
+	var dialCount int32
+	dialFunc := func() (*BigtableConn, error) {
+		count := atomic.AddInt32(&dialCount, 1)
+		// The first connection goes to unhealthyFake, the rest and replacements go to healthyFake
+		addr := healthyAddr
+		if count == 1 {
+			addr = unhealthyAddr
+		}
+		return dialBigtableserver(addr)
+	}
+
+	dynConfig := DynamicChannelPoolConfig{
+		Enabled:              true,
+		MinConns:             2,
+		MaxConns:             5,
+		AvgLoadHighThreshold: 10,
+		AvgLoadLowThreshold:  3,
+		MinScalingInterval:   0,
+		CheckInterval:        20 * time.Millisecond,
+		MaxRemoveConns:       2,
+	}
+
+	hcConfig := HealthCheckConfig{
+		Enabled:                  true,
+		ProbeInterval:            15 * time.Millisecond,
+		ProbeTimeout:             1 * time.Second,
+		WindowDuration:           100 * time.Millisecond,
+		MinProbesForEval:         2,
+		FailurePercentThresh:     40,
+		PoolwideBadThreshPercent: 70,
+		MinEvictionInterval:      0,
+	}
+
+	initialSize := 2
+	pool, err := NewBigtableChannelPool(ctx, initialSize, btopt.RoundRobin, dialFunc, log.Default(), nil,
+		WithDynamicChannelPool(dynConfig),
+		WithHealthCheckConfig(hcConfig),
+	)
+	if err != nil {
+		t.Fatalf("Failed to create pool: %v", err)
+	}
+	defer pool.Close()
+
+	// Allow initial health checks to run
+	time.Sleep(2 * hcConfig.WindowDuration)
+
+	// --- Phase 1: Scale Up ---
+	t.Log("Phase 1: Triggering Scale Up")
+	setConnLoads(pool.getConns(), 15, 0) // High load
+
+	time.Sleep(3 * dynConfig.CheckInterval) // Wait for scaling to occur
+
+	if pool.Num() <= initialSize {
+		t.Errorf("Pool size should have increased from %d, got %d", initialSize, pool.Num())
+	}
+	if pool.Num() > dynConfig.MaxConns {
+		t.Errorf("Pool size %d exceeded MaxConns %d", pool.Num(), dynConfig.MaxConns)
+	}
+	t.Logf("Pool scaled up to %d connections", pool.Num())
+
+	// --- Phase 2: Inject Unhealthiness ---
+	t.Log("Phase 2: Triggering Unhealthiness")
+	unhealthyFake.setPingErr(errors.New("simulated ping failure"))
+
+	// Wait for health checker to detect and evict
+	evicted := false
+	for i := 0; i < 40; i++ { // Wait up to 600ms
+		time.Sleep(hcConfig.ProbeInterval)
+		conns := pool.getConns()
+		foundUnhealthyTarget := false
+		for _, entry := range conns {
+			if entry.conn.ClientConn.Target() == unhealthyAddr {
+				foundUnhealthyTarget = true
+				break
+			}
+		}
+		if !foundUnhealthyTarget {
+			evicted = true
+			break
+		}
+	}
+
+	if !evicted {
+		t.Errorf("Connection to %s was not evicted", unhealthyAddr)
+	} else {
+		t.Logf("Connection to %s was evicted", unhealthyAddr)
+	}
+	unhealthyFake.setPingErr(nil) // Clear error
+
+	// Check all current connections point to healthyAddr
+	for i, entry := range pool.getConns() {
+		if entry.conn.ClientConn.Target() != healthyAddr {
+			t.Errorf("Connection at index %d points to %s, want %s", i, entry.conn.ClientConn.Target(), healthyAddr)
+		}
+	}
+
+	// --- Phase 3: Scale Down ---
+	t.Log("Phase 3: Triggering Scale Down")
+	setConnLoads(pool.getConns(), 1, 0) // Low load
+
+	time.Sleep(4 * dynConfig.CheckInterval) // Wait for scaling
+
+	currentSize := pool.Num()
+	if currentSize >= dynConfig.MaxConns && currentSize > dynConfig.MinConns {
+		t.Errorf("Pool size should have decreased, got %d", currentSize)
+	}
+	if currentSize < dynConfig.MinConns {
+		t.Errorf("Pool size %d went below MinConns %d", currentSize, dynConfig.MinConns)
+	}
+	t.Logf("Pool scaled down to %d connections", currentSize)
+
+	// Final check: ensure all connections are healthy
+	time.Sleep(2 * hcConfig.WindowDuration) // Let probes run on new/remaining conns
+	for i, entry := range pool.getConns() {
+		if !entry.health.isHealthy(hcConfig.MinProbesForEval, hcConfig.FailurePercentThresh) {
+			t.Errorf("Connection at index %d is not healthy after test cycles", i)
 		}
 	}
 }

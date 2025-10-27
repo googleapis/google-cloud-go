@@ -36,11 +36,40 @@ import (
 
 const (
 	bigtableClientMonitoredResourceName = "bigtable_client"
-	bigtableClientMetricPrefix          = "bigtable.googleapis.com/internal/client/"
-	unKnownAtttr                        = "unknown"
+	// Bigtable Client Metric Prefix
+	bigtableClientMetricPrefix = "bigtable.googleapis.com/internal/client/"
+	unKnownAtttr               = "unknown"
 )
 
 var latenciesBoundaries = []float64{0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.008, 0.01, 0.013, 0.016, 0.02, 0.025, 0.03, 0.04, 0.05, 0.065, 0.08, 0.1, 0.13, 0.16, 0.2, 0.25, 0.3, 0.4, 0.5, 0.65, 0.8, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 400.0, 800.0, 1600.0, 3200.0} // max is 53.3 minutes
+
+// Boundaries for the connection_pool.outstanding_rpcs histogram.
+var outstandingRPCsBoundaries = []float64{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 20, 24, 28, 32, 40, 50, 64, 128, 256, 512, 1024}
+
+var perConnectionErrorCountHistogram = []float64{
+	0.0,
+	1.0,
+	2.0,
+	4.0,
+	8.0,
+	16.0,
+	32.0,
+	64.0,
+	125.0,
+	250.0,
+	500.0,
+	1000.0,
+	2000.0,
+	4000.0,
+	8000.0,
+	16000.0,
+	32000.0,
+	64000.0,
+	128000.0,
+	250000.0,
+	500000.0,
+	1000000.0,
+}
 
 // bigtable_client monitored resource labels
 type bigtableClientMonitoredResource struct {
@@ -179,6 +208,8 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*metricsCont
 		// customer histogram boundaries
 		metric.WithView(
 			createHistogramView("grpc.client.attempt.duration", latenciesBoundaries),
+			createHistogramView("connection_pool/outstanding_rpcs", outstandingRPCsBoundaries),
+			createHistogramView("per_connection_error_count", perConnectionErrorCountHistogram),
 		))
 	if cfg.manualReader != nil {
 		meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
