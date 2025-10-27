@@ -3800,6 +3800,15 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/privilegedaccessmanager/
     tag_format: '{id}/v{version}'
+  - id: profiler
+    version: 0.4.3
+    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    apis: []
+    source_roots:
+      - profiler
+    preserve_regex: []
+    remove_regex: []
+    tag_format: '{id}/v{version}'
   - id: pubsub
     version: 1.50.1
     last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576

@@ -18,9 +18,6 @@
     "logging": {
       "component": "logging"
     },
-    "profiler": {
-      "component": "profiler"
-    },
     "storage": {
       "component": "storage"
     }

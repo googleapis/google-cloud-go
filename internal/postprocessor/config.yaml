@@ -7,7 +7,6 @@ modules:
   - bigtable
   - errorreporting
   - logging
-  - profiler
   - storage
 
 manual-clients:
@@ -218,6 +217,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - profiler
   - vertexai
   - spanner
   - datastore
@@ -395,7 +395,6 @@ skip-module-scan-paths:
   - bigtable
   - errorreporting
   - logging
-  - profiler
   - storage
   # unreleased modules
   - spanner/test/opentelemetry/test
