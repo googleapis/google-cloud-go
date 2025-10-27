@@ -47,10 +47,12 @@ const (
 	OracleDatabase_ListDbServers_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers"
 	OracleDatabase_ListDbNodes_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes"
 	OracleDatabase_ListGiVersions_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions"
+	OracleDatabase_ListMinorVersions_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions"
 	OracleDatabase_ListDbSystemShapes_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes"
 	OracleDatabase_ListAutonomousDatabases_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases"
 	OracleDatabase_GetAutonomousDatabase_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase"
 	OracleDatabase_CreateAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase"
+	OracleDatabase_UpdateAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase"
 	OracleDatabase_DeleteAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase"
 	OracleDatabase_RestoreAutonomousDatabase_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase"
 	OracleDatabase_GenerateAutonomousDatabaseWallet_FullMethodName    = "/google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet"
@@ -60,6 +62,37 @@ const (
 	OracleDatabase_StopAutonomousDatabase_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase"
 	OracleDatabase_StartAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase"
 	OracleDatabase_RestartAutonomousDatabase_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
+	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
+	OracleDatabase_FailoverAutonomousDatabase_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
+	OracleDatabase_ListOdbNetworks_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
+	OracleDatabase_GetOdbNetwork_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
+	OracleDatabase_CreateOdbNetwork_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
+	OracleDatabase_DeleteOdbNetwork_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork"
+	OracleDatabase_ListOdbSubnets_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets"
+	OracleDatabase_GetOdbSubnet_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
+	OracleDatabase_CreateOdbSubnet_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
+	OracleDatabase_DeleteOdbSubnet_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
+	OracleDatabase_ListExadbVmClusters_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
+	OracleDatabase_GetExadbVmCluster_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
+	OracleDatabase_CreateExadbVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
+	OracleDatabase_DeleteExadbVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster"
+	OracleDatabase_UpdateExadbVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster"
+	OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName  = "/google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster"
+	OracleDatabase_ListExascaleDbStorageVaults_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults"
+	OracleDatabase_GetExascaleDbStorageVault_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault"
+	OracleDatabase_CreateExascaleDbStorageVault_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault"
+	OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault"
+	OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes"
+	OracleDatabase_ListDatabases_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases"
+	OracleDatabase_GetDatabase_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase"
+	OracleDatabase_ListPluggableDatabases_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases"
+	OracleDatabase_GetPluggableDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase"
+	OracleDatabase_ListDbSystems_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems"
+	OracleDatabase_GetDbSystem_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem"
+	OracleDatabase_CreateDbSystem_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem"
+	OracleDatabase_DeleteDbSystem_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem"
+	OracleDatabase_ListDbVersions_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
+	OracleDatabase_ListDatabaseCharacterSets_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
 )
 
 // OracleDatabaseClient is the client API for OracleDatabase service.
@@ -91,6 +124,9 @@ type OracleDatabaseClient interface {
 	// Lists all the valid Oracle Grid Infrastructure (GI) versions for the given
 	// project and location.
 	ListGiVersions(ctx context.Context, in *ListGiVersionsRequest, opts ...grpc.CallOption) (*ListGiVersionsResponse, error)
+	// Lists all the valid minor versions for the given
+	// project, location, gi version and shape family.
+	ListMinorVersions(ctx context.Context, in *ListMinorVersionsRequest, opts ...grpc.CallOption) (*ListMinorVersionsResponse, error)
 	// Lists the database system shapes available for the project and location.
 	ListDbSystemShapes(ctx context.Context, in *ListDbSystemShapesRequest, opts ...grpc.CallOption) (*ListDbSystemShapesResponse, error)
 	// Lists the Autonomous Databases in a given project and location.
@@ -99,6 +135,8 @@ type OracleDatabaseClient interface {
 	GetAutonomousDatabase(ctx context.Context, in *GetAutonomousDatabaseRequest, opts ...grpc.CallOption) (*AutonomousDatabase, error)
 	// Creates a new Autonomous Database in a given project and location.
 	CreateAutonomousDatabase(ctx context.Context, in *CreateAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single Autonomous Database.
+	UpdateAutonomousDatabase(ctx context.Context, in *UpdateAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Autonomous Database.
 	DeleteAutonomousDatabase(ctx context.Context, in *DeleteAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restores a single Autonomous Database.
@@ -118,6 +156,75 @@ type OracleDatabaseClient interface {
 	StartAutonomousDatabase(ctx context.Context, in *StartAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restarts an Autonomous Database.
 	RestartAutonomousDatabase(ctx context.Context, in *RestartAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Initiates a switchover of specified autonomous database to the associated
+	// peer database.
+	SwitchoverAutonomousDatabase(ctx context.Context, in *SwitchoverAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Initiates a failover to target autonomous database from the associated
+	// primary database.
+	FailoverAutonomousDatabase(ctx context.Context, in *FailoverAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists the ODB Networks in a given project and location.
+	ListOdbNetworks(ctx context.Context, in *ListOdbNetworksRequest, opts ...grpc.CallOption) (*ListOdbNetworksResponse, error)
+	// Gets details of a single ODB Network.
+	GetOdbNetwork(ctx context.Context, in *GetOdbNetworkRequest, opts ...grpc.CallOption) (*OdbNetwork, error)
+	// Creates a new ODB Network in a given project and location.
+	CreateOdbNetwork(ctx context.Context, in *CreateOdbNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single ODB Network.
+	DeleteOdbNetwork(ctx context.Context, in *DeleteOdbNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the ODB Subnets in a given ODB Network.
+	ListOdbSubnets(ctx context.Context, in *ListOdbSubnetsRequest, opts ...grpc.CallOption) (*ListOdbSubnetsResponse, error)
+	// Gets details of a single ODB Subnet.
+	GetOdbSubnet(ctx context.Context, in *GetOdbSubnetRequest, opts ...grpc.CallOption) (*OdbSubnet, error)
+	// Creates a new ODB Subnet in a given ODB Network.
+	CreateOdbSubnet(ctx context.Context, in *CreateOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single ODB Subnet.
+	DeleteOdbSubnet(ctx context.Context, in *DeleteOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the Exadb (Exascale) VM Clusters for the given project and
+	// location.
+	ListExadbVmClusters(ctx context.Context, in *ListExadbVmClustersRequest, opts ...grpc.CallOption) (*ListExadbVmClustersResponse, error)
+	// Gets details of a single Exadb (Exascale) VM Cluster.
+	GetExadbVmCluster(ctx context.Context, in *GetExadbVmClusterRequest, opts ...grpc.CallOption) (*ExadbVmCluster, error)
+	// Creates a new Exadb (Exascale) VM Cluster resource.
+	CreateExadbVmCluster(ctx context.Context, in *CreateExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single Exadb (Exascale) VM Cluster.
+	DeleteExadbVmCluster(ctx context.Context, in *DeleteExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a single Exadb (Exascale) VM Cluster. To add virtual machines to
+	// existing exadb vm cluster, only pass the node count.
+	UpdateExadbVmCluster(ctx context.Context, in *UpdateExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Removes virtual machines from an existing exadb vm cluster.
+	RemoveVirtualMachineExadbVmCluster(ctx context.Context, in *RemoveVirtualMachineExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the ExascaleDB Storage Vaults for the given project and
+	// location.
+	ListExascaleDbStorageVaults(ctx context.Context, in *ListExascaleDbStorageVaultsRequest, opts ...grpc.CallOption) (*ListExascaleDbStorageVaultsResponse, error)
+	// Gets details of a single ExascaleDB Storage Vault.
+	GetExascaleDbStorageVault(ctx context.Context, in *GetExascaleDbStorageVaultRequest, opts ...grpc.CallOption) (*ExascaleDbStorageVault, error)
+	// Creates a new ExascaleDB Storage Vault resource.
+	CreateExascaleDbStorageVault(ctx context.Context, in *CreateExascaleDbStorageVaultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single ExascaleDB Storage Vault.
+	DeleteExascaleDbStorageVault(ctx context.Context, in *DeleteExascaleDbStorageVaultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the DbSystemInitialStorageSizes for the given project and
+	// location.
+	ListDbSystemInitialStorageSizes(ctx context.Context, in *ListDbSystemInitialStorageSizesRequest, opts ...grpc.CallOption) (*ListDbSystemInitialStorageSizesResponse, error)
+	// Lists all the Databases for the given project, location and DbSystem.
+	ListDatabases(ctx context.Context, in *ListDatabasesRequest, opts ...grpc.CallOption) (*ListDatabasesResponse, error)
+	// Gets details of a single Database.
+	GetDatabase(ctx context.Context, in *GetDatabaseRequest, opts ...grpc.CallOption) (*Database, error)
+	// Lists all the PluggableDatabases for the given project, location and
+	// Container Database.
+	ListPluggableDatabases(ctx context.Context, in *ListPluggableDatabasesRequest, opts ...grpc.CallOption) (*ListPluggableDatabasesResponse, error)
+	// Gets details of a single PluggableDatabase.
+	GetPluggableDatabase(ctx context.Context, in *GetPluggableDatabaseRequest, opts ...grpc.CallOption) (*PluggableDatabase, error)
+	// Lists all the DbSystems for the given project and location.
+	ListDbSystems(ctx context.Context, in *ListDbSystemsRequest, opts ...grpc.CallOption) (*ListDbSystemsResponse, error)
+	// Gets details of a single DbSystem.
+	GetDbSystem(ctx context.Context, in *GetDbSystemRequest, opts ...grpc.CallOption) (*DbSystem, error)
+	// Creates a new DbSystem in a given project and location.
+	CreateDbSystem(ctx context.Context, in *CreateDbSystemRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single DbSystem.
+	DeleteDbSystem(ctx context.Context, in *DeleteDbSystemRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// List DbVersions for the given project and location.
+	ListDbVersions(ctx context.Context, in *ListDbVersionsRequest, opts ...grpc.CallOption) (*ListDbVersionsResponse, error)
+	// List DatabaseCharacterSets for the given project and location.
+	ListDatabaseCharacterSets(ctx context.Context, in *ListDatabaseCharacterSetsRequest, opts ...grpc.CallOption) (*ListDatabaseCharacterSetsResponse, error)
 }
 
 type oracleDatabaseClient struct {
@@ -236,6 +343,15 @@ func (c *oracleDatabaseClient) ListGiVersions(ctx context.Context, in *ListGiVer
 	return out, nil
 }
 
+func (c *oracleDatabaseClient) ListMinorVersions(ctx context.Context, in *ListMinorVersionsRequest, opts ...grpc.CallOption) (*ListMinorVersionsResponse, error) {
+	out := new(ListMinorVersionsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListMinorVersions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *oracleDatabaseClient) ListDbSystemShapes(ctx context.Context, in *ListDbSystemShapesRequest, opts ...grpc.CallOption) (*ListDbSystemShapesResponse, error) {
 	out := new(ListDbSystemShapesResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListDbSystemShapes_FullMethodName, in, out, opts...)
@@ -266,6 +382,15 @@ func (c *oracleDatabaseClient) GetAutonomousDatabase(ctx context.Context, in *Ge
 func (c *oracleDatabaseClient) CreateAutonomousDatabase(ctx context.Context, in *CreateAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, OracleDatabase_CreateAutonomousDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) UpdateAutonomousDatabase(ctx context.Context, in *UpdateAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_UpdateAutonomousDatabase_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -353,6 +478,285 @@ func (c *oracleDatabaseClient) RestartAutonomousDatabase(ctx context.Context, in
 	return out, nil
 }
 
+func (c *oracleDatabaseClient) SwitchoverAutonomousDatabase(ctx context.Context, in *SwitchoverAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) FailoverAutonomousDatabase(ctx context.Context, in *FailoverAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_FailoverAutonomousDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListOdbNetworks(ctx context.Context, in *ListOdbNetworksRequest, opts ...grpc.CallOption) (*ListOdbNetworksResponse, error) {
+	out := new(ListOdbNetworksResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListOdbNetworks_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetOdbNetwork(ctx context.Context, in *GetOdbNetworkRequest, opts ...grpc.CallOption) (*OdbNetwork, error) {
+	out := new(OdbNetwork)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetOdbNetwork_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateOdbNetwork(ctx context.Context, in *CreateOdbNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateOdbNetwork_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteOdbNetwork(ctx context.Context, in *DeleteOdbNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteOdbNetwork_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListOdbSubnets(ctx context.Context, in *ListOdbSubnetsRequest, opts ...grpc.CallOption) (*ListOdbSubnetsResponse, error) {
+	out := new(ListOdbSubnetsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListOdbSubnets_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetOdbSubnet(ctx context.Context, in *GetOdbSubnetRequest, opts ...grpc.CallOption) (*OdbSubnet, error) {
+	out := new(OdbSubnet)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetOdbSubnet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateOdbSubnet(ctx context.Context, in *CreateOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateOdbSubnet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteOdbSubnet(ctx context.Context, in *DeleteOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteOdbSubnet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListExadbVmClusters(ctx context.Context, in *ListExadbVmClustersRequest, opts ...grpc.CallOption) (*ListExadbVmClustersResponse, error) {
+	out := new(ListExadbVmClustersResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListExadbVmClusters_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetExadbVmCluster(ctx context.Context, in *GetExadbVmClusterRequest, opts ...grpc.CallOption) (*ExadbVmCluster, error) {
+	out := new(ExadbVmCluster)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetExadbVmCluster_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateExadbVmCluster(ctx context.Context, in *CreateExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateExadbVmCluster_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteExadbVmCluster(ctx context.Context, in *DeleteExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteExadbVmCluster_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) UpdateExadbVmCluster(ctx context.Context, in *UpdateExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_UpdateExadbVmCluster_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, in *RemoveVirtualMachineExadbVmClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListExascaleDbStorageVaults(ctx context.Context, in *ListExascaleDbStorageVaultsRequest, opts ...grpc.CallOption) (*ListExascaleDbStorageVaultsResponse, error) {
+	out := new(ListExascaleDbStorageVaultsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListExascaleDbStorageVaults_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetExascaleDbStorageVault(ctx context.Context, in *GetExascaleDbStorageVaultRequest, opts ...grpc.CallOption) (*ExascaleDbStorageVault, error) {
+	out := new(ExascaleDbStorageVault)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetExascaleDbStorageVault_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateExascaleDbStorageVault(ctx context.Context, in *CreateExascaleDbStorageVaultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateExascaleDbStorageVault_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteExascaleDbStorageVault(ctx context.Context, in *DeleteExascaleDbStorageVaultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListDbSystemInitialStorageSizes(ctx context.Context, in *ListDbSystemInitialStorageSizesRequest, opts ...grpc.CallOption) (*ListDbSystemInitialStorageSizesResponse, error) {
+	out := new(ListDbSystemInitialStorageSizesResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListDatabases(ctx context.Context, in *ListDatabasesRequest, opts ...grpc.CallOption) (*ListDatabasesResponse, error) {
+	out := new(ListDatabasesResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListDatabases_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetDatabase(ctx context.Context, in *GetDatabaseRequest, opts ...grpc.CallOption) (*Database, error) {
+	out := new(Database)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListPluggableDatabases(ctx context.Context, in *ListPluggableDatabasesRequest, opts ...grpc.CallOption) (*ListPluggableDatabasesResponse, error) {
+	out := new(ListPluggableDatabasesResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListPluggableDatabases_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetPluggableDatabase(ctx context.Context, in *GetPluggableDatabaseRequest, opts ...grpc.CallOption) (*PluggableDatabase, error) {
+	out := new(PluggableDatabase)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetPluggableDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListDbSystems(ctx context.Context, in *ListDbSystemsRequest, opts ...grpc.CallOption) (*ListDbSystemsResponse, error) {
+	out := new(ListDbSystemsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListDbSystems_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetDbSystem(ctx context.Context, in *GetDbSystemRequest, opts ...grpc.CallOption) (*DbSystem, error) {
+	out := new(DbSystem)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetDbSystem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateDbSystem(ctx context.Context, in *CreateDbSystemRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateDbSystem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteDbSystem(ctx context.Context, in *DeleteDbSystemRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteDbSystem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListDbVersions(ctx context.Context, in *ListDbVersionsRequest, opts ...grpc.CallOption) (*ListDbVersionsResponse, error) {
+	out := new(ListDbVersionsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListDbVersions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListDatabaseCharacterSets(ctx context.Context, in *ListDatabaseCharacterSetsRequest, opts ...grpc.CallOption) (*ListDatabaseCharacterSetsResponse, error) {
+	out := new(ListDatabaseCharacterSetsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListDatabaseCharacterSets_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OracleDatabaseServer is the server API for OracleDatabase service.
 // All implementations should embed UnimplementedOracleDatabaseServer
 // for forward compatibility
@@ -382,6 +786,9 @@ type OracleDatabaseServer interface {
 	// Lists all the valid Oracle Grid Infrastructure (GI) versions for the given
 	// project and location.
 	ListGiVersions(context.Context, *ListGiVersionsRequest) (*ListGiVersionsResponse, error)
+	// Lists all the valid minor versions for the given
+	// project, location, gi version and shape family.
+	ListMinorVersions(context.Context, *ListMinorVersionsRequest) (*ListMinorVersionsResponse, error)
 	// Lists the database system shapes available for the project and location.
 	ListDbSystemShapes(context.Context, *ListDbSystemShapesRequest) (*ListDbSystemShapesResponse, error)
 	// Lists the Autonomous Databases in a given project and location.
@@ -390,6 +797,8 @@ type OracleDatabaseServer interface {
 	GetAutonomousDatabase(context.Context, *GetAutonomousDatabaseRequest) (*AutonomousDatabase, error)
 	// Creates a new Autonomous Database in a given project and location.
 	CreateAutonomousDatabase(context.Context, *CreateAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single Autonomous Database.
+	UpdateAutonomousDatabase(context.Context, *UpdateAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Autonomous Database.
 	DeleteAutonomousDatabase(context.Context, *DeleteAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
 	// Restores a single Autonomous Database.
@@ -409,6 +818,75 @@ type OracleDatabaseServer interface {
 	StartAutonomousDatabase(context.Context, *StartAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
 	// Restarts an Autonomous Database.
 	RestartAutonomousDatabase(context.Context, *RestartAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Initiates a switchover of specified autonomous database to the associated
+	// peer database.
+	SwitchoverAutonomousDatabase(context.Context, *SwitchoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Initiates a failover to target autonomous database from the associated
+	// primary database.
+	FailoverAutonomousDatabase(context.Context, *FailoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Lists the ODB Networks in a given project and location.
+	ListOdbNetworks(context.Context, *ListOdbNetworksRequest) (*ListOdbNetworksResponse, error)
+	// Gets details of a single ODB Network.
+	GetOdbNetwork(context.Context, *GetOdbNetworkRequest) (*OdbNetwork, error)
+	// Creates a new ODB Network in a given project and location.
+	CreateOdbNetwork(context.Context, *CreateOdbNetworkRequest) (*longrunningpb.Operation, error)
+	// Deletes a single ODB Network.
+	DeleteOdbNetwork(context.Context, *DeleteOdbNetworkRequest) (*longrunningpb.Operation, error)
+	// Lists all the ODB Subnets in a given ODB Network.
+	ListOdbSubnets(context.Context, *ListOdbSubnetsRequest) (*ListOdbSubnetsResponse, error)
+	// Gets details of a single ODB Subnet.
+	GetOdbSubnet(context.Context, *GetOdbSubnetRequest) (*OdbSubnet, error)
+	// Creates a new ODB Subnet in a given ODB Network.
+	CreateOdbSubnet(context.Context, *CreateOdbSubnetRequest) (*longrunningpb.Operation, error)
+	// Deletes a single ODB Subnet.
+	DeleteOdbSubnet(context.Context, *DeleteOdbSubnetRequest) (*longrunningpb.Operation, error)
+	// Lists all the Exadb (Exascale) VM Clusters for the given project and
+	// location.
+	ListExadbVmClusters(context.Context, *ListExadbVmClustersRequest) (*ListExadbVmClustersResponse, error)
+	// Gets details of a single Exadb (Exascale) VM Cluster.
+	GetExadbVmCluster(context.Context, *GetExadbVmClusterRequest) (*ExadbVmCluster, error)
+	// Creates a new Exadb (Exascale) VM Cluster resource.
+	CreateExadbVmCluster(context.Context, *CreateExadbVmClusterRequest) (*longrunningpb.Operation, error)
+	// Deletes a single Exadb (Exascale) VM Cluster.
+	DeleteExadbVmCluster(context.Context, *DeleteExadbVmClusterRequest) (*longrunningpb.Operation, error)
+	// Updates a single Exadb (Exascale) VM Cluster. To add virtual machines to
+	// existing exadb vm cluster, only pass the node count.
+	UpdateExadbVmCluster(context.Context, *UpdateExadbVmClusterRequest) (*longrunningpb.Operation, error)
+	// Removes virtual machines from an existing exadb vm cluster.
+	RemoveVirtualMachineExadbVmCluster(context.Context, *RemoveVirtualMachineExadbVmClusterRequest) (*longrunningpb.Operation, error)
+	// Lists all the ExascaleDB Storage Vaults for the given project and
+	// location.
+	ListExascaleDbStorageVaults(context.Context, *ListExascaleDbStorageVaultsRequest) (*ListExascaleDbStorageVaultsResponse, error)
+	// Gets details of a single ExascaleDB Storage Vault.
+	GetExascaleDbStorageVault(context.Context, *GetExascaleDbStorageVaultRequest) (*ExascaleDbStorageVault, error)
+	// Creates a new ExascaleDB Storage Vault resource.
+	CreateExascaleDbStorageVault(context.Context, *CreateExascaleDbStorageVaultRequest) (*longrunningpb.Operation, error)
+	// Deletes a single ExascaleDB Storage Vault.
+	DeleteExascaleDbStorageVault(context.Context, *DeleteExascaleDbStorageVaultRequest) (*longrunningpb.Operation, error)
+	// Lists all the DbSystemInitialStorageSizes for the given project and
+	// location.
+	ListDbSystemInitialStorageSizes(context.Context, *ListDbSystemInitialStorageSizesRequest) (*ListDbSystemInitialStorageSizesResponse, error)
+	// Lists all the Databases for the given project, location and DbSystem.
+	ListDatabases(context.Context, *ListDatabasesRequest) (*ListDatabasesResponse, error)
+	// Gets details of a single Database.
+	GetDatabase(context.Context, *GetDatabaseRequest) (*Database, error)
+	// Lists all the PluggableDatabases for the given project, location and
+	// Container Database.
+	ListPluggableDatabases(context.Context, *ListPluggableDatabasesRequest) (*ListPluggableDatabasesResponse, error)
+	// Gets details of a single PluggableDatabase.
+	GetPluggableDatabase(context.Context, *GetPluggableDatabaseRequest) (*PluggableDatabase, error)
+	// Lists all the DbSystems for the given project and location.
+	ListDbSystems(context.Context, *ListDbSystemsRequest) (*ListDbSystemsResponse, error)
+	// Gets details of a single DbSystem.
+	GetDbSystem(context.Context, *GetDbSystemRequest) (*DbSystem, error)
+	// Creates a new DbSystem in a given project and location.
+	CreateDbSystem(context.Context, *CreateDbSystemRequest) (*longrunningpb.Operation, error)
+	// Deletes a single DbSystem.
+	DeleteDbSystem(context.Context, *DeleteDbSystemRequest) (*longrunningpb.Operation, error)
+	// List DbVersions for the given project and location.
+	ListDbVersions(context.Context, *ListDbVersionsRequest) (*ListDbVersionsResponse, error)
+	// List DatabaseCharacterSets for the given project and location.
+	ListDatabaseCharacterSets(context.Context, *ListDatabaseCharacterSetsRequest) (*ListDatabaseCharacterSetsResponse, error)
 }
 
 // UnimplementedOracleDatabaseServer should be embedded to have forward compatible implementations.
@@ -451,6 +929,9 @@ func (UnimplementedOracleDatabaseServer) ListDbNodes(context.Context, *ListDbNod
 func (UnimplementedOracleDatabaseServer) ListGiVersions(context.Context, *ListGiVersionsRequest) (*ListGiVersionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGiVersions not implemented")
 }
+func (UnimplementedOracleDatabaseServer) ListMinorVersions(context.Context, *ListMinorVersionsRequest) (*ListMinorVersionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMinorVersions not implemented")
+}
 func (UnimplementedOracleDatabaseServer) ListDbSystemShapes(context.Context, *ListDbSystemShapesRequest) (*ListDbSystemShapesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDbSystemShapes not implemented")
 }
@@ -462,6 +943,9 @@ func (UnimplementedOracleDatabaseServer) GetAutonomousDatabase(context.Context, 
 }
 func (UnimplementedOracleDatabaseServer) CreateAutonomousDatabase(context.Context, *CreateAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAutonomousDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) UpdateAutonomousDatabase(context.Context, *UpdateAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAutonomousDatabase not implemented")
 }
 func (UnimplementedOracleDatabaseServer) DeleteAutonomousDatabase(context.Context, *DeleteAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAutonomousDatabase not implemented")
@@ -489,6 +973,99 @@ func (UnimplementedOracleDatabaseServer) StartAutonomousDatabase(context.Context
 }
 func (UnimplementedOracleDatabaseServer) RestartAutonomousDatabase(context.Context, *RestartAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestartAutonomousDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) SwitchoverAutonomousDatabase(context.Context, *SwitchoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SwitchoverAutonomousDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) FailoverAutonomousDatabase(context.Context, *FailoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FailoverAutonomousDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListOdbNetworks(context.Context, *ListOdbNetworksRequest) (*ListOdbNetworksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListOdbNetworks not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetOdbNetwork(context.Context, *GetOdbNetworkRequest) (*OdbNetwork, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOdbNetwork not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateOdbNetwork(context.Context, *CreateOdbNetworkRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOdbNetwork not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteOdbNetwork(context.Context, *DeleteOdbNetworkRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteOdbNetwork not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListOdbSubnets(context.Context, *ListOdbSubnetsRequest) (*ListOdbSubnetsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListOdbSubnets not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetOdbSubnet(context.Context, *GetOdbSubnetRequest) (*OdbSubnet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOdbSubnet not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateOdbSubnet(context.Context, *CreateOdbSubnetRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOdbSubnet not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteOdbSubnet(context.Context, *DeleteOdbSubnetRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteOdbSubnet not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListExadbVmClusters(context.Context, *ListExadbVmClustersRequest) (*ListExadbVmClustersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListExadbVmClusters not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetExadbVmCluster(context.Context, *GetExadbVmClusterRequest) (*ExadbVmCluster, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExadbVmCluster not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateExadbVmCluster(context.Context, *CreateExadbVmClusterRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateExadbVmCluster not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteExadbVmCluster(context.Context, *DeleteExadbVmClusterRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteExadbVmCluster not implemented")
+}
+func (UnimplementedOracleDatabaseServer) UpdateExadbVmCluster(context.Context, *UpdateExadbVmClusterRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateExadbVmCluster not implemented")
+}
+func (UnimplementedOracleDatabaseServer) RemoveVirtualMachineExadbVmCluster(context.Context, *RemoveVirtualMachineExadbVmClusterRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveVirtualMachineExadbVmCluster not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListExascaleDbStorageVaults(context.Context, *ListExascaleDbStorageVaultsRequest) (*ListExascaleDbStorageVaultsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListExascaleDbStorageVaults not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetExascaleDbStorageVault(context.Context, *GetExascaleDbStorageVaultRequest) (*ExascaleDbStorageVault, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExascaleDbStorageVault not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateExascaleDbStorageVault(context.Context, *CreateExascaleDbStorageVaultRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateExascaleDbStorageVault not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteExascaleDbStorageVault(context.Context, *DeleteExascaleDbStorageVaultRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteExascaleDbStorageVault not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListDbSystemInitialStorageSizes(context.Context, *ListDbSystemInitialStorageSizesRequest) (*ListDbSystemInitialStorageSizesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDbSystemInitialStorageSizes not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListDatabases(context.Context, *ListDatabasesRequest) (*ListDatabasesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDatabases not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetDatabase(context.Context, *GetDatabaseRequest) (*Database, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListPluggableDatabases(context.Context, *ListPluggableDatabasesRequest) (*ListPluggableDatabasesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPluggableDatabases not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetPluggableDatabase(context.Context, *GetPluggableDatabaseRequest) (*PluggableDatabase, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPluggableDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListDbSystems(context.Context, *ListDbSystemsRequest) (*ListDbSystemsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDbSystems not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetDbSystem(context.Context, *GetDbSystemRequest) (*DbSystem, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDbSystem not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateDbSystem(context.Context, *CreateDbSystemRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDbSystem not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteDbSystem(context.Context, *DeleteDbSystemRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDbSystem not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListDbVersions(context.Context, *ListDbVersionsRequest) (*ListDbVersionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDbVersions not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListDatabaseCharacterSets(context.Context, *ListDatabaseCharacterSetsRequest) (*ListDatabaseCharacterSetsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDatabaseCharacterSets not implemented")
 }
 
 // UnsafeOracleDatabaseServer may be embedded to opt out of forward compatibility for this service.
@@ -718,6 +1295,24 @@ func _OracleDatabase_ListGiVersions_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OracleDatabase_ListMinorVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMinorVersionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListMinorVersions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListMinorVersions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListMinorVersions(ctx, req.(*ListMinorVersionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OracleDatabase_ListDbSystemShapes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListDbSystemShapesRequest)
 	if err := dec(in); err != nil {
@@ -786,6 +1381,24 @@ func _OracleDatabase_CreateAutonomousDatabase_Handler(srv interface{}, ctx conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).CreateAutonomousDatabase(ctx, req.(*CreateAutonomousDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_UpdateAutonomousDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAutonomousDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).UpdateAutonomousDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_UpdateAutonomousDatabase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).UpdateAutonomousDatabase(ctx, req.(*UpdateAutonomousDatabaseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -952,6 +1565,564 @@ func _OracleDatabase_RestartAutonomousDatabase_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OracleDatabase_SwitchoverAutonomousDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SwitchoverAutonomousDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).SwitchoverAutonomousDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).SwitchoverAutonomousDatabase(ctx, req.(*SwitchoverAutonomousDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_FailoverAutonomousDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FailoverAutonomousDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).FailoverAutonomousDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_FailoverAutonomousDatabase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).FailoverAutonomousDatabase(ctx, req.(*FailoverAutonomousDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListOdbNetworks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListOdbNetworksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListOdbNetworks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListOdbNetworks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListOdbNetworks(ctx, req.(*ListOdbNetworksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetOdbNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOdbNetworkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetOdbNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetOdbNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetOdbNetwork(ctx, req.(*GetOdbNetworkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateOdbNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOdbNetworkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateOdbNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateOdbNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateOdbNetwork(ctx, req.(*CreateOdbNetworkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteOdbNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteOdbNetworkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteOdbNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteOdbNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteOdbNetwork(ctx, req.(*DeleteOdbNetworkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListOdbSubnets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListOdbSubnetsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListOdbSubnets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListOdbSubnets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListOdbSubnets(ctx, req.(*ListOdbSubnetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetOdbSubnet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOdbSubnetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetOdbSubnet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetOdbSubnet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetOdbSubnet(ctx, req.(*GetOdbSubnetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateOdbSubnet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOdbSubnetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateOdbSubnet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateOdbSubnet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateOdbSubnet(ctx, req.(*CreateOdbSubnetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteOdbSubnet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteOdbSubnetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteOdbSubnet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteOdbSubnet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteOdbSubnet(ctx, req.(*DeleteOdbSubnetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListExadbVmClusters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListExadbVmClustersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListExadbVmClusters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListExadbVmClusters_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListExadbVmClusters(ctx, req.(*ListExadbVmClustersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetExadbVmCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExadbVmClusterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetExadbVmCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetExadbVmCluster_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetExadbVmCluster(ctx, req.(*GetExadbVmClusterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateExadbVmCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateExadbVmClusterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateExadbVmCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateExadbVmCluster_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateExadbVmCluster(ctx, req.(*CreateExadbVmClusterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteExadbVmCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteExadbVmClusterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteExadbVmCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteExadbVmCluster_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteExadbVmCluster(ctx, req.(*DeleteExadbVmClusterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_UpdateExadbVmCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateExadbVmClusterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).UpdateExadbVmCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_UpdateExadbVmCluster_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).UpdateExadbVmCluster(ctx, req.(*UpdateExadbVmClusterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_RemoveVirtualMachineExadbVmCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveVirtualMachineExadbVmClusterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).RemoveVirtualMachineExadbVmCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).RemoveVirtualMachineExadbVmCluster(ctx, req.(*RemoveVirtualMachineExadbVmClusterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListExascaleDbStorageVaults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListExascaleDbStorageVaultsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListExascaleDbStorageVaults(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListExascaleDbStorageVaults_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListExascaleDbStorageVaults(ctx, req.(*ListExascaleDbStorageVaultsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetExascaleDbStorageVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExascaleDbStorageVaultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetExascaleDbStorageVault(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetExascaleDbStorageVault_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetExascaleDbStorageVault(ctx, req.(*GetExascaleDbStorageVaultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateExascaleDbStorageVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateExascaleDbStorageVaultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateExascaleDbStorageVault(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateExascaleDbStorageVault_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateExascaleDbStorageVault(ctx, req.(*CreateExascaleDbStorageVaultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteExascaleDbStorageVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteExascaleDbStorageVaultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteExascaleDbStorageVault(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteExascaleDbStorageVault(ctx, req.(*DeleteExascaleDbStorageVaultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListDbSystemInitialStorageSizes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDbSystemInitialStorageSizesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListDbSystemInitialStorageSizes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListDbSystemInitialStorageSizes(ctx, req.(*ListDbSystemInitialStorageSizesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListDatabases_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDatabasesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListDatabases(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListDatabases_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListDatabases(ctx, req.(*ListDatabasesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetDatabase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetDatabase(ctx, req.(*GetDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListPluggableDatabases_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPluggableDatabasesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListPluggableDatabases(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListPluggableDatabases_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListPluggableDatabases(ctx, req.(*ListPluggableDatabasesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetPluggableDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPluggableDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetPluggableDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetPluggableDatabase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetPluggableDatabase(ctx, req.(*GetPluggableDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListDbSystems_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDbSystemsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListDbSystems(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListDbSystems_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListDbSystems(ctx, req.(*ListDbSystemsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetDbSystem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDbSystemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetDbSystem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetDbSystem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetDbSystem(ctx, req.(*GetDbSystemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateDbSystem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDbSystemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateDbSystem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateDbSystem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateDbSystem(ctx, req.(*CreateDbSystemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteDbSystem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDbSystemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteDbSystem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteDbSystem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteDbSystem(ctx, req.(*DeleteDbSystemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListDbVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDbVersionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListDbVersions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListDbVersions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListDbVersions(ctx, req.(*ListDbVersionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListDatabaseCharacterSets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDatabaseCharacterSetsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListDatabaseCharacterSets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListDatabaseCharacterSets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListDatabaseCharacterSets(ctx, req.(*ListDatabaseCharacterSetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OracleDatabase_ServiceDesc is the grpc.ServiceDesc for OracleDatabase service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1008,6 +2179,10 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _OracleDatabase_ListGiVersions_Handler,
 		},
 		{
+			MethodName: "ListMinorVersions",
+			Handler:    _OracleDatabase_ListMinorVersions_Handler,
+		},
+		{
 			MethodName: "ListDbSystemShapes",
 			Handler:    _OracleDatabase_ListDbSystemShapes_Handler,
 		},
@@ -1022,6 +2197,10 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAutonomousDatabase",
 			Handler:    _OracleDatabase_CreateAutonomousDatabase_Handler,
+		},
+		{
+			MethodName: "UpdateAutonomousDatabase",
+			Handler:    _OracleDatabase_UpdateAutonomousDatabase_Handler,
 		},
 		{
 			MethodName: "DeleteAutonomousDatabase",
@@ -1058,6 +2237,130 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RestartAutonomousDatabase",
 			Handler:    _OracleDatabase_RestartAutonomousDatabase_Handler,
+		},
+		{
+			MethodName: "SwitchoverAutonomousDatabase",
+			Handler:    _OracleDatabase_SwitchoverAutonomousDatabase_Handler,
+		},
+		{
+			MethodName: "FailoverAutonomousDatabase",
+			Handler:    _OracleDatabase_FailoverAutonomousDatabase_Handler,
+		},
+		{
+			MethodName: "ListOdbNetworks",
+			Handler:    _OracleDatabase_ListOdbNetworks_Handler,
+		},
+		{
+			MethodName: "GetOdbNetwork",
+			Handler:    _OracleDatabase_GetOdbNetwork_Handler,
+		},
+		{
+			MethodName: "CreateOdbNetwork",
+			Handler:    _OracleDatabase_CreateOdbNetwork_Handler,
+		},
+		{
+			MethodName: "DeleteOdbNetwork",
+			Handler:    _OracleDatabase_DeleteOdbNetwork_Handler,
+		},
+		{
+			MethodName: "ListOdbSubnets",
+			Handler:    _OracleDatabase_ListOdbSubnets_Handler,
+		},
+		{
+			MethodName: "GetOdbSubnet",
+			Handler:    _OracleDatabase_GetOdbSubnet_Handler,
+		},
+		{
+			MethodName: "CreateOdbSubnet",
+			Handler:    _OracleDatabase_CreateOdbSubnet_Handler,
+		},
+		{
+			MethodName: "DeleteOdbSubnet",
+			Handler:    _OracleDatabase_DeleteOdbSubnet_Handler,
+		},
+		{
+			MethodName: "ListExadbVmClusters",
+			Handler:    _OracleDatabase_ListExadbVmClusters_Handler,
+		},
+		{
+			MethodName: "GetExadbVmCluster",
+			Handler:    _OracleDatabase_GetExadbVmCluster_Handler,
+		},
+		{
+			MethodName: "CreateExadbVmCluster",
+			Handler:    _OracleDatabase_CreateExadbVmCluster_Handler,
+		},
+		{
+			MethodName: "DeleteExadbVmCluster",
+			Handler:    _OracleDatabase_DeleteExadbVmCluster_Handler,
+		},
+		{
+			MethodName: "UpdateExadbVmCluster",
+			Handler:    _OracleDatabase_UpdateExadbVmCluster_Handler,
+		},
+		{
+			MethodName: "RemoveVirtualMachineExadbVmCluster",
+			Handler:    _OracleDatabase_RemoveVirtualMachineExadbVmCluster_Handler,
+		},
+		{
+			MethodName: "ListExascaleDbStorageVaults",
+			Handler:    _OracleDatabase_ListExascaleDbStorageVaults_Handler,
+		},
+		{
+			MethodName: "GetExascaleDbStorageVault",
+			Handler:    _OracleDatabase_GetExascaleDbStorageVault_Handler,
+		},
+		{
+			MethodName: "CreateExascaleDbStorageVault",
+			Handler:    _OracleDatabase_CreateExascaleDbStorageVault_Handler,
+		},
+		{
+			MethodName: "DeleteExascaleDbStorageVault",
+			Handler:    _OracleDatabase_DeleteExascaleDbStorageVault_Handler,
+		},
+		{
+			MethodName: "ListDbSystemInitialStorageSizes",
+			Handler:    _OracleDatabase_ListDbSystemInitialStorageSizes_Handler,
+		},
+		{
+			MethodName: "ListDatabases",
+			Handler:    _OracleDatabase_ListDatabases_Handler,
+		},
+		{
+			MethodName: "GetDatabase",
+			Handler:    _OracleDatabase_GetDatabase_Handler,
+		},
+		{
+			MethodName: "ListPluggableDatabases",
+			Handler:    _OracleDatabase_ListPluggableDatabases_Handler,
+		},
+		{
+			MethodName: "GetPluggableDatabase",
+			Handler:    _OracleDatabase_GetPluggableDatabase_Handler,
+		},
+		{
+			MethodName: "ListDbSystems",
+			Handler:    _OracleDatabase_ListDbSystems_Handler,
+		},
+		{
+			MethodName: "GetDbSystem",
+			Handler:    _OracleDatabase_GetDbSystem_Handler,
+		},
+		{
+			MethodName: "CreateDbSystem",
+			Handler:    _OracleDatabase_CreateDbSystem_Handler,
+		},
+		{
+			MethodName: "DeleteDbSystem",
+			Handler:    _OracleDatabase_DeleteDbSystem_Handler,
+		},
+		{
+			MethodName: "ListDbVersions",
+			Handler:    _OracleDatabase_ListDbVersions_Handler,
+		},
+		{
+			MethodName: "ListDatabaseCharacterSets",
+			Handler:    _OracleDatabase_ListDatabaseCharacterSets_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

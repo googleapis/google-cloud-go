@@ -21,6 +21,7 @@ package generator
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -52,7 +53,7 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 		var err error
 		changes, err = gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
 		if err != nil {
-			return nil, fmt.Errorf("error gathering commit info")
+			return nil, fmt.Errorf("error gathering commit info: %w", err)
 		}
 		if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
 			return nil, err
@@ -80,10 +81,24 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 		}
 		protos := make(map[string]struct{})
 		for _, file := range files {
+			if file == "" {
+				continue
+			}
 			if !strings.HasSuffix(file, ".proto") {
 				continue
 			}
-			pkg, err := goPkg(filepath.Join(googleapisDir, file))
+			content, err := git.GetFileContentAtCommit(googleapisDir, commit, file)
+			if err != nil {
+				// It's possible the file was deleted in this commit, so we check the parent.
+				originalErr := err
+				content, err = git.GetFileContentAtCommit(googleapisDir, commit+"^", file)
+				if err != nil {
+					// We don't want to fail here, just log the error and continue.
+					log.Printf("could not get content for %s at commit %s (%v) or its parent (%v)", file, commit, originalErr, err)
+					continue
+				}
+			}
+			pkg, err := parseGoPkg(content)
 			if err != nil {
 				return nil, err
 			}

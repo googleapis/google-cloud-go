@@ -21,6 +21,7 @@ import (
 	"log/slog"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/configure"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/module"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
@@ -56,6 +57,24 @@ func PostProcess(ctx context.Context, req *request.Library, outputDir, moduleDir
 		return fmt.Errorf("librariangen: failed to run 'goimports': %w", err)
 	}
 
+	// If we have a single API, and it's new, then this must be the first time generating this library.
+	// We run go mod init and go mod tidy *only* this time. We can only run this once because once go.mod and go.sum have
+	// been created, Librarian should refuse to copy it over unless the old version is deleted first...
+	// and we *don't* want to run it every time (partly because generate shouldn't be updating dependencies,
+	// and partly because there might be handwritten code in the library, which generate can't "see").
+	// When configuring the first generated API for a library, we assume the whole library is new.
+	//
+	// We can't even run "go mod init" from configure and just "go mod tidy" here, as files written
+	// by the configure command aren't available during generate.
+	if len(req.APIs) == 1 && req.APIs[0].Status == configure.NewAPIStatus {
+		if err := goModInit(ctx, moduleDir); err != nil {
+			return fmt.Errorf("librariangen: failed to run 'go mod init': %w", err)
+		}
+		if err := goModTidy(ctx, moduleDir); err != nil {
+			return fmt.Errorf("librariangen: failed to run 'go mod tidy': %w", err)
+		}
+	}
+
 	slog.Debug("librariangen: post-processing finished successfully")
 	return nil
 }
@@ -67,5 +86,19 @@ func goimports(ctx context.Context, dir string) error {
 	// The `.` argument will make goimports process all go files in the directory
 	// and its subdirectories. The -w flag writes results back to source files.
 	args := []string{"goimports", "-w", "."}
+	return execvRun(ctx, args, dir)
+}
+
+// goModInit runs "go mod init" on a directory to initialize the module.
+func goModInit(ctx context.Context, dir string) error {
+	slog.Debug("librariangen: running go mod init", "directory", dir)
+	args := []string{"go", "mod", "init"}
+	return execvRun(ctx, args, dir)
+}
+
+// goModTidy runs "go mod tidy" on a directory to add appropriate dependencies.
+func goModTidy(ctx context.Context, dir string) error {
+	slog.Debug("librariangen: running go mod tidy", "directory", dir)
+	args := []string{"go", "mod", "tidy"}
 	return execvRun(ctx, args, dir)
 }

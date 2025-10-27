@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:a272fe1ca4fba0c579426dd16fdbb0cac7795fae318292696aa59f801598d431
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:9d769b80b95bb0ff51c282def392bd57ac10ed05f0987a60d6cb5d2e8e2c3aa2
 libraries:
   - id: accessapproval
     version: 1.8.8
@@ -73,7 +73,7 @@ libraries:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
   - id: ai
-    version: 0.13.0
+    version: 0.14.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/ai/generativelanguage/v1
@@ -130,8 +130,8 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.107.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.108.0
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -983,7 +983,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chat
     version: 0.15.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/chat/v1
         service_config: chat_v1.yaml
@@ -1418,8 +1418,8 @@ libraries:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
   - id: container
-    version: 1.44.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.45.0
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/container/v1
         service_config: container_v1.yaml
@@ -1621,7 +1621,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.27.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dataplex/v1
         service_config: dataplex_v1.yaml
@@ -1667,6 +1667,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
+  - id: dataqna
+    version: 0.9.8
+    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    apis:
+      - path: google/cloud/dataqna/v1alpha
+        service_config: dataqna_v1alpha.yaml
+    source_roots:
+      - dataqna
+      - internal/generated/snippets/dataqna
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/dataqna/
+      - ^dataqna/apiv1alpha/[^/]*_client\.go$
+      - ^dataqna/apiv1alpha/[^/]*_client_example_go123_test\.go$
+      - ^dataqna/apiv1alpha/[^/]*_client_example_test\.go$
+      - ^dataqna/apiv1alpha/auxiliary\.go$
+      - ^dataqna/apiv1alpha/auxiliary_go123\.go$
+      - ^dataqna/apiv1alpha/doc\.go$
+      - ^dataqna/apiv1alpha/gapic_metadata\.json$
+      - ^dataqna/apiv1alpha/helpers\.go$
+      - ^dataqna/apiv1alpha/dataqnapb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/dataqna/
+    tag_format: '{id}/v{version}'
   - id: datastore
     version: 1.21.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -1701,30 +1725,6 @@ libraries:
       - ^datastore/apiv1/datastorepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/datastore/
-  - id: dataqna
-    version: 0.9.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
-    apis:
-      - path: google/cloud/dataqna/v1alpha
-        service_config: dataqna_v1alpha.yaml
-    source_roots:
-      - dataqna
-      - internal/generated/snippets/dataqna
-    preserve_regex: []
-    remove_regex:
-      - ^internal/generated/snippets/dataqna/
-      - ^dataqna/apiv1alpha/[^/]*_client\.go$
-      - ^dataqna/apiv1alpha/[^/]*_client_example_go123_test\.go$
-      - ^dataqna/apiv1alpha/[^/]*_client_example_test\.go$
-      - ^dataqna/apiv1alpha/auxiliary\.go$
-      - ^dataqna/apiv1alpha/auxiliary_go123\.go$
-      - ^dataqna/apiv1alpha/doc\.go$
-      - ^dataqna/apiv1alpha/gapic_metadata\.json$
-      - ^dataqna/apiv1alpha/helpers\.go$
-      - ^dataqna/apiv1alpha/dataqnapb/.*$
-    release_exclude_paths:
-      - internal/generated/snippets/dataqna/
-    tag_format: '{id}/v{version}'
   - id: datastream
     version: 1.15.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -1835,7 +1835,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dialogflow
     version: 1.70.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -1891,7 +1891,7 @@ libraries:
       - internal/generated/snippets/dialogflow/
     tag_format: '{id}/v{version}'
   - id: discoveryengine
-    version: 1.21.1
+    version: 1.22.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/discoveryengine/v1
@@ -2875,8 +2875,8 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.24.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.25.0
+    last_generated_commit: b61fb21bbac838de7f55cf2c60d371a47fc2799e
     apis:
       - path: google/maps/addressvalidation/v1
         service_config: addressvalidation_v1.yaml
@@ -3422,8 +3422,8 @@ libraries:
       - internal/generated/snippets/optimization/
     tag_format: '{id}/v{version}'
   - id: oracledatabase
-    version: 0.5.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.6.0
+    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
     apis:
       - path: google/cloud/oracledatabase/v1
         service_config: oracledatabase_v1.yaml
@@ -3574,7 +3574,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oslogin
     version: 1.14.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/oslogin/v1
         service_config: oslogin_v1.yaml
@@ -3824,7 +3824,7 @@ libraries:
       - internal/generated/snippets/pubsub/
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
-    version: 2.2.1
+    version: 2.3.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/pubsub/v1
@@ -4896,6 +4896,81 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
+  - id: spanner
+    version: 1.86.1
+    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    apis:
+      - path: google/spanner/adapter/v1
+        service_config: spanner.yaml
+      - path: google/spanner/admin/database/v1
+        service_config: spanner.yaml
+      - path: google/spanner/admin/instance/v1
+        service_config: spanner.yaml
+      - path: google/spanner/v1
+        service_config: spanner.yaml
+      - path: google/spanner/executor/v1
+        service_config: spanner_cloud_executor.yaml
+    source_roots:
+      - spanner
+      - internal/generated/snippets/spanner
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/spanner/
+      - ^spanner/adapter/apiv1/[^/]*_client\.go$
+      - ^spanner/adapter/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/adapter/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/adapter/apiv1/auxiliary\.go$
+      - ^spanner/adapter/apiv1/auxiliary_go123\.go$
+      - ^spanner/adapter/apiv1/doc\.go$
+      - ^spanner/adapter/apiv1/gapic_metadata\.json$
+      - ^spanner/adapter/apiv1/helpers\.go$
+      - ^spanner/adapter/apiv1/adapterpb/.*$
+      - ^spanner/admin/database/apiv1/[^/]*_client\.go$
+      - ^spanner/admin/database/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/admin/database/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/admin/database/apiv1/auxiliary\.go$
+      - ^spanner/admin/database/apiv1/auxiliary_go123\.go$
+      - ^spanner/admin/database/apiv1/doc\.go$
+      - ^spanner/admin/database/apiv1/gapic_metadata\.json$
+      - ^spanner/admin/database/apiv1/helpers\.go$
+      - ^spanner/admin/database/apiv1/databasepb/.*$
+      - ^spanner/admin/instance/apiv1/[^/]*_client\.go$
+      - ^spanner/admin/instance/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/admin/instance/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/admin/instance/apiv1/auxiliary\.go$
+      - ^spanner/admin/instance/apiv1/auxiliary_go123\.go$
+      - ^spanner/admin/instance/apiv1/doc\.go$
+      - ^spanner/admin/instance/apiv1/gapic_metadata\.json$
+      - ^spanner/admin/instance/apiv1/helpers\.go$
+      - ^spanner/admin/instance/apiv1/instancepb/.*$
+      - ^spanner/apiv1/[^/]*_client\.go$
+      - ^spanner/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/apiv1/auxiliary\.go$
+      - ^spanner/apiv1/auxiliary_go123\.go$
+      - ^spanner/apiv1/doc\.go$
+      - ^spanner/apiv1/gapic_metadata\.json$
+      - ^spanner/apiv1/helpers\.go$
+      - ^spanner/apiv1/spannerpb/.*$
+      - ^spanner/executor/apiv1/[^/]*_client\.go$
+      - ^spanner/executor/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^spanner/executor/apiv1/[^/]*_client_example_test\.go$
+      - ^spanner/executor/apiv1/auxiliary\.go$
+      - ^spanner/executor/apiv1/auxiliary_go123\.go$
+      - ^spanner/executor/apiv1/doc\.go$
+      - ^spanner/executor/apiv1/gapic_metadata\.json$
+      - ^spanner/executor/apiv1/helpers\.go$
+      - ^spanner/executor/apiv1/executorpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/spanner/
+      - spanner/benchmarks
+      - spanner/internal/benchwrapper
+      - spanner/internal/testutil
+      - spanner/kokoro
+      - spanner/spannertest
+      - spanner/test
+      - spanner/testdata
+    tag_format: '{id}/v{version}'
   - id: speech
     version: 1.28.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -5133,7 +5208,7 @@ libraries:
       - internal/generated/snippets/telcoautomation/
     tag_format: '{id}/v{version}'
   - id: texttospeech
-    version: 1.15.1
+    version: 1.16.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/texttospeech/v1

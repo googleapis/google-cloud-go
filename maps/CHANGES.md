@@ -2,6 +2,24 @@
 
 
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.25.0) (2025-10-22)
+
+### Features
+
+* Add moved_place and moved_place_id to Place 
+* add OptimizeToursLongRunning method 
+* add OptimizeToursUri method 
+* add experimental Load Costs feature 
+* add experimental U-turn Avoidance feature 
+
+### Documentation
+
+* A comment for enum `TravelMode` is changed 
+* A comment for field `duration_distance_matrices` in message `.google.maps.routeoptimization.v1.ShipmentModel` is changed 
+* A comment for field `place_id` in message `.google.maps.routeoptimization.v1.Waypoint` is changed 
+* A comment for field `precedence_rules` in message `.google.maps.routeoptimization.v1.ShipmentModel` is changed 
+* Change comments in some fields in Places API 
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.24.0) (2025-10-10)
 
 ### Features
