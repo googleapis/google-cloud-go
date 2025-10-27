@@ -103,7 +103,7 @@ func defaultGRPCOptions() []option.ClientOption {
 			internaloption.AllowNonDefaultServiceAccount(true),
 			internaloption.EnableDirectPath(true),
 			internaloption.EnableDirectPathXds())
-		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GCS_DISABLE_DIRECTPATH_BOUND_TOKEN")); !disableBoundToken {
+		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("STORAGE_DISABLE_DIRECTPATH_BOUND_TOKEN")); !disableBoundToken {
 			defaults = append(defaults, internaloption.AllowHardBoundTokens("ALTS"))
 		}
 	}
