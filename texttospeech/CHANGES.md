@@ -1,5 +1,11 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/texttospeech%2Fv1.16.0) (2025-10-22)
+
+### Features
+
+* add `relax_safety_filters` proto field for Gemini TTS 
+
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.15.0...texttospeech/v1.15.1) (2025-10-07)
 
 

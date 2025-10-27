@@ -468,17 +468,50 @@ func TestApplyModuleVersion(t *testing.T) {
 			if tt.wantErr {
 				return
 			}
-
-			for _, wantPresent := range tt.wantPresent {
-				if _, err := os.Stat(filepath.Join(tmpDir, wantPresent)); err != nil {
-					t.Errorf("wanted present, was absent: %s", wantPresent)
-				}
-			}
-			for _, wantAbsent := range tt.wantAbsent {
-				if _, err := os.Stat(filepath.Join(tmpDir, wantAbsent)); !os.IsNotExist(err) {
-					t.Errorf("wanted absent, was missing: %s", wantAbsent)
-				}
-			}
+			assertPresent(t, tmpDir, tt.wantPresent)
+			assertAbsent(t, tmpDir, tt.wantAbsent)
 		})
+	}
+}
+
+func TestDeleteOutputPaths(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "apply-module-version-test")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	// We create file1, file2 and dir1/file3, then delete
+	// file1 and dir1; only file2 should be left.
+	if err := os.MkdirAll(filepath.Join(tmpDir, "dir1"), 0755); err != nil {
+		t.Fatalf("failed to create dir1: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "file1"), []byte("test"), 0644); err != nil {
+		t.Fatalf("failed to write file1: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "file2"), []byte("test"), 0644); err != nil {
+		t.Fatalf("failed to write file file2: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, "dir1", "file3"), []byte("test"), 0644); err != nil {
+		t.Fatalf("failed to write file dir1/file3: %v", err)
+	}
+	deleteOutputPaths(tmpDir, []string{"file1", "dir1"})
+	assertPresent(t, tmpDir, []string{"file2"})
+	assertAbsent(t, tmpDir, []string{"file1", "dir1"})
+}
+
+func assertPresent(t *testing.T, dir string, paths []string) {
+	t.Helper()
+	for _, path := range paths {
+		if _, err := os.Stat(filepath.Join(dir, path)); err != nil {
+			t.Errorf("wanted present, stat failed: %s", path)
+		}
+	}
+}
+
+func assertAbsent(t *testing.T, dir string, paths []string) {
+	t.Helper()
+	for _, path := range paths {
+		if _, err := os.Stat(filepath.Join(dir, path)); !os.IsNotExist(err) {
+			t.Errorf("wanted absent, was present (or stat failed): %s", path)
+		}
 	}
 }

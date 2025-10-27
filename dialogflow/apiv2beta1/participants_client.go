@@ -46,23 +46,24 @@ var newParticipantsClientHook clientHook
 
 // ParticipantsCallOptions contains the retry settings for each method of ParticipantsClient.
 type ParticipantsCallOptions struct {
-	CreateParticipant       []gax.CallOption
-	GetParticipant          []gax.CallOption
-	ListParticipants        []gax.CallOption
-	UpdateParticipant       []gax.CallOption
-	AnalyzeContent          []gax.CallOption
-	StreamingAnalyzeContent []gax.CallOption
-	SuggestArticles         []gax.CallOption
-	SuggestFaqAnswers       []gax.CallOption
-	SuggestSmartReplies     []gax.CallOption
-	SuggestKnowledgeAssist  []gax.CallOption
-	ListSuggestions         []gax.CallOption
-	CompileSuggestion       []gax.CallOption
-	GetLocation             []gax.CallOption
-	ListLocations           []gax.CallOption
-	CancelOperation         []gax.CallOption
-	GetOperation            []gax.CallOption
-	ListOperations          []gax.CallOption
+	CreateParticipant           []gax.CallOption
+	GetParticipant              []gax.CallOption
+	ListParticipants            []gax.CallOption
+	UpdateParticipant           []gax.CallOption
+	AnalyzeContent              []gax.CallOption
+	StreamingAnalyzeContent     []gax.CallOption
+	BidiStreamingAnalyzeContent []gax.CallOption
+	SuggestArticles             []gax.CallOption
+	SuggestFaqAnswers           []gax.CallOption
+	SuggestSmartReplies         []gax.CallOption
+	SuggestKnowledgeAssist      []gax.CallOption
+	ListSuggestions             []gax.CallOption
+	CompileSuggestion           []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
+	CancelOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
 }
 
 func defaultParticipantsGRPCClientOptions() []option.ClientOption {
@@ -143,6 +144,15 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		StreamingAnalyzeContent: []gax.CallOption{},
+		BidiStreamingAnalyzeContent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		SuggestArticles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -283,6 +293,9 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 		StreamingAnalyzeContent: []gax.CallOption{
 			gax.WithTimeout(220000 * time.Millisecond),
 		},
+		BidiStreamingAnalyzeContent: []gax.CallOption{
+			gax.WithTimeout(1800000 * time.Millisecond),
+		},
 		SuggestArticles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -368,6 +381,7 @@ type internalParticipantsClient interface {
 	UpdateParticipant(context.Context, *dialogflowpb.UpdateParticipantRequest, ...gax.CallOption) (*dialogflowpb.Participant, error)
 	AnalyzeContent(context.Context, *dialogflowpb.AnalyzeContentRequest, ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error)
 	StreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error)
+	BidiStreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error)
 	SuggestArticles(context.Context, *dialogflowpb.SuggestArticlesRequest, ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error)
 	SuggestFaqAnswers(context.Context, *dialogflowpb.SuggestFaqAnswersRequest, ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error)
 	SuggestSmartReplies(context.Context, *dialogflowpb.SuggestSmartRepliesRequest, ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error)
@@ -466,6 +480,14 @@ func (c *ParticipantsClient) AnalyzeContent(ctx context.Context, req *dialogflow
 // This method is not supported for the REST transport.
 func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
 	return c.internalClient.StreamingAnalyzeContent(ctx, opts...)
+}
+
+// BidiStreamingAnalyzeContent bidirectional endless streaming version of
+// StreamingAnalyzeContent.
+//
+// This method is not supported for the REST transport.
+func (c *ParticipantsClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	return c.internalClient.BidiStreamingAnalyzeContent(ctx, opts...)
 }
 
 // SuggestArticles gets suggested articles for a participant based on specific historical
@@ -857,6 +879,23 @@ func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, op
 		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingAnalyzeContent")
 		resp, err = c.participantsClient.StreamingAnalyzeContent(ctx, settings.GRPC...)
 		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingAnalyzeContent")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp dialogflowpb.Participants_BidiStreamingAnalyzeContentClient
+	opts = append((*c.CallOptions).BidiStreamingAnalyzeContent[0:len((*c.CallOptions).BidiStreamingAnalyzeContent):len((*c.CallOptions).BidiStreamingAnalyzeContent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BidiStreamingAnalyzeContent")
+		resp, err = c.participantsClient.BidiStreamingAnalyzeContent(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BidiStreamingAnalyzeContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1472,6 +1511,14 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 // This method is not supported for the REST transport.
 func (c *participantsRESTClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
 	return nil, errors.New("StreamingAnalyzeContent not yet supported for REST clients")
+}
+
+// BidiStreamingAnalyzeContent bidirectional endless streaming version of
+// StreamingAnalyzeContent.
+//
+// This method is not supported for the REST transport.
+func (c *participantsRESTClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	return nil, errors.New("BidiStreamingAnalyzeContent not yet supported for REST clients")
 }
 
 // SuggestArticles gets suggested articles for a participant based on specific historical

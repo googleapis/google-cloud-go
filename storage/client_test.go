@@ -1397,6 +1397,63 @@ func TestWriterFlushAtCloseEmulated(t *testing.T) {
 	})
 }
 
+func TestWriterRetryAttrsEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+		data := generateRandomBytes(20 * MiB)
+
+		vc := &Client{tc: client}
+
+		// Setup retry test.
+		instructions := map[string][]string{"storage.objects.insert": {"return-503-after-4097K"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		w := vc.Bucket(bucket).Object(objName).If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		w.Append = true
+		w.ChunkSize = 8 * MiB
+
+		if _, err := w.Flush(); err != nil {
+			t.Fatalf("flush at 0b: %v", err)
+		}
+
+		if _, err := w.Write(data); err != nil {
+			t.Fatalf("writing data: got %v; want ok", err)
+		}
+
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing writer: %v", err)
+		}
+
+		if gotAttrs := w.Attrs(); gotAttrs == nil || gotAttrs.Name != objName {
+			t.Fatalf("w.Attrs(): got %v, want attrs for object %v", gotAttrs, objName)
+		}
+
+		// Download object and check data
+		r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
+		defer r.Close()
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(data)
+		got, err := io.ReadAll(r)
+		if n := len(got); n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
+		}
+		if !bytes.Equal(got, data) {
+			t.Fatalf("got data did not match uploaded data")
+		}
+	})
+}
+
 // Tests small flush (under 512 bytes) to verify that logic avoiding
 // content type sniffing works as expected in this case.
 func TestWriterSmallFlushEmulated(t *testing.T) {

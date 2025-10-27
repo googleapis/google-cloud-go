@@ -202,3 +202,14 @@ func FilesChanged(gitDir, hash string) ([]string, error) {
 	}
 	return strings.Split(string(b), "\n"), nil
 }
+
+// GetFileContentAtCommit returns the content of a file at a specific commit.
+func GetFileContentAtCommit(gitDir, hash, filePath string) ([]byte, error) {
+	c := execv.Command("git", "show", fmt.Sprintf("%s:%s", hash, filePath))
+	c.Dir = gitDir
+	b, err := c.Output()
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}

@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.108.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.108.0) (2025-10-22)
+
+### Features
+
+* Add EmbedContent method v1beta1 
+* Continuous Tuning 
+* add FunctionResponsePart and excluded_predefined_functions in ComputerUse 
+
+### Documentation
+
+* Updated docs for related fields 
+
 ## [1.107.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.106.0...aiplatform/v1.107.0) (2025-10-15)
 
 

@@ -46,7 +46,7 @@ const (
 	DeletionMetadata_DELETION_TYPE_UNSPECIFIED DeletionMetadata_DeletionType = 0
 	// User deleted their own message.
 	DeletionMetadata_CREATOR DeletionMetadata_DeletionType = 1
-	// A space manager deleted the message.
+	// An owner or manager deleted the message.
 	DeletionMetadata_SPACE_OWNER DeletionMetadata_DeletionType = 2
 	// A Google Workspace administrator deleted the message. Administrators can
 	// delete any message in the space, including messages sent by any space

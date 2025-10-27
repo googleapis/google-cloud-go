@@ -1,6 +1,27 @@
 # Changes
 
 
+## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/ai%2Fv0.14.0) (2025-10-22)
+
+### Features
+
+* add Computer Use tool type 
+* add URL_RETRIEVAL_STATUS_UNSAFE and URL_RETRIEVAL_STATUS_PAYWALL statuses for url retrieval 
+* add log_probability_sum 
+* add support for FunctionResponsePart 
+* add support for additional reasons to stop image generation 
+* add support for finish_message that contain details the reason why the model stopped generating tokens 
+* add support for image generation features 
+* add support for raw media bytes for function response 
+
+### Bug Fixes
+
+* replaced GenerateVideoResponse by PredictLongRunningGeneratedVideoResponse field 
+
+### Documentation
+
+* deprecation notice for HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY 
+
 ## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.12.1...ai/v0.13.0) (2025-09-04)
 
 

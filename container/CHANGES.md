@@ -1,5 +1,26 @@
 # Changes
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.45.0) (2025-10-22)
+
+### Features
+
+* add autoscaled_rollout_policy field to BlueGreenSettings 
+* add end_time_behavior field to MaintenanceExclusionOptions 
+* add membership_type field to Fleet 
+* add network_tier_config field to IPAllocationPolicy 
+* add network_tier_config field to NodeNetworkConfig 
+* add node_kernel_module_loading field to LinuxNodeConfig 
+* add privileged_admission_config field to Autopilot 
+* add rotation_config field to SecretManagerConfig 
+* add writable_cgroups field to ContainerdConfig 
+* deprecate desired_enterprise_config field in ClusterUpdate 
+* deprecate enable_legacy_lustre_port field in LustreCsiDriverConfig 
+* deprecate enterprise_config field in Cluster 
+
+### Documentation
+
+* various documentation fixes 
+
 ## [1.44.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.44.0...container/v1.44.1) (2025-10-07)
 
 

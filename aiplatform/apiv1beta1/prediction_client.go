@@ -63,6 +63,7 @@ type PredictionCallOptions struct {
 	GenerateContent        []gax.CallOption
 	StreamGenerateContent  []gax.CallOption
 	ChatCompletions        []gax.CallOption
+	EmbedContent           []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
 	GetIamPolicy           []gax.CallOption
@@ -111,6 +112,7 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 		GenerateContent:       []gax.CallOption{},
 		StreamGenerateContent: []gax.CallOption{},
 		ChatCompletions:       []gax.CallOption{},
+		EmbedContent:          []gax.CallOption{},
 		GetLocation:           []gax.CallOption{},
 		ListLocations:         []gax.CallOption{},
 		GetIamPolicy:          []gax.CallOption{},
@@ -145,6 +147,7 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 		GenerateContent:       []gax.CallOption{},
 		StreamGenerateContent: []gax.CallOption{},
 		ChatCompletions:       []gax.CallOption{},
+		EmbedContent:          []gax.CallOption{},
 		GetLocation:           []gax.CallOption{},
 		ListLocations:         []gax.CallOption{},
 		GetIamPolicy:          []gax.CallOption{},
@@ -178,6 +181,7 @@ type internalPredictionClient interface {
 	GenerateContent(context.Context, *aiplatformpb.GenerateContentRequest, ...gax.CallOption) (*aiplatformpb.GenerateContentResponse, error)
 	StreamGenerateContent(context.Context, *aiplatformpb.GenerateContentRequest, ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error)
 	ChatCompletions(context.Context, *aiplatformpb.ChatCompletionsRequest, ...gax.CallOption) (aiplatformpb.PredictionService_ChatCompletionsClient, error)
+	EmbedContent(context.Context, *aiplatformpb.EmbedContentRequest, ...gax.CallOption) (*aiplatformpb.EmbedContentResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -332,6 +336,11 @@ func (c *PredictionClient) StreamGenerateContent(ctx context.Context, req *aipla
 // ChatCompletions exposes an OpenAI-compatible endpoint for chat completions.
 func (c *PredictionClient) ChatCompletions(ctx context.Context, req *aiplatformpb.ChatCompletionsRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ChatCompletionsClient, error) {
 	return c.internalClient.ChatCompletions(ctx, req, opts...)
+}
+
+// EmbedContent embed content with multimodal inputs.
+func (c *PredictionClient) EmbedContent(ctx context.Context, req *aiplatformpb.EmbedContentRequest, opts ...gax.CallOption) (*aiplatformpb.EmbedContentResponse, error) {
+	return c.internalClient.EmbedContent(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -823,6 +832,24 @@ func (c *predictionGRPCClient) ChatCompletions(ctx context.Context, req *aiplatf
 		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ChatCompletions")
 		resp, err = c.predictionClient.ChatCompletions(ctx, req, settings.GRPC...)
 		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ChatCompletions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) EmbedContent(ctx context.Context, req *aiplatformpb.EmbedContentRequest, opts ...gax.CallOption) (*aiplatformpb.EmbedContentResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EmbedContent[0:len((*c.CallOptions).EmbedContent):len((*c.CallOptions).EmbedContent)], opts...)
+	var resp *aiplatformpb.EmbedContentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.predictionClient.EmbedContent, req, settings.GRPC, c.logger, "EmbedContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1912,6 +1939,62 @@ func (c *chatCompletionsRESTStreamClient) SendMsg(m interface{}) error {
 func (c *chatCompletionsRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
+}
+
+// EmbedContent embed content with multimodal inputs.
+func (c *predictionRESTClient) EmbedContent(ctx context.Context, req *aiplatformpb.EmbedContentRequest, opts ...gax.CallOption) (*aiplatformpb.EmbedContentResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:embedContent", req.GetModel())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).EmbedContent[0:len((*c.CallOptions).EmbedContent):len((*c.CallOptions).EmbedContent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.EmbedContentResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EmbedContent")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.

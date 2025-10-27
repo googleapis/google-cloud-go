@@ -48,6 +48,7 @@ const (
 	PredictionService_Explain_FullMethodName                = "/google.cloud.aiplatform.v1.PredictionService/Explain"
 	PredictionService_GenerateContent_FullMethodName        = "/google.cloud.aiplatform.v1.PredictionService/GenerateContent"
 	PredictionService_StreamGenerateContent_FullMethodName  = "/google.cloud.aiplatform.v1.PredictionService/StreamGenerateContent"
+	PredictionService_EmbedContent_FullMethodName           = "/google.cloud.aiplatform.v1.PredictionService/EmbedContent"
 )
 
 // PredictionServiceClient is the client API for PredictionService service.
@@ -106,6 +107,8 @@ type PredictionServiceClient interface {
 	GenerateContent(ctx context.Context, in *GenerateContentRequest, opts ...grpc.CallOption) (*GenerateContentResponse, error)
 	// Generate content with multimodal inputs with streaming support.
 	StreamGenerateContent(ctx context.Context, in *GenerateContentRequest, opts ...grpc.CallOption) (PredictionService_StreamGenerateContentClient, error)
+	// Embed content with multimodal inputs.
+	EmbedContent(ctx context.Context, in *EmbedContentRequest, opts ...grpc.CallOption) (*EmbedContentResponse, error)
 }
 
 type predictionServiceClient struct {
@@ -390,6 +393,15 @@ func (x *predictionServiceStreamGenerateContentClient) Recv() (*GenerateContentR
 	return m, nil
 }
 
+func (c *predictionServiceClient) EmbedContent(ctx context.Context, in *EmbedContentRequest, opts ...grpc.CallOption) (*EmbedContentResponse, error) {
+	out := new(EmbedContentResponse)
+	err := c.cc.Invoke(ctx, PredictionService_EmbedContent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PredictionServiceServer is the server API for PredictionService service.
 // All implementations should embed UnimplementedPredictionServiceServer
 // for forward compatibility
@@ -446,6 +458,8 @@ type PredictionServiceServer interface {
 	GenerateContent(context.Context, *GenerateContentRequest) (*GenerateContentResponse, error)
 	// Generate content with multimodal inputs with streaming support.
 	StreamGenerateContent(*GenerateContentRequest, PredictionService_StreamGenerateContentServer) error
+	// Embed content with multimodal inputs.
+	EmbedContent(context.Context, *EmbedContentRequest) (*EmbedContentResponse, error)
 }
 
 // UnimplementedPredictionServiceServer should be embedded to have forward compatible implementations.
@@ -490,6 +504,9 @@ func (UnimplementedPredictionServiceServer) GenerateContent(context.Context, *Ge
 }
 func (UnimplementedPredictionServiceServer) StreamGenerateContent(*GenerateContentRequest, PredictionService_StreamGenerateContentServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamGenerateContent not implemented")
+}
+func (UnimplementedPredictionServiceServer) EmbedContent(context.Context, *EmbedContentRequest) (*EmbedContentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EmbedContent not implemented")
 }
 
 // UnsafePredictionServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -778,6 +795,24 @@ func (x *predictionServiceStreamGenerateContentServer) Send(m *GenerateContentRe
 	return x.ServerStream.SendMsg(m)
 }
 
+func _PredictionService_EmbedContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmbedContentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PredictionServiceServer).EmbedContent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PredictionService_EmbedContent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PredictionServiceServer).EmbedContent(ctx, req.(*EmbedContentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PredictionService_ServiceDesc is the grpc.ServiceDesc for PredictionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -808,6 +843,10 @@ var PredictionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateContent",
 			Handler:    _PredictionService_GenerateContent_Handler,
+		},
+		{
+			MethodName: "EmbedContent",
+			Handler:    _PredictionService_EmbedContent_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

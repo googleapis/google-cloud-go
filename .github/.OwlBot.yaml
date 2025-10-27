@@ -50,18 +50,9 @@ deep-remove-regex:
   - /internal/generated/snippets//devicestreaming/apiv1/
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/logging/apiv2/
-  - /internal/generated/snippets/spanner/adapter/apiv1/
-  - /internal/generated/snippets/spanner/admin/database/apiv1/
-  - /internal/generated/snippets/spanner/admin/instance/apiv1/
-  - /internal/generated/snippets/spanner/apiv1/
   - /internal/generated/snippets/storage/control/apiv2/
   # END snippets
   - /logging/apiv2/
-  - /spanner/adapter/apiv1/
-  - /spanner/admin/database/apiv1/
-  - /spanner/admin/instance/apiv1/
-  - /spanner/apiv1/
-  - /spanner/executor/apiv1/
   - /storage/control/apiv2/
   - /storage/internal/apiv2/
 
@@ -71,14 +62,6 @@ deep-preserve-regex:
   - /.*/version.go
   - /logging/apiv2/WriteLogEntries_smoke_test.go
   # TODO(#7336): Remove these networkconnectivity lines once breaking change is handled.
-  - /spanner/admin/database/apiv1/backup.go
-  - /spanner/admin/database/apiv1/backup_test.go
-  - /spanner/admin/database/apiv1/database.go
-  - /spanner/admin/database/apiv1/database_test.go
-  - /spanner/admin/database/apiv1/init.go
-  - /spanner/admin/database/apiv1/mock_test.go
-  - /spanner/admin/instance/apiv1/init.go
-  - /spanner/apiv1/spanner_client_options.go
   - /storage/internal/apiv2/metadata.go
   # Must preserve these even though they aren't generated anymore
 
@@ -129,16 +112,6 @@ deep-copy-regex:
   - source: /google/cloud/bigquery/v2/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/adapter/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/admin/database/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/admin/instance/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/v1/cloud.google.com/go
-    dest: /
-  - source: /google/spanner/executor/v1/cloud.google.com/go
     dest: /
   - source: /google/storage/control/v2/cloud.google.com/go/
     dest: /

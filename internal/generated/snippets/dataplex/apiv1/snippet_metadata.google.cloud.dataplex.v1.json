@@ -1663,7 +1663,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntry_sync",
       "title": "dataplex GetEntry Sample",
-      "description": "GetEntry gets an Entry.",
+      "description": "GetEntry gets an Entry.\nCaution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc\nMetastore metadata that is stored in Dataplex Universal Catalog is\nchanging. For more information, see [Changes to metadata stored in\nDataplex Universal\nCatalog](https: //cloud.google.com/dataplex/docs/metadata-changes).",
       "file": "CatalogClient/GetEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2031,7 +2031,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_ListEntries_sync",
       "title": "dataplex ListEntries Sample",
-      "description": "ListEntries lists Entries within an EntryGroup.",
+      "description": "ListEntries lists Entries within an EntryGroup.\nCaution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc\nMetastore metadata that is stored in Dataplex Universal Catalog is\nchanging. For more information, see [Changes to metadata stored in\nDataplex Universal\nCatalog](https: //cloud.google.com/dataplex/docs/metadata-changes).",
       "file": "CatalogClient/ListEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2307,7 +2307,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_LookupEntry_sync",
       "title": "dataplex LookupEntry Sample",
-      "description": "LookupEntry looks up an entry by name using the permission on the source system.",
+      "description": "LookupEntry looks up an entry by name using the permission on the source system.\nCaution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc\nMetastore metadata that is stored in Dataplex Universal Catalog is\nchanging. For more information, see [Changes to metadata stored in\nDataplex Universal\nCatalog](https: //cloud.google.com/dataplex/docs/metadata-changes).",
       "file": "CatalogClient/LookupEntry/main.go",
       "language": "GO",
       "clientMethod": {

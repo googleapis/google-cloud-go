@@ -1,4 +1,6 @@
 # Default owner for all directories not owned by others
+
+*                       @googleapis/cloud-sdk-librarian-team # Librarian team access for merging Librarian PRs
 *                       @googleapis/cloud-sdk-go-eng
 
 /ai/                    @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng

@@ -1,5 +1,17 @@
 # Changes
 
+## [2.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.3.0) (2025-10-22)
+
+### Features
+
+* Add AwsKinesisFailureReason.ApiViolationReason 
+* Add tags to Subscription, Topic, and CreateSnapshotRequest messages for use in CreateSubscription, CreateTopic, and CreateSnapshot requests respectively 
+* Annotate some resource fields with their corresponding API types 
+
+### Documentation
+
+* A comment for field `received_messages` in message `.google.pubsub.v1.StreamingPullResponse` is changed 
+
 ## [2.2.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2/v2.2.0...pubsub/v2/v2.2.1) (2025-10-14)
 
 

@@ -220,14 +220,9 @@ func filterPackages(in map[string][]string) (map[string][]string, error) {
 	return out, nil
 }
 
-// goPkg reports the import path declared in the given file's `go_package`
-// option. If the option is missing, goPkg returns empty string.
-func goPkg(fileName string) (string, error) {
-	content, err := os.ReadFile(fileName)
-	if err != nil {
-		return "", err
-	}
-
+// parseGoPkg parses the import path declared in the given file's `go_package`
+// option. If the option is missing, parseGoPkg returns empty string.
+func parseGoPkg(content []byte) (string, error) {
 	var pkgName string
 	if match := goPkgOptRe.FindSubmatch(content); len(match) > 0 {
 		pn, err := strconv.Unquote(string(match[1]))
@@ -240,6 +235,16 @@ func goPkg(fileName string) (string, error) {
 		pkgName = pkgName[:p]
 	}
 	return pkgName, nil
+}
+
+// goPkg reports the import path declared in the given file's `go_package`
+// option. If the option is missing, goPkg returns empty string.
+func goPkg(fileName string) (string, error) {
+	content, err := os.ReadFile(fileName)
+	if err != nil {
+		return "", err
+	}
+	return parseGoPkg(content)
 }
 
 // protoc executes the "protoc" command on files named in fileNames, and outputs

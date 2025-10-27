@@ -48,6 +48,11 @@ type ModuleConfig struct {
 	ModulePathVersion string `yaml:"module_path_version"`
 	// APIs is the list of APIs within this module (that need overrides).
 	APIs []*APIConfig `yaml:"apis"`
+	// DeleteGenerationOutputPaths specifies paths (files or directories) to
+	// be deleted from the output directory at the end of generation. This is for files
+	// which it is difficult to prevent from being generated, but which shouldn't appear
+	// in the repo.
+	DeleteGenerationOutputPaths []string `yaml:"delete_generation_output_paths"`
 }
 
 // APIConfig provides per-API configuration to override defaults,

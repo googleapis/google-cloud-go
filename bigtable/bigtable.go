@@ -150,6 +150,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
 	if enableDirectAccess {
 		o = append(o, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
+		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("CBT_DISABLE_DIRECTPATH_BOUND_TOKEN")); !disableBoundToken {
+			o = append(o, internaloption.AllowHardBoundTokens("ALTS"))
+		}
 	}
 
 	// Allow non-default service account in DirectPath.

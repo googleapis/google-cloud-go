@@ -59,10 +59,12 @@ type CallOptions struct {
 	ListDbServers                       []gax.CallOption
 	ListDbNodes                         []gax.CallOption
 	ListGiVersions                      []gax.CallOption
+	ListMinorVersions                   []gax.CallOption
 	ListDbSystemShapes                  []gax.CallOption
 	ListAutonomousDatabases             []gax.CallOption
 	GetAutonomousDatabase               []gax.CallOption
 	CreateAutonomousDatabase            []gax.CallOption
+	UpdateAutonomousDatabase            []gax.CallOption
 	DeleteAutonomousDatabase            []gax.CallOption
 	RestoreAutonomousDatabase           []gax.CallOption
 	GenerateAutonomousDatabaseWallet    []gax.CallOption
@@ -72,6 +74,37 @@ type CallOptions struct {
 	StopAutonomousDatabase              []gax.CallOption
 	StartAutonomousDatabase             []gax.CallOption
 	RestartAutonomousDatabase           []gax.CallOption
+	SwitchoverAutonomousDatabase        []gax.CallOption
+	FailoverAutonomousDatabase          []gax.CallOption
+	ListOdbNetworks                     []gax.CallOption
+	GetOdbNetwork                       []gax.CallOption
+	CreateOdbNetwork                    []gax.CallOption
+	DeleteOdbNetwork                    []gax.CallOption
+	ListOdbSubnets                      []gax.CallOption
+	GetOdbSubnet                        []gax.CallOption
+	CreateOdbSubnet                     []gax.CallOption
+	DeleteOdbSubnet                     []gax.CallOption
+	ListExadbVmClusters                 []gax.CallOption
+	GetExadbVmCluster                   []gax.CallOption
+	CreateExadbVmCluster                []gax.CallOption
+	DeleteExadbVmCluster                []gax.CallOption
+	UpdateExadbVmCluster                []gax.CallOption
+	RemoveVirtualMachineExadbVmCluster  []gax.CallOption
+	ListExascaleDbStorageVaults         []gax.CallOption
+	GetExascaleDbStorageVault           []gax.CallOption
+	CreateExascaleDbStorageVault        []gax.CallOption
+	DeleteExascaleDbStorageVault        []gax.CallOption
+	ListDbSystemInitialStorageSizes     []gax.CallOption
+	ListDatabases                       []gax.CallOption
+	GetDatabase                         []gax.CallOption
+	ListPluggableDatabases              []gax.CallOption
+	GetPluggableDatabase                []gax.CallOption
+	ListDbSystems                       []gax.CallOption
+	GetDbSystem                         []gax.CallOption
+	CreateDbSystem                      []gax.CallOption
+	DeleteDbSystem                      []gax.CallOption
+	ListDbVersions                      []gax.CallOption
+	ListDatabaseCharacterSets           []gax.CallOption
 	GetLocation                         []gax.CallOption
 	ListLocations                       []gax.CallOption
 	CancelOperation                     []gax.CallOption
@@ -101,9 +134,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -116,9 +147,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -137,9 +166,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -152,9 +179,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -173,9 +198,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -188,9 +211,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -203,9 +224,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -218,9 +237,20 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListMinorVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -233,9 +263,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -248,9 +276,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -263,9 +289,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -275,6 +299,9 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAutonomousDatabase: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteAutonomousDatabase: []gax.CallOption{
@@ -290,9 +317,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -305,9 +330,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -320,9 +343,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.Internal,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -339,6 +360,269 @@ func defaultCallOptions() *CallOptions {
 		},
 		RestartAutonomousDatabase: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SwitchoverAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		FailoverAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListOdbNetworks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOdbNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateOdbNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteOdbNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListOdbSubnets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOdbSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateOdbSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteOdbSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListExadbVmClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemoveVirtualMachineExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListExascaleDbStorageVaults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetExascaleDbStorageVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateExascaleDbStorageVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteExascaleDbStorageVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDbSystemInitialStorageSizes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListPluggableDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetPluggableDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDbSystems: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDbSystem: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateDbSystem: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDbSystem: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDbVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDatabaseCharacterSets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
@@ -359,9 +643,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -373,9 +655,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -393,9 +673,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -407,9 +685,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -427,9 +703,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -441,9 +715,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -455,9 +727,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -469,9 +739,19 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListMinorVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -483,9 +763,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -497,9 +775,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -511,13 +787,14 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
 		CreateAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAutonomousDatabase: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteAutonomousDatabase: []gax.CallOption{
@@ -537,9 +814,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -551,9 +826,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -565,9 +838,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
 			}),
 		},
@@ -579,6 +850,252 @@ func defaultRESTCallOptions() *CallOptions {
 		},
 		RestartAutonomousDatabase: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SwitchoverAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		FailoverAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListOdbNetworks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetOdbNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateOdbNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteOdbNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListOdbSubnets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetOdbSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateOdbSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteOdbSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListExadbVmClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemoveVirtualMachineExadbVmCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListExascaleDbStorageVaults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetExascaleDbStorageVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateExascaleDbStorageVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteExascaleDbStorageVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDbSystemInitialStorageSizes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListPluggableDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetPluggableDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListDbSystems: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetDbSystem: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateDbSystem: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDbSystem: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDbVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListDatabaseCharacterSets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
 		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
@@ -610,11 +1127,14 @@ type internalClient interface {
 	ListDbServers(context.Context, *oracledatabasepb.ListDbServersRequest, ...gax.CallOption) *DbServerIterator
 	ListDbNodes(context.Context, *oracledatabasepb.ListDbNodesRequest, ...gax.CallOption) *DbNodeIterator
 	ListGiVersions(context.Context, *oracledatabasepb.ListGiVersionsRequest, ...gax.CallOption) *GiVersionIterator
+	ListMinorVersions(context.Context, *oracledatabasepb.ListMinorVersionsRequest, ...gax.CallOption) *MinorVersionIterator
 	ListDbSystemShapes(context.Context, *oracledatabasepb.ListDbSystemShapesRequest, ...gax.CallOption) *DbSystemShapeIterator
 	ListAutonomousDatabases(context.Context, *oracledatabasepb.ListAutonomousDatabasesRequest, ...gax.CallOption) *AutonomousDatabaseIterator
 	GetAutonomousDatabase(context.Context, *oracledatabasepb.GetAutonomousDatabaseRequest, ...gax.CallOption) (*oracledatabasepb.AutonomousDatabase, error)
 	CreateAutonomousDatabase(context.Context, *oracledatabasepb.CreateAutonomousDatabaseRequest, ...gax.CallOption) (*CreateAutonomousDatabaseOperation, error)
 	CreateAutonomousDatabaseOperation(name string) *CreateAutonomousDatabaseOperation
+	UpdateAutonomousDatabase(context.Context, *oracledatabasepb.UpdateAutonomousDatabaseRequest, ...gax.CallOption) (*UpdateAutonomousDatabaseOperation, error)
+	UpdateAutonomousDatabaseOperation(name string) *UpdateAutonomousDatabaseOperation
 	DeleteAutonomousDatabase(context.Context, *oracledatabasepb.DeleteAutonomousDatabaseRequest, ...gax.CallOption) (*DeleteAutonomousDatabaseOperation, error)
 	DeleteAutonomousDatabaseOperation(name string) *DeleteAutonomousDatabaseOperation
 	RestoreAutonomousDatabase(context.Context, *oracledatabasepb.RestoreAutonomousDatabaseRequest, ...gax.CallOption) (*RestoreAutonomousDatabaseOperation, error)
@@ -629,6 +1149,51 @@ type internalClient interface {
 	StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation
 	RestartAutonomousDatabase(context.Context, *oracledatabasepb.RestartAutonomousDatabaseRequest, ...gax.CallOption) (*RestartAutonomousDatabaseOperation, error)
 	RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation
+	SwitchoverAutonomousDatabase(context.Context, *oracledatabasepb.SwitchoverAutonomousDatabaseRequest, ...gax.CallOption) (*SwitchoverAutonomousDatabaseOperation, error)
+	SwitchoverAutonomousDatabaseOperation(name string) *SwitchoverAutonomousDatabaseOperation
+	FailoverAutonomousDatabase(context.Context, *oracledatabasepb.FailoverAutonomousDatabaseRequest, ...gax.CallOption) (*FailoverAutonomousDatabaseOperation, error)
+	FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation
+	ListOdbNetworks(context.Context, *oracledatabasepb.ListOdbNetworksRequest, ...gax.CallOption) *OdbNetworkIterator
+	GetOdbNetwork(context.Context, *oracledatabasepb.GetOdbNetworkRequest, ...gax.CallOption) (*oracledatabasepb.OdbNetwork, error)
+	CreateOdbNetwork(context.Context, *oracledatabasepb.CreateOdbNetworkRequest, ...gax.CallOption) (*CreateOdbNetworkOperation, error)
+	CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation
+	DeleteOdbNetwork(context.Context, *oracledatabasepb.DeleteOdbNetworkRequest, ...gax.CallOption) (*DeleteOdbNetworkOperation, error)
+	DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOperation
+	ListOdbSubnets(context.Context, *oracledatabasepb.ListOdbSubnetsRequest, ...gax.CallOption) *OdbSubnetIterator
+	GetOdbSubnet(context.Context, *oracledatabasepb.GetOdbSubnetRequest, ...gax.CallOption) (*oracledatabasepb.OdbSubnet, error)
+	CreateOdbSubnet(context.Context, *oracledatabasepb.CreateOdbSubnetRequest, ...gax.CallOption) (*CreateOdbSubnetOperation, error)
+	CreateOdbSubnetOperation(name string) *CreateOdbSubnetOperation
+	DeleteOdbSubnet(context.Context, *oracledatabasepb.DeleteOdbSubnetRequest, ...gax.CallOption) (*DeleteOdbSubnetOperation, error)
+	DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation
+	ListExadbVmClusters(context.Context, *oracledatabasepb.ListExadbVmClustersRequest, ...gax.CallOption) *ExadbVmClusterIterator
+	GetExadbVmCluster(context.Context, *oracledatabasepb.GetExadbVmClusterRequest, ...gax.CallOption) (*oracledatabasepb.ExadbVmCluster, error)
+	CreateExadbVmCluster(context.Context, *oracledatabasepb.CreateExadbVmClusterRequest, ...gax.CallOption) (*CreateExadbVmClusterOperation, error)
+	CreateExadbVmClusterOperation(name string) *CreateExadbVmClusterOperation
+	DeleteExadbVmCluster(context.Context, *oracledatabasepb.DeleteExadbVmClusterRequest, ...gax.CallOption) (*DeleteExadbVmClusterOperation, error)
+	DeleteExadbVmClusterOperation(name string) *DeleteExadbVmClusterOperation
+	UpdateExadbVmCluster(context.Context, *oracledatabasepb.UpdateExadbVmClusterRequest, ...gax.CallOption) (*UpdateExadbVmClusterOperation, error)
+	UpdateExadbVmClusterOperation(name string) *UpdateExadbVmClusterOperation
+	RemoveVirtualMachineExadbVmCluster(context.Context, *oracledatabasepb.RemoveVirtualMachineExadbVmClusterRequest, ...gax.CallOption) (*RemoveVirtualMachineExadbVmClusterOperation, error)
+	RemoveVirtualMachineExadbVmClusterOperation(name string) *RemoveVirtualMachineExadbVmClusterOperation
+	ListExascaleDbStorageVaults(context.Context, *oracledatabasepb.ListExascaleDbStorageVaultsRequest, ...gax.CallOption) *ExascaleDbStorageVaultIterator
+	GetExascaleDbStorageVault(context.Context, *oracledatabasepb.GetExascaleDbStorageVaultRequest, ...gax.CallOption) (*oracledatabasepb.ExascaleDbStorageVault, error)
+	CreateExascaleDbStorageVault(context.Context, *oracledatabasepb.CreateExascaleDbStorageVaultRequest, ...gax.CallOption) (*CreateExascaleDbStorageVaultOperation, error)
+	CreateExascaleDbStorageVaultOperation(name string) *CreateExascaleDbStorageVaultOperation
+	DeleteExascaleDbStorageVault(context.Context, *oracledatabasepb.DeleteExascaleDbStorageVaultRequest, ...gax.CallOption) (*DeleteExascaleDbStorageVaultOperation, error)
+	DeleteExascaleDbStorageVaultOperation(name string) *DeleteExascaleDbStorageVaultOperation
+	ListDbSystemInitialStorageSizes(context.Context, *oracledatabasepb.ListDbSystemInitialStorageSizesRequest, ...gax.CallOption) *DbSystemInitialStorageSizeIterator
+	ListDatabases(context.Context, *oracledatabasepb.ListDatabasesRequest, ...gax.CallOption) *DatabaseIterator
+	GetDatabase(context.Context, *oracledatabasepb.GetDatabaseRequest, ...gax.CallOption) (*oracledatabasepb.Database, error)
+	ListPluggableDatabases(context.Context, *oracledatabasepb.ListPluggableDatabasesRequest, ...gax.CallOption) *PluggableDatabaseIterator
+	GetPluggableDatabase(context.Context, *oracledatabasepb.GetPluggableDatabaseRequest, ...gax.CallOption) (*oracledatabasepb.PluggableDatabase, error)
+	ListDbSystems(context.Context, *oracledatabasepb.ListDbSystemsRequest, ...gax.CallOption) *DbSystemIterator
+	GetDbSystem(context.Context, *oracledatabasepb.GetDbSystemRequest, ...gax.CallOption) (*oracledatabasepb.DbSystem, error)
+	CreateDbSystem(context.Context, *oracledatabasepb.CreateDbSystemRequest, ...gax.CallOption) (*CreateDbSystemOperation, error)
+	CreateDbSystemOperation(name string) *CreateDbSystemOperation
+	DeleteDbSystem(context.Context, *oracledatabasepb.DeleteDbSystemRequest, ...gax.CallOption) (*DeleteDbSystemOperation, error)
+	DeleteDbSystemOperation(name string) *DeleteDbSystemOperation
+	ListDbVersions(context.Context, *oracledatabasepb.ListDbVersionsRequest, ...gax.CallOption) *DbVersionIterator
+	ListDatabaseCharacterSets(context.Context, *oracledatabasepb.ListDatabaseCharacterSetsRequest, ...gax.CallOption) *DatabaseCharacterSetIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -762,6 +1327,12 @@ func (c *Client) ListGiVersions(ctx context.Context, req *oracledatabasepb.ListG
 	return c.internalClient.ListGiVersions(ctx, req, opts...)
 }
 
+// ListMinorVersions lists all the valid minor versions for the given
+// project, location, gi version and shape family.
+func (c *Client) ListMinorVersions(ctx context.Context, req *oracledatabasepb.ListMinorVersionsRequest, opts ...gax.CallOption) *MinorVersionIterator {
+	return c.internalClient.ListMinorVersions(ctx, req, opts...)
+}
+
 // ListDbSystemShapes lists the database system shapes available for the project and location.
 func (c *Client) ListDbSystemShapes(ctx context.Context, req *oracledatabasepb.ListDbSystemShapesRequest, opts ...gax.CallOption) *DbSystemShapeIterator {
 	return c.internalClient.ListDbSystemShapes(ctx, req, opts...)
@@ -786,6 +1357,17 @@ func (c *Client) CreateAutonomousDatabase(ctx context.Context, req *oracledataba
 // The name must be that of a previously created CreateAutonomousDatabaseOperation, possibly from a different process.
 func (c *Client) CreateAutonomousDatabaseOperation(name string) *CreateAutonomousDatabaseOperation {
 	return c.internalClient.CreateAutonomousDatabaseOperation(name)
+}
+
+// UpdateAutonomousDatabase updates the parameters of a single Autonomous Database.
+func (c *Client) UpdateAutonomousDatabase(ctx context.Context, req *oracledatabasepb.UpdateAutonomousDatabaseRequest, opts ...gax.CallOption) (*UpdateAutonomousDatabaseOperation, error) {
+	return c.internalClient.UpdateAutonomousDatabase(ctx, req, opts...)
+}
+
+// UpdateAutonomousDatabaseOperation returns a new UpdateAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateAutonomousDatabaseOperation, possibly from a different process.
+func (c *Client) UpdateAutonomousDatabaseOperation(name string) *UpdateAutonomousDatabaseOperation {
+	return c.internalClient.UpdateAutonomousDatabaseOperation(name)
 }
 
 // DeleteAutonomousDatabase deletes a single Autonomous Database.
@@ -862,6 +1444,252 @@ func (c *Client) RestartAutonomousDatabase(ctx context.Context, req *oracledatab
 // The name must be that of a previously created RestartAutonomousDatabaseOperation, possibly from a different process.
 func (c *Client) RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation {
 	return c.internalClient.RestartAutonomousDatabaseOperation(name)
+}
+
+// SwitchoverAutonomousDatabase initiates a switchover of specified autonomous database to the associated
+// peer database.
+func (c *Client) SwitchoverAutonomousDatabase(ctx context.Context, req *oracledatabasepb.SwitchoverAutonomousDatabaseRequest, opts ...gax.CallOption) (*SwitchoverAutonomousDatabaseOperation, error) {
+	return c.internalClient.SwitchoverAutonomousDatabase(ctx, req, opts...)
+}
+
+// SwitchoverAutonomousDatabaseOperation returns a new SwitchoverAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created SwitchoverAutonomousDatabaseOperation, possibly from a different process.
+func (c *Client) SwitchoverAutonomousDatabaseOperation(name string) *SwitchoverAutonomousDatabaseOperation {
+	return c.internalClient.SwitchoverAutonomousDatabaseOperation(name)
+}
+
+// FailoverAutonomousDatabase initiates a failover to target autonomous database from the associated
+// primary database.
+func (c *Client) FailoverAutonomousDatabase(ctx context.Context, req *oracledatabasepb.FailoverAutonomousDatabaseRequest, opts ...gax.CallOption) (*FailoverAutonomousDatabaseOperation, error) {
+	return c.internalClient.FailoverAutonomousDatabase(ctx, req, opts...)
+}
+
+// FailoverAutonomousDatabaseOperation returns a new FailoverAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created FailoverAutonomousDatabaseOperation, possibly from a different process.
+func (c *Client) FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation {
+	return c.internalClient.FailoverAutonomousDatabaseOperation(name)
+}
+
+// ListOdbNetworks lists the ODB Networks in a given project and location.
+func (c *Client) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.ListOdbNetworksRequest, opts ...gax.CallOption) *OdbNetworkIterator {
+	return c.internalClient.ListOdbNetworks(ctx, req, opts...)
+}
+
+// GetOdbNetwork gets details of a single ODB Network.
+func (c *Client) GetOdbNetwork(ctx context.Context, req *oracledatabasepb.GetOdbNetworkRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbNetwork, error) {
+	return c.internalClient.GetOdbNetwork(ctx, req, opts...)
+}
+
+// CreateOdbNetwork creates a new ODB Network in a given project and location.
+func (c *Client) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb.CreateOdbNetworkRequest, opts ...gax.CallOption) (*CreateOdbNetworkOperation, error) {
+	return c.internalClient.CreateOdbNetwork(ctx, req, opts...)
+}
+
+// CreateOdbNetworkOperation returns a new CreateOdbNetworkOperation from a given name.
+// The name must be that of a previously created CreateOdbNetworkOperation, possibly from a different process.
+func (c *Client) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation {
+	return c.internalClient.CreateOdbNetworkOperation(name)
+}
+
+// DeleteOdbNetwork deletes a single ODB Network.
+func (c *Client) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb.DeleteOdbNetworkRequest, opts ...gax.CallOption) (*DeleteOdbNetworkOperation, error) {
+	return c.internalClient.DeleteOdbNetwork(ctx, req, opts...)
+}
+
+// DeleteOdbNetworkOperation returns a new DeleteOdbNetworkOperation from a given name.
+// The name must be that of a previously created DeleteOdbNetworkOperation, possibly from a different process.
+func (c *Client) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOperation {
+	return c.internalClient.DeleteOdbNetworkOperation(name)
+}
+
+// ListOdbSubnets lists all the ODB Subnets in a given ODB Network.
+func (c *Client) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.ListOdbSubnetsRequest, opts ...gax.CallOption) *OdbSubnetIterator {
+	return c.internalClient.ListOdbSubnets(ctx, req, opts...)
+}
+
+// GetOdbSubnet gets details of a single ODB Subnet.
+func (c *Client) GetOdbSubnet(ctx context.Context, req *oracledatabasepb.GetOdbSubnetRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbSubnet, error) {
+	return c.internalClient.GetOdbSubnet(ctx, req, opts...)
+}
+
+// CreateOdbSubnet creates a new ODB Subnet in a given ODB Network.
+func (c *Client) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.CreateOdbSubnetRequest, opts ...gax.CallOption) (*CreateOdbSubnetOperation, error) {
+	return c.internalClient.CreateOdbSubnet(ctx, req, opts...)
+}
+
+// CreateOdbSubnetOperation returns a new CreateOdbSubnetOperation from a given name.
+// The name must be that of a previously created CreateOdbSubnetOperation, possibly from a different process.
+func (c *Client) CreateOdbSubnetOperation(name string) *CreateOdbSubnetOperation {
+	return c.internalClient.CreateOdbSubnetOperation(name)
+}
+
+// DeleteOdbSubnet deletes a single ODB Subnet.
+func (c *Client) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.DeleteOdbSubnetRequest, opts ...gax.CallOption) (*DeleteOdbSubnetOperation, error) {
+	return c.internalClient.DeleteOdbSubnet(ctx, req, opts...)
+}
+
+// DeleteOdbSubnetOperation returns a new DeleteOdbSubnetOperation from a given name.
+// The name must be that of a previously created DeleteOdbSubnetOperation, possibly from a different process.
+func (c *Client) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation {
+	return c.internalClient.DeleteOdbSubnetOperation(name)
+}
+
+// ListExadbVmClusters lists all the Exadb (Exascale) VM Clusters for the given project and
+// location.
+func (c *Client) ListExadbVmClusters(ctx context.Context, req *oracledatabasepb.ListExadbVmClustersRequest, opts ...gax.CallOption) *ExadbVmClusterIterator {
+	return c.internalClient.ListExadbVmClusters(ctx, req, opts...)
+}
+
+// GetExadbVmCluster gets details of a single Exadb (Exascale) VM Cluster.
+func (c *Client) GetExadbVmCluster(ctx context.Context, req *oracledatabasepb.GetExadbVmClusterRequest, opts ...gax.CallOption) (*oracledatabasepb.ExadbVmCluster, error) {
+	return c.internalClient.GetExadbVmCluster(ctx, req, opts...)
+}
+
+// CreateExadbVmCluster creates a new Exadb (Exascale) VM Cluster resource.
+func (c *Client) CreateExadbVmCluster(ctx context.Context, req *oracledatabasepb.CreateExadbVmClusterRequest, opts ...gax.CallOption) (*CreateExadbVmClusterOperation, error) {
+	return c.internalClient.CreateExadbVmCluster(ctx, req, opts...)
+}
+
+// CreateExadbVmClusterOperation returns a new CreateExadbVmClusterOperation from a given name.
+// The name must be that of a previously created CreateExadbVmClusterOperation, possibly from a different process.
+func (c *Client) CreateExadbVmClusterOperation(name string) *CreateExadbVmClusterOperation {
+	return c.internalClient.CreateExadbVmClusterOperation(name)
+}
+
+// DeleteExadbVmCluster deletes a single Exadb (Exascale) VM Cluster.
+func (c *Client) DeleteExadbVmCluster(ctx context.Context, req *oracledatabasepb.DeleteExadbVmClusterRequest, opts ...gax.CallOption) (*DeleteExadbVmClusterOperation, error) {
+	return c.internalClient.DeleteExadbVmCluster(ctx, req, opts...)
+}
+
+// DeleteExadbVmClusterOperation returns a new DeleteExadbVmClusterOperation from a given name.
+// The name must be that of a previously created DeleteExadbVmClusterOperation, possibly from a different process.
+func (c *Client) DeleteExadbVmClusterOperation(name string) *DeleteExadbVmClusterOperation {
+	return c.internalClient.DeleteExadbVmClusterOperation(name)
+}
+
+// UpdateExadbVmCluster updates a single Exadb (Exascale) VM Cluster. To add virtual machines to
+// existing exadb vm cluster, only pass the node count.
+func (c *Client) UpdateExadbVmCluster(ctx context.Context, req *oracledatabasepb.UpdateExadbVmClusterRequest, opts ...gax.CallOption) (*UpdateExadbVmClusterOperation, error) {
+	return c.internalClient.UpdateExadbVmCluster(ctx, req, opts...)
+}
+
+// UpdateExadbVmClusterOperation returns a new UpdateExadbVmClusterOperation from a given name.
+// The name must be that of a previously created UpdateExadbVmClusterOperation, possibly from a different process.
+func (c *Client) UpdateExadbVmClusterOperation(name string) *UpdateExadbVmClusterOperation {
+	return c.internalClient.UpdateExadbVmClusterOperation(name)
+}
+
+// RemoveVirtualMachineExadbVmCluster removes virtual machines from an existing exadb vm cluster.
+func (c *Client) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req *oracledatabasepb.RemoveVirtualMachineExadbVmClusterRequest, opts ...gax.CallOption) (*RemoveVirtualMachineExadbVmClusterOperation, error) {
+	return c.internalClient.RemoveVirtualMachineExadbVmCluster(ctx, req, opts...)
+}
+
+// RemoveVirtualMachineExadbVmClusterOperation returns a new RemoveVirtualMachineExadbVmClusterOperation from a given name.
+// The name must be that of a previously created RemoveVirtualMachineExadbVmClusterOperation, possibly from a different process.
+func (c *Client) RemoveVirtualMachineExadbVmClusterOperation(name string) *RemoveVirtualMachineExadbVmClusterOperation {
+	return c.internalClient.RemoveVirtualMachineExadbVmClusterOperation(name)
+}
+
+// ListExascaleDbStorageVaults lists all the ExascaleDB Storage Vaults for the given project and
+// location.
+func (c *Client) ListExascaleDbStorageVaults(ctx context.Context, req *oracledatabasepb.ListExascaleDbStorageVaultsRequest, opts ...gax.CallOption) *ExascaleDbStorageVaultIterator {
+	return c.internalClient.ListExascaleDbStorageVaults(ctx, req, opts...)
+}
+
+// GetExascaleDbStorageVault gets details of a single ExascaleDB Storage Vault.
+func (c *Client) GetExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.GetExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*oracledatabasepb.ExascaleDbStorageVault, error) {
+	return c.internalClient.GetExascaleDbStorageVault(ctx, req, opts...)
+}
+
+// CreateExascaleDbStorageVault creates a new ExascaleDB Storage Vault resource.
+func (c *Client) CreateExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.CreateExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*CreateExascaleDbStorageVaultOperation, error) {
+	return c.internalClient.CreateExascaleDbStorageVault(ctx, req, opts...)
+}
+
+// CreateExascaleDbStorageVaultOperation returns a new CreateExascaleDbStorageVaultOperation from a given name.
+// The name must be that of a previously created CreateExascaleDbStorageVaultOperation, possibly from a different process.
+func (c *Client) CreateExascaleDbStorageVaultOperation(name string) *CreateExascaleDbStorageVaultOperation {
+	return c.internalClient.CreateExascaleDbStorageVaultOperation(name)
+}
+
+// DeleteExascaleDbStorageVault deletes a single ExascaleDB Storage Vault.
+func (c *Client) DeleteExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.DeleteExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*DeleteExascaleDbStorageVaultOperation, error) {
+	return c.internalClient.DeleteExascaleDbStorageVault(ctx, req, opts...)
+}
+
+// DeleteExascaleDbStorageVaultOperation returns a new DeleteExascaleDbStorageVaultOperation from a given name.
+// The name must be that of a previously created DeleteExascaleDbStorageVaultOperation, possibly from a different process.
+func (c *Client) DeleteExascaleDbStorageVaultOperation(name string) *DeleteExascaleDbStorageVaultOperation {
+	return c.internalClient.DeleteExascaleDbStorageVaultOperation(name)
+}
+
+// ListDbSystemInitialStorageSizes lists all the DbSystemInitialStorageSizes for the given project and
+// location.
+func (c *Client) ListDbSystemInitialStorageSizes(ctx context.Context, req *oracledatabasepb.ListDbSystemInitialStorageSizesRequest, opts ...gax.CallOption) *DbSystemInitialStorageSizeIterator {
+	return c.internalClient.ListDbSystemInitialStorageSizes(ctx, req, opts...)
+}
+
+// ListDatabases lists all the Databases for the given project, location and DbSystem.
+func (c *Client) ListDatabases(ctx context.Context, req *oracledatabasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	return c.internalClient.ListDatabases(ctx, req, opts...)
+}
+
+// GetDatabase gets details of a single Database.
+func (c *Client) GetDatabase(ctx context.Context, req *oracledatabasepb.GetDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.Database, error) {
+	return c.internalClient.GetDatabase(ctx, req, opts...)
+}
+
+// ListPluggableDatabases lists all the PluggableDatabases for the given project, location and
+// Container Database.
+func (c *Client) ListPluggableDatabases(ctx context.Context, req *oracledatabasepb.ListPluggableDatabasesRequest, opts ...gax.CallOption) *PluggableDatabaseIterator {
+	return c.internalClient.ListPluggableDatabases(ctx, req, opts...)
+}
+
+// GetPluggableDatabase gets details of a single PluggableDatabase.
+func (c *Client) GetPluggableDatabase(ctx context.Context, req *oracledatabasepb.GetPluggableDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.PluggableDatabase, error) {
+	return c.internalClient.GetPluggableDatabase(ctx, req, opts...)
+}
+
+// ListDbSystems lists all the DbSystems for the given project and location.
+func (c *Client) ListDbSystems(ctx context.Context, req *oracledatabasepb.ListDbSystemsRequest, opts ...gax.CallOption) *DbSystemIterator {
+	return c.internalClient.ListDbSystems(ctx, req, opts...)
+}
+
+// GetDbSystem gets details of a single DbSystem.
+func (c *Client) GetDbSystem(ctx context.Context, req *oracledatabasepb.GetDbSystemRequest, opts ...gax.CallOption) (*oracledatabasepb.DbSystem, error) {
+	return c.internalClient.GetDbSystem(ctx, req, opts...)
+}
+
+// CreateDbSystem creates a new DbSystem in a given project and location.
+func (c *Client) CreateDbSystem(ctx context.Context, req *oracledatabasepb.CreateDbSystemRequest, opts ...gax.CallOption) (*CreateDbSystemOperation, error) {
+	return c.internalClient.CreateDbSystem(ctx, req, opts...)
+}
+
+// CreateDbSystemOperation returns a new CreateDbSystemOperation from a given name.
+// The name must be that of a previously created CreateDbSystemOperation, possibly from a different process.
+func (c *Client) CreateDbSystemOperation(name string) *CreateDbSystemOperation {
+	return c.internalClient.CreateDbSystemOperation(name)
+}
+
+// DeleteDbSystem deletes a single DbSystem.
+func (c *Client) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.DeleteDbSystemRequest, opts ...gax.CallOption) (*DeleteDbSystemOperation, error) {
+	return c.internalClient.DeleteDbSystem(ctx, req, opts...)
+}
+
+// DeleteDbSystemOperation returns a new DeleteDbSystemOperation from a given name.
+// The name must be that of a previously created DeleteDbSystemOperation, possibly from a different process.
+func (c *Client) DeleteDbSystemOperation(name string) *DeleteDbSystemOperation {
+	return c.internalClient.DeleteDbSystemOperation(name)
+}
+
+// ListDbVersions list DbVersions for the given project and location.
+func (c *Client) ListDbVersions(ctx context.Context, req *oracledatabasepb.ListDbVersionsRequest, opts ...gax.CallOption) *DbVersionIterator {
+	return c.internalClient.ListDbVersions(ctx, req, opts...)
+}
+
+// ListDatabaseCharacterSets list DatabaseCharacterSets for the given project and location.
+func (c *Client) ListDatabaseCharacterSets(ctx context.Context, req *oracledatabasepb.ListDatabaseCharacterSetsRequest, opts ...gax.CallOption) *DatabaseCharacterSetIterator {
+	return c.internalClient.ListDatabaseCharacterSets(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -1476,6 +2304,52 @@ func (c *gRPCClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 	return it
 }
 
+func (c *gRPCClient) ListMinorVersions(ctx context.Context, req *oracledatabasepb.ListMinorVersionsRequest, opts ...gax.CallOption) *MinorVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListMinorVersions[0:len((*c.CallOptions).ListMinorVersions):len((*c.CallOptions).ListMinorVersions)], opts...)
+	it := &MinorVersionIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListMinorVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.MinorVersion, string, error) {
+		resp := &oracledatabasepb.ListMinorVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListMinorVersions, req, settings.GRPC, c.logger, "ListMinorVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMinorVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) ListDbSystemShapes(ctx context.Context, req *oracledatabasepb.ListDbSystemShapesRequest, opts ...gax.CallOption) *DbSystemShapeIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1602,6 +2476,26 @@ func (c *gRPCClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 		return nil, err
 	}
 	return &CreateAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateAutonomousDatabase(ctx context.Context, req *oracledatabasepb.UpdateAutonomousDatabaseRequest, opts ...gax.CallOption) (*UpdateAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "autonomous_database.name", url.QueryEscape(req.GetAutonomousDatabase().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAutonomousDatabase[0:len((*c.CallOptions).UpdateAutonomousDatabase):len((*c.CallOptions).UpdateAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAutonomousDatabase, req, settings.GRPC, c.logger, "UpdateAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateAutonomousDatabaseOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1862,6 +2756,872 @@ func (c *gRPCClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 	}, nil
 }
 
+func (c *gRPCClient) SwitchoverAutonomousDatabase(ctx context.Context, req *oracledatabasepb.SwitchoverAutonomousDatabaseRequest, opts ...gax.CallOption) (*SwitchoverAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SwitchoverAutonomousDatabase[0:len((*c.CallOptions).SwitchoverAutonomousDatabase):len((*c.CallOptions).SwitchoverAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SwitchoverAutonomousDatabase, req, settings.GRPC, c.logger, "SwitchoverAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SwitchoverAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) FailoverAutonomousDatabase(ctx context.Context, req *oracledatabasepb.FailoverAutonomousDatabaseRequest, opts ...gax.CallOption) (*FailoverAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FailoverAutonomousDatabase[0:len((*c.CallOptions).FailoverAutonomousDatabase):len((*c.CallOptions).FailoverAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FailoverAutonomousDatabase, req, settings.GRPC, c.logger, "FailoverAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &FailoverAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.ListOdbNetworksRequest, opts ...gax.CallOption) *OdbNetworkIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOdbNetworks[0:len((*c.CallOptions).ListOdbNetworks):len((*c.CallOptions).ListOdbNetworks)], opts...)
+	it := &OdbNetworkIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListOdbNetworksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbNetwork, string, error) {
+		resp := &oracledatabasepb.ListOdbNetworksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListOdbNetworks, req, settings.GRPC, c.logger, "ListOdbNetworks")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOdbNetworks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetOdbNetwork(ctx context.Context, req *oracledatabasepb.GetOdbNetworkRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbNetwork, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOdbNetwork[0:len((*c.CallOptions).GetOdbNetwork):len((*c.CallOptions).GetOdbNetwork)], opts...)
+	var resp *oracledatabasepb.OdbNetwork
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetOdbNetwork, req, settings.GRPC, c.logger, "GetOdbNetwork")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb.CreateOdbNetworkRequest, opts ...gax.CallOption) (*CreateOdbNetworkOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateOdbNetwork[0:len((*c.CallOptions).CreateOdbNetwork):len((*c.CallOptions).CreateOdbNetwork)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateOdbNetwork, req, settings.GRPC, c.logger, "CreateOdbNetwork")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateOdbNetworkOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb.DeleteOdbNetworkRequest, opts ...gax.CallOption) (*DeleteOdbNetworkOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOdbNetwork[0:len((*c.CallOptions).DeleteOdbNetwork):len((*c.CallOptions).DeleteOdbNetwork)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteOdbNetwork, req, settings.GRPC, c.logger, "DeleteOdbNetwork")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteOdbNetworkOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.ListOdbSubnetsRequest, opts ...gax.CallOption) *OdbSubnetIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOdbSubnets[0:len((*c.CallOptions).ListOdbSubnets):len((*c.CallOptions).ListOdbSubnets)], opts...)
+	it := &OdbSubnetIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListOdbSubnetsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbSubnet, string, error) {
+		resp := &oracledatabasepb.ListOdbSubnetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListOdbSubnets, req, settings.GRPC, c.logger, "ListOdbSubnets")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOdbSubnets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetOdbSubnet(ctx context.Context, req *oracledatabasepb.GetOdbSubnetRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbSubnet, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOdbSubnet[0:len((*c.CallOptions).GetOdbSubnet):len((*c.CallOptions).GetOdbSubnet)], opts...)
+	var resp *oracledatabasepb.OdbSubnet
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetOdbSubnet, req, settings.GRPC, c.logger, "GetOdbSubnet")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.CreateOdbSubnetRequest, opts ...gax.CallOption) (*CreateOdbSubnetOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateOdbSubnet[0:len((*c.CallOptions).CreateOdbSubnet):len((*c.CallOptions).CreateOdbSubnet)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateOdbSubnet, req, settings.GRPC, c.logger, "CreateOdbSubnet")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateOdbSubnetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.DeleteOdbSubnetRequest, opts ...gax.CallOption) (*DeleteOdbSubnetOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOdbSubnet[0:len((*c.CallOptions).DeleteOdbSubnet):len((*c.CallOptions).DeleteOdbSubnet)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteOdbSubnet, req, settings.GRPC, c.logger, "DeleteOdbSubnet")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteOdbSubnetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListExadbVmClusters(ctx context.Context, req *oracledatabasepb.ListExadbVmClustersRequest, opts ...gax.CallOption) *ExadbVmClusterIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListExadbVmClusters[0:len((*c.CallOptions).ListExadbVmClusters):len((*c.CallOptions).ListExadbVmClusters)], opts...)
+	it := &ExadbVmClusterIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListExadbVmClustersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExadbVmCluster, string, error) {
+		resp := &oracledatabasepb.ListExadbVmClustersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListExadbVmClusters, req, settings.GRPC, c.logger, "ListExadbVmClusters")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetExadbVmClusters(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetExadbVmCluster(ctx context.Context, req *oracledatabasepb.GetExadbVmClusterRequest, opts ...gax.CallOption) (*oracledatabasepb.ExadbVmCluster, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetExadbVmCluster[0:len((*c.CallOptions).GetExadbVmCluster):len((*c.CallOptions).GetExadbVmCluster)], opts...)
+	var resp *oracledatabasepb.ExadbVmCluster
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetExadbVmCluster, req, settings.GRPC, c.logger, "GetExadbVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateExadbVmCluster(ctx context.Context, req *oracledatabasepb.CreateExadbVmClusterRequest, opts ...gax.CallOption) (*CreateExadbVmClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateExadbVmCluster[0:len((*c.CallOptions).CreateExadbVmCluster):len((*c.CallOptions).CreateExadbVmCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateExadbVmCluster, req, settings.GRPC, c.logger, "CreateExadbVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteExadbVmCluster(ctx context.Context, req *oracledatabasepb.DeleteExadbVmClusterRequest, opts ...gax.CallOption) (*DeleteExadbVmClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteExadbVmCluster[0:len((*c.CallOptions).DeleteExadbVmCluster):len((*c.CallOptions).DeleteExadbVmCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteExadbVmCluster, req, settings.GRPC, c.logger, "DeleteExadbVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateExadbVmCluster(ctx context.Context, req *oracledatabasepb.UpdateExadbVmClusterRequest, opts ...gax.CallOption) (*UpdateExadbVmClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "exadb_vm_cluster.name", url.QueryEscape(req.GetExadbVmCluster().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateExadbVmCluster[0:len((*c.CallOptions).UpdateExadbVmCluster):len((*c.CallOptions).UpdateExadbVmCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateExadbVmCluster, req, settings.GRPC, c.logger, "UpdateExadbVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req *oracledatabasepb.RemoveVirtualMachineExadbVmClusterRequest, opts ...gax.CallOption) (*RemoveVirtualMachineExadbVmClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RemoveVirtualMachineExadbVmCluster[0:len((*c.CallOptions).RemoveVirtualMachineExadbVmCluster):len((*c.CallOptions).RemoveVirtualMachineExadbVmCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RemoveVirtualMachineExadbVmCluster, req, settings.GRPC, c.logger, "RemoveVirtualMachineExadbVmCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RemoveVirtualMachineExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListExascaleDbStorageVaults(ctx context.Context, req *oracledatabasepb.ListExascaleDbStorageVaultsRequest, opts ...gax.CallOption) *ExascaleDbStorageVaultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListExascaleDbStorageVaults[0:len((*c.CallOptions).ListExascaleDbStorageVaults):len((*c.CallOptions).ListExascaleDbStorageVaults)], opts...)
+	it := &ExascaleDbStorageVaultIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListExascaleDbStorageVaultsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExascaleDbStorageVault, string, error) {
+		resp := &oracledatabasepb.ListExascaleDbStorageVaultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListExascaleDbStorageVaults, req, settings.GRPC, c.logger, "ListExascaleDbStorageVaults")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetExascaleDbStorageVaults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.GetExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*oracledatabasepb.ExascaleDbStorageVault, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetExascaleDbStorageVault[0:len((*c.CallOptions).GetExascaleDbStorageVault):len((*c.CallOptions).GetExascaleDbStorageVault)], opts...)
+	var resp *oracledatabasepb.ExascaleDbStorageVault
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetExascaleDbStorageVault, req, settings.GRPC, c.logger, "GetExascaleDbStorageVault")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.CreateExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*CreateExascaleDbStorageVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateExascaleDbStorageVault[0:len((*c.CallOptions).CreateExascaleDbStorageVault):len((*c.CallOptions).CreateExascaleDbStorageVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateExascaleDbStorageVault, req, settings.GRPC, c.logger, "CreateExascaleDbStorageVault")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateExascaleDbStorageVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.DeleteExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*DeleteExascaleDbStorageVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteExascaleDbStorageVault[0:len((*c.CallOptions).DeleteExascaleDbStorageVault):len((*c.CallOptions).DeleteExascaleDbStorageVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteExascaleDbStorageVault, req, settings.GRPC, c.logger, "DeleteExascaleDbStorageVault")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteExascaleDbStorageVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *oracledatabasepb.ListDbSystemInitialStorageSizesRequest, opts ...gax.CallOption) *DbSystemInitialStorageSizeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDbSystemInitialStorageSizes[0:len((*c.CallOptions).ListDbSystemInitialStorageSizes):len((*c.CallOptions).ListDbSystemInitialStorageSizes)], opts...)
+	it := &DbSystemInitialStorageSizeIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemInitialStorageSizesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystemInitialStorageSize, string, error) {
+		resp := &oracledatabasepb.ListDbSystemInitialStorageSizesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDbSystemInitialStorageSizes, req, settings.GRPC, c.logger, "ListDbSystemInitialStorageSizes")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDbSystemInitialStorageSizes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListDatabases(ctx context.Context, req *oracledatabasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
+	it := &DatabaseIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDatabasesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.Database, string, error) {
+		resp := &oracledatabasepb.ListDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDatabases, req, settings.GRPC, c.logger, "ListDatabases")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatabases(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetDatabase(ctx context.Context, req *oracledatabasepb.GetDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.Database, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
+	var resp *oracledatabasepb.Database
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetDatabase, req, settings.GRPC, c.logger, "GetDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPluggableDatabases(ctx context.Context, req *oracledatabasepb.ListPluggableDatabasesRequest, opts ...gax.CallOption) *PluggableDatabaseIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListPluggableDatabases[0:len((*c.CallOptions).ListPluggableDatabases):len((*c.CallOptions).ListPluggableDatabases)], opts...)
+	it := &PluggableDatabaseIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListPluggableDatabasesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.PluggableDatabase, string, error) {
+		resp := &oracledatabasepb.ListPluggableDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListPluggableDatabases, req, settings.GRPC, c.logger, "ListPluggableDatabases")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPluggableDatabases(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetPluggableDatabase(ctx context.Context, req *oracledatabasepb.GetPluggableDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.PluggableDatabase, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetPluggableDatabase[0:len((*c.CallOptions).GetPluggableDatabase):len((*c.CallOptions).GetPluggableDatabase)], opts...)
+	var resp *oracledatabasepb.PluggableDatabase
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetPluggableDatabase, req, settings.GRPC, c.logger, "GetPluggableDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListDbSystems(ctx context.Context, req *oracledatabasepb.ListDbSystemsRequest, opts ...gax.CallOption) *DbSystemIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDbSystems[0:len((*c.CallOptions).ListDbSystems):len((*c.CallOptions).ListDbSystems)], opts...)
+	it := &DbSystemIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystem, string, error) {
+		resp := &oracledatabasepb.ListDbSystemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDbSystems, req, settings.GRPC, c.logger, "ListDbSystems")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDbSystems(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetDbSystem(ctx context.Context, req *oracledatabasepb.GetDbSystemRequest, opts ...gax.CallOption) (*oracledatabasepb.DbSystem, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDbSystem[0:len((*c.CallOptions).GetDbSystem):len((*c.CallOptions).GetDbSystem)], opts...)
+	var resp *oracledatabasepb.DbSystem
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetDbSystem, req, settings.GRPC, c.logger, "GetDbSystem")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.CreateDbSystemRequest, opts ...gax.CallOption) (*CreateDbSystemOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDbSystem[0:len((*c.CallOptions).CreateDbSystem):len((*c.CallOptions).CreateDbSystem)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateDbSystem, req, settings.GRPC, c.logger, "CreateDbSystem")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateDbSystemOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.DeleteDbSystemRequest, opts ...gax.CallOption) (*DeleteDbSystemOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDbSystem[0:len((*c.CallOptions).DeleteDbSystem):len((*c.CallOptions).DeleteDbSystem)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteDbSystem, req, settings.GRPC, c.logger, "DeleteDbSystem")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDbSystemOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.ListDbVersionsRequest, opts ...gax.CallOption) *DbVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDbVersions[0:len((*c.CallOptions).ListDbVersions):len((*c.CallOptions).ListDbVersions)], opts...)
+	it := &DbVersionIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbVersion, string, error) {
+		resp := &oracledatabasepb.ListDbVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDbVersions, req, settings.GRPC, c.logger, "ListDbVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDbVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListDatabaseCharacterSets(ctx context.Context, req *oracledatabasepb.ListDatabaseCharacterSetsRequest, opts ...gax.CallOption) *DatabaseCharacterSetIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDatabaseCharacterSets[0:len((*c.CallOptions).ListDatabaseCharacterSets):len((*c.CallOptions).ListDatabaseCharacterSets)], opts...)
+	it := &DatabaseCharacterSetIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDatabaseCharacterSetsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DatabaseCharacterSet, string, error) {
+		resp := &oracledatabasepb.ListDatabaseCharacterSetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDatabaseCharacterSets, req, settings.GRPC, c.logger, "ListDatabaseCharacterSets")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatabaseCharacterSets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2041,6 +3801,12 @@ func (c *restClient) ListCloudExadataInfrastructures(ctx context.Context, req *o
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2781,6 +4547,9 @@ func (c *restClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2836,6 +4605,88 @@ func (c *restClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 	return it
 }
 
+// ListMinorVersions lists all the valid minor versions for the given
+// project, location, gi version and shape family.
+func (c *restClient) ListMinorVersions(ctx context.Context, req *oracledatabasepb.ListMinorVersionsRequest, opts ...gax.CallOption) *MinorVersionIterator {
+	it := &MinorVersionIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListMinorVersionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.MinorVersion, string, error) {
+		resp := &oracledatabasepb.ListMinorVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/minorVersions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMinorVersions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetMinorVersions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ListDbSystemShapes lists the database system shapes available for the project and location.
 func (c *restClient) ListDbSystemShapes(ctx context.Context, req *oracledatabasepb.ListDbSystemShapesRequest, opts ...gax.CallOption) *DbSystemShapeIterator {
 	it := &DbSystemShapeIterator{}
@@ -2859,6 +4710,9 @@ func (c *restClient) ListDbSystemShapes(ctx context.Context, req *oracledatabase
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -3107,6 +4961,76 @@ func (c *restClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &CreateAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateAutonomousDatabase updates the parameters of a single Autonomous Database.
+func (c *restClient) UpdateAutonomousDatabase(ctx context.Context, req *oracledatabasepb.UpdateAutonomousDatabaseRequest, opts ...gax.CallOption) (*UpdateAutonomousDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAutonomousDatabase()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAutonomousDatabase().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "autonomous_database.name", url.QueryEscape(req.GetAutonomousDatabase().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAutonomousDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateAutonomousDatabaseOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3701,6 +5625,2032 @@ func (c *restClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 	}, nil
 }
 
+// SwitchoverAutonomousDatabase initiates a switchover of specified autonomous database to the associated
+// peer database.
+func (c *restClient) SwitchoverAutonomousDatabase(ctx context.Context, req *oracledatabasepb.SwitchoverAutonomousDatabaseRequest, opts ...gax.CallOption) (*SwitchoverAutonomousDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:switchover", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SwitchoverAutonomousDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SwitchoverAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// FailoverAutonomousDatabase initiates a failover to target autonomous database from the associated
+// primary database.
+func (c *restClient) FailoverAutonomousDatabase(ctx context.Context, req *oracledatabasepb.FailoverAutonomousDatabaseRequest, opts ...gax.CallOption) (*FailoverAutonomousDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:failover", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FailoverAutonomousDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &FailoverAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListOdbNetworks lists the ODB Networks in a given project and location.
+func (c *restClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.ListOdbNetworksRequest, opts ...gax.CallOption) *OdbNetworkIterator {
+	it := &OdbNetworkIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListOdbNetworksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbNetwork, string, error) {
+		resp := &oracledatabasepb.ListOdbNetworksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/odbNetworks", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOdbNetworks")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOdbNetworks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetOdbNetwork gets details of a single ODB Network.
+func (c *restClient) GetOdbNetwork(ctx context.Context, req *oracledatabasepb.GetOdbNetworkRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbNetwork, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOdbNetwork[0:len((*c.CallOptions).GetOdbNetwork):len((*c.CallOptions).GetOdbNetwork)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.OdbNetwork{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOdbNetwork")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateOdbNetwork creates a new ODB Network in a given project and location.
+func (c *restClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb.CreateOdbNetworkRequest, opts ...gax.CallOption) (*CreateOdbNetworkOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOdbNetwork()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/odbNetworks", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("odbNetworkId", fmt.Sprintf("%v", req.GetOdbNetworkId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOdbNetwork")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateOdbNetworkOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteOdbNetwork deletes a single ODB Network.
+func (c *restClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb.DeleteOdbNetworkRequest, opts ...gax.CallOption) (*DeleteOdbNetworkOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOdbNetwork")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteOdbNetworkOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListOdbSubnets lists all the ODB Subnets in a given ODB Network.
+func (c *restClient) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.ListOdbSubnetsRequest, opts ...gax.CallOption) *OdbSubnetIterator {
+	it := &OdbSubnetIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListOdbSubnetsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbSubnet, string, error) {
+		resp := &oracledatabasepb.ListOdbSubnetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/odbSubnets", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOdbSubnets")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOdbSubnets(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetOdbSubnet gets details of a single ODB Subnet.
+func (c *restClient) GetOdbSubnet(ctx context.Context, req *oracledatabasepb.GetOdbSubnetRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbSubnet, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOdbSubnet[0:len((*c.CallOptions).GetOdbSubnet):len((*c.CallOptions).GetOdbSubnet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.OdbSubnet{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOdbSubnet")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateOdbSubnet creates a new ODB Subnet in a given ODB Network.
+func (c *restClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.CreateOdbSubnetRequest, opts ...gax.CallOption) (*CreateOdbSubnetOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOdbSubnet()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/odbSubnets", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("odbSubnetId", fmt.Sprintf("%v", req.GetOdbSubnetId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOdbSubnet")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateOdbSubnetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteOdbSubnet deletes a single ODB Subnet.
+func (c *restClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.DeleteOdbSubnetRequest, opts ...gax.CallOption) (*DeleteOdbSubnetOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOdbSubnet")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteOdbSubnetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListExadbVmClusters lists all the Exadb (Exascale) VM Clusters for the given project and
+// location.
+func (c *restClient) ListExadbVmClusters(ctx context.Context, req *oracledatabasepb.ListExadbVmClustersRequest, opts ...gax.CallOption) *ExadbVmClusterIterator {
+	it := &ExadbVmClusterIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListExadbVmClustersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExadbVmCluster, string, error) {
+		resp := &oracledatabasepb.ListExadbVmClustersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/exadbVmClusters", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExadbVmClusters")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetExadbVmClusters(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetExadbVmCluster gets details of a single Exadb (Exascale) VM Cluster.
+func (c *restClient) GetExadbVmCluster(ctx context.Context, req *oracledatabasepb.GetExadbVmClusterRequest, opts ...gax.CallOption) (*oracledatabasepb.ExadbVmCluster, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetExadbVmCluster[0:len((*c.CallOptions).GetExadbVmCluster):len((*c.CallOptions).GetExadbVmCluster)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.ExadbVmCluster{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExadbVmCluster")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateExadbVmCluster creates a new Exadb (Exascale) VM Cluster resource.
+func (c *restClient) CreateExadbVmCluster(ctx context.Context, req *oracledatabasepb.CreateExadbVmClusterRequest, opts ...gax.CallOption) (*CreateExadbVmClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetExadbVmCluster()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/exadbVmClusters", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("exadbVmClusterId", fmt.Sprintf("%v", req.GetExadbVmClusterId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateExadbVmCluster")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateExadbVmClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteExadbVmCluster deletes a single Exadb (Exascale) VM Cluster.
+func (c *restClient) DeleteExadbVmCluster(ctx context.Context, req *oracledatabasepb.DeleteExadbVmClusterRequest, opts ...gax.CallOption) (*DeleteExadbVmClusterOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteExadbVmCluster")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteExadbVmClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateExadbVmCluster updates a single Exadb (Exascale) VM Cluster. To add virtual machines to
+// existing exadb vm cluster, only pass the node count.
+func (c *restClient) UpdateExadbVmCluster(ctx context.Context, req *oracledatabasepb.UpdateExadbVmClusterRequest, opts ...gax.CallOption) (*UpdateExadbVmClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetExadbVmCluster()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetExadbVmCluster().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "exadb_vm_cluster.name", url.QueryEscape(req.GetExadbVmCluster().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateExadbVmCluster")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateExadbVmClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RemoveVirtualMachineExadbVmCluster removes virtual machines from an existing exadb vm cluster.
+func (c *restClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req *oracledatabasepb.RemoveVirtualMachineExadbVmClusterRequest, opts ...gax.CallOption) (*RemoveVirtualMachineExadbVmClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:removeVirtualMachine", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveVirtualMachineExadbVmCluster")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RemoveVirtualMachineExadbVmClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListExascaleDbStorageVaults lists all the ExascaleDB Storage Vaults for the given project and
+// location.
+func (c *restClient) ListExascaleDbStorageVaults(ctx context.Context, req *oracledatabasepb.ListExascaleDbStorageVaultsRequest, opts ...gax.CallOption) *ExascaleDbStorageVaultIterator {
+	it := &ExascaleDbStorageVaultIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListExascaleDbStorageVaultsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExascaleDbStorageVault, string, error) {
+		resp := &oracledatabasepb.ListExascaleDbStorageVaultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/exascaleDbStorageVaults", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExascaleDbStorageVaults")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetExascaleDbStorageVaults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetExascaleDbStorageVault gets details of a single ExascaleDB Storage Vault.
+func (c *restClient) GetExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.GetExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*oracledatabasepb.ExascaleDbStorageVault, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetExascaleDbStorageVault[0:len((*c.CallOptions).GetExascaleDbStorageVault):len((*c.CallOptions).GetExascaleDbStorageVault)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.ExascaleDbStorageVault{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExascaleDbStorageVault")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateExascaleDbStorageVault creates a new ExascaleDB Storage Vault resource.
+func (c *restClient) CreateExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.CreateExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*CreateExascaleDbStorageVaultOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetExascaleDbStorageVault()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/exascaleDbStorageVaults", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("exascaleDbStorageVaultId", fmt.Sprintf("%v", req.GetExascaleDbStorageVaultId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateExascaleDbStorageVault")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateExascaleDbStorageVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteExascaleDbStorageVault deletes a single ExascaleDB Storage Vault.
+func (c *restClient) DeleteExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.DeleteExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*DeleteExascaleDbStorageVaultOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteExascaleDbStorageVault")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteExascaleDbStorageVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDbSystemInitialStorageSizes lists all the DbSystemInitialStorageSizes for the given project and
+// location.
+func (c *restClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *oracledatabasepb.ListDbSystemInitialStorageSizesRequest, opts ...gax.CallOption) *DbSystemInitialStorageSizeIterator {
+	it := &DbSystemInitialStorageSizeIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemInitialStorageSizesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystemInitialStorageSize, string, error) {
+		resp := &oracledatabasepb.ListDbSystemInitialStorageSizesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystemInitialStorageSizes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDbSystemInitialStorageSizes")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDbSystemInitialStorageSizes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListDatabases lists all the Databases for the given project, location and DbSystem.
+func (c *restClient) ListDatabases(ctx context.Context, req *oracledatabasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	it := &DatabaseIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDatabasesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.Database, string, error) {
+		resp := &oracledatabasepb.ListDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatabases")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDatabases(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDatabase gets details of a single Database.
+func (c *restClient) GetDatabase(ctx context.Context, req *oracledatabasepb.GetDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.Database, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.Database{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDatabase")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPluggableDatabases lists all the PluggableDatabases for the given project, location and
+// Container Database.
+func (c *restClient) ListPluggableDatabases(ctx context.Context, req *oracledatabasepb.ListPluggableDatabasesRequest, opts ...gax.CallOption) *PluggableDatabaseIterator {
+	it := &PluggableDatabaseIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListPluggableDatabasesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.PluggableDatabase, string, error) {
+		resp := &oracledatabasepb.ListPluggableDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/pluggableDatabases", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPluggableDatabases")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPluggableDatabases(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetPluggableDatabase gets details of a single PluggableDatabase.
+func (c *restClient) GetPluggableDatabase(ctx context.Context, req *oracledatabasepb.GetPluggableDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.PluggableDatabase, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPluggableDatabase[0:len((*c.CallOptions).GetPluggableDatabase):len((*c.CallOptions).GetPluggableDatabase)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.PluggableDatabase{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPluggableDatabase")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListDbSystems lists all the DbSystems for the given project and location.
+func (c *restClient) ListDbSystems(ctx context.Context, req *oracledatabasepb.ListDbSystemsRequest, opts ...gax.CallOption) *DbSystemIterator {
+	it := &DbSystemIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystem, string, error) {
+		resp := &oracledatabasepb.ListDbSystemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystems", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDbSystems")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDbSystems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDbSystem gets details of a single DbSystem.
+func (c *restClient) GetDbSystem(ctx context.Context, req *oracledatabasepb.GetDbSystemRequest, opts ...gax.CallOption) (*oracledatabasepb.DbSystem, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDbSystem[0:len((*c.CallOptions).GetDbSystem):len((*c.CallOptions).GetDbSystem)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.DbSystem{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDbSystem")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateDbSystem creates a new DbSystem in a given project and location.
+func (c *restClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.CreateDbSystemRequest, opts ...gax.CallOption) (*CreateDbSystemOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDbSystem()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystems", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("dbSystemId", fmt.Sprintf("%v", req.GetDbSystemId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDbSystem")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDbSystemOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDbSystem deletes a single DbSystem.
+func (c *restClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.DeleteDbSystemRequest, opts ...gax.CallOption) (*DeleteDbSystemOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDbSystem")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDbSystemOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDbVersions list DbVersions for the given project and location.
+func (c *restClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.ListDbVersionsRequest, opts ...gax.CallOption) *DbVersionIterator {
+	it := &DbVersionIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDbVersionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbVersion, string, error) {
+		resp := &oracledatabasepb.ListDbVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dbVersions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDbVersions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDbVersions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListDatabaseCharacterSets list DatabaseCharacterSets for the given project and location.
+func (c *restClient) ListDatabaseCharacterSets(ctx context.Context, req *oracledatabasepb.ListDatabaseCharacterSetsRequest, opts ...gax.CallOption) *DatabaseCharacterSetIterator {
+	it := &DatabaseCharacterSetIterator{}
+	req = proto.Clone(req).(*oracledatabasepb.ListDatabaseCharacterSetsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DatabaseCharacterSet, string, error) {
+		resp := &oracledatabasepb.ListDatabaseCharacterSetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/databaseCharacterSets", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatabaseCharacterSets")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDatabaseCharacterSets(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4093,6 +8043,96 @@ func (c *restClient) CreateCloudVmClusterOperation(name string) *CreateCloudVmCl
 	}
 }
 
+// CreateDbSystemOperation returns a new CreateDbSystemOperation from a given name.
+// The name must be that of a previously created CreateDbSystemOperation, possibly from a different process.
+func (c *gRPCClient) CreateDbSystemOperation(name string) *CreateDbSystemOperation {
+	return &CreateDbSystemOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDbSystemOperation returns a new CreateDbSystemOperation from a given name.
+// The name must be that of a previously created CreateDbSystemOperation, possibly from a different process.
+func (c *restClient) CreateDbSystemOperation(name string) *CreateDbSystemOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDbSystemOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateExadbVmClusterOperation returns a new CreateExadbVmClusterOperation from a given name.
+// The name must be that of a previously created CreateExadbVmClusterOperation, possibly from a different process.
+func (c *gRPCClient) CreateExadbVmClusterOperation(name string) *CreateExadbVmClusterOperation {
+	return &CreateExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateExadbVmClusterOperation returns a new CreateExadbVmClusterOperation from a given name.
+// The name must be that of a previously created CreateExadbVmClusterOperation, possibly from a different process.
+func (c *restClient) CreateExadbVmClusterOperation(name string) *CreateExadbVmClusterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateExadbVmClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateExascaleDbStorageVaultOperation returns a new CreateExascaleDbStorageVaultOperation from a given name.
+// The name must be that of a previously created CreateExascaleDbStorageVaultOperation, possibly from a different process.
+func (c *gRPCClient) CreateExascaleDbStorageVaultOperation(name string) *CreateExascaleDbStorageVaultOperation {
+	return &CreateExascaleDbStorageVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateExascaleDbStorageVaultOperation returns a new CreateExascaleDbStorageVaultOperation from a given name.
+// The name must be that of a previously created CreateExascaleDbStorageVaultOperation, possibly from a different process.
+func (c *restClient) CreateExascaleDbStorageVaultOperation(name string) *CreateExascaleDbStorageVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateExascaleDbStorageVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateOdbNetworkOperation returns a new CreateOdbNetworkOperation from a given name.
+// The name must be that of a previously created CreateOdbNetworkOperation, possibly from a different process.
+func (c *gRPCClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation {
+	return &CreateOdbNetworkOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateOdbNetworkOperation returns a new CreateOdbNetworkOperation from a given name.
+// The name must be that of a previously created CreateOdbNetworkOperation, possibly from a different process.
+func (c *restClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateOdbNetworkOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateOdbSubnetOperation returns a new CreateOdbSubnetOperation from a given name.
+// The name must be that of a previously created CreateOdbSubnetOperation, possibly from a different process.
+func (c *gRPCClient) CreateOdbSubnetOperation(name string) *CreateOdbSubnetOperation {
+	return &CreateOdbSubnetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateOdbSubnetOperation returns a new CreateOdbSubnetOperation from a given name.
+// The name must be that of a previously created CreateOdbSubnetOperation, possibly from a different process.
+func (c *restClient) CreateOdbSubnetOperation(name string) *CreateOdbSubnetOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateOdbSubnetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteAutonomousDatabaseOperation returns a new DeleteAutonomousDatabaseOperation from a given name.
 // The name must be that of a previously created DeleteAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAutonomousDatabaseOperation(name string) *DeleteAutonomousDatabaseOperation {
@@ -4142,6 +8182,132 @@ func (c *gRPCClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmCl
 func (c *restClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCloudVmClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteDbSystemOperation returns a new DeleteDbSystemOperation from a given name.
+// The name must be that of a previously created DeleteDbSystemOperation, possibly from a different process.
+func (c *gRPCClient) DeleteDbSystemOperation(name string) *DeleteDbSystemOperation {
+	return &DeleteDbSystemOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDbSystemOperation returns a new DeleteDbSystemOperation from a given name.
+// The name must be that of a previously created DeleteDbSystemOperation, possibly from a different process.
+func (c *restClient) DeleteDbSystemOperation(name string) *DeleteDbSystemOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDbSystemOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteExadbVmClusterOperation returns a new DeleteExadbVmClusterOperation from a given name.
+// The name must be that of a previously created DeleteExadbVmClusterOperation, possibly from a different process.
+func (c *gRPCClient) DeleteExadbVmClusterOperation(name string) *DeleteExadbVmClusterOperation {
+	return &DeleteExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteExadbVmClusterOperation returns a new DeleteExadbVmClusterOperation from a given name.
+// The name must be that of a previously created DeleteExadbVmClusterOperation, possibly from a different process.
+func (c *restClient) DeleteExadbVmClusterOperation(name string) *DeleteExadbVmClusterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteExadbVmClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteExascaleDbStorageVaultOperation returns a new DeleteExascaleDbStorageVaultOperation from a given name.
+// The name must be that of a previously created DeleteExascaleDbStorageVaultOperation, possibly from a different process.
+func (c *gRPCClient) DeleteExascaleDbStorageVaultOperation(name string) *DeleteExascaleDbStorageVaultOperation {
+	return &DeleteExascaleDbStorageVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteExascaleDbStorageVaultOperation returns a new DeleteExascaleDbStorageVaultOperation from a given name.
+// The name must be that of a previously created DeleteExascaleDbStorageVaultOperation, possibly from a different process.
+func (c *restClient) DeleteExascaleDbStorageVaultOperation(name string) *DeleteExascaleDbStorageVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteExascaleDbStorageVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteOdbNetworkOperation returns a new DeleteOdbNetworkOperation from a given name.
+// The name must be that of a previously created DeleteOdbNetworkOperation, possibly from a different process.
+func (c *gRPCClient) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOperation {
+	return &DeleteOdbNetworkOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteOdbNetworkOperation returns a new DeleteOdbNetworkOperation from a given name.
+// The name must be that of a previously created DeleteOdbNetworkOperation, possibly from a different process.
+func (c *restClient) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteOdbNetworkOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteOdbSubnetOperation returns a new DeleteOdbSubnetOperation from a given name.
+// The name must be that of a previously created DeleteOdbSubnetOperation, possibly from a different process.
+func (c *gRPCClient) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation {
+	return &DeleteOdbSubnetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteOdbSubnetOperation returns a new DeleteOdbSubnetOperation from a given name.
+// The name must be that of a previously created DeleteOdbSubnetOperation, possibly from a different process.
+func (c *restClient) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteOdbSubnetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// FailoverAutonomousDatabaseOperation returns a new FailoverAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created FailoverAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation {
+	return &FailoverAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// FailoverAutonomousDatabaseOperation returns a new FailoverAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created FailoverAutonomousDatabaseOperation, possibly from a different process.
+func (c *restClient) FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &FailoverAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// RemoveVirtualMachineExadbVmClusterOperation returns a new RemoveVirtualMachineExadbVmClusterOperation from a given name.
+// The name must be that of a previously created RemoveVirtualMachineExadbVmClusterOperation, possibly from a different process.
+func (c *gRPCClient) RemoveVirtualMachineExadbVmClusterOperation(name string) *RemoveVirtualMachineExadbVmClusterOperation {
+	return &RemoveVirtualMachineExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RemoveVirtualMachineExadbVmClusterOperation returns a new RemoveVirtualMachineExadbVmClusterOperation from a given name.
+// The name must be that of a previously created RemoveVirtualMachineExadbVmClusterOperation, possibly from a different process.
+func (c *restClient) RemoveVirtualMachineExadbVmClusterOperation(name string) *RemoveVirtualMachineExadbVmClusterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RemoveVirtualMachineExadbVmClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -4214,6 +8380,60 @@ func (c *gRPCClient) StopAutonomousDatabaseOperation(name string) *StopAutonomou
 func (c *restClient) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SwitchoverAutonomousDatabaseOperation returns a new SwitchoverAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created SwitchoverAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) SwitchoverAutonomousDatabaseOperation(name string) *SwitchoverAutonomousDatabaseOperation {
+	return &SwitchoverAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SwitchoverAutonomousDatabaseOperation returns a new SwitchoverAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created SwitchoverAutonomousDatabaseOperation, possibly from a different process.
+func (c *restClient) SwitchoverAutonomousDatabaseOperation(name string) *SwitchoverAutonomousDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SwitchoverAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateAutonomousDatabaseOperation returns a new UpdateAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) UpdateAutonomousDatabaseOperation(name string) *UpdateAutonomousDatabaseOperation {
+	return &UpdateAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateAutonomousDatabaseOperation returns a new UpdateAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateAutonomousDatabaseOperation, possibly from a different process.
+func (c *restClient) UpdateAutonomousDatabaseOperation(name string) *UpdateAutonomousDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateExadbVmClusterOperation returns a new UpdateExadbVmClusterOperation from a given name.
+// The name must be that of a previously created UpdateExadbVmClusterOperation, possibly from a different process.
+func (c *gRPCClient) UpdateExadbVmClusterOperation(name string) *UpdateExadbVmClusterOperation {
+	return &UpdateExadbVmClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateExadbVmClusterOperation returns a new UpdateExadbVmClusterOperation from a given name.
+// The name must be that of a previously created UpdateExadbVmClusterOperation, possibly from a different process.
+func (c *restClient) UpdateExadbVmClusterOperation(name string) *UpdateExadbVmClusterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateExadbVmClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

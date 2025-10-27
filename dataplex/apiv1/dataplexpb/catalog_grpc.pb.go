@@ -108,10 +108,25 @@ type CatalogServiceClient interface {
 	// Deletes an Entry.
 	DeleteEntry(ctx context.Context, in *DeleteEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Lists Entries within an EntryGroup.
+	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+	// Metastore metadata that is stored in Dataplex Universal Catalog is
+	// changing. For more information, see [Changes to metadata stored in
+	// Dataplex Universal
+	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	ListEntries(ctx context.Context, in *ListEntriesRequest, opts ...grpc.CallOption) (*ListEntriesResponse, error)
 	// Gets an Entry.
+	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+	// Metastore metadata that is stored in Dataplex Universal Catalog is
+	// changing. For more information, see [Changes to metadata stored in
+	// Dataplex Universal
+	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	GetEntry(ctx context.Context, in *GetEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Looks up an entry by name using the permission on the source system.
+	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+	// Metastore metadata that is stored in Dataplex Universal Catalog is
+	// changing. For more information, see [Changes to metadata stored in
+	// Dataplex Universal
+	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	LookupEntry(ctx context.Context, in *LookupEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(ctx context.Context, in *SearchEntriesRequest, opts ...grpc.CallOption) (*SearchEntriesResponse, error)
@@ -447,10 +462,25 @@ type CatalogServiceServer interface {
 	// Deletes an Entry.
 	DeleteEntry(context.Context, *DeleteEntryRequest) (*Entry, error)
 	// Lists Entries within an EntryGroup.
+	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+	// Metastore metadata that is stored in Dataplex Universal Catalog is
+	// changing. For more information, see [Changes to metadata stored in
+	// Dataplex Universal
+	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	ListEntries(context.Context, *ListEntriesRequest) (*ListEntriesResponse, error)
 	// Gets an Entry.
+	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+	// Metastore metadata that is stored in Dataplex Universal Catalog is
+	// changing. For more information, see [Changes to metadata stored in
+	// Dataplex Universal
+	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	GetEntry(context.Context, *GetEntryRequest) (*Entry, error)
 	// Looks up an entry by name using the permission on the source system.
+	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+	// Metastore metadata that is stored in Dataplex Universal Catalog is
+	// changing. For more information, see [Changes to metadata stored in
+	// Dataplex Universal
+	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	LookupEntry(context.Context, *LookupEntryRequest) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(context.Context, *SearchEntriesRequest) (*SearchEntriesResponse, error)
