@@ -4128,6 +4128,7 @@ libraries:
     preserve_regex: []
     remove_regex: []
     release_exclude_paths:
+      - internal/.repo-metadata-full.json
       - internal/actions
       - internal/aliasfix
       - internal/aliasgen
