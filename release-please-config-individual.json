@@ -12,9 +12,6 @@
     "bigtable": {
       "component": "bigtable"
     },
-    "errorreporting": {
-      "component": "errorreporting"
-    },
     "logging": {
       "component": "logging"
     },
