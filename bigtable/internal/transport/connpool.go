@@ -755,13 +755,12 @@ func (p *BigtableChannelPool) Close() error {
 	var errs multiError
 
 	p.conns.Store(([]*connEntry)(nil)) // Mark as closed
-	if conns != nil {
-		for _, entry := range conns {
-			if err := entry.conn.Close(); err != nil {
-				errs = append(errs, err)
-			}
+	for _, entry := range conns {
+		if err := entry.conn.Close(); err != nil {
+			errs = append(errs, err)
 		}
 	}
+
 	if len(errs) == 0 {
 		return nil
 	}

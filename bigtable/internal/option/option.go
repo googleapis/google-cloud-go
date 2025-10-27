@@ -213,14 +213,14 @@ func logf(logger *log.Logger, format string, v ...interface{}) {
 	}
 }
 
-var Debug = os.Getenv("CBT_ENABLE_DEBUG") == "true"
+var debug = os.Getenv("CBT_ENABLE_DEBUG") == "true"
 
 // Debugf logs the given message *only if* the global Debug flag is true.
 // It reuses Logf to handle the nil logger logic and prepends "DEBUG: "
 // to the message.
 func Debugf(logger *log.Logger, format string, v ...interface{}) {
 	// Only log if the Debug flag is set
-	if Debug {
+	if debug {
 		// Prepend "DEBUG: " to the format string
 		debugFormat := "DEBUG: " + format
 		logf(logger, debugFormat, v...)
