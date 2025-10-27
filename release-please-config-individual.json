@@ -15,14 +15,8 @@
     "logging": {
       "component": "logging"
     },
-    "profiler": {
-      "component": "profiler"
-    },
     "storage": {
       "component": "storage"
-    },
-    "vertexai": {
-      "component": "vertexai"
     }
   },
   "plugins": [

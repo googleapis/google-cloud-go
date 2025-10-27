@@ -6,7 +6,6 @@ modules:
   - bigquery
   - errorreporting
   - logging
-  - profiler
   - storage
 
 manual-clients:
@@ -210,6 +209,8 @@ skip-module-scan-paths:
   - .
   # Librarian released modules
   - bigtable
+  - profiler
+  - vertexai
   - spanner
   - datastore
   - firestore
@@ -385,8 +386,6 @@ skip-module-scan-paths:
   - bigquery/v2
   - errorreporting
   - logging
-  - profiler
   - storage
-  - vertexai
   # unreleased modules
   - spanner/test/opentelemetry/test
