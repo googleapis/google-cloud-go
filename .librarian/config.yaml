@@ -40,3 +40,5 @@ libraries:
     release_blocked: true
   - id: "spanner"
     release_blocked: true
+  - id: "vertexai"
+    release_blocked: true
