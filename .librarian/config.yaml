@@ -30,6 +30,8 @@ libraries:
     release_blocked: true
   - id: "auth/oauth2adapt"
     release_blocked: true
+  - id: "bigtable"
+    release_blocked: true
   - id: "compute/metadata"
     release_blocked: true
   - id: "datastore"
