@@ -65,6 +65,18 @@ func (it *CloudVmClusterIterator) All() iter.Seq2[*oracledatabasepb.CloudVmClust
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DatabaseCharacterSetIterator) All() iter.Seq2[*oracledatabasepb.DatabaseCharacterSet, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseIterator) All() iter.Seq2[*oracledatabasepb.Database, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *DbNodeIterator) All() iter.Seq2[*oracledatabasepb.DbNode, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -77,13 +89,43 @@ func (it *DbServerIterator) All() iter.Seq2[*oracledatabasepb.DbServer, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DbSystemInitialStorageSizeIterator) All() iter.Seq2[*oracledatabasepb.DbSystemInitialStorageSize, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DbSystemIterator) All() iter.Seq2[*oracledatabasepb.DbSystem, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *DbSystemShapeIterator) All() iter.Seq2[*oracledatabasepb.DbSystemShape, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DbVersionIterator) All() iter.Seq2[*oracledatabasepb.DbVersion, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *EntitlementIterator) All() iter.Seq2[*oracledatabasepb.Entitlement, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExadbVmClusterIterator) All() iter.Seq2[*oracledatabasepb.ExadbVmCluster, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExascaleDbStorageVaultIterator) All() iter.Seq2[*oracledatabasepb.ExascaleDbStorageVault, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -101,6 +143,30 @@ func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *MinorVersionIterator) All() iter.Seq2[*oracledatabasepb.MinorVersion, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OdbNetworkIterator) All() iter.Seq2[*oracledatabasepb.OdbNetwork, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OdbSubnetIterator) All() iter.Seq2[*oracledatabasepb.OdbSubnet, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PluggableDatabaseIterator) All() iter.Seq2[*oracledatabasepb.PluggableDatabase, error] {
 	return iterator.RangeAdapter(it.Next)
 }

@@ -8,7 +8,7 @@ assign_issues_by:
 - labels:
   - 'api: storage'
   to:
-  - BrennaEpp
+  - cpriti-os
 - labels:
   - 'api: bigquery'
   to:

@@ -34,18 +34,19 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Participants_CreateParticipant_FullMethodName       = "/google.cloud.dialogflow.v2beta1.Participants/CreateParticipant"
-	Participants_GetParticipant_FullMethodName          = "/google.cloud.dialogflow.v2beta1.Participants/GetParticipant"
-	Participants_ListParticipants_FullMethodName        = "/google.cloud.dialogflow.v2beta1.Participants/ListParticipants"
-	Participants_UpdateParticipant_FullMethodName       = "/google.cloud.dialogflow.v2beta1.Participants/UpdateParticipant"
-	Participants_AnalyzeContent_FullMethodName          = "/google.cloud.dialogflow.v2beta1.Participants/AnalyzeContent"
-	Participants_StreamingAnalyzeContent_FullMethodName = "/google.cloud.dialogflow.v2beta1.Participants/StreamingAnalyzeContent"
-	Participants_SuggestArticles_FullMethodName         = "/google.cloud.dialogflow.v2beta1.Participants/SuggestArticles"
-	Participants_SuggestFaqAnswers_FullMethodName       = "/google.cloud.dialogflow.v2beta1.Participants/SuggestFaqAnswers"
-	Participants_SuggestSmartReplies_FullMethodName     = "/google.cloud.dialogflow.v2beta1.Participants/SuggestSmartReplies"
-	Participants_SuggestKnowledgeAssist_FullMethodName  = "/google.cloud.dialogflow.v2beta1.Participants/SuggestKnowledgeAssist"
-	Participants_ListSuggestions_FullMethodName         = "/google.cloud.dialogflow.v2beta1.Participants/ListSuggestions"
-	Participants_CompileSuggestion_FullMethodName       = "/google.cloud.dialogflow.v2beta1.Participants/CompileSuggestion"
+	Participants_CreateParticipant_FullMethodName           = "/google.cloud.dialogflow.v2beta1.Participants/CreateParticipant"
+	Participants_GetParticipant_FullMethodName              = "/google.cloud.dialogflow.v2beta1.Participants/GetParticipant"
+	Participants_ListParticipants_FullMethodName            = "/google.cloud.dialogflow.v2beta1.Participants/ListParticipants"
+	Participants_UpdateParticipant_FullMethodName           = "/google.cloud.dialogflow.v2beta1.Participants/UpdateParticipant"
+	Participants_AnalyzeContent_FullMethodName              = "/google.cloud.dialogflow.v2beta1.Participants/AnalyzeContent"
+	Participants_StreamingAnalyzeContent_FullMethodName     = "/google.cloud.dialogflow.v2beta1.Participants/StreamingAnalyzeContent"
+	Participants_BidiStreamingAnalyzeContent_FullMethodName = "/google.cloud.dialogflow.v2beta1.Participants/BidiStreamingAnalyzeContent"
+	Participants_SuggestArticles_FullMethodName             = "/google.cloud.dialogflow.v2beta1.Participants/SuggestArticles"
+	Participants_SuggestFaqAnswers_FullMethodName           = "/google.cloud.dialogflow.v2beta1.Participants/SuggestFaqAnswers"
+	Participants_SuggestSmartReplies_FullMethodName         = "/google.cloud.dialogflow.v2beta1.Participants/SuggestSmartReplies"
+	Participants_SuggestKnowledgeAssist_FullMethodName      = "/google.cloud.dialogflow.v2beta1.Participants/SuggestKnowledgeAssist"
+	Participants_ListSuggestions_FullMethodName             = "/google.cloud.dialogflow.v2beta1.Participants/ListSuggestions"
+	Participants_CompileSuggestion_FullMethodName           = "/google.cloud.dialogflow.v2beta1.Participants/CompileSuggestion"
 )
 
 // ParticipantsClient is the client API for Participants service.
@@ -83,6 +84,9 @@ type ParticipantsClient interface {
 	// sent to virtual agents. See [Versions and
 	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 	StreamingAnalyzeContent(ctx context.Context, opts ...grpc.CallOption) (Participants_StreamingAnalyzeContentClient, error)
+	// Bidirectional endless streaming version of
+	// [StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent].
+	BidiStreamingAnalyzeContent(ctx context.Context, opts ...grpc.CallOption) (Participants_BidiStreamingAnalyzeContentClient, error)
 	// Gets suggested articles for a participant based on specific historical
 	// messages.
 	//
@@ -226,6 +230,37 @@ func (x *participantsStreamingAnalyzeContentClient) Recv() (*StreamingAnalyzeCon
 	return m, nil
 }
 
+func (c *participantsClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...grpc.CallOption) (Participants_BidiStreamingAnalyzeContentClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Participants_ServiceDesc.Streams[1], Participants_BidiStreamingAnalyzeContent_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &participantsBidiStreamingAnalyzeContentClient{stream}
+	return x, nil
+}
+
+type Participants_BidiStreamingAnalyzeContentClient interface {
+	Send(*BidiStreamingAnalyzeContentRequest) error
+	Recv() (*BidiStreamingAnalyzeContentResponse, error)
+	grpc.ClientStream
+}
+
+type participantsBidiStreamingAnalyzeContentClient struct {
+	grpc.ClientStream
+}
+
+func (x *participantsBidiStreamingAnalyzeContentClient) Send(m *BidiStreamingAnalyzeContentRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *participantsBidiStreamingAnalyzeContentClient) Recv() (*BidiStreamingAnalyzeContentResponse, error) {
+	m := new(BidiStreamingAnalyzeContentResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *participantsClient) SuggestArticles(ctx context.Context, in *SuggestArticlesRequest, opts ...grpc.CallOption) (*SuggestArticlesResponse, error) {
 	out := new(SuggestArticlesResponse)
 	err := c.cc.Invoke(ctx, Participants_SuggestArticles_FullMethodName, in, out, opts...)
@@ -317,6 +352,9 @@ type ParticipantsServer interface {
 	// sent to virtual agents. See [Versions and
 	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 	StreamingAnalyzeContent(Participants_StreamingAnalyzeContentServer) error
+	// Bidirectional endless streaming version of
+	// [StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent].
+	BidiStreamingAnalyzeContent(Participants_BidiStreamingAnalyzeContentServer) error
 	// Gets suggested articles for a participant based on specific historical
 	// messages.
 	//
@@ -397,6 +435,9 @@ func (UnimplementedParticipantsServer) AnalyzeContent(context.Context, *AnalyzeC
 }
 func (UnimplementedParticipantsServer) StreamingAnalyzeContent(Participants_StreamingAnalyzeContentServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamingAnalyzeContent not implemented")
+}
+func (UnimplementedParticipantsServer) BidiStreamingAnalyzeContent(Participants_BidiStreamingAnalyzeContentServer) error {
+	return status.Errorf(codes.Unimplemented, "method BidiStreamingAnalyzeContent not implemented")
 }
 func (UnimplementedParticipantsServer) SuggestArticles(context.Context, *SuggestArticlesRequest) (*SuggestArticlesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SuggestArticles not implemented")
@@ -538,6 +579,32 @@ func (x *participantsStreamingAnalyzeContentServer) Send(m *StreamingAnalyzeCont
 
 func (x *participantsStreamingAnalyzeContentServer) Recv() (*StreamingAnalyzeContentRequest, error) {
 	m := new(StreamingAnalyzeContentRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _Participants_BidiStreamingAnalyzeContent_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ParticipantsServer).BidiStreamingAnalyzeContent(&participantsBidiStreamingAnalyzeContentServer{stream})
+}
+
+type Participants_BidiStreamingAnalyzeContentServer interface {
+	Send(*BidiStreamingAnalyzeContentResponse) error
+	Recv() (*BidiStreamingAnalyzeContentRequest, error)
+	grpc.ServerStream
+}
+
+type participantsBidiStreamingAnalyzeContentServer struct {
+	grpc.ServerStream
+}
+
+func (x *participantsBidiStreamingAnalyzeContentServer) Send(m *BidiStreamingAnalyzeContentResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *participantsBidiStreamingAnalyzeContentServer) Recv() (*BidiStreamingAnalyzeContentRequest, error) {
+	m := new(BidiStreamingAnalyzeContentRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -708,6 +775,12 @@ var Participants_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "StreamingAnalyzeContent",
 			Handler:       _Participants_StreamingAnalyzeContent_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "BidiStreamingAnalyzeContent",
+			Handler:       _Participants_BidiStreamingAnalyzeContent_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
