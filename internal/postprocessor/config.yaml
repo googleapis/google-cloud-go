@@ -7,7 +7,6 @@ modules:
   - bigtable
   - errorreporting
   - logging
-  - profiler
   - storage
 
 manual-clients:
@@ -218,6 +217,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - profiler
   - spanner
   - datastore
   - firestore
@@ -394,7 +394,6 @@ skip-module-scan-paths:
   - bigtable
   - errorreporting
   - logging
-  - profiler
   - storage
   - vertexai
   # unreleased modules

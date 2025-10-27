@@ -38,6 +38,8 @@ libraries:
     release_blocked: true
   - id: "longrunning"
     release_blocked: true
+  - id: "profiler"
+    release_blocked: true
   - id: "pubsub"
     release_blocked: true
   - id: "pubsub/v2"
