@@ -1,25 +1,17 @@
 # Hand-maintained configuration for libraries.
 
-# The "global" file here is really only for the root module.
-# We don't want to add a source path of "." to the state file,
-# as that would include everything that's *not* in the module
-# as well. The root module includes a source path of "internal"
-# despite several subdirectories being tools which don't need
-# to be releasesd as such; those are listed as released exclusion
-# paths in state.yaml.
-
-# This is temporarily commented out as we only create CHANGES.md
-# in the output directory when releasing the root module - but
-# librarian expects it to be present for all releases. See
-# https://github.com/googleapis/librarian/issues/2627 for more
-# details and discussion.
-# global_files_allowlist:
-#  - path: "CHANGES.md"
-#    permissions: "read-write"
-
 global_files_allowlist:
  # Paths (currently just one) that need to modified during configure
  - path: "internal/generated/snippets/go.mod"
+   permissions: "read-write"
+ # Allow CHANGES.md to be rewritten. This is only used for the root module.
+ # We don't want to add a source path of "." to the state file,
+ # as that would include everything that's *not* in the module
+ # as well. The root module includes a source path of "internal"
+ # despite several subdirectories being tools which don't need
+ # to be released as such; those are listed as released exclusion
+ # paths in state.yaml.
+ - path: "CHANGES.md"
    permissions: "read-write"
 
 # All libraries with handwritten code (core, hybrid and handwritten)
@@ -49,4 +41,6 @@ libraries:
   - id: "root-module"
     release_blocked: true
   - id: "spanner"
+    release_blocked: true
+  - id: "vertexai"
     release_blocked: true

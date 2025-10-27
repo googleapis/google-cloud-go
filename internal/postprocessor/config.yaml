@@ -218,6 +218,7 @@ skip-module-scan-paths:
   - .
   # Librarian released modules
   - profiler
+  - vertexai
   - spanner
   - datastore
   - firestore
@@ -395,6 +396,5 @@ skip-module-scan-paths:
   - errorreporting
   - logging
   - storage
-  - vertexai
   # unreleased modules
   - spanner/test/opentelemetry/test

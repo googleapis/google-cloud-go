@@ -4137,6 +4137,7 @@ libraries:
     preserve_regex: []
     remove_regex: []
     release_exclude_paths:
+      - internal/.repo-metadata-full.json
       - internal/actions
       - internal/aliasfix
       - internal/aliasgen
@@ -5322,6 +5323,15 @@ libraries:
       - ^translate/apiv3/translatepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/translate/
+    tag_format: '{id}/v{version}'
+  - id: vertexai
+    version: 0.15.0
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    apis: []
+    source_roots:
+      - vertexai
+    preserve_regex: []
+    remove_regex: []
     tag_format: '{id}/v{version}'
   - id: video
     version: 1.27.1

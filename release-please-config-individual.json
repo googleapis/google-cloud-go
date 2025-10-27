@@ -20,9 +20,6 @@
     },
     "storage": {
       "component": "storage"
-    },
-    "vertexai": {
-      "component": "vertexai"
     }
   },
   "plugins": [
