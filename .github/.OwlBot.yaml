@@ -22,8 +22,6 @@ deep-remove-regex:
   - /bigquery/storage/apiv1beta1/
   - /bigquery/storage/apiv1beta2/
   - /bigquery/v2/apiv2/
-  - /bigtable/admin/apiv2/
-  - /bigtable/apiv2/
   # - /errorreporting/apiv1beta1/
   # START snippets
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
@@ -67,10 +65,6 @@ deep-preserve-regex:
 
 deep-copy-regex:
   # Just copy the bigtable protos for now
-  - source: /google/bigtable/admin/v2/cloud.google.com/go/bigtable/admin/apiv2/adminpb
-    dest: /bigtable/admin/apiv2/adminpb
-  - source: /google/bigtable/v2/cloud.google.com/go/bigtable/apiv2/bigtablepb
-    dest: /bigtable/apiv2/bigtablepb
   - source: /google/cloud/bigquery/analyticshub/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/biglake/v1/cloud.google.com/go

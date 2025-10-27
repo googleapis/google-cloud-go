@@ -828,6 +828,41 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
+  - id: bigtable
+    version: 1.40.1
+    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    apis:
+      - path: google/bigtable/admin/v2
+        service_config: bigtableadmin_v2.yaml
+      - path: google/bigtable/v2
+        service_config: bigtable_v2.yaml
+    source_roots:
+      - bigtable
+      - internal/generated/snippets/bigtable
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/bigtable/
+      - ^bigtable/admin/apiv2/[^/]*_client\.go$
+      - ^bigtable/admin/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^bigtable/admin/apiv2/[^/]*_client_example_test\.go$
+      - ^bigtable/admin/apiv2/auxiliary\.go$
+      - ^bigtable/admin/apiv2/auxiliary_go123\.go$
+      - ^bigtable/admin/apiv2/doc\.go$
+      - ^bigtable/admin/apiv2/gapic_metadata\.json$
+      - ^bigtable/admin/apiv2/helpers\.go$
+      - ^bigtable/admin/apiv2/adminpb/.*$
+      - ^bigtable/apiv2/[^/]*_client\.go$
+      - ^bigtable/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^bigtable/apiv2/[^/]*_client_example_test\.go$
+      - ^bigtable/apiv2/auxiliary\.go$
+      - ^bigtable/apiv2/auxiliary_go123\.go$
+      - ^bigtable/apiv2/doc\.go$
+      - ^bigtable/apiv2/gapic_metadata\.json$
+      - ^bigtable/apiv2/helpers\.go$
+      - ^bigtable/apiv2/bigtablepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/bigtable/
+    tag_format: '{id}/v{version}'
   - id: billing
     version: 1.21.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
