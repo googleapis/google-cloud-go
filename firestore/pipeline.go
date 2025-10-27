@@ -317,11 +317,11 @@ type UnnestOptions struct {
 // Each output document is a copy of the input document, but the array field is replaced by an element from the array.
 // The `fieldOrSelectable` parameter specifies the array field to unnest. It can be a string representing the field path or a [Selectable] expression.
 // If a [Selectable] is provided, the alias of the selectable will be used as the new field name.
-func (p *Pipeline) Unnest(fieldpathsOrSelectables any) *Pipeline {
+func (p *Pipeline) Unnest(fieldpathsOrSelectable any) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newUnnestStageFromAny(fieldpathsOrSelectables)
+	stage, err := newUnnestStageFromAny(fieldpathsOrSelectable)
 	if err != nil {
 		p.err = err
 		return p

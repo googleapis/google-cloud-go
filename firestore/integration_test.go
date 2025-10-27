@@ -156,7 +156,7 @@ func initIntegrationTest() {
 			},
 		},
 	}
-	copts := append(ti.CallOptions()) //, option.WithTokenSource(ts))
+	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
 	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
@@ -3791,9 +3791,6 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Fatalf("results[1] Exists: got: false, want: true")
 		}
 		dist2 := results[1].Data()
-		if err != nil {
-			t.Fatalf("Failed to get data: %v", err)
-		}
 		if dist1[distanceField].(float64) > dist2[distanceField].(float64) {
 			t.Errorf("documents are not sorted by distance")
 		}
@@ -4098,9 +4095,6 @@ func TestIntegration_PipelineStages(t *testing.T) {
 				t.Fatalf("Exists: got: false, want: true")
 			}
 			data := doc.Data()
-			if err != nil {
-				t.Fatalf("Failed to get data: %v", err)
-			}
 			got = append(got, data)
 		}
 		want := []map[string]interface{}{
