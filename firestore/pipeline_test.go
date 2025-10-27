@@ -231,8 +231,8 @@ func TestPipeline_Select(t *testing.T) {
 			{ValueType: &pb.Value_MapValue{
 				MapValue: &pb.MapValue{
 					Fields: map[string]*pb.Value{
-						"name":      {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "name"}},
-						"age":       {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "age"}},
+						"name": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "name"}},
+						"age":  {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "age"}},
 						"new_score": {ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
 							Name: "add",
 							Args: []*pb.Value{
