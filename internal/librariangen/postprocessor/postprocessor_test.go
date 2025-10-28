@@ -23,6 +23,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/configure"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
@@ -32,6 +33,7 @@ func TestPostProcess(t *testing.T) {
 		mockexecvRun func(ctx context.Context, args []string, dir string) error
 		wantErr      bool
 		noVersion    bool
+		singleNewAPI bool
 	}{
 		{
 			name: "success",
@@ -55,9 +57,40 @@ func TestPostProcess(t *testing.T) {
 			noVersion: true,
 			wantErr:   true,
 		},
+		{
+			name: "success with go mod init and tidy",
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
+				return nil
+			},
+			wantErr:      false,
+			singleNewAPI: true,
+		},
+		{
+			name: "go mod init fails",
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
+				if len(args) > 2 && args[1] == "mod" && args[2] == "init" {
+					return errors.New("go mod init failed")
+				}
+				return nil
+			},
+			wantErr:      true,
+			singleNewAPI: true,
+		},
+		{
+			name: "go mod tidy fails",
+			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
+				if len(args) > 2 && args[1] == "mod" && args[2] == "tidy" {
+					return errors.New("go mod tidy failed")
+				}
+				return nil
+			},
+			wantErr:      true,
+			singleNewAPI: true,
+		},
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			outputDir := t.TempDir()
 			moduleDir := filepath.Join(outputDir, "chronicle")
@@ -99,7 +132,16 @@ func TestPostProcess(t *testing.T) {
 				return
 			}
 
-			execvRun = tt.mockexecvRun
+			var goModInitCalled, goModTidyCalled bool
+			execvRun = func(ctx context.Context, args []string, dir string) error {
+				if len(args) > 2 && args[1] == "mod" && args[2] == "init" {
+					goModInitCalled = true
+				}
+				if len(args) > 2 && args[1] == "mod" && args[2] == "tidy" {
+					goModTidyCalled = true
+				}
+				return tt.mockexecvRun(ctx, args, dir)
+			}
 
 			req := &request.Library{
 				ID: "chronicle",
@@ -109,6 +151,15 @@ func TestPostProcess(t *testing.T) {
 					{Path: "google/cloud/chronicle/sublevel1/sublevel2/v1"},
 				},
 				Version: "1.0.0",
+			}
+			if tt.singleNewAPI {
+				req = &request.Library{
+					ID: "chronicle",
+					APIs: []request.API{
+						{Path: "google/cloud/chronicle/v1", Status: configure.NewAPIStatus},
+					},
+					Version: "0.0.0",
+				}
 			}
 
 			if tt.noVersion {
@@ -122,17 +173,47 @@ func TestPostProcess(t *testing.T) {
 				t.Fatalf("PostProcess() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
+			if tt.singleNewAPI && !tt.wantErr {
+				if !goModInitCalled {
+					t.Error("go mod init was not called")
+				}
+				if !goModTidyCalled {
+					t.Error("go mod tidy was not called")
+				}
+			}
+			if !tt.singleNewAPI {
+				if goModInitCalled {
+					t.Error("go mod init was called unexpectedly")
+				}
+				if goModTidyCalled {
+					t.Error("go mod tidy was called unexpectedly")
+				}
+			}
+
 			if tt.wantErr {
 				return
+			}
+
+			// Determine which files should have been modified based on the request.
+			wantModifiedFiles := make(map[string]bool)
+			for _, api := range req.APIs {
+				apiConfig := moduleConfig.GetAPIConfig(api.Path)
+				clientDirName, err := apiConfig.GetClientDirectory()
+				if err != nil {
+					t.Fatalf("failed to get client directory: %v", err)
+				}
+				snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
+				path := filepath.Join(snippetsDir, clientDirName, snippetFile)
+				wantModifiedFiles[path] = true
 			}
 
 			for _, snippetMetadataFile := range snippetMetadataFiles {
 				path := filepath.Join(snippetsDir, snippetMetadataFile)
 				read, err := os.ReadFile(path)
 				if err != nil {
-					t.Errorf("Couldn't read snippet metadata file %s: %v", snippetMetadataFile, err)
+					t.Fatalf("Couldn't read snippet metadata file %s: %v", snippetMetadataFile, err)
 				}
-				wantModified := !strings.Contains(snippetMetadataFile, "v3")
+				wantModified := wantModifiedFiles[path]
 				gotModified := strings.Contains(string(read), req.Version)
 				if wantModified != gotModified {
 					t.Errorf("incorrect snippet metadata modification for %s; got = %v; want = %v", snippetMetadataFile, gotModified, wantModified)
