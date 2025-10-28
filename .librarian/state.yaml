@@ -131,7 +131,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.108.0
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -2043,7 +2043,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: edgenetwork
     version: 1.2.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
     apis:
       - path: google/cloud/edgenetwork/v1
         service_config: edgenetwork_v1.yaml
