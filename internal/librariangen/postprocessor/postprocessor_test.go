@@ -17,8 +17,10 @@ package postprocessor
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -29,18 +31,37 @@ import (
 
 func TestPostProcess(t *testing.T) {
 	tests := []struct {
-		name         string
-		mockexecvRun func(ctx context.Context, args []string, dir string) error
-		wantErr      bool
-		noVersion    bool
-		singleNewAPI bool
+		name                     string
+		mockexecvRun             func(ctx context.Context, args []string, dir string) error
+		wantErr                  bool
+		noVersion                bool
+		singleNewAPI             bool
+		snippetFiles             []string
+		wantModifiedSnippetFiles []string
 	}{
 		{
 			name: "success",
 			mockexecvRun: func(ctx context.Context, args []string, dir string) error {
+				baseDir := filepath.Base(dir)
+				wantBaseDir := "output"
+				if args[0] == "goimports" && baseDir != wantBaseDir {
+					return fmt.Errorf("goimports failed, baseDir: got: %q, want: %q", baseDir, wantBaseDir)
+				}
 				return nil
 			},
 			wantErr: false,
+			snippetFiles: []string{
+				"apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+				"apiv2/snippet_metadata.google.cloud.chronicle.v2.json",
+				"sublevel1/sublevel2/apiv1/snippet_metadata.google.cloud.chronicle.sublevel1.sublevel2.v1.json",
+				// This is *not* part of the request, so won't be modified.
+				"apiv3/snippet_metadata.google.cloud.chronicle.v3.json",
+			},
+			wantModifiedSnippetFiles: []string{
+				"apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+				"apiv2/snippet_metadata.google.cloud.chronicle.v2.json",
+				"sublevel1/sublevel2/apiv1/snippet_metadata.google.cloud.chronicle.sublevel1.sublevel2.v1.json",
+			},
 		},
 		{
 			name: "goimports fails (fatal)",
@@ -64,6 +85,12 @@ func TestPostProcess(t *testing.T) {
 			},
 			wantErr:      false,
 			singleNewAPI: true,
+			snippetFiles: []string{
+				"apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+			},
+			wantModifiedSnippetFiles: []string{
+				"apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+			},
 		},
 		{
 			name: "go mod init fails",
@@ -92,7 +119,7 @@ func TestPostProcess(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			outputDir := t.TempDir()
+			outputDir := filepath.Join(t.TempDir(), "output")
 			moduleDir := filepath.Join(outputDir, "chronicle")
 			if err := os.MkdirAll(moduleDir, 0755); err != nil {
 				t.Fatalf("failed to create directory %s: %v", moduleDir, err)
@@ -106,15 +133,8 @@ func TestPostProcess(t *testing.T) {
 				return
 			}
 
-			snippetMetadataFiles := []string{
-				"apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
-				"apiv2/snippet_metadata.google.cloud.chronicle.v2.json",
-				"sublevel1/sublevel2/apiv1/snippet_metadata.google.cloud.chronicle.sublevel1.sublevel2.v1.json",
-				// This is *not* part of the request, so won't be modified.
-				"apiv3/snippet_metadata.google.cloud.chronicle.v3.json",
-			}
-			for _, snippetMetadataFile := range snippetMetadataFiles {
-				fullPath := filepath.Join(snippetsDir, snippetMetadataFile)
+			for _, snippetFile := range tt.snippetFiles {
+				fullPath := filepath.Join(snippetsDir, snippetFile)
 				specificSnippetDir := filepath.Dir(fullPath)
 				if err := os.MkdirAll(specificSnippetDir, 0755); err != nil {
 					t.Fatalf("failed to create directory %s: %v", moduleDir, err)
@@ -195,28 +215,16 @@ func TestPostProcess(t *testing.T) {
 			}
 
 			// Determine which files should have been modified based on the request.
-			wantModifiedFiles := make(map[string]bool)
-			for _, api := range req.APIs {
-				apiConfig := moduleConfig.GetAPIConfig(api.Path)
-				clientDirName, err := apiConfig.GetClientDirectory()
-				if err != nil {
-					t.Fatalf("failed to get client directory: %v", err)
-				}
-				snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
-				path := filepath.Join(snippetsDir, clientDirName, snippetFile)
-				wantModifiedFiles[path] = true
-			}
-
-			for _, snippetMetadataFile := range snippetMetadataFiles {
-				path := filepath.Join(snippetsDir, snippetMetadataFile)
+			for _, snippetFile := range tt.snippetFiles {
+				path := filepath.Join(snippetsDir, snippetFile)
 				read, err := os.ReadFile(path)
 				if err != nil {
-					t.Fatalf("Couldn't read snippet metadata file %s: %v", snippetMetadataFile, err)
+					t.Fatalf("Couldn't read snippet metadata file %s: %v", snippetFile, err)
 				}
-				wantModified := wantModifiedFiles[path]
+				wantModified := slices.Contains(tt.wantModifiedSnippetFiles, snippetFile)
 				gotModified := strings.Contains(string(read), req.Version)
 				if wantModified != gotModified {
-					t.Errorf("incorrect snippet metadata modification for %s; got = %v; want = %v", snippetMetadataFile, gotModified, wantModified)
+					t.Errorf("incorrect snippet metadata modification for %s; got = %v; want = %v", snippetFile, gotModified, wantModified)
 				}
 			}
 		})

@@ -96,7 +96,7 @@ func Configure(ctx context.Context, cfg *Config) error {
 	if err := cfg.Validate(); err != nil {
 		return fmt.Errorf("librariangen: invalid configuration: %w", err)
 	}
-	slog.Info("librariangen: configure command started")
+	slog.Debug("librariangen: configure command started")
 	configureReq, err := readConfigureReq(cfg.LibrarianDir)
 	if err != nil {
 		return fmt.Errorf("librariangen: failed to read request: %w", err)
@@ -320,7 +320,9 @@ func goModEditReplaceInSnippets(ctx context.Context, cfg *Config, modulePath, re
 		return err
 	}
 	copyRepoFileToOutput(cfg, "internal/generated/snippets/go.mod")
-	args := []string{"go", "mod", "edit", "-replace", fmt.Sprintf("%s=%s", modulePath, relativeDir)}
+	replaceStr := fmt.Sprintf("%s=%s", modulePath, relativeDir)
+	args := []string{"go", "mod", "edit", "-replace", replaceStr}
+	slog.Info("librariangen: running go mod edit -replace", "replace", replaceStr, "directory", outputSnippetsDir)
 	return execvRun(ctx, args, outputSnippetsDir)
 }
 
