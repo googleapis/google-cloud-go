@@ -47,7 +47,7 @@ func ConstantOf(value any) Expr {
 
 	// Handle known scalar types
 	switch value.(type) {
-	case string, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, time.Time, *ts.Timestamp, []byte, Vector32, Vector64, *latlng.LatLng:
+	case bool, string, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, time.Time, *ts.Timestamp, []byte, Vector32, Vector64, *latlng.LatLng:
 		pbVal, _, err := toProtoValue(reflect.ValueOf(value))
 		if err != nil {
 			return &constant{baseExpr: &baseExpr{err: err}}

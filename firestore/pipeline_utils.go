@@ -17,9 +17,80 @@ package firestore
 import (
 	"errors"
 	"fmt"
+	"reflect"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
+
+// toExprs converts a plain Go value or an existing Expr into an Expr.
+// Plain values are wrapped in a Constant.
+func toExprs(val []any) []Expr {
+	exprs := make([]Expr, len(val))
+	for i, v := range val {
+		exprs[i] = toExprOrConstant(v)
+	}
+	return exprs
+}
+
+func toExprsFromSlice[T any](val []T) []Expr {
+	exprs := make([]Expr, len(val))
+	for i, v := range val {
+		exprs[i] = toExprOrConstant(v)
+	}
+	return exprs
+}
+
+// val should be single Expr or array of Expr/constants
+func asArrayFunctionExpr(val any) Expr {
+	if expr, ok := val.(Expr); ok {
+		return expr
+	}
+
+	arrayVal := reflect.ValueOf(val)
+	if arrayVal.Kind() != reflect.Slice {
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a slice or Expr, but got %T", val)}
+	}
+
+	// Convert the slice of any to []Expr
+	var exprs []Expr
+	for i := 0; i < arrayVal.Len(); i++ {
+		exprs = append(exprs, toExprOrConstant(arrayVal.Index(i).Interface()))
+	}
+	return newBaseFunction("array", exprs)
+}
+
+func asInt64Expr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case int, int8, int16, int32, int64, uint8, uint16, uint32:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int8, int16, int32, int64, uint8, uint16, uint32 or Expr, but got %T", val)}
+	}
+}
+
+func asStringExpr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case string:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
+	}
+}
+
+func asVectorExpr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case Vector32, Vector64, []float32, []float64:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a []float32, []float64, Vector32, Vector64 or Expr, but got %T", val)}
+	}
+}
 
 // toExprOrConstant converts a plain Go value or an existing Expr into an Expr.
 // Plain values are wrapped in a Constant.
