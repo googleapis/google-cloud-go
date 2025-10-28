@@ -129,10 +129,7 @@ skip-module-scan-paths:
   - .
   # Librarian released modules
   - bigquery
-  - bigtable
-  - storage
-  - logging
-  - errorreporting
+  - bigquery/v2
   - profiler
   - vertexai
   - spanner
@@ -305,7 +302,5 @@ skip-module-scan-paths:
   - longrunning
   - pubsub/v2
   - pubsub
-  # individually released modules
-  - bigquery/v2
   # unreleased modules
   - spanner/test/opentelemetry/test
