@@ -54,7 +54,7 @@ func PostProcess(ctx context.Context, req *request.Library, outputDir, moduleDir
 		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
-	if err := goimports(ctx, moduleDir); err != nil {
+	if err := goimports(ctx, outputDir); err != nil {
 		return fmt.Errorf("librariangen: failed to run 'goimports': %w", err)
 	}
 
