@@ -1,7 +1,6 @@
 {
   "bigquery": "1.72.0",
   "bigtable": "1.40.1",
-  "errorreporting": "0.3.2",
   "logging": "1.13.1",
   "storage": "1.57.0"
 }

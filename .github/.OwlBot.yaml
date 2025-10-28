@@ -24,7 +24,6 @@ deep-remove-regex:
   - /bigquery/v2/apiv2/
   - /bigtable/admin/apiv2/
   - /bigtable/apiv2/
-  # - /errorreporting/apiv1beta1/
   # START snippets
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
   - /internal/generated/snippets/bigquery/biglake/apiv1/
@@ -48,7 +47,6 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/v2/apiv2/
   - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets//devicestreaming/apiv1/
-  # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/storage/control/apiv2/
   # END snippets
