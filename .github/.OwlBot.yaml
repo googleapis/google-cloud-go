@@ -59,12 +59,9 @@ deep-preserve-regex:
   - /.*/path_funcs.go
   - /.*/version.go
   - /logging/apiv2/WriteLogEntries_smoke_test.go
-  # TODO(#7336): Remove these networkconnectivity lines once breaking change is handled.
   - /storage/internal/apiv2/metadata.go
-  # Must preserve these even though they aren't generated anymore
 
 deep-copy-regex:
-  # Just copy the bigtable protos for now
   - source: /google/cloud/bigquery/analyticshub/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/biglake/v1/cloud.google.com/go
