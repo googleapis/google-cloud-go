@@ -2789,6 +2789,30 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/locationfinder/
     tag_format: '{id}/v{version}'
+  - id: logging
+    version: 1.13.0
+    last_generated_commit: 0654a03c3f7a6cb46e36227d17cfcc6f4b71fa5a
+    apis:
+      - path: google/logging/v2
+        service_config: logging_v2.yaml
+    source_roots:
+      - logging
+      - internal/generated/snippets/logging
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/logging/
+      - ^logging/apiv2/[^/]*_client\.go$
+      - ^logging/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^logging/apiv2/[^/]*_client_example_test\.go$
+      - ^logging/apiv2/auxiliary\.go$
+      - ^logging/apiv2/auxiliary_go123\.go$
+      - ^logging/apiv2/doc\.go$
+      - ^logging/apiv2/gapic_metadata\.json$
+      - ^logging/apiv2/helpers\.go$
+      - ^logging/apiv2/loggingpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/logging/
+    tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.7.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
