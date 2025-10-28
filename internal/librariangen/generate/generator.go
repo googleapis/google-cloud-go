@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/bazel"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/genproto"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/postprocessor"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/protoc"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
@@ -96,15 +97,21 @@ func Generate(ctx context.Context, cfg *Config) error {
 	if err := cfg.Validate(); err != nil {
 		return fmt.Errorf("librariangen: invalid configuration: %w", err)
 	}
+	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
+	if err != nil {
+		return fmt.Errorf("librariangen: failed to load repo config: %w", err)
+	}
+	if !repoConfig.CanGenerate() {
+		return errors.New("generate is not supported in this repo")
+	}
 	slog.Debug("librariangen: generate command started")
 
 	generateReq, err := readGenerateReq(cfg.LibrarianDir)
 	if err != nil {
 		return fmt.Errorf("librariangen: failed to read request: %w", err)
 	}
-	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
-	if err != nil {
-		return fmt.Errorf("librariangen: failed to load repo config: %w", err)
+	if repoConfig.Type == genproto.RepoType {
+		return genproto.Generate(ctx, cfg.SourceDir, cfg.OutputDir, generateReq)
 	}
 	moduleConfig := repoConfig.GetModuleConfig(generateReq.ID)
 
