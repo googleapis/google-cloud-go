@@ -83,7 +83,7 @@ func PostProcess(ctx context.Context, req *request.Library, outputDir, moduleDir
 // goimports runs the goimports tool on a directory to format Go files and
 // manage imports.
 func goimports(ctx context.Context, dir string) error {
-	slog.Debug("librariangen: running goimports", "directory", dir)
+	slog.Info("librariangen: running goimports", "directory", dir)
 	// The `.` argument will make goimports process all go files in the directory
 	// and its subdirectories. The -w flag writes results back to source files.
 	args := []string{"goimports", "-w", "."}
@@ -92,14 +92,14 @@ func goimports(ctx context.Context, dir string) error {
 
 // goModInit runs "go mod init" on a directory to initialize the module.
 func goModInit(ctx context.Context, dir string) error {
-	slog.Debug("librariangen: running go mod init", "directory", dir)
+	slog.Info("librariangen: running go mod init", "directory", dir)
 	args := []string{"go", "mod", "init"}
 	return execvRun(ctx, args, dir)
 }
 
 // goModTidy runs "go mod tidy" on a directory to add appropriate dependencies.
 func goModTidy(ctx context.Context, dir string) error {
-	slog.Debug("librariangen: running go mod tidy", "directory", dir)
+	slog.Info("librariangen: running go mod tidy", "directory", dir)
 	args := []string{"go", "mod", "tidy"}
 	return execvRun(ctx, args, dir)
 }
