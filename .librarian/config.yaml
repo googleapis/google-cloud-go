@@ -26,6 +26,8 @@ libraries:
     release_blocked: true
   - id: "bigquery"
     release_blocked: true
+  - id: "bigquery/v2"
+    release_blocked: true
   - id: "compute/metadata"
     release_blocked: true
   - id: "datastore"
