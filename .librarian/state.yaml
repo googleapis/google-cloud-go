@@ -2392,7 +2392,6 @@ libraries:
         service_config: gkerecommender_v1.yaml
     source_roots:
       - gkerecommender
-      - internal/generated/
       - internal/generated/snippets/gkerecommender
     preserve_regex: []
     remove_regex:
