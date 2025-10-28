@@ -37,6 +37,7 @@ var (
 //
 //  1. Modify the generated snippets to specify the current version
 //  2. Run `goimports` to format the code.
+//  3. For new modules only, run "go mod init" and "go mod tidy"
 func PostProcess(ctx context.Context, req *request.Library, outputDir, moduleDir string, moduleConfig *config.ModuleConfig) error {
 	slog.Debug("librariangen: starting post-processing", "directory", moduleDir)
 
@@ -53,7 +54,7 @@ func PostProcess(ctx context.Context, req *request.Library, outputDir, moduleDir
 		return fmt.Errorf("librariangen: failed to update snippets metadata: %w", err)
 	}
 
-	if err := goimports(ctx, moduleDir); err != nil {
+	if err := goimports(ctx, outputDir); err != nil {
 		return fmt.Errorf("librariangen: failed to run 'goimports': %w", err)
 	}
 
