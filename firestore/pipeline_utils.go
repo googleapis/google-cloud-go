@@ -22,6 +22,11 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
+// newFieldAndArrayBooleanExpr creates a new BooleanExpr for functions that operate on a field/expression and an array of values.
+func newFieldAndArrayBooleanExpr(name string, exprOrFieldPath any, values any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{toExprOrField(exprOrFieldPath), asArrayFunctionExpr(values)})}
+}
+
 // toExprs converts a plain Go value or an existing Expr into an Expr.
 // Plain values are wrapped in a Constant.
 func toExprs(val []any) []Expr {
@@ -32,6 +37,7 @@ func toExprs(val []any) []Expr {
 	return exprs
 }
 
+// toExprsFromSlice converts a slice of any type into a slice of Expr, wrapping plain values in Constants.
 func toExprsFromSlice[T any](val []T) []Expr {
 	exprs := make([]Expr, len(val))
 	for i, v := range val {
@@ -59,6 +65,7 @@ func asArrayFunctionExpr(val any) Expr {
 	return newBaseFunction("array", exprs)
 }
 
+// asInt64Expr converts a value to an Expr that evaluates to an int64, or returns an error Expr if conversion is not possible.
 func asInt64Expr(val any) Expr {
 	switch v := val.(type) {
 	case Expr:
@@ -70,6 +77,7 @@ func asInt64Expr(val any) Expr {
 	}
 }
 
+// asStringExpr converts a value to an Expr that evaluates to a string, or returns an error Expr if conversion is not possible.
 func asStringExpr(val any) Expr {
 	switch v := val.(type) {
 	case Expr:
@@ -81,6 +89,7 @@ func asStringExpr(val any) Expr {
 	}
 }
 
+// asVectorExpr converts a value to an Expr that evaluates to a vector type (Vector32, Vector64, []float32, []float64), or returns an error Expr if conversion is not possible.
 func asVectorExpr(val any) Expr {
 	switch v := val.(type) {
 	case Expr:
@@ -158,7 +167,7 @@ func aliasedAggregatesToMapValue(aggregates []*AliasedAggregate) (*pb.Value, err
 
 		base := agg.getBaseAggregateFunction()
 		if base.err != nil {
-			return nil, fmt.Errorf("error in aggregate expression for alias %q: %w", agg.alias, base.err)
+			return nil, fmt.Errorf("firestore: error in aggregate expression for alias %q: %w", agg.alias, base.err)
 		}
 		protoVal, err := base.toProto()
 		if err != nil {

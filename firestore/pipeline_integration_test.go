@@ -150,7 +150,7 @@ func arrayFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isInvalidHeaderError(err) {
+				if isRetryablePipelineExecuteErr(err) {
 					r.Errorf("GetAll: %v. Retrying....", err)
 					return
 				} else if err != nil {
@@ -292,7 +292,7 @@ func stringFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isInvalidHeaderError(err) {
+				if isRetryablePipelineExecuteErr(err) {
 					r.Errorf("GetAll: %v. Retrying....", err)
 					return
 				} else if err != nil {
@@ -427,7 +427,7 @@ func typeFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isInvalidHeaderError(err) {
+				if isRetryablePipelineExecuteErr(err) {
 					r.Errorf("GetAll: %v. Retrying....", err)
 					return
 				} else if err != nil {
@@ -505,7 +505,7 @@ func vectorFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isInvalidHeaderError(err) {
+				if isRetryablePipelineExecuteErr(err) {
 					r.Errorf("GetAll: %v. Retrying....", err)
 					return
 				} else if err != nil {
@@ -529,7 +529,7 @@ func vectorFuncs(t *testing.T) {
 	}
 }
 
-func isInvalidHeaderError(err error) bool {
+func isRetryablePipelineExecuteErr(err error) bool {
 	if err == nil {
 		return false
 	}

@@ -51,7 +51,7 @@ func ArrayContains(exprOrFieldPath any, value any) BooleanExpr {
 //	// Check if the 'tags' array contains both "Go" and "Firestore".
 //	ArrayContainsAll("tags", []string{"Go", "Firestore"})
 func ArrayContainsAll(exprOrFieldPath any, values any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("array_contains_all", append([]Expr{toExprOrField(exprOrFieldPath)}, asArrayFunctionExpr(values)))}
+	return newFieldAndArrayBooleanExpr("array_contains_all", exprOrFieldPath, values)
 }
 
 // ArrayContainsAny creates an expression that checks if an array contains any of the provided values.
@@ -63,7 +63,7 @@ func ArrayContainsAll(exprOrFieldPath any, values any) BooleanExpr {
 //	// Check if the 'tags' array contains either "Go" or "Firestore".
 //	ArrayContainsAny("tags", []string{"Go", "Firestore"})
 func ArrayContainsAny(exprOrFieldPath any, values any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("array_contains_any", append([]Expr{toExprOrField(exprOrFieldPath)}, asArrayFunctionExpr(values)))}
+	return newFieldAndArrayBooleanExpr("array_contains_any", exprOrFieldPath, values)
 }
 
 // EqualAny creates an expression that checks if a field or expression is equal to any of the provided values.
@@ -75,7 +75,7 @@ func ArrayContainsAny(exprOrFieldPath any, values any) BooleanExpr {
 //	// Check if the 'status' field is either "active" or "pending".
 //	EqualAny("status", []string{"active", "pending"})
 func EqualAny(exprOrFieldPath any, values any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("equal_any", append([]Expr{toExprOrField(exprOrFieldPath)}, asArrayFunctionExpr(values)))}
+	return newFieldAndArrayBooleanExpr("equal_any", exprOrFieldPath, values)
 }
 
 // NotEqualAny creates an expression that checks if a field or expression is not equal to any of the provided values.
@@ -87,7 +87,7 @@ func EqualAny(exprOrFieldPath any, values any) BooleanExpr {
 //	// Check if the 'status' field is not "archived" or "deleted".
 //	NotEqualAny("status", []string{"archived", "deleted"})
 func NotEqualAny(exprOrFieldPath any, values any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("not_equal_any", append([]Expr{toExprOrField(exprOrFieldPath)}, asArrayFunctionExpr(values)))}
+	return newFieldAndArrayBooleanExpr("not_equal_any", exprOrFieldPath, values)
 }
 
 // Equal creates an expression that checks if field's value or an expression is equal to an expression or a constant value,

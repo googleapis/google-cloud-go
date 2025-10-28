@@ -43,7 +43,7 @@ func newBaseFunction(name string, params []Expr) *baseFunction {
 		paramExpr := toExprOrField(param)
 		pbVal, err := paramExpr.toProto()
 		if err != nil {
-			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("error converting arg %d for function %q: %w", i, name, err)}}
+			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("firestore: error converting arg %d for function %q: %w", i, name, err)}}
 		}
 		argsPbVals = append(argsPbVals, pbVal)
 	}
@@ -279,8 +279,9 @@ func Array(elements ...any) Expr {
 }
 
 // ArrayFromSlice creates a new array expression from a slice of elements.
-// This is a convenience function for creating an array from an existing slice,
-// as opposed to [Array] which takes a variadic number of arguments.
+// This function is necessary for creating an array from an existing typed slice (e.g., []int),
+// as the [Array] function (which takes variadic arguments) cannot directly accept a typed slice
+// using the spread operator (...). It handles the conversion of each element to `any` internally.
 func ArrayFromSlice[T any](elements []T) Expr {
 	return newBaseFunction("array", toExprsFromSlice(elements))
 }
