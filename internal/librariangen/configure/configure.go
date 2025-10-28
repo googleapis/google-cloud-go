@@ -207,7 +207,7 @@ func configureLibrary(ctx context.Context, cfg *Config, library *request.Library
 	// - internal/version.go
 	// - go.mod
 	if len(library.APIs) == 1 {
-		library.SourcePaths = []string{library.ID, "internal/generated/", "internal/generated/snippets/" + library.ID}
+		library.SourcePaths = []string{library.ID, "internal/generated/snippets/" + library.ID}
 		library.RemoveRegex = []string{"^internal/generated/snippets/" + library.ID + "/"}
 		library.TagFormat = "{id}/v{version}"
 		library.Version = "0.0.0"
