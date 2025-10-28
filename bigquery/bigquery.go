@@ -293,6 +293,10 @@ func retryableError(err error, allowedReasons []string) bool {
 				return true
 			}
 		}
+	case interface{ Timeout() bool }:
+		if e.Timeout() {
+			return true
+		}
 	case interface{ Temporary() bool }:
 		if e.Temporary() {
 			return true
