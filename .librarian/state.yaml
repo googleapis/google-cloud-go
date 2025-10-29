@@ -5074,8 +5074,8 @@ libraries:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
-    version: 1.57.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.57.1
+    last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
     apis:
       - path: google/storage/control/v2
         service_config: storage_v2.yaml
