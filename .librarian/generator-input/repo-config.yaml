@@ -44,6 +44,11 @@ modules:
       - path: google/datastore/v1
         disable_gapic: true
 
+  - name: errorreporting
+    apis:
+      - path: google/devtools/clouderrorreporting/v1beta1
+        client_directory: apiv1beta1
+
   - name: firestore
     apis:
       - path: google/firestore/admin/v1

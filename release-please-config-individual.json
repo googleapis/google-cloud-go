@@ -12,17 +12,8 @@
     "bigtable": {
       "component": "bigtable"
     },
-    "errorreporting": {
-      "component": "errorreporting"
-    },
     "logging": {
       "component": "logging"
-    },
-    "profiler": {
-      "component": "profiler"
-    },
-    "vertexai": {
-      "component": "vertexai"
     }
   },
   "plugins": [

@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:9d769b80b95bb0ff51c282def392bd57ac10ed05f0987a60d6cb5d2e8e2c3aa2
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:496591304b0d24ab57ea5f2c8a7870921713edab7f6fd002c5b2e78a8d6de396
 libraries:
   - id: accessapproval
     version: 1.8.8
@@ -131,7 +131,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.108.0
-    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -983,7 +983,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chat
     version: 0.15.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/chat/v1
         service_config: chat_v1.yaml
@@ -1621,7 +1621,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.27.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dataplex/v1
         service_config: dataplex_v1.yaml
@@ -1835,7 +1835,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dialogflow
     version: 1.70.0
-    last_generated_commit: b61fb21bbac838de7f55cf2c60d371a47fc2799e
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -2043,7 +2043,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: edgenetwork
     version: 1.2.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
     apis:
       - path: google/cloud/edgenetwork/v1
         service_config: edgenetwork_v1.yaml
@@ -2064,6 +2064,30 @@ libraries:
       - ^edgenetwork/apiv1/edgenetworkpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/edgenetwork/
+    tag_format: '{id}/v{version}'
+  - id: errorreporting
+    version: 0.3.2
+    last_generated_commit: 4221b78ecddf8edf168ff2817ed6c14dd844ae2c
+    apis:
+      - path: google/devtools/clouderrorreporting/v1beta1
+        service_config: clouderrorreporting_v1beta1.yaml
+    source_roots:
+      - errorreporting
+      - internal/generated/snippets/errorreporting
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/errorreporting/
+      - ^errorreporting/apiv1beta1/[^/]*_client\.go$
+      - ^errorreporting/apiv1beta1/[^/]*_client_example_go123_test\.go$
+      - ^errorreporting/apiv1beta1/[^/]*_client_example_test\.go$
+      - ^errorreporting/apiv1beta1/auxiliary\.go$
+      - ^errorreporting/apiv1beta1/auxiliary_go123\.go$
+      - ^errorreporting/apiv1beta1/doc\.go$
+      - ^errorreporting/apiv1beta1/gapic_metadata\.json$
+      - ^errorreporting/apiv1beta1/helpers\.go$
+      - ^errorreporting/apiv1beta1/errorreportingpb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/errorreporting/
     tag_format: '{id}/v{version}'
   - id: essentialcontacts
     version: 1.7.7
@@ -2383,6 +2407,28 @@ libraries:
       - ^gkemulticloud/apiv1/gkemulticloudpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/gkemulticloud/
+    tag_format: '{id}/v{version}'
+  - id: gkerecommender
+    version: 0.0.0
+    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    apis:
+      - path: google/cloud/gkerecommender/v1
+        service_config: gkerecommender_v1.yaml
+    source_roots:
+      - gkerecommender
+      - internal/generated/snippets/gkerecommender
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/gkerecommender/
+      - ^apiv1/[^/]*_client\.go$
+      - ^apiv1/[^/]*_client_example_go123_test\.go$
+      - ^apiv1/[^/]*_client_example_test\.go$
+      - ^apiv1/auxiliary\.go$
+      - ^apiv1/auxiliary_go123\.go$
+      - ^apiv1/doc\.go$
+      - ^apiv1/gapic_metadata\.json$
+      - ^apiv1/helpers\.go$
+      - ^apiv1/gkerecommenderpb/.*$
     tag_format: '{id}/v{version}'
   - id: grafeas
     version: 0.3.17
@@ -3574,7 +3620,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oslogin
     version: 1.14.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/oslogin/v1
         service_config: oslogin_v1.yaml
@@ -3799,6 +3845,15 @@ libraries:
       - ^privilegedaccessmanager/apiv1/privilegedaccessmanagerpb/.*$
     release_exclude_paths:
       - internal/generated/snippets/privilegedaccessmanager/
+    tag_format: '{id}/v{version}'
+  - id: profiler
+    version: 0.4.3
+    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    apis: []
+    source_roots:
+      - profiler
+    preserve_regex: []
+    remove_regex: []
     tag_format: '{id}/v{version}'
   - id: pubsub
     version: 1.50.1
@@ -4128,6 +4183,7 @@ libraries:
     preserve_regex: []
     remove_regex: []
     release_exclude_paths:
+      - internal/.repo-metadata-full.json
       - internal/actions
       - internal/aliasfix
       - internal/aliasgen
@@ -5350,6 +5406,15 @@ libraries:
       - ^translate/apiv3/translatepb/.*$
     release_exclude_paths:
       - internal/generated/snippets/translate/
+    tag_format: '{id}/v{version}'
+  - id: vertexai
+    version: 0.15.0
+    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    apis: []
+    source_roots:
+      - vertexai
+    preserve_regex: []
+    remove_regex: []
     tag_format: '{id}/v{version}'
   - id: video
     version: 1.27.1

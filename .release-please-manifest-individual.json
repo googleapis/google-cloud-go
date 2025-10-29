@@ -1,8 +1,5 @@
 {
-  "bigquery": "1.71.0",
+  "bigquery": "1.72.0",
   "bigtable": "1.40.1",
-  "errorreporting": "0.3.2",
-  "logging": "1.13.0",
-  "profiler": "0.4.3",
-  "vertexai": "0.15.0"
+  "logging": "1.13.1"
 }

@@ -5,9 +5,7 @@ modules:
   - bigquery/v2
   - bigquery
   - bigtable
-  - errorreporting
   - logging
-  - profiler
 
 manual-clients:
   - api-shortname: bigquery
@@ -200,9 +198,6 @@ service-configs:
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
     release-level-override: stable
-  - input-directory: google/devtools/clouderrorreporting/v1beta1
-    service-config: clouderrorreporting_v1beta1.yaml
-    import-path: cloud.google.com/go/errorreporting/apiv1beta1
   - input-directory: google/logging/v2
     service-config: logging_v2.yaml
     import-path: cloud.google.com/go/logging/apiv2
@@ -212,6 +207,9 @@ skip-module-scan-paths:
   - .
   # Librarian released modules
   - storage
+  - errorreporting
+  - profiler
+  - vertexai
   - spanner
   - datastore
   - firestore
@@ -386,9 +384,6 @@ skip-module-scan-paths:
   - bigquery
   - bigquery/v2
   - bigtable
-  - errorreporting
   - logging
-  - profiler
-  - vertexai
   # unreleased modules
   - spanner/test/opentelemetry/test

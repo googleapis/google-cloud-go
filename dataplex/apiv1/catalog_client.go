@@ -717,16 +717,31 @@ func (c *CatalogClient) DeleteEntry(ctx context.Context, req *dataplexpb.DeleteE
 }
 
 // ListEntries lists Entries within an EntryGroup.
+// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+// Metastore metadata that is stored in Dataplex Universal Catalog is
+// changing. For more information, see Changes to metadata stored in
+// Dataplex Universal
+// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *CatalogClient) ListEntries(ctx context.Context, req *dataplexpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	return c.internalClient.ListEntries(ctx, req, opts...)
 }
 
 // GetEntry gets an Entry.
+// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+// Metastore metadata that is stored in Dataplex Universal Catalog is
+// changing. For more information, see Changes to metadata stored in
+// Dataplex Universal
+// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *CatalogClient) GetEntry(ctx context.Context, req *dataplexpb.GetEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	return c.internalClient.GetEntry(ctx, req, opts...)
 }
 
 // LookupEntry looks up an entry by name using the permission on the source system.
+// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+// Metastore metadata that is stored in Dataplex Universal Catalog is
+// changing. For more information, see Changes to metadata stored in
+// Dataplex Universal
+// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *CatalogClient) LookupEntry(ctx context.Context, req *dataplexpb.LookupEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	return c.internalClient.LookupEntry(ctx, req, opts...)
 }
@@ -3029,6 +3044,11 @@ func (c *catalogRESTClient) DeleteEntry(ctx context.Context, req *dataplexpb.Del
 }
 
 // ListEntries lists Entries within an EntryGroup.
+// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+// Metastore metadata that is stored in Dataplex Universal Catalog is
+// changing. For more information, see Changes to metadata stored in
+// Dataplex Universal
+// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *catalogRESTClient) ListEntries(ctx context.Context, req *dataplexpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	it := &EntryIterator{}
 	req = proto.Clone(req).(*dataplexpb.ListEntriesRequest)
@@ -3110,6 +3130,11 @@ func (c *catalogRESTClient) ListEntries(ctx context.Context, req *dataplexpb.Lis
 }
 
 // GetEntry gets an Entry.
+// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+// Metastore metadata that is stored in Dataplex Universal Catalog is
+// changing. For more information, see Changes to metadata stored in
+// Dataplex Universal
+// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *catalogRESTClient) GetEntry(ctx context.Context, req *dataplexpb.GetEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3173,6 +3198,11 @@ func (c *catalogRESTClient) GetEntry(ctx context.Context, req *dataplexpb.GetEnt
 }
 
 // LookupEntry looks up an entry by name using the permission on the source system.
+// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
+// Metastore metadata that is stored in Dataplex Universal Catalog is
+// changing. For more information, see Changes to metadata stored in
+// Dataplex Universal
+// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *catalogRESTClient) LookupEntry(ctx context.Context, req *dataplexpb.LookupEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
