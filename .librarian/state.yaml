@@ -2066,7 +2066,7 @@ libraries:
       - internal/generated/snippets/edgenetwork/
     tag_format: '{id}/v{version}'
   - id: errorreporting
-    version: 0.3.2
+    version: 0.4.0
     last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
     apis:
       - path: google/devtools/clouderrorreporting/v1beta1
