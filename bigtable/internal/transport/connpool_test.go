@@ -38,6 +38,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/connectivity"
 
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
@@ -1878,6 +1879,156 @@ func TestDynamicScalingAndHealthCheckingInteraction(t *testing.T) {
 			t.Errorf("Connection at index %d is not healthy after test cycles", i)
 		}
 	}
+}
+
+// isConnClosed checks if a grpc.ClientConn has been closed.
+func isConnClosed(conn *grpc.ClientConn) bool {
+	// The state will be Shutdown if the connection has been terminated.
+	return conn.GetState() == connectivity.Shutdown
+}
+
+func TestGracefulDraining(t *testing.T) {
+	ctx := context.Background()
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	t.Run("DrainingOnReplaceConnection", func(t *testing.T) {
+		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, nil, nil)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		oldEntry := pool.getConns()[0]
+
+		// Create a long-lived stream to simulate in-flight traffic
+		fake.streamSema = make(chan struct{})
+		stream, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/grpc.testing.BenchmarkService/StreamingCall")
+		if err != nil {
+			t.Fatalf("NewStream failed: %v", err)
+		}
+
+		if atomic.LoadInt32(&oldEntry.streamingLoad) != 1 {
+			t.Fatalf("Streaming load should be 1, got %d", atomic.LoadInt32(&oldEntry.streamingLoad))
+		}
+
+		// Trigger the replacement, which should start draining the old connection
+		pool.replaceConnection(0)
+
+		if !oldEntry.isDraining() {
+			t.Fatal("Old connection was not marked as draining")
+		}
+		if isConnClosed(oldEntry.conn.ClientConn) {
+			t.Fatal("Old connection was closed immediately instead of draining")
+		}
+
+		// Verify the new connection is in the pool and is not draining
+		newEntry := pool.getConns()[0]
+		if newEntry == oldEntry {
+			t.Fatal("Connection was not replaced in the pool")
+		}
+		if newEntry.isDraining() {
+			t.Fatal("New connection is incorrectly marked as draining")
+		}
+
+		// Verify new requests go to the new connection
+		selectedEntry, err := pool.selectFunc()
+		if err != nil {
+			t.Fatalf("Failed to select a connection: %v", err)
+		}
+		if selectedEntry != newEntry {
+			t.Fatalf("A new request was routed to the old draining connection")
+		}
+
+		// Finish the stream on the old connection
+		close(fake.streamSema) // Unblock server
+		stream.CloseSend()
+		for {
+			if err := stream.RecvMsg(&testpb.SimpleResponse{}); err == io.EOF {
+				break
+			}
+		}
+
+		// Wait for the waitForDrainAndClose goroutine to finish
+		time.Sleep(500 * time.Millisecond)
+
+		if atomic.LoadInt32(&oldEntry.streamingLoad) != 0 {
+			t.Errorf("Old connection load is still %d after stream completion", atomic.LoadInt32(&oldEntry.streamingLoad))
+		}
+		if !isConnClosed(oldEntry.conn.ClientConn) {
+			t.Error("Old connection was not closed after its load dropped to zero")
+		}
+	})
+
+	t.Run("SelectionSkipsDrainingConns", func(t *testing.T) {
+		pool, err := NewBigtableChannelPool(ctx, 3, btopt.RoundRobin, dialFunc, nil, nil)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		conns := pool.getConns()
+		drainingEntry := conns[1]
+		drainingEntry.drainingState.Store(true) // Manually mark as draining
+
+		// Run selection many times and ensure the draining one is never picked
+		for i := 0; i < 20; i++ {
+			entry, err := pool.selectRoundRobin()
+			if err != nil {
+				t.Fatalf("Selection failed: %v", err)
+			}
+			if entry == drainingEntry {
+				t.Fatal("Selection logic picked a connection that is draining")
+			}
+		}
+
+		// Mark all as draining and expect an error
+		for _, entry := range conns {
+			entry.drainingState.Store(true)
+		}
+		_, err = pool.selectRoundRobin()
+		if !errors.Is(err, errNoConnections) {
+			t.Errorf("Expected errNoConnections when all connections are draining, got %v", err)
+		}
+	})
+
+	t.Run("DrainingTimeout", func(t *testing.T) {
+		// Temporarily shorten the timeout for this specific test
+		originalTimeout := maxDrainingTimeout
+		maxDrainingTimeout = 100 * time.Millisecond
+		defer func() { maxDrainingTimeout = originalTimeout }()
+
+		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, nil, nil)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		oldEntry := pool.getConns()[0]
+
+		// Create a stream that will never finish
+		fake.streamSema = make(chan struct{})
+		pool.NewStream(ctx, &grpc.StreamDesc{}, "/grpc.testing.BenchmarkService/StreamingCall")
+
+		// Trigger replacement
+		pool.replaceConnection(0)
+
+		if isConnClosed(oldEntry.conn.ClientConn) {
+			t.Fatal("Connection was closed immediately")
+		}
+
+		// Wait for the drain timeout to fire
+		time.Sleep(maxDrainingTimeout + 50*time.Millisecond)
+
+		if !isConnClosed(oldEntry.conn.ClientConn) {
+			t.Error("Connection was not force-closed after the draining timeout")
+		}
+		// In a real scenario, we'd log that the load was still > 0, e.g.,
+		if atomic.LoadInt32(&oldEntry.streamingLoad) == 0 {
+			t.Error("Load was unexpectedly 0, timeout should not have been the reason for closing")
+		}
+	})
 }
 
 // --- Benchmarks ---

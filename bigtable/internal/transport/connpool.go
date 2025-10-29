@@ -42,6 +42,9 @@ import (
 	"google.golang.org/grpc"
 )
 
+// A safety net to prevent a connection from draining indefinitely if a stream hangs.
+var maxDrainingTimeout = 2 * time.Minute
+
 // HealthCheckConfig holds the parameters for channel pool health checking.
 type HealthCheckConfig struct {
 	// Enabled for toggle
@@ -235,7 +238,47 @@ type connEntry struct {
 	health        connHealthState // Embedded health state
 	altsUsed      int32           // Set to 1 atomically if ALTS is used, 0 otherwise.
 	errorCount    int64           // Errors since the last metric report
+	drainingState atomic.Bool     // True if the connection is being gracefully drained.
 
+}
+
+// isDraining atomically checks if the connection is in the draining state.
+func (e *connEntry) isDraining() bool {
+	return e.drainingState.Load()
+}
+
+// markAsDraining atomically sets the connection's state to draining.
+// It returns true if it successfully marked it, false if it was already marked.
+func (e *connEntry) markAsDraining() bool {
+	return e.drainingState.CompareAndSwap(false, true)
+}
+
+// waitForDrainAndClose waits for a connection's in-flight request count to drop to zero
+// before closing it. It runs in a separate goroutine.
+func (p *BigtableChannelPool) waitForDrainAndClose(entry *connEntry) {
+	// Create a context with a timeout to prevent waiting forever.
+	ctx, cancel := context.WithTimeout(p.poolCtx, maxDrainingTimeout)
+	defer cancel()
+
+	ticker := time.NewTicker(250 * time.Millisecond) // Check load frequently
+	defer ticker.Stop()
+
+	btopt.Debugf(p.logger, "bigtable_connpool: Connection is draining, waiting for load to become 0.")
+
+	for {
+		select {
+		case <-ticker.C:
+			if entry.calculateWeightedLoad() == 0 {
+				btopt.Debugf(p.logger, "bigtable_connpool: Draining connection is idle, closing now.")
+				entry.conn.Close()
+				return
+			}
+		case <-ctx.Done():
+			btopt.Debugf(p.logger, "bigtable_connpool: Draining connection timed out after %v with load %d. Force closing.", maxDrainingTimeout, entry.calculateWeightedLoad())
+			entry.conn.Close()
+			return
+		}
+	}
 }
 
 func (e *connEntry) calculateWeightedLoad() int32 {
@@ -760,7 +803,6 @@ func (p *BigtableChannelPool) Close() error {
 			errs = append(errs, err)
 		}
 	}
-
 	if len(errs) == 0 {
 		return nil
 	}
@@ -856,6 +898,11 @@ func (p *BigtableChannelPool) replaceConnection(idx int) {
 	}
 
 	oldEntry := currentConns[idx]
+	// Mark the connection for draining *before* replacing it in the pool.
+	if !oldEntry.markAsDraining() {
+		return // Already being drained by another process, nothing to do.
+	}
+
 	btopt.Debugf(p.logger, "bigtable_connpool: Evicting connection at index %d\n", idx)
 	select {
 	case <-p.poolCtx.Done():
@@ -893,14 +940,10 @@ func (p *BigtableChannelPool) replaceConnection(idx int) {
 	newConns[idx] = newEntry
 	p.conns.Store(newConns)
 
-	btopt.Debugf(p.logger, "bigtable_connpool: Replaced connection at index %d\n", idx)
+	btopt.Debugf(p.logger, "bigtable_connpool: Replacing connection at index %d\n", idx)
 
-	go func() {
-		// TODO Implement graceful draining
-		if err := oldEntry.conn.Close(); err != nil {
-			btopt.Debugf(p.logger, "bigtable_connpool: Error closing evicted connection at index %d: %v\n", idx, err)
-		}
-	}()
+	// Start the graceful shutdown process for the old connection
+	go p.waitForDrainAndClose(oldEntry)
 }
 
 // Invoke selects the least loaded connection and calls Invoke on it.
@@ -970,24 +1013,37 @@ func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (*connEntry, error)
 		return nil, errNoConnections
 	}
 	if numConns == 1 {
+		if conns[0].isDraining() {
+			return nil, errNoConnections
+		}
 		return conns[0], nil
 	}
 
-	idx1 := rand.Intn(numConns)
-	idx2 := rand.Intn(numConns)
-	for idx2 == idx1 {
-		idx2 = rand.Intn(numConns)
-	}
+	// Retry numConns * 2 times in worst case.
+	for i := 0; i < numConns*2 && numConns > 1; i++ {
+		idx1 := rand.Intn(numConns)
+		idx2 := rand.Intn(numConns)
 
-	entry1 := conns[idx1]
-	entry2 := conns[idx2]
-	load1 := entry1.calculateWeightedLoad()
-	load2 := entry2.calculateWeightedLoad()
+		entry1 := conns[idx1]
+		entry2 := conns[idx2]
 
-	if load1 <= load2 {
-		return entry1, nil
+		if entry1.isDraining() || entry2.isDraining() {
+			continue // Find another pair
+		}
+
+		if idx1 == idx2 {
+			return entry1, nil // Both random choices were the same and it's not draining
+		}
+
+		load1 := entry1.calculateWeightedLoad()
+		load2 := entry2.calculateWeightedLoad()
+		if load1 <= load2 {
+			return entry1, nil
+		}
+		return entry2, nil
 	}
-	return entry2, nil
+	//  Fallback to finding any active connection if the random strategy fails.,
+	return p.selectLeastLoaded()
 }
 
 func (p *BigtableChannelPool) selectRoundRobin() (*connEntry, error) {
@@ -996,12 +1052,17 @@ func (p *BigtableChannelPool) selectRoundRobin() (*connEntry, error) {
 	if numConns == 0 {
 		return nil, errNoConnections
 	}
-	if numConns == 1 {
-		return conns[0], nil
+	// Add a retry loop to handle draining connections.
+	// We iterate at most numConns times to prevent an infinite loop if all connections are draining.
+	for i := 0; i < numConns; i++ {
+		nextIndex := atomic.AddUint64(&p.rrIndex, 1) - 1
+		entry := conns[int(nextIndex%uint64(numConns))]
+		if !entry.isDraining() {
+			return entry, nil
+		}
 	}
 
-	nextIndex := atomic.AddUint64(&p.rrIndex, 1) - 1
-	return conns[int(nextIndex%uint64(numConns))], nil
+	return nil, errNoConnections // All connections we checked are draining
 }
 
 // selectLeastLoaded returns the index of the connection with the minimum load.
@@ -1012,15 +1073,21 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 		return nil, errNoConnections
 	}
 
-	minIndex := 0
-	minLoad := conns[0].calculateWeightedLoad()
+	minIndex := -1
+	minLoad := int32(1<<31 - 1) // maxInt32
 
-	for i := 1; i < numConns; i++ {
-		currentLoad := conns[i].calculateWeightedLoad()
+	for i, entry := range conns {
+		if entry.isDraining() {
+			continue
+		}
+		currentLoad := entry.calculateWeightedLoad()
 		if currentLoad < minLoad {
 			minLoad = currentLoad
 			minIndex = i
 		}
+	}
+	if minIndex == -1 {
+		return nil, errNoConnections // All connections are draining
 	}
 	return conns[minIndex], nil
 }
@@ -1170,10 +1237,11 @@ func (p *BigtableChannelPool) removeConnections(n int) bool {
 	})
 
 	toRemove := make(map[int]bool)
-	removedConns := make([]*BigtableConn, 0, n)
+	removedConns := make([]*connEntry, 0, n)
 	for i := 0; i < n; i++ {
 		toRemove[entries[i].index] = true
-		removedConns = append(removedConns, entries[i].entry.conn)
+		entries[i].entry.markAsDraining()
+		removedConns = append(removedConns, entries[i].entry)
 	}
 
 	newConns := make([]*connEntry, 0, numCurrent-n)
@@ -1186,12 +1254,8 @@ func (p *BigtableChannelPool) removeConnections(n int) bool {
 	p.conns.Store(newConns)
 	btopt.Debugf(p.logger, "bigtable_connpool: Removed %d connections, new size: %d\n", n, len(newConns))
 
-	for _, conn := range removedConns {
-		go func(c *BigtableConn) {
-			if err := c.Close(); err != nil {
-				btopt.Debugf(p.logger, "bigtable_connpool: Error closing removed connection: %v\n", err)
-			}
-		}(conn)
+	for _, entry := range removedConns {
+		go p.waitForDrainAndClose(entry)
 	}
 	return true
 }
