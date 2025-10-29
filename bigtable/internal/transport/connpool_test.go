@@ -1253,7 +1253,7 @@ func TestReplaceConnection(t *testing.T) {
 		atomic.StoreInt32(&dialCount, 0) // Reset count for replaceConnection call
 
 		oldEntry := pool.getConns()[idxToReplace]
-		pool.replaceConnection(idxToReplace)
+		pool.replaceConnection(oldEntry)
 
 		if atomic.LoadInt32(&dialCount) != 1 {
 			t.Errorf("Dial function called %d times by replaceConnection, want 1", atomic.LoadInt32(&dialCount))
@@ -1291,7 +1291,7 @@ func TestReplaceConnection(t *testing.T) {
 		atomic.StoreInt32(&dialCount, 0) // Reset count for replaceConnection call
 
 		currentEntry := pool.getConns()[idxToReplace]
-		pool.replaceConnection(idxToReplace)
+		pool.replaceConnection(currentEntry)
 
 		if atomic.LoadInt32(&dialCount) != 1 {
 			t.Errorf("Dial function called %d times by replaceConnection, want 1", atomic.LoadInt32(&dialCount))
@@ -1317,7 +1317,7 @@ func TestReplaceConnection(t *testing.T) {
 		atomic.StoreInt32(&dialCount, 0) // Reset count for replaceConnection call
 
 		currentEntry := poolCancelled.getConns()[idxToReplace]
-		poolCancelled.replaceConnection(idxToReplace)
+		poolCancelled.replaceConnection(currentEntry)
 
 		if atomic.LoadInt32(&dialCount) != 0 {
 			t.Errorf("Dial function called %d times by replaceConnection, want 0 because context is done", atomic.LoadInt32(&dialCount))
@@ -1914,7 +1914,7 @@ func TestGracefulDraining(t *testing.T) {
 		}
 
 		// Trigger the replacement, which should start draining the old connection
-		pool.replaceConnection(0)
+		pool.replaceConnection(oldEntry)
 
 		if !oldEntry.isDraining() {
 			t.Fatal("Old connection was not marked as draining")
@@ -2012,7 +2012,7 @@ func TestGracefulDraining(t *testing.T) {
 		pool.NewStream(ctx, &grpc.StreamDesc{}, "/grpc.testing.BenchmarkService/StreamingCall")
 
 		// Trigger replacement
-		pool.replaceConnection(0)
+		pool.replaceConnection(oldEntry)
 
 		if isConnClosed(oldEntry.conn.ClientConn) {
 			t.Fatal("Connection was closed immediately")

@@ -256,11 +256,11 @@ func (e *connEntry) markAsDraining() bool {
 // waitForDrainAndClose waits for a connection's in-flight request count to drop to zero
 // before closing it. It runs in a separate goroutine.
 func (p *BigtableChannelPool) waitForDrainAndClose(entry *connEntry) {
-	// Create a context with a timeout to prevent waiting forever.
+	// Create a context with a drain timeout
 	ctx, cancel := context.WithTimeout(p.poolCtx, maxDrainingTimeout)
 	defer cancel()
 
-	ticker := time.NewTicker(250 * time.Millisecond) // Check load frequently
+	ticker := time.NewTicker(250 * time.Millisecond) // 250ms tick
 	defer ticker.Stop()
 
 	btopt.Debugf(p.logger, "bigtable_connpool: Connection is draining, waiting for load to become 0.")
@@ -866,43 +866,56 @@ func (p *BigtableChannelPool) detectAndEvictUnhealthy(hcConfig HealthCheckConfig
 	}
 
 	// Find the connection with the most failed probes among the unhealthy ones.
-	worstIdx := -1
+	var worstEntry *connEntry
 	maxFailed := -1
 	for _, idx := range unhealthyIndices {
 		entry := conns[idx]                      // Safe, using snapshot
 		failed := entry.health.getFailedProbes() // getFailedProbes() locks internally
 		if failed > maxFailed {
 			maxFailed = failed
-			worstIdx = idx
+			worstEntry = entry
 		}
 	}
 
-	if worstIdx != -1 {
+	if worstEntry != nil {
 		recordEviction() // Record eviction time *before* replacing. // Record eviction time *before* replacing.
-		p.replaceConnection(worstIdx)
+		p.replaceConnection(worstEntry)
 		return true // Eviction happened
 	}
 
 	return false
 }
 
-// replaceConnection closes the connection at the given index and dials a new one.
-func (p *BigtableChannelPool) replaceConnection(idx int) {
-	p.dialMu.Lock() // 	p.dialMu.Lock() // Serialize replacements
+// replaceConnection closes the connection for the oldEntry
+func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
+	p.dialMu.Lock() // Serialize replacements
 	defer p.dialMu.Unlock()
 
-	currentConns := p.getConns()
-
-	if idx < 0 || idx >= len(currentConns) {
-		return // Should not happen
-	}
-
-	oldEntry := currentConns[idx]
-	// Mark the connection for draining *before* replacing it in the pool.
+	// Mark the connection
+	// if it is marked,
+	// it means another routine (health eviction or dynamic scale down) took over it.
 	if !oldEntry.markAsDraining() {
-		return // Already being drained by another process, nothing to do.
+		return
 	}
 
+	currentConns := p.getConns()
+	idx := -1
+	for i, entry := range currentConns {
+		if entry == oldEntry {
+			idx = i
+			break
+		}
+	}
+
+	// If the connection isn't in the slice, it was already removed.
+	// The drain process should still be kicked off.
+	if idx == -1 {
+		btopt.Debugf(p.logger, "bigtable_connpool: Connection to replace was already removed. Draining it.")
+		// thread safe to call waitForDrainAndClose as conn.Close() can be called multiple times.
+		go p.waitForDrainAndClose(oldEntry)
+		return
+	}
+	// Simple eviction logic.
 	btopt.Debugf(p.logger, "bigtable_connpool: Evicting connection at index %d\n", idx)
 	select {
 	case <-p.poolCtx.Done():
