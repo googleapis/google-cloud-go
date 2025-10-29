@@ -19,7 +19,7 @@ package errorreporting
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -557,7 +557,7 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *errorrep
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
@@ -658,7 +658,7 @@ func (c *errorStatsRESTClient) ListEvents(ctx context.Context, req *errorreporti
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
@@ -733,7 +733,7 @@ func (c *errorStatsRESTClient) DeleteEvents(ctx context.Context, req *errorrepor
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
