@@ -22,9 +22,17 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
+func toArrayOfExprOrConstant(val []any) []Expr {
+	exprs := make([]Expr, 0, len(val))
+	for _, v := range val {
+		exprs = append(exprs, toExprOrConstant(v))
+	}
+	return exprs
+}
+
 // newFieldAndArrayBooleanExpr creates a new BooleanExpr for functions that operate on a field/expression and an array of values.
 func newFieldAndArrayBooleanExpr(name string, exprOrFieldPath any, values any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{toExprOrField(exprOrFieldPath), asArrayFunctionExpr(values)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{asFieldExpr(exprOrFieldPath), asArrayFunctionExpr(values)})}
 }
 
 // toExprs converts a plain Go value or an existing Expr into an Expr.
@@ -63,30 +71,6 @@ func asArrayFunctionExpr(val any) Expr {
 		exprs = append(exprs, toExprOrConstant(arrayVal.Index(i).Interface()))
 	}
 	return newBaseFunction("array", exprs)
-}
-
-// asInt64Expr converts a value to an Expr that evaluates to an int64, or returns an error Expr if conversion is not possible.
-func asInt64Expr(val any) Expr {
-	switch v := val.(type) {
-	case Expr:
-		return v
-	case int, int8, int16, int32, int64, uint8, uint16, uint32:
-		return ConstantOf(v)
-	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int8, int16, int32, int64, uint8, uint16, uint32 or Expr, but got %T", val)}
-	}
-}
-
-// asStringExpr converts a value to an Expr that evaluates to a string, or returns an error Expr if conversion is not possible.
-func asStringExpr(val any) Expr {
-	switch v := val.(type) {
-	case Expr:
-		return v
-	case string:
-		return ConstantOf(v)
-	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
-	}
 }
 
 // asVectorExpr converts a value to an Expr that evaluates to a vector type (Vector32, Vector64, []float32, []float64), or returns an error Expr if conversion is not possible.

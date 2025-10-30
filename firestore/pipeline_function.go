@@ -39,7 +39,26 @@ var _ Function = (*baseFunction)(nil)
 func newBaseFunction(name string, params []Expr) *baseFunction {
 	argsPbVals := make([]*pb.Value, 0, len(params))
 	for i, param := range params {
+		paramExpr := asFieldExpr(param)
+		pbVal, err := paramExpr.toProto()
+		if err != nil {
+			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("error converting arg %d for function %q: %w", i, name, err)}}
+		}
+		argsPbVals = append(argsPbVals, pbVal)
+	}
+	pbVal := &pb.Value{ValueType: &pb.Value_FunctionValue{
+		FunctionValue: &pb.Function{
+			Name: name,
+			Args: argsPbVals,
+		},
+	}}
 
+	return &baseFunction{baseExpr: &baseExpr{pbVal: pbVal}}
+}
+
+func newBaseFunctionFromBooleans(name string, params []BooleanExpr) *baseFunction {
+	argsPbVals := make([]*pb.Value, 0, len(params))
+	for i, param := range params {
 		paramExpr := asFieldExpr(param)
 		pbVal, err := paramExpr.toProto()
 		if err != nil {
@@ -328,7 +347,7 @@ func CurrentTimestamp() Expr {
 //	// Get the length of the 'tags' array field.
 //	ArrayLength("tags")
 func ArrayLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("array_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("array_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // Array creates an expression that represents a Firestore array.
@@ -359,7 +378,7 @@ func ArrayFromSlice[T any](elements []T) Expr {
 //	// Get the first element of the 'tags' array field.
 //	ArrayGet("tags", 0)
 func ArrayGet(exprOrFieldPath any, offset any) Expr {
-	return newBaseFunction("array_get", []Expr{toExprOrField(exprOrFieldPath), asInt64Expr(offset)})
+	return newBaseFunction("array_get", []Expr{asFieldExpr(exprOrFieldPath), asInt64Expr(offset)})
 }
 
 // ArrayReverse creates an expression that reverses the order of elements in an array.
@@ -370,7 +389,7 @@ func ArrayGet(exprOrFieldPath any, offset any) Expr {
 //	// Reverse the 'tags' array.
 //	ArrayReverse("tags")
 func ArrayReverse(exprOrFieldPath any) Expr {
-	return newBaseFunction("array_reverse", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("array_reverse", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ArrayConcat creates an expression that concatenates multiple arrays into a single array.
@@ -382,7 +401,7 @@ func ArrayReverse(exprOrFieldPath any) Expr {
 //	// Concatenate the 'tags' and 'categories' array fields.
 //	ArrayConcat("tags", FieldOf("categories"))
 func ArrayConcat(exprOrFieldPath any, otherArrays ...any) Expr {
-	return newBaseFunction("array_concat", append([]Expr{toExprOrField(exprOrFieldPath)}, toExprs(otherArrays)...))
+	return newBaseFunction("array_concat", append([]Expr{asFieldExpr(exprOrFieldPath)}, toExprs(otherArrays)...))
 }
 
 // ArraySum creates an expression that calculates the sum of all elements in a numeric array.
@@ -393,7 +412,7 @@ func ArrayConcat(exprOrFieldPath any, otherArrays ...any) Expr {
 //	// Calculate the sum of the 'scores' array.
 //	ArraySum("scores")
 func ArraySum(exprOrFieldPath any) Expr {
-	return newBaseFunction("sum", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("sum", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ArrayMaximum creates an expression that finds the maximum element in a numeric array.
@@ -404,7 +423,7 @@ func ArraySum(exprOrFieldPath any) Expr {
 //	// Find the maximum value in the 'scores' array.
 //	ArrayMaximum("scores")
 func ArrayMaximum(exprOrFieldPath any) Expr {
-	return newBaseFunction("maximum", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("maximum", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ArrayMinimum creates an expression that finds the minimum element in a numeric array.
@@ -415,7 +434,7 @@ func ArrayMaximum(exprOrFieldPath any) Expr {
 //	// Find the minimum value in the 'scores' array.
 //	ArrayMinimum("scores")
 func ArrayMinimum(exprOrFieldPath any) Expr {
-	return newBaseFunction("minimum", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("minimum", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ByteLength creates an expression that calculates the length of a string represented by a field or [Expr] in UTF-8
@@ -427,7 +446,7 @@ func ArrayMinimum(exprOrFieldPath any) Expr {
 //	// Get the byte length of the 'name' field.
 //	ByteLength("name")
 func ByteLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("byte_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("byte_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // CharLength creates an expression that calculates the character length of a string field or expression in UTF8.
@@ -438,7 +457,7 @@ func ByteLength(exprOrFieldPath any) Expr {
 //	// Get the character length of the 'name' field.
 //	CharLength("name")
 func CharLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("char_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("char_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // StringConcat creates an expression that concatenates multiple strings into a single string.
@@ -450,18 +469,31 @@ func CharLength(exprOrFieldPath any) Expr {
 //	// Concatenate first name and last name.
 //	StringConcat(FieldOf("firstName"), " ", FieldOf("lastName"))
 func StringConcat(exprOrFieldPath any, otherStrings ...any) Expr {
-	return newBaseFunction("string_concat", append([]Expr{toExprOrField(exprOrFieldPath)}, toExprs(otherStrings)...))
+	return newBaseFunction("string_concat", append([]Expr{asFieldExpr(exprOrFieldPath)}, toExprs(otherStrings)...))
 }
 
 // StringReverse creates an expression that reverses a string.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to a string.
+// Length creates an expression that calculates the length of string, array, map, vector, or Blob.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, array, map or vector when evaluated.
+//
+// Example:
+//
+//	// Length of the 'name' field.
+//	Length("name")
+func Length(exprOrField any) Expr {
+	return newBaseFunction("length", []Expr{asFieldExpr(exprOrField)})
+}
+
+// Reverse creates an expression that reverses a string, blob, or array.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, or array when evaluated.
 //
 // Example:
 //
 //	// Reverse the 'name' field.
 //	StringReverse("name")
 func StringReverse(exprOrFieldPath any) Expr {
-	return newBaseFunction("string_reverse", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("string_reverse", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // Join creates an expression that joins the elements of a string array into a single string.
@@ -473,7 +505,7 @@ func StringReverse(exprOrFieldPath any) Expr {
 //	// Join the 'tags' array with a comma and space.
 //	Join("tags", ", ")
 func Join(exprOrFieldPath any, separator any) Expr {
-	return newBaseFunction("join", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(separator)})
+	return newBaseFunction("join", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(separator)})
 }
 
 // Substring creates an expression that returns a substring of a string.
@@ -486,7 +518,7 @@ func Join(exprOrFieldPath any, separator any) Expr {
 //	// Get the first 5 characters of the 'description' field.
 //	Substring("description", 0, 5)
 func Substring(exprOrFieldPath any, index any, offset any) Expr {
-	return newBaseFunction("substring", []Expr{toExprOrField(exprOrFieldPath), asInt64Expr(index), asInt64Expr(offset)})
+	return newBaseFunction("substring", []Expr{asFieldExpr(exprOrFieldPath), asInt64Expr(index), asInt64Expr(offset)})
 }
 
 // ToLower creates an expression that converts a string to lowercase.
@@ -497,7 +529,7 @@ func Substring(exprOrFieldPath any, index any, offset any) Expr {
 //	// Convert the 'username' to lowercase.
 //	ToLower("username")
 func ToLower(exprOrFieldPath any) Expr {
-	return newBaseFunction("to_lower", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("to_lower", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ToUpper creates an expression that converts a string to uppercase.
@@ -508,7 +540,7 @@ func ToLower(exprOrFieldPath any) Expr {
 //	// Convert the 'product_code' to uppercase.
 //	ToUpper("product_code")
 func ToUpper(exprOrFieldPath any) Expr {
-	return newBaseFunction("to_upper", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("to_upper", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // Trim creates an expression that removes leading and trailing whitespace from a string.
@@ -519,7 +551,7 @@ func ToUpper(exprOrFieldPath any) Expr {
 //	// Trim the 'email' field.
 //	Trim("email")
 func Trim(exprOrFieldPath any) Expr {
-	return newBaseFunction("trim", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("trim", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // CosineDistance creates an expression that calculates the cosine distance between two vectors.
@@ -531,7 +563,7 @@ func Trim(exprOrFieldPath any) Expr {
 //	// Calculate the cosine distance between two vector fields.
 //	CosineDistance("vector_field_1", FieldOf("vector_field_2"))
 func CosineDistance(vector1 any, vector2 any) Expr {
-	return newBaseFunction("cosine_distance", []Expr{toExprOrField(vector1), asVectorExpr(vector2)})
+	return newBaseFunction("cosine_distance", []Expr{asFieldExpr(vector1), asVectorExpr(vector2)})
 }
 
 // DotProduct creates an expression that calculates the dot product of two vectors.
@@ -543,7 +575,7 @@ func CosineDistance(vector1 any, vector2 any) Expr {
 //	// Calculate the dot product of two vector fields.
 //	DotProduct("vector_field_1", FieldOf("vector_field_2"))
 func DotProduct(vector1 any, vector2 any) Expr {
-	return newBaseFunction("dot_product", []Expr{toExprOrField(vector1), asVectorExpr(vector2)})
+	return newBaseFunction("dot_product", []Expr{asFieldExpr(vector1), asVectorExpr(vector2)})
 }
 
 // EuclideanDistance creates an expression that calculates the euclidean distance between two vectors.
@@ -555,7 +587,7 @@ func DotProduct(vector1 any, vector2 any) Expr {
 //	// Calculate the euclidean distance between two vector fields.
 //	EuclideanDistance("vector_field_1", FieldOf("vector_field_2"))
 func EuclideanDistance(vector1 any, vector2 any) Expr {
-	return newBaseFunction("euclidean_distance", []Expr{toExprOrField(vector1), asVectorExpr(vector2)})
+	return newBaseFunction("euclidean_distance", []Expr{asFieldExpr(vector1), asVectorExpr(vector2)})
 }
 
 // VectorLength creates an expression that calculates the length of a vector.
@@ -566,5 +598,91 @@ func EuclideanDistance(vector1 any, vector2 any) Expr {
 //	// Calculate the length of a vector field.
 //	VectorLength("vector_field")
 func VectorLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("vector_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("vector_length", []Expr{asFieldExpr(exprOrFieldPath)})
+}
+
+// Reverse("name")
+func Reverse(exprOrField any) Expr {
+	return newBaseFunction("reverse", []Expr{asFieldExpr(exprOrField)})
+}
+
+// Concat creates an expression that concatenates expressions together.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr].
+// - others can be a list of constants or [Expr].
+//
+// Example:
+//
+//	// Concat the 'name' field with a constant string.
+//	Concat("name", "-suffix")
+func Concat(exprOrField any, others ...any) Expr {
+	return newBaseFunction("concat", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
+}
+
+// CollectionId creates an expression that returns the ID of the collection that contains the document.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that evaluates to a field path.
+func CollectionId(exprOrField any) Expr {
+	return newBaseFunction("collection_id", []Expr{asFieldExpr(exprOrField)})
+}
+
+// DocumentId creates an expression that returns the ID of the document.
+// - exprStringOrDocRef can be a string, a [DocumentRef], or an [Expr] that evaluates to a document reference.
+func DocumentId(exprStringOrDocRef any) Expr {
+	var expr Expr
+	switch v := exprStringOrDocRef.(type) {
+	case string:
+		expr = ConstantOf(v)
+	case *DocumentRef:
+		expr = ConstantOf(v)
+	case Expr:
+		expr = v
+	default:
+		return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("firestore: value must be a string, DocumentRef, or Expr, but got %T", exprStringOrDocRef)}}
+	}
+
+	return newBaseFunction("document_id", []Expr{expr})
+}
+
+func Conditional(condition BooleanExpr, thenVal, elseVal any) Expr {
+	return newBaseFunction("conditional", []Expr{condition, toExprOrConstant(thenVal), toExprOrConstant(elseVal)})
+}
+
+func LogicalMaximum(exprOrField any, others ...any) Expr {
+	return newBaseFunction("logical_max", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
+}
+
+func LogicalMinimum(exprOrField any, others ...any) Expr {
+	return newBaseFunction("logical_min", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
+}
+
+// Map creates an expression that creates a Firestore map value from an input object.
+// - elements: The input map to evaluate in the expression.
+func Map(elements map[string]any) Expr {
+	exprs := []Expr{}
+	for k, v := range elements {
+		exprs = append(exprs, ConstantOf(k), toExprOrConstant(v))
+	}
+	return newBaseFunction("map", exprs)
+}
+
+// MapGet creates an expression that accesses a value from a map (object) field using the provided key.
+// - exprOrField: The expression representing the map.
+// - strOrExprkey: The key to access in the map.
+func MapGet(exprOrField any, strOrExprkey any) Expr {
+	return newBaseFunction("map_get", []Expr{asFieldExpr(exprOrField), asStringExpr(strOrExprkey)})
+}
+
+// MapMerge creates an expression that merges multiple maps into a single map.
+// If multiple maps have the same key, the later value is used.
+// - exprOrField: First map expression that will be merged.
+// - secondMap: Second map expression that will be merged.
+// - otherMaps: Additional maps to merge.
+func MapMerge(exprOrField any, secondMap Expr, otherMaps ...Expr) Expr {
+	return newBaseFunction("map_merge", append([]Expr{asFieldExpr(exprOrField), secondMap}, otherMaps...))
+}
+
+// MapRemove creates an expression that removes a key from a map.
+// - exprOrField: The expression representing the map.
+// - strOrExprkey: The key to remove from the map.
+func MapRemove(exprOrField any, strOrExprkey any) Expr {
+	return newBaseFunction("map_remove", []Expr{asFieldExpr(exprOrField), asStringExpr(strOrExprkey)})
 }

@@ -94,6 +94,20 @@ type Expr interface {
 	LessThanOrEqual(other any) BooleanExpr
 	Equivalent(other any) BooleanExpr
 
+	// General functions
+	Length() Expr
+	Reverse() Expr
+	Concat(others ...any) Expr
+
+	// Key functions
+	CollectionId() Expr
+	DocumentId() Expr
+
+	// Object functions
+	MapGet(strOrExprkey any) Expr
+	MapMerge(secondMap Expr, otherMaps ...Expr) Expr
+	MapRemove(strOrExprkey any) Expr
+
 	// Aggregators
 	Sum() AggregateFunction
 	Average() AggregateFunction
@@ -198,6 +212,22 @@ func (b *baseExpr) GreaterThanOrEqual(other any) BooleanExpr { return GreaterTha
 func (b *baseExpr) LessThan(other any) BooleanExpr           { return LessThan(b, other) }
 func (b *baseExpr) LessThanOrEqual(other any) BooleanExpr    { return LessThanOrEqual(b, other) }
 func (b *baseExpr) Equivalent(other any) BooleanExpr         { return Equivalent(b, other) }
+
+// General functions
+func (b *baseExpr) Length() Expr              { return Length(b) }
+func (b *baseExpr) Reverse() Expr             { return Reverse(b) }
+func (b *baseExpr) Concat(others ...any) Expr { return Concat(b, others...) }
+
+// Key functions
+func (b *baseExpr) CollectionId() Expr { return CollectionId(b) }
+func (b *baseExpr) DocumentId() Expr   { return DocumentId(b) }
+
+// Object functions
+func (b *baseExpr) MapGet(strOrExprkey any) Expr { return MapGet(b, strOrExprkey) }
+func (b *baseExpr) MapMerge(secondMap Expr, otherMaps ...Expr) Expr {
+	return MapMerge(b, secondMap, otherMaps...)
+}
+func (b *baseExpr) MapRemove(strOrExprkey any) Expr { return MapRemove(b, strOrExprkey) }
 
 // Aggregation operations
 func (b *baseExpr) Sum() AggregateFunction           { return Sum(b) }

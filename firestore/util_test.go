@@ -147,10 +147,7 @@ func refval(path string) *pb.Value {
 func docsToMaps(t *testing.T, docs []*PipelineResult) []map[string]interface{} {
 	var maps []map[string]interface{}
 	for _, doc := range docs {
-		data, err := doc.Data()
-		if err != nil {
-			t.Fatalf("Data: %v", err)
-		}
+		data := doc.Data()
 		maps = append(maps, data)
 	}
 	return maps
