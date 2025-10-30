@@ -8,24 +8,6 @@
     "bigquery": {
       "component": "bigquery",
       "exclude-paths": ["bigquery/v2"]
-    },
-    "bigtable": {
-      "component": "bigtable"
-    },
-    "errorreporting": {
-      "component": "errorreporting"
-    },
-    "logging": {
-      "component": "logging"
-    },
-    "profiler": {
-      "component": "profiler"
-    },
-    "storage": {
-      "component": "storage"
-    },
-    "vertexai": {
-      "component": "vertexai"
     }
   },
   "plugins": [

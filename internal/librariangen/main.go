@@ -40,12 +40,12 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: logLevel,
 	})))
-	slog.Info("librariangen: invoked", "args", os.Args)
+	slog.Debug("librariangen: invoked", "args", os.Args)
 	if err := run(context.Background(), os.Args[1:]); err != nil {
 		slog.Error("librariangen: failed", "error", err)
 		os.Exit(1)
 	}
-	slog.Info("librariangen: finished successfully")
+	slog.Debug("librariangen: finished successfully")
 }
 
 var (

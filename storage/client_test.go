@@ -2931,13 +2931,15 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 						t.Fatalf("opening reading: %v", err)
 					}
 					wantLen := len(buffer)
-					got := make([]byte, wantLen)
-					n, err := r.Read(got)
-					if n != wantLen {
-						t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+					got, err := io.ReadAll(r)
+					if err != nil {
+						t.Fatalf("reading bytes: %v", err)
 					}
-					if diff := cmp.Diff(got, buffer); diff != "" {
-						t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+					if len(got) != wantLen {
+						t.Fatalf("expected to read %d bytes, but got %d", wantLen, len(got))
+					}
+					if !bytes.Equal(got, buffer) {
+						t.Errorf("checking content: bytes did not match")
 					}
 				} else {
 					// Deadlines may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
