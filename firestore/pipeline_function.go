@@ -473,25 +473,8 @@ func StringConcat(exprOrFieldPath any, otherStrings ...any) Expr {
 }
 
 // StringReverse creates an expression that reverses a string.
-// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to a string.
-// Length creates an expression that calculates the length of string, array, map, vector, or Blob.
-// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, array, map or vector when evaluated.
-//
-// Example:
-//
-//	// Length of the 'name' field.
-//	Length("name")
-func Length(exprOrField any) Expr {
-	return newBaseFunction("length", []Expr{asFieldExpr(exprOrField)})
-}
-
-// Reverse creates an expression that reverses a string, blob, or array.
-// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, or array when evaluated.
-//
-// Example:
-//
-//	// Reverse the 'name' field.
-//	StringReverse("name")
+//   - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to a string.
+//     StringReverse("name")
 func StringReverse(exprOrFieldPath any) Expr {
 	return newBaseFunction("string_reverse", []Expr{asFieldExpr(exprOrFieldPath)})
 }
@@ -601,6 +584,24 @@ func VectorLength(exprOrFieldPath any) Expr {
 	return newBaseFunction("vector_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
+// Length creates an expression that calculates the length of string, array, map, vector, or Blob.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, array, map or vector when evaluated.
+//
+// Example:
+//
+//	// Length of the 'name' field.
+//	Length("name")
+func Length(exprOrField any) Expr {
+	return newBaseFunction("length", []Expr{asFieldExpr(exprOrField)})
+}
+
+// Reverse creates an expression that reverses a string, blob, or array.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, or array when evaluated.
+//
+// Example:
+//
+//	// Reverse the 'name' field.
+//
 // Reverse("name")
 func Reverse(exprOrField any) Expr {
 	return newBaseFunction("reverse", []Expr{asFieldExpr(exprOrField)})
