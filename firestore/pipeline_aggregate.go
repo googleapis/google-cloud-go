@@ -108,18 +108,18 @@ func Sum(fieldOrExpr any) AggregateFunction {
 	return newBaseAggregateFunction("sum", fieldOrExpr)
 }
 
-// Avg creates an aggregation that calculates the average (mean) of values from an expression or a field's values
+// Average creates an aggregation that calculates the average (mean) of values from an expression or a field's values
 // across multiple stage inputs.
 // fieldOrExpr can be a field path string, [FieldPath] or [Expr]
 // Example:
 //
 //		// Calculate the average age of users
-//		Avg(FieldOf("info.age")).As("averageAge")       // FieldOf returns Expr
-//		Avg(FieldOfPath("info.age")).As("averageAge") // FieldOfPath returns Expr
-//	    Avg("info.age").As("averageAge")              // String implicitly becomes FieldOf(...).As(...)
-//	    Avg(FieldPath([]string{"info", "age"})).As("averageAge")
-func Avg(fieldOrExpr any) AggregateFunction {
-	return newBaseAggregateFunction("avg", fieldOrExpr)
+//		Average(FieldOf("info.age")).As("averageAge")       // FieldOf returns Expr
+//		Average(FieldOfPath("info.age")).As("averageAge") // FieldOfPath returns Expr
+//	    Average("info.age").As("averageAge")              // String implicitly becomes FieldOf(...).As(...)
+//	    Average(FieldPath([]string{"info", "age"})).As("averageAge")
+func Average(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("average", fieldOrExpr)
 }
 
 // Count creates an aggregation that counts the number of stage inputs with valid evaluations of the
@@ -143,4 +143,52 @@ func Count(fieldOrExpr any) AggregateFunction {
 //	    CountAll().As("totalUsers")
 func CountAll() AggregateFunction {
 	return newBaseAggregateFunction("count", nil)
+}
+
+// CountDistinct creates an aggregation that counts the number of distinct values of the
+// provided field or expression.
+// fieldOrExpr can be a field path string, [FieldPath] or [Expr]
+// Example:
+//
+//		// CountDistinct the number of distinct items where the price is greater than 10
+//		CountDistinct(FieldOf("price").Gt(10)).As("expensiveItemCount") // FieldOf("price").Gt(10) is a BooleanExpr
+//	    // CountDistinct the total number of distinct products
+//		CountDistinct("productId").As("totalProducts")                  // String implicitly becomes FieldOf(...).As(...)
+func CountDistinct(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("count_distinct", fieldOrExpr)
+}
+
+// CountIf creates an aggregation that counts the number of values of the
+// provided field or expression evaluates to TRUE.
+// fieldOrExpr can be a field path string, [FieldPath] or [Expr]
+// Example:
+//
+//	CountIf(FieldOf("published")).As("publishedCount")
+//	CountIf("published").As("publishedCount")
+func CountIf(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("count_if", fieldOrExpr)
+}
+
+// Maximum creates an aggregation that calculates the maximum of values from an expression or a field's values
+// across multiple stage inputs.
+//
+// Example:
+//
+//		// Find the highest order amount
+//		Maximum(FieldOf("orderAmount")).As("maxOrderAmount") // FieldOf returns Expr
+//	 	Maximum("orderAmount").As("maxOrderAmount")          // String implicitly becomes FieldOf(...).As(...)
+func Maximum(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("maximum", fieldOrExpr)
+}
+
+// Minimum creates an aggregation that calculates the minimum of values from an expression or a field's values
+// across multiple stage inputs.
+//
+// Example:
+//
+//		// Find the lowest order amount
+//		Minimum(FieldOf("orderAmount")).As("minOrderAmount") // FieldOf returns Expr
+//	 	Minimum("orderAmount").As("minOrderAmount")          // String implicitly becomes FieldOf(...).As(...)
+func Minimum(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("minimum", fieldOrExpr)
 }
