@@ -128,6 +128,10 @@ type Expr interface {
 	EuclideanDistance(other any) Expr
 	VectorLength() Expr
 
+	// Ordering
+	Ascending() Ordering
+	Descending() Ordering
+
 	// As assigns an alias to an expression.
 	// Aliases are useful for renaming fields in the output of a stage.
 	As(alias string) Selectable
@@ -232,6 +236,10 @@ func (b *baseExpr) CosineDistance(other any) Expr    { return CosineDistance(b, 
 func (b *baseExpr) DotProduct(other any) Expr        { return DotProduct(b, other) }
 func (b *baseExpr) EuclideanDistance(other any) Expr { return EuclideanDistance(b, other) }
 func (b *baseExpr) VectorLength() Expr               { return VectorLength(b) }
+
+// Ordering
+func (b *baseExpr) Ascending() Ordering  { return Ascending(b) }
+func (b *baseExpr) Descending() Ordering { return Descending(b) }
 
 func (b *baseExpr) As(alias string) Selectable {
 	return newAliasedExpr(b, alias)

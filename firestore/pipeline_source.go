@@ -38,20 +38,12 @@ func (ps *PipelineSource) CollectionGroup(collectionID string) *Pipeline {
 	return newPipeline(ps.client, newInputStageCollectionGroup("", collectionID))
 }
 
-// CollectionGroupWithAncestor creates a new [Pipeline] that operates on all documents in a group
-// of collections that include the given ID, that are underneath a given document.
-//
-// For example, consider:
-// /continents/Europe/Countries/Germany/Cities/Paris = {population: 100}
-// /continents/Europe/Countries/France/Cities/Paris = {population: 100}
-// /continents/NorthAmerica/Countries/Canada/Cities/Montreal = {population: 90}
-//
-// CollectionGroupWithAncestor can be used to query across all "Cities" in "/continents/Europe".
-func (ps *PipelineSource) CollectionGroupWithAncestor(ancestor, collectionID string) *Pipeline {
-	return newPipeline(ps.client, newInputStageCollectionGroup(ancestor, collectionID))
-}
-
 // Database creates a new [Pipeline] that operates on all documents in the Firestore database.
 func (ps *PipelineSource) Database() *Pipeline {
 	return newPipeline(ps.client, newInputStageDatabase())
+}
+
+// Documents creates a new [Pipeline] that operates on a specific set of Firestore documents.
+func (ps *PipelineSource) Documents(refs ...*DocumentRef) *Pipeline {
+	return newPipeline(ps.client, newInputStageDocuments(refs...))
 }

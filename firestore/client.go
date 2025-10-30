@@ -47,7 +47,7 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 // requestParamsHeader is routing header required to access named databases
 const reqParamsHeader = "x-goog-request-params"
 
-// reqParamsHeaderVal constructs header from dbPath
+// reqParamsHeaderVal constructs header from dbPath.
 // dbPath is of the form projects/{project_id}/databases/{database_id}
 func reqParamsHeaderVal(dbPath string) string {
 	splitPath := strings.Split(dbPath, "/")
