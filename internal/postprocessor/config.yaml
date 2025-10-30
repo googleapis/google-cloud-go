@@ -4,7 +4,6 @@ modules:
   # More info: https://github.com/googleapis/google-cloud-go/issues/12452
   - bigquery/v2
   - bigquery
-  - bigtable
 
 manual-clients:
   - api-shortname: bigquery
@@ -189,19 +188,12 @@ service-configs:
   - input-directory: google/cloud/bigquery/v2
     service-config: bigquery_v2.yaml
     import-path: cloud.google.com/go/bigquery/v2/apiv2
-  - input-directory: google/bigtable/admin/v2
-    service-config: bigtableadmin_v2.yaml
-    import-path: cloud.google.com/go/bigtable/admin/apiv2
-    release-level-override: stable
-  - input-directory: google/bigtable/v2
-    service-config: bigtable_v2.yaml
-    import-path: cloud.google.com/go/bigtable/apiv2
-    release-level-override: stable
 
 skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - bigtable
   - storage
   - logging
   - errorreporting
@@ -380,6 +372,5 @@ skip-module-scan-paths:
   # individually released modules
   - bigquery
   - bigquery/v2
-  - bigtable
   # unreleased modules
   - spanner/test/opentelemetry/test

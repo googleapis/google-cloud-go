@@ -8,9 +8,6 @@
     "bigquery": {
       "component": "bigquery",
       "exclude-paths": ["bigquery/v2"]
-    },
-    "bigtable": {
-      "component": "bigtable"
     }
   },
   "plugins": [
