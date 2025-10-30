@@ -181,72 +181,8 @@ func (cv CreateView) SQL() string {
 	sb.WriteString(" SQL SECURITY ")
 	sb.WriteString(cv.SecurityType.SQL())
 	sb.WriteString(" AS ")
-	writeFormattedQuery(&sb, &cv.Query)
+	cv.Query.addSQL(&sb)
 	return sb.String()
-}
-
-func writeSQLList[T interface{ SQL() string }](sb *strings.Builder, items []T) {
-	for i, item := range items {
-		if i > 0 {
-			sb.WriteString(", ")
-		}
-		sb.WriteString(item.SQL())
-	}
-}
-
-func writeFormattedQuery(sb *strings.Builder, q *Query) {
-	sb.WriteString("SELECT\n")
-
-	// SELECT list with aliases
-	for i, expr := range q.Select.List {
-		sb.WriteString("\t")
-		sb.WriteString(expr.SQL())
-		// Add alias if available (check bounds safely)
-		if len(q.Select.ListAliases) > i && q.Select.ListAliases[i] != "" {
-			sb.WriteString(" AS ")
-			sb.WriteString(q.Select.ListAliases[i].SQL())
-		}
-		// Add comma and newline, except after last item
-		if i < len(q.Select.List)-1 {
-			sb.WriteString(",\n")
-		} else {
-			sb.WriteString("\n")
-		}
-	}
-
-	// FROM clause
-	if len(q.Select.From) > 0 {
-		sb.WriteString("FROM ")
-		writeSQLList(sb, q.Select.From)
-	}
-
-	// WHERE clause
-	if q.Select.Where != nil {
-		sb.WriteString("\nWHERE ")
-		sb.WriteString(q.Select.Where.SQL())
-	}
-
-	// GROUP BY clause
-	if len(q.Select.GroupBy) > 0 {
-		sb.WriteString("\nGROUP BY ")
-		writeSQLList(sb, q.Select.GroupBy)
-	}
-
-	// ORDER BY clause
-	if len(q.Order) > 0 {
-		sb.WriteString("\nORDER BY ")
-		writeSQLList(sb, q.Order)
-	}
-
-	// LIMIT/OFFSET clauses
-	if q.Limit != nil {
-		sb.WriteString("\nLIMIT ")
-		sb.WriteString(q.Limit.SQL())
-		if q.Offset != nil {
-			sb.WriteString(" OFFSET ")
-			sb.WriteString(q.Offset.SQL())
-		}
-	}
 }
 
 func (st SecurityType) SQL() string {
@@ -908,8 +844,10 @@ func (kp KeyPart) SQL() string {
 func (q Query) SQL() string { return buildSQL(q) }
 func (q Query) addSQL(sb *strings.Builder) {
 	q.Select.addSQL(sb)
+
+	// ORDER BY clause
 	if len(q.Order) > 0 {
-		sb.WriteString(" ORDER BY ")
+		sb.WriteString("\nORDER BY ")
 		for i, o := range q.Order {
 			if i > 0 {
 				sb.WriteString(", ")
@@ -917,8 +855,10 @@ func (q Query) addSQL(sb *strings.Builder) {
 			o.addSQL(sb)
 		}
 	}
+
+	// LIMIT/OFFSET clauses
 	if q.Limit != nil {
-		sb.WriteString(" LIMIT ")
+		sb.WriteString("\nLIMIT ")
 		sb.WriteString(q.Limit.SQL())
 		if q.Offset != nil {
 			sb.WriteString(" OFFSET ")
@@ -929,14 +869,17 @@ func (q Query) addSQL(sb *strings.Builder) {
 
 func (sel Select) SQL() string { return buildSQL(sel) }
 func (sel Select) addSQL(sb *strings.Builder) {
-	sb.WriteString("SELECT ")
+	sb.WriteString("SELECT")
 	if sel.Distinct {
-		sb.WriteString("DISTINCT ")
+		sb.WriteString(" DISTINCT")
 	}
+
+	// SELECT list with aliases
 	for i, e := range sel.List {
-		if i > 0 {
-			sb.WriteString(", ")
+		if i == 0 {
+			sb.WriteString("\n")
 		}
+		sb.WriteString("\t")
 		e.addSQL(sb)
 		if len(sel.ListAliases) > 0 {
 			alias := sel.ListAliases[i]
@@ -945,9 +888,15 @@ func (sel Select) addSQL(sb *strings.Builder) {
 				sb.WriteString(alias.SQL())
 			}
 		}
+		// Add comma and newline, except after last item
+		if i < len(sel.List)-1 {
+			sb.WriteString(",\n")
+		}
 	}
+
+	// FROM clause
 	if len(sel.From) > 0 {
-		sb.WriteString(" FROM ")
+		sb.WriteString("\nFROM ")
 		for i, f := range sel.From {
 			if i > 0 {
 				sb.WriteString(", ")
@@ -955,14 +904,24 @@ func (sel Select) addSQL(sb *strings.Builder) {
 			sb.WriteString(f.SQL())
 		}
 	}
+
+	// WHERE clause
 	if sel.Where != nil {
-		sb.WriteString(" WHERE ")
+		sb.WriteString("\nWHERE ")
 		sel.Where.addSQL(sb)
 	}
+
+	// GROUP BY clause
 	if len(sel.GroupBy) > 0 {
-		sb.WriteString(" GROUP BY ")
+		sb.WriteString("\nGROUP BY ")
 		addExprList(sb, sel.GroupBy, ", ")
 	}
+
+	// TODO: HAVING clause when supported
+	// if sel.Having != nil {
+	// 	sb.WriteString("\nHAVING ")
+	// 	sel.Having.addSQL(sb)
+	// }
 }
 
 func (sft SelectFromTable) SQL() string {

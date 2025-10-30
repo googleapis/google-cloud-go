@@ -544,6 +544,28 @@ LIMIT 50 OFFSET 0`,
 			reparseDDL,
 		},
 		{
+			&CreateView{
+				Name:         "ViewWithDistinct",
+				OrReplace:    false,
+				SecurityType: Invoker,
+				Query: Query{
+					Select: Select{
+						Distinct: true,
+						List:     []Expr{ID("city"), ID("country")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "customers",
+						}},
+					},
+				},
+				Position: line(1),
+			},
+			`CREATE VIEW ViewWithDistinct SQL SECURITY INVOKER AS SELECT DISTINCT
+	city,
+	country
+FROM customers`,
+			reparseDDL,
+		},
+		{
 			&DropView{
 				Name:     "SingersView",
 				Position: line(1),
@@ -1510,7 +1532,13 @@ LIMIT 50 OFFSET 0`,
 				Order: []Order{{Expr: ID("OCol"), Desc: true}},
 				Limit: IntegerLiteral(1000),
 			},
-			`SELECT A, B AS banana FROM Table WHERE C < "whelp" AND D IS NOT NULL ORDER BY OCol DESC LIMIT 1000`,
+			`SELECT
+	A,
+	B AS banana
+FROM Table
+WHERE C < "whelp" AND D IS NOT NULL
+ORDER BY OCol DESC
+LIMIT 1000`,
 			reparseQuery,
 		},
 		{
@@ -1539,7 +1567,12 @@ LIMIT 50 OFFSET 0`,
 					},
 				},
 			},
-			`SELECT * FROM A WHERE NOT EXISTS (SELECT * FROM B)`,
+			`SELECT
+	*
+FROM A
+WHERE NOT EXISTS (SELECT
+	*
+FROM B)`,
 			reparseQuery,
 		},
 		{
@@ -1557,7 +1590,10 @@ LIMIT 50 OFFSET 0`,
 					},
 				},
 			},
-			`SELECT A FROM Table@{FORCE_INDEX=Idx} WHERE B = @b`,
+			`SELECT
+	A
+FROM Table@{FORCE_INDEX=Idx}
+WHERE B = @b`,
 			reparseQuery,
 		},
 		{
@@ -1575,7 +1611,10 @@ LIMIT 50 OFFSET 0`,
 					},
 				},
 			},
-			`SELECT A FROM Table@{FORCE_INDEX=Idx,GROUPBY_SCAN_OPTIMIZATION=TRUE} WHERE B = @b`,
+			`SELECT
+	A
+FROM Table@{FORCE_INDEX=Idx,GROUPBY_SCAN_OPTIMIZATION=TRUE}
+WHERE B = @b`,
 			reparseQuery,
 		},
 		{
@@ -1584,7 +1623,8 @@ LIMIT 50 OFFSET 0`,
 					List: []Expr{IntegerLiteral(7)},
 				},
 			},
-			`SELECT 7`,
+			`SELECT
+	7`,
 			reparseQuery,
 		},
 		{
@@ -1596,7 +1636,8 @@ LIMIT 50 OFFSET 0`,
 					}},
 				},
 			},
-			`SELECT CAST(7 AS STRING)`,
+			`SELECT
+	CAST(7 AS STRING)`,
 			reparseQuery,
 		},
 		{
@@ -1608,7 +1649,8 @@ LIMIT 50 OFFSET 0`,
 					}},
 				},
 			},
-			`SELECT CAST(7 AS ENUM)`,
+			`SELECT
+	CAST(7 AS ENUM)`,
 			reparseQuery,
 		},
 		{
@@ -1620,7 +1662,8 @@ LIMIT 50 OFFSET 0`,
 					}},
 				},
 			},
-			`SELECT SAFE_CAST(7 AS DATE)`,
+			`SELECT
+	SAFE_CAST(7 AS DATE)`,
 			reparseQuery,
 		},
 		{
@@ -1661,7 +1704,7 @@ LIMIT 50 OFFSET 0`,
 					},
 				},
 			},
-			"SELECT `Desc`",
+			"SELECT\n\t`Desc`",
 			reparseQuery,
 		},
 		{
@@ -1699,7 +1742,10 @@ LIMIT 50 OFFSET 0`,
 					},
 				},
 			},
-			`SELECT A, B FROM Table1
+			`SELECT
+	A,
+	B
+FROM Table1
 INNER JOIN Table2 ON Table1.A = Table2.A`,
 			reparseQuery,
 		},
@@ -1728,7 +1774,10 @@ INNER JOIN Table2 ON Table1.A = Table2.A`,
 					},
 				},
 			},
-			`SELECT A, B FROM Table1
+			`SELECT
+	A,
+	B
+FROM Table1
 INNER JOIN Table2 ON Table1.A = Table2.A
 INNER JOIN Table3 USING (X)`,
 			reparseQuery,
@@ -1748,7 +1797,8 @@ INNER JOIN Table3 USING (X)`,
 					},
 				},
 			},
-			`SELECT CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			`SELECT
+	CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
 			reparseQuery,
 		},
 		{
@@ -1764,7 +1814,8 @@ INNER JOIN Table3 USING (X)`,
 					},
 				},
 			},
-			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			`SELECT
+	CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
 			reparseQuery,
 		},
 		{
@@ -1779,7 +1830,8 @@ INNER JOIN Table3 USING (X)`,
 					},
 				},
 			},
-			`SELECT IF(1 < 2, TRUE, FALSE)`,
+			`SELECT
+	IF(1 < 2, TRUE, FALSE)`,
 			reparseQuery,
 		},
 		{
@@ -1793,7 +1845,8 @@ INNER JOIN Table3 USING (X)`,
 					},
 				},
 			},
-			`SELECT IFNULL(10, 0)`,
+			`SELECT
+	IFNULL(10, 0)`,
 			reparseQuery,
 		},
 		{
@@ -1807,7 +1860,8 @@ INNER JOIN Table3 USING (X)`,
 					},
 				},
 			},
-			`SELECT NULLIF(10, 0)`,
+			`SELECT
+	NULLIF(10, 0)`,
 			reparseQuery,
 		},
 		{
@@ -1824,7 +1878,77 @@ INNER JOIN Table3 USING (X)`,
 					},
 				},
 			},
-			`SELECT COALESCE("A", NULL, "C")`,
+			`SELECT
+	COALESCE("A", NULL, "C")`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					Distinct: true,
+					List:     []Expr{ID("city"), ID("country")},
+					From: []SelectFrom{SelectFromTable{
+						Table: "customers",
+					}},
+				},
+			},
+			`SELECT DISTINCT
+	city,
+	country
+FROM customers`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("department"),
+						Func{Name: "COUNT", Args: []Expr{Star}},
+					},
+					From: []SelectFrom{SelectFromTable{
+						Table: "employees",
+					}},
+					GroupBy: []Expr{ID("department")},
+				},
+			},
+			`SELECT
+	department,
+	COUNT(*)
+FROM employees
+GROUP BY department`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					Distinct: true,
+					List: []Expr{
+						ID("region"),
+						Func{Name: "AVG", Args: []Expr{ID("salary")}},
+					},
+					From: []SelectFrom{SelectFromTable{
+						Table: "employees",
+					}},
+					Where: ComparisonOp{
+						Op:  Gt,
+						LHS: ID("salary"),
+						RHS: IntegerLiteral(50000),
+					},
+					GroupBy: []Expr{ID("region")},
+				},
+				Order: []Order{
+					{Expr: ID("region")},
+				},
+				Limit: IntegerLiteral(100),
+			},
+			`SELECT DISTINCT
+	region,
+	AVG(salary)
+FROM employees
+WHERE salary > 50000
+GROUP BY region
+ORDER BY region
+LIMIT 100`,
 			reparseQuery,
 		},
 	}
