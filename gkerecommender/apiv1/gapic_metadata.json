@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.gkerecommender.v1",
+  "libraryPackage": "cloud.google.com/go/gkerecommender/apiv1",
+  "services": {
+    "GkeInferenceQuickstart": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GkeInferenceQuickstartClient",
+          "rpcs": {
+            "FetchBenchmarkingData": {
+              "methods": [
+                "FetchBenchmarkingData"
+              ]
+            },
+            "FetchModelServerVersions": {
+              "methods": [
+                "FetchModelServerVersions"
+              ]
+            },
+            "FetchModelServers": {
+              "methods": [
+                "FetchModelServers"
+              ]
+            },
+            "FetchModels": {
+              "methods": [
+                "FetchModels"
+              ]
+            },
+            "FetchProfiles": {
+              "methods": [
+                "FetchProfiles"
+              ]
+            },
+            "GenerateOptimizedManifest": {
+              "methods": [
+                "GenerateOptimizedManifest"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GkeInferenceQuickstartClient",
+          "rpcs": {
+            "FetchBenchmarkingData": {
+              "methods": [
+                "FetchBenchmarkingData"
+              ]
+            },
+            "FetchModelServerVersions": {
+              "methods": [
+                "FetchModelServerVersions"
+              ]
+            },
+            "FetchModelServers": {
+              "methods": [
+                "FetchModelServers"
+              ]
+            },
+            "FetchModels": {
+              "methods": [
+                "FetchModels"
+              ]
+            },
+            "FetchProfiles": {
+              "methods": [
+                "FetchProfiles"
+              ]
+            },
+            "GenerateOptimizedManifest": {
+              "methods": [
+                "GenerateOptimizedManifest"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

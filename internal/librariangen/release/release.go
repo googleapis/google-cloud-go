@@ -44,7 +44,7 @@ type Config struct {
 
 // Init is the entrypoint for the release-init command.
 func Init(ctx context.Context, cfg *Config) error {
-	slog.Info("librariangen: release.Init: starting", "config", cfg)
+	slog.Debug("librariangen: release.Init: starting", "config", cfg)
 	reqPath := filepath.Join(cfg.LibrarianDir, "release-init-request.json")
 	b, err := os.ReadFile(reqPath)
 	if err != nil {
@@ -84,7 +84,7 @@ func Init(ctx context.Context, cfg *Config) error {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update snippet version for %s: %w", lib.ID, err))
 		}
 	}
-	slog.Info("librariangen: release.Init: finished successfully")
+	slog.Debug("librariangen: release.Init: finished successfully")
 	return nil
 }
 
@@ -152,12 +152,12 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 		for _, subj := range subjects {
 			change := subjectsMap[subj]
 			var commitLink string
-			if change.SourceCommitHash != "" {
-				shortHash := change.SourceCommitHash
+			if change.CommitHash != "" {
+				shortHash := change.CommitHash
 				if len(shortHash) > 7 {
 					shortHash = shortHash[:7]
 				}
-				commitURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/commit/%s", change.SourceCommitHash)
+				commitURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/commit/%s", change.CommitHash)
 				commitLink = fmt.Sprintf("([%s](%s))", shortHash, commitURL)
 			}
 

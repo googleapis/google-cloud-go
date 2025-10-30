@@ -33,6 +33,7 @@ type ChangeInfo struct {
 	Body           string
 	Title          string
 	GoogleapisHash string
+	AffectedProtos []string
 }
 
 // FormatChanges turns a slice of changes into formatted string that will match
@@ -73,11 +74,18 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 		if truncate {
 			startBody := strings.Index(body, "PiperOrigin-RevId")
 			if startBody != -1 {
-				body = fmt.Sprintf("  %s", body[startBody:])
+				body = "  " + body[startBody:]
 			}
 		}
 
-		sb.WriteString(fmt.Sprintf("%s\n\n", body))
+		sb.WriteString(fmt.Sprintf("%s\n", body))
+		if len(c.AffectedProtos) > 0 {
+			sb.WriteString("  Affected protos:\n")
+			for _, proto := range c.AffectedProtos {
+				sb.WriteString(fmt.Sprintf("  - %s\n", proto))
+			}
+		}
+		sb.WriteString("\n")
 	}
 	// If the buffer is empty except for the "Changes:" text return an empty
 	// string.
@@ -88,7 +96,7 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
-func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, error) {
+func ParseChangeInfo(googleapisDir string, hashes []string, affectedProtos map[string][]string) ([]*ChangeInfo, error) {
 	var changes []*ChangeInfo
 	for _, hash := range hashes {
 		// Get commit title and body
@@ -112,6 +120,7 @@ func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, erro
 			Title:          title,
 			Body:           body,
 			GoogleapisHash: hash,
+			AffectedProtos: affectedProtos[hash],
 		})
 	}
 	return changes, nil
@@ -182,9 +191,9 @@ func DeepClone(repo, dir string) error {
 	return err
 }
 
-// filesChanged returns a list of files changed in a commit for the provdied
+// FilesChanged returns a list of files changed in a commit for the provided
 // hash in the given gitDir.
-func filesChanged(gitDir, hash string) ([]string, error) {
+func FilesChanged(gitDir, hash string) ([]string, error) {
 	c := execv.Command("git", "show", "--pretty=format:", "--name-only", hash)
 	c.Dir = gitDir
 	b, err := c.Output()
@@ -192,4 +201,15 @@ func filesChanged(gitDir, hash string) ([]string, error) {
 		return nil, err
 	}
 	return strings.Split(string(b), "\n"), nil
+}
+
+// GetFileContentAtCommit returns the content of a file at a specific commit.
+func GetFileContentAtCommit(gitDir, hash, filePath string) ([]byte, error) {
+	c := execv.Command("git", "show", fmt.Sprintf("%s:%s", hash, filePath))
+	c.Dir = gitDir
+	b, err := c.Output()
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }

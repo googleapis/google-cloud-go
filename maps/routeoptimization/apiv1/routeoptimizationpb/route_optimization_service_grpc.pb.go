@@ -35,8 +35,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	RouteOptimization_OptimizeTours_FullMethodName      = "/google.maps.routeoptimization.v1.RouteOptimization/OptimizeTours"
-	RouteOptimization_BatchOptimizeTours_FullMethodName = "/google.maps.routeoptimization.v1.RouteOptimization/BatchOptimizeTours"
+	RouteOptimization_OptimizeTours_FullMethodName            = "/google.maps.routeoptimization.v1.RouteOptimization/OptimizeTours"
+	RouteOptimization_BatchOptimizeTours_FullMethodName       = "/google.maps.routeoptimization.v1.RouteOptimization/BatchOptimizeTours"
+	RouteOptimization_OptimizeToursLongRunning_FullMethodName = "/google.maps.routeoptimization.v1.RouteOptimization/OptimizeToursLongRunning"
+	RouteOptimization_OptimizeToursUri_FullMethodName         = "/google.maps.routeoptimization.v1.RouteOptimization/OptimizeToursUri"
 )
 
 // RouteOptimizationClient is the client API for RouteOptimization service.
@@ -81,6 +83,55 @@ type RouteOptimizationClient interface {
 	// available in Cloud Storage. If the LRO's `error` field is set, then it
 	// contains the error from one of the failed requests.
 	BatchOptimizeTours(ctx context.Context, in *BatchOptimizeToursRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// This is a variant of the
+	// [OptimizeTours][google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours]
+	// method designed for
+	// optimizations with large timeout values. It should be preferred over the
+	// `OptimizeTours` method for optimizations that take longer than
+	// a few minutes.
+	//
+	// The returned [long-running operation][google.longrunning.Operation] (LRO)
+	// will have a name of the format
+	// `<parent>/operations/<operation_id>` and can be used to track
+	// progress of the computation. The
+	// [metadata][google.longrunning.Operation.metadata] field type is
+	// [OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursLongRunningMetadata].
+	// The [response][google.longrunning.Operation.response] field type is
+	// [OptimizeToursResponse][google.maps.routeoptimization.v1.OptimizeToursResponse],
+	// if successful.
+	//
+	// Experimental: See
+	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
+	// for more details.
+	OptimizeToursLongRunning(ctx context.Context, in *OptimizeToursRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// This is a variant of the
+	// [OptimizeToursLongRunning][google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning]
+	// method designed for optimizations with large timeout values and large
+	// input/output sizes.
+	//
+	// The client specifies the URI of the `OptimizeToursRequest` stored
+	// in Google Cloud Storage and the server writes the `OptimizeToursResponse`
+	// to a client-specified Google Cloud Storage URI.
+	//
+	// This method should be preferred over the `OptimizeTours` method for
+	// optimizations that take longer than a few minutes and input/output sizes
+	// that are larger than 8MB, though it can be used for shorter and smaller
+	// optimizations as well.
+	//
+	// The returned [long-running operation][google.longrunning.Operation] (LRO)
+	// will have a name of the format
+	// `<parent>/operations/<operation_id>` and can be used to track
+	// progress of the computation. The
+	// [metadata][google.longrunning.Operation.metadata] field type is
+	// [OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursUriMetadata].
+	// The [response][google.longrunning.Operation.response] field type is
+	// [OptimizeToursUriResponse][google.maps.routeoptimization.v1.OptimizeToursUriResponse],
+	// if successful.
+	//
+	// Experimental: See
+	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
+	// for more details.
+	OptimizeToursUri(ctx context.Context, in *OptimizeToursUriRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type routeOptimizationClient struct {
@@ -103,6 +154,24 @@ func (c *routeOptimizationClient) OptimizeTours(ctx context.Context, in *Optimiz
 func (c *routeOptimizationClient) BatchOptimizeTours(ctx context.Context, in *BatchOptimizeToursRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, RouteOptimization_BatchOptimizeTours_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *routeOptimizationClient) OptimizeToursLongRunning(ctx context.Context, in *OptimizeToursRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, RouteOptimization_OptimizeToursLongRunning_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *routeOptimizationClient) OptimizeToursUri(ctx context.Context, in *OptimizeToursUriRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, RouteOptimization_OptimizeToursUri_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,6 +220,55 @@ type RouteOptimizationServer interface {
 	// available in Cloud Storage. If the LRO's `error` field is set, then it
 	// contains the error from one of the failed requests.
 	BatchOptimizeTours(context.Context, *BatchOptimizeToursRequest) (*longrunningpb.Operation, error)
+	// This is a variant of the
+	// [OptimizeTours][google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours]
+	// method designed for
+	// optimizations with large timeout values. It should be preferred over the
+	// `OptimizeTours` method for optimizations that take longer than
+	// a few minutes.
+	//
+	// The returned [long-running operation][google.longrunning.Operation] (LRO)
+	// will have a name of the format
+	// `<parent>/operations/<operation_id>` and can be used to track
+	// progress of the computation. The
+	// [metadata][google.longrunning.Operation.metadata] field type is
+	// [OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursLongRunningMetadata].
+	// The [response][google.longrunning.Operation.response] field type is
+	// [OptimizeToursResponse][google.maps.routeoptimization.v1.OptimizeToursResponse],
+	// if successful.
+	//
+	// Experimental: See
+	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
+	// for more details.
+	OptimizeToursLongRunning(context.Context, *OptimizeToursRequest) (*longrunningpb.Operation, error)
+	// This is a variant of the
+	// [OptimizeToursLongRunning][google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning]
+	// method designed for optimizations with large timeout values and large
+	// input/output sizes.
+	//
+	// The client specifies the URI of the `OptimizeToursRequest` stored
+	// in Google Cloud Storage and the server writes the `OptimizeToursResponse`
+	// to a client-specified Google Cloud Storage URI.
+	//
+	// This method should be preferred over the `OptimizeTours` method for
+	// optimizations that take longer than a few minutes and input/output sizes
+	// that are larger than 8MB, though it can be used for shorter and smaller
+	// optimizations as well.
+	//
+	// The returned [long-running operation][google.longrunning.Operation] (LRO)
+	// will have a name of the format
+	// `<parent>/operations/<operation_id>` and can be used to track
+	// progress of the computation. The
+	// [metadata][google.longrunning.Operation.metadata] field type is
+	// [OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursUriMetadata].
+	// The [response][google.longrunning.Operation.response] field type is
+	// [OptimizeToursUriResponse][google.maps.routeoptimization.v1.OptimizeToursUriResponse],
+	// if successful.
+	//
+	// Experimental: See
+	// https://developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request
+	// for more details.
+	OptimizeToursUri(context.Context, *OptimizeToursUriRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedRouteOptimizationServer should be embedded to have forward compatible implementations.
@@ -162,6 +280,12 @@ func (UnimplementedRouteOptimizationServer) OptimizeTours(context.Context, *Opti
 }
 func (UnimplementedRouteOptimizationServer) BatchOptimizeTours(context.Context, *BatchOptimizeToursRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchOptimizeTours not implemented")
+}
+func (UnimplementedRouteOptimizationServer) OptimizeToursLongRunning(context.Context, *OptimizeToursRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OptimizeToursLongRunning not implemented")
+}
+func (UnimplementedRouteOptimizationServer) OptimizeToursUri(context.Context, *OptimizeToursUriRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OptimizeToursUri not implemented")
 }
 
 // UnsafeRouteOptimizationServer may be embedded to opt out of forward compatibility for this service.
@@ -211,6 +335,42 @@ func _RouteOptimization_BatchOptimizeTours_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RouteOptimization_OptimizeToursLongRunning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OptimizeToursRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RouteOptimizationServer).OptimizeToursLongRunning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RouteOptimization_OptimizeToursLongRunning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RouteOptimizationServer).OptimizeToursLongRunning(ctx, req.(*OptimizeToursRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RouteOptimization_OptimizeToursUri_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OptimizeToursUriRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RouteOptimizationServer).OptimizeToursUri(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RouteOptimization_OptimizeToursUri_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RouteOptimizationServer).OptimizeToursUri(ctx, req.(*OptimizeToursUriRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RouteOptimization_ServiceDesc is the grpc.ServiceDesc for RouteOptimization service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -225,6 +385,14 @@ var RouteOptimization_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BatchOptimizeTours",
 			Handler:    _RouteOptimization_BatchOptimizeTours_Handler,
+		},
+		{
+			MethodName: "OptimizeToursLongRunning",
+			Handler:    _RouteOptimization_OptimizeToursLongRunning_Handler,
+		},
+		{
+			MethodName: "OptimizeToursUri",
+			Handler:    _RouteOptimization_OptimizeToursUri_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -48,6 +48,11 @@ type ModuleConfig struct {
 	ModulePathVersion string `yaml:"module_path_version"`
 	// APIs is the list of APIs within this module (that need overrides).
 	APIs []*APIConfig `yaml:"apis"`
+	// DeleteGenerationOutputPaths specifies paths (files or directories) to
+	// be deleted from the output directory at the end of generation. This is for files
+	// which it is difficult to prevent from being generated, but which shouldn't appear
+	// in the repo.
+	DeleteGenerationOutputPaths []string `yaml:"delete_generation_output_paths"`
 }
 
 // APIConfig provides per-API configuration to override defaults,
@@ -64,6 +69,11 @@ type APIConfig struct {
 	// DisableGAPIC is a flag to disable GAPIC generation for an API, overriding
 	// settings from the BUILD.bazel file.
 	DisableGAPIC bool `yaml:"disable_gapic"`
+	// NestedProtos lists any nested proto files (under Path) that should be included
+	// in generation. Currently, only proto files *directly* under Path (as opposed to
+	// in subdirectories) are passed to protoc; this setting allows selected nested
+	// protos to be included as well.
+	NestedProtos []string `yaml:"nested_protos"`
 	// ModuleName is the name of the module this API config belongs to.
 	// This is only exported for ease of testing, and is not expected to be
 	// present in the YAML file. It is populated when the APIConfig is returned

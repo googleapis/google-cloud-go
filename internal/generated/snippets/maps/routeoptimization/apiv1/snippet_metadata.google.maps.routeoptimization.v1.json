@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/routeoptimization/apiv1",
-    "version": "1.24.0",
+    "version": "1.25.0",
     "language": "GO",
     "apis": [
       {
@@ -145,6 +145,98 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "routeoptimization_v1_generated_RouteOptimization_OptimizeToursLongRunning_sync",
+      "title": "routeoptimization OptimizeToursLongRunning Sample",
+      "description": "OptimizeToursLongRunning this is a variant of the\n[OptimizeTours][google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours]\nmethod designed for\noptimizations with large timeout values. It should be preferred over the\n`OptimizeTours` method for optimizations that take longer than\na few minutes.\n\nThe returned [long-running operation][google.longrunning.Operation] (LRO)\nwill have a name of the format\n`<parent>/operations/<operation_id>` and can be used to track\nprogress of the computation. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursLongRunningMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[OptimizeToursResponse][google.maps.routeoptimization.v1.OptimizeToursResponse],\nif successful.\n\nExperimental: See\nhttps: //developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request\nfor more details.",
+      "file": "Client/OptimizeToursLongRunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "OptimizeToursLongRunning",
+        "fullName": "google.maps.routeoptimization.v1.Client.OptimizeToursLongRunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "routeoptimizationpb.OptimizeToursRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OptimizeToursLongRunningOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.routeoptimization.v1.Client"
+        },
+        "method": {
+          "shortName": "OptimizeToursLongRunning",
+          "fullName": "google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning",
+          "service": {
+            "shortName": "RouteOptimization",
+            "fullName": "google.maps.routeoptimization.v1.RouteOptimization"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "routeoptimization_v1_generated_RouteOptimization_OptimizeToursUri_sync",
+      "title": "routeoptimization OptimizeToursUri Sample",
+      "description": "OptimizeToursUri this is a variant of the\n[OptimizeToursLongRunning][google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursLongRunning]\nmethod designed for optimizations with large timeout values and large\ninput/output sizes.\n\nThe client specifies the URI of the `OptimizeToursRequest` stored\nin Google Cloud Storage and the server writes the `OptimizeToursResponse`\nto a client-specified Google Cloud Storage URI.\n\nThis method should be preferred over the `OptimizeTours` method for\noptimizations that take longer than a few minutes and input/output sizes\nthat are larger than 8MB, though it can be used for shorter and smaller\noptimizations as well.\n\nThe returned [long-running operation][google.longrunning.Operation] (LRO)\nwill have a name of the format\n`<parent>/operations/<operation_id>` and can be used to track\nprogress of the computation. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[OptimizeToursLongRunningMetadata][google.maps.routeoptimization.v1.OptimizeToursUriMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[OptimizeToursUriResponse][google.maps.routeoptimization.v1.OptimizeToursUriResponse],\nif successful.\n\nExperimental: See\nhttps: //developers.google.com/maps/tt/route-optimization/experimental/otlr/make-request\nfor more details.",
+      "file": "Client/OptimizeToursUri/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "OptimizeToursUri",
+        "fullName": "google.maps.routeoptimization.v1.Client.OptimizeToursUri",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "routeoptimizationpb.OptimizeToursUriRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OptimizeToursUriOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.routeoptimization.v1.Client"
+        },
+        "method": {
+          "shortName": "OptimizeToursUri",
+          "fullName": "google.maps.routeoptimization.v1.RouteOptimization.OptimizeToursUri",
+          "service": {
+            "shortName": "RouteOptimization",
+            "fullName": "google.maps.routeoptimization.v1.RouteOptimization"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

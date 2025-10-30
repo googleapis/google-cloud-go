@@ -43,7 +43,7 @@ func GenerateInternalVersionFile(moduleDir, version string) error {
 		return err
 	}
 	versionPath := filepath.Join(internalDir, "version.go")
-	slog.Debug("librariangen: creating file", "path", versionPath)
+	slog.Info("librariangen: creating file", "path", versionPath)
 	t := template.Must(template.New("internal_version").Parse(internalVersionTmpl))
 	internalVersionData := struct {
 		Year    int

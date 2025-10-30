@@ -37,6 +37,8 @@ modules:
     apis:
       - path: google/monitoring/v3
         client_directory: apiv3/v2
+        nested_protos:
+          - nested/x.proto
   - name: recaptchaenterprise
     module_path_version: v2
 `
@@ -71,6 +73,7 @@ modules:
 					{
 						Path:            "google/monitoring/v3",
 						ClientDirectory: "apiv3/v2",
+						NestedProtos:    []string{"nested/x.proto"},
 					},
 				},
 			},

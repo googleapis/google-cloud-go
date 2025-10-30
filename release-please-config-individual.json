@@ -8,40 +8,6 @@
     "bigquery": {
       "component": "bigquery",
       "exclude-paths": ["bigquery/v2"]
-    },
-    "bigtable": {
-      "component": "bigtable"
-    },
-    "datastore": {
-      "component": "datastore"
-    },
-    "errorreporting": {
-      "component": "errorreporting"
-    },
-    "firestore": {
-      "component": "firestore"
-    },
-    "logging": {
-      "component": "logging"
-    },
-    "profiler": {
-      "component": "profiler"
-    },
-    "pubsub": {
-      "component": "pubsub",
-      "exclude-paths": ["pubsub/v2"]
-    },
-    "pubsub/v2": {
-      "component": "pubsub/v2"
-    },
-    "spanner": {
-      "component": "spanner"
-    },
-    "storage": {
-      "component": "storage"
-    },
-    "vertexai": {
-      "component": "vertexai"
     }
   },
   "plugins": [

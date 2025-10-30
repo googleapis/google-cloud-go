@@ -27,6 +27,15 @@ modules:
       - path: google/cloud/tasks/v2beta3
         client_directory: apiv2beta3
 
+  - name: containeranalysis
+    apis:
+      # Note: we *don't* currently generate/copy grafeas/grafeaspb/grafeas.pb.go
+      # See https://github.com/googleapis/google-cloud-go/issues/13176 for
+      # more details.
+      - path: google/devtools/containeranalysis/v1beta1
+        nested_protos:
+          - grafeas/grafeas.proto
+
   - name: dataproc
     module_path_version: v2
 
@@ -34,6 +43,11 @@ modules:
     apis:
       - path: google/datastore/v1
         disable_gapic: true
+
+  - name: errorreporting
+    apis:
+      - path: google/devtools/clouderrorreporting/v1beta1
+        client_directory: apiv1beta1
 
   - name: firestore
     apis:
@@ -57,13 +71,17 @@ modules:
       - path: google/monitoring/v3
         client_directory: apiv3/v2
 
-  - name: pubsub
+  - name: pubsub/v2
     apis:
       - path: google/pubsub/v1
-        client_directory: v2/apiv1
+        client_directory: apiv1
 
   - name: recaptchaenterprise
     module_path_version: v2
+
+  - name: storage
+    delete_generation_output_paths:
+      - internal/generated/snippets/storage/internal
 
   - name: trace
     apis:

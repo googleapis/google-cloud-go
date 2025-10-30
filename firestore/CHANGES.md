@@ -1,5 +1,18 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.19.0...firestore/v1.20.0) (2025-10-20)
+
+
+### Features
+
+* **firestore:** Add omitzero struct tag option ([#12992](https://github.com/googleapis/google-cloud-go/issues/12992)) ([c2f9c74](https://github.com/googleapis/google-cloud-go/commit/c2f9c7408f0a1c003da19db5520da8a745474f38))
+
+
+### Bug Fixes
+
+* **firestore:** Handle unused values ([#13103](https://github.com/googleapis/google-cloud-go/issues/13103)) ([a109cf6](https://github.com/googleapis/google-cloud-go/commit/a109cf6bde9675f8bc5edba61dce49f4852709d6)), refs [#9784](https://github.com/googleapis/google-cloud-go/issues/9784)
+* **firestore:** Upgrade gRPC service registration func ([8fffca2](https://github.com/googleapis/google-cloud-go/commit/8fffca2819fa3dc858c213aa0c503e0df331b084))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.18.0...firestore/v1.19.0) (2025-10-06)
 
 
@@ -286,4 +299,3 @@
 
 This is the first tag to carve out firestore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-

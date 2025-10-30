@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/oracledatabase/apiv1",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "language": "GO",
     "apis": [
       {
@@ -195,6 +195,236 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateDbSystem_sync",
+      "title": "oracledatabase CreateDbSystem Sample",
+      "description": "CreateDbSystem creates a new DbSystem in a given project and location.",
+      "file": "Client/CreateDbSystem/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDbSystem",
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateDbSystem",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.CreateDbSystemRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDbSystemOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDbSystem",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateDbSystem",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateExadbVmCluster_sync",
+      "title": "oracledatabase CreateExadbVmCluster Sample",
+      "description": "CreateExadbVmCluster creates a new Exadb (Exascale) VM Cluster resource.",
+      "file": "Client/CreateExadbVmCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExadbVmCluster",
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateExadbVmCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.CreateExadbVmClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateExadbVmClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateExadbVmCluster",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateExadbVmCluster",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateExascaleDbStorageVault_sync",
+      "title": "oracledatabase CreateExascaleDbStorageVault Sample",
+      "description": "CreateExascaleDbStorageVault creates a new ExascaleDB Storage Vault resource.",
+      "file": "Client/CreateExascaleDbStorageVault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExascaleDbStorageVault",
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateExascaleDbStorageVault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.CreateExascaleDbStorageVaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateExascaleDbStorageVaultOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateExascaleDbStorageVault",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateExascaleDbStorageVault",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateOdbNetwork_sync",
+      "title": "oracledatabase CreateOdbNetwork Sample",
+      "description": "CreateOdbNetwork creates a new ODB Network in a given project and location.",
+      "file": "Client/CreateOdbNetwork/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOdbNetwork",
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateOdbNetwork",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.CreateOdbNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateOdbNetworkOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateOdbNetwork",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbNetwork",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateOdbSubnet_sync",
+      "title": "oracledatabase CreateOdbSubnet Sample",
+      "description": "CreateOdbSubnet creates a new ODB Subnet in a given ODB Network.",
+      "file": "Client/CreateOdbSubnet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOdbSubnet",
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateOdbSubnet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.CreateOdbSubnetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateOdbSubnetOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateOdbSubnet",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbSubnet",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteAutonomousDatabase_sync",
       "title": "oracledatabase DeleteAutonomousDatabase Sample",
       "description": "DeleteAutonomousDatabase deletes a single Autonomous Database.",
@@ -333,6 +563,236 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteDbSystem_sync",
+      "title": "oracledatabase DeleteDbSystem Sample",
+      "description": "DeleteDbSystem deletes a single DbSystem.",
+      "file": "Client/DeleteDbSystem/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDbSystem",
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteDbSystem",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.DeleteDbSystemRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDbSystemOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDbSystem",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteDbSystem",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteExadbVmCluster_sync",
+      "title": "oracledatabase DeleteExadbVmCluster Sample",
+      "description": "DeleteExadbVmCluster deletes a single Exadb (Exascale) VM Cluster.",
+      "file": "Client/DeleteExadbVmCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExadbVmCluster",
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteExadbVmCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.DeleteExadbVmClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExadbVmClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteExadbVmCluster",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteExadbVmCluster",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteExascaleDbStorageVault_sync",
+      "title": "oracledatabase DeleteExascaleDbStorageVault Sample",
+      "description": "DeleteExascaleDbStorageVault deletes a single ExascaleDB Storage Vault.",
+      "file": "Client/DeleteExascaleDbStorageVault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExascaleDbStorageVault",
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteExascaleDbStorageVault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.DeleteExascaleDbStorageVaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExascaleDbStorageVaultOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteExascaleDbStorageVault",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteExascaleDbStorageVault",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteOdbNetwork_sync",
+      "title": "oracledatabase DeleteOdbNetwork Sample",
+      "description": "DeleteOdbNetwork deletes a single ODB Network.",
+      "file": "Client/DeleteOdbNetwork/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOdbNetwork",
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteOdbNetwork",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.DeleteOdbNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteOdbNetworkOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOdbNetwork",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbNetwork",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteOdbSubnet_sync",
+      "title": "oracledatabase DeleteOdbSubnet Sample",
+      "description": "DeleteOdbSubnet deletes a single ODB Subnet.",
+      "file": "Client/DeleteOdbSubnet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOdbSubnet",
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteOdbSubnet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.DeleteOdbSubnetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteOdbSubnetOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOdbSubnet",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbSubnet",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteOperation_sync",
       "title": "oracledatabase DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -373,6 +833,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_FailoverAutonomousDatabase_sync",
+      "title": "oracledatabase FailoverAutonomousDatabase Sample",
+      "description": "FailoverAutonomousDatabase initiates a failover to target autonomous database from the associated\nprimary database.",
+      "file": "Client/FailoverAutonomousDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FailoverAutonomousDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.FailoverAutonomousDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.FailoverAutonomousDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FailoverAutonomousDatabaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "FailoverAutonomousDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.FailoverAutonomousDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -562,6 +1068,190 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetDatabase_sync",
+      "title": "oracledatabase GetDatabase Sample",
+      "description": "GetDatabase gets details of a single Database.",
+      "file": "Client/GetDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.GetDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*oracledatabasepb.Database",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetDbSystem_sync",
+      "title": "oracledatabase GetDbSystem Sample",
+      "description": "GetDbSystem gets details of a single DbSystem.",
+      "file": "Client/GetDbSystem/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDbSystem",
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetDbSystem",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.GetDbSystemRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*oracledatabasepb.DbSystem",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDbSystem",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetDbSystem",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetExadbVmCluster_sync",
+      "title": "oracledatabase GetExadbVmCluster Sample",
+      "description": "GetExadbVmCluster gets details of a single Exadb (Exascale) VM Cluster.",
+      "file": "Client/GetExadbVmCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExadbVmCluster",
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetExadbVmCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.GetExadbVmClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*oracledatabasepb.ExadbVmCluster",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "GetExadbVmCluster",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetExadbVmCluster",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetExascaleDbStorageVault_sync",
+      "title": "oracledatabase GetExascaleDbStorageVault Sample",
+      "description": "GetExascaleDbStorageVault gets details of a single ExascaleDB Storage Vault.",
+      "file": "Client/GetExascaleDbStorageVault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExascaleDbStorageVault",
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetExascaleDbStorageVault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.GetExascaleDbStorageVaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*oracledatabasepb.ExascaleDbStorageVault",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "GetExascaleDbStorageVault",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetExascaleDbStorageVault",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetLocation_sync",
       "title": "oracledatabase GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -608,6 +1298,98 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetOdbNetwork_sync",
+      "title": "oracledatabase GetOdbNetwork Sample",
+      "description": "GetOdbNetwork gets details of a single ODB Network.",
+      "file": "Client/GetOdbNetwork/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOdbNetwork",
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetOdbNetwork",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.GetOdbNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*oracledatabasepb.OdbNetwork",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOdbNetwork",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetOdbNetwork",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetOdbSubnet_sync",
+      "title": "oracledatabase GetOdbSubnet Sample",
+      "description": "GetOdbSubnet gets details of a single ODB Subnet.",
+      "file": "Client/GetOdbSubnet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOdbSubnet",
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetOdbSubnet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.GetOdbSubnetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*oracledatabasepb.OdbSubnet",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOdbSubnet",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetOdbSubnet",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetOperation_sync",
       "title": "oracledatabase GetOperation Sample",
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
@@ -641,6 +1423,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetPluggableDatabase_sync",
+      "title": "oracledatabase GetPluggableDatabase Sample",
+      "description": "GetPluggableDatabase gets details of a single PluggableDatabase.",
+      "file": "Client/GetPluggableDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPluggableDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetPluggableDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.GetPluggableDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*oracledatabasepb.PluggableDatabase",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPluggableDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetPluggableDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
           }
         }
       },
@@ -930,6 +1758,98 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListDatabaseCharacterSets_sync",
+      "title": "oracledatabase ListDatabaseCharacterSets Sample",
+      "description": "ListDatabaseCharacterSets list DatabaseCharacterSets for the given project and location.",
+      "file": "Client/ListDatabaseCharacterSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatabaseCharacterSets",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListDatabaseCharacterSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListDatabaseCharacterSetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseCharacterSetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDatabaseCharacterSets",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListDatabaseCharacterSets",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListDatabases_sync",
+      "title": "oracledatabase ListDatabases Sample",
+      "description": "ListDatabases lists all the Databases for the given project, location and DbSystem.",
+      "file": "Client/ListDatabases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatabases",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListDatabases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListDatabasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDatabases",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListDatabases",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListDbNodes_sync",
       "title": "oracledatabase ListDbNodes Sample",
       "description": "ListDbNodes lists the database nodes of a VM Cluster.",
@@ -1022,6 +1942,52 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListDbSystemInitialStorageSizes_sync",
+      "title": "oracledatabase ListDbSystemInitialStorageSizes Sample",
+      "description": "ListDbSystemInitialStorageSizes lists all the DbSystemInitialStorageSizes for the given project and\nlocation.",
+      "file": "Client/ListDbSystemInitialStorageSizes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDbSystemInitialStorageSizes",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListDbSystemInitialStorageSizes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListDbSystemInitialStorageSizesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DbSystemInitialStorageSizeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDbSystemInitialStorageSizes",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystemInitialStorageSizes",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListDbSystemShapes_sync",
       "title": "oracledatabase ListDbSystemShapes Sample",
       "description": "ListDbSystemShapes lists the database system shapes available for the project and location.",
@@ -1068,6 +2034,98 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListDbSystems_sync",
+      "title": "oracledatabase ListDbSystems Sample",
+      "description": "ListDbSystems lists all the DbSystems for the given project and location.",
+      "file": "Client/ListDbSystems/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDbSystems",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListDbSystems",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListDbSystemsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DbSystemIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDbSystems",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystems",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListDbVersions_sync",
+      "title": "oracledatabase ListDbVersions Sample",
+      "description": "ListDbVersions list DbVersions for the given project and location.",
+      "file": "Client/ListDbVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDbVersions",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListDbVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListDbVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DbVersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDbVersions",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListDbVersions",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListEntitlements_sync",
       "title": "oracledatabase ListEntitlements Sample",
       "description": "ListEntitlements lists the entitlements in a given project.",
@@ -1098,6 +2156,98 @@
         "method": {
           "shortName": "ListEntitlements",
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListEntitlements",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListExadbVmClusters_sync",
+      "title": "oracledatabase ListExadbVmClusters Sample",
+      "description": "ListExadbVmClusters lists all the Exadb (Exascale) VM Clusters for the given project and\nlocation.",
+      "file": "Client/ListExadbVmClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExadbVmClusters",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListExadbVmClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListExadbVmClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExadbVmClusterIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListExadbVmClusters",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListExadbVmClusters",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListExascaleDbStorageVaults_sync",
+      "title": "oracledatabase ListExascaleDbStorageVaults Sample",
+      "description": "ListExascaleDbStorageVaults lists all the ExascaleDB Storage Vaults for the given project and\nlocation.",
+      "file": "Client/ListExascaleDbStorageVaults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExascaleDbStorageVaults",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListExascaleDbStorageVaults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListExascaleDbStorageVaultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExascaleDbStorageVaultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListExascaleDbStorageVaults",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListExascaleDbStorageVaults",
           "service": {
             "shortName": "OracleDatabase",
             "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
@@ -1206,6 +2356,144 @@
       ]
     },
     {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListMinorVersions_sync",
+      "title": "oracledatabase ListMinorVersions Sample",
+      "description": "ListMinorVersions lists all the valid minor versions for the given\nproject, location, gi version and shape family.",
+      "file": "Client/ListMinorVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMinorVersions",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListMinorVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListMinorVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MinorVersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMinorVersions",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListMinorVersions",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListOdbNetworks_sync",
+      "title": "oracledatabase ListOdbNetworks Sample",
+      "description": "ListOdbNetworks lists the ODB Networks in a given project and location.",
+      "file": "Client/ListOdbNetworks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOdbNetworks",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListOdbNetworks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListOdbNetworksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OdbNetworkIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOdbNetworks",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListOdbNetworks",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListOdbSubnets_sync",
+      "title": "oracledatabase ListOdbSubnets Sample",
+      "description": "ListOdbSubnets lists all the ODB Subnets in a given ODB Network.",
+      "file": "Client/ListOdbSubnets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOdbSubnets",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListOdbSubnets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListOdbSubnetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OdbSubnetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOdbSubnets",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListOdbSubnets",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListOperations_sync",
       "title": "oracledatabase ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -1247,6 +2535,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListPluggableDatabases_sync",
+      "title": "oracledatabase ListPluggableDatabases Sample",
+      "description": "ListPluggableDatabases lists all the PluggableDatabases for the given project, location and\nContainer Database.",
+      "file": "Client/ListPluggableDatabases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPluggableDatabases",
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListPluggableDatabases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.ListPluggableDatabasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PluggableDatabaseIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPluggableDatabases",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListPluggableDatabases",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_RemoveVirtualMachineExadbVmCluster_sync",
+      "title": "oracledatabase RemoveVirtualMachineExadbVmCluster Sample",
+      "description": "RemoveVirtualMachineExadbVmCluster removes virtual machines from an existing exadb vm cluster.",
+      "file": "Client/RemoveVirtualMachineExadbVmCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveVirtualMachineExadbVmCluster",
+        "fullName": "google.cloud.oracledatabase.v1.Client.RemoveVirtualMachineExadbVmCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.RemoveVirtualMachineExadbVmClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RemoveVirtualMachineExadbVmClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "RemoveVirtualMachineExadbVmCluster",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.RemoveVirtualMachineExadbVmCluster",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1420,6 +2800,144 @@
         "method": {
           "shortName": "StopAutonomousDatabase",
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.StopAutonomousDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_SwitchoverAutonomousDatabase_sync",
+      "title": "oracledatabase SwitchoverAutonomousDatabase Sample",
+      "description": "SwitchoverAutonomousDatabase initiates a switchover of specified autonomous database to the associated\npeer database.",
+      "file": "Client/SwitchoverAutonomousDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SwitchoverAutonomousDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.SwitchoverAutonomousDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.SwitchoverAutonomousDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SwitchoverAutonomousDatabaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "SwitchoverAutonomousDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.SwitchoverAutonomousDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_UpdateAutonomousDatabase_sync",
+      "title": "oracledatabase UpdateAutonomousDatabase Sample",
+      "description": "UpdateAutonomousDatabase updates the parameters of a single Autonomous Database.",
+      "file": "Client/UpdateAutonomousDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAutonomousDatabase",
+        "fullName": "google.cloud.oracledatabase.v1.Client.UpdateAutonomousDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.UpdateAutonomousDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAutonomousDatabaseOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAutonomousDatabase",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.UpdateAutonomousDatabase",
+          "service": {
+            "shortName": "OracleDatabase",
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_UpdateExadbVmCluster_sync",
+      "title": "oracledatabase UpdateExadbVmCluster Sample",
+      "description": "UpdateExadbVmCluster updates a single Exadb (Exascale) VM Cluster. To add virtual machines to\nexisting exadb vm cluster, only pass the node count.",
+      "file": "Client/UpdateExadbVmCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExadbVmCluster",
+        "fullName": "google.cloud.oracledatabase.v1.Client.UpdateExadbVmCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "oracledatabasepb.UpdateExadbVmClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateExadbVmClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oracledatabase.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateExadbVmCluster",
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.UpdateExadbVmCluster",
           "service": {
             "shortName": "OracleDatabase",
             "fullName": "google.cloud.oracledatabase.v1.OracleDatabase"

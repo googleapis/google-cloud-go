@@ -47,17 +47,21 @@ type Library struct {
 
 // API corresponds to a single API definition within a librarian request/response.
 type API struct {
-	Path          string `json:"path,omitempty"`
+	// Path is the directory to the API definition in protos, within googleapis (e.g. google/cloud/functions/v2)
+	Path string `json:"path,omitempty"`
+	// ServiceConfig is the name of the service config file, relative to Path.
 	ServiceConfig string `json:"service_config,omitempty"`
+	// Status is the status of the API: "new" or "existing". This is only used in the configure command.
+	Status string `json:"status,omitempty"`
 }
 
 // Change represents a single commit change for a library.
 type Change struct {
-	Type             string `json:"type"`
-	Subject          string `json:"subject"`
-	Body             string `json:"body"`
-	PiperCLNumber    string `json:"piper_cl_number"`
-	SourceCommitHash string `json:"source_commit_hash"`
+	Type          string `json:"type"`
+	Subject       string `json:"subject"`
+	Body          string `json:"body"`
+	PiperCLNumber string `json:"piper_cl_number"`
+	CommitHash    string `json:"commit_hash"`
 }
 
 // ParseLibrary reads a file from the given path and unmarshals
