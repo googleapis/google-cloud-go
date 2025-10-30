@@ -47,18 +47,12 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/v2/apiv2/
   - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets//devicestreaming/apiv1/
-  - /internal/generated/snippets/storage/control/apiv2/
   # END snippets
-  - /storage/control/apiv2/
-  - /storage/internal/apiv2/
 
 deep-preserve-regex:
   - /.*/info.go
   - /.*/path_funcs.go
   - /.*/version.go
-  # TODO(#7336): Remove these networkconnectivity lines once breaking change is handled.
-  - /storage/internal/apiv2/metadata.go
-  # Must preserve these even though they aren't generated anymore
 
 deep-copy-regex:
   # Just copy the bigtable protos for now
@@ -106,7 +100,3 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/v2/cloud.google.com/go
     dest: /
-  - source: /google/storage/control/v2/cloud.google.com/go/
-    dest: /
-  - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
-    dest: /storage/internal/apiv2

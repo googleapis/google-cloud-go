@@ -5,7 +5,6 @@ modules:
   - bigquery/v2
   - bigquery
   - bigtable
-  - storage
 
 manual-clients:
   - api-shortname: bigquery
@@ -198,17 +197,12 @@ service-configs:
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
     release-level-override: stable
-  - input-directory: google/storage/control/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/control/apiv2
-  - input-directory: google/storage/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/internal/apiv2
 
 skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - storage
   - logging
   - errorreporting
   - profiler
@@ -387,6 +381,5 @@ skip-module-scan-paths:
   - bigquery
   - bigquery/v2
   - bigtable
-  - storage
   # unreleased modules
   - spanner/test/opentelemetry/test

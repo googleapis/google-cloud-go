@@ -79,6 +79,10 @@ modules:
   - name: recaptchaenterprise
     module_path_version: v2
 
+  - name: storage
+    delete_generation_output_paths:
+      - internal/generated/snippets/storage/internal
+
   - name: trace
     apis:
       - path: google/devtools/cloudtrace/v1

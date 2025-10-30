@@ -5097,6 +5097,43 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
+  - id: storage
+    version: 1.57.1
+    last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
+    apis:
+      - path: google/storage/control/v2
+        service_config: storage_v2.yaml
+      - path: google/storage/v2
+        service_config: storage_v2.yaml
+    source_roots:
+      - storage
+      - internal/generated/snippets/storage
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/storage/
+      - ^storage/control/apiv2/[^/]*_client\.go$
+      - ^storage/control/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^storage/control/apiv2/[^/]*_client_example_test\.go$
+      - ^storage/control/apiv2/auxiliary\.go$
+      - ^storage/control/apiv2/auxiliary_go123\.go$
+      - ^storage/control/apiv2/doc\.go$
+      - ^storage/control/apiv2/gapic_metadata\.json$
+      - ^storage/control/apiv2/helpers\.go$
+      - ^storage/control/apiv2/controlpb/.*$
+      - ^storage/internal/apiv2/[^/]*_client\.go$
+      - ^storage/internal/apiv2/[^/]*_client_example_go123_test\.go$
+      - ^storage/internal/apiv2/[^/]*_client_example_test\.go$
+      - ^storage/internal/apiv2/auxiliary\.go$
+      - ^storage/internal/apiv2/auxiliary_go123\.go$
+      - ^storage/internal/apiv2/doc\.go$
+      - ^storage/internal/apiv2/gapic_metadata\.json$
+      - ^storage/internal/apiv2/helpers\.go$
+      - ^storage/internal/apiv2/storagepb/.*$
+    release_exclude_paths:
+      - internal/generated/snippets/storage/
+      - storage/internal/benchmarks
+      - storage/internal/test
+    tag_format: '{id}/v{version}'
   - id: storagebatchoperations
     version: 0.1.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
