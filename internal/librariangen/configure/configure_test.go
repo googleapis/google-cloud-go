@@ -154,7 +154,7 @@ func TestConfigure(t *testing.T) {
 		APIs: []request.API{
 			{Path: "google/cloud/capacityplanner/v1beta", ServiceConfig: "service.yaml", Status: "new"},
 		},
-		SourcePaths: []string{"capacityplanner", "internal/generated/", "internal/generated/snippets/capacityplanner"},
+		SourcePaths: []string{"capacityplanner", "internal/generated/snippets/capacityplanner"},
 		RemoveRegex: []string{
 			"^internal/generated/snippets/capacityplanner/",
 			"^apiv1beta/[^/]*_client\\.go$",

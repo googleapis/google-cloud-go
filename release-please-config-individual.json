@@ -8,15 +8,6 @@
     "bigquery": {
       "component": "bigquery",
       "exclude-paths": ["bigquery/v2"]
-    },
-    "errorreporting": {
-      "component": "errorreporting"
-    },
-    "logging": {
-      "component": "logging"
-    },
-    "storage": {
-      "component": "storage"
     }
   },
   "plugins": [

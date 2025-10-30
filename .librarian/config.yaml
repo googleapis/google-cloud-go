@@ -28,7 +28,11 @@ libraries:
     release_blocked: true
   - id: "datastore"
     release_blocked: true
+  - id: "errorreporting"
+    release_blocked: true
   - id: "firestore"
+    release_blocked: true
+  - id: "logging"
     release_blocked: true
   - id: "longrunning"
     release_blocked: true
@@ -43,6 +47,8 @@ libraries:
   - id: "root-module"
     release_blocked: true
   - id: "spanner"
+    release_blocked: true
+  - id: "storage"
     release_blocked: true
   - id: "vertexai"
     release_blocked: true
