@@ -11,9 +11,6 @@
     },
     "bigtable": {
       "component": "bigtable"
-    },
-    "logging": {
-      "component": "logging"
     }
   },
   "plugins": [

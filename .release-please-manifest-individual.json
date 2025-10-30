@@ -1,5 +1,4 @@
 {
   "bigquery": "1.72.0",
-  "bigtable": "1.40.1",
-  "logging": "1.13.1"
+  "bigtable": "1.40.1"
 }

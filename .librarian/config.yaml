@@ -30,6 +30,8 @@ libraries:
     release_blocked: true
   - id: "firestore"
     release_blocked: true
+  - id: "logging"
+    release_blocked: true
   - id: "longrunning"
     release_blocked: true
   - id: "profiler"
