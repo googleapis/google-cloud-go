@@ -49,7 +49,12 @@ func TestIntegration_RunQuery(t *testing.T) {
 				t.Fatalf("expected job to be complete")
 			}
 
-			// TODO: read data and assert row count
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatalf("Read() error: %v", err)
+			}
+
+			assertRowCount(t, it, 1)
 		})
 	}
 }
@@ -63,9 +68,9 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			numGenRows := uint64(1000000)
+			numGenRows := uint64(1_000_000)
 			req := helper.FromSQL(fmt.Sprintf("SELECT num FROM UNNEST(GENERATE_ARRAY(1,%d)) as num", numGenRows))
-			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
+			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_REQUIRED
 			req.QueryRequest.TimeoutMs = wrapperspb.UInt32(500)
 			req.QueryRequest.UseQueryCache = wrapperspb.Bool(false)
 
@@ -105,8 +110,43 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 			if !nq.Complete() {
 				t.Fatalf("Complete() should be true after Wait()")
 			}
+		})
+	}
+}
 
-			// TODO: read data and assert row count
+func TestIntegration_ReadQueryJob(t *testing.T) {
+	if len(testQueryHelpers) == 0 {
+		t.Skip("integration tests skipped")
+	}
+	for k, helper := range testQueryHelpers {
+		t.Run(k, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+			defer cancel()
+
+			req := helper.FromSQL("SELECT CURRENT_TIMESTAMP() as foo, SESSION_USER() as bar")
+			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_REQUIRED
+
+			q, err := helper.StartQuery(ctx, req)
+			if err != nil {
+				t.Fatalf("Run() error: %v", err)
+			}
+			err = q.Wait(ctx)
+			if err != nil {
+				t.Fatalf("Wait() error: %v", err)
+			}
+
+			jobRef := q.JobReference()
+			q, err = helper.AttachJob(ctx, jobRef)
+			if err != nil {
+				t.Fatalf("AttachJob() error: %v", err)
+			}
+
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatalf("Read() error: %v", err)
+			}
+
+			assertRowCount(t, it, 1)
 		})
 	}
 }
@@ -141,7 +181,30 @@ func TestIntegration_InsertQueryJob(t *testing.T) {
 				t.Fatalf("expected job to be complete")
 			}
 
-			// TODO: read data and assert row count
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatalf("Read() error: %v", err)
+			}
+
+			assertRowCount(t, it, 1)
 		})
 	}
+}
+
+func assertRowCount(t *testing.T, it *RowIterator, n uint64) {
+	_, total := readRows(t, it)
+	if total != uint64(n) {
+		t.Errorf("expected %d row of data, got %d", n, total)
+	}
+}
+
+func readRows(t *testing.T, it *RowIterator) ([]*Row, uint64) {
+	rows := []*Row{}
+	for row, err := range it.All() {
+		if err != nil {
+			t.Fatalf("Next() error: %v", err)
+		}
+		rows = append(rows, row)
+	}
+	return rows, it.totalRows
 }
