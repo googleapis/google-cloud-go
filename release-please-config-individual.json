@@ -12,9 +12,6 @@
     "bigtable": {
       "component": "bigtable"
     },
-    "logging": {
-      "component": "logging"
-    },
     "storage": {
       "component": "storage"
     }

@@ -5,7 +5,6 @@ modules:
   - bigquery/v2
   - bigquery
   - bigtable
-  - logging
   - storage
 
 manual-clients:
@@ -199,9 +198,6 @@ service-configs:
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
     release-level-override: stable
-  - input-directory: google/logging/v2
-    service-config: logging_v2.yaml
-    import-path: cloud.google.com/go/logging/apiv2
   - input-directory: google/storage/control/v2
     service-config: storage_v2.yaml
     import-path: cloud.google.com/go/storage/control/apiv2
@@ -213,6 +209,7 @@ skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - logging
   - errorreporting
   - profiler
   - vertexai
@@ -390,7 +387,6 @@ skip-module-scan-paths:
   - bigquery
   - bigquery/v2
   - bigtable
-  - logging
   - storage
   # unreleased modules
   - spanner/test/opentelemetry/test
