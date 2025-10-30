@@ -1,0 +1,10 @@
+{
+  "api_shortname": "servicecontrol",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/servicecontrol/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Service Control API",
+  "distribution_name": "cloud.google.com/go/servicecontrol/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

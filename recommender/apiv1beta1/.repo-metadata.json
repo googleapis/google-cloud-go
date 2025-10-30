@@ -1,0 +1,10 @@
+{
+  "api_shortname": "recommender",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/recommender/latest/apiv1beta1",
+  "client_library_type": "generated",
+  "description": "Recommender API",
+  "distribution_name": "cloud.google.com/go/recommender/apiv1beta1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}
