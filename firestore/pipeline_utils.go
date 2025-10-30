@@ -110,9 +110,9 @@ func toExprOrConstant(val any) Expr {
 	return ConstantOf(val)
 }
 
-// toExprOrField converts a plain Go string or FieldPath into a field expression.
+// asFieldExpr converts a plain Go string or FieldPath into a field expression.
 // If the value is already an Expr, it's returned directly.
-func toExprOrField(val any) Expr {
+func asFieldExpr(val any) Expr {
 	switch v := val.(type) {
 	case Expr:
 		return v
@@ -125,10 +125,32 @@ func toExprOrField(val any) Expr {
 	}
 }
 
+func asInt64Expr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case int, int32, int64:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int32, int64 or Expr, but got %T", val)}
+	}
+}
+
+func asStringExpr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case string:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
+	}
+}
+
 // leftRightToBaseFunction is a helper for creating binary functions like Add or Eq.
 // It ensures the left operand is a field-like expression and the right is a constant-like expression.
 func leftRightToBaseFunction(name string, left, right any) *baseFunction {
-	return newBaseFunction(name, []Expr{toExprOrField(left), toExprOrConstant(right)})
+	return newBaseFunction(name, []Expr{asFieldExpr(left), toExprOrConstant(right)})
 }
 
 // projectionsToMapValue converts a slice of Selectable items into a single

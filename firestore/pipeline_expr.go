@@ -75,6 +75,16 @@ type Expr interface {
 	ArrayMaximum() Expr
 	ArrayMinimum() Expr
 
+	// Timestamp operations
+	TimestampAdd(unit, amount any) Expr
+	TimestampSubtract(unit, amount any) Expr
+	TimestampToUnixMicros() Expr
+	TimestampToUnixMillis() Expr
+	TimestampToUnixSeconds() Expr
+	UnixMicrosToTimestamp() Expr
+	UnixMillisToTimestamp() Expr
+	UnixSecondsToTimestamp() Expr
+
 	// Comparison operations
 	Equal(other any) BooleanExpr
 	NotEqual(other any) BooleanExpr
@@ -86,7 +96,7 @@ type Expr interface {
 
 	// Aggregators
 	Sum() AggregateFunction
-	Avg() AggregateFunction
+	Average() AggregateFunction
 	Count() AggregateFunction
 
 	// String functions
@@ -164,6 +174,18 @@ func (b *baseExpr) ArraySum() Expr                          { return ArraySum(b)
 func (b *baseExpr) ArrayMaximum() Expr                      { return ArrayMaximum(b) }
 func (b *baseExpr) ArrayMinimum() Expr                      { return ArrayMinimum(b) }
 
+// Timestamp functions
+func (b *baseExpr) TimestampAdd(unit, amount any) Expr { return TimestampAdd(b, unit, amount) }
+func (b *baseExpr) TimestampSubtract(unit, amount any) Expr {
+	return TimestampSubtract(b, unit, amount)
+}
+func (b *baseExpr) TimestampToUnixMicros() Expr  { return TimestampToUnixMicros(b) }
+func (b *baseExpr) TimestampToUnixMillis() Expr  { return TimestampToUnixMillis(b) }
+func (b *baseExpr) TimestampToUnixSeconds() Expr { return TimestampToUnixSeconds(b) }
+func (b *baseExpr) UnixMicrosToTimestamp() Expr  { return UnixMicrosToTimestamp(b) }
+func (b *baseExpr) UnixMillisToTimestamp() Expr  { return UnixMillisToTimestamp(b) }
+func (b *baseExpr) UnixSecondsToTimestamp() Expr { return UnixSecondsToTimestamp(b) }
+
 // Comparison functions
 func (b *baseExpr) Equal(other any) BooleanExpr              { return Equal(b, other) }
 func (b *baseExpr) NotEqual(other any) BooleanExpr           { return NotEqual(b, other) }
@@ -174,9 +196,13 @@ func (b *baseExpr) LessThanOrEqual(other any) BooleanExpr    { return LessThanOr
 func (b *baseExpr) Equivalent(other any) BooleanExpr         { return Equivalent(b, other) }
 
 // Aggregation operations
-func (b *baseExpr) Sum() AggregateFunction   { return Sum(b) }
-func (b *baseExpr) Avg() AggregateFunction   { return Avg(b) }
-func (b *baseExpr) Count() AggregateFunction { return Count(b) }
+func (b *baseExpr) Sum() AggregateFunction           { return Sum(b) }
+func (b *baseExpr) Average() AggregateFunction       { return Average(b) }
+func (b *baseExpr) Count() AggregateFunction         { return Count(b) }
+func (b *baseExpr) CountDistinct() AggregateFunction { return CountDistinct(b) }
+func (b *baseExpr) CountIf() AggregateFunction       { return CountIf(b) }
+func (b *baseExpr) Maximum() AggregateFunction       { return Maximum(b) }
+func (b *baseExpr) Minimum() AggregateFunction       { return Minimum(b) }
 
 // String functions
 func (b *baseExpr) ByteLength() Expr                         { return ByteLength(b) }
