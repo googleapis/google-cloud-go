@@ -180,18 +180,25 @@ func (cv CreateView) SQL() string {
 	sb.WriteString(cv.Name.SQL())
 	sb.WriteString(" SQL SECURITY ")
 	sb.WriteString(cv.SecurityType.SQL())
-	sb.WriteString(" AS SELECT\n")
+	sb.WriteString(" AS ")
+	writeFormattedQuery(&sb, &cv.Query)
+	return sb.String()
+}
 
-	for i, expr := range cv.Query.Select.List {
+func writeFormattedQuery(sb *strings.Builder, q *Query) {
+	sb.WriteString("SELECT\n")
+
+	// SELECT list with aliases
+	for i, expr := range q.Select.List {
 		sb.WriteString("\t")
 		sb.WriteString(expr.SQL())
-		// add alias if available.
-		if cv.Query.Select.ListAliases != nil && i < len(cv.Query.Select.ListAliases) && cv.Query.Select.ListAliases[i] != "" {
+		// Add alias if available (check bounds safely)
+		if len(q.Select.ListAliases) > i && q.Select.ListAliases[i] != "" {
 			sb.WriteString(" AS ")
-			sb.WriteString(cv.Query.Select.ListAliases[i].SQL())
+			sb.WriteString(q.Select.ListAliases[i].SQL())
 		}
-		// Add a newline after each expression
-		if i < len(cv.Query.Select.List)-1 {
+		// Add comma and newline, except after last item
+		if i < len(q.Select.List)-1 {
 			sb.WriteString(",\n")
 		} else {
 			sb.WriteString("\n")
@@ -199,9 +206,9 @@ func (cv CreateView) SQL() string {
 	}
 
 	// FROM clause
-	if len(cv.Query.Select.From) > 0 {
+	if len(q.Select.From) > 0 {
 		sb.WriteString("FROM ")
-		for i, f := range cv.Query.Select.From {
+		for i, f := range q.Select.From {
 			if i > 0 {
 				sb.WriteString(", ")
 			}
@@ -210,15 +217,15 @@ func (cv CreateView) SQL() string {
 	}
 
 	// WHERE clause
-	if cv.Query.Select.Where != nil {
+	if q.Select.Where != nil {
 		sb.WriteString("\nWHERE ")
-		sb.WriteString(cv.Query.Select.Where.SQL())
+		sb.WriteString(q.Select.Where.SQL())
 	}
 
 	// GROUP BY clause
-	if len(cv.Query.Select.GroupBy) > 0 {
+	if len(q.Select.GroupBy) > 0 {
 		sb.WriteString("\nGROUP BY ")
-		for i, gb := range cv.Query.Select.GroupBy {
+		for i, gb := range q.Select.GroupBy {
 			if i > 0 {
 				sb.WriteString(", ")
 			}
@@ -227,9 +234,9 @@ func (cv CreateView) SQL() string {
 	}
 
 	// ORDER BY clause
-	if cv.Query.Order != nil {
+	if len(q.Order) > 0 {
 		sb.WriteString("\nORDER BY ")
-		for i, o := range cv.Query.Order {
+		for i, o := range q.Order {
 			if i > 0 {
 				sb.WriteString(", ")
 			}
@@ -238,16 +245,14 @@ func (cv CreateView) SQL() string {
 	}
 
 	// LIMIT/OFFSET clauses
-	if cv.Query.Limit != nil {
+	if q.Limit != nil {
 		sb.WriteString("\nLIMIT ")
-		sb.WriteString(cv.Query.Limit.SQL())
-		if cv.Query.Offset != nil {
+		sb.WriteString(q.Limit.SQL())
+		if q.Offset != nil {
 			sb.WriteString(" OFFSET ")
-			sb.WriteString(cv.Query.Offset.SQL())
+			sb.WriteString(q.Offset.SQL())
 		}
 	}
-
-	return sb.String()
 }
 
 func (st SecurityType) SQL() string {
