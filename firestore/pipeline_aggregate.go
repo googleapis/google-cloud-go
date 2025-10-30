@@ -44,7 +44,7 @@ func newBaseAggregateFunction(name string, fieldOrExpr any) *baseAggregateFuncti
 		case string:
 			valueExpr = FieldOf(value)
 		case FieldPath:
-			valueExpr = FieldOfPath(value)
+			valueExpr = FieldOf(value)
 		case Expr:
 			valueExpr = value
 		default:

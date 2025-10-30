@@ -213,7 +213,7 @@ func newFindNearestStage(vectorField any, queryVector any, measure PipelineDista
 	case string:
 		propertyExpr = FieldOf(v)
 	case FieldPath:
-		propertyExpr = FieldOfPath(v)
+		propertyExpr = FieldOf(v)
 	case Expr:
 		propertyExpr = v
 	default:
@@ -300,7 +300,7 @@ func newRemoveFieldsStage(fieldpaths ...any) (*removeFieldsStage, error) {
 		case string:
 			fields[i] = FieldOf(v)
 		case FieldPath:
-			fields[i] = FieldOfPath(v)
+			fields[i] = FieldOf(v)
 		default:
 			return nil, errInvalidArg(fp, "string", "FieldPath")
 		}
@@ -332,7 +332,7 @@ func newReplaceStage(fieldOrSelectable any) (*replaceStage, error) {
 	case string:
 		expr = FieldOf(v)
 	case FieldPath:
-		expr = FieldOfPath(v)
+		expr = FieldOf(v)
 	case Selectable:
 		_, expr = v.getSelectionDetails()
 	default:
@@ -463,7 +463,7 @@ func newUnnestStage(fieldExpr Expr, alias string, opts *UnnestOptions) (*unnestS
 		var indexFieldExpr Expr
 		switch v := opts.IndexField.(type) {
 		case FieldPath:
-			indexFieldExpr = FieldOfPath(v)
+			indexFieldExpr = FieldOf(v)
 		case string:
 			indexFieldExpr = FieldOf(v)
 		default:
