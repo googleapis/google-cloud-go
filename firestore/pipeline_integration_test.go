@@ -868,10 +868,10 @@ func aggregateFuncs(t *testing.T) {
 			want: map[string]interface{}{"sum_a": int64(3)},
 		},
 		{
-			name: "Sum - FieldOfPath Expr",
+			name: "Sum - FieldOf Path Expr",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(Sum(FieldOfPath(FieldPath([]string{"a"}))).As("sum_a")),
+				Aggregate(Sum(FieldOf(FieldPath([]string{"a"}))).As("sum_a")),
 			want: map[string]interface{}{"sum_a": int64(3)},
 		},
 		{

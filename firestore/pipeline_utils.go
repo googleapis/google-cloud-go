@@ -117,7 +117,7 @@ func asFieldExpr(val any) Expr {
 	case Expr:
 		return v
 	case FieldPath:
-		return FieldOfPath(v)
+		return FieldOf(v)
 	case string:
 		return FieldOf(v)
 	default:
@@ -191,7 +191,7 @@ func fieldsOrSelectablesToSelectables(fieldsOrSelectables ...any) ([]Selectable,
 			}
 			s = FieldOf(v).(*field)
 		case FieldPath:
-			s = FieldOfPath(v).(*field)
+			s = FieldOf(v).(*field)
 		case Selectable:
 			s = v
 		default:
