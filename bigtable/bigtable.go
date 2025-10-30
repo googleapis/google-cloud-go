@@ -201,9 +201,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			dialFunc,
 			config.Logger,
 			nil,
-			btransport.WithHealthCheckConfig(btransport.DefaultHealthCheckConfig()),
-			btransport.WithDynamicChannelPool(btransport.DynamicChannelPoolConfig{}),
+			btransport.WithHealthCheckConfig(btopt.DefaultHealthCheckConfig()),
+			btransport.WithDynamicChannelPool(btopt.DefaultDynamicChannelPoolConfig(defaultBigtableConnPoolSize)),
+			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig())
 		)
+		connPool, connPoolErr = btransport.NewBigtableChannelPool(ctx, defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), dialFunc, config.Logger, meterP)
 	} else {
 		// use to regular ConnPool
 		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
