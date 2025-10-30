@@ -185,6 +185,15 @@ func (cv CreateView) SQL() string {
 	return sb.String()
 }
 
+func writeSQLList[T interface{ SQL() string }](sb *strings.Builder, items []T) {
+	for i, item := range items {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(item.SQL())
+	}
+}
+
 func writeFormattedQuery(sb *strings.Builder, q *Query) {
 	sb.WriteString("SELECT\n")
 
@@ -208,12 +217,7 @@ func writeFormattedQuery(sb *strings.Builder, q *Query) {
 	// FROM clause
 	if len(q.Select.From) > 0 {
 		sb.WriteString("FROM ")
-		for i, f := range q.Select.From {
-			if i > 0 {
-				sb.WriteString(", ")
-			}
-			sb.WriteString(f.SQL())
-		}
+		writeSQLList(sb, q.Select.From)
 	}
 
 	// WHERE clause
@@ -225,23 +229,13 @@ func writeFormattedQuery(sb *strings.Builder, q *Query) {
 	// GROUP BY clause
 	if len(q.Select.GroupBy) > 0 {
 		sb.WriteString("\nGROUP BY ")
-		for i, gb := range q.Select.GroupBy {
-			if i > 0 {
-				sb.WriteString(", ")
-			}
-			sb.WriteString(gb.SQL())
-		}
+		writeSQLList(sb, q.Select.GroupBy)
 	}
 
 	// ORDER BY clause
 	if len(q.Order) > 0 {
 		sb.WriteString("\nORDER BY ")
-		for i, o := range q.Order {
-			if i > 0 {
-				sb.WriteString(", ")
-			}
-			sb.WriteString(o.SQL())
-		}
+		writeSQLList(sb, q.Order)
 	}
 
 	// LIMIT/OFFSET clauses
