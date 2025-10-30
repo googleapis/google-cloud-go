@@ -2090,16 +2090,19 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 	/*
 		DELETE [FROM] target_name [[AS] alias]
 		WHERE condition
+		THEN RETURN { [ expression. ]* | expression [ [ AS ] alias ] } [, ...]
 
 		UPDATE target_name [[AS] alias]
 		SET update_item [, ...]
 		WHERE condition
+		THEN RETURN { [ expression. ]* | expression [ [ AS ] alias ] } [, ...]
 
 		update_item: path_expression = expression | path_expression = DEFAULT
 
 		INSERT [INTO] target_name
 		 (column_name_1 [, ..., column_name_n] )
 		 input
+		 THEN RETURN { [ expression. ]* | expression [ [ AS ] alias ] } [, ...]
 
 		input:
 		 VALUES (row_1_column_1_expr [, ..., row_1_column_n_expr ] )
@@ -2123,9 +2126,15 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		if err != nil {
 			return nil, err
 		}
+		list, aliases, err := p.parseThenReturn()
+		if err != nil {
+			return nil, err
+		}
 		return &Delete{
-			Table: tname,
-			Where: where,
+			Table:         tname,
+			Where:         where,
+			Return:        list,
+			ReturnAliases: aliases,
 		}, nil
 	}
 
@@ -2160,6 +2169,12 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 			return nil, err
 		}
 		u.Where = where
+		list, aliases, err := p.parseThenReturn()
+		if err != nil {
+			return nil, err
+		}
+		u.Return = list
+		u.ReturnAliases = aliases
 		return u, nil
 	}
 
@@ -2196,14 +2211,28 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 			}
 		}
 
+		list, aliases, err := p.parseThenReturn()
+		if err != nil {
+			return nil, err
+		}
+
 		return &Insert{
-			Table:   tname,
-			Columns: columns,
-			Input:   input,
+			Table:         tname,
+			Columns:       columns,
+			Input:         input,
+			Return:        list,
+			ReturnAliases: aliases,
 		}, nil
 	}
 
 	return nil, p.errorf("unknown DML statement")
+}
+
+func (p *parser) parseThenReturn() ([]Expr, []ID, *parseError) {
+	if p.eat("THEN", "RETURN") {
+		return p.parseSelectList()
+	}
+	return nil, nil, nil
 }
 
 func (p *parser) parseUpdateItem() (UpdateItem, *parseError) {
