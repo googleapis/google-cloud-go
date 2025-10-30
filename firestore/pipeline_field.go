@@ -30,16 +30,16 @@ type field struct {
 
 // FieldOf creates a new field [Expr] from a dot separated field path string or [FieldPath].
 func FieldOf[T string | FieldPath](path T) Expr {
-	anyPath := any(path)
 	var fieldPath FieldPath
-	var err error
-	if v, ok := anyPath.(string); ok {
-		fieldPath, err = parseDotSeparatedString(v)
+	switch p := any(path).(type) {
+	case string:
+		fp, err := parseDotSeparatedString(p)
 		if err != nil {
 			return &field{baseExpr: &baseExpr{err: err}}
 		}
-	} else {
-		fieldPath = anyPath.(FieldPath)
+		fieldPath = fp
+	case FieldPath:
+		fieldPath = p
 	}
 
 	if err := fieldPath.validate(); err != nil {
