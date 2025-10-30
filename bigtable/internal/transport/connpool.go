@@ -233,13 +233,19 @@ func (chs *connHealthState) getFailedProbes() int {
 // connEntry represents a single connection in the pool.
 type connEntry struct {
 	conn          *BigtableConn
-	unaryLoad     int32           // In-flight unary requests
-	streamingLoad int32           // Active streams
+	unaryLoad     atomic.Int32    // In-flight unary requests
+	streamingLoad atomic.Int32    // Active streams
 	health        connHealthState // Embedded health state
-	altsUsed      int32           // Set to 1 atomically if ALTS is used, 0 otherwise.
+	altsUsed      atomic.Bool     // alts used, best effort only checked during Prime()
 	errorCount    int64           // Errors since the last metric report
 	drainingState atomic.Bool     // True if the connection is being gracefully drained.
 
+}
+
+// isALTSUsed reports whether the connection is using ALTS aka Direct Access.
+// best effort basis
+func (e *connEntry) isALTSUsed() bool {
+	return e.altsUsed.Load()
 }
 
 // isDraining atomically checks if the connection is in the draining state.
@@ -282,14 +288,9 @@ func (p *BigtableChannelPool) waitForDrainAndClose(entry *connEntry) {
 }
 
 func (e *connEntry) calculateWeightedLoad() int32 {
-	unary := atomic.LoadInt32(&e.unaryLoad)
-	streaming := atomic.LoadInt32(&e.streamingLoad)
+	unary := e.unaryLoad.Load()
+	streaming := e.streamingLoad.Load()
 	return (unaryLoadFactor * unary) + (streamingLoadFactor * streaming)
-}
-
-// isALTSUsed reports whether the connection is using ALTS.
-func (e *connEntry) isALTSUsed() bool {
-	return atomic.LoadInt32(&e.altsUsed) == 1
 }
 
 // ChannelHealthMonitor manages the overall health checking process for a pool of connections.
@@ -688,7 +689,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 			pool.poolCancel() // Ensure context is cancelled
 			return nil, err
 		}
-		entry := &connEntry{conn: conn, unaryLoad: 0, streamingLoad: 0}
+		entry := &connEntry{conn: conn}
 		initialConns[i] = entry // TODO prime the connection
 		// Prime the new connection in a non-blocking goroutine to warm it up.
 		// We pass the conn object as an argument to avoid closing over the loop variable.
@@ -699,7 +700,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 			if err != nil {
 				btopt.Debugf(pool.logger, "bigtable_connpool: failed to prime initial connection: %v\n", err)
 			} else if isALTS {
-				atomic.StoreInt32(&e.altsUsed, 1)
+				e.altsUsed.Store(true)
 			}
 		}(entry)
 	}
@@ -755,12 +756,12 @@ func (p *BigtableChannelPool) snapshotAndRecordMetrics(ctx context.Context) {
 
 		// Record distribution sample for unary load
 		unaryAttrs := attribute.NewSet(append(baseAttrs, attribute.Bool("streaming", false))...)
-		unaryLoad := atomic.LoadInt32(&entry.unaryLoad)
+		unaryLoad := entry.unaryLoad.Load()
 		p.outstandingRPCsHistogram.Record(ctx, float64(unaryLoad), metric.WithAttributeSet(unaryAttrs))
 
 		// Record distribution sample for streaming load
 		streamingAttrs := attribute.NewSet(append(baseAttrs, attribute.Bool("streaming", true))...)
-		streamingLoad := atomic.LoadInt32(&entry.streamingLoad)
+		streamingLoad := entry.streamingLoad.Load()
 		p.outstandingRPCsHistogram.Record(ctx, float64(streamingLoad), metric.WithAttributeSet(streamingAttrs))
 
 		// Record per-connection error count for the interval
@@ -930,10 +931,8 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 	}
 
 	newEntry := &connEntry{
-		conn:          newConn,
-		unaryLoad:     0,
-		streamingLoad: 0,
-		health:        connHealthState{},
+		conn:   newConn,
+		health: connHealthState{},
 	}
 
 	go func() {
@@ -943,7 +942,7 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 		if err != nil {
 			btopt.Debugf(p.logger, "bigtable_connpool: failed to prime replacement connection at index %d: %v\n", idx, err)
 		} else if isALTS {
-			atomic.StoreInt32(&newEntry.altsUsed, 1)
+			newEntry.altsUsed.Store(true)
 		}
 	}()
 
@@ -967,8 +966,8 @@ func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args in
 	if err != nil {
 		return err
 	}
-	atomic.AddInt32(&entry.unaryLoad, 1)
-	defer atomic.AddInt32(&entry.unaryLoad, -1)
+	entry.unaryLoad.Add(1)
+	defer entry.unaryLoad.Add(-1)
 
 	err = entry.conn.Invoke(ctx, method, args, reply, opts...)
 	if err != nil {
@@ -1003,11 +1002,11 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 		return nil, err
 	}
 
-	atomic.AddInt32(&entry.streamingLoad, 1)
+	entry.streamingLoad.Add(1)
 	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
 	if err != nil {
 		atomic.AddInt64(&entry.errorCount, 1)
-		atomic.AddInt32(&entry.streamingLoad, -1)
+		entry.streamingLoad.Add(-1) // Decrement immediately on creation failure
 		return nil, err
 	}
 
@@ -1144,7 +1143,7 @@ func (s *refCountedStream) RecvMsg(m interface{}) error {
 // decrementLoad ensures the load count is decremented exactly once.
 func (s *refCountedStream) decrementLoad() {
 	s.once.Do(func() {
-		atomic.AddInt32(&s.entry.streamingLoad, -1)
+		s.entry.streamingLoad.Add(-1)
 	})
 }
 
@@ -1191,7 +1190,7 @@ func (p *BigtableChannelPool) addConnections(n int) bool {
 			if err != nil {
 				btopt.Debugf(p.logger, "bigtable_connpool: failed to prime new connection: %v\n", err)
 			} else if isALTS {
-				atomic.StoreInt32(&e.altsUsed, 1)
+				e.altsUsed.Store(true)
 			}
 		}(entry)
 	}

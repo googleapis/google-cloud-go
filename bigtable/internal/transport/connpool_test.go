@@ -455,8 +455,8 @@ func TestSelectLeastLoadedRandomOfTwo(t *testing.T) {
 	conns = make([]*connEntry, len(testLoads))
 	for i, loads := range testLoads {
 		conns[i] = &connEntry{}
-		atomic.StoreInt32(&conns[i].unaryLoad, loads.unary)
-		atomic.StoreInt32(&conns[i].streamingLoad, loads.stream)
+		conns[i].unaryLoad.Store(loads.unary)
+		conns[i].streamingLoad.Store(loads.stream)
 	}
 	pool.conns.Store(conns)
 	for i := 0; i < 100; i++ {
@@ -568,8 +568,8 @@ func TestPoolInvoke(t *testing.T) {
 			}
 
 			for _, entry := range pool.getConns() {
-				if atomic.LoadInt32(&entry.unaryLoad) != 0 {
-					t.Errorf("Unary load is non-zero after Invoke: %d", atomic.LoadInt32(&entry.unaryLoad))
+				if entry.unaryLoad.Load() != 0 {
+					t.Errorf("Unary load is non-zero after Invoke: %d", entry.unaryLoad.Load())
 				}
 			}
 
@@ -590,8 +590,8 @@ func TestPoolInvoke(t *testing.T) {
 				t.Errorf("Server call count got %d, want 1 after error", fake.getCallCount())
 			}
 			for _, entry := range pool.getConns() {
-				if atomic.LoadInt32(&entry.unaryLoad) != 0 {
-					t.Errorf("Unary load is non-zero after failed Invoke: %d", atomic.LoadInt32(&entry.unaryLoad))
+				if entry.unaryLoad.Load() != 0 {
+					t.Errorf("Unary load is non-zero after failed Invoke: %d", entry.unaryLoad.Load())
 				}
 			}
 		})
@@ -635,7 +635,7 @@ func TestPoolNewStream(t *testing.T) {
 
 			loadSum := int32(0)
 			for _, entry := range pool.getConns() {
-				loadSum += atomic.LoadInt32(&entry.streamingLoad)
+				loadSum += entry.streamingLoad.Load()
 			}
 			if loadSum != 1 {
 				t.Errorf("Total streaming load after NewStream got %d, want 1.", loadSum)
@@ -663,7 +663,7 @@ func TestPoolNewStream(t *testing.T) {
 			time.Sleep(20 * time.Millisecond) // Allow decrements to complete
 			loadSum = int32(0)
 			for _, entry := range pool.getConns() {
-				loadSum += atomic.LoadInt32(&entry.streamingLoad)
+				loadSum += entry.streamingLoad.Load()
 			}
 			if loadSum != 0 {
 				t.Errorf("Total streaming load after stream completion got %d, want 0.", loadSum)
@@ -700,14 +700,14 @@ func TestPoolNewStream(t *testing.T) {
 			// t.Fatalf("NewStream should have failed")
 		} else {
 			// This case should ideally not happen based on grpc behavior
-			if atomic.LoadInt32(&pool.getConns()[0].streamingLoad) != 0 {
-				t.Errorf("Load is non-zero after NewStream failed: %d", atomic.LoadInt32(&pool.getConns()[0].streamingLoad))
+			if pool.getConns()[0].streamingLoad.Load() != 0 {
+				t.Errorf("Load is non-zero after NewStream failed: %d", pool.getConns()[0].streamingLoad.Load())
 			}
 			return
 		}
 
-		if atomic.LoadInt32(&pool.getConns()[0].streamingLoad) != 1 {
-			t.Fatalf("Load is %d, want 1 after NewStream", atomic.LoadInt32(&pool.getConns()[0].streamingLoad))
+		if pool.getConns()[0].streamingLoad.Load() != 1 {
+			t.Fatalf("Load is %d, want 1 after NewStream", pool.getConns()[0].streamingLoad.Load())
 		}
 
 		err = stream.RecvMsg(&testpb.SimpleResponse{})
@@ -722,8 +722,8 @@ func TestPoolNewStream(t *testing.T) {
 
 		time.Sleep(20 * time.Millisecond)
 
-		if atomic.LoadInt32(&pool.getConns()[0].streamingLoad) != 0 {
-			t.Errorf("Load is %d, want 0 after stream error", atomic.LoadInt32(&pool.getConns()[0].streamingLoad))
+		if pool.getConns()[0].streamingLoad.Load() != 0 {
+			t.Errorf("Load is %d, want 0 after stream error", pool.getConns()[0].streamingLoad.Load())
 		}
 	})
 }
@@ -755,8 +755,8 @@ func TestSelectLeastLoaded(t *testing.T) {
 	expectedMinIndex := 4
 	for i, loads := range testLoads {
 		conns[i] = &connEntry{}
-		atomic.StoreInt32(&conns[i].unaryLoad, loads.unary)
-		atomic.StoreInt32(&conns[i].streamingLoad, loads.stream)
+		conns[i].unaryLoad.Store(loads.unary)
+		conns[i].streamingLoad.Store(loads.stream)
 	}
 	pool.conns.Store(conns)
 
@@ -828,8 +828,8 @@ func TestMultipleStreamsSingleConn(t *testing.T) {
 		}
 		streams[i] = stream
 		expectedLoad := int32(i + 1)
-		if atomic.LoadInt32(&connEntry.streamingLoad) != expectedLoad {
-			t.Errorf("Load after opening stream %d is %d, want %d", i, atomic.LoadInt32(&connEntry.streamingLoad), expectedLoad)
+		if connEntry.streamingLoad.Load() != expectedLoad {
+			t.Errorf("Load after opening stream %d is %d, want %d", i, connEntry.streamingLoad.Load(), expectedLoad)
 		}
 	}
 
@@ -867,13 +867,13 @@ func TestMultipleStreamsSingleConn(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 
 		expectedLoad := int32(numStreams - 1 - i)
-		currentLoad := atomic.LoadInt32(&connEntry.streamingLoad)
+		currentLoad := connEntry.streamingLoad.Load()
 		if currentLoad != expectedLoad {
 			t.Errorf("Load after closing stream %d is %d, want %d", i, currentLoad, expectedLoad)
 		}
 	}
 
-	finalLoad := atomic.LoadInt32(&connEntry.streamingLoad)
+	finalLoad := connEntry.streamingLoad.Load()
 	if finalLoad != 0 {
 		t.Errorf("Final load is %d, want 0", finalLoad)
 	}
@@ -902,34 +902,34 @@ func TestCachingStreamDecrement(t *testing.T) {
 	t.Run("DecrementOnRecvError", func(t *testing.T) {
 		fake.serverErr = errors.New("stream recv error")
 		defer func() { fake.serverErr = nil }()
-		atomic.StoreInt32(&entry.streamingLoad, 0)
+		entry.streamingLoad.Store(0)
 
 		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream failed: %v", err)
 		}
-		if atomic.LoadInt32(&entry.streamingLoad) != 1 {
-			t.Errorf("Load is %d, want 1 after NewStream", atomic.LoadInt32(&entry.streamingLoad))
+		if entry.streamingLoad.Load() != 1 {
+			t.Errorf("Load is %d, want 1 after NewStream", entry.streamingLoad.Load())
 		}
 
 		stream.RecvMsg(&testpb.SimpleResponse{})
 		time.Sleep(20 * time.Millisecond)
 
-		if atomic.LoadInt32(&entry.streamingLoad) != 0 {
-			t.Errorf("Load is %d, want 0 after RecvMsg error", atomic.LoadInt32(&entry.streamingLoad))
+		if entry.streamingLoad.Load() != 0 {
+			t.Errorf("Load is %d, want 0 after RecvMsg error", entry.streamingLoad.Load())
 		}
 	})
 
 	t.Run("DecrementOnSendError", func(t *testing.T) {
-		atomic.StoreInt32(&entry.streamingLoad, 0)
+		entry.streamingLoad.Store(0)
 		fake.serverErr = nil
 
 		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream failed: %v", err)
 		}
-		if atomic.LoadInt32(&entry.streamingLoad) != 1 {
-			t.Errorf("Load is %d, want 1 after NewStream", atomic.LoadInt32(&entry.streamingLoad))
+		if entry.streamingLoad.Load() != 1 {
+			t.Errorf("Load is %d, want 1 after NewStream", entry.streamingLoad.Load())
 		}
 
 		if err := stream.CloseSend(); err != nil {
@@ -950,13 +950,13 @@ func TestCachingStreamDecrement(t *testing.T) {
 		}
 
 		time.Sleep(20 * time.Millisecond)
-		if atomic.LoadInt32(&entry.streamingLoad) != 0 {
-			t.Errorf("Load is %d, want 0 after SendMsg error", atomic.LoadInt32(&entry.streamingLoad))
+		if entry.streamingLoad.Load() != 0 {
+			t.Errorf("Load is %d, want 0 after SendMsg error", entry.streamingLoad.Load())
 		}
 	})
 
 	t.Run("NoDecrementOnSuccessfulSend", func(t *testing.T) {
-		atomic.StoreInt32(&entry.streamingLoad, 0)
+		entry.streamingLoad.Store(0)
 		fake.serverErr = nil
 		fake.streamSema = make(chan struct{})
 
@@ -964,15 +964,15 @@ func TestCachingStreamDecrement(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewStream failed: %v", err)
 		}
-		if atomic.LoadInt32(&entry.streamingLoad) != 1 {
-			t.Errorf("Load is %d, want 1", atomic.LoadInt32(&entry.streamingLoad))
+		if entry.streamingLoad.Load() != 1 {
+			t.Errorf("Load is %d, want 1", entry.streamingLoad.Load())
 		}
 
 		if err := stream.SendMsg(&testpb.SimpleRequest{Payload: &testpb.Payload{Body: []byte("test")}}); err != nil {
 			t.Fatalf("SendMsg failed: %v", err)
 		}
-		if atomic.LoadInt32(&entry.streamingLoad) != 1 {
-			t.Errorf("Load is %d, want 1 after successful SendMsg", atomic.LoadInt32(&entry.streamingLoad))
+		if entry.streamingLoad.Load() != 1 {
+			t.Errorf("Load is %d, want 1 after successful SendMsg", entry.streamingLoad.Load())
 		}
 
 		close(fake.streamSema)
@@ -983,8 +983,8 @@ func TestCachingStreamDecrement(t *testing.T) {
 			}
 		}
 		time.Sleep(20 * time.Millisecond)
-		if atomic.LoadInt32(&entry.streamingLoad) != 0 {
-			t.Errorf("Load is %d, want 0 after stream cleanup", atomic.LoadInt32(&entry.streamingLoad))
+		if entry.streamingLoad.Load() != 0 {
+			t.Errorf("Load is %d, want 0 after stream cleanup", entry.streamingLoad.Load())
 		}
 	})
 }
@@ -1262,7 +1262,7 @@ func TestReplaceConnection(t *testing.T) {
 		if newEntry == oldEntry || newEntry.conn == oldEntry.conn {
 			t.Errorf("Connection not replaced")
 		}
-		if atomic.LoadInt32(&newEntry.unaryLoad) != 0 || atomic.LoadInt32(&newEntry.streamingLoad) != 0 {
+		if newEntry.unaryLoad.Load() != 0 || newEntry.streamingLoad.Load() != 0 {
 			t.Errorf("New entry load not zero")
 		}
 		time.Sleep(50 * time.Millisecond) // Wait for prime to finish
@@ -1557,8 +1557,8 @@ func TestMetricsExporting(t *testing.T) {
 
 func setConnLoads(conns []*connEntry, unary, stream int32) {
 	for _, entry := range conns {
-		atomic.StoreInt32(&entry.unaryLoad, unary)
-		atomic.StoreInt32(&entry.streamingLoad, stream)
+		entry.unaryLoad.Store(unary)
+		entry.streamingLoad.Store(stream)
 	}
 }
 
@@ -1909,8 +1909,8 @@ func TestGracefulDraining(t *testing.T) {
 			t.Fatalf("NewStream failed: %v", err)
 		}
 
-		if atomic.LoadInt32(&oldEntry.streamingLoad) != 1 {
-			t.Fatalf("Streaming load should be 1, got %d", atomic.LoadInt32(&oldEntry.streamingLoad))
+		if oldEntry.streamingLoad.Load() != 1 {
+			t.Fatalf("Streaming load should be 1, got %d", oldEntry.streamingLoad.Load())
 		}
 
 		// Trigger the replacement, which should start draining the old connection
@@ -1953,8 +1953,8 @@ func TestGracefulDraining(t *testing.T) {
 		// Wait for the waitForDrainAndClose goroutine to finish
 		time.Sleep(500 * time.Millisecond)
 
-		if atomic.LoadInt32(&oldEntry.streamingLoad) != 0 {
-			t.Errorf("Old connection load is still %d after stream completion", atomic.LoadInt32(&oldEntry.streamingLoad))
+		if oldEntry.streamingLoad.Load() != 0 {
+			t.Errorf("Old connection load is still %d after stream completion", oldEntry.streamingLoad.Load())
 		}
 		if !isConnClosed(oldEntry.conn.ClientConn) {
 			t.Error("Old connection was not closed after its load dropped to zero")
@@ -2025,7 +2025,7 @@ func TestGracefulDraining(t *testing.T) {
 			t.Error("Connection was not force-closed after the draining timeout")
 		}
 		// In a real scenario, we'd log that the load was still > 0, e.g.,
-		if atomic.LoadInt32(&oldEntry.streamingLoad) == 0 {
+		if oldEntry.streamingLoad.Load() == 0 {
 			t.Error("Load was unexpectedly 0, timeout should not have been the reason for closing")
 		}
 	})
