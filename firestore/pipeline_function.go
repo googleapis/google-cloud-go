@@ -328,7 +328,7 @@ func CurrentTimestamp() Expr {
 //	// Get the length of the 'tags' array field.
 //	ArrayLength("tags")
 func ArrayLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("array_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("array_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // Array creates an expression that represents a Firestore array.
@@ -359,7 +359,7 @@ func ArrayFromSlice[T any](elements []T) Expr {
 //	// Get the first element of the 'tags' array field.
 //	ArrayGet("tags", 0)
 func ArrayGet(exprOrFieldPath any, offset any) Expr {
-	return newBaseFunction("array_get", []Expr{toExprOrField(exprOrFieldPath), asInt64Expr(offset)})
+	return newBaseFunction("array_get", []Expr{asFieldExpr(exprOrFieldPath), asInt64Expr(offset)})
 }
 
 // ArrayReverse creates an expression that reverses the order of elements in an array.
@@ -370,7 +370,7 @@ func ArrayGet(exprOrFieldPath any, offset any) Expr {
 //	// Reverse the 'tags' array.
 //	ArrayReverse("tags")
 func ArrayReverse(exprOrFieldPath any) Expr {
-	return newBaseFunction("array_reverse", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("array_reverse", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ArrayConcat creates an expression that concatenates multiple arrays into a single array.
@@ -382,7 +382,7 @@ func ArrayReverse(exprOrFieldPath any) Expr {
 //	// Concatenate the 'tags' and 'categories' array fields.
 //	ArrayConcat("tags", FieldOf("categories"))
 func ArrayConcat(exprOrFieldPath any, otherArrays ...any) Expr {
-	return newBaseFunction("array_concat", append([]Expr{toExprOrField(exprOrFieldPath)}, toExprs(otherArrays)...))
+	return newBaseFunction("array_concat", append([]Expr{asFieldExpr(exprOrFieldPath)}, toExprs(otherArrays)...))
 }
 
 // ArraySum creates an expression that calculates the sum of all elements in a numeric array.
@@ -393,7 +393,7 @@ func ArrayConcat(exprOrFieldPath any, otherArrays ...any) Expr {
 //	// Calculate the sum of the 'scores' array.
 //	ArraySum("scores")
 func ArraySum(exprOrFieldPath any) Expr {
-	return newBaseFunction("sum", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("sum", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ArrayMaximum creates an expression that finds the maximum element in a numeric array.
@@ -404,7 +404,7 @@ func ArraySum(exprOrFieldPath any) Expr {
 //	// Find the maximum value in the 'scores' array.
 //	ArrayMaximum("scores")
 func ArrayMaximum(exprOrFieldPath any) Expr {
-	return newBaseFunction("maximum", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("maximum", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ArrayMinimum creates an expression that finds the minimum element in a numeric array.
@@ -415,7 +415,7 @@ func ArrayMaximum(exprOrFieldPath any) Expr {
 //	// Find the minimum value in the 'scores' array.
 //	ArrayMinimum("scores")
 func ArrayMinimum(exprOrFieldPath any) Expr {
-	return newBaseFunction("minimum", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("minimum", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ByteLength creates an expression that calculates the length of a string represented by a field or [Expr] in UTF-8
@@ -427,7 +427,7 @@ func ArrayMinimum(exprOrFieldPath any) Expr {
 //	// Get the byte length of the 'name' field.
 //	ByteLength("name")
 func ByteLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("byte_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("byte_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // CharLength creates an expression that calculates the character length of a string field or expression in UTF8.
@@ -438,7 +438,7 @@ func ByteLength(exprOrFieldPath any) Expr {
 //	// Get the character length of the 'name' field.
 //	CharLength("name")
 func CharLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("char_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("char_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // StringConcat creates an expression that concatenates multiple strings into a single string.
@@ -450,7 +450,7 @@ func CharLength(exprOrFieldPath any) Expr {
 //	// Concatenate first name and last name.
 //	StringConcat(FieldOf("firstName"), " ", FieldOf("lastName"))
 func StringConcat(exprOrFieldPath any, otherStrings ...any) Expr {
-	return newBaseFunction("string_concat", append([]Expr{toExprOrField(exprOrFieldPath)}, toExprs(otherStrings)...))
+	return newBaseFunction("string_concat", append([]Expr{asFieldExpr(exprOrFieldPath)}, toExprs(otherStrings)...))
 }
 
 // StringReverse creates an expression that reverses a string.
@@ -461,7 +461,7 @@ func StringConcat(exprOrFieldPath any, otherStrings ...any) Expr {
 //	// Reverse the 'name' field.
 //	StringReverse("name")
 func StringReverse(exprOrFieldPath any) Expr {
-	return newBaseFunction("string_reverse", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("string_reverse", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // Join creates an expression that joins the elements of a string array into a single string.
@@ -473,7 +473,7 @@ func StringReverse(exprOrFieldPath any) Expr {
 //	// Join the 'tags' array with a comma and space.
 //	Join("tags", ", ")
 func Join(exprOrFieldPath any, separator any) Expr {
-	return newBaseFunction("join", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(separator)})
+	return newBaseFunction("join", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(separator)})
 }
 
 // Substring creates an expression that returns a substring of a string.
@@ -486,7 +486,7 @@ func Join(exprOrFieldPath any, separator any) Expr {
 //	// Get the first 5 characters of the 'description' field.
 //	Substring("description", 0, 5)
 func Substring(exprOrFieldPath any, index any, offset any) Expr {
-	return newBaseFunction("substring", []Expr{toExprOrField(exprOrFieldPath), asInt64Expr(index), asInt64Expr(offset)})
+	return newBaseFunction("substring", []Expr{asFieldExpr(exprOrFieldPath), asInt64Expr(index), asInt64Expr(offset)})
 }
 
 // ToLower creates an expression that converts a string to lowercase.
@@ -497,7 +497,7 @@ func Substring(exprOrFieldPath any, index any, offset any) Expr {
 //	// Convert the 'username' to lowercase.
 //	ToLower("username")
 func ToLower(exprOrFieldPath any) Expr {
-	return newBaseFunction("to_lower", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("to_lower", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // ToUpper creates an expression that converts a string to uppercase.
@@ -508,7 +508,7 @@ func ToLower(exprOrFieldPath any) Expr {
 //	// Convert the 'product_code' to uppercase.
 //	ToUpper("product_code")
 func ToUpper(exprOrFieldPath any) Expr {
-	return newBaseFunction("to_upper", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("to_upper", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // Trim creates an expression that removes leading and trailing whitespace from a string.
@@ -519,7 +519,7 @@ func ToUpper(exprOrFieldPath any) Expr {
 //	// Trim the 'email' field.
 //	Trim("email")
 func Trim(exprOrFieldPath any) Expr {
-	return newBaseFunction("trim", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("trim", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // CosineDistance creates an expression that calculates the cosine distance between two vectors.
@@ -531,7 +531,7 @@ func Trim(exprOrFieldPath any) Expr {
 //	// Calculate the cosine distance between two vector fields.
 //	CosineDistance("vector_field_1", FieldOf("vector_field_2"))
 func CosineDistance(vector1 any, vector2 any) Expr {
-	return newBaseFunction("cosine_distance", []Expr{toExprOrField(vector1), asVectorExpr(vector2)})
+	return newBaseFunction("cosine_distance", []Expr{asFieldExpr(vector1), asVectorExpr(vector2)})
 }
 
 // DotProduct creates an expression that calculates the dot product of two vectors.
@@ -543,7 +543,7 @@ func CosineDistance(vector1 any, vector2 any) Expr {
 //	// Calculate the dot product of two vector fields.
 //	DotProduct("vector_field_1", FieldOf("vector_field_2"))
 func DotProduct(vector1 any, vector2 any) Expr {
-	return newBaseFunction("dot_product", []Expr{toExprOrField(vector1), asVectorExpr(vector2)})
+	return newBaseFunction("dot_product", []Expr{asFieldExpr(vector1), asVectorExpr(vector2)})
 }
 
 // EuclideanDistance creates an expression that calculates the euclidean distance between two vectors.
@@ -555,7 +555,7 @@ func DotProduct(vector1 any, vector2 any) Expr {
 //	// Calculate the euclidean distance between two vector fields.
 //	EuclideanDistance("vector_field_1", FieldOf("vector_field_2"))
 func EuclideanDistance(vector1 any, vector2 any) Expr {
-	return newBaseFunction("euclidean_distance", []Expr{toExprOrField(vector1), asVectorExpr(vector2)})
+	return newBaseFunction("euclidean_distance", []Expr{asFieldExpr(vector1), asVectorExpr(vector2)})
 }
 
 // VectorLength creates an expression that calculates the length of a vector.
@@ -566,5 +566,5 @@ func EuclideanDistance(vector1 any, vector2 any) Expr {
 //	// Calculate the length of a vector field.
 //	VectorLength("vector_field")
 func VectorLength(exprOrFieldPath any) Expr {
-	return newBaseFunction("vector_length", []Expr{toExprOrField(exprOrFieldPath)})
+	return newBaseFunction("vector_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }

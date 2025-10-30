@@ -24,7 +24,7 @@ import (
 
 // newFieldAndArrayBooleanExpr creates a new BooleanExpr for functions that operate on a field/expression and an array of values.
 func newFieldAndArrayBooleanExpr(name string, exprOrFieldPath any, values any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{toExprOrField(exprOrFieldPath), asArrayFunctionExpr(values)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{asFieldExpr(exprOrFieldPath), asArrayFunctionExpr(values)})}
 }
 
 // toExprs converts a plain Go value or an existing Expr into an Expr.
@@ -122,28 +122,6 @@ func asFieldExpr(val any) Expr {
 		return FieldOf(v)
 	default:
 		return &baseExpr{err: fmt.Errorf("firestore: value must be a string, FieldPath, or Expr, but got %T", val)}
-	}
-}
-
-func asInt64Expr(val any) Expr {
-	switch v := val.(type) {
-	case Expr:
-		return v
-	case int, int32, int64:
-		return ConstantOf(v)
-	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int32, int64 or Expr, but got %T", val)}
-	}
-}
-
-func asStringExpr(val any) Expr {
-	switch v := val.(type) {
-	case Expr:
-		return v
-	case string:
-		return ConstantOf(v)
-	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
 	}
 }
 

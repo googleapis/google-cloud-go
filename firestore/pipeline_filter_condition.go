@@ -39,7 +39,7 @@ var _ BooleanExpr = (*baseBooleanExpr)(nil)
 //	// Check if the 'tags' array contains "Go".
 //	ArrayContains("tags", "Go")
 func ArrayContains(exprOrFieldPath any, value any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("array_contains", []Expr{toExprOrField(exprOrFieldPath), toExprOrConstant(value)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("array_contains", []Expr{asFieldExpr(exprOrFieldPath), toExprOrConstant(value)})}
 }
 
 // ArrayContainsAll creates an expression that checks if an array contains all of the provided values.
@@ -241,7 +241,7 @@ func Equivalent(left, right any) BooleanExpr {
 //	// Check if the 'filename' field ends with ".go".
 //	EndsWith("filename", ".go")
 func EndsWith(exprOrFieldPath any, suffix any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("ends_with", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(suffix)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("ends_with", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(suffix)})}
 }
 
 // Like creates an expression that performs a case-sensitive wildcard string comparison.
@@ -253,7 +253,7 @@ func EndsWith(exprOrFieldPath any, suffix any) BooleanExpr {
 //	// Check if the 'name' field starts with "G".
 //	Like("name", "G%")
 func Like(exprOrFieldPath any, pattern any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("like", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(pattern)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("like", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(pattern)})}
 }
 
 // RegexContains creates an expression that checks if a string contains a match for a regular expression.
@@ -265,7 +265,7 @@ func Like(exprOrFieldPath any, pattern any) BooleanExpr {
 //	// Check if the 'email' field contains a gmail address.
 //	RegexContains("email", "@gmail\\.com$")
 func RegexContains(exprOrFieldPath any, pattern any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("regex_contains", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(pattern)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("regex_contains", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(pattern)})}
 }
 
 // RegexMatch creates an expression that checks if a string matches a regular expression.
@@ -277,7 +277,7 @@ func RegexContains(exprOrFieldPath any, pattern any) BooleanExpr {
 //	// Check if the 'zip_code' field is a 5-digit number.
 //	RegexMatch("zip_code", "^[0-9]{5}$")
 func RegexMatch(exprOrFieldPath any, pattern any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("regex_match", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(pattern)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("regex_match", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(pattern)})}
 }
 
 // StartsWith creates an expression that checks if a string field or expression starts with a given prefix.
@@ -289,7 +289,7 @@ func RegexMatch(exprOrFieldPath any, pattern any) BooleanExpr {
 //	// Check if the 'name' field starts with "Mr.".
 //	StartsWith("name", "Mr.")
 func StartsWith(exprOrFieldPath any, prefix any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("starts_with", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(prefix)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("starts_with", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(prefix)})}
 }
 
 // StringContains creates an expression that checks if a string contains a specified substring.
@@ -301,7 +301,7 @@ func StartsWith(exprOrFieldPath any, prefix any) BooleanExpr {
 //	// Check if the 'description' field contains the word "Firestore".
 //	StringContains("description", "Firestore")
 func StringContains(exprOrFieldPath any, substring any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("string_contains", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(substring)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("string_contains", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(substring)})}
 }
 
 // IsNaN creates a boolean expression that checks if a field or expression evaluates to NaN.
@@ -313,7 +313,7 @@ func StringContains(exprOrFieldPath any, substring any) BooleanExpr {
 //	// Check if the 'score' field is NaN.
 //	IsNaN("score")
 func IsNaN(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_nan", []Expr{toExprOrField(exprOrFieldPath)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_nan", []Expr{asFieldExpr(exprOrFieldPath)})}
 }
 
 // IsNotNaN creates a boolean expression that checks if a field or expression does not evaluate to NaN.
@@ -325,7 +325,7 @@ func IsNaN(exprOrFieldPath any) BooleanExpr {
 //	// Check if the 'score' field is not NaN.
 //	IsNotNaN("score")
 func IsNotNaN(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_nan", []Expr{toExprOrField(exprOrFieldPath)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_nan", []Expr{asFieldExpr(exprOrFieldPath)})}
 }
 
 // IsNull creates a boolean expression that checks if a field or expression evaluates to null.
@@ -337,7 +337,7 @@ func IsNotNaN(exprOrFieldPath any) BooleanExpr {
 //	// Check if the 'address' field is null.
 //	IsNull("address")
 func IsNull(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_null", []Expr{toExprOrField(exprOrFieldPath)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_null", []Expr{asFieldExpr(exprOrFieldPath)})}
 }
 
 // IsNotNull creates a boolean expression that checks if a field or expression does not evaluate to null.
@@ -349,5 +349,5 @@ func IsNull(exprOrFieldPath any) BooleanExpr {
 //	// Check if the 'address' field is not null.
 //	IsNotNull("address")
 func IsNotNull(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_null", []Expr{toExprOrField(exprOrFieldPath)})}
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_null", []Expr{asFieldExpr(exprOrFieldPath)})}
 }
