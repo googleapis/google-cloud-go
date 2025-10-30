@@ -1,5 +1,18 @@
 # Changes
 
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.40.1...bigtable/v1.41.0) (2025-10-30)
+
+
+### Features
+
+* **bigtable:** Add experimental Bigtable connection pool with custom load balancing strategy.  ([#12882](https://github.com/googleapis/google-cloud-go/issues/12882)) ([7aa9612](https://github.com/googleapis/google-cloud-go/commit/7aa96127a9903d47e8b2834b53e4bd229145161c))
+* **bigtable:** Enable ALTS hard bound token in Bigtable w/ direct access ([#13153](https://github.com/googleapis/google-cloud-go/issues/13153)) ([9023934](https://github.com/googleapis/google-cloud-go/commit/9023934127b4aaf8ba02e00486ef0f2fb9822137))
+
+
+### Performance Improvements
+
+* **bigtable:** Parallelize the exportTimeSeries function ([#13004](https://github.com/googleapis/google-cloud-go/issues/13004)) ([bafd691](https://github.com/googleapis/google-cloud-go/commit/bafd691de181bf19f39e55d15e1782156524b6ae)), refs [#12920](https://github.com/googleapis/google-cloud-go/issues/12920)
+
 ## [1.40.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.40.0...bigtable/v1.40.1) (2025-09-26)
 
 
