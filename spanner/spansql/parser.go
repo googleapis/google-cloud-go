@@ -4655,8 +4655,21 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return BytesLiteral(tok.string), nil
 	}
 
-	// Handle parenthesized expressions.
+	// Handle parenthesized expressions and scalar subqueries.
 	if tok.value == "(" {
+		// Look ahead to see if this is a subquery
+		if p.sniff("SELECT") {
+			q, err := p.parseQuery()
+			if err != nil {
+				return nil, err
+			}
+			if err := p.expect(")"); err != nil {
+				return nil, err
+			}
+			return ScalarSubquery{Query: q}, nil
+		}
+
+		// Regular parenthesized expression
 		e, err := p.parseExpr()
 		if err != nil {
 			return nil, err

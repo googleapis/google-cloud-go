@@ -1084,6 +1084,13 @@ func (eo ExistsOp) addSQL(sb *strings.Builder) {
 	sb.WriteString(")")
 }
 
+func (ss ScalarSubquery) SQL() string { return buildSQL(ss) }
+func (ss ScalarSubquery) addSQL(sb *strings.Builder) {
+	sb.WriteString("(")
+	ss.Query.addSQL(sb)
+	sb.WriteString(")")
+}
+
 func (io InOp) SQL() string { return buildSQL(io) }
 func (io InOp) addSQL(sb *strings.Builder) {
 	io.LHS.addSQL(sb)

@@ -2415,6 +2415,95 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE OR REPLACE VIEW Transaction SQL SECURITY INVOKER AS SELECT
+				ID, Name, Amount, AccountID, PaymentID
+			FROM
+				Transactions as t
+			JOIN Accounts as acc ON t.AccountID = acc.ID
+			JOIN Payment as p ON t.PaymentID = p.ID
+			    AND p.EventSequence = (
+					SELECT MAX(p2.EventSequence)
+					FROM Payment as p2
+					WHERE p2.ID = p.ID
+					)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateView{
+						Name:         "Transaction",
+						OrReplace:    true,
+						SecurityType: Invoker,
+						Query: Query{
+							Select: Select{
+								List: []Expr{ID("ID"), ID("Name"), ID("Amount"), ID("AccountID"), ID("PaymentID")},
+								From: []SelectFrom{
+									SelectFromJoin{
+										Type: InnerJoin,
+										LHS: SelectFromJoin{
+											Type: InnerJoin,
+											LHS: SelectFromTable{
+												Table: "Transactions",
+												Alias: "t",
+											},
+											RHS: SelectFromTable{
+												Table: "Accounts",
+												Alias: "acc",
+											},
+											On: ComparisonOp{
+												LHS: PathExp{"t", "AccountID"},
+												Op:  Eq,
+												RHS: PathExp{"acc", "ID"},
+											},
+										},
+										RHS: SelectFromTable{
+											Table: "Payment",
+											Alias: "p",
+										},
+										On: LogicalOp{
+											LHS: ComparisonOp{
+												LHS: PathExp{"t", "PaymentID"},
+												Op:  Eq,
+												RHS: PathExp{"p", "ID"},
+											},
+											Op: And,
+											RHS: ComparisonOp{
+												LHS: PathExp{"p", "EventSequence"},
+												Op:  Eq,
+												RHS: ScalarSubquery{
+													Query: Query{
+														Select: Select{
+															List: []Expr{
+																Func{
+																	Name: "MAX",
+																	Args: []Expr{PathExp{"p2", "EventSequence"}},
+																},
+															},
+															From: []SelectFrom{
+																SelectFromTable{
+																	Table: "Payment",
+																	Alias: "p2",
+																},
+															},
+															Where: ComparisonOp{
+																LHS: PathExp{"p2", "ID"},
+																Op:  Eq,
+																RHS: PathExp{"p", "ID"},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
