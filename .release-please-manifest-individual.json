@@ -1,5 +1,5 @@
 {
   "bigquery": "1.72.0",
   "bigtable": "1.40.1",
-  "storage": "1.57.0"
+  "storage": "1.57.1"
 }

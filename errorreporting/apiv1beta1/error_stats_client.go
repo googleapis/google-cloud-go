@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package errorreporting
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -35,7 +34,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -54,9 +52,11 @@ func defaultErrorStatsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
 		internaloption.WithDefaultEndpointTemplate("clouderrorreporting.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -65,6 +65,7 @@ func defaultErrorStatsGRPCClientOptions() []option.ClientOption {
 func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 	return &ErrorStatsCallOptions{
 		ListGroupStats: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +78,7 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 			}),
 		},
 		ListEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -89,6 +91,7 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 			}),
 		},
 		DeleteEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,6 +109,7 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 func defaultErrorStatsRESTCallOptions() *ErrorStatsCallOptions {
 	return &ErrorStatsCallOptions{
 		ListGroupStats: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -117,6 +121,7 @@ func defaultErrorStatsRESTCallOptions() *ErrorStatsCallOptions {
 			}),
 		},
 		ListEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -128,6 +133,7 @@ func defaultErrorStatsRESTCallOptions() *ErrorStatsCallOptions {
 			}),
 		},
 		DeleteEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -209,9 +215,6 @@ type errorStatsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ErrorStatsClient
 	CallOptions **ErrorStatsCallOptions
 
@@ -219,7 +222,9 @@ type errorStatsGRPCClient struct {
 	errorStatsClient errorreportingpb.ErrorStatsServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewErrorStatsClient creates a new error stats service client based on gRPC.
@@ -237,11 +242,6 @@ func NewErrorStatsClient(ctx context.Context, opts ...option.ClientOption) (*Err
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -250,9 +250,9 @@ func NewErrorStatsClient(ctx context.Context, opts ...option.ClientOption) (*Err
 
 	c := &errorStatsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		errorStatsClient: errorreportingpb.NewErrorStatsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -274,8 +274,10 @@ func (c *errorStatsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *errorStatsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -292,11 +294,13 @@ type errorStatsRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ErrorStatsClient
 	CallOptions **ErrorStatsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewErrorStatsRESTClient creates a new error stats service rest client.
@@ -315,6 +319,7 @@ func NewErrorStatsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -326,8 +331,10 @@ func defaultErrorStatsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("https://clouderrorreporting.googleapis.com"),
 		internaloption.WithDefaultEndpointTemplate("https://clouderrorreporting.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouderrorreporting.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -336,8 +343,10 @@ func defaultErrorStatsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *errorStatsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -355,9 +364,10 @@ func (c *errorStatsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *errorStatsGRPCClient) ListGroupStats(ctx context.Context, req *errorreportingpb.ListGroupStatsRequest, opts ...gax.CallOption) *ErrorGroupStatsIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListGroupStats[0:len((*c.CallOptions).ListGroupStats):len((*c.CallOptions).ListGroupStats)], opts...)
 	it := &ErrorGroupStatsIterator{}
 	req = proto.Clone(req).(*errorreportingpb.ListGroupStatsRequest)
@@ -373,7 +383,7 @@ func (c *errorStatsGRPCClient) ListGroupStats(ctx context.Context, req *errorrep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.errorStatsClient.ListGroupStats(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.errorStatsClient.ListGroupStats, req, settings.GRPC, c.logger, "ListGroupStats")
 			return err
 		}, opts...)
 		if err != nil {
@@ -400,9 +410,10 @@ func (c *errorStatsGRPCClient) ListGroupStats(ctx context.Context, req *errorrep
 }
 
 func (c *errorStatsGRPCClient) ListEvents(ctx context.Context, req *errorreportingpb.ListEventsRequest, opts ...gax.CallOption) *ErrorEventIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &ErrorEventIterator{}
 	req = proto.Clone(req).(*errorreportingpb.ListEventsRequest)
@@ -418,7 +429,7 @@ func (c *errorStatsGRPCClient) ListEvents(ctx context.Context, req *errorreporti
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.errorStatsClient.ListEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.errorStatsClient.ListEvents, req, settings.GRPC, c.logger, "ListEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -445,19 +456,15 @@ func (c *errorStatsGRPCClient) ListEvents(ctx context.Context, req *errorreporti
 }
 
 func (c *errorStatsGRPCClient) DeleteEvents(ctx context.Context, req *errorreportingpb.DeleteEventsRequest, opts ...gax.CallOption) (*errorreportingpb.DeleteEventsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteEvents[0:len((*c.CallOptions).DeleteEvents):len((*c.CallOptions).DeleteEvents)], opts...)
 	var resp *errorreportingpb.DeleteEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.errorStatsClient.DeleteEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.errorStatsClient.DeleteEvents, req, settings.GRPC, c.logger, "DeleteEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -493,11 +500,11 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *errorrep
 			params.Add("alignment", fmt.Sprintf("%v", req.GetAlignment()))
 		}
 		if req.GetAlignmentTime() != nil {
-			alignmentTime, err := protojson.Marshal(req.GetAlignmentTime())
+			field, err := protojson.Marshal(req.GetAlignmentTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("alignmentTime", string(alignmentTime))
+			params.Add("alignmentTime", string(field[1:len(field)-1]))
 		}
 		if items := req.GetGroupId(); len(items) > 0 {
 			for _, item := range items {
@@ -526,17 +533,18 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *errorrep
 			params.Add("timeRange.period", fmt.Sprintf("%v", req.GetTimeRange().GetPeriod()))
 		}
 		if req.GetTimedCountDuration() != nil {
-			timedCountDuration, err := protojson.Marshal(req.GetTimedCountDuration())
+			field, err := protojson.Marshal(req.GetTimedCountDuration())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("timedCountDuration", string(timedCountDuration))
+			params.Add("timedCountDuration", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -547,21 +555,10 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *errorrep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGroupStats")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := ioutil.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -637,7 +634,8 @@ func (c *errorStatsRESTClient) ListEvents(ctx context.Context, req *errorreporti
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -648,21 +646,10 @@ func (c *errorStatsRESTClient) ListEvents(ctx context.Context, req *errorreporti
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := ioutil.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -706,9 +693,11 @@ func (c *errorStatsRESTClient) DeleteEvents(ctx context.Context, req *errorrepor
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteEvents[0:len((*c.CallOptions).DeleteEvents):len((*c.CallOptions).DeleteEvents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &errorreportingpb.DeleteEventsResponse{}
@@ -723,17 +712,7 @@ func (c *errorStatsRESTClient) DeleteEvents(ctx context.Context, req *errorrepor
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEvents")
 		if err != nil {
 			return err
 		}
@@ -748,98 +727,4 @@ func (c *errorStatsRESTClient) DeleteEvents(ctx context.Context, req *errorrepor
 		return nil, e
 	}
 	return resp, nil
-}
-
-// ErrorEventIterator manages a stream of *errorreportingpb.ErrorEvent.
-type ErrorEventIterator struct {
-	items    []*errorreportingpb.ErrorEvent
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*errorreportingpb.ErrorEvent, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ErrorEventIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ErrorEventIterator) Next() (*errorreportingpb.ErrorEvent, error) {
-	var item *errorreportingpb.ErrorEvent
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ErrorEventIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ErrorEventIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ErrorGroupStatsIterator manages a stream of *errorreportingpb.ErrorGroupStats.
-type ErrorGroupStatsIterator struct {
-	items    []*errorreportingpb.ErrorGroupStats
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*errorreportingpb.ErrorGroupStats, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ErrorGroupStatsIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ErrorGroupStatsIterator) Next() (*errorreportingpb.ErrorGroupStats, error) {
-	var item *errorreportingpb.ErrorGroupStats
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ErrorGroupStatsIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ErrorGroupStatsIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

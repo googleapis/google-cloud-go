@@ -2067,7 +2067,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: errorreporting
     version: 0.3.2
-    last_generated_commit: 4221b78ecddf8edf168ff2817ed6c14dd844ae2c
+    last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
     apis:
       - path: google/devtools/clouderrorreporting/v1beta1
         service_config: clouderrorreporting_v1beta1.yaml
