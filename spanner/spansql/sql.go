@@ -171,12 +171,83 @@ func (cp CreateProtoBundle) SQL() string {
 }
 
 func (cv CreateView) SQL() string {
-	str := "CREATE"
+	var sb strings.Builder
+	sb.WriteString("CREATE")
 	if cv.OrReplace {
-		str += " OR REPLACE"
+		sb.WriteString(" OR REPLACE")
 	}
-	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY " + cv.SecurityType.SQL() + " AS " + cv.Query.SQL()
-	return str
+	sb.WriteString(" VIEW ")
+	sb.WriteString(cv.Name.SQL())
+	sb.WriteString(" SQL SECURITY ")
+	sb.WriteString(cv.SecurityType.SQL())
+	sb.WriteString(" AS SELECT\n")
+
+	for i, expr := range cv.Query.Select.List {
+		sb.WriteString("\t")
+		sb.WriteString(expr.SQL())
+		// add alias if available.
+		if cv.Query.Select.ListAliases != nil && i < len(cv.Query.Select.ListAliases) && cv.Query.Select.ListAliases[i] != "" {
+			sb.WriteString(" AS ")
+			sb.WriteString(cv.Query.Select.ListAliases[i].SQL())
+		}
+		// Add a newline after each expression
+		if i < len(cv.Query.Select.List)-1 {
+			sb.WriteString(",\n")
+		} else {
+			sb.WriteString("\n")
+		}
+	}
+
+	// FROM clause
+	if len(cv.Query.Select.From) > 0 {
+		sb.WriteString("FROM ")
+		for i, f := range cv.Query.Select.From {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(f.SQL())
+		}
+	}
+
+	// WHERE clause
+	if cv.Query.Select.Where != nil {
+		sb.WriteString("\nWHERE ")
+		sb.WriteString(cv.Query.Select.Where.SQL())
+	}
+
+	// GROUP BY clause
+	if len(cv.Query.Select.GroupBy) > 0 {
+		sb.WriteString("\nGROUP BY ")
+		for i, gb := range cv.Query.Select.GroupBy {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(gb.SQL())
+		}
+	}
+
+	// ORDER BY clause
+	if cv.Query.Order != nil {
+		sb.WriteString("\nORDER BY ")
+		for i, o := range cv.Query.Order {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(o.SQL())
+		}
+	}
+
+	// LIMIT/OFFSET clauses
+	if cv.Query.Limit != nil {
+		sb.WriteString("\nLIMIT ")
+		sb.WriteString(cv.Query.Limit.SQL())
+		if cv.Query.Offset != nil {
+			sb.WriteString(" OFFSET ")
+			sb.WriteString(cv.Query.Offset.SQL())
+		}
+	}
+
+	return sb.String()
 }
 
 func (st SecurityType) SQL() string {
@@ -918,7 +989,7 @@ func (sft SelectFromTable) SQL() string {
 
 func (sfj SelectFromJoin) SQL() string {
 	// TODO: The grammar permits arbitrary nesting. Does this need to add parens?
-	str := sfj.LHS.SQL() + " " + joinTypes[sfj.Type] + " JOIN "
+	str := sfj.LHS.SQL() + "\n" + joinTypes[sfj.Type] + " JOIN "
 	// TODO: hints go here
 	str += sfj.RHS.SQL()
 	if sfj.On != nil {
