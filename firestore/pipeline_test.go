@@ -150,3 +150,255 @@ func TestPipeline_ToExecutePipelineRequest(t *testing.T) {
 		t.Errorf("Limit stage mismatch (-want +got):\n%s", diff)
 	}
 }
+
+func TestPipeline_Sort(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Sort(Ordering{Expr: FieldOf("age"), Direction: OrderingDesc})
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantSortStage := &pb.Pipeline_Stage{
+		Name: "sort",
+		Args: []*pb.Value{
+			{
+				ValueType: &pb.Value_MapValue{
+					MapValue: &pb.MapValue{
+						Fields: map[string]*pb.Value{
+							"expression": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "age"}},
+							"direction":  {ValueType: &pb.Value_StringValue{StringValue: "descending"}},
+						},
+					},
+				},
+			},
+		},
+	}
+	if diff := cmp.Diff(wantSortStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for sort stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Offset(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Offset(20)
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantOffsetStage := &pb.Pipeline_Stage{
+		Name: "offset",
+		Args: []*pb.Value{{ValueType: &pb.Value_IntegerValue{IntegerValue: 20}}},
+	}
+	if diff := cmp.Diff(wantOffsetStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for offset stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Select(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Select("name", FieldOf("age"), Add(FieldOf("score"), 10).As("new_score"))
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantSelectStage := &pb.Pipeline_Stage{
+		Name: "select",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"name": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "name"}},
+						"age":  {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "age"}},
+						"new_score": {ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
+							Name: "add",
+							Args: []*pb.Value{
+								{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "score"}},
+								{ValueType: &pb.Value_IntegerValue{IntegerValue: 10}},
+							},
+						}}},
+					},
+				},
+			}},
+		},
+	}
+	if diff := cmp.Diff(wantSelectStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for select stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_AddFields(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").AddFields(Add(FieldOf("score"), 10).As("new_score"))
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantAddFieldsStage := &pb.Pipeline_Stage{
+		Name: "add_fields",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"new_score": {ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
+							Name: "add",
+							Args: []*pb.Value{
+								{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "score"}},
+								{ValueType: &pb.Value_IntegerValue{IntegerValue: 10}},
+							},
+						}}},
+					},
+				},
+			}},
+		},
+	}
+	if diff := cmp.Diff(wantAddFieldsStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for addFields stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Where(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Where(Equal(FieldOf("age"), 30))
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantWhereStage := &pb.Pipeline_Stage{
+		Name: "where",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
+				Name: "equal",
+				Args: []*pb.Value{
+					{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "age"}},
+					{ValueType: &pb.Value_IntegerValue{IntegerValue: 30}},
+				},
+			}}},
+		},
+	}
+	if diff := cmp.Diff(wantWhereStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for where stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Aggregate(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Aggregate(Sum("age").As("total_age"))
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantAggregateStage := &pb.Pipeline_Stage{
+		Name: "aggregate",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"total_age": {ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
+							Name: "sum",
+							Args: []*pb.Value{
+								{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "age"}},
+							},
+						}}},
+					},
+				},
+			}},
+			{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{}}},
+		},
+	}
+	if diff := cmp.Diff(wantAggregateStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for aggregate stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_AggregateWithSpec(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	spec := NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre")
+	p := ps.Collection("books").AggregateWithSpec(spec)
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantAggregateStage := &pb.Pipeline_Stage{
+		Name: "aggregate",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"avg_rating": {ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
+							Name: "average",
+							Args: []*pb.Value{
+								{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "rating"}},
+							},
+						}}},
+					},
+				},
+			}},
+			{ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"genre": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "genre"}},
+					},
+				},
+			}},
+		},
+	}
+	if diff := cmp.Diff(wantAggregateStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for aggregate stage (-want +got):\n%s", diff)
+	}
+}

@@ -85,6 +85,10 @@ type Expr interface {
 	Average() AggregateFunction
 	Count() AggregateFunction
 
+	// Ordering
+	Ascending() Ordering
+	Descending() Ordering
+
 	// As assigns an alias to an expression.
 	// Aliases are useful for renaming fields in the output of a stage.
 	As(alias string) Selectable
@@ -147,6 +151,9 @@ func (b *baseExpr) CountIf() AggregateFunction       { return CountIf(b) }
 func (b *baseExpr) Maximum() AggregateFunction       { return Maximum(b) }
 func (b *baseExpr) Minimum() AggregateFunction       { return Minimum(b) }
 
+// Ordering
+func (b *baseExpr) Ascending() Ordering  { return Ascending(b) }
+func (b *baseExpr) Descending() Ordering { return Descending(b) }
 func (b *baseExpr) As(alias string) Selectable {
 	return newAliasedExpr(b, alias)
 }
