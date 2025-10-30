@@ -17,9 +17,65 @@ package firestore
 import (
 	"errors"
 	"fmt"
+	"reflect"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
+
+// newFieldAndArrayBooleanExpr creates a new BooleanExpr for functions that operate on a field/expression and an array of values.
+func newFieldAndArrayBooleanExpr(name string, exprOrFieldPath any, values any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{asFieldExpr(exprOrFieldPath), asArrayFunctionExpr(values)})}
+}
+
+// toExprs converts a plain Go value or an existing Expr into an Expr.
+// Plain values are wrapped in a Constant.
+func toExprs(val []any) []Expr {
+	exprs := make([]Expr, len(val))
+	for i, v := range val {
+		exprs[i] = toExprOrConstant(v)
+	}
+	return exprs
+}
+
+// toExprsFromSlice converts a slice of any type into a slice of Expr, wrapping plain values in Constants.
+func toExprsFromSlice[T any](val []T) []Expr {
+	exprs := make([]Expr, len(val))
+	for i, v := range val {
+		exprs[i] = toExprOrConstant(v)
+	}
+	return exprs
+}
+
+// val should be single Expr or array of Expr/constants
+func asArrayFunctionExpr(val any) Expr {
+	if expr, ok := val.(Expr); ok {
+		return expr
+	}
+
+	arrayVal := reflect.ValueOf(val)
+	if arrayVal.Kind() != reflect.Slice {
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a slice or Expr, but got %T", val)}
+	}
+
+	// Convert the slice of any to []Expr
+	var exprs []Expr
+	for i := 0; i < arrayVal.Len(); i++ {
+		exprs = append(exprs, toExprOrConstant(arrayVal.Index(i).Interface()))
+	}
+	return newBaseFunction("array", exprs)
+}
+
+// asVectorExpr converts a value to an Expr that evaluates to a vector type (Vector32, Vector64, []float32, []float64), or returns an error Expr if conversion is not possible.
+func asVectorExpr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case Vector32, Vector64, []float32, []float64:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a []float32, []float64, Vector32, Vector64 or Expr, but got %T", val)}
+	}
+}
 
 // toExprOrConstant converts a plain Go value or an existing Expr into an Expr.
 // Plain values are wrapped in a Constant.
@@ -30,9 +86,9 @@ func toExprOrConstant(val any) Expr {
 	return ConstantOf(val)
 }
 
-// toExprOrField converts a plain Go string or FieldPath into a field expression.
+// asFieldExpr converts a plain Go string or FieldPath into a field expression.
 // If the value is already an Expr, it's returned directly.
-func toExprOrField(val any) Expr {
+func asFieldExpr(val any) Expr {
 	switch v := val.(type) {
 	case Expr:
 		return v
@@ -43,10 +99,32 @@ func toExprOrField(val any) Expr {
 	}
 }
 
+func asInt64Expr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case int, int32, int64:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int32, int64 or Expr, but got %T", val)}
+	}
+}
+
+func asStringExpr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case string:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
+	}
+}
+
 // leftRightToBaseFunction is a helper for creating binary functions like Add or Eq.
 // It ensures the left operand is a field-like expression and the right is a constant-like expression.
 func leftRightToBaseFunction(name string, left, right any) *baseFunction {
-	return newBaseFunction(name, []Expr{toExprOrField(left), toExprOrConstant(right)})
+	return newBaseFunction(name, []Expr{asFieldExpr(left), toExprOrConstant(right)})
 }
 
 // projectionsToMapValue converts a slice of Selectable items into a single
@@ -85,7 +163,7 @@ func aliasedAggregatesToMapValue(aggregates []*AliasedAggregate) (*pb.Value, err
 
 		base := agg.getBaseAggregateFunction()
 		if base.err != nil {
-			return nil, fmt.Errorf("error in aggregate expression for alias %q: %w", agg.alias, base.err)
+			return nil, fmt.Errorf("firestore: error in aggregate expression for alias %q: %w", agg.alias, base.err)
 		}
 		protoVal, err := base.toProto()
 		if err != nil {

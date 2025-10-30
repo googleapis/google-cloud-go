@@ -444,6 +444,7 @@ func newUnionStage(other *Pipeline) (*unionStage, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &unionStage{baseStage{
 		stageName: stageNameUnion,
 		stagePb: &pb.Pipeline_Stage{

@@ -402,6 +402,7 @@ func (p *Pipeline) Aggregate(accumulators ...*AliasedAggregate) *Pipeline {
 //		// Calculate the average rating for each genre.
 //		client.Pipeline().Collection("books").
 //	        AggregateWithSpec(NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre"))
+//	        AggregateWithSpec(NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre"))
 func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
 	aggStage, err := newAggregateStage(spec)
 	if err != nil {
