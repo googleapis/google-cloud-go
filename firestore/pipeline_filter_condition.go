@@ -30,6 +30,66 @@ func (b *baseBooleanExpr) isBooleanExpr() {}
 // Ensure that baseBooleanExpr implements the BooleanExpr interface.
 var _ BooleanExpr = (*baseBooleanExpr)(nil)
 
+// ArrayContains creates an expression that checks if an array contains a specified element.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to an array.
+// - value is the element to check for.
+//
+// Example:
+//
+//	// Check if the 'tags' array contains "Go".
+//	ArrayContains("tags", "Go")
+func ArrayContains(exprOrFieldPath any, value any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("array_contains", []Expr{toExprOrField(exprOrFieldPath), toExprOrConstant(value)})}
+}
+
+// ArrayContainsAll creates an expression that checks if an array contains all of the provided values.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to an array.
+// - values can be an array of values or an expression that evaluates to an array.
+//
+// Example:
+//
+//	// Check if the 'tags' array contains both "Go" and "Firestore".
+//	ArrayContainsAll("tags", []string{"Go", "Firestore"})
+func ArrayContainsAll(exprOrFieldPath any, values any) BooleanExpr {
+	return newFieldAndArrayBooleanExpr("array_contains_all", exprOrFieldPath, values)
+}
+
+// ArrayContainsAny creates an expression that checks if an array contains any of the provided values.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to an array.
+// - values can be an array of values or an expression that evaluates to an array.
+//
+// Example:
+//
+//	// Check if the 'tags' array contains either "Go" or "Firestore".
+//	ArrayContainsAny("tags", []string{"Go", "Firestore"})
+func ArrayContainsAny(exprOrFieldPath any, values any) BooleanExpr {
+	return newFieldAndArrayBooleanExpr("array_contains_any", exprOrFieldPath, values)
+}
+
+// EqualAny creates an expression that checks if a field or expression is equal to any of the provided values.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr].
+// - values can be an array of values or an expression that evaluates to an array.
+//
+// Example:
+//
+//	// Check if the 'status' field is either "active" or "pending".
+//	EqualAny("status", []string{"active", "pending"})
+func EqualAny(exprOrFieldPath any, values any) BooleanExpr {
+	return newFieldAndArrayBooleanExpr("equal_any", exprOrFieldPath, values)
+}
+
+// NotEqualAny creates an expression that checks if a field or expression is not equal to any of the provided values.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr].
+// - values can be an array of values or an expression that evaluates to an array.
+//
+// Example:
+//
+//	// Check if the 'status' field is not "archived" or "deleted".
+//	NotEqualAny("status", []string{"archived", "deleted"})
+func NotEqualAny(exprOrFieldPath any, values any) BooleanExpr {
+	return newFieldAndArrayBooleanExpr("not_equal_any", exprOrFieldPath, values)
+}
+
 // Equal creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
 // returning it as a BooleanExpr.
 //   - left: The field path string, [FieldPath] or [Expr] to compare.
@@ -170,4 +230,124 @@ func LessThanOrEqual(left, right any) BooleanExpr {
 //		Equivalent("city", "London")
 func Equivalent(left, right any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("equivalent", left, right)}
+}
+
+// EndsWith creates an expression that checks if a string field or expression ends with a given suffix.
+// - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
+// - suffix string or [Expr] to check for.
+//
+// Example:
+//
+//	// Check if the 'filename' field ends with ".go".
+//	EndsWith("filename", ".go")
+func EndsWith(exprOrFieldPath any, suffix any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("ends_with", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(suffix)})}
+}
+
+// Like creates an expression that performs a case-sensitive wildcard string comparison.
+// - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
+// - pattern string or [Expr] to search for. You can use "%" as a wildcard character.
+//
+// Example:
+//
+//	// Check if the 'name' field starts with "G".
+//	Like("name", "G%")
+func Like(exprOrFieldPath any, pattern any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("like", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(pattern)})}
+}
+
+// RegexContains creates an expression that checks if a string contains a match for a regular expression.
+// - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
+// - pattern is the regular expression to search for.
+//
+// Example:
+//
+//	// Check if the 'email' field contains a gmail address.
+//	RegexContains("email", "@gmail\\.com$")
+func RegexContains(exprOrFieldPath any, pattern any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("regex_contains", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(pattern)})}
+}
+
+// RegexMatch creates an expression that checks if a string matches a regular expression.
+// - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
+// - pattern is the regular expression to match against.
+//
+// Example:
+//
+//	// Check if the 'zip_code' field is a 5-digit number.
+//	RegexMatch("zip_code", "^[0-9]{5}$")
+func RegexMatch(exprOrFieldPath any, pattern any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("regex_match", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(pattern)})}
+}
+
+// StartsWith creates an expression that checks if a string field or expression starts with a given prefix.
+// - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
+// - prefix string or [Expr] to check for.
+//
+// Example:
+//
+//	// Check if the 'name' field starts with "Mr.".
+//	StartsWith("name", "Mr.")
+func StartsWith(exprOrFieldPath any, prefix any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("starts_with", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(prefix)})}
+}
+
+// StringContains creates an expression that checks if a string contains a specified substring.
+// - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
+// - substring is the string to search for.
+//
+// Example:
+//
+//	// Check if the 'description' field contains the word "Firestore".
+//	StringContains("description", "Firestore")
+func StringContains(exprOrFieldPath any, substring any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("string_contains", []Expr{toExprOrField(exprOrFieldPath), asStringExpr(substring)})}
+}
+
+// IsNaN creates a boolean expression that checks if a field or expression evaluates to NaN.
+//
+// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
+//
+// Example:
+//
+//	// Check if the 'score' field is NaN.
+//	IsNaN("score")
+func IsNaN(exprOrFieldPath any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_nan", []Expr{toExprOrField(exprOrFieldPath)})}
+}
+
+// IsNotNaN creates a boolean expression that checks if a field or expression does not evaluate to NaN.
+//
+// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
+//
+// Example:
+//
+//	// Check if the 'score' field is not NaN.
+//	IsNotNaN("score")
+func IsNotNaN(exprOrFieldPath any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_nan", []Expr{toExprOrField(exprOrFieldPath)})}
+}
+
+// IsNull creates a boolean expression that checks if a field or expression evaluates to null.
+//
+// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
+//
+// Example:
+//
+//	// Check if the 'address' field is null.
+//	IsNull("address")
+func IsNull(exprOrFieldPath any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_null", []Expr{toExprOrField(exprOrFieldPath)})}
+}
+
+// IsNotNull creates a boolean expression that checks if a field or expression does not evaluate to null.
+//
+// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
+//
+// Example:
+//
+//	// Check if the 'address' field is not null.
+//	IsNotNull("address")
+func IsNotNull(exprOrFieldPath any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_null", []Expr{toExprOrField(exprOrFieldPath)})}
 }

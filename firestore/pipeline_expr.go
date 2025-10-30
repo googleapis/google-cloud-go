@@ -61,6 +61,20 @@ type Expr interface {
 	Round() Expr
 	Sqrt() Expr
 
+	// Array operations
+	ArrayContains(value any) BooleanExpr
+	ArrayContainsAll(values any) BooleanExpr
+	ArrayContainsAny(values any) BooleanExpr
+	ArrayLength() Expr
+	EqualAny(values any) BooleanExpr
+	NotEqualAny(values any) BooleanExpr
+	ArrayGet(offset any) Expr
+	ArrayReverse() Expr
+	ArrayConcat(otherArrays ...any) Expr
+	ArraySum() Expr
+	ArrayMaximum() Expr
+	ArrayMinimum() Expr
+
 	// Timestamp operations
 	TimestampAdd(unit, amount any) Expr
 	TimestampSubtract(unit, amount any) Expr
@@ -84,6 +98,35 @@ type Expr interface {
 	Sum() AggregateFunction
 	Average() AggregateFunction
 	Count() AggregateFunction
+
+	// String functions
+	ByteLength() Expr
+	CharLength() Expr
+	EndsWith(suffix any) BooleanExpr
+	Like(suffix any) BooleanExpr
+	RegexContains(pattern any) BooleanExpr
+	RegexMatch(pattern any) BooleanExpr
+	StartsWith(prefix any) BooleanExpr
+	StringConcat(otherStrings ...any) Expr
+	StringContains(substring any) BooleanExpr
+	StringReverse() Expr
+	Join(separator any) Expr
+	Substring(index, offset any) Expr
+	ToLower() Expr
+	ToUpper() Expr
+	Trim() Expr
+
+	// Type functions
+	IsNaN() BooleanExpr
+	IsNotNaN() BooleanExpr
+	IsNull() BooleanExpr
+	IsNotNull() BooleanExpr
+
+	// Vector functions
+	CosineDistance(other any) Expr
+	DotProduct(other any) Expr
+	EuclideanDistance(other any) Expr
+	VectorLength() Expr
 
 	// Ordering
 	Ascending() Ordering
@@ -121,6 +164,20 @@ func (b *baseExpr) Pow(other any) Expr      { return Pow(b, other) }
 func (b *baseExpr) Round() Expr             { return Round(b) }
 func (b *baseExpr) Sqrt() Expr              { return Sqrt(b) }
 
+// Array functions
+func (b *baseExpr) ArrayContains(value any) BooleanExpr     { return ArrayContains(b, value) }
+func (b *baseExpr) ArrayContainsAll(values any) BooleanExpr { return ArrayContainsAll(b, values) }
+func (b *baseExpr) ArrayContainsAny(values any) BooleanExpr { return ArrayContainsAny(b, values) }
+func (b *baseExpr) ArrayLength() Expr                       { return ArrayLength(b) }
+func (b *baseExpr) EqualAny(values any) BooleanExpr         { return EqualAny(b, values) }
+func (b *baseExpr) NotEqualAny(values any) BooleanExpr      { return NotEqualAny(b, values) }
+func (b *baseExpr) ArrayGet(offset any) Expr                { return ArrayGet(b, offset) }
+func (b *baseExpr) ArrayReverse() Expr                      { return ArrayReverse(b) }
+func (b *baseExpr) ArrayConcat(otherArrays ...any) Expr     { return ArrayConcat(b, otherArrays...) }
+func (b *baseExpr) ArraySum() Expr                          { return ArraySum(b) }
+func (b *baseExpr) ArrayMaximum() Expr                      { return ArrayMaximum(b) }
+func (b *baseExpr) ArrayMinimum() Expr                      { return ArrayMinimum(b) }
+
 // Timestamp functions
 func (b *baseExpr) TimestampAdd(unit, amount any) Expr { return TimestampAdd(b, unit, amount) }
 func (b *baseExpr) TimestampSubtract(unit, amount any) Expr {
@@ -151,9 +208,39 @@ func (b *baseExpr) CountIf() AggregateFunction       { return CountIf(b) }
 func (b *baseExpr) Maximum() AggregateFunction       { return Maximum(b) }
 func (b *baseExpr) Minimum() AggregateFunction       { return Minimum(b) }
 
+// String functions
+func (b *baseExpr) ByteLength() Expr                         { return ByteLength(b) }
+func (b *baseExpr) CharLength() Expr                         { return CharLength(b) }
+func (b *baseExpr) EndsWith(suffix any) BooleanExpr          { return EndsWith(b, suffix) }
+func (b *baseExpr) Like(suffix any) BooleanExpr              { return Like(b, suffix) }
+func (b *baseExpr) RegexContains(pattern any) BooleanExpr    { return RegexContains(b, pattern) }
+func (b *baseExpr) RegexMatch(pattern any) BooleanExpr       { return RegexMatch(b, pattern) }
+func (b *baseExpr) StartsWith(prefix any) BooleanExpr        { return StartsWith(b, prefix) }
+func (b *baseExpr) StringConcat(otherStrings ...any) Expr    { return StringConcat(b, otherStrings...) }
+func (b *baseExpr) StringContains(substring any) BooleanExpr { return StringContains(b, substring) }
+func (b *baseExpr) StringReverse() Expr                      { return StringReverse(b) }
+func (b *baseExpr) Join(separator any) Expr                  { return Join(b, separator) }
+func (b *baseExpr) Substring(index, offset any) Expr         { return Substring(b, index, offset) }
+func (b *baseExpr) ToLower() Expr                            { return ToLower(b) }
+func (b *baseExpr) ToUpper() Expr                            { return ToUpper(b) }
+func (b *baseExpr) Trim() Expr                               { return Trim(b) }
+
+// Type functions
+func (b *baseExpr) IsNaN() BooleanExpr     { return IsNaN(b) }
+func (b *baseExpr) IsNotNaN() BooleanExpr  { return IsNotNaN(b) }
+func (b *baseExpr) IsNull() BooleanExpr    { return IsNull(b) }
+func (b *baseExpr) IsNotNull() BooleanExpr { return IsNotNull(b) }
+
+// Vector functions
+func (b *baseExpr) CosineDistance(other any) Expr    { return CosineDistance(b, other) }
+func (b *baseExpr) DotProduct(other any) Expr        { return DotProduct(b, other) }
+func (b *baseExpr) EuclideanDistance(other any) Expr { return EuclideanDistance(b, other) }
+func (b *baseExpr) VectorLength() Expr               { return VectorLength(b) }
+
 // Ordering
 func (b *baseExpr) Ascending() Ordering  { return Ascending(b) }
 func (b *baseExpr) Descending() Ordering { return Descending(b) }
+
 func (b *baseExpr) As(alias string) Selectable {
 	return newAliasedExpr(b, alias)
 }
