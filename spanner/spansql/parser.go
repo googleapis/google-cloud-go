@@ -4656,9 +4656,13 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	}
 
 	// Handle parenthesized expressions and scalar subqueries.
+	// NOTE: The opening "(" has already been consumed by p.next() above (line 4638).
+	// The parser is now positioned right after the "(", ready to parse the contents.
 	if tok.value == "(" {
-		// Look ahead to see if this is a subquery
+		// Look ahead to see if this is a subquery like: (SELECT ...)
+		// p.sniff("SELECT") peeks at the next token without consuming it.
 		if p.sniff("SELECT") {
+			// Parse the subquery starting from the current position (after the "(")
 			q, err := p.parseQuery()
 			if err != nil {
 				return nil, err
@@ -4669,7 +4673,8 @@ func (p *parser) parseLit() (Expr, *parseError) {
 			return ScalarSubquery{Query: q}, nil
 		}
 
-		// Regular parenthesized expression
+		// Regular parenthesized expression like: (1 + 2)
+		// Parse the inner expression starting from the current position (after the "(")
 		e, err := p.parseExpr()
 		if err != nil {
 			return nil, err

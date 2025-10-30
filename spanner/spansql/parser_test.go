@@ -365,6 +365,65 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		// Scalar subqueries in SELECT list - ensures parseLit handles (SELECT ...) correctly
+		{
+			`SELECT (SELECT MAX(id) FROM t1), name FROM t2`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						ScalarSubquery{
+							Query: Query{
+								Select: Select{
+									List: []Expr{Func{Name: "MAX", Args: []Expr{ID("id")}}},
+									From: []SelectFrom{SelectFromTable{Table: "t1"}},
+								},
+							},
+						},
+						ID("name"),
+					},
+					From: []SelectFrom{SelectFromTable{Table: "t2"}},
+				},
+			},
+		},
+		// Scalar subquery in WHERE clause
+		{
+			`SELECT * FROM users WHERE age > (SELECT AVG(age) FROM users)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromTable{Table: "users"}},
+					Where: ComparisonOp{
+						Op:  Gt,
+						LHS: ID("age"),
+						RHS: ScalarSubquery{
+							Query: Query{
+								Select: Select{
+									List: []Expr{Func{Name: "AVG", Args: []Expr{ID("age")}}},
+									From: []SelectFrom{SelectFromTable{Table: "users"}},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		// Parenthesized expression in SELECT list - ensures parseLit handles (expr) correctly
+		{
+			`SELECT (1 + 2) * 3, name FROM t`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						ArithOp{
+							LHS: Paren{Expr: ArithOp{LHS: IntegerLiteral(1), Op: Add, RHS: IntegerLiteral(2)}},
+							Op:  Mul,
+							RHS: IntegerLiteral(3),
+						},
+						ID("name"),
+					},
+					From: []SelectFrom{SelectFromTable{Table: "t"}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)
@@ -634,6 +693,53 @@ func TestParseExpr(t *testing.T) {
 		// Reserved keywords.
 		{`TRUE AND FALSE`, LogicalOp{LHS: True, Op: And, RHS: False}},
 		{`NULL`, Null},
+
+		// Parenthesized expressions - test that parseLit correctly handles the opening paren.
+		// The opening "(" is consumed by p.next(), then parseExpr is called for the contents.
+		{`(1)`, Paren{Expr: IntegerLiteral(1)}},
+		{`(1 + 2)`, Paren{Expr: ArithOp{LHS: IntegerLiteral(1), Op: Add, RHS: IntegerLiteral(2)}}},
+		{`((1 + 2))`, Paren{Expr: Paren{Expr: ArithOp{LHS: IntegerLiteral(1), Op: Add, RHS: IntegerLiteral(2)}}}},
+		{`(1 + 2) * 3`, ArithOp{LHS: Paren{Expr: ArithOp{LHS: IntegerLiteral(1), Op: Add, RHS: IntegerLiteral(2)}}, Op: Mul, RHS: IntegerLiteral(3)}},
+		{`((1 + 2) * 3)`, Paren{Expr: ArithOp{LHS: Paren{Expr: ArithOp{LHS: IntegerLiteral(1), Op: Add, RHS: IntegerLiteral(2)}}, Op: Mul, RHS: IntegerLiteral(3)}}},
+		{`(A AND B) OR C`, LogicalOp{LHS: Paren{Expr: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}}, Op: Or, RHS: ID("C")}},
+		{`(TRUE)`, Paren{Expr: True}},
+		{`(NULL)`, Paren{Expr: Null}},
+
+		// Scalar subqueries - test that parseLit correctly distinguishes (SELECT ...) from (expr).
+		// When p.sniff("SELECT") is true after consuming "(", parseQuery is called instead of parseExpr.
+		{
+			`(SELECT 1)`,
+			ScalarSubquery{
+				Query: Query{
+					Select: Select{
+						List: []Expr{IntegerLiteral(1)},
+					},
+				},
+			},
+		},
+		{
+			`(SELECT MAX(x) FROM t)`,
+			ScalarSubquery{
+				Query: Query{
+					Select: Select{
+						List: []Expr{Func{Name: "MAX", Args: []Expr{ID("x")}}},
+						From: []SelectFrom{SelectFromTable{Table: "t"}},
+					},
+				},
+			},
+		},
+		{
+			`(SELECT COUNT(*) FROM users WHERE active = TRUE)`,
+			ScalarSubquery{
+				Query: Query{
+					Select: Select{
+						List: []Expr{Func{Name: "COUNT", Args: []Expr{Star}}},
+						From: []SelectFrom{SelectFromTable{Table: "users"}},
+						Where: ComparisonOp{LHS: ID("active"), Op: Eq, RHS: True},
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		p := newParser("test-file", test.in)
