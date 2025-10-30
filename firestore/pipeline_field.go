@@ -28,7 +28,7 @@ type field struct {
 	fieldPath FieldPath
 }
 
-// FieldOf creates a new field [Expr] from a field path string.
+// FieldOf creates a new field [Expr] from a dot separated field path string or [FieldPath].
 func FieldOf[T string | FieldPath](path T) Expr {
 	anyPath := any(path)
 	var fieldPath FieldPath
