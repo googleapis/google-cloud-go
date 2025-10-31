@@ -146,8 +146,13 @@ type ReceiveSettings struct {
 	// concurrently. Even with one goroutine, many messages might be processed at
 	// once, because that goroutine may continually receive messages and invoke the
 	// function passed to Receive on them. To limit the number of messages being
-	// processed concurrently, set MaxOutstandingMessages.
+	// processed concurrently, set MaxCallbacks.
 	NumGoroutines int
+
+	// MaxCallbacks configures the maximum number of callbacks invoked at once.
+	// If MaxCallbacks is less than or equal to 0, the value will default to
+	// MaxOutstandingMessages.
+	MaxCallbacks int
 
 	// ShutdownOptions configures the shutdown behavior of the subscriber.
 	// Default: if unset / nil, the client library will wait
@@ -209,6 +214,10 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
 	}
+	maxCallbacks := s.ReceiveSettings.MaxCallbacks
+	if maxCallbacks == 0 {
+		maxCallbacks = 2 * maxCount
+	}
 	maxBytes := s.ReceiveSettings.MaxOutstandingBytes
 	if maxBytes == 0 {
 		maxBytes = DefaultReceiveSettings.MaxOutstandingBytes
@@ -264,7 +273,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		LimitExceededBehavior:  FlowControlBlock,
 	})
 
-	sched := scheduler.NewReceiveScheduler(maxCount)
+	sched := scheduler.NewReceiveScheduler(maxCallbacks)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.

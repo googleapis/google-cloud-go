@@ -329,6 +329,7 @@ func TestStreamingPullFlowControl(t *testing.T) {
 	server.addStreamingPullMessages(testMessages)
 	sub := client.Subscriber("S")
 	sub.ReceiveSettings.MaxOutstandingMessages = 2
+	sub.ReceiveSettings.MaxCallbacks = 2
 	ctx, cancel := context.WithCancel(context.Background())
 	activec := make(chan int)
 	waitc := make(chan int)
