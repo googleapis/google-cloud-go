@@ -92,7 +92,6 @@ type Expr interface {
 	GreaterThanOrEqual(other any) BooleanExpr
 	LessThan(other any) BooleanExpr
 	LessThanOrEqual(other any) BooleanExpr
-	Equivalent(other any) BooleanExpr
 
 	// Aggregators
 	Sum() AggregateFunction
@@ -191,7 +190,6 @@ func (b *baseExpr) GreaterThan(other any) BooleanExpr        { return GreaterTha
 func (b *baseExpr) GreaterThanOrEqual(other any) BooleanExpr { return GreaterThanOrEqual(b, other) }
 func (b *baseExpr) LessThan(other any) BooleanExpr           { return LessThan(b, other) }
 func (b *baseExpr) LessThanOrEqual(other any) BooleanExpr    { return LessThanOrEqual(b, other) }
-func (b *baseExpr) Equivalent(other any) BooleanExpr         { return Equivalent(b, other) }
 
 // Aggregation operations
 func (b *baseExpr) Sum() AggregateFunction           { return Sum(b) }

@@ -210,28 +210,6 @@ func LessThanOrEqual(left, right any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("less_than_or_equal", left, right)}
 }
 
-// Equivalent creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
-// returning it as a BooleanExpr. This is an alias for Equal.
-//   - left: The field path string, [FieldPath] or [Expr] to compare.
-//   - right: The constant value or [Expr] to compare to.
-//
-// Example:
-//
-//		// Check if the 'age' field is equal to 21
-//		Equivalent(FieldOf("age"), 21)
-//
-//		// Check if the 'age' field is equal to an expression
-//	 	Equivalent(FieldOf("age"), FieldOf("minAge").Add(10))
-//
-//		// Check if the 'age' field is equal to the 'limit' field
-//		Equivalent("age", FieldOf("limit"))
-//
-//		// Check if the 'city' field is equal to string constant "London"
-//		Equivalent("city", "London")
-func Equivalent(left, right any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("equivalent", left, right)}
-}
-
 // EndsWith creates an expression that checks if a string field or expression ends with a given suffix.
 // - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
 // - suffix string or [Expr] to check for.
