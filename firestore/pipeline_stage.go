@@ -529,8 +529,9 @@ func newWhereStage(condition BooleanExpr) (*whereStage, error) {
 // RawStageOptions holds the options for a RawStage.
 type RawStageOptions map[string]any
 
-// RawStage represents a pipeline stage that is not yet implemented in the SDK.
-// This allows users to call stages that are supported by the Firestore backend
+// RawStage is a generic stage in the pipeline.
+// It provides a flexible way to extend the pipeline's functionality by adding custom
+// stages. It also allows the users to call the stages that are supported by the Firestore backend
 // but not yet available in the current SDK version.
 type RawStage struct {
 	stageName string

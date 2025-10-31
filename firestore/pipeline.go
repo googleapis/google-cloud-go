@@ -485,8 +485,20 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 	return p.append(stage)
 }
 
-// RawStage adds a raw stage to the pipeline.
-// This is useful for using stages that are not yet implemented in the SDK.
+// RawStage adds a generic stage to the pipeline.
+// This method provides a flexible way to extend the pipeline's functionality by adding custom stages.
+//
+// Example:
+//
+//	// Assume we don't have a built-in "where" stage
+//	client.Pipeline().Collection("books").
+//		RawStage(
+//			NewRawStage("where").
+//				WithArguments(
+//					LessThan(FieldOf("published"), 1900),
+//				),
+//		).
+//		Select("title", "author")
 func (p *Pipeline) RawStage(stage *RawStage) *Pipeline {
 	if p.err != nil {
 		return p
