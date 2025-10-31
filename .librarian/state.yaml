@@ -848,8 +848,8 @@ libraries:
       - bigtable/testdata
     tag_format: '{id}/v{version}'
   - id: bigquery
-    version: 1.71.0
-    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    version: 1.72.0
+    last_generated_commit: 97763d6efb2d35474e0363c254ee6994837a08fa
     apis:
       - path: google/cloud/bigquery/analyticshub/v1
         service_config: analyticshub_v1.yaml
