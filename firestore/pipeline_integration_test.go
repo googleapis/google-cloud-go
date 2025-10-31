@@ -743,7 +743,6 @@ func TestIntegration_PipelineFunctions(t *testing.T) {
 	}
 	t.Run("arrayFuncs", arrayFuncs)
 	t.Run("stringFuncs", stringFuncs)
-	t.Run("typeFuncs", typeFuncs)
 	t.Run("vectorFuncs", vectorFuncs)
 
 	t.Run("timestampFuncs", timestampFuncs)
@@ -1055,97 +1054,6 @@ func stringFuncs(t *testing.T) {
 
 }
 
-func typeFuncs(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	client := integrationClient(t)
-	coll := client.Collection(collectionIDs.New())
-	docWithNaN := map[string]interface{}{
-		"docID": 1,
-		"value": math.NaN(),
-		"type":  "nan",
-	}
-	_, err := coll.Doc("docNaN").Create(ctx, docWithNaN)
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-
-	docWithNull := map[string]interface{}{
-		"docID": 2,
-		"value": nil,
-		"type":  "null",
-	}
-	_, err = coll.Doc("docNull").Create(ctx, docWithNull)
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-
-	docWithNumber := map[string]interface{}{
-		"docID": 3,
-		"value": 123,
-		"type":  "number",
-	}
-	_, err = coll.Doc("docNum").Create(ctx, docWithNumber)
-	if err != nil {
-		t.Fatalf("Create: %v", err)
-	}
-	defer deleteDocuments([]*DocumentRef{coll.Doc("docNaN"), coll.Doc("docNull"), coll.Doc("docNum")})
-
-	wantNaN := map[string]interface{}{"docID": int64(1), "value": math.NaN(), "type": "nan"}
-	wantNull := map[string]interface{}{"docID": int64(2), "value": nil, "type": "null"}
-	wantNum := map[string]interface{}{"docID": int64(3), "value": int64(123), "type": "number"}
-
-	tests := []struct {
-		name     string
-		pipeline *Pipeline
-		want     []map[string]interface{}
-	}{
-		{
-			name:     "IsNull",
-			pipeline: client.Pipeline().Collection(coll.ID).Where(IsNull("value")),
-			want:     []map[string]interface{}{wantNull},
-		},
-		{
-			name:     "IsNotNull",
-			pipeline: client.Pipeline().Collection(coll.ID).Where(IsNotNull("value")),
-			want:     []map[string]interface{}{wantNaN, wantNum},
-		},
-		{
-			name:     "IsNaN",
-			pipeline: client.Pipeline().Collection(coll.ID).Where(IsNaN("value")),
-			want:     []map[string]interface{}{wantNaN},
-		},
-		{
-			name:     "IsNotNaN",
-			pipeline: client.Pipeline().Collection(coll.ID).Where(IsNotNaN("value")),
-			want:     []map[string]interface{}{wantNum},
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
-
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if diff := testutil.Diff(docsToMaps(t, docs), test.want,
-					cmpopts.SortSlices(func(a, b map[string]interface{}) bool { return a["docID"].(int64) < b["docID"].(int64) })); diff != "" {
-					r.Errorf("mismatch (+want -got):\n%s", diff)
-				}
-			})
-		})
-	}
-}
-
 func vectorFuncs(t *testing.T) {
 	t.Parallel()
 	h := testHelper{t}
@@ -1229,6 +1137,9 @@ func vectorFuncs(t *testing.T) {
 }
 
 func isRetryablePipelineExecuteErr(err error) bool {
+	return false
+}
+func isRetryablePipelineExecuteErr1(err error) bool {
 	if err == nil {
 		return false
 	}

@@ -19,10 +19,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -30,6 +30,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
+
+const maxExecuteRecvAttempts = 5
 
 // PipelineResult is a result returned from executing a pipeline.
 type PipelineResult struct {
@@ -270,69 +272,76 @@ func newStreamPipelineResultIterator(ctx context.Context, p *Pipeline, s *execut
 func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 	client := it.p.c
 
-	// streamClient is initialized on first next call
-	if it.streamClient == nil {
-		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.ExecutePipeline")
-		defer func() {
-			if errors.Is(err, iterator.Done) {
-				trace.EndSpan(it.ctx, nil)
-			} else {
-				trace.EndSpan(it.ctx, err)
+	for i := 0; i < maxExecuteRecvAttempts; i++ {
+		if it.streamClient == nil {
+			req, reqErr := it.p.toExecutePipelineRequest(it.execSettings)
+			if reqErr != nil {
+				return nil, reqErr
 			}
-		}()
-		req, err := it.p.toExecutePipelineRequest(it.execSettings)
-		if err != nil {
-			return nil, err
-		}
 
-		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+			ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+			ctx = withResourceHeader(it.ctx, client.path())
 
-		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// If the current response is nil or all its results have been processed,
-	// receive the next response from the stream.
-	if it.currResp == nil || it.currRespResultsIdx >= len(it.currResp.GetResults()) {
-		var res *pb.ExecutePipelineResponse
-		for {
-			res, err = it.streamClient.Recv()
-			if err == io.EOF {
-				return nil, iterator.Done
-			}
+			it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 			if err != nil {
 				return nil, err
 			}
-			if res.GetResults() != nil {
-				it.currResp = res
-				it.currRespResultsIdx = 0
-				it.statsPb = res.GetExplainStats()
-				break
+		}
+
+		var shouldRetry bool
+		if it.currResp == nil || it.currRespResultsIdx >= len(it.currResp.GetResults()) {
+			var res *pb.ExecutePipelineResponse
+			for {
+				res, err = it.streamClient.Recv()
+				if err != nil {
+					st, ok := status.FromError(err)
+					if ok && st.Code() == codes.InvalidArgument &&
+						strings.Contains(err.Error(), "Please fill in the request header with format x-goog-request-params:project_id=") {
+
+						it.streamClient = nil
+						shouldRetry = true
+						break
+					}
+				}
+				if err == io.EOF {
+					return nil, iterator.Done
+				}
+				if err != nil {
+					return nil, err
+				}
+				if res.GetResults() != nil {
+					it.currResp = res
+					it.currRespResultsIdx = 0
+					it.statsPb = res.GetExplainStats()
+					break
+				}
+				// No results => partial progress; keep receiving
 			}
-			// No results => partial progress; keep receiving
 		}
-	}
-
-	// Get the next document proto from the current response.
-	docProto := it.currResp.GetResults()[it.currRespResultsIdx]
-	it.currRespResultsIdx++
-
-	var docRef *DocumentRef
-	if len(docProto.GetName()) != 0 {
-		var pathErr error
-		docRef, pathErr = pathToDoc(docProto.GetName(), client)
-		if pathErr != nil {
-			return nil, pathErr
+		if shouldRetry {
+			continue
 		}
-	}
 
-	pr, err := newPipelineResult(docRef, docProto, client, it.currResp.GetExecutionTime())
-	if err != nil {
-		return nil, err
+		// Get the next document proto from the current response.
+		docProto := it.currResp.GetResults()[it.currRespResultsIdx]
+		it.currRespResultsIdx++
+
+		var docRef *DocumentRef
+		if len(docProto.GetName()) != 0 {
+			var pathErr error
+			docRef, pathErr = pathToDoc(docProto.GetName(), client)
+			if pathErr != nil {
+				return nil, pathErr
+			}
+		}
+
+		pr, err := newPipelineResult(docRef, docProto, client, it.currResp.GetExecutionTime())
+		if err != nil {
+			return nil, err
+		}
+		return pr, nil
 	}
-	return pr, nil
+	return nil, err
 }
 
 func (it *streamPipelineResultIterator) stop() {

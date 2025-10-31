@@ -600,3 +600,43 @@ func (s *RawStage) toProto() (*pb.Pipeline_Stage, error) {
 		Options: optionsPb,
 	}, nil
 }
+
+func optionsToProto(options any) (map[string]*pb.Value, error) {
+	if options == nil {
+		return nil, nil
+	}
+
+	v := reflect.ValueOf(options)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	if v.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("firestore: options must be a struct or pointer to struct, got %T", options)
+	}
+
+	optsMap := make(map[string]*pb.Value)
+
+	typ := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		field := typ.Field(i)
+		fieldValue := v.Field(i)
+
+		if fieldValue.IsZero() {
+			continue
+		}
+
+		optionName := field.Name
+		if tag, ok := field.Tag.Lookup("firestore"); ok {
+			optionName = tag
+		}
+
+		pbVal, _, err := toProtoValue(fieldValue)
+		if err != nil {
+			return nil, fmt.Errorf("firestore: error converting option %q: %w", optionName, err)
+		}
+		optsMap[optionName] = pbVal
+	}
+
+	return optsMap, nil
+}

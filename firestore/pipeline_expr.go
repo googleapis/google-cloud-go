@@ -116,12 +116,6 @@ type Expr interface {
 	ToUpper() Expr
 	Trim() Expr
 
-	// Type functions
-	IsNaN() BooleanExpr
-	IsNotNaN() BooleanExpr
-	IsNull() BooleanExpr
-	IsNotNull() BooleanExpr
-
 	// Vector functions
 	CosineDistance(other any) Expr
 	DotProduct(other any) Expr
@@ -224,12 +218,6 @@ func (b *baseExpr) Substring(index, offset any) Expr         { return Substring(
 func (b *baseExpr) ToLower() Expr                            { return ToLower(b) }
 func (b *baseExpr) ToUpper() Expr                            { return ToUpper(b) }
 func (b *baseExpr) Trim() Expr                               { return Trim(b) }
-
-// Type functions
-func (b *baseExpr) IsNaN() BooleanExpr     { return IsNaN(b) }
-func (b *baseExpr) IsNotNaN() BooleanExpr  { return IsNotNaN(b) }
-func (b *baseExpr) IsNull() BooleanExpr    { return IsNull(b) }
-func (b *baseExpr) IsNotNull() BooleanExpr { return IsNotNull(b) }
 
 // Vector functions
 func (b *baseExpr) CosineDistance(other any) Expr    { return CosineDistance(b, other) }

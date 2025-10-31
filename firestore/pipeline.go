@@ -115,7 +115,9 @@ func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *Pipeline
 
 	s := &executeSettings{}
 	for _, opt := range opts {
-		opt.apply(s)
+		if opt != nil {
+			opt.apply(s)
+		}
 	}
 
 	return &PipelineResultIterator{
@@ -193,7 +195,9 @@ func (p *Pipeline) copy() *Pipeline {
 func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
 	newP := p.copy()
 	for _, opt := range opts {
-		opt.apply(newP.readSettings)
+		if opt != nil {
+			opt.apply(newP.readSettings)
+		}
 	}
 	return newP
 }
@@ -401,7 +405,6 @@ func (p *Pipeline) Aggregate(accumulators ...*AliasedAggregate) *Pipeline {
 //
 //		// Calculate the average rating for each genre.
 //		client.Pipeline().Collection("books").
-//	        AggregateWithSpec(NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre"))
 //	        AggregateWithSpec(NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre"))
 func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
 	aggStage, err := newAggregateStage(spec)

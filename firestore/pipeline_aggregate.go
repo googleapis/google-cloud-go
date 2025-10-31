@@ -48,7 +48,7 @@ func newBaseAggregateFunction(name string, fieldOrExpr any) *baseAggregateFuncti
 		case Expr:
 			valueExpr = value
 		default:
-			err = fmt.Errorf("firestore: invalid type for parameter 'value' for %s: expected string, or Expr, but got %T", name, value)
+			err = fmt.Errorf("firestore: invalid type for parameter 'value' for %s: expected string, FieldPath, or Expr, but got %T", name, value)
 		}
 
 		if err == nil {

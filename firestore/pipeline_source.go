@@ -14,13 +14,6 @@
 
 package firestore
 
-import (
-	"fmt"
-	"reflect"
-
-	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-)
-
 // PipelineSource is a factory for creating Pipeline instances.
 // It is obtained by calling [Client.Pipeline()].
 type PipelineSource struct {
@@ -78,7 +71,9 @@ func WithCollectionHints(hints CollectionHints) CollectionOption {
 func (ps *PipelineSource) Collection(path string, opts ...CollectionOption) *Pipeline {
 	cs := &collectionSettings{}
 	for _, opt := range opts {
-		opt.apply(cs)
+		if opt != nil {
+			opt.apply(cs)
+		}
 	}
 	return newPipeline(ps.client, newInputStageCollection(path, cs))
 }
@@ -127,7 +122,9 @@ func WithCollectionGroupHints(hints CollectionHints) CollectionGroupOption {
 func (ps *PipelineSource) CollectionGroup(collectionID string, opts ...CollectionGroupOption) *Pipeline {
 	cgs := &collectionGroupSettings{}
 	for _, opt := range opts {
-		opt.apply(cgs)
+		if opt != nil {
+			opt.apply(cgs)
+		}
 	}
 	return newPipeline(ps.client, newInputStageCollectionGroup("", collectionID, cgs))
 }
@@ -140,44 +137,4 @@ func (ps *PipelineSource) Database() *Pipeline {
 // Documents creates a new [Pipeline] that operates on a specific set of Firestore documents.
 func (ps *PipelineSource) Documents(refs ...*DocumentRef) *Pipeline {
 	return newPipeline(ps.client, newInputStageDocuments(refs...))
-}
-
-func optionsToProto(options any) (map[string]*pb.Value, error) {
-	if options == nil {
-		return nil, nil
-	}
-
-	v := reflect.ValueOf(options)
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-
-	if v.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("firestore: options must be a struct or pointer to struct, got %T", options)
-	}
-
-	optsMap := make(map[string]*pb.Value)
-
-	typ := v.Type()
-	for i := 0; i < v.NumField(); i++ {
-		field := typ.Field(i)
-		fieldValue := v.Field(i)
-
-		if fieldValue.IsZero() {
-			continue
-		}
-
-		optionName := field.Name
-		if tag, ok := field.Tag.Lookup("firestore"); ok {
-			optionName = tag
-		}
-
-		pbVal, _, err := toProtoValue(fieldValue)
-		if err != nil {
-			return nil, fmt.Errorf("firestore: error converting option %q: %w", optionName, err)
-		}
-		optsMap[optionName] = pbVal
-	}
-
-	return optsMap, nil
 }
