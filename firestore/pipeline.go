@@ -271,8 +271,8 @@ func (p *Pipeline) Offset(offset int) *Pipeline {
 //
 //		client.Pipeline().Collection("users").Select("info.email")
 //		client.Pipeline().Collection("users").Select(FieldOf("info.email"))
-//		client.Pipeline().Collection("users").Select(FieldOfPath([]string{"info", "email"}))
-//		client.Pipeline().Collection("users").Select(FieldOfPath([]string{"info", "email"}))
+//		client.Pipeline().Collection("users").Select(FieldOf([]string{"info", "email"}))
+//		client.Pipeline().Collection("users").Select(FieldOf([]string{"info", "email"}))
 //	 	client.Pipeline().Collection("users").Select(Add("age", 5).As("agePlus5"))
 func (p *Pipeline) Select(fieldpathsOrSelectables ...any) *Pipeline {
 	if p.err != nil {
@@ -444,7 +444,9 @@ func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts *UnnestOpti
 
 	var fieldExpr Expr
 	switch v := fieldpath.(type) {
-	case string, FieldPath:
+	case string:
+		fieldExpr = FieldOf(v)
+	case FieldPath:
 		fieldExpr = FieldOf(v)
 	default:
 		p.err = errInvalidArg(fieldpath, "string", "FieldPath")

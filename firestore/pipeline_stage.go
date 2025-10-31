@@ -226,7 +226,9 @@ type findNearestStage struct {
 func newFindNearestStage(vectorField any, queryVector any, measure PipelineDistanceMeasure, options *PipelineFindNearestOptions) (*findNearestStage, error) {
 	var propertyExpr Expr
 	switch v := vectorField.(type) {
-	case string, FieldPath:
+	case string:
+		propertyExpr = FieldOf(v)
+	case FieldPath:
 		propertyExpr = FieldOf(v)
 	case Expr:
 		propertyExpr = v
@@ -311,7 +313,9 @@ func newRemoveFieldsStage(fieldpaths ...any) (*removeFieldsStage, error) {
 	fields := make([]Expr, len(fieldpaths))
 	for i, fp := range fieldpaths {
 		switch v := fp.(type) {
-		case string, FieldPath:
+		case string:
+			fields[i] = FieldOf(v)
+		case FieldPath:
 			fields[i] = FieldOf(v)
 		default:
 			return nil, errInvalidArg(fp, "string", "FieldPath")
@@ -341,7 +345,9 @@ type replaceStage struct {
 func newReplaceStage(fieldOrSelectable any) (*replaceStage, error) {
 	var expr Expr
 	switch v := fieldOrSelectable.(type) {
-	case string, FieldPath:
+	case string:
+		expr = FieldOf(v)
+	case FieldPath:
 		expr = FieldOf(v)
 	case Selectable:
 		_, expr = v.getSelectionDetails()
@@ -473,7 +479,9 @@ func newUnnestStage(fieldExpr Expr, alias string, opts *UnnestOptions) (*unnestS
 	if opts != nil && opts.IndexField != nil {
 		var indexFieldExpr Expr
 		switch v := opts.IndexField.(type) {
-		case string, FieldPath:
+		case FieldPath:
+			indexFieldExpr = FieldOf(v)
+		case string:
 			indexFieldExpr = FieldOf(v)
 		default:
 			return nil, errInvalidArg(opts.IndexField, "string", "FieldPath")

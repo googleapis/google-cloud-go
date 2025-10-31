@@ -92,32 +92,12 @@ func asFieldExpr(val any) Expr {
 	switch v := val.(type) {
 	case Expr:
 		return v
-	case string, FieldPath:
+	case FieldPath:
+		return FieldOf(v)
+	case string:
 		return FieldOf(v)
 	default:
 		return &baseExpr{err: fmt.Errorf("firestore: value must be a string, FieldPath, or Expr, but got %T", val)}
-	}
-}
-
-func asInt64Expr(val any) Expr {
-	switch v := val.(type) {
-	case Expr:
-		return v
-	case int, int32, int64:
-		return ConstantOf(v)
-	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int32, int64 or Expr, but got %T", val)}
-	}
-}
-
-func asStringExpr(val any) Expr {
-	switch v := val.(type) {
-	case Expr:
-		return v
-	case string:
-		return ConstantOf(v)
-	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
 	}
 }
 
@@ -185,6 +165,8 @@ func fieldsOrSelectablesToSelectables(fieldsOrSelectables ...any) ([]Selectable,
 			if v == "" {
 				return nil, errors.New("firestore: path cannot be empty")
 			}
+			s = FieldOf(v).(*field)
+		case FieldPath:
 			s = FieldOf(v).(*field)
 		case Selectable:
 			s = v
