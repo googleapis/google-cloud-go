@@ -3825,6 +3825,36 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Errorf("got title %q, want 'The Great Gatsby'", data["title"])
 		}
 	})
+	t.Run("RawStage", func(t *testing.T) {
+		// Using RawStage to perform a Limit operation
+		iter := client.Pipeline().Collection(coll.ID).RawStage(NewRawStage("limit").WithArguments(3)).Execute(ctx)
+		defer iter.Stop()
+		results, err := iter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+		if len(results) != 3 {
+			t.Errorf("got %d documents, want 3", len(results))
+		}
+
+		// Using RawStage to perform a Select operation with options
+		iter = client.Pipeline().Collection(coll.ID).RawStage(NewRawStage("select").WithArguments(map[string]interface{}{"title": FieldOf("title")})).Limit(1).Execute(ctx)
+		defer iter.Stop()
+		doc, err := iter.Next()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
+		}
+		data := doc.Data()
+		if _, ok := data["title"]; !ok {
+			t.Error("missing 'title' field")
+		}
+		if _, ok := data["genre"]; ok {
+			t.Error("unexpected 'genre' field")
+		}
+	})
 	t.Run("RemoveFields", func(t *testing.T) {
 		iter := client.Pipeline().Collection(coll.ID).
 			Limit(1).

@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -523,4 +524,63 @@ func newWhereStage(condition BooleanExpr) (*whereStage, error) {
 		stageName: stageNameWhere,
 		stagePb:   newUnaryStage(stageNameWhere, argsPb),
 	}}, nil
+}
+
+// RawStageOptions holds the options for a RawStage.
+type RawStageOptions map[string]any
+
+// RawStage represents a pipeline stage that is not yet implemented in the SDK.
+// This allows users to call stages that are supported by the Firestore backend
+// but not yet available in the current SDK version.
+type RawStage struct {
+	stageName string
+	args      []any
+	options   RawStageOptions
+}
+
+// NewRawStage creates a new RawStage with the given name.
+func NewRawStage(name string) *RawStage {
+	return &RawStage{stageName: name}
+}
+
+// WithArguments sets the arguments for the RawStage.
+func (s *RawStage) WithArguments(args ...any) *RawStage {
+	s.args = args
+	return s
+}
+
+// WithOptions sets the options for the RawStage.
+func (s *RawStage) WithOptions(options RawStageOptions) *RawStage {
+	s.options = options
+	return s
+}
+
+func (s *RawStage) name() string { return s.stageName }
+
+func (s *RawStage) toProto() (*pb.Pipeline_Stage, error) {
+	argsPb := make([]*pb.Value, len(s.args))
+	for i, arg := range s.args {
+		val, _, err := toProtoValue(reflect.ValueOf(arg))
+		if err != nil {
+			return nil, fmt.Errorf("firestore: error converting raw stage argument %d: %w", i, err)
+		}
+		argsPb[i] = val
+	}
+
+	optionsPb := make(map[string]*pb.Value)
+	if s.options != nil {
+		for key, val := range s.options {
+			valPb, _, err := toProtoValue(reflect.ValueOf(val))
+			if err != nil {
+				return nil, fmt.Errorf("firestore: error converting raw stage option %q: %w", key, err)
+			}
+			optionsPb[key] = valPb
+		}
+	}
+
+	return &pb.Pipeline_Stage{
+		Name:    s.name(),
+		Args:    argsPb,
+		Options: optionsPb,
+	}, nil
 }
