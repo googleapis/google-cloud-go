@@ -77,14 +77,13 @@ func newInputStageCollection(path string, options *collectionSettings) *inputSta
 }
 func (s *inputStageCollection) name() string { return stageNameCollection }
 func (s *inputStageCollection) toProto() (*pb.Pipeline_Stage, error) {
-	arg := &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.path}}
-	optionsPb, err := optionsToProto(s.options)
+	optionsPb, err := s.options.toProto()
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Pipeline_Stage{
 		Name:    s.name(),
-		Args:    []*pb.Value{arg},
+		Args:    []*pb.Value{{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.path}}},
 		Options: optionsPb,
 	}, nil
 }
@@ -101,15 +100,16 @@ func newInputStageCollectionGroup(ancestor, collectionID string, options *collec
 }
 func (s *inputStageCollectionGroup) name() string { return stageNameCollectionGroup }
 func (s *inputStageCollectionGroup) toProto() (*pb.Pipeline_Stage, error) {
-	ancestor := &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.ancestor}}
-	collectionID := &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s.collectionID}}
-	optionsPb, err := optionsToProto(s.options)
+	optionsPb, err := s.options.toProto()
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Pipeline_Stage{
-		Name:    s.name(),
-		Args:    []*pb.Value{ancestor, collectionID},
+		Name: s.name(),
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.ancestor}},
+			{ValueType: &pb.Value_StringValue{StringValue: s.collectionID}},
+		},
 		Options: optionsPb,
 	}, nil
 }
@@ -595,48 +595,8 @@ func (s *RawStage) toProto() (*pb.Pipeline_Stage, error) {
 	}
 
 	return &pb.Pipeline_Stage{
-		Name:    s.stageName,
+		Name:    s.name(),
 		Args:    argsPb,
 		Options: optionsPb,
 	}, nil
-}
-
-func optionsToProto(options any) (map[string]*pb.Value, error) {
-	if options == nil {
-		return nil, nil
-	}
-
-	v := reflect.ValueOf(options)
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-
-	if v.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("firestore: options must be a struct or pointer to struct, got %T", options)
-	}
-
-	optsMap := make(map[string]*pb.Value)
-
-	typ := v.Type()
-	for i := 0; i < v.NumField(); i++ {
-		field := typ.Field(i)
-		fieldValue := v.Field(i)
-
-		if fieldValue.IsZero() {
-			continue
-		}
-
-		optionName := field.Name
-		if tag, ok := field.Tag.Lookup("firestore"); ok {
-			optionName = tag
-		}
-
-		pbVal, _, err := toProtoValue(fieldValue)
-		if err != nil {
-			return nil, fmt.Errorf("firestore: error converting option %q: %w", optionName, err)
-		}
-		optsMap[optionName] = pbVal
-	}
-
-	return optsMap, nil
 }

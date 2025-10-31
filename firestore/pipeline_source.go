@@ -14,6 +14,13 @@
 
 package firestore
 
+import (
+	"fmt"
+	"reflect"
+
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+)
+
 // PipelineSource is a factory for creating Pipeline instances.
 // It is obtained by calling [Client.Pipeline()].
 type PipelineSource struct {
@@ -35,6 +42,21 @@ func (ch CollectionHints) WithIgnoreIndexFields(fields ...string) CollectionHint
 	return ch
 }
 
+func (ch CollectionHints) toProto() (map[string]*pb.Value, error) {
+	if ch == nil {
+		return nil, nil
+	}
+	optsMap := make(map[string]*pb.Value)
+	for key, val := range ch {
+		valPb, _, err := toProtoValue(reflect.ValueOf(val))
+		if err != nil {
+			return nil, fmt.Errorf("firestore: error converting option %q: %w", key, err)
+		}
+		optsMap[key] = valPb
+	}
+	return optsMap, nil
+}
+
 // CollectionOption is an option for a Collection pipeline stage.
 type CollectionOption interface {
 	apply(co *collectionSettings)
@@ -42,6 +64,13 @@ type CollectionOption interface {
 
 type collectionSettings struct {
 	Hints CollectionHints
+}
+
+func (cs *collectionSettings) toProto() (map[string]*pb.Value, error) {
+	if cs == nil {
+		return nil, nil
+	}
+	return cs.Hints.toProto()
 }
 
 // funcCollectionOption wraps a function that modifies collectionSettings
@@ -85,6 +114,13 @@ type CollectionGroupOption interface {
 
 type collectionGroupSettings struct {
 	Hints CollectionHints
+}
+
+func (cgs *collectionGroupSettings) toProto() (map[string]*pb.Value, error) {
+	if cgs == nil {
+		return nil, nil
+	}
+	return cgs.Hints.toProto()
 }
 
 // funcCollectionGroupOption wraps a function that modifies collectionGroupSettings

@@ -23,6 +23,7 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -274,13 +275,21 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 
 	for i := 0; i < maxExecuteRecvAttempts; i++ {
 		if it.streamClient == nil {
+			it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.ExecutePipeline")
+			defer func() {
+				if errors.Is(err, iterator.Done) {
+					trace.EndSpan(it.ctx, nil)
+				} else {
+					trace.EndSpan(it.ctx, err)
+				}
+			}()
 			req, reqErr := it.p.toExecutePipelineRequest(it.execSettings)
 			if reqErr != nil {
 				return nil, reqErr
 			}
 
 			ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
-			ctx = withResourceHeader(it.ctx, client.path())
+			ctx = withResourceHeader(ctx, client.path())
 
 			it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 			if err != nil {

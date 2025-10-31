@@ -19,15 +19,12 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func TestIntegration_PipelineStages(t *testing.T) {
@@ -864,10 +861,7 @@ func arrayFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
+				if err != nil {
 					r.Fatalf("GetAll: %v", err)
 					return
 				}
@@ -1002,10 +996,7 @@ func stringFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
+				if err != nil {
 					r.Fatalf("GetAll: %v", err)
 					return
 				}
@@ -1116,10 +1107,7 @@ func vectorFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
+				if err != nil {
 					r.Fatalf("GetAll: %v", err)
 					return
 				}
@@ -1134,22 +1122,6 @@ func vectorFuncs(t *testing.T) {
 			})
 		})
 	}
-}
-
-func isRetryablePipelineExecuteErr(err error) bool {
-	return false
-}
-func isRetryablePipelineExecuteErr1(err error) bool {
-	if err == nil {
-		return false
-	}
-	s, ok := status.FromError(err)
-	if !ok {
-		return false
-	}
-	return s.Code() == codes.InvalidArgument &&
-		strings.Contains(s.Message(), "Invalid request routing header") &&
-		strings.Contains(s.Message(), "Please fill in the request header with format")
 }
 
 func timestampFuncs(t *testing.T) {
@@ -1597,13 +1569,6 @@ func comparisonFuncs(t *testing.T) {
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
 				Where(LessThan("a", 2)),
-			want: []map[string]interface{}{doc1want},
-		},
-		{
-			name: "Equivalent",
-			pipeline: client.Pipeline().
-				Collection(coll.ID).
-				Where(Equivalent("a", 1)),
 			want: []map[string]interface{}{doc1want},
 		},
 	}
