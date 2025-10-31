@@ -130,6 +130,10 @@ skip-module-scan-paths:
   # Librarian released modules
   - bigquery
   - bigquery/v2
+  - bigtable
+  - storage
+  - logging
+  - errorreporting
   - profiler
   - vertexai
   - spanner
