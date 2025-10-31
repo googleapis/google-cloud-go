@@ -24,7 +24,7 @@ import (
 func TestPipelineSource_Collection(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users")
+	p := ps.Collection("users", nil)
 
 	if p.err != nil {
 		t.Fatalf("Collection: %v", p.err)
@@ -33,7 +33,7 @@ func TestPipelineSource_Collection(t *testing.T) {
 		t.Fatalf("initial stages: got %d, want 1", len(p.stages))
 	}
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
 		t.Fatalf("toExecutePipelineRequest: %v", err)
 	}
@@ -54,7 +54,7 @@ func TestPipelineSource_Collection(t *testing.T) {
 func TestPipelineSource_CollectionGroup(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.CollectionGroup("cities")
+	p := ps.CollectionGroup("cities", nil)
 
 	if p.err != nil {
 		t.Fatalf("CollectionGroup: %v", p.err)
@@ -63,7 +63,7 @@ func TestPipelineSource_CollectionGroup(t *testing.T) {
 		t.Fatalf("initial stages: got %d, want 1", len(p.stages))
 	}
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
 		t.Fatalf("toExecutePipelineRequest: %v", err)
 	}
@@ -96,7 +96,7 @@ func TestPipelineSource_Database(t *testing.T) {
 		t.Fatalf("initial stages: got %d, want 1", len(p.stages))
 	}
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
 		t.Fatalf("toExecutePipelineRequest: %v", err)
 	}

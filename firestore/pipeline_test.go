@@ -80,7 +80,7 @@ func newTestClient() *Client {
 func TestPipeline_Limit(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users").Limit(10)
+	p := ps.Collection("users", nil).Limit(10)
 
 	if p.err != nil {
 		t.Fatalf("Pipeline.Limit() returned error: %v", p.err)
@@ -89,9 +89,9 @@ func TestPipeline_Limit(t *testing.T) {
 		t.Fatalf("Expected 2 stages, got %d", len(p.stages))
 	}
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -104,16 +104,16 @@ func TestPipeline_Limit(t *testing.T) {
 		Args: []*pb.Value{{ValueType: &pb.Value_IntegerValue{IntegerValue: 10}}},
 	}
 	if diff := cmp.Diff(wantLimitStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for limit stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for limit stage (-want +got):\n%s", diff)
 	}
 }
 
 func TestPipeline_ToExecutePipelineRequest(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("items").Limit(5)
+	p := ps.Collection("items", nil).Limit(5)
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
 		t.Fatalf("toExecutePipelineRequest: %v", err)
 	}
@@ -154,11 +154,11 @@ func TestPipeline_ToExecutePipelineRequest(t *testing.T) {
 func TestPipeline_Sort(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users").Sort(Ordering{Expr: FieldOf("age"), Direction: OrderingDesc})
+	p := ps.Collection("users", nil).Sort(Ordering{Expr: FieldOf("age"), Direction: OrderingDesc})
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -182,18 +182,18 @@ func TestPipeline_Sort(t *testing.T) {
 		},
 	}
 	if diff := cmp.Diff(wantSortStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for sort stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for sort stage (-want +got):\n%s", diff)
 	}
 }
 
 func TestPipeline_Offset(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users").Offset(20)
+	p := ps.Collection("users", nil).Offset(20)
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -206,18 +206,18 @@ func TestPipeline_Offset(t *testing.T) {
 		Args: []*pb.Value{{ValueType: &pb.Value_IntegerValue{IntegerValue: 20}}},
 	}
 	if diff := cmp.Diff(wantOffsetStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for offset stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for offset stage (-want +got):\n%s", diff)
 	}
 }
 
 func TestPipeline_Select(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users").Select("name", FieldOf("age"), Add(FieldOf("score"), 10).As("new_score"))
+	p := ps.Collection("users", nil).Select("name", FieldOf("age"), Add(FieldOf("score"), 10).As("new_score"))
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -246,18 +246,18 @@ func TestPipeline_Select(t *testing.T) {
 		},
 	}
 	if diff := cmp.Diff(wantSelectStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for select stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for select stage (-want +got):\n%s", diff)
 	}
 }
 
 func TestPipeline_AddFields(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users").AddFields(Add(FieldOf("score"), 10).As("new_score"))
+	p := ps.Collection("users", nil).AddFields(Add(FieldOf("score"), 10).As("new_score"))
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -284,18 +284,18 @@ func TestPipeline_AddFields(t *testing.T) {
 		},
 	}
 	if diff := cmp.Diff(wantAddFieldsStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for addFields stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for addFields stage (-want +got):\n%s", diff)
 	}
 }
 
 func TestPipeline_Where(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users").Where(Equal(FieldOf("age"), 30))
+	p := ps.Collection("users", nil).Where(Equal(FieldOf("age"), 30))
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -316,18 +316,18 @@ func TestPipeline_Where(t *testing.T) {
 		},
 	}
 	if diff := cmp.Diff(wantWhereStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for where stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for where stage (-want +got):\n%s", diff)
 	}
 }
 
 func TestPipeline_Aggregate(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
-	p := ps.Collection("users").Aggregate(Sum("age").As("total_age"))
+	p := ps.Collection("users", nil).Aggregate(Sum("age").As("total_age"))
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -354,7 +354,7 @@ func TestPipeline_Aggregate(t *testing.T) {
 		},
 	}
 	if diff := cmp.Diff(wantAggregateStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for aggregate stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for aggregate stage (-want +got):\n%s", diff)
 	}
 }
 
@@ -362,11 +362,11 @@ func TestPipeline_AggregateWithSpec(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
 	spec := NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre")
-	p := ps.Collection("books").AggregateWithSpec(spec)
+	p := ps.Collection("books", nil).AggregateWithSpec(spec)
 
-	req, err := p.toExecutePipelineRequest()
+	req, err := p.toExecutePipelineRequest(nil)
 	if err != nil {
-		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		t.Fatalf("p.toExecutePipelineRequest(nil) failed: %v", err)
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
@@ -399,6 +399,6 @@ func TestPipeline_AggregateWithSpec(t *testing.T) {
 		},
 	}
 	if diff := cmp.Diff(wantAggregateStage, stages[1], protocmp.Transform()); diff != "" {
-		t.Errorf("toExecutePipelineRequest() mismatch for aggregate stage (-want +got):\n%s", diff)
+		t.Errorf("toExecutePipelineRequest(nil) mismatch for aggregate stage (-want +got):\n%s", diff)
 	}
 }

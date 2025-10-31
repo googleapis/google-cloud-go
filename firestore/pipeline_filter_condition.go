@@ -210,28 +210,6 @@ func LessThanOrEqual(left, right any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("less_than_or_equal", left, right)}
 }
 
-// Equivalent creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
-// returning it as a BooleanExpr. This is an alias for Equal.
-//   - left: The field path string, [FieldPath] or [Expr] to compare.
-//   - right: The constant value or [Expr] to compare to.
-//
-// Example:
-//
-//		// Check if the 'age' field is equal to 21
-//		Equivalent(FieldOf("age"), 21)
-//
-//		// Check if the 'age' field is equal to an expression
-//	 	Equivalent(FieldOf("age"), FieldOf("minAge").Add(10))
-//
-//		// Check if the 'age' field is equal to the 'limit' field
-//		Equivalent("age", FieldOf("limit"))
-//
-//		// Check if the 'city' field is equal to string constant "London"
-//		Equivalent("city", "London")
-func Equivalent(left, right any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("equivalent", left, right)}
-}
-
 // EndsWith creates an expression that checks if a string field or expression ends with a given suffix.
 // - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
 // - suffix string or [Expr] to check for.
@@ -302,52 +280,4 @@ func StartsWith(exprOrFieldPath any, prefix any) BooleanExpr {
 //	StringContains("description", "Firestore")
 func StringContains(exprOrFieldPath any, substring any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: newBaseFunction("string_contains", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(substring)})}
-}
-
-// IsNaN creates a boolean expression that checks if a field or expression evaluates to NaN.
-//
-// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
-//
-// Example:
-//
-//	// Check if the 'score' field is NaN.
-//	IsNaN("score")
-func IsNaN(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_nan", []Expr{asFieldExpr(exprOrFieldPath)})}
-}
-
-// IsNotNaN creates a boolean expression that checks if a field or expression does not evaluate to NaN.
-//
-// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
-//
-// Example:
-//
-//	// Check if the 'score' field is not NaN.
-//	IsNotNaN("score")
-func IsNotNaN(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_nan", []Expr{asFieldExpr(exprOrFieldPath)})}
-}
-
-// IsNull creates a boolean expression that checks if a field or expression evaluates to null.
-//
-// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
-//
-// Example:
-//
-//	// Check if the 'address' field is null.
-//	IsNull("address")
-func IsNull(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_null", []Expr{asFieldExpr(exprOrFieldPath)})}
-}
-
-// IsNotNull creates a boolean expression that checks if a field or expression does not evaluate to null.
-//
-// exprOrFieldPath is the field path string, [FieldPath] or [Expr] that will be evaluated.
-//
-// Example:
-//
-//	// Check if the 'address' field is not null.
-//	IsNotNull("address")
-func IsNotNull(exprOrFieldPath any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("is_not_null", []Expr{asFieldExpr(exprOrFieldPath)})}
 }

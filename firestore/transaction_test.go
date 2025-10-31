@@ -339,6 +339,27 @@ func TestTransactionErrors(t *testing.T) {
 		}
 	})
 
+	t.Run("Read after write, with pipeline", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+			if err := tx.Delete(c.Doc("C/a")); err != nil {
+				return err
+			}
+			p := c.Pipeline().Collection("C", nil).Select("x")
+			it := tx.Execute(p)
+			it.Stop()
+			return it.err
+		})
+		if err != errReadAfterWrite {
+			t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
+	})
+
 	t.Run("Read after write fails even if the user ignores the read's error", func(t *testing.T) {
 		srv.reset()
 		srv.addRPC(beginReq, beginRes)

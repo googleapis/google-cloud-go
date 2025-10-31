@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -26,8 +27,12 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
+
+const maxExecuteRecvAttempts = 5
 
 // PipelineResult is a result returned from executing a pipeline.
 type PipelineResult struct {
@@ -176,10 +181,66 @@ func (it *PipelineResultIterator) GetAll() ([]*PipelineResult, error) {
 	return results, nil
 }
 
+// ExplainStats returns stats from query explain.
+// If [ExecuteExplainOptions.ExecutionMode] was set to [ExecutionModeExplain] or left unset, then this returns nil
+func (it *PipelineResultIterator) ExplainStats() *ExplainStats {
+	if it == nil {
+		return &ExplainStats{err: errors.New("firestore: iterator is nil")}
+	}
+	if it.err == nil || it.err != iterator.Done {
+		return &ExplainStats{err: errStatsBeforeEnd}
+	}
+	statsPb, statsErr := it.iter.getExplainStats()
+	return &ExplainStats{statsPb: statsPb, err: statsErr}
+}
+
+// ExplainStats is query explain stats.
+//
+// Contains all metadata related to pipeline planning and execution, specific
+// contents depend on the supplied pipeline options.
+type ExplainStats struct {
+	statsPb *pb.ExplainStats
+	err     error
+}
+
+// GetRawData returns the explain stats in an encoded proto format, as returned from the Firestore backend.
+// The caller is responsible for unpacking this proto message.
+func (es *ExplainStats) GetRawData() (*anypb.Any, error) {
+	if es.err != nil {
+		return nil, es.err
+	}
+	if es.statsPb == nil {
+		return nil, nil
+	}
+
+	return es.statsPb.GetData(), nil
+}
+
+// GetText returns the explain stats string verbatim as returned from the Firestore backend
+// when explain stats were requested with `outputFormat = 'text'`, this
+// If explain stats were requested with `outputFormat = 'json'`, this returns the explain stats
+// as stringified JSON, which was returned from the Firestore backend.
+func (es *ExplainStats) GetText() (string, error) {
+	if es.err != nil {
+		return "", es.err
+	}
+	if es.statsPb == nil || es.statsPb.GetData() == nil {
+		return "", nil
+	}
+
+	var data wrapperspb.StringValue
+	if err := es.statsPb.GetData().UnmarshalTo(&data); err != nil {
+		return "", fmt.Errorf("firestore: failed to unmarshal Any to wrapperspb.StringValue: %w", err)
+	}
+
+	return data.GetValue(), nil
+}
+
 // pipelineResultIteratorInternal is an unexported interface defining the core iteration logic.
 type pipelineResultIteratorInternal interface {
 	next() (*PipelineResult, error)
 	stop()
+	getExplainStats() (*pb.ExplainStats, error)
 }
 
 // streamPipelineResultIterator is the concrete implementation for gRPC streaming of pipeline results.
@@ -187,17 +248,23 @@ type streamPipelineResultIterator struct {
 	ctx                context.Context
 	cancel             func()
 	p                  *Pipeline
+	execSettings       *executeSettings
 	streamClient       pb.Firestore_ExecutePipelineClient
 	currResp           *pb.ExecutePipelineResponse
 	currRespResultsIdx int
+	statsPb            *pb.ExplainStats
 }
 
-func newStreamPipelineResultIterator(ctx context.Context, p *Pipeline) *streamPipelineResultIterator {
+// Ensure that streamPipelineResultIterator implements the pipelineResultIteratorInternal interface.
+var _ pipelineResultIteratorInternal = (*streamPipelineResultIterator)(nil)
+
+func newStreamPipelineResultIterator(ctx context.Context, p *Pipeline, s *executeSettings) *streamPipelineResultIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	return &streamPipelineResultIterator{
-		ctx:    ctx,
-		cancel: cancel,
-		p:      p,
+		ctx:          ctx,
+		cancel:       cancel,
+		p:            p,
+		execSettings: s,
 	}
 }
 
@@ -206,71 +273,94 @@ func newStreamPipelineResultIterator(ctx context.Context, p *Pipeline) *streamPi
 func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 	client := it.p.c
 
-	// streamClient is initialized on first next call
-	if it.streamClient == nil {
-		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.ExecutePipeline")
-		defer func() {
-			if errors.Is(err, iterator.Done) {
-				trace.EndSpan(it.ctx, nil)
-			} else {
-				trace.EndSpan(it.ctx, err)
+	// TODO(bahaaiman): Remove retries once b/456536006 is fixed
+	for i := 0; i < maxExecuteRecvAttempts; i++ {
+		if it.streamClient == nil {
+			it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.ExecutePipeline")
+			defer func() {
+				if errors.Is(err, iterator.Done) {
+					trace.EndSpan(it.ctx, nil)
+				} else {
+					trace.EndSpan(it.ctx, err)
+				}
+			}()
+			req, reqErr := it.p.toExecutePipelineRequest(it.execSettings)
+			if reqErr != nil {
+				return nil, reqErr
 			}
-		}()
-		req, err := it.p.toExecutePipelineRequest()
-		if err != nil {
-			return nil, err
-		}
 
-		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+			ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+			ctx = withResourceHeader(ctx, client.path())
 
-		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// If the current response is nil or all its results have been processed,
-	// receive the next response from the stream.
-	if it.currResp == nil || it.currRespResultsIdx >= len(it.currResp.GetResults()) {
-		var res *pb.ExecutePipelineResponse
-		for {
-			res, err = it.streamClient.Recv()
-			if err == io.EOF {
-				return nil, iterator.Done
-			}
+			it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 			if err != nil {
 				return nil, err
 			}
-			if res.GetResults() != nil {
-				it.currResp = res
-				it.currRespResultsIdx = 0
-				break
+		}
+
+		var shouldRetry bool
+		if it.currResp == nil || it.currRespResultsIdx >= len(it.currResp.GetResults()) {
+			var res *pb.ExecutePipelineResponse
+			for {
+				res, err = it.streamClient.Recv()
+				if err != nil {
+					st, ok := status.FromError(err)
+					if ok && st.Code() == codes.InvalidArgument &&
+						strings.Contains(err.Error(), "Please fill in the request header with format x-goog-request-params:project_id=") {
+
+						it.streamClient = nil
+						shouldRetry = true
+						break
+					}
+				}
+				if err == io.EOF {
+					return nil, iterator.Done
+				}
+				if err != nil {
+					return nil, err
+				}
+				if res.GetResults() != nil {
+					it.currResp = res
+					it.currRespResultsIdx = 0
+					it.statsPb = res.GetExplainStats()
+					break
+				}
+				// No results => partial progress; keep receiving
 			}
-			// No results => partial progress; keep receiving
-			// TODO: Set ExplainStats
 		}
-	}
-
-	// Get the next document proto from the current response.
-	docProto := it.currResp.GetResults()[it.currRespResultsIdx]
-	it.currRespResultsIdx++
-
-	var docRef *DocumentRef
-	if len(docProto.GetName()) != 0 {
-		var pathErr error
-		docRef, pathErr = pathToDoc(docProto.GetName(), client)
-		if pathErr != nil {
-			return nil, pathErr
+		if shouldRetry {
+			continue
 		}
-	}
 
-	pr, err := newPipelineResult(docRef, docProto, client, it.currResp.GetExecutionTime())
-	if err != nil {
-		return nil, err
+		// Get the next document proto from the current response.
+		docProto := it.currResp.GetResults()[it.currRespResultsIdx]
+		it.currRespResultsIdx++
+
+		var docRef *DocumentRef
+		if len(docProto.GetName()) != 0 {
+			var pathErr error
+			docRef, pathErr = pathToDoc(docProto.GetName(), client)
+			if pathErr != nil {
+				return nil, pathErr
+			}
+		}
+
+		pr, err := newPipelineResult(docRef, docProto, client, it.currResp.GetExecutionTime())
+		if err != nil {
+			return nil, err
+		}
+		return pr, nil
 	}
-	return pr, nil
+	return nil, err
 }
 
 func (it *streamPipelineResultIterator) stop() {
 	it.cancel()
+}
+
+func (it *streamPipelineResultIterator) getExplainStats() (*pb.ExplainStats, error) {
+	if it == nil {
+		return nil, fmt.Errorf("firestore: iterator is nil")
+	}
+	return it.statsPb, nil
 }

@@ -20,6 +20,8 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 func TestPipelineStages(t *testing.T) {
@@ -39,7 +41,7 @@ func TestPipelineStages(t *testing.T) {
 	}{
 		{
 			desc:  "inputStageCollection",
-			stage: newInputStageCollection("my-collection"),
+			stage: newInputStageCollection("my-collection", nil),
 			want: &pb.Pipeline_Stage{
 				Name: "collection",
 				Args: []*pb.Value{{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/my-collection"}}},
@@ -47,7 +49,7 @@ func TestPipelineStages(t *testing.T) {
 		},
 		{
 			desc:  "inputStageCollectionGroup",
-			stage: newInputStageCollectionGroup("ancestor/path", "my-collection-group"),
+			stage: newInputStageCollectionGroup("ancestor/path", "my-collection-group", nil),
 			want: &pb.Pipeline_Stage{
 				Name: "collection_group",
 				Args: []*pb.Value{
@@ -300,6 +302,73 @@ func TestFindNearestStage(t *testing.T) {
 	}
 }
 
+func TestRawStage(t *testing.T) {
+	tests := []struct {
+		name  string
+		stage *RawStage
+		want  *pb.Pipeline_Stage
+	}{
+		{
+			name:  "no args or options",
+			stage: NewRawStage("test_stage"),
+			want: &pb.Pipeline_Stage{
+				Name: "test_stage",
+			},
+		},
+		{
+			name:  "with args",
+			stage: NewRawStage("another_stage").WithArguments("arg1", 123, true),
+			want: &pb.Pipeline_Stage{
+				Name: "another_stage",
+				Args: []*pb.Value{
+					{ValueType: &pb.Value_StringValue{StringValue: "arg1"}},
+					{ValueType: &pb.Value_IntegerValue{IntegerValue: 123}},
+					{ValueType: &pb.Value_BooleanValue{BooleanValue: true}},
+				},
+			},
+		},
+		{
+			name: "with options",
+			stage: NewRawStage("option_stage").WithOptions(RawStageOptions{
+				"opt1": "val1",
+				"opt2": 456,
+			}),
+			want: &pb.Pipeline_Stage{
+				Name: "option_stage",
+				Options: map[string]*pb.Value{
+					"opt1": {ValueType: &pb.Value_StringValue{StringValue: "val1"}},
+					"opt2": {ValueType: &pb.Value_IntegerValue{IntegerValue: 456}},
+				},
+			},
+		},
+		{
+			name:  "with args and options",
+			stage: NewRawStage("complex_stage").WithArguments(FieldOf("myField")).WithOptions(RawStageOptions{"enabled": true}),
+			want: &pb.Pipeline_Stage{
+				Name: "complex_stage",
+				Args: []*pb.Value{
+					{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "myField"}},
+				},
+				Options: map[string]*pb.Value{
+					"enabled": {ValueType: &pb.Value_BooleanValue{BooleanValue: true}},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.stage.toProto()
+			if err != nil {
+				t.Fatalf("toProto() failed: %v", err)
+			}
+			if diff := cmp.Diff(tt.want, got, protocmp.Transform()); diff != "" {
+				t.Errorf("toProto() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestRemoveFieldsStage(t *testing.T) {
 	stage, err := newRemoveFieldsStage("price", FieldPath{"author", "name"})
 	if err != nil {
@@ -375,7 +444,7 @@ func TestUnionStage(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
-	otherPipeline := newPipeline(client, newInputStageCollection("other_collection"))
+	otherPipeline := newPipeline(client, newInputStageCollection("other_collection", nil))
 	stage, err := newUnionStage(otherPipeline)
 	if err != nil {
 		t.Fatalf("newUnionStage() failed: %v", err)

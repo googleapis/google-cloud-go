@@ -36,40 +36,126 @@ import (
 // Instead, Firestore only guarantees that the result is the same as if the chained stages were
 // executed in order.
 type Pipeline struct {
-	c      *Client
-	stages []pipelineStage
-	err    error
+	c            *Client
+	stages       []pipelineStage
+	readSettings *readSettings
+	tx           *Transaction
+	err          error
 }
 
 func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 	return &Pipeline{
-		c:      client,
-		stages: []pipelineStage{initialStage},
+		c:            client,
+		stages:       []pipelineStage{initialStage},
+		readSettings: &readSettings{},
 	}
+}
+
+// executeSettings holds the options for executing a pipeline.
+type executeSettings struct {
+	ExplainOptions *executeExplainOptions
+	IndexMode      string
+}
+
+// ExecuteOption is an option for executing a pipeline query.
+type ExecuteOption interface {
+	apply(*executeSettings)
+}
+
+type funcExecuteOption struct {
+	f func(*executeSettings)
+}
+
+func (fdo *funcExecuteOption) apply(do *executeSettings) {
+	fdo.f(do)
+}
+
+func newFuncExecuteOption(f func(*executeSettings)) *funcExecuteOption {
+	return &funcExecuteOption{
+		f: f,
+	}
+}
+
+// ExecutionMode is the execution mode for pipeline explain.
+// Default is PipelineExplainExecutionModeExplain.
+// Use PipelineExplainExecutionModeAnalyze to include runtime execution statistics.
+// Use PipelineExplainExecutionModeExplain to only include planning information.
+type ExecutionMode string
+
+const (
+	// ExecutionModeExplain plans the query, but skips over the execution stage.
+	ExecutionModeExplain ExecutionMode = "explain"
+	// ExecutionModeAnalyze both plans and executes the query.
+	ExecutionModeAnalyze ExecutionMode = "analyze"
+)
+
+// executeExplainOptions are options for explaining a pipeline execution.
+type executeExplainOptions struct {
+	Mode ExecutionMode
+}
+
+// WithExplainMode sets the execution mode for pipeline explain.
+func WithExplainMode(mode ExecutionMode) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.ExplainOptions = &executeExplainOptions{Mode: mode}
+	})
+}
+
+// WithIndexMode sets the index mode for the pipeline execution.
+func WithIndexMode(indexMode string) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.IndexMode = indexMode
+	})
 }
 
 // Execute executes the pipeline and returns an iterator for streaming the results.
-// TODO: Accept PipelineOptions
-func (p *Pipeline) Execute(ctx context.Context) *PipelineResultIterator {
+func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *PipelineResultIterator {
 	ctx = withResourceHeader(ctx, p.c.path())
 	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(p.c.path()))
+
+	s := &executeSettings{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(s)
+		}
+	}
+
 	return &PipelineResultIterator{
-		iter: newStreamPipelineResultIterator(ctx, p),
+		iter: newStreamPipelineResultIterator(ctx, p, s),
 	}
 }
 
-func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error) {
+func (p *Pipeline) toExecutePipelineRequest(execOpts *executeSettings) (*pb.ExecutePipelineRequest, error) {
 	pipelinePb, err := p.toProto()
 	if err != nil {
 		return nil, err
 	}
 
+	options := make(map[string]*pb.Value)
+	if execOpts.ExplainOptions != nil {
+		options["explain_options"] = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{
+			Fields: map[string]*pb.Value{
+				"mode": {ValueType: &pb.Value_StringValue{StringValue: string(execOpts.ExplainOptions.Mode)}},
+			},
+		}}}
+	}
+	if execOpts.IndexMode != "" {
+		options["index_mode"] = &pb.Value{ValueType: &pb.Value_StringValue{StringValue: execOpts.IndexMode}}
+	}
+
 	req := &pb.ExecutePipelineRequest{
 		Database: p.c.path(),
 		PipelineType: &pb.ExecutePipelineRequest_StructuredPipeline{
-			StructuredPipeline: &pb.StructuredPipeline{Pipeline: pipelinePb},
+			StructuredPipeline: &pb.StructuredPipeline{
+				Pipeline: pipelinePb,
+				Options:  options,
+			},
 		},
-		// TODO: Add consistencyselector
+	}
+	if p.tx != nil {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_Transaction{Transaction: p.tx.id}
+	} else if rt, hasOpts := parseReadTime(p.c, p.readSettings); hasOpts {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_ReadTime{ReadTime: rt}
 	}
 	return req, nil
 }
@@ -89,17 +175,40 @@ func (p *Pipeline) toProto() (*pb.Pipeline, error) {
 	return &pb.Pipeline{Stages: protoStages}, nil
 }
 
+func (p *Pipeline) copy() *Pipeline {
+	newP := &Pipeline{
+		c:            p.c,
+		stages:       make([]pipelineStage, len(p.stages)),
+		readSettings: &readSettings{},
+		tx:           p.tx,
+		err:          p.err,
+	}
+	copy(newP.stages, p.stages)
+	if p.readSettings != nil {
+		*newP.readSettings = *p.readSettings
+	}
+	return newP
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// such as ReadTime.
+func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
+	newP := p.copy()
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(newP.readSettings)
+		}
+	}
+	return newP
+}
+
 // append creates a new Pipeline by adding a stage to the current one.
 func (p *Pipeline) append(s pipelineStage) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	newP := &Pipeline{
-		c:      p.c,
-		stages: make([]pipelineStage, len(p.stages)+1),
-	}
-	copy(newP.stages, p.stages)
-	newP.stages[len(p.stages)] = s
+	newP := p.copy()
+	newP.stages = append(newP.stages, s)
 	return newP
 }
 
@@ -480,6 +589,15 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 	stage, err := newFindNearestStage(vectorField, queryVector, measure, options)
 	if err != nil {
 		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// Raw adds a raw stage to the pipeline.
+// This is useful for using stages that are not yet implemented in the SDK.
+func (p *Pipeline) Raw(stage *RawStage) *Pipeline {
+	if p.err != nil {
 		return p
 	}
 	return p.append(stage)
