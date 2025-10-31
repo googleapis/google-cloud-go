@@ -20,6 +20,7 @@ package option
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -200,4 +201,104 @@ func EnableBigtableConnectionPool() bool {
 		return false
 	}
 	return enableBigtableConnPool
+}
+
+// Logf logs the given message to the given logger, or the standard logger if
+// the given logger is nil.
+func logf(logger *log.Logger, format string, v ...interface{}) {
+	if logger == nil {
+		log.Printf(format, v...)
+	} else {
+		logger.Printf(format, v...)
+	}
+}
+
+var debug = os.Getenv("CBT_ENABLE_DEBUG") == "true"
+
+// Debugf logs the given message *only if* the global Debug flag is true.
+// It reuses Logf to handle the nil logger logic and prepends "DEBUG: "
+// to the message.
+func Debugf(logger *log.Logger, format string, v ...interface{}) {
+	// Only log if the Debug flag is set
+	if debug {
+		// Prepend "DEBUG: " to the format string
+		debugFormat := "DEBUG: " + format
+		logf(logger, debugFormat, v...)
+	}
+}
+
+// HealthCheckConfig holds the parameters for channel pool health checking.
+type HealthCheckConfig struct {
+	// Enabled for toggle
+	Enabled bool
+	// ProbeInterval is the interval at which channel health is probed.
+	ProbeInterval time.Duration
+	// ProbeTimeout is the deadline for each individual health check probe RPC.
+	ProbeTimeout time.Duration
+	// WindowDuration is the duration over which probe results are kept for health evaluation.
+	WindowDuration time.Duration
+	// MinProbesForEval is the minimum number of probes required before a channel's health is evaluated.
+	MinProbesForEval int
+	// FailurePercentThresh is the percentage of failed probes within the window duration
+	// that will cause a channel to be considered unhealthy.
+	FailurePercentThresh int
+	// PoolwideBadThreshPercent is the "circuit breaker" threshold. If this percentage
+	// of channels in the pool are unhealthy, no evictions will occur.
+	PoolwideBadThreshPercent int
+	// MinEvictionInterval is the minimum time that must pass between eviction of unhealthy channels.
+	MinEvictionInterval time.Duration
+}
+
+// DynamicChannelPoolConfig holds the parameters for dynamic channel pool scaling.
+type DynamicChannelPoolConfig struct {
+	Enabled              bool          // Whether dynamic scaling is enabled.
+	MinConns             int           // Minimum number of connections in the pool.
+	MaxConns             int           // Maximum number of connections in the pool.
+	AvgLoadHighThreshold int32         // Average weighted load per connection to trigger scale-up.
+	AvgLoadLowThreshold  int32         // Average weighted load per connection to trigger scale-down.
+	MinScalingInterval   time.Duration // Minimum time between scaling operations (both up and down).
+	CheckInterval        time.Duration // How often to check if scaling is needed.
+	MaxRemoveConns       int           // Maximum number of connections to remove at once.
+}
+
+// DefaultDynamicChannelPoolConfig is default settings for dynamic channel pool
+func DefaultDynamicChannelPoolConfig(initialConns int) DynamicChannelPoolConfig {
+	return DynamicChannelPoolConfig{
+		Enabled:              true, // Enabled by default
+		MinConns:             10,
+		MaxConns:             200,
+		AvgLoadHighThreshold: 50, // Example thresholds, these likely need tuning
+		AvgLoadLowThreshold:  10,
+		MinScalingInterval:   1 * time.Minute,
+		CheckInterval:        30 * time.Second,
+		MaxRemoveConns:       2, // Cap for removals
+	}
+}
+
+// DefaultHealthCheckConfig for HealthCheckConfig
+func DefaultHealthCheckConfig() HealthCheckConfig {
+	return HealthCheckConfig{
+		Enabled:                  true,
+		ProbeInterval:            30 * time.Second,
+		ProbeTimeout:             1 * time.Second,
+		WindowDuration:           5 * time.Minute,
+		MinProbesForEval:         4,
+		FailurePercentThresh:     60,
+		PoolwideBadThreshPercent: 70,
+		MinEvictionInterval:      1 * time.Minute,
+	}
+}
+
+// MetricsReportingConfig for periodic reporting
+// MetricsReporterConfig holds the parameters for metrics reporting.
+type MetricsReporterConfig struct {
+	Enabled           bool
+	ReportingInterval time.Duration
+}
+
+func DefaultMetricsReporterConfig() MetricsReporterConfig {
+	return MetricsReporterConfig{
+		Enabled:           true,
+		ReportingInterval: 1 * time.Minute,
+	}
 }

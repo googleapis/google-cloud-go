@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/url"
 	"os"
 	"strconv"
@@ -80,6 +81,7 @@ type Client struct {
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	enableDirectAccess      bool
+	logger                  *log.Logger
 }
 
 // ClientConfig has configurations for the client.
@@ -94,6 +96,10 @@ type ClientConfig struct {
 	//
 	// TODO: support user provided meter provider
 	MetricsProvider MetricsProvider
+
+	// Logger is the logger to use for this client. If it is nil, all logging
+	// will be directed to the standard logger.
+	Logger *log.Logger
 }
 
 // MetricsProvider is a wrapper for built in metrics meter provider
@@ -178,9 +184,31 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	var connPoolErr error
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	if enableBigtableConnPool {
-		connPool, connPoolErr = btransport.NewBigtableChannelPool(defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), func() (*grpc.ClientConn, error) {
-			return gtransport.Dial(ctx, o...)
-		})
+		// Return *BigtableConn.
+		dialFunc := func() (*btransport.BigtableConn, error) {
+			// First, establish the underlying gRPC connection.
+			grpcConn, err := gtransport.Dial(ctx, o...)
+			if err != nil {
+				return nil, err
+			}
+			// Then, wrap the grpcConn in a BigtableConn, providing instance and app profile.
+			return btransport.NewBigtableConn(grpcConn, instance, config.AppProfile), nil
+		}
+
+		// Initialize the BigtableChannelPool with the updated dialFunc.
+		// btransport is assumed to be the package where BigtableChannelPool resides.
+		connPool, connPoolErr = btransport.NewBigtableChannelPool(
+			ctx,
+			defaultBigtableConnPoolSize,
+			btopt.BigtableLoadBalancingStrategy(),
+			dialFunc,
+			config.Logger,
+			nil,
+			btransport.WithHealthCheckConfig(btopt.DefaultHealthCheckConfig()),
+			btransport.WithDynamicChannelPool(btopt.DefaultDynamicChannelPoolConfig(defaultBigtableConnPoolSize)),
+			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+		)
+		connPool, connPoolErr = btransport.NewBigtableChannelPool(ctx, defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), dialFunc, config.Logger, nil)
 	} else {
 		// use to regular ConnPool
 		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
@@ -201,6 +229,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		retryOption:             retryOption,
 		executeQueryRetryOption: executeQueryRetryOption,
 		enableDirectAccess:      enableDirectAccess,
+		logger:                  config.Logger,
 	}, nil
 }
 
