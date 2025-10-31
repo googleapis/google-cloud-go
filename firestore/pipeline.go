@@ -79,11 +79,10 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 	// Note that transaction ID and other consistency selectors are mutually exclusive.
 	// We respect the transaction first, any read options passed by the caller second,
 	// and any read options stored in the client third.
-	if rt, hasOpts := parseReadTime(p.c, p.readSettings); hasOpts {
-		req.ConsistencySelector = &pb.ExecutePipelineRequest_ReadTime{ReadTime: rt}
-	}
 	if p.tx != nil {
 		req.ConsistencySelector = &pb.ExecutePipelineRequest_Transaction{Transaction: p.tx.id}
+	} else if rt, hasOpts := parseReadTime(p.c, p.readSettings); hasOpts {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_ReadTime{ReadTime: rt}
 	}
 	return req, nil
 }
@@ -112,9 +111,7 @@ func (p *Pipeline) copy() *Pipeline {
 		err:          p.err,
 	}
 	copy(newP.stages, p.stages)
-	if p.readSettings != nil {
-		*newP.readSettings = *p.readSettings
-	}
+	*newP.readSettings = *p.readSettings
 	return newP
 }
 
