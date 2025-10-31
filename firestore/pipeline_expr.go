@@ -92,7 +92,6 @@ type Expr interface {
 	GreaterThanOrEqual(other any) BooleanExpr
 	LessThan(other any) BooleanExpr
 	LessThanOrEqual(other any) BooleanExpr
-	Equivalent(other any) BooleanExpr
 
 	// Aggregators
 	Sum() AggregateFunction
@@ -115,12 +114,6 @@ type Expr interface {
 	ToLower() Expr
 	ToUpper() Expr
 	Trim() Expr
-
-	// Type functions
-	IsNaN() BooleanExpr
-	IsNotNaN() BooleanExpr
-	IsNull() BooleanExpr
-	IsNotNull() BooleanExpr
 
 	// Vector functions
 	CosineDistance(other any) Expr
@@ -197,7 +190,6 @@ func (b *baseExpr) GreaterThan(other any) BooleanExpr        { return GreaterTha
 func (b *baseExpr) GreaterThanOrEqual(other any) BooleanExpr { return GreaterThanOrEqual(b, other) }
 func (b *baseExpr) LessThan(other any) BooleanExpr           { return LessThan(b, other) }
 func (b *baseExpr) LessThanOrEqual(other any) BooleanExpr    { return LessThanOrEqual(b, other) }
-func (b *baseExpr) Equivalent(other any) BooleanExpr         { return Equivalent(b, other) }
 
 // Aggregation operations
 func (b *baseExpr) Sum() AggregateFunction           { return Sum(b) }
@@ -224,12 +216,6 @@ func (b *baseExpr) Substring(index, offset any) Expr         { return Substring(
 func (b *baseExpr) ToLower() Expr                            { return ToLower(b) }
 func (b *baseExpr) ToUpper() Expr                            { return ToUpper(b) }
 func (b *baseExpr) Trim() Expr                               { return Trim(b) }
-
-// Type functions
-func (b *baseExpr) IsNaN() BooleanExpr     { return IsNaN(b) }
-func (b *baseExpr) IsNotNaN() BooleanExpr  { return IsNotNaN(b) }
-func (b *baseExpr) IsNull() BooleanExpr    { return IsNull(b) }
-func (b *baseExpr) IsNotNull() BooleanExpr { return IsNotNull(b) }
 
 // Vector functions
 func (b *baseExpr) CosineDistance(other any) Expr    { return CosineDistance(b, other) }
