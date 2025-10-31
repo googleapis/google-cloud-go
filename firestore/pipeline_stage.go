@@ -567,15 +567,13 @@ func (s *RawStage) toProto() (*pb.Pipeline_Stage, error) {
 		argsPb[i] = val
 	}
 
-	optionsPb := make(map[string]*pb.Value)
-	if s.options != nil {
-		for key, val := range s.options {
-			valPb, _, err := toProtoValue(reflect.ValueOf(val))
-			if err != nil {
-				return nil, fmt.Errorf("firestore: error converting raw stage option %q: %w", key, err)
-			}
-			optionsPb[key] = valPb
+	optionsPb := make(map[string]*pb.Value, len(s.options))
+	for key, val := range s.options {
+		valPb, _, err := toProtoValue(reflect.ValueOf(val))
+		if err != nil {
+			return nil, fmt.Errorf("firestore: error converting raw stage option %q: %w", key, err)
 		}
+		optionsPb[key] = valPb
 	}
 
 	return &pb.Pipeline_Stage{
