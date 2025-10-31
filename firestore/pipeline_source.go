@@ -32,14 +32,22 @@ type CollectionHints map[string]any
 
 // WithForceIndex specifies an index to force the query to use.
 func (ch CollectionHints) WithForceIndex(index string) CollectionHints {
-	ch["force_index"] = index
-	return ch
+	newCH := make(CollectionHints, len(ch)+1)
+	for k, v := range ch {
+		newCH[k] = v
+	}
+	newCH["force_index"] = index
+	return newCH
 }
 
 // WithIgnoreIndexFields specifies fields to ignore when selecting an index.
 func (ch CollectionHints) WithIgnoreIndexFields(fields ...string) CollectionHints {
-	ch["ignore_index_fields"] = fields
-	return ch
+	newCH := make(CollectionHints, len(ch)+1)
+	for k, v := range ch {
+		newCH[k] = v
+	}
+	newCH["ignore_index_fields"] = fields
+	return newCH
 }
 
 func (ch CollectionHints) toProto() (map[string]*pb.Value, error) {
@@ -57,93 +65,73 @@ func (ch CollectionHints) toProto() (map[string]*pb.Value, error) {
 	return optsMap, nil
 }
 
-// CollectionOption is an option for a Collection pipeline stage.
-type CollectionOption interface {
-	apply(co *collectionSettings)
-}
-
-type collectionSettings struct {
+// collectionStageSettings provides settings for Collection and CollectionGroup pipeline stages.
+type collectionStageSettings struct {
 	Hints CollectionHints
 }
 
-func (cs *collectionSettings) toProto() (map[string]*pb.Value, error) {
+func (cs *collectionStageSettings) toProto() (map[string]*pb.Value, error) {
 	if cs == nil {
 		return nil, nil
 	}
 	return cs.Hints.toProto()
 }
 
-// funcCollectionOption wraps a function that modifies collectionSettings
-// into an implementation of the CollectionOption interface.
-type funcCollectionOption struct {
-	f func(*collectionSettings)
+// CollectionOption is an option for a Collection pipeline stage.
+type CollectionOption interface {
+	apply(co *collectionStageSettings)
+	isCollectionOption()
 }
 
-func (fco *funcCollectionOption) apply(cs *collectionSettings) {
-	fco.f(cs)
+// CollectionGroupOption is an option for a CollectionGroup pipeline stage.
+type CollectionGroupOption interface {
+	apply(co *collectionStageSettings)
+	isCollectionGroupOption()
 }
 
-func newFuncCollectionOption(f func(*collectionSettings)) *funcCollectionOption {
-	return &funcCollectionOption{
+// funcOption wraps a function that modifies collectionStageSettings
+// into an implementation of the CollectionOption and CollectionGroupOption interfaces.
+type funcOption struct {
+	f func(*collectionStageSettings)
+}
+
+func (fo *funcOption) apply(cs *collectionStageSettings) {
+	fo.f(cs)
+}
+
+func (*funcOption) isCollectionOption() {}
+
+func (*funcOption) isCollectionGroupOption() {}
+
+func newFuncOption(f func(*collectionStageSettings)) *funcOption {
+	return &funcOption{
 		f: f,
 	}
 }
 
 // WithCollectionHints specifies hints for the query planner.
 func WithCollectionHints(hints CollectionHints) CollectionOption {
-	return newFuncCollectionOption(func(cs *collectionSettings) {
+	return newFuncOption(func(cs *collectionStageSettings) {
+		cs.Hints = hints
+	})
+}
+
+// WithCollectionGroupHints specifies hints for the query planner.
+func WithCollectionGroupHints(hints CollectionHints) CollectionGroupOption {
+	return newFuncOption(func(cs *collectionStageSettings) {
 		cs.Hints = hints
 	})
 }
 
 // Collection creates a new [Pipeline] that operates on the specified Firestore collection.
 func (ps *PipelineSource) Collection(path string, opts ...CollectionOption) *Pipeline {
-	cs := &collectionSettings{}
+	cs := &collectionStageSettings{}
 	for _, opt := range opts {
 		if opt != nil {
 			opt.apply(cs)
 		}
 	}
 	return newPipeline(ps.client, newInputStageCollection(path, cs))
-}
-
-// CollectionGroupOption is an option for a CollectionGroup pipeline stage.
-type CollectionGroupOption interface {
-	apply(co *collectionGroupSettings)
-}
-
-type collectionGroupSettings struct {
-	Hints CollectionHints
-}
-
-func (cgs *collectionGroupSettings) toProto() (map[string]*pb.Value, error) {
-	if cgs == nil {
-		return nil, nil
-	}
-	return cgs.Hints.toProto()
-}
-
-// funcCollectionGroupOption wraps a function that modifies collectionGroupSettings
-// into an implementation of the CollectionGroupOption interface.
-type funcCollectionGroupOption struct {
-	f func(*collectionGroupSettings)
-}
-
-func (fcgo *funcCollectionGroupOption) apply(cgs *collectionGroupSettings) {
-	fcgo.f(cgs)
-}
-
-func newFuncCollectionGroupOption(f func(*collectionGroupSettings)) *funcCollectionGroupOption {
-	return &funcCollectionGroupOption{
-		f: f,
-	}
-}
-
-// WithCollectionGroupHints specifies hints for the query planner.
-func WithCollectionGroupHints(hints CollectionHints) CollectionGroupOption {
-	return newFuncCollectionGroupOption(func(cgs *collectionGroupSettings) {
-		cgs.Hints = hints
-	})
 }
 
 // CollectionGroup creates a new [Pipeline] that operates on all documents in a group
@@ -156,7 +144,7 @@ func WithCollectionGroupHints(hints CollectionHints) CollectionGroupOption {
 // CollectionGroup can be used to query across all "Cities" regardless of
 // its parent "Countries".
 func (ps *PipelineSource) CollectionGroup(collectionID string, opts ...CollectionGroupOption) *Pipeline {
-	cgs := &collectionGroupSettings{}
+	cgs := &collectionStageSettings{}
 	for _, opt := range opts {
 		if opt != nil {
 			opt.apply(cgs)
