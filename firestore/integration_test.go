@@ -156,7 +156,7 @@ func initIntegrationTest() {
 			},
 		},
 	}
-	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
+	copts := append(ti.CallOptions()) //, option.WithTokenSource(ts))
 	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
@@ -166,7 +166,7 @@ func initIntegrationTest() {
 
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
-	adminC, err := apiv1.NewFirestoreAdminClient(adminCtx, option.WithTokenSource(ts))
+	adminC, err := apiv1.NewFirestoreAdminClient(adminCtx) //, option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewFirestoreAdminClient: %v", err)
 	}
@@ -3690,6 +3690,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Errorf("got %d distinct genres, want 8", len(results))
 		}
 	})
+
 	t.Run("Documents", func(t *testing.T) {
 		iter := client.Pipeline().Documents(docRefs[0], docRefs[1]).Execute(ctx)
 		defer iter.Stop()
@@ -3722,6 +3723,15 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 		if len(results) != 2 {
 			t.Errorf("got %d documents, want 2", len(results))
+		}
+	})
+	t.Run("CollectionWithOptions", func(t *testing.T) {
+		hints := CollectionHints{}.WithForceIndex("title")
+		iter := client.Pipeline().Collection(coll.ID, WithCollectionHints(hints)).Execute(ctx)
+		defer iter.Stop()
+		_, err := iter.Next()
+		if err == nil {
+			t.Errorf("Expected error due to non-existent index, but got nil")
 		}
 	})
 	t.Run("Database", func(t *testing.T) {

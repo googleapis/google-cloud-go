@@ -61,21 +61,26 @@ type pipelineStage interface {
 
 // inputStageCollection returns all documents from the entire collection.
 type inputStageCollection struct {
-	path string
+	path    string
+	options *collectionSettings
 }
 
-func newInputStageCollection(path string) *inputStageCollection {
+func newInputStageCollection(path string, options *collectionSettings) *inputStageCollection {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}
-	return &inputStageCollection{path: path}
+	return &inputStageCollection{path: path, options: options}
 }
 func (s *inputStageCollection) name() string { return stageNameCollection }
 func (s *inputStageCollection) toProto() (*pb.Pipeline_Stage, error) {
-	arg := &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.path}}
+	optionsPb, err := s.options.toProto()
+	if err != nil {
+		return nil, err
+	}
 	return &pb.Pipeline_Stage{
-		Name: s.name(),
-		Args: []*pb.Value{arg},
+		Name:    s.name(),
+		Args:    []*pb.Value{{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.path}}},
+		Options: optionsPb,
 	}, nil
 }
 
@@ -83,18 +88,25 @@ func (s *inputStageCollection) toProto() (*pb.Pipeline_Stage, error) {
 type inputStageCollectionGroup struct {
 	collectionID string
 	ancestor     string
+	options      *collectionGroupSettings
 }
 
-func newInputStageCollectionGroup(ancestor, collectionID string) *inputStageCollectionGroup {
-	return &inputStageCollectionGroup{ancestor: ancestor, collectionID: collectionID}
+func newInputStageCollectionGroup(ancestor, collectionID string, options *collectionGroupSettings) *inputStageCollectionGroup {
+	return &inputStageCollectionGroup{ancestor: ancestor, collectionID: collectionID, options: options}
 }
 func (s *inputStageCollectionGroup) name() string { return stageNameCollectionGroup }
 func (s *inputStageCollectionGroup) toProto() (*pb.Pipeline_Stage, error) {
-	ancestor := &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.ancestor}}
-	collectionID := &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s.collectionID}}
+	optionsPb, err := s.options.toProto()
+	if err != nil {
+		return nil, err
+	}
 	return &pb.Pipeline_Stage{
 		Name: s.name(),
-		Args: []*pb.Value{ancestor, collectionID},
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_ReferenceValue{ReferenceValue: s.ancestor}},
+			{ValueType: &pb.Value_StringValue{StringValue: s.collectionID}},
+		},
+		Options: optionsPb,
 	}, nil
 }
 
@@ -346,7 +358,7 @@ func newReplaceStage(fieldOrSelectable any) (*replaceStage, error) {
 		stageName: stageNameReplace,
 		stagePb: &pb.Pipeline_Stage{
 			Name: stageNameReplace,
-			Args: []*pb.Value{exprPb, &pb.Value{ValueType: &pb.Value_StringValue{StringValue: "full_replace"}}},
+			Args: []*pb.Value{exprPb, {ValueType: &pb.Value_StringValue{StringValue: "full_replace"}}},
 		},
 	}}, nil
 }
