@@ -4241,7 +4241,6 @@ libraries:
       - internal/postprocessor
       - internal/pretty
       - internal/protoveneer
-      - internal/stategen
       - internal/testutil
       - internal/tracecontext
       - internal/version
