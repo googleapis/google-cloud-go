@@ -125,3 +125,17 @@ func Build(lib *request.Library, api *request.API, config ConfigProvider, source
 
 	return args, nil
 }
+
+// BuildGenProto builds the command line arguments (including "protoc" itself) required
+// for protoc for the go-genproto repo, for a single package.
+func BuildGenProto(sourceDir, outputDir string, protos []string) []string {
+	args := []string{
+		"protoc",
+		"--experimental_allow_proto3_optional",
+		"--go_v1_out=" + outputDir,
+		"--go_v1_opt=plugins=grpc",
+		"-I=" + sourceDir,
+	}
+	args = append(args, protos...)
+	return args
+}

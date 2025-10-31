@@ -34,8 +34,14 @@ const RepoConfigFile string = "repo-config.yaml"
 
 // RepoConfig is the configuration for all modules in the repository.
 type RepoConfig struct {
+	// Type is the type of the repo, where custom behavior is needed.
+	// For most repos, this is not specified; where it *is* specified,
+	// it's typically the name of the repo (e.g. "go-genproto").
+	Type string `yaml:"type"`
 	// Modules is the list of all the modules in the repository which need overrides.
 	Modules []*ModuleConfig `yaml:"modules"`
+	// GenProtoPackages is the list of packages generated in the go-genproto repo.
+	GenProtoPackages []string `yaml:"genproto_packages"`
 }
 
 // ModuleConfig is the configuration for a single module.
@@ -94,6 +100,31 @@ func LoadRepoConfig(librarianDir string) (*RepoConfig, error) {
 		return nil, err
 	}
 	return &config, nil
+}
+
+// CanConfigure returns whether or not the configure command is supported for this
+// repository, based on its Type.
+func (rc *RepoConfig) CanConfigure() bool {
+	// Only the default repo type can be configured.
+	return rc.Type == ""
+}
+
+// CanGenerate returns whether or not the generate command is supported for this
+// repository, based on its Type.
+func (rc *RepoConfig) CanGenerate() bool {
+	return true
+}
+
+// CanBuild returns whether or not the build command is supported for this
+// repository, based on its Type.
+func (rc *RepoConfig) CanBuild() bool {
+	return true
+}
+
+// CanReleaseInit returns whether or not the release init command is supported for this
+// repository, based on its Type.
+func (rc *RepoConfig) CanReleaseInit() bool {
+	return rc.Type == ""
 }
 
 // GetModuleConfig returns the configuration for the named module

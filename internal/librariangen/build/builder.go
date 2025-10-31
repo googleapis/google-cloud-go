@@ -21,6 +21,7 @@ import (
 	"log/slog"
 	"path/filepath"
 
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
@@ -57,12 +58,24 @@ func Build(ctx context.Context, cfg *Config) error {
 	if err := cfg.Validate(); err != nil {
 		return fmt.Errorf("librariangen: invalid configuration: %w", err)
 	}
-	slog.Debug("librariangen: generate command started")
+	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
+	if err != nil {
+		return fmt.Errorf("librariangen: failed to load repo config: %w", err)
+	}
+	if !repoConfig.CanBuild() {
+		return errors.New("build is not supported in this repo")
+	}
+
+	slog.Debug("librariangen: build command started")
 
 	buildReq, err := readBuildReq(cfg.LibrarianDir)
 	if err != nil {
 		return fmt.Errorf("librariangen: failed to read request: %w", err)
 	}
+	/*
+		if repoConfig.Type == genproto.RepoType {
+			return genproto.Build(ctx, cfg, repoConfig, buildReq)
+		}*/
 	moduleDir := filepath.Join(cfg.RepoDir, buildReq.ID)
 	if err := goBuild(ctx, moduleDir, buildReq.ID); err != nil {
 		return fmt.Errorf("librariangen: failed to run 'go build': %w", err)

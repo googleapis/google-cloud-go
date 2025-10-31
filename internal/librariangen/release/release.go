@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -44,7 +45,15 @@ type Config struct {
 
 // Init is the entrypoint for the release-init command.
 func Init(ctx context.Context, cfg *Config) error {
+	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
+	if err != nil {
+		return fmt.Errorf("librariangen: failed to load repo config: %w", err)
+	}
+	if !repoConfig.CanReleaseInit() {
+		return errors.New("release init is not supported in this repo")
+	}
 	slog.Debug("librariangen: release.Init: starting", "config", cfg)
+
 	reqPath := filepath.Join(cfg.LibrarianDir, "release-init-request.json")
 	b, err := os.ReadFile(reqPath)
 	if err != nil {
@@ -54,11 +63,6 @@ func Init(ctx context.Context, cfg *Config) error {
 	var req Request
 	if err := json.Unmarshal(b, &req); err != nil {
 		return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to unmarshal request: %w", err))
-	}
-
-	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
-	if err != nil {
-		return fmt.Errorf("librariangen: failed to load repo config: %w", err)
 	}
 
 	for _, lib := range req.Libraries {
