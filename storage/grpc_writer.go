@@ -594,19 +594,22 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf
 // error may be returned in some cases.
 func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, doneReading bool) (obj *storagepb.Object, err error) {
 	if w.streamSender == nil {
-		if w.append {
-			// Appendable object semantics
-			w.streamSender, err = w.newGRPCAppendableObjectBufferSender()
-		} else if doneReading || w.forceOneShot {
-			// One shot semantics
-			w.streamSender, err = w.newGRPCOneshotBidiWriteBufferSender()
-		} else {
+		ss, sserr := func() (gRPCBidiWriteBufferSender, error) {
+			if w.append {
+				// Appendable object semantics
+				return w.newGRPCAppendableObjectBufferSender()
+			}
+			if doneReading || w.forceOneShot {
+				// One shot semantics
+				return w.newGRPCOneshotBidiWriteBufferSender()
+			}
 			// Resumable write semantics
-			w.streamSender, err = w.newGRPCResumableBidiWriteBufferSender(ctx)
+			return w.newGRPCResumableBidiWriteBufferSender(ctx)
+		}()
+		if sserr != nil {
+			return nil, sserr
 		}
-		if err != nil {
-			return
-		}
+		w.streamSender = ss
 	}
 
 	data := w.buf[:recvd]
