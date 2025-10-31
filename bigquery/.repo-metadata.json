@@ -1,0 +1,10 @@
+{
+  "api_shortname": "bigquery",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest",
+  "client_library_type": "manual",
+  "description": "BigQuery",
+  "distribution_name": "cloud.google.com/go/bigquery",
+  "language": "go",
+  "library_type": "GAPIC_MANUAL",
+  "release_level": "stable"
+}

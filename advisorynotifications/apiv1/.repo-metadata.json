@@ -1,0 +1,10 @@
+{
+  "api_shortname": "advisorynotifications",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/advisorynotifications/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Advisory Notifications API",
+  "distribution_name": "cloud.google.com/go/advisorynotifications/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

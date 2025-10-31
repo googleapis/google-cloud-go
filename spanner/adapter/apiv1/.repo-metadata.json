@@ -1,0 +1,10 @@
+{
+  "api_shortname": "spanner",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest/adapter/apiv1",
+  "client_library_type": "generated",
+  "description": "Cloud Spanner API",
+  "distribution_name": "cloud.google.com/go/spanner/adapter/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

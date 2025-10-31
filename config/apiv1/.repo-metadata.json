@@ -1,0 +1,10 @@
+{
+  "api_shortname": "config",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/config/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Infrastructure Manager API",
+  "distribution_name": "cloud.google.com/go/config/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

@@ -1,0 +1,10 @@
+{
+  "api_shortname": "analyticshub",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/dataexchange/apiv1beta1",
+  "client_library_type": "generated",
+  "description": "Analytics Hub API",
+  "distribution_name": "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

@@ -1,0 +1,10 @@
+{
+  "api_shortname": "analyticsadmin",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/analytics/latest/admin/apiv1alpha",
+  "client_library_type": "generated",
+  "description": "Google Analytics Admin API",
+  "distribution_name": "cloud.google.com/go/analytics/admin/apiv1alpha",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}
