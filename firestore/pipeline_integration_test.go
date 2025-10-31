@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"strings"
 	"testing"
@@ -26,6 +27,165 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func TestIntegration_PipelineExecute(t *testing.T) {
+	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
+		t.Skip("Skipping pipeline queries tests since the firestore edition of", testParams[databaseIDKey].(string), "database is not enterprise")
+	}
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := integrationColl(t)
+	h := testHelper{t}
+	type Author struct {
+		Name    string `firestore:"name"`
+		Country string `firestore:"country"`
+	}
+	type Book struct {
+		Title     string `firestore:"title"`
+		Author    `firestore:"author"`
+		Genre     string   `firestore:"genre"`
+		Published int      `firestore:"published"`
+		Rating    float64  `firestore:"rating"`
+		Tags      []string `firestore:"tags"`
+	}
+	books := []Book{
+		{
+			Title:     "The Hitchhiker's Guide to the Galaxy",
+			Author:    Author{Name: "Douglas Adams", Country: "UK"},
+			Genre:     "Science Fiction",
+			Published: 1979,
+			Rating:    4.2,
+			Tags:      []string{"comedy", "space", "adventure"},
+		},
+		{
+			Title:     "Pride and Prejudice",
+			Author:    Author{Name: "Jane Austen", Country: "UK"},
+			Genre:     "Romance",
+			Published: 1813,
+			Rating:    4.5,
+			Tags:      []string{"classic", "social commentary", "love"},
+		},
+		{
+			Title:     "One Hundred Years of Solitude",
+			Author:    Author{Name: "Gabriel García Márquez", Country: "Colombia"},
+			Genre:     "Magical Realism",
+			Published: 1967,
+			Rating:    4.3,
+			Tags:      []string{"family", "history", "fantasy"},
+		},
+		{
+			Title:     "The Lord of the Rings",
+			Author:    Author{Name: "J.R.R. Tolkien", Country: "UK"},
+			Genre:     "Fantasy",
+			Published: 1954,
+			Rating:    4.7,
+			Tags:      []string{"adventure", "magic", "epic"},
+		},
+		{
+			Title:     "The Handmaid's Tale",
+			Author:    Author{Name: "Margaret Atwood", Country: "Canada"},
+			Genre:     "Dystopian",
+			Published: 1985,
+			Rating:    4.1,
+			Tags:      []string{"feminism", "totalitarianism", "resistance"},
+		},
+		{
+			Title:     "Crime and Punishment",
+			Author:    Author{Name: "Fyodor Dostoevsky", Country: "Russia"},
+			Genre:     "Psychological Thriller",
+			Published: 1866,
+			Rating:    4.3,
+			Tags:      []string{"philosophy", "crime", "redemption"},
+		},
+		{
+			Title:     "To Kill a Mockingbird",
+			Author:    Author{Name: "Harper Lee", Country: "USA"},
+			Genre:     "Southern Gothic",
+			Published: 1960,
+			Rating:    4.2,
+			Tags:      []string{"racism", "injustice", "coming-of-age"},
+		},
+		{
+			Title:     "1984",
+			Author:    Author{Name: "George Orwell", Country: "UK"},
+			Genre:     "Dystopian",
+			Published: 1949,
+			Rating:    4.2,
+			Tags:      []string{"surveillance", "totalitarianism", "propaganda"},
+		},
+		{
+			Title:     "The Great Gatsby",
+			Author:    Author{Name: "F. Scott Fitzgerald", Country: "USA"},
+			Genre:     "Modernist",
+			Published: 1925,
+			Rating:    4.0,
+			Tags:      []string{"wealth", "american dream", "love"},
+		},
+		{
+			Title:     "Dune",
+			Author:    Author{Name: "Frank Herbert", Country: "USA"},
+			Genre:     "Science Fiction",
+			Published: 1965,
+			Rating:    4.6,
+			Tags:      []string{"politics", "desert", "ecology"},
+		},
+	}
+	timeBeforeCreate := time.Now().Add(-time.Minute)
+	var docRefs []*DocumentRef
+	for _, b := range books {
+		docRef := coll.NewDoc()
+		h.mustCreate(docRef, b)
+		docRefs = append(docRefs, docRef)
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+	t.Run("WithReadOptions", func(t *testing.T) {
+		doc1 := coll.NewDoc()
+		_, err := doc1.Create(ctx, map[string]interface{}{"a": 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Let a little time pass to ensure the next write has a later timestamp.
+		time.Sleep(1 * time.Millisecond)
+
+		doc2 := coll.NewDoc()
+		_, err = doc2.Create(ctx, map[string]interface{}{"a": 2})
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{doc1, doc2})
+		})
+
+		iter := client.Pipeline().Collection(coll.ID).WithReadOptions(ReadTime(timeBeforeCreate)).Execute(ctx)
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 0 {
+			t.Errorf("got %d documents, want 0", len(res))
+		}
+	})
+	t.Run("WithTransaction", func(t *testing.T) {
+		p := client.Pipeline().Collection(coll.ID)
+		err := client.RunTransaction(ctx, func(ctx context.Context, txn *Transaction) error {
+			iter := txn.Execute(p)
+			res, err := iter.GetAll()
+			if err != nil {
+				return err
+			}
+			if len(res) != len(books) {
+				return fmt.Errorf("got %d documents, want %d", len(res), len(books))
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+}
 
 func TestIntegration_PipelineFunctions(t *testing.T) {
 	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
