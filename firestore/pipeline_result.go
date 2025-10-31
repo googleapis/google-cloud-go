@@ -273,6 +273,7 @@ func newStreamPipelineResultIterator(ctx context.Context, p *Pipeline, s *execut
 func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 	client := it.p.c
 
+	// TODO(bahaaiman): Remove retries once b/456536006 is fixed
 	for i := 0; i < maxExecuteRecvAttempts; i++ {
 		if it.streamClient == nil {
 			it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.ExecutePipeline")
