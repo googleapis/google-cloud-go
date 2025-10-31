@@ -39,7 +39,7 @@ func TestPipelineStages(t *testing.T) {
 	}{
 		{
 			desc:  "inputStageCollection",
-			stage: newInputStageCollection("my-collection"),
+			stage: newInputStageCollection("my-collection", nil),
 			want: &pb.Pipeline_Stage{
 				Name: "collection",
 				Args: []*pb.Value{{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/my-collection"}}},
@@ -47,7 +47,7 @@ func TestPipelineStages(t *testing.T) {
 		},
 		{
 			desc:  "inputStageCollectionGroup",
-			stage: newInputStageCollectionGroup("ancestor/path", "my-collection-group"),
+			stage: newInputStageCollectionGroup("ancestor/path", "my-collection-group", nil),
 			want: &pb.Pipeline_Stage{
 				Name: "collection_group",
 				Args: []*pb.Value{
@@ -375,7 +375,7 @@ func TestUnionStage(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
-	otherPipeline := newPipeline(client, newInputStageCollection("other_collection"))
+	otherPipeline := newPipeline(client, newInputStageCollection("other_collection", nil))
 	stage, err := newUnionStage(otherPipeline)
 	if err != nil {
 		t.Fatalf("newUnionStage() failed: %v", err)
