@@ -733,8 +733,8 @@ func TestParseExpr(t *testing.T) {
 			ScalarSubquery{
 				Query: Query{
 					Select: Select{
-						List: []Expr{Func{Name: "COUNT", Args: []Expr{Star}}},
-						From: []SelectFrom{SelectFromTable{Table: "users"}},
+						List:  []Expr{Func{Name: "COUNT", Args: []Expr{Star}}},
+						From:  []SelectFrom{SelectFromTable{Table: "users"}},
 						Where: ComparisonOp{LHS: ID("active"), Op: Eq, RHS: True},
 					},
 				},

@@ -90,7 +90,7 @@ func ParseDML(filename, s string) (*DML, error) {
 	return dml, nil
 }
 
-func parseStatements(stmts statements, filename string, s string) error {
+func parseStatements(stmts statements, filename, s string) error {
 	p := newParser(filename, s)
 
 	stmts.setFilename(filename)
