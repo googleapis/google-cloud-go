@@ -585,16 +585,16 @@ func TestIntegration_PipelineFunctions(t *testing.T) {
 	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
 		t.Skip("Skipping pipeline queries tests since the firestore edition of", testParams[databaseIDKey].(string), "database is not enterprise")
 	}
-	t.Run("aggregateFuncs", aggregateFuncs)
-
-	t.Run("arithmeticFuncs", arithmeticFuncs)
 	t.Run("arrayFuncs", arrayFuncs)
-	t.Run("comparisonFuncs", comparisonFuncs)
-	t.Run("timestampFuncs", timestampFuncs)
-	t.Run("generalFuncs", generalFuncs)
-	t.Run("keyFuncs", keyFuncs)
 	t.Run("stringFuncs", stringFuncs)
 	t.Run("vectorFuncs", vectorFuncs)
+
+	t.Run("timestampFuncs", timestampFuncs)
+	t.Run("arithmeticFuncs", arithmeticFuncs)
+	t.Run("aggregateFuncs", aggregateFuncs)
+	t.Run("comparisonFuncs", comparisonFuncs)
+	t.Run("generalFuncs", generalFuncs)
+	t.Run("keyFuncs", keyFuncs)
 
 }
 
@@ -982,6 +982,19 @@ func vectorFuncs(t *testing.T) {
 	}
 }
 
+func isRetryablePipelineExecuteErr(err error) bool {
+	if err == nil {
+		return false
+	}
+	s, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+	return s.Code() == codes.InvalidArgument &&
+		strings.Contains(s.Message(), "Invalid request routing header") &&
+		strings.Contains(s.Message(), "Please fill in the request header with format")
+}
+
 func timestampFuncs(t *testing.T) {
 	t.Parallel()
 	client := integrationClient(t)
@@ -1116,102 +1129,6 @@ func timestampFuncs(t *testing.T) {
 			if diff := testutil.Diff(got, test.want, cmpopts.EquateApproxTime(margin)); diff != "" {
 				t.Errorf("got: %v, want: %v, diff: %s", got, test.want, diff)
 			}
-		})
-	}
-}
-
-func generalFuncs(t *testing.T) {
-	t.Parallel()
-	h := testHelper{t}
-	client := integrationClient(t)
-	coll := client.Collection(collectionIDs.New())
-	docRef1 := coll.NewDoc()
-	h.mustCreate(docRef1, map[string]interface{}{
-		"a": "hello",
-		"b": "world",
-	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
-
-	tests := []struct {
-		name     string
-		pipeline *Pipeline
-		want     map[string]interface{}
-	}{
-		{
-			name:     "Length - string literal",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Length(ConstantOf("hello")).As("len")),
-			want:     map[string]interface{}{"len": int64(5)},
-		},
-		{
-			name:     "Length - field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Length("a").As("len")),
-			want:     map[string]interface{}{"len": int64(5)},
-		},
-		{
-			name:     "Length - field path",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Length(FieldPath{"a"}).As("len")),
-			want:     map[string]interface{}{"len": int64(5)},
-		},
-		{
-			name:     "Reverse - string literal",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse(ConstantOf("hello")).As("reverse")),
-			want:     map[string]interface{}{"reverse": "olleh"},
-		},
-		{
-			name:     "Reverse - field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse("a").As("reverse")),
-			want:     map[string]interface{}{"reverse": "olleh"},
-		},
-		{
-			name:     "Reverse - field path",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse(FieldPath{"a"}).As("reverse")),
-			want:     map[string]interface{}{"reverse": "olleh"},
-		},
-		{
-			name:     "Concat - two literals",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(ConstantOf("hello"), ConstantOf("world")).As("concat")),
-			want:     map[string]interface{}{"concat": "helloworld"},
-		},
-		{
-			name:     "Concat - literal and field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(ConstantOf("hello"), FieldOf("b")).As("concat")),
-			want:     map[string]interface{}{"concat": "helloworld"},
-		},
-		{
-			name:     "Concat - two fields",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(FieldOf("a"), FieldOf("b")).As("concat")),
-			want:     map[string]interface{}{"concat": "helloworld"},
-		},
-		{
-			name:     "Concat - field and literal",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(FieldOf("a"), ConstantOf("world")).As("concat")),
-			want:     map[string]interface{}{"concat": "helloworld"},
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
-
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if len(docs) != 1 {
-					t.Fatalf("expected 1 doc, got %d", len(docs))
-				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-				}
-			})
 		})
 	}
 }
@@ -1556,19 +1473,6 @@ func comparisonFuncs(t *testing.T) {
 	}
 }
 
-func isRetryablePipelineExecuteErr(err error) bool {
-	if err == nil {
-		return false
-	}
-	s, ok := status.FromError(err)
-	if !ok {
-		return false
-	}
-	return s.Code() == codes.InvalidArgument &&
-		strings.Contains(s.Message(), "Invalid request routing header") &&
-		strings.Contains(s.Message(), "Please fill in the request header with format")
-}
-
 func keyFuncs(t *testing.T) {
 	t.Parallel()
 	h := testHelper{t}
@@ -1619,6 +1523,102 @@ func keyFuncs(t *testing.T) {
 				got := docs[0].Data()
 				if diff := testutil.Diff(got, test.want); diff != "" {
 					r.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+				}
+			})
+		})
+	}
+}
+
+func generalFuncs(t *testing.T) {
+	t.Parallel()
+	h := testHelper{t}
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	docRef1 := coll.NewDoc()
+	h.mustCreate(docRef1, map[string]interface{}{
+		"a": "hello",
+		"b": "world",
+	})
+	defer deleteDocuments([]*DocumentRef{docRef1})
+
+	tests := []struct {
+		name     string
+		pipeline *Pipeline
+		want     map[string]interface{}
+	}{
+		{
+			name:     "Length - string literal",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Length(ConstantOf("hello")).As("len")),
+			want:     map[string]interface{}{"len": int64(5)},
+		},
+		{
+			name:     "Length - field",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Length("a").As("len")),
+			want:     map[string]interface{}{"len": int64(5)},
+		},
+		{
+			name:     "Length - field path",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Length(FieldPath{"a"}).As("len")),
+			want:     map[string]interface{}{"len": int64(5)},
+		},
+		{
+			name:     "Reverse - string literal",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse(ConstantOf("hello")).As("reverse")),
+			want:     map[string]interface{}{"reverse": "olleh"},
+		},
+		{
+			name:     "Reverse - field",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse("a").As("reverse")),
+			want:     map[string]interface{}{"reverse": "olleh"},
+		},
+		{
+			name:     "Reverse - field path",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse(FieldPath{"a"}).As("reverse")),
+			want:     map[string]interface{}{"reverse": "olleh"},
+		},
+		{
+			name:     "Concat - two literals",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(ConstantOf("hello"), ConstantOf("world")).As("concat")),
+			want:     map[string]interface{}{"concat": "helloworld"},
+		},
+		{
+			name:     "Concat - literal and field",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(ConstantOf("hello"), FieldOf("b")).As("concat")),
+			want:     map[string]interface{}{"concat": "helloworld"},
+		},
+		{
+			name:     "Concat - two fields",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(FieldOf("a"), FieldOf("b")).As("concat")),
+			want:     map[string]interface{}{"concat": "helloworld"},
+		},
+		{
+			name:     "Concat - field and literal",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(FieldOf("a"), ConstantOf("world")).As("concat")),
+			want:     map[string]interface{}{"concat": "helloworld"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
+				ctx := context.Background()
+				iter := test.pipeline.Execute(ctx)
+				defer iter.Stop()
+
+				docs, err := iter.GetAll()
+				if isRetryablePipelineExecuteErr(err) {
+					r.Errorf("GetAll: %v. Retrying....", err)
+					return
+				} else if err != nil {
+					r.Fatalf("GetAll: %v", err)
+					return
+				}
+				if len(docs) != 1 {
+					t.Fatalf("expected 1 doc, got %d", len(docs))
+				}
+				got := docs[0].Data()
+				if diff := testutil.Diff(got, test.want); diff != "" {
+					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
 				}
 			})
 		})
