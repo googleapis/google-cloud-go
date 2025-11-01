@@ -73,6 +73,30 @@ func asArrayFunctionExpr(val any) Expr {
 	return newBaseFunction("array", exprs)
 }
 
+// asInt64Expr converts a value to an Expr that evaluates to an int64, or returns an error Expr if conversion is not possible.
+func asInt64Expr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case int, int8, int16, int32, int64, uint8, uint16, uint32:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int8, int16, int32, int64, uint8, uint16, uint32 or Expr, but got %T", val)}
+	}
+}
+
+// asStringExpr converts a value to an Expr that evaluates to a string, or returns an error Expr if conversion is not possible.
+func asStringExpr(val any) Expr {
+	switch v := val.(type) {
+	case Expr:
+		return v
+	case string:
+		return ConstantOf(v)
+	default:
+		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
+	}
+}
+
 // asVectorExpr converts a value to an Expr that evaluates to a vector type (Vector32, Vector64, []float32, []float64), or returns an error Expr if conversion is not possible.
 func asVectorExpr(val any) Expr {
 	switch v := val.(type) {

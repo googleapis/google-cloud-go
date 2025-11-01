@@ -102,6 +102,10 @@ type Expr interface {
 	CollectionId() Expr
 	DocumentId() Expr
 
+	// Logical functions
+	IfError(catchExprOrValue any) Expr
+	IfAbsent(catchExprOrValue any) Expr
+
 	// Object functions
 	MapGet(strOrExprkey any) Expr
 	MapMerge(secondMap Expr, otherMaps ...Expr) Expr
@@ -204,6 +208,8 @@ func (b *baseExpr) GreaterThan(other any) BooleanExpr        { return GreaterTha
 func (b *baseExpr) GreaterThanOrEqual(other any) BooleanExpr { return GreaterThanOrEqual(b, other) }
 func (b *baseExpr) LessThan(other any) BooleanExpr           { return LessThan(b, other) }
 func (b *baseExpr) LessThanOrEqual(other any) BooleanExpr    { return LessThanOrEqual(b, other) }
+func (b *baseExpr) IfError(catchExprOrValue any) Expr        { return IfError(b, catchExprOrValue) }
+func (b *baseExpr) IfAbsent(catchExprOrValue any) Expr       { return IfAbsent(b, catchExprOrValue) }
 
 // General functions
 func (b *baseExpr) Length() Expr              { return Length(b) }
