@@ -27,14 +27,14 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
-func ExampleNewVpcFlowLogsClient() {
+func ExampleNewOrganizationVpcFlowLogsClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -44,14 +44,14 @@ func ExampleNewVpcFlowLogsClient() {
 	_ = c
 }
 
-func ExampleNewVpcFlowLogsRESTClient() {
+func ExampleNewOrganizationVpcFlowLogsRESTClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsRESTClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -61,14 +61,14 @@ func ExampleNewVpcFlowLogsRESTClient() {
 	_ = c
 }
 
-func ExampleVpcFlowLogsClient_CreateVpcFlowLogsConfig() {
+func ExampleOrganizationVpcFlowLogsClient_CreateVpcFlowLogsConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -91,14 +91,14 @@ func ExampleVpcFlowLogsClient_CreateVpcFlowLogsConfig() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_DeleteVpcFlowLogsConfig() {
+func ExampleOrganizationVpcFlowLogsClient_DeleteVpcFlowLogsConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -119,14 +119,14 @@ func ExampleVpcFlowLogsClient_DeleteVpcFlowLogsConfig() {
 	}
 }
 
-func ExampleVpcFlowLogsClient_GetVpcFlowLogsConfig() {
+func ExampleOrganizationVpcFlowLogsClient_GetVpcFlowLogsConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -144,14 +144,14 @@ func ExampleVpcFlowLogsClient_GetVpcFlowLogsConfig() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_ListVpcFlowLogsConfigs() {
+func ExampleOrganizationVpcFlowLogsClient_ListVpcFlowLogsConfigs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -181,88 +181,14 @@ func ExampleVpcFlowLogsClient_ListVpcFlowLogsConfigs() {
 	}
 }
 
-func ExampleVpcFlowLogsClient_QueryOrgVpcFlowLogsConfigs() {
+func ExampleOrganizationVpcFlowLogsClient_UpdateVpcFlowLogsConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#QueryOrgVpcFlowLogsConfigsRequest.
-	}
-	it := c.QueryOrgVpcFlowLogsConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-
-		// If you need to access the underlying RPC response,
-		// you can do so by casting the `Response` as below.
-		// Otherwise, remove this line. Only populated after
-		// first call to Next(). Not safe for concurrent access.
-		_ = it.Response.(*networkmanagementpb.QueryOrgVpcFlowLogsConfigsResponse)
-	}
-}
-
-func ExampleVpcFlowLogsClient_ShowEffectiveFlowLogsConfigs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#ShowEffectiveFlowLogsConfigsRequest.
-	}
-	it := c.ShowEffectiveFlowLogsConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-
-		// If you need to access the underlying RPC response,
-		// you can do so by casting the `Response` as below.
-		// Otherwise, remove this line. Only populated after
-		// first call to Next(). Not safe for concurrent access.
-		_ = it.Response.(*networkmanagementpb.ShowEffectiveFlowLogsConfigsResponse)
-	}
-}
-
-func ExampleVpcFlowLogsClient_UpdateVpcFlowLogsConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -285,14 +211,14 @@ func ExampleVpcFlowLogsClient_UpdateVpcFlowLogsConfig() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_GetLocation() {
+func ExampleOrganizationVpcFlowLogsClient_GetLocation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -310,14 +236,14 @@ func ExampleVpcFlowLogsClient_GetLocation() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_ListLocations() {
+func ExampleOrganizationVpcFlowLogsClient_ListLocations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -347,14 +273,14 @@ func ExampleVpcFlowLogsClient_ListLocations() {
 	}
 }
 
-func ExampleVpcFlowLogsClient_GetIamPolicy() {
+func ExampleOrganizationVpcFlowLogsClient_GetIamPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -372,14 +298,14 @@ func ExampleVpcFlowLogsClient_GetIamPolicy() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_SetIamPolicy() {
+func ExampleOrganizationVpcFlowLogsClient_SetIamPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -397,14 +323,14 @@ func ExampleVpcFlowLogsClient_SetIamPolicy() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_TestIamPermissions() {
+func ExampleOrganizationVpcFlowLogsClient_TestIamPermissions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -422,14 +348,14 @@ func ExampleVpcFlowLogsClient_TestIamPermissions() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_CancelOperation() {
+func ExampleOrganizationVpcFlowLogsClient_CancelOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -445,14 +371,14 @@ func ExampleVpcFlowLogsClient_CancelOperation() {
 	}
 }
 
-func ExampleVpcFlowLogsClient_DeleteOperation() {
+func ExampleOrganizationVpcFlowLogsClient_DeleteOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -468,14 +394,14 @@ func ExampleVpcFlowLogsClient_DeleteOperation() {
 	}
 }
 
-func ExampleVpcFlowLogsClient_GetOperation() {
+func ExampleOrganizationVpcFlowLogsClient_GetOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -493,14 +419,14 @@ func ExampleVpcFlowLogsClient_GetOperation() {
 	_ = resp
 }
 
-func ExampleVpcFlowLogsClient_ListOperations() {
+func ExampleOrganizationVpcFlowLogsClient_ListOperations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkmanagement.NewVpcFlowLogsClient(ctx)
+	c, err := networkmanagement.NewOrganizationVpcFlowLogsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -937,7 +937,7 @@ type DedicatedResources_ScaleToZeroSpec struct {
 	// [MaxValue=28800] (8 hours)
 	MinScaleupPeriod *durationpb.Duration `protobuf:"bytes,1,opt,name=min_scaleup_period,json=minScaleupPeriod,proto3" json:"min_scaleup_period,omitempty"`
 	// Optional. Duration of no traffic before scaling to zero.
-	// [MinValue=3600] (5 minutes)
+	// [MinValue=300] (5 minutes)
 	// [MaxValue=28800] (8 hours)
 	IdleScaledownPeriod *durationpb.Duration `protobuf:"bytes,2,opt,name=idle_scaledown_period,json=idleScaledownPeriod,proto3" json:"idle_scaledown_period,omitempty"`
 }
