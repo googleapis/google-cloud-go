@@ -120,9 +120,6 @@ func TestIntegration_StorageReadFromSources(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	dstTable := dataset.Table(tableIDs.New())
-	dstTable.c = storageOptimizedClient
-
 	sql := `SELECT 1 as num, 'one' as str 
 UNION ALL 
 SELECT 2 as num, 'two' as str 
@@ -130,7 +127,6 @@ UNION ALL
 SELECT 3 as num, 'three' as str 
 ORDER BY num`
 	q := storageOptimizedClient.Query(sql)
-	q.Dst = dstTable
 	job, err := q.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -142,6 +138,9 @@ ORDER BY num`
 	if err := status.Err(); err != nil {
 		t.Fatal(err)
 	}
+
+	dstTable := bqToTable(job.config.Query.DestinationTable, storageOptimizedClient)
+
 	expectedRows := [][]Value{
 		{int64(1), "one"},
 		{int64(2), "two"},
