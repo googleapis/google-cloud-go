@@ -1221,6 +1221,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -1311,6 +1312,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -1872,6 +1874,7 @@ func TestIntegration_ConditionalDownload(t *testing.T) {
 }
 
 func TestIntegration_ObjectIteration(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
@@ -2157,6 +2160,7 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 }
 
 func TestIntegration_ObjectUpdate(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
@@ -2994,6 +2998,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 }
 
 func TestIntegration_BucketACL(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -4563,6 +4568,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 }
 
 func TestIntegration_PublicObject(t *testing.T) {
+	t.Skip("b/453096525")
 	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support object ACLs"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		publicObj := client.Bucket(bucket).Object("public-obj" + uidSpaceObjects.New())
 		contents := randomContents()

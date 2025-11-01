@@ -4,11 +4,6 @@ modules:
   # More info: https://github.com/googleapis/google-cloud-go/issues/12452
   - bigquery/v2
   - bigquery
-  - bigtable
-  - errorreporting
-  - logging
-  - profiler
-  - storage
 
 manual-clients:
   - api-shortname: bigquery
@@ -193,31 +188,17 @@ service-configs:
   - input-directory: google/cloud/bigquery/v2
     service-config: bigquery_v2.yaml
     import-path: cloud.google.com/go/bigquery/v2/apiv2
-  - input-directory: google/bigtable/admin/v2
-    service-config: bigtableadmin_v2.yaml
-    import-path: cloud.google.com/go/bigtable/admin/apiv2
-    release-level-override: stable
-  - input-directory: google/bigtable/v2
-    service-config: bigtable_v2.yaml
-    import-path: cloud.google.com/go/bigtable/apiv2
-    release-level-override: stable
-  - input-directory: google/devtools/clouderrorreporting/v1beta1
-    service-config: clouderrorreporting_v1beta1.yaml
-    import-path: cloud.google.com/go/errorreporting/apiv1beta1
-  - input-directory: google/logging/v2
-    service-config: logging_v2.yaml
-    import-path: cloud.google.com/go/logging/apiv2
-  - input-directory: google/storage/control/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/control/apiv2
-  - input-directory: google/storage/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/internal/apiv2
 
 skip-module-scan-paths:
   # ignore the root module
   - .
   # Librarian released modules
+  - bigtable
+  - storage
+  - logging
+  - errorreporting
+  - profiler
+  - vertexai
   - spanner
   - datastore
   - firestore
@@ -391,11 +372,5 @@ skip-module-scan-paths:
   # individually released modules
   - bigquery
   - bigquery/v2
-  - bigtable
-  - errorreporting
-  - logging
-  - profiler
-  - storage
-  - vertexai
   # unreleased modules
   - spanner/test/opentelemetry/test

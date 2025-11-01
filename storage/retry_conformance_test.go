@@ -739,6 +739,79 @@ var methods = map[string][]retryFunc{
 			}
 			return nil
 		},
+		// Appendable upload using a takeover.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
+			b := c.Bucket(bucketName)
+			if err := b.Create(ctx, projectID, nil); err != nil {
+				return err
+			}
+			defer b.Delete(ctx)
+
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			// Force multiple messages per chunk, and multiple chunks in the object.
+			chunkSize := 2 * maxPerMessageWriteSize
+			toWrite := generateRandomBytes(chunkSize * 3)
+
+			objW := obj.NewWriter(ctx)
+			objW.Append = true
+			objW.ChunkSize = chunkSize
+			if _, err := objW.Write(toWrite[0:maxPerMessageWriteSize]); err != nil {
+				return fmt.Errorf("Writer.Write: %w", err)
+			}
+			// Close this writer, which will create the appendable unfinalized object
+			// (there was not enough in Write to trigger a send).
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Creation Writer.Close: %v", err)
+			}
+
+			generation := int64(0)
+			if preconditions {
+				generation = objW.Attrs().Generation
+			}
+			objT := b.Object(obj.ObjectName()).Generation(generation)
+			w, l, err := objT.NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{ChunkSize: chunkSize})
+			if err != nil {
+				return fmt.Errorf("NewWriterFromAppendableObject: %v", err)
+			}
+			if l != int64(maxPerMessageWriteSize) {
+				return fmt.Errorf("NewWriterFromAppendableObject unexpected len: got %v, want %v", l, maxPerMessageWriteSize)
+			}
+
+			if _, err := w.Write(toWrite[maxPerMessageWriteSize:]); err != nil {
+				return fmt.Errorf("Writer.Write: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+
+			if w.Attrs() == nil {
+				return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			}
+
+			// Don't reuse obj, in case preconditions were set on the write request.
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			defer r.Close()
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %v", err)
+			}
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %v", err)
+			}
+
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(toWrite)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(toWrite), expectedMd5)
+			}
+			return nil
+		},
 	},
 	"storage.objects.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {

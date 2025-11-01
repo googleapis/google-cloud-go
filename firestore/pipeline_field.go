@@ -28,21 +28,23 @@ type field struct {
 	fieldPath FieldPath
 }
 
-// FieldOf creates a new field [Expr] from a field path string.
-func FieldOf(path string) Expr {
-	fieldPath, err := parseDotSeparatedString(path)
-	if err != nil {
-		return &field{baseExpr: &baseExpr{err: err}}
+// FieldOf creates a new field [Expr] from a dot separated field path string or [FieldPath].
+func FieldOf[T string | FieldPath](path T) Expr {
+	var fieldPath FieldPath
+	switch p := any(path).(type) {
+	case string:
+		fp, err := parseDotSeparatedString(p)
+		if err != nil {
+			return &field{baseExpr: &baseExpr{err: err}}
+		}
+		fieldPath = fp
+	case FieldPath:
+		fieldPath = p
 	}
-	return FieldOfPath(fieldPath)
-}
 
-// FieldOfPath creates a new field [Expr] for the given [FieldPath].
-func FieldOfPath(fieldPath FieldPath) Expr {
 	if err := fieldPath.validate(); err != nil {
 		return &field{baseExpr: &baseExpr{err: err}}
 	}
-
 	pbVal := &pb.Value{
 		ValueType: &pb.Value_FieldReferenceValue{
 			FieldReferenceValue: fieldPath.toServiceFieldPath(),
