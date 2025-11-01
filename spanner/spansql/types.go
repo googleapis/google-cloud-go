@@ -815,6 +815,12 @@ type ExistsOp struct {
 func (ExistsOp) isBoolExpr() {} // usually
 func (ExistsOp) isExpr()     {}
 
+type ScalarSubquery struct {
+	Query Query
+}
+
+func (ScalarSubquery) isExpr() {}
+
 type InOp struct {
 	LHS    Expr
 	Neg    bool
