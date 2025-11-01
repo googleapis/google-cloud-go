@@ -39,6 +39,13 @@ const (
 	directPathIPV4Prefix = "34.126"
 )
 
+// Transaction type constants for span attributes
+const (
+	TransactionTypeReadOnly       = "read_only"
+	TransactionTypeReadWrite      = "read_write"
+	TransactionTypePartitionedDML = "partitioned_dml"
+)
+
 type contextKey string
 
 const metricsTracerKey contextKey = "metricsTracer"
@@ -174,6 +181,28 @@ func (g *grpcSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.De
 	return err
 }
 
+// getTransactionType determines the transaction type from a TransactionSelector
+func getTransactionType(ts *spannerpb.TransactionSelector) string {
+	if singleUse := ts.GetSingleUse(); singleUse != nil {
+		if singleUse.GetReadOnly() != nil {
+			return TransactionTypeReadOnly
+		} else if singleUse.GetReadWrite() != nil {
+			return TransactionTypeReadWrite
+		} else if singleUse.GetPartitionedDml() != nil {
+			return TransactionTypePartitionedDML
+		}
+	} else if begin := ts.GetBegin(); begin != nil {
+		if begin.GetReadOnly() != nil {
+			return TransactionTypeReadOnly
+		} else if begin.GetReadWrite() != nil {
+			return TransactionTypeReadWrite
+		} else if begin.GetPartitionedDml() != nil {
+			return TransactionTypePartitionedDML
+		}
+	}
+	return ""
+}
+
 // setSpanAttributes dynamically sets span attributes based on the request type.
 func setSpanAttributes[T any](span oteltrace.Span, req T) {
 	if !span.IsRecording() {
@@ -212,6 +241,17 @@ func setSpanAttributes[T any](span oteltrace.Span, req T) {
 	if r, ok := any(req).(interface{ GetTable() string }); ok {
 		if table := r.GetTable(); table != "" {
 			attrs = append(attrs, attribute.String("db.table", table))
+		}
+	}
+
+	// Add transaction type detection
+	if r, ok := any(req).(interface {
+		GetTransaction() *spannerpb.TransactionSelector
+	}); ok {
+		if ts := r.GetTransaction(); ts != nil {
+			if transactionType := getTransactionType(ts); transactionType != "" {
+				attrs = append(attrs, attribute.String("spanner.transaction.type", transactionType))
+			}
 		}
 	}
 
