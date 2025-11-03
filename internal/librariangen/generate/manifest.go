@@ -36,13 +36,13 @@ const betaIndicator = "It is not stable"
 // ManifestEntry is used for JSON marshaling in manifest.
 type ManifestEntry struct {
 	APIShortname        string      `json:"api_shortname" yaml:"api-shortname"`
-	DistributionName    string      `json:"distribution_name" yaml:"distribution-name"`
-	Description         string      `json:"description" yaml:"description"`
-	Language            string      `json:"language" yaml:"language"`
-	ClientLibraryType   string      `json:"client_library_type" yaml:"client-library-type"`
 	ClientDocumentation string      `json:"client_documentation" yaml:"client-documentation"`
-	ReleaseLevel        string      `json:"release_level" yaml:"release-level"`
+	ClientLibraryType   string      `json:"client_library_type" yaml:"client-library-type"`
+	Description         string      `json:"description" yaml:"description"`
+	DistributionName    string      `json:"distribution_name" yaml:"distribution-name"`
+	Language            string      `json:"language" yaml:"language"`
 	LibraryType         libraryType `json:"library_type" yaml:"library-type"`
+	ReleaseLevel        string      `json:"release_level" yaml:"release-level"`
 }
 
 type libraryType string
@@ -56,6 +56,9 @@ const (
 )
 
 // generateRepoMetadata generates a .repo-metadata.json file for a given API.
+// It gathers metadata from the service YAML, Bazel configuration, and Go module information.
+// The generated file is written to the appropriate location within the output directory,
+// following the expected structure for .repo-metadata.json files.
 func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library, api *request.API, moduleConfig *config.ModuleConfig, bazelConfig *bazel.Config) error {
 	apiServiceDir := filepath.Join(cfg.SourceDir, api.Path)
 	yamlPath := filepath.Join(apiServiceDir, bazelConfig.ServiceYAML())
@@ -93,7 +96,7 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 		return fmt.Errorf("librariangen: unable to build docs URL: %w", err)
 	}
 
-	releaseLevel, err := releaseLevel(cfg.OutputDir, li, bazelConfig)
+	releaseLevel, err := releaseLevel(filepath.Join(cfg.OutputDir, li.RelPath, "doc.go"), li, bazelConfig)
 	if err != nil {
 		return fmt.Errorf("librariangen: unable to calculate release level for %v: %w", api.Path, err)
 	}
@@ -105,13 +108,13 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 
 	entry := ManifestEntry{
 		APIShortname:        apiShortname,
-		DistributionName:    li.ImportPath,
-		Description:         yamlConfig.Title,
-		Language:            "go",
-		ClientLibraryType:   "generated",
 		ClientDocumentation: docURL,
-		ReleaseLevel:        releaseLevel,
+		ClientLibraryType:   "generated",
+		Description:         yamlConfig.Title,
+		DistributionName:    li.ImportPath,
+		Language:            "go",
 		LibraryType:         gapicAutoLibraryType,
+		ReleaseLevel:        releaseLevel,
 	}
 
 	// Determine output path: e.g., accessapproval/apiv1/.repo-metadata.json
@@ -127,7 +130,7 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 	if err != nil {
 		return fmt.Errorf("librariangen: error marshalling data for API %s: %w", api.Path, err)
 	}
-
+	jsonData = append(jsonData, '\n')
 	if err := os.WriteFile(outputPath, jsonData, 0644); err != nil {
 		return fmt.Errorf("librariangen: error writing file %s: %w", outputPath, err)
 	}
@@ -150,7 +153,11 @@ func docURL(modulePath, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + modulePath + "/latest/" + pkgPath, nil
 }
 
-func releaseLevel(cloudDir string, li *struct {
+// releaseLevel determines the release level of a library. It prioritizes the release_level
+// specified in the BUILD.bazel file. If not present, it falls back to checking the
+// import path for "alpha" or "beta" suffixes, and finally by scanning the doc.go file
+// for a beta disclaimer.
+func releaseLevel(docGoPath string, li *struct {
 	ImportPath   string
 	RelPath      string
 	ReleaseLevel string
@@ -175,8 +182,7 @@ func releaseLevel(cloudDir string, li *struct {
 	}
 
 	// Determine by scanning doc.go for our beta disclaimer
-	docFile := filepath.Join(cloudDir, li.RelPath, "doc.go")
-	f, err := os.Open(docFile)
+	f, err := os.Open(docGoPath)
 	if err != nil {
 		// If doc.go doesn't exist, assume stable for now.
 		// This might need refinement if there are cases where doc.go is missing
@@ -198,5 +204,3 @@ func releaseLevel(cloudDir string, li *struct {
 	}
 	return "stable", nil
 }
-
-

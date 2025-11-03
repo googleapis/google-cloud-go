@@ -1,0 +1,209 @@
+// Copyright 2025 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package generate
+
+import (
+	"context"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/bazel"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/config"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
+	"github.com/google/go-cmp/cmp"
+)
+
+func TestApiShortname(t *testing.T) {
+	tests := []struct {
+		nameFull string
+		want     string
+		wantErr  bool
+	}{
+		{"secretmanager.googleapis.com", "secretmanager", false},
+		{"compute.googleapis.com", "compute", false},
+		{"", "", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.nameFull, func(t *testing.T) {
+			got, err := apiShortname(tt.nameFull)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("apiShortname() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("apiShortname() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDocURL(t *testing.T) {
+	tests := []struct {
+		modulePath string
+		importPath string
+		want       string
+	}{
+		{"cloud.google.com/go/secretmanager", "cloud.google.com/go/secretmanager/apiv1", "https://cloud.google.com/go/docs/reference/cloud.google.com/go/secretmanager/latest/apiv1"},
+		{"cloud.google.com/go/compute", "cloud.google.com/go/compute/apiv1", "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/apiv1"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.modulePath+"/"+tt.importPath, func(t *testing.T) {
+			got, err := docURL(tt.modulePath, tt.importPath)
+			if err != nil {
+				t.Fatalf("docURL() unexpected error: %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("docURL() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReleaseLevel(t *testing.T) {
+	tests := []struct {
+		name         string
+		bazelRL      string
+		liRL         string
+		docGoContent string
+		want         string
+	}{
+		{"bazel_ga", "ga", "", "", "stable"},
+		{"bazel_beta", "beta", "", "", "preview"},
+		{"li_preview", "", "preview", "", "preview"},
+		{"li_stable", "", "stable", "", "stable"},
+		{"doc_go_beta", "", "", "NOTE: This package is in beta. It is not stable, and may be subject to changes.", "preview"},
+		{"doc_go_stable", "", "", "Package foo", "stable"},
+		{"default_stable", "", "", "", "stable"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			docGoPath := filepath.Join(tmpDir, "doc.go")
+			if tt.docGoContent != "" {
+				if err := os.WriteFile(docGoPath, []byte(tt.docGoContent), 0644); err != nil {
+					t.Fatalf("writing doc.go: %v", err)
+				}
+			}
+
+			bazelConfig, err := bazel.Parse(createFakeBazelFile(t, tt.bazelRL))
+			if err != nil {
+				t.Fatalf("bazel.Parse() failed: %v", err)
+			}
+
+			li := &struct {
+				ImportPath   string
+				RelPath      string
+				ReleaseLevel string
+			}{
+				RelPath:      tmpDir,
+				ReleaseLevel: tt.liRL,
+			}
+
+			got, err := releaseLevel(docGoPath, li, bazelConfig)
+			if err != nil {
+				t.Fatalf("releaseLevel() failed: %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("releaseLevel() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGenerateRepoMetadata(t *testing.T) {
+	tmpDir := t.TempDir()
+	sourceDir := filepath.Join(tmpDir, "source")
+	outputDir := filepath.Join(tmpDir, "output")
+	if err := os.MkdirAll(filepath.Join(sourceDir, "google/cloud/testlib/v1"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	bazelPath := createFakeBazelFile(t, "ga")
+	if err := os.WriteFile(filepath.Join(sourceDir, "google/cloud/testlib/v1", "testlib_v1.yaml"), []byte("name: test.googleapis.com\ntitle: Test API"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := &Config{
+		SourceDir: sourceDir,
+		OutputDir: outputDir,
+	}
+	lib := &request.Library{
+		ID: "testlib",
+	}
+	api := &request.API{
+		Path: "google/cloud/testlib/v1",
+	}
+	moduleConfig := &config.ModuleConfig{
+		Name: "testlib",
+	}
+	bazelConfig, err := bazel.Parse(bazelPath)
+	if err != nil {
+		t.Fatalf("bazel.Parse() failed: %v", err)
+	}
+
+	if err := generateRepoMetadata(context.Background(), cfg, lib, api, moduleConfig, bazelConfig); err != nil {
+		t.Fatalf("generateRepoMetadata() failed: %v", err)
+	}
+
+	got, err := os.ReadFile(filepath.Join(outputDir, "cloud.google.com/go/testlib/apiv1/.repo-metadata.json"))
+	if err != nil {
+		t.Fatalf("os.ReadFile() failed: %v", err)
+	}
+
+	var gotEntry ManifestEntry
+	if err := json.Unmarshal(got, &gotEntry); err != nil {
+		t.Fatalf("json.Unmarshal() failed: %v", err)
+	}
+
+	wantEntry := ManifestEntry{
+		APIShortname:        "test",
+		ClientDocumentation: "https://cloud.google.com/go/docs/reference/cloud.google.com/go/testlib/latest/apiv1",
+		ClientLibraryType:   "generated",
+		Description:         "Test API",
+		DistributionName:    "cloud.google.com/go/testlib/apiv1",
+		Language:            "go",
+		LibraryType:         "GAPIC_AUTO",
+		ReleaseLevel:        "stable",
+	}
+
+	if diff := cmp.Diff(wantEntry, gotEntry); diff != "" {
+		t.Errorf("generateRepoMetadata() mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func createFakeBazelFile(t *testing.T, releaseLevel string) string {
+	t.Helper()
+	dir := t.TempDir()
+	content := `
+go_gapic_library(
+    name = "testlib_go_gapic",
+    importpath = "cloud.google.com/go/testlib/apiv1;testlib",
+    service_yaml = "testlib_v1.yaml",
+    release_level = "` + releaseLevel + `",
+)
+`
+	if err := os.WriteFile(filepath.Join(dir, "BUILD.bazel"), []byte(content), 0644); err != nil {
+		t.Fatalf("writing fake BUILD.bazel: %v", err)
+	}
+	return dir
+}
