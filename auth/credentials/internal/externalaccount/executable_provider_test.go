@@ -26,7 +26,56 @@ import (
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"github.com/google/go-cmp/cmp"
+	"github.com/mattn/go-shellwords"
 )
+
+func TestShellwordsParse(t *testing.T) {
+	tests := []struct {
+		name    string
+		command string
+		want    []string
+		wantErr bool
+	}{
+		{
+			name:    "simple command",
+			command: "a b c",
+			want:    []string{"a", "b", "c"},
+		},
+		{
+			name:    "quoted argument",
+			command: `a "b c"`,
+			want:    []string{"a", "b c"},
+		},
+		{
+			name:    "quoted executable",
+			command: `"a b" c`,
+			want:    []string{"a b", "c"},
+		},
+		{
+			name:    "quoted executable and argument",
+			command: `"a b" "c d"`,
+			want:    []string{"a b", "c d"},
+		},
+		{
+			name:    "single quotes",
+			command: `'a b' 'c d'`,
+			want:    []string{"a b", "c d"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := shellwords.Parse(tt.command)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("Parse() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 var executablesAllowed = map[string]string{
 	allowExecutablesEnvVar: "1",
