@@ -71,6 +71,7 @@ func (bc *BigtableConn) Prime(ctx context.Context) (bool, error) {
 
 	}
 
+	// TODO : Plumb featureflag and instanceName header
 	client := btpb.NewBigtableClient(bc.ClientConn)
 	req := &btpb.PingAndWarmRequest{
 		Name:         bc.instanceName,
