@@ -195,6 +195,8 @@ func (p *BigtableChannelPool) getConns() []*connEntry {
 }
 
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
+// NewBigtableChannelPool primes the new connection in a non-blocking goroutine to warm it up.
+// We keep it consistent with the current channelpool behavior which is lazily initialized.
 func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), logger *log.Logger, mp metric.MeterProvider, opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
