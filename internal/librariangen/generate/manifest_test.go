@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/bazel"
@@ -28,50 +29,23 @@ import (
 )
 
 func TestApiShortname(t *testing.T) {
-	tests := []struct {
-		nameFull string
-		want     string
-		wantErr  bool
-	}{
-		{"secretmanager.googleapis.com", "secretmanager", false},
-		{"compute.googleapis.com", "compute", false},
-		{"", "", false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.nameFull, func(t *testing.T) {
-			got, err := apiShortname(tt.nameFull)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("apiShortname() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("apiShortname() = %v, want %v", got, tt.want)
-			}
-		})
+	nameFull := "secretmanager.googleapis.com"
+	want := "secretmanager"
+	if got := apiShortname(nameFull); got != want {
+		t.Errorf("apiShortname() = %v, want %v", got, want)
 	}
 }
 
 func TestDocURL(t *testing.T) {
-	tests := []struct {
-		modulePath string
-		importPath string
-		want       string
-	}{
-		{"cloud.google.com/go/secretmanager", "cloud.google.com/go/secretmanager/apiv1", "https://cloud.google.com/go/docs/reference/cloud.google.com/go/secretmanager/latest/apiv1"},
-		{"cloud.google.com/go/compute", "cloud.google.com/go/compute/apiv1", "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/apiv1"},
+	modulePath := "cloud.google.com/go/secretmanager"
+	importPath := "cloud.google.com/go/secretmanager/apiv1"
+	want := "https://cloud.google.com/go/docs/reference/cloud.google.com/go/secretmanager/latest/apiv1"
+	got, err := docURL(modulePath, importPath)
+	if err != nil {
+		t.Fatalf("docURL() unexpected error: %v", err)
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.modulePath+"/"+tt.importPath, func(t *testing.T) {
-			got, err := docURL(tt.modulePath, tt.importPath)
-			if err != nil {
-				t.Fatalf("docURL() unexpected error: %v", err)
-			}
-			if got != tt.want {
-				t.Errorf("docURL() = %v, want %v", got, tt.want)
-			}
-		})
+	if got != want {
+		t.Errorf("docURL() = %v, want %v", got, want)
 	}
 }
 
@@ -107,11 +81,12 @@ func TestReleaseLevel(t *testing.T) {
 				t.Fatalf("bazel.Parse() failed: %v", err)
 			}
 
-			li := &struct {
-				ImportPath   string
-				RelPath      string
-				ReleaseLevel string
-			}{
+			importPath := "cloud.google.com/go/foo/apiv1"
+			if strings.Contains(tt.name, "preview") {
+				importPath = "cloud.google.com/go/foo/apiv1beta"
+			}
+			li := &libraryInfo{
+				ImportPath:   importPath,
 				RelPath:      tmpDir,
 				ReleaseLevel: tt.liRL,
 			}

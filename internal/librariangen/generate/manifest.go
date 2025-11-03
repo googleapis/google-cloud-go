@@ -79,17 +79,13 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 
 	// Construct import path and relative path for docURL and releaseLevel.
 	// This is a simplified version of libraryInfo from the legacy postprocessor.
-	li := &struct {
-		ImportPath   string
-		RelPath      string
-		ReleaseLevel string
-	}{
+	li := &libraryInfo{
 		ImportPath: bazelConfig.GAPICImportPath(),
 	}
 	if i := strings.Index(li.ImportPath, ";"); i != -1 {
 		li.ImportPath = li.ImportPath[:i]
 	}
-	li.RelPath = filepath.Join(lib.ID, strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/"+lib.ID))
+	li.RelPath = strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
 
 	docURL, err := docURL(moduleConfig.GetModulePath(), li.ImportPath)
 	if err != nil {
@@ -101,10 +97,7 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 		return fmt.Errorf("librariangen: unable to calculate release level for %v: %w", api.Path, err)
 	}
 
-	apiShortname, err := apiShortname(yamlConfig.NameFull)
-	if err != nil {
-		return fmt.Errorf("librariangen: unable to determine api_shortname from %v: %w", yamlConfig.NameFull, err)
-	}
+	apiShortname := apiShortname(yamlConfig.NameFull)
 
 	entry := ManifestEntry{
 		APIShortname:        apiShortname,
@@ -117,10 +110,8 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 		ReleaseLevel:        releaseLevel,
 	}
 
-	// Determine output path: e.g., accessapproval/apiv1/.repo-metadata.json
-	parts := strings.Split(api.Path, "/")
-	version := parts[len(parts)-1]
-	outputPath := filepath.Join(cfg.OutputDir, "cloud.google.com", "go", lib.ID, "api"+version, ".repo-metadata.json")
+	// Determine output path from the import path.
+	outputPath := filepath.Join(cfg.OutputDir, filepath.FromSlash(li.ImportPath), ".repo-metadata.json")
 
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
 		return fmt.Errorf("librariangen: error creating directory for %s: %w", outputPath, err)
@@ -140,12 +131,9 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 
 // Name is of form secretmanager.googleapis.com api_shortname
 // should be prefix secretmanager.
-func apiShortname(nameFull string) (string, error) {
+func apiShortname(nameFull string) string {
 	nameParts := strings.Split(nameFull, ".")
-	if len(nameParts) > 0 {
-		return nameParts[0], nil
-	}
-	return "", nil
+	return nameParts[0]
 }
 
 func docURL(modulePath, importPath string) (string, error) {
@@ -153,15 +141,17 @@ func docURL(modulePath, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + modulePath + "/latest/" + pkgPath, nil
 }
 
+type libraryInfo struct {
+	ImportPath   string
+	RelPath      string
+	ReleaseLevel string
+}
+
 // releaseLevel determines the release level of a library. It prioritizes the release_level
 // specified in the BUILD.bazel file. If not present, it falls back to checking the
 // import path for "alpha" or "beta" suffixes, and finally by scanning the doc.go file
 // for a beta disclaimer.
-func releaseLevel(docGoPath string, li *struct {
-	ImportPath   string
-	RelPath      string
-	ReleaseLevel string
-}, bazelConfig *bazel.Config) (string, error) {
+func releaseLevel(docGoPath string, li *libraryInfo, bazelConfig *bazel.Config) (string, error) {
 	// Prioritize Bazel config if available
 	if bazelConfig.ReleaseLevel() == "ga" {
 		return "stable", nil
@@ -170,9 +160,6 @@ func releaseLevel(docGoPath string, li *struct {
 	}
 
 	// Fallback to import path and doc.go scan
-	if li.ReleaseLevel != "" {
-		return li.ReleaseLevel, nil
-	}
 	i := strings.LastIndex(li.ImportPath, "/")
 	lastElm := li.ImportPath[i+1:]
 	if strings.Contains(lastElm, "alpha") {
@@ -190,7 +177,6 @@ func releaseLevel(docGoPath string, li *struct {
 		if errors.Is(err, os.ErrNotExist) {
 			return "stable", nil
 		}
-		return "", err
 	}
 	defer f.Close()
 
