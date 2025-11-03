@@ -39,7 +39,26 @@ var _ Function = (*baseFunction)(nil)
 func newBaseFunction(name string, params []Expr) *baseFunction {
 	argsPbVals := make([]*pb.Value, 0, len(params))
 	for i, param := range params {
+		paramExpr := asFieldExpr(param)
+		pbVal, err := paramExpr.toProto()
+		if err != nil {
+			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("error converting arg %d for function %q: %w", i, name, err)}}
+		}
+		argsPbVals = append(argsPbVals, pbVal)
+	}
+	pbVal := &pb.Value{ValueType: &pb.Value_FunctionValue{
+		FunctionValue: &pb.Function{
+			Name: name,
+			Args: argsPbVals,
+		},
+	}}
 
+	return &baseFunction{baseExpr: &baseExpr{pbVal: pbVal}}
+}
+
+func newBaseFunctionFromBooleans(name string, params []BooleanExpr) *baseFunction {
+	argsPbVals := make([]*pb.Value, 0, len(params))
+	for i, param := range params {
 		paramExpr := asFieldExpr(param)
 		pbVal, err := paramExpr.toProto()
 		if err != nil {
@@ -356,4 +375,141 @@ func EuclideanDistance(vector1 any, vector2 any) Expr {
 //   - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
 func VectorLength(exprOrFieldPath any) Expr {
 	return newBaseFunction("vector_length", []Expr{asFieldExpr(exprOrFieldPath)})
+}
+
+// Length creates an expression that calculates the length of string, array, map, vector, or Blob.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, array, map or vector when evaluated.
+//
+// Example:
+//
+//	// Length of the 'name' field.
+//	Length("name")
+func Length(exprOrField any) Expr {
+	return newBaseFunction("length", []Expr{asFieldExpr(exprOrField)})
+}
+
+// Reverse creates an expression that reverses a string, blob, or array.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, or array when evaluated.
+//
+// Example:
+//
+//	// Reverse the 'name' field.
+//
+// Reverse("name")
+func Reverse(exprOrField any) Expr {
+	return newBaseFunction("reverse", []Expr{asFieldExpr(exprOrField)})
+}
+
+// Concat creates an expression that concatenates expressions together.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr].
+// - others can be a list of constants or [Expr].
+//
+// Example:
+//
+//	// Concat the 'name' field with a constant string.
+//	Concat("name", "-suffix")
+func Concat(exprOrField any, others ...any) Expr {
+	return newBaseFunction("concat", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
+}
+
+// CollectionID creates an expression that returns the ID of the collection that contains the document.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr] that evaluates to a field path.
+func CollectionID(exprOrField any) Expr {
+	return newBaseFunction("collection_id", []Expr{asFieldExpr(exprOrField)})
+}
+
+// DocumentIDFrom creates an expression that returns the ID of the document.
+// - exprStringOrDocRef can be a string, a [DocumentRef], or an [Expr] that evaluates to a document reference.
+func DocumentIDFrom(exprStringOrDocRef any) Expr {
+	var expr Expr
+	switch v := exprStringOrDocRef.(type) {
+	case string:
+		expr = ConstantOf(v)
+	case *DocumentRef:
+		expr = ConstantOf(v)
+	case Expr:
+		expr = v
+	default:
+		return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("firestore: value must be a string, DocumentRef, or Expr, but got %T", exprStringOrDocRef)}}
+	}
+
+	return newBaseFunction("document_id", []Expr{expr})
+}
+
+// Conditional creates an expression that evaluates a condition and returns one of two expressions.
+// - condition is the boolean expression to evaluate.
+// - thenVal is the expression to return if the condition is true.
+// - elseVal is the expression to return if the condition is false.
+func Conditional(condition BooleanExpr, thenVal, elseVal any) Expr {
+	return newBaseFunction("conditional", []Expr{condition, toExprOrConstant(thenVal), toExprOrConstant(elseVal)})
+}
+
+// LogicalMax creates an expression that evaluates to the maximum value in a list of expressions.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr].
+// - others can be a list of constants or [Expr].
+func LogicalMaximum(exprOrField any, others ...any) Expr {
+	return newBaseFunction("maximum", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
+}
+
+// LogicalMin creates an expression that evaluates to the minimum value in a list of expressions.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr].
+// - others can be a list of constants or [Expr].
+func LogicalMinimum(exprOrField any, others ...any) Expr {
+	return newBaseFunction("minimum", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
+}
+
+// IfError creates an expression that evaluates and returns `tryExpr` if it does not produce an error;
+// otherwise, it evaluates and returns `catchExprOrValue`.
+// - tryExpr is the expression to try.
+// - catchExprOrValue is the expression or value to return if `tryExpr` errors.
+func IfError(tryExpr Expr, catchExprOrValue any) Expr {
+	return newBaseFunction("if_error", []Expr{tryExpr, toExprOrConstant(catchExprOrValue)})
+}
+
+// IfErrorBoolean creates a boolean expression that evaluates and returns `tryExpr` if it does not produce an error;
+// otherwise, it evaluates and returns `catchExpr`.
+// - tryExpr is the boolean expression to try.
+// - catchExpr is the boolean expression to return if `tryExpr` errors.
+func IfErrorBoolean(tryExpr BooleanExpr, catchExpr BooleanExpr) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("if_error", []Expr{tryExpr, catchExpr})}
+}
+
+// IfAbsent creates an expression that returns a default value if an expression evaluates to an absent value.
+// - exprOrField can be a field path string, [FieldPath] or an [Expr].
+// - elseValue is the value to return if the expression is absent.
+func IfAbsent(exprOrField any, elseValue any) Expr {
+	return newBaseFunction("if_absent", []Expr{asFieldExpr(exprOrField), toExprOrConstant(elseValue)})
+}
+
+// Map creates an expression that creates a Firestore map value from an input object.
+// - elements: The input map to evaluate in the expression.
+func Map(elements map[string]any) Expr {
+	exprs := []Expr{}
+	for k, v := range elements {
+		exprs = append(exprs, ConstantOf(k), toExprOrConstant(v))
+	}
+	return newBaseFunction("map", exprs)
+}
+
+// MapGet creates an expression that accesses a value from a map (object) field using the provided key.
+// - exprOrField: The expression representing the map.
+// - strOrExprkey: The key to access in the map.
+func MapGet(exprOrField any, strOrExprkey any) Expr {
+	return newBaseFunction("map_get", []Expr{asFieldExpr(exprOrField), asStringExpr(strOrExprkey)})
+}
+
+// MapMerge creates an expression that merges multiple maps into a single map.
+// If multiple maps have the same key, the later value is used.
+// - exprOrField: First map expression that will be merged.
+// - secondMap: Second map expression that will be merged.
+// - otherMaps: Additional maps to merge.
+func MapMerge(exprOrField any, secondMap Expr, otherMaps ...Expr) Expr {
+	return newBaseFunction("map_merge", append([]Expr{asFieldExpr(exprOrField), secondMap}, otherMaps...))
+}
+
+// MapRemove creates an expression that removes a key from a map.
+// - exprOrField: The expression representing the map.
+// - strOrExprkey: The key to remove from the map.
+func MapRemove(exprOrField any, strOrExprkey any) Expr {
+	return newBaseFunction("map_remove", []Expr{asFieldExpr(exprOrField), asStringExpr(strOrExprkey)})
 }

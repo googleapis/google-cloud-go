@@ -156,7 +156,7 @@ func initIntegrationTest() {
 			},
 		},
 	}
-	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
+	copts := append(ti.CallOptions()) //, option.WithTokenSource(ts))
 	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)

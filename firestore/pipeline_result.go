@@ -26,6 +26,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -222,7 +223,8 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		}
 
 		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
-
+		bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(req)
+		fmt.Println(string(bytes))
 		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 		if err != nil {
 			return nil, err
@@ -235,6 +237,8 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		var res *pb.ExecutePipelineResponse
 		for {
 			res, err = it.streamClient.Recv()
+			bytes, _ := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true, Multiline: true}.Marshal(res)
+			fmt.Println("res", string(bytes))
 			if err == io.EOF {
 				return nil, iterator.Done
 			}
