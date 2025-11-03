@@ -148,23 +148,23 @@ func (p *BigtableChannelPool) waitForDrainAndClose(entry *connEntry) {
 	for {
 		select {
 		case <-ticker.C:
-			if entry.calculateWeightedLoad() == 0 {
+			if entry.calculateConnLoad() == 0 {
 				btopt.Debugf(p.logger, "bigtable_connpool: Draining connection is idle, closing now.")
 				entry.conn.Close()
 				return
 			}
 		case <-ctx.Done():
-			btopt.Debugf(p.logger, "bigtable_connpool: Draining connection timed out after %v with load %d. Force closing.", maxDrainingTimeout, entry.calculateWeightedLoad())
+			btopt.Debugf(p.logger, "bigtable_connpool: Draining connection timed out after %v with load %d. Force closing.", maxDrainingTimeout, entry.calculateConnLoad())
 			entry.conn.Close()
 			return
 		}
 	}
 }
 
-func (e *connEntry) calculateWeightedLoad() int32 {
+func (e *connEntry) calculateConnLoad() int32 {
 	unary := e.unaryLoad.Load()
 	streaming := e.streamingLoad.Load()
-	return (unaryLoadFactor * unary) + (streamingLoadFactor * streaming)
+	return unary + streaming
 }
 
 // BigtableChannelPool implements ConnPool and routes requests to the connection
@@ -336,20 +336,23 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 		return
 	}
 
+	primeCtx, cancel := context.WithTimeout(p.poolCtx, primeRPCTimeout)
+	isALTS, err := newConn.Prime(primeCtx)
+	cancel() // cancel the prime context
+
+	if err != nil {
+		btopt.Debugf(p.logger, "bigtable_connpool: Failed to prime replacement connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
+		newConn.Close() //
+		return          // Abort
+	}
+
+	btopt.Debugf(p.logger, "bigtable_connpool: Successfully primed new connection. Replacing connection at index %d\n", idx)
 	newEntry := &connEntry{
 		conn: newConn,
 	}
-
-	go func() {
-		primeCtx, cancel := context.WithTimeout(p.poolCtx, primeRPCTimeout)
-		defer cancel()
-		isALTS, err := newConn.Prime(primeCtx)
-		if err != nil {
-			btopt.Debugf(p.logger, "bigtable_connpool: failed to prime replacement connection at index %d: %v\n", idx, err)
-		} else if isALTS {
-			newEntry.altsUsed.Store(true)
-		}
-	}()
+	if isALTS {
+		newEntry.altsUsed.Store(true)
+	}
 
 	// Copy-on-write
 	newConns := make([]*connEntry, len(currentConns))
@@ -452,8 +455,8 @@ func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (*connEntry, error)
 			return entry1, nil // Both random choices were the same and it's not draining
 		}
 
-		load1 := entry1.calculateWeightedLoad()
-		load2 := entry2.calculateWeightedLoad()
+		load1 := entry1.calculateConnLoad()
+		load2 := entry2.calculateConnLoad()
 		if load1 <= load2 {
 			return entry1, nil
 		}
@@ -497,7 +500,7 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 		if entry.isDraining() {
 			continue
 		}
-		currentLoad := entry.calculateWeightedLoad()
+		currentLoad := entry.calculateConnLoad()
 		if currentLoad < minLoad {
 			minLoad = currentLoad
 			minIndex = i

@@ -536,7 +536,7 @@ func TestSelectLeastLoaded(t *testing.T) {
 		t.Errorf("Multi conn: got error %v, want nil", err)
 	}
 	if entry != conns[expectedMinIndex] {
-		t.Errorf("Multi conn: selected entry with load %d, want entry with load 1 (index %d)", entry.calculateWeightedLoad(), expectedMinIndex)
+		t.Errorf("Multi conn: selected entry with load %d, want entry with load 1 (index %d)", entry.calculateConnLoad(), expectedMinIndex)
 	}
 }
 
@@ -1040,6 +1040,39 @@ func TestReplaceConnection(t *testing.T) {
 			t.Errorf("Connection entry changed despite context done")
 		}
 		poolCancelled.Close() // Still close to free resources
+	})
+
+	t.Run("FailedPrime", func(t *testing.T) {
+		// Pool creation should succeed
+		mu.Lock()
+		dialSucceed = true
+		mu.Unlock()
+		pingErr := status.Error(codes.Internal, "simulated ping error")
+		fake.setPingErr(pingErr)
+		atomic.StoreInt32(&dialCount, 0)
+
+		pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, log.Default(), nil)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		mu.Lock()
+		dialSucceed = true
+		mu.Unlock()
+		atomic.StoreInt32(&dialCount, 0)
+
+		currentEntry := pool.getConns()[idxToReplace]
+		pool.replaceConnection(currentEntry)
+
+		// Dial should be called
+		if atomic.LoadInt32(&dialCount) != 1 {
+			t.Errorf("Dial function called %d times by replaceConnection, want 1", atomic.LoadInt32(&dialCount))
+		}
+		// Connection should NOT be replaced as Prime() fails
+		if pool.getConns()[idxToReplace] != currentEntry {
+			t.Errorf("Connection entry changed despite Prime() failure")
+		}
 	})
 }
 
