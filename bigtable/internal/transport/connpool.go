@@ -21,6 +21,7 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -308,13 +309,7 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 	}
 
 	currentConns := p.getConns()
-	idx := -1
-	for i, entry := range currentConns {
-		if entry == oldEntry {
-			idx = i
-			break
-		}
-	}
+	idx := slices.Index(currentConns, oldEntry)
 
 	// If the connection isn't in the slice, it was already removed.
 	// The drain process should still be kicked off.
