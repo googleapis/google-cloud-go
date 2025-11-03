@@ -146,11 +146,11 @@ func TestBigtableConn_Prime(t *testing.T) {
 		}
 		defer conn.Close()
 		fake.setPingCount(0)
-		isALTS, err := conn.Prime(ctx)
+		err = conn.Prime(ctx)
 		if err != nil {
 			t.Errorf("Prime() failed: %v", err)
 		}
-		if isALTS {
+		if conn.isALTSConn.Load() {
 			t.Errorf("Prime() got isALTS true, want false")
 		}
 		if fake.getPingCount() != 1 {
@@ -201,7 +201,7 @@ func TestBigtableConn_Prime(t *testing.T) {
 			fake.setPingErr(tc.pingErr)
 			defer func() { fake.setPingErr(nil) }()
 
-			_, err = conn.Prime(ctx)
+			err = conn.Prime(ctx)
 			if err == nil {
 				t.Fatalf("Prime() succeeded, want error")
 			}
@@ -235,7 +235,7 @@ func TestBigtableConn_Prime(t *testing.T) {
 		primeCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond) // Shorter than primeRPCTimeout
 		defer cancel()
 
-		_, err = conn.Prime(primeCtx)
+		err = conn.Prime(primeCtx)
 		if err == nil {
 			t.Fatalf("Prime() succeeded, want timeout error")
 		}

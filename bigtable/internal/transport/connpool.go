@@ -58,16 +58,17 @@ var _ gtransport.ConnPool = &BigtableChannelPool{}
 type BigtableConn struct {
 	*grpc.ClientConn
 	instanceName string // Needed for PingAndWarm
-	appProfile   string // Needed for PingAndWarm
+	appProfile   string // Needed for PingAndWarm,
+	isALTSConn   atomic.Bool
 }
 
 // Prime sends a PingAndWarm request to warm up the connection.
-func (bc *BigtableConn) Prime(ctx context.Context) (bool, error) {
+func (bc *BigtableConn) Prime(ctx context.Context) error {
 	if bc.instanceName == "" {
-		return false, status.Error(codes.FailedPrecondition, "bigtable: instanceName is required for conn:Prime operation")
+		return status.Error(codes.FailedPrecondition, "bigtable: instanceName is required for conn:Prime operation")
 	}
 	if bc.appProfile == "" {
-		return false, status.Error(codes.FailedPrecondition, "bigtable: appProfile is required for conn:Prime operation")
+		return status.Error(codes.FailedPrecondition, "bigtable: appProfile is required for conn:Prime operation")
 
 	}
 
@@ -85,16 +86,15 @@ func (bc *BigtableConn) Prime(ctx context.Context) (bool, error) {
 	var p peer.Peer
 	_, err := client.PingAndWarm(primeCtx, req, grpc.Peer(&p))
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	isALTS := false
 	if p.AuthInfo != nil {
 		if _, ok := p.AuthInfo.(alts.AuthInfo); ok {
-			isALTS = true
+			bc.isALTSConn.Store(true)
 		}
 	}
-	return isALTS, nil
+	return nil
 }
 
 func NewBigtableConn(conn *grpc.ClientConn, instanceName, appProfileId string) *BigtableConn {
@@ -110,7 +110,6 @@ type connEntry struct {
 	conn          *BigtableConn
 	unaryLoad     atomic.Int32 // In-flight unary requests
 	streamingLoad atomic.Int32 // Active streams
-	altsUsed      atomic.Bool  // alts used, best effort only checked during Prime()
 	errorCount    int64        // Errors since the last metric report
 	drainingState atomic.Bool  // True if the connection is being gracefully drained.
 
@@ -119,7 +118,10 @@ type connEntry struct {
 // isALTSUsed reports whether the connection is using ALTS aka Direct Access.
 // best effort basis
 func (e *connEntry) isALTSUsed() bool {
-	return e.altsUsed.Load()
+	if e.conn == nil {
+		return false
+	}
+	return e.conn.isALTSConn.Load()
 }
 
 // isDraining atomically checks if the connection is in the draining state.
@@ -260,11 +262,9 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		go func(e *connEntry) {
 			primeCtx, cancel := context.WithTimeout(pool.poolCtx, primeRPCTimeout)
 			defer cancel()
-			isALTS, err := e.conn.Prime(primeCtx)
+			err := e.conn.Prime(primeCtx)
 			if err != nil {
 				btopt.Debugf(pool.logger, "bigtable_connpool: failed to prime initial connection: %v\n", err)
-			} else if isALTS {
-				e.altsUsed.Store(true)
 			}
 		}(entry)
 	}
@@ -339,7 +339,7 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 	}
 
 	primeCtx, cancel := context.WithTimeout(p.poolCtx, primeRPCTimeout)
-	isALTS, err := newConn.Prime(primeCtx)
+	err = newConn.Prime(primeCtx)
 	cancel() // cancel the prime context
 
 	if err != nil {
@@ -351,9 +351,6 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 	btopt.Debugf(p.logger, "bigtable_connpool: Successfully primed new connection. Replacing connection at index %d\n", idx)
 	newEntry := &connEntry{
 		conn: newConn,
-	}
-	if isALTS {
-		newEntry.altsUsed.Store(true)
 	}
 
 	// Copy-on-write
