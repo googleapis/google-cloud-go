@@ -107,6 +107,7 @@ jobs:
     # For non-GA versions (e.g., "apiv1beta1"), this step is skipped, and the
     # job continues.
     - name: Conditionally fail for GA APIs
+      id: ga_check # Add an ID to this step to check its outcome later.
       if: steps.detect.outputs.breaking_change_found == 'true'
       run: |
         if [[ "${{ matrix.changed }}" =~ apiv[0-9]+$ ]]; then
@@ -129,3 +130,39 @@ jobs:
             repo: context.repo.repo,
             labels: ['breaking change']
           })
+    # Step 4: For non-GA APIs, post the breaking change details as a comment.
+    # This step only runs if the ga_check step succeeded, meaning a breaking
+    # change was found in a non-GA API. This provides high-visibility feedback
+    # without blocking the PR, and avoids redundant comments for GA APIs where
+    # the failed presubmit check is the primary signal.
+    - name: Post breaking change details as a comment
+      if: ${{ steps.ga_check.outcome == 'success' && !github.event.pull_request.head.repo.fork }}
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const diff = fs.readFileSync('${{ matrix.changed }}/diff.txt', 'utf8');
+          const moduleName = '${{ matrix.changed }}';
+          const commentHeader = `### ⚠️ Breaking change detected in pre-GA module: \`${moduleName}\``;
+          const body = `${commentHeader}\n\nThe apidiff check has detected one or more breaking changes in this module for pre-GA APIs.\n\nPre-GA breaking changes do not block the pull request, but are flagged here for review.\n\nFor any pre-GA breaking change that needs investigation, open a new issue containing a link to this comment, then you may proceed with reviewing and merging this PR.\n\n\`\`\`\n${diff}\n\`\`\``;
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          const existingComment = comments.find(comment => comment.body.startsWith(commentHeader));
+          if (existingComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existingComment.id,
+              body: body,
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body,
+            });
+          }
