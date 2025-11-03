@@ -96,7 +96,15 @@ func Configure(ctx context.Context, cfg *Config) error {
 	if err := cfg.Validate(); err != nil {
 		return fmt.Errorf("librariangen: invalid configuration: %w", err)
 	}
+	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
+	if err != nil {
+		return err
+	}
+	if !repoConfig.CanConfigure() {
+		return errors.New("configure is not supported in this repo")
+	}
 	slog.Debug("librariangen: configure command started")
+
 	configureReq, err := readConfigureReq(cfg.LibrarianDir)
 	if err != nil {
 		return fmt.Errorf("librariangen: failed to read request: %w", err)
@@ -106,7 +114,7 @@ func Configure(ctx context.Context, cfg *Config) error {
 		return err
 	}
 
-	response, err := configureLibrary(ctx, cfg, library, api)
+	response, err := configureLibrary(ctx, cfg, repoConfig, library, api)
 	if err != nil {
 		return err
 	}
@@ -182,17 +190,7 @@ func findLibraryAndAPIToConfigure(req *Request) (*request.Library, *request.API,
 // returning the configure-response... it just happens to be "the library being configured"
 // at the moment. If the format of configure-response ever changes, we'll need fewer
 // changes if we don't make too many assumptions now.
-func configureLibrary(ctx context.Context, cfg *Config, library *request.Library, api *request.API) (*request.Library, error) {
-	// It's just *possible* the new path has a manually configured
-	// client directory - but even if not, RepoConfig has the logic
-	// for figuring out the client directory. Even if the new path
-	// doesn't have a custom configuration, we can use this to
-	// work out the module path, e.g. if there's a major version other
-	// than v1.
-	repoConfig, err := config.LoadRepoConfig(cfg.LibrarianDir)
-	if err != nil {
-		return nil, err
-	}
+func configureLibrary(ctx context.Context, cfg *Config, repoConfig *config.RepoConfig, library *request.Library, api *request.API) (*request.Library, error) {
 	var moduleConfig = repoConfig.GetModuleConfig(library.ID)
 
 	moduleRoot := filepath.Join(cfg.OutputDir, library.ID)
