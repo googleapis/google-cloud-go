@@ -203,3 +203,14 @@ func setConnLoads(conns []*connEntry, unary, stream int32) {
 		entry.streamingLoad.Store(stream)
 	}
 }
+
+// findMonitor safely finds a monitor of a specific type from the pool's slice.
+func findMonitor[T Monitor](pool *BigtableChannelPool) (T, bool) {
+	for _, m := range pool.monitors {
+		if monitor, ok := m.(T); ok {
+			return monitor, true
+		}
+	}
+	var zero T
+	return zero, false
+}
