@@ -381,14 +381,14 @@ func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args in
 
 // Conn provides connbased on selectfunc()
 func (p *BigtableChannelPool) Conn() *grpc.ClientConn {
-	bigtableConn := p.GetBigtableConn()
+	bigtableConn := p.getBigtableConn()
 	if bigtableConn == nil {
 		return nil
 	}
 	return bigtableConn.ClientConn
 }
 
-func (p *BigtableChannelPool) GetBigtableConn() *BigtableConn {
+func (p *BigtableChannelPool) getBigtableConn() *BigtableConn {
 	entry, err := p.selectFunc()
 	if err != nil {
 		return nil
