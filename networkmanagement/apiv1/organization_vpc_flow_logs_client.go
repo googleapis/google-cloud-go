@@ -42,29 +42,27 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var newVpcFlowLogsClientHook clientHook
+var newOrganizationVpcFlowLogsClientHook clientHook
 
-// VpcFlowLogsCallOptions contains the retry settings for each method of VpcFlowLogsClient.
-type VpcFlowLogsCallOptions struct {
-	ListVpcFlowLogsConfigs       []gax.CallOption
-	GetVpcFlowLogsConfig         []gax.CallOption
-	CreateVpcFlowLogsConfig      []gax.CallOption
-	UpdateVpcFlowLogsConfig      []gax.CallOption
-	DeleteVpcFlowLogsConfig      []gax.CallOption
-	QueryOrgVpcFlowLogsConfigs   []gax.CallOption
-	ShowEffectiveFlowLogsConfigs []gax.CallOption
-	GetLocation                  []gax.CallOption
-	ListLocations                []gax.CallOption
-	GetIamPolicy                 []gax.CallOption
-	SetIamPolicy                 []gax.CallOption
-	TestIamPermissions           []gax.CallOption
-	CancelOperation              []gax.CallOption
-	DeleteOperation              []gax.CallOption
-	GetOperation                 []gax.CallOption
-	ListOperations               []gax.CallOption
+// OrganizationVpcFlowLogsCallOptions contains the retry settings for each method of OrganizationVpcFlowLogsClient.
+type OrganizationVpcFlowLogsCallOptions struct {
+	ListVpcFlowLogsConfigs  []gax.CallOption
+	GetVpcFlowLogsConfig    []gax.CallOption
+	CreateVpcFlowLogsConfig []gax.CallOption
+	UpdateVpcFlowLogsConfig []gax.CallOption
+	DeleteVpcFlowLogsConfig []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	CancelOperation         []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
-func defaultVpcFlowLogsGRPCClientOptions() []option.ClientOption {
+func defaultOrganizationVpcFlowLogsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("networkmanagement.googleapis.com:443"),
 		internaloption.WithDefaultEndpointTemplate("networkmanagement.UNIVERSE_DOMAIN:443"),
@@ -79,50 +77,46 @@ func defaultVpcFlowLogsGRPCClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultVpcFlowLogsCallOptions() *VpcFlowLogsCallOptions {
-	return &VpcFlowLogsCallOptions{
-		ListVpcFlowLogsConfigs:       []gax.CallOption{},
-		GetVpcFlowLogsConfig:         []gax.CallOption{},
-		CreateVpcFlowLogsConfig:      []gax.CallOption{},
-		UpdateVpcFlowLogsConfig:      []gax.CallOption{},
-		DeleteVpcFlowLogsConfig:      []gax.CallOption{},
-		QueryOrgVpcFlowLogsConfigs:   []gax.CallOption{},
-		ShowEffectiveFlowLogsConfigs: []gax.CallOption{},
-		GetLocation:                  []gax.CallOption{},
-		ListLocations:                []gax.CallOption{},
-		GetIamPolicy:                 []gax.CallOption{},
-		SetIamPolicy:                 []gax.CallOption{},
-		TestIamPermissions:           []gax.CallOption{},
-		CancelOperation:              []gax.CallOption{},
-		DeleteOperation:              []gax.CallOption{},
-		GetOperation:                 []gax.CallOption{},
-		ListOperations:               []gax.CallOption{},
+func defaultOrganizationVpcFlowLogsCallOptions() *OrganizationVpcFlowLogsCallOptions {
+	return &OrganizationVpcFlowLogsCallOptions{
+		ListVpcFlowLogsConfigs:  []gax.CallOption{},
+		GetVpcFlowLogsConfig:    []gax.CallOption{},
+		CreateVpcFlowLogsConfig: []gax.CallOption{},
+		UpdateVpcFlowLogsConfig: []gax.CallOption{},
+		DeleteVpcFlowLogsConfig: []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
 	}
 }
 
-func defaultVpcFlowLogsRESTCallOptions() *VpcFlowLogsCallOptions {
-	return &VpcFlowLogsCallOptions{
-		ListVpcFlowLogsConfigs:       []gax.CallOption{},
-		GetVpcFlowLogsConfig:         []gax.CallOption{},
-		CreateVpcFlowLogsConfig:      []gax.CallOption{},
-		UpdateVpcFlowLogsConfig:      []gax.CallOption{},
-		DeleteVpcFlowLogsConfig:      []gax.CallOption{},
-		QueryOrgVpcFlowLogsConfigs:   []gax.CallOption{},
-		ShowEffectiveFlowLogsConfigs: []gax.CallOption{},
-		GetLocation:                  []gax.CallOption{},
-		ListLocations:                []gax.CallOption{},
-		GetIamPolicy:                 []gax.CallOption{},
-		SetIamPolicy:                 []gax.CallOption{},
-		TestIamPermissions:           []gax.CallOption{},
-		CancelOperation:              []gax.CallOption{},
-		DeleteOperation:              []gax.CallOption{},
-		GetOperation:                 []gax.CallOption{},
-		ListOperations:               []gax.CallOption{},
+func defaultOrganizationVpcFlowLogsRESTCallOptions() *OrganizationVpcFlowLogsCallOptions {
+	return &OrganizationVpcFlowLogsCallOptions{
+		ListVpcFlowLogsConfigs:  []gax.CallOption{},
+		GetVpcFlowLogsConfig:    []gax.CallOption{},
+		CreateVpcFlowLogsConfig: []gax.CallOption{},
+		UpdateVpcFlowLogsConfig: []gax.CallOption{},
+		DeleteVpcFlowLogsConfig: []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
 	}
 }
 
-// internalVpcFlowLogsClient is an interface that defines the methods available from Network Management API.
-type internalVpcFlowLogsClient interface {
+// internalOrganizationVpcFlowLogsClient is an interface that defines the methods available from Network Management API.
+type internalOrganizationVpcFlowLogsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
@@ -134,8 +128,6 @@ type internalVpcFlowLogsClient interface {
 	UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation
 	DeleteVpcFlowLogsConfig(context.Context, *networkmanagementpb.DeleteVpcFlowLogsConfigRequest, ...gax.CallOption) (*DeleteVpcFlowLogsConfigOperation, error)
 	DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation
-	QueryOrgVpcFlowLogsConfigs(context.Context, *networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest, ...gax.CallOption) *VpcFlowLogsConfigIterator
-	ShowEffectiveFlowLogsConfigs(context.Context, *networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest, ...gax.CallOption) *EffectiveVpcFlowLogsConfigIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -147,18 +139,19 @@ type internalVpcFlowLogsClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// VpcFlowLogsClient is a client for interacting with Network Management API.
+// OrganizationVpcFlowLogsClient is a client for interacting with Network Management API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The VPC Flow Logs service in the Google Cloud Network Management API provides
-// configurations that generate Flow Logs. The service and the configuration
-// resources created using this service are global.
-type VpcFlowLogsClient struct {
+// The VPC Flow Logs organization service in the Google Cloud Network Management
+// API provides organization level configurations that generate Flow Logs. The
+// service and the configuration resources created using this service are
+// global.
+type OrganizationVpcFlowLogsClient struct {
 	// The internal transport-dependent client.
-	internalClient internalVpcFlowLogsClient
+	internalClient internalOrganizationVpcFlowLogsClient
 
 	// The call options for this service.
-	CallOptions *VpcFlowLogsCallOptions
+	CallOptions *OrganizationVpcFlowLogsCallOptions
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
@@ -170,14 +163,14 @@ type VpcFlowLogsClient struct {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *VpcFlowLogsClient) Close() error {
+func (c *OrganizationVpcFlowLogsClient) Close() error {
 	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *VpcFlowLogsClient) setGoogleClientInfo(keyval ...string) {
+func (c *OrganizationVpcFlowLogsClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
@@ -185,17 +178,17 @@ func (c *VpcFlowLogsClient) setGoogleClientInfo(keyval ...string) {
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *VpcFlowLogsClient) Connection() *grpc.ClientConn {
+func (c *OrganizationVpcFlowLogsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListVpcFlowLogsConfigs lists all VpcFlowLogsConfigs in a given project.
-func (c *VpcFlowLogsClient) ListVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ListVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
+// ListVpcFlowLogsConfigs lists all VpcFlowLogsConfigs in a given organization.
+func (c *OrganizationVpcFlowLogsClient) ListVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ListVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
 	return c.internalClient.ListVpcFlowLogsConfigs(ctx, req, opts...)
 }
 
 // GetVpcFlowLogsConfig gets the details of a specific VpcFlowLogsConfig.
-func (c *VpcFlowLogsClient) GetVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.GetVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*networkmanagementpb.VpcFlowLogsConfig, error) {
+func (c *OrganizationVpcFlowLogsClient) GetVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.GetVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*networkmanagementpb.VpcFlowLogsConfig, error) {
 	return c.internalClient.GetVpcFlowLogsConfig(ctx, req, opts...)
 }
 
@@ -220,13 +213,13 @@ func (c *VpcFlowLogsClient) GetVpcFlowLogsConfig(ctx context.Context, req *netwo
 //	labels
 //
 //	description
-func (c *VpcFlowLogsClient) CreateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.CreateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*CreateVpcFlowLogsConfigOperation, error) {
+func (c *OrganizationVpcFlowLogsClient) CreateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.CreateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*CreateVpcFlowLogsConfigOperation, error) {
 	return c.internalClient.CreateVpcFlowLogsConfig(ctx, req, opts...)
 }
 
 // CreateVpcFlowLogsConfigOperation returns a new CreateVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created CreateVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *VpcFlowLogsClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
+func (c *OrganizationVpcFlowLogsClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
 	return c.internalClient.CreateVpcFlowLogsConfigOperation(name)
 }
 
@@ -235,7 +228,7 @@ func (c *VpcFlowLogsClient) CreateVpcFlowLogsConfigOperation(name string) *Creat
 // ID is different), the creation fails.
 // Notes:
 //
-// Updating a configuration with state=DISABLED will fail.
+// Updating a configuration with state=DISABLED will fail
 //
 // The following fields are not considered as settings for the purpose
 // of the check mentioned above, therefore - updating another configuration
@@ -251,52 +244,40 @@ func (c *VpcFlowLogsClient) CreateVpcFlowLogsConfigOperation(name string) *Creat
 //	labels
 //
 //	description
-func (c *VpcFlowLogsClient) UpdateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.UpdateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*UpdateVpcFlowLogsConfigOperation, error) {
+func (c *OrganizationVpcFlowLogsClient) UpdateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.UpdateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*UpdateVpcFlowLogsConfigOperation, error) {
 	return c.internalClient.UpdateVpcFlowLogsConfig(ctx, req, opts...)
 }
 
 // UpdateVpcFlowLogsConfigOperation returns a new UpdateVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created UpdateVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *VpcFlowLogsClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
+func (c *OrganizationVpcFlowLogsClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
 	return c.internalClient.UpdateVpcFlowLogsConfigOperation(name)
 }
 
 // DeleteVpcFlowLogsConfig deletes a specific VpcFlowLogsConfig.
-func (c *VpcFlowLogsClient) DeleteVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.DeleteVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*DeleteVpcFlowLogsConfigOperation, error) {
+func (c *OrganizationVpcFlowLogsClient) DeleteVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.DeleteVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*DeleteVpcFlowLogsConfigOperation, error) {
 	return c.internalClient.DeleteVpcFlowLogsConfig(ctx, req, opts...)
 }
 
 // DeleteVpcFlowLogsConfigOperation returns a new DeleteVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created DeleteVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *VpcFlowLogsClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
+func (c *OrganizationVpcFlowLogsClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
 	return c.internalClient.DeleteVpcFlowLogsConfigOperation(name)
 }
 
-// QueryOrgVpcFlowLogsConfigs queryOrgVpcFlowLogsConfigs returns a list of all organization-level VPC
-// Flow Logs configurations applicable to the specified project.
-func (c *VpcFlowLogsClient) QueryOrgVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
-	return c.internalClient.QueryOrgVpcFlowLogsConfigs(ctx, req, opts...)
-}
-
-// ShowEffectiveFlowLogsConfigs showEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs
-// configurations applicable to a specified resource.
-func (c *VpcFlowLogsClient) ShowEffectiveFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest, opts ...gax.CallOption) *EffectiveVpcFlowLogsConfigIterator {
-	return c.internalClient.ShowEffectiveFlowLogsConfigs(ctx, req, opts...)
-}
-
 // GetLocation gets information about a location.
-func (c *VpcFlowLogsClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *OrganizationVpcFlowLogsClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
-func (c *VpcFlowLogsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *OrganizationVpcFlowLogsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
 // if the resource exists and does not have a policy set.
-func (c *VpcFlowLogsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *OrganizationVpcFlowLogsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
@@ -305,7 +286,7 @@ func (c *VpcFlowLogsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 //
 // Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
 // errors.
-func (c *VpcFlowLogsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *OrganizationVpcFlowLogsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
@@ -316,42 +297,42 @@ func (c *VpcFlowLogsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 // Note: This operation is designed to be used for building
 // permission-aware UIs and command-line tools, not for authorization
 // checking. This operation may “fail open” without warning.
-func (c *VpcFlowLogsClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *OrganizationVpcFlowLogsClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
-func (c *VpcFlowLogsClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *OrganizationVpcFlowLogsClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // DeleteOperation is a utility method from google.longrunning.Operations.
-func (c *VpcFlowLogsClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+func (c *OrganizationVpcFlowLogsClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *VpcFlowLogsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *OrganizationVpcFlowLogsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *VpcFlowLogsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *OrganizationVpcFlowLogsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// vpcFlowLogsGRPCClient is a client for interacting with Network Management API over gRPC transport.
+// organizationVpcFlowLogsGRPCClient is a client for interacting with Network Management API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type vpcFlowLogsGRPCClient struct {
+type organizationVpcFlowLogsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// Points back to the CallOptions field of the containing VpcFlowLogsClient
-	CallOptions **VpcFlowLogsCallOptions
+	// Points back to the CallOptions field of the containing OrganizationVpcFlowLogsClient
+	CallOptions **OrganizationVpcFlowLogsCallOptions
 
 	// The gRPC API client.
-	vpcFlowLogsClient networkmanagementpb.VpcFlowLogsServiceClient
+	organizationVpcFlowLogsClient networkmanagementpb.OrganizationVpcFlowLogsServiceClient
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
@@ -370,16 +351,17 @@ type vpcFlowLogsGRPCClient struct {
 	logger *slog.Logger
 }
 
-// NewVpcFlowLogsClient creates a new vpc flow logs service client based on gRPC.
+// NewOrganizationVpcFlowLogsClient creates a new organization vpc flow logs service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The VPC Flow Logs service in the Google Cloud Network Management API provides
-// configurations that generate Flow Logs. The service and the configuration
-// resources created using this service are global.
-func NewVpcFlowLogsClient(ctx context.Context, opts ...option.ClientOption) (*VpcFlowLogsClient, error) {
-	clientOpts := defaultVpcFlowLogsGRPCClientOptions()
-	if newVpcFlowLogsClientHook != nil {
-		hookOpts, err := newVpcFlowLogsClientHook(ctx, clientHookParams{})
+// The VPC Flow Logs organization service in the Google Cloud Network Management
+// API provides organization level configurations that generate Flow Logs. The
+// service and the configuration resources created using this service are
+// global.
+func NewOrganizationVpcFlowLogsClient(ctx context.Context, opts ...option.ClientOption) (*OrganizationVpcFlowLogsClient, error) {
+	clientOpts := defaultOrganizationVpcFlowLogsGRPCClientOptions()
+	if newOrganizationVpcFlowLogsClientHook != nil {
+		hookOpts, err := newOrganizationVpcFlowLogsClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -390,16 +372,16 @@ func NewVpcFlowLogsClient(ctx context.Context, opts ...option.ClientOption) (*Vp
 	if err != nil {
 		return nil, err
 	}
-	client := VpcFlowLogsClient{CallOptions: defaultVpcFlowLogsCallOptions()}
+	client := OrganizationVpcFlowLogsClient{CallOptions: defaultOrganizationVpcFlowLogsCallOptions()}
 
-	c := &vpcFlowLogsGRPCClient{
-		connPool:          connPool,
-		vpcFlowLogsClient: networkmanagementpb.NewVpcFlowLogsServiceClient(connPool),
-		CallOptions:       &client.CallOptions,
-		logger:            internaloption.GetLogger(opts),
-		operationsClient:  longrunningpb.NewOperationsClient(connPool),
-		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
-		locationsClient:   locationpb.NewLocationsClient(connPool),
+	c := &organizationVpcFlowLogsGRPCClient{
+		connPool:                      connPool,
+		organizationVpcFlowLogsClient: networkmanagementpb.NewOrganizationVpcFlowLogsServiceClient(connPool),
+		CallOptions:                   &client.CallOptions,
+		logger:                        internaloption.GetLogger(opts),
+		operationsClient:              longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:               iampb.NewIAMPolicyClient(connPool),
+		locationsClient:               locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -423,14 +405,14 @@ func NewVpcFlowLogsClient(ctx context.Context, opts ...option.ClientOption) (*Vp
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *vpcFlowLogsGRPCClient) Connection() *grpc.ClientConn {
+func (c *organizationVpcFlowLogsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *vpcFlowLogsGRPCClient) setGoogleClientInfo(keyval ...string) {
+func (c *organizationVpcFlowLogsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
 	c.xGoogHeaders = []string{
@@ -440,12 +422,12 @@ func (c *vpcFlowLogsGRPCClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *vpcFlowLogsGRPCClient) Close() error {
+func (c *organizationVpcFlowLogsGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type vpcFlowLogsRESTClient struct {
+type organizationVpcFlowLogsRESTClient struct {
 	// The http endpoint to connect to.
 	endpoint string
 
@@ -460,26 +442,27 @@ type vpcFlowLogsRESTClient struct {
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
-	// Points back to the CallOptions field of the containing VpcFlowLogsClient
-	CallOptions **VpcFlowLogsCallOptions
+	// Points back to the CallOptions field of the containing OrganizationVpcFlowLogsClient
+	CallOptions **OrganizationVpcFlowLogsCallOptions
 
 	logger *slog.Logger
 }
 
-// NewVpcFlowLogsRESTClient creates a new vpc flow logs service rest client.
+// NewOrganizationVpcFlowLogsRESTClient creates a new organization vpc flow logs service rest client.
 //
-// The VPC Flow Logs service in the Google Cloud Network Management API provides
-// configurations that generate Flow Logs. The service and the configuration
-// resources created using this service are global.
-func NewVpcFlowLogsRESTClient(ctx context.Context, opts ...option.ClientOption) (*VpcFlowLogsClient, error) {
-	clientOpts := append(defaultVpcFlowLogsRESTClientOptions(), opts...)
+// The VPC Flow Logs organization service in the Google Cloud Network Management
+// API provides organization level configurations that generate Flow Logs. The
+// service and the configuration resources created using this service are
+// global.
+func NewOrganizationVpcFlowLogsRESTClient(ctx context.Context, opts ...option.ClientOption) (*OrganizationVpcFlowLogsClient, error) {
+	clientOpts := append(defaultOrganizationVpcFlowLogsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	callOpts := defaultVpcFlowLogsRESTCallOptions()
-	c := &vpcFlowLogsRESTClient{
+	callOpts := defaultOrganizationVpcFlowLogsRESTCallOptions()
+	c := &organizationVpcFlowLogsRESTClient{
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
@@ -497,10 +480,10 @@ func NewVpcFlowLogsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 	}
 	c.LROClient = &opClient
 
-	return &VpcFlowLogsClient{internalClient: c, CallOptions: callOpts}, nil
+	return &OrganizationVpcFlowLogsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
-func defaultVpcFlowLogsRESTClientOptions() []option.ClientOption {
+func defaultOrganizationVpcFlowLogsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://networkmanagement.googleapis.com"),
 		internaloption.WithDefaultEndpointTemplate("https://networkmanagement.UNIVERSE_DOMAIN"),
@@ -515,7 +498,7 @@ func defaultVpcFlowLogsRESTClientOptions() []option.ClientOption {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *vpcFlowLogsRESTClient) setGoogleClientInfo(keyval ...string) {
+func (c *organizationVpcFlowLogsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
@@ -525,7 +508,7 @@ func (c *vpcFlowLogsRESTClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *vpcFlowLogsRESTClient) Close() error {
+func (c *organizationVpcFlowLogsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
 	return nil
@@ -534,10 +517,10 @@ func (c *vpcFlowLogsRESTClient) Close() error {
 // Connection returns a connection to the API service.
 //
 // Deprecated: This method always returns nil.
-func (c *vpcFlowLogsRESTClient) Connection() *grpc.ClientConn {
+func (c *organizationVpcFlowLogsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *vpcFlowLogsGRPCClient) ListVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ListVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
+func (c *organizationVpcFlowLogsGRPCClient) ListVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ListVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -557,7 +540,7 @@ func (c *vpcFlowLogsGRPCClient) ListVpcFlowLogsConfigs(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = executeRPC(ctx, c.vpcFlowLogsClient.ListVpcFlowLogsConfigs, req, settings.GRPC, c.logger, "ListVpcFlowLogsConfigs")
+			resp, err = executeRPC(ctx, c.organizationVpcFlowLogsClient.ListVpcFlowLogsConfigs, req, settings.GRPC, c.logger, "ListVpcFlowLogsConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -583,7 +566,7 @@ func (c *vpcFlowLogsGRPCClient) ListVpcFlowLogsConfigs(ctx context.Context, req 
 	return it
 }
 
-func (c *vpcFlowLogsGRPCClient) GetVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.GetVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*networkmanagementpb.VpcFlowLogsConfig, error) {
+func (c *organizationVpcFlowLogsGRPCClient) GetVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.GetVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*networkmanagementpb.VpcFlowLogsConfig, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -592,7 +575,7 @@ func (c *vpcFlowLogsGRPCClient) GetVpcFlowLogsConfig(ctx context.Context, req *n
 	var resp *networkmanagementpb.VpcFlowLogsConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = executeRPC(ctx, c.vpcFlowLogsClient.GetVpcFlowLogsConfig, req, settings.GRPC, c.logger, "GetVpcFlowLogsConfig")
+		resp, err = executeRPC(ctx, c.organizationVpcFlowLogsClient.GetVpcFlowLogsConfig, req, settings.GRPC, c.logger, "GetVpcFlowLogsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -601,7 +584,7 @@ func (c *vpcFlowLogsGRPCClient) GetVpcFlowLogsConfig(ctx context.Context, req *n
 	return resp, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) CreateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.CreateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*CreateVpcFlowLogsConfigOperation, error) {
+func (c *organizationVpcFlowLogsGRPCClient) CreateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.CreateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*CreateVpcFlowLogsConfigOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -610,7 +593,7 @@ func (c *vpcFlowLogsGRPCClient) CreateVpcFlowLogsConfig(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = executeRPC(ctx, c.vpcFlowLogsClient.CreateVpcFlowLogsConfig, req, settings.GRPC, c.logger, "CreateVpcFlowLogsConfig")
+		resp, err = executeRPC(ctx, c.organizationVpcFlowLogsClient.CreateVpcFlowLogsConfig, req, settings.GRPC, c.logger, "CreateVpcFlowLogsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -621,7 +604,7 @@ func (c *vpcFlowLogsGRPCClient) CreateVpcFlowLogsConfig(ctx context.Context, req
 	}, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.UpdateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*UpdateVpcFlowLogsConfigOperation, error) {
+func (c *organizationVpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.UpdateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*UpdateVpcFlowLogsConfigOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "vpc_flow_logs_config.name", url.QueryEscape(req.GetVpcFlowLogsConfig().GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -630,7 +613,7 @@ func (c *vpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfig(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = executeRPC(ctx, c.vpcFlowLogsClient.UpdateVpcFlowLogsConfig, req, settings.GRPC, c.logger, "UpdateVpcFlowLogsConfig")
+		resp, err = executeRPC(ctx, c.organizationVpcFlowLogsClient.UpdateVpcFlowLogsConfig, req, settings.GRPC, c.logger, "UpdateVpcFlowLogsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -641,7 +624,7 @@ func (c *vpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfig(ctx context.Context, req
 	}, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.DeleteVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*DeleteVpcFlowLogsConfigOperation, error) {
+func (c *organizationVpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.DeleteVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*DeleteVpcFlowLogsConfigOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -650,7 +633,7 @@ func (c *vpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfig(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = executeRPC(ctx, c.vpcFlowLogsClient.DeleteVpcFlowLogsConfig, req, settings.GRPC, c.logger, "DeleteVpcFlowLogsConfig")
+		resp, err = executeRPC(ctx, c.organizationVpcFlowLogsClient.DeleteVpcFlowLogsConfig, req, settings.GRPC, c.logger, "DeleteVpcFlowLogsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -661,99 +644,7 @@ func (c *vpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfig(ctx context.Context, req
 	}, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) QueryOrgVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).QueryOrgVpcFlowLogsConfigs[0:len((*c.CallOptions).QueryOrgVpcFlowLogsConfigs):len((*c.CallOptions).QueryOrgVpcFlowLogsConfigs)], opts...)
-	it := &VpcFlowLogsConfigIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.VpcFlowLogsConfig, string, error) {
-		resp := &networkmanagementpb.QueryOrgVpcFlowLogsConfigsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.vpcFlowLogsClient.QueryOrgVpcFlowLogsConfigs, req, settings.GRPC, c.logger, "QueryOrgVpcFlowLogsConfigs")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetVpcFlowLogsConfigs(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *vpcFlowLogsGRPCClient) ShowEffectiveFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest, opts ...gax.CallOption) *EffectiveVpcFlowLogsConfigIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ShowEffectiveFlowLogsConfigs[0:len((*c.CallOptions).ShowEffectiveFlowLogsConfigs):len((*c.CallOptions).ShowEffectiveFlowLogsConfigs)], opts...)
-	it := &EffectiveVpcFlowLogsConfigIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.EffectiveVpcFlowLogsConfig, string, error) {
-		resp := &networkmanagementpb.ShowEffectiveFlowLogsConfigsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.vpcFlowLogsClient.ShowEffectiveFlowLogsConfigs, req, settings.GRPC, c.logger, "ShowEffectiveFlowLogsConfigs")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetEffectiveFlowLogsConfigs(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *vpcFlowLogsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *organizationVpcFlowLogsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -771,7 +662,7 @@ func (c *vpcFlowLogsGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	return resp, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *organizationVpcFlowLogsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -817,7 +708,7 @@ func (c *vpcFlowLogsGRPCClient) ListLocations(ctx context.Context, req *location
 	return it
 }
 
-func (c *vpcFlowLogsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *organizationVpcFlowLogsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -835,7 +726,7 @@ func (c *vpcFlowLogsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	return resp, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *organizationVpcFlowLogsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -853,7 +744,7 @@ func (c *vpcFlowLogsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	return resp, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *organizationVpcFlowLogsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -871,7 +762,7 @@ func (c *vpcFlowLogsGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	return resp, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *organizationVpcFlowLogsGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -885,7 +776,7 @@ func (c *vpcFlowLogsGRPCClient) CancelOperation(ctx context.Context, req *longru
 	return err
 }
 
-func (c *vpcFlowLogsGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+func (c *organizationVpcFlowLogsGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -899,7 +790,7 @@ func (c *vpcFlowLogsGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	return err
 }
 
-func (c *vpcFlowLogsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *organizationVpcFlowLogsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -917,7 +808,7 @@ func (c *vpcFlowLogsGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	return resp, nil
 }
 
-func (c *vpcFlowLogsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *organizationVpcFlowLogsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -963,8 +854,8 @@ func (c *vpcFlowLogsGRPCClient) ListOperations(ctx context.Context, req *longrun
 	return it
 }
 
-// ListVpcFlowLogsConfigs lists all VpcFlowLogsConfigs in a given project.
-func (c *vpcFlowLogsRESTClient) ListVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ListVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
+// ListVpcFlowLogsConfigs lists all VpcFlowLogsConfigs in a given organization.
+func (c *organizationVpcFlowLogsRESTClient) ListVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ListVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
 	it := &VpcFlowLogsConfigIterator{}
 	req = proto.Clone(req).(*networkmanagementpb.ListVpcFlowLogsConfigsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -1048,7 +939,7 @@ func (c *vpcFlowLogsRESTClient) ListVpcFlowLogsConfigs(ctx context.Context, req 
 }
 
 // GetVpcFlowLogsConfig gets the details of a specific VpcFlowLogsConfig.
-func (c *vpcFlowLogsRESTClient) GetVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.GetVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*networkmanagementpb.VpcFlowLogsConfig, error) {
+func (c *organizationVpcFlowLogsRESTClient) GetVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.GetVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*networkmanagementpb.VpcFlowLogsConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1118,7 +1009,7 @@ func (c *vpcFlowLogsRESTClient) GetVpcFlowLogsConfig(ctx context.Context, req *n
 //	labels
 //
 //	description
-func (c *vpcFlowLogsRESTClient) CreateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.CreateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*CreateVpcFlowLogsConfigOperation, error) {
+func (c *organizationVpcFlowLogsRESTClient) CreateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.CreateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*CreateVpcFlowLogsConfigOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVpcFlowLogsConfig()
 	jsonReq, err := m.Marshal(body)
@@ -1183,7 +1074,7 @@ func (c *vpcFlowLogsRESTClient) CreateVpcFlowLogsConfig(ctx context.Context, req
 // ID is different), the creation fails.
 // Notes:
 //
-// Updating a configuration with state=DISABLED will fail.
+// Updating a configuration with state=DISABLED will fail
 //
 // The following fields are not considered as settings for the purpose
 // of the check mentioned above, therefore - updating another configuration
@@ -1199,7 +1090,7 @@ func (c *vpcFlowLogsRESTClient) CreateVpcFlowLogsConfig(ctx context.Context, req
 //	labels
 //
 //	description
-func (c *vpcFlowLogsRESTClient) UpdateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.UpdateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*UpdateVpcFlowLogsConfigOperation, error) {
+func (c *organizationVpcFlowLogsRESTClient) UpdateVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.UpdateVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*UpdateVpcFlowLogsConfigOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVpcFlowLogsConfig()
 	jsonReq, err := m.Marshal(body)
@@ -1266,7 +1157,7 @@ func (c *vpcFlowLogsRESTClient) UpdateVpcFlowLogsConfig(ctx context.Context, req
 }
 
 // DeleteVpcFlowLogsConfig deletes a specific VpcFlowLogsConfig.
-func (c *vpcFlowLogsRESTClient) DeleteVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.DeleteVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*DeleteVpcFlowLogsConfigOperation, error) {
+func (c *organizationVpcFlowLogsRESTClient) DeleteVpcFlowLogsConfig(ctx context.Context, req *networkmanagementpb.DeleteVpcFlowLogsConfigRequest, opts ...gax.CallOption) (*DeleteVpcFlowLogsConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1318,173 +1209,8 @@ func (c *vpcFlowLogsRESTClient) DeleteVpcFlowLogsConfig(ctx context.Context, req
 	}, nil
 }
 
-// QueryOrgVpcFlowLogsConfigs queryOrgVpcFlowLogsConfigs returns a list of all organization-level VPC
-// Flow Logs configurations applicable to the specified project.
-func (c *vpcFlowLogsRESTClient) QueryOrgVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
-	it := &VpcFlowLogsConfigIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.VpcFlowLogsConfig, string, error) {
-		resp := &networkmanagementpb.QueryOrgVpcFlowLogsConfigsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1/%v/vpcFlowLogsConfigs:queryOrgVpcFlowLogsConfigs", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetFilter() != "" {
-			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-		}
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryOrgVpcFlowLogsConfigs")
-			if err != nil {
-				return err
-			}
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetVpcFlowLogsConfigs(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-// ShowEffectiveFlowLogsConfigs showEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs
-// configurations applicable to a specified resource.
-func (c *vpcFlowLogsRESTClient) ShowEffectiveFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest, opts ...gax.CallOption) *EffectiveVpcFlowLogsConfigIterator {
-	it := &EffectiveVpcFlowLogsConfigIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.EffectiveVpcFlowLogsConfig, string, error) {
-		resp := &networkmanagementpb.ShowEffectiveFlowLogsConfigsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1/%v/vpcFlowLogsConfigs:showEffectiveFlowLogsConfigs", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetFilter() != "" {
-			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-		}
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		params.Add("resource", fmt.Sprintf("%v", req.GetResource()))
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ShowEffectiveFlowLogsConfigs")
-			if err != nil {
-				return err
-			}
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetEffectiveFlowLogsConfigs(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
 // GetLocation gets information about a location.
-func (c *vpcFlowLogsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *organizationVpcFlowLogsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1534,7 +1260,7 @@ func (c *vpcFlowLogsRESTClient) GetLocation(ctx context.Context, req *locationpb
 }
 
 // ListLocations lists information about the supported locations for this service.
-func (c *vpcFlowLogsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *organizationVpcFlowLogsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -1616,7 +1342,7 @@ func (c *vpcFlowLogsRESTClient) ListLocations(ctx context.Context, req *location
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
 // if the resource exists and does not have a policy set.
-func (c *vpcFlowLogsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *organizationVpcFlowLogsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1673,7 +1399,7 @@ func (c *vpcFlowLogsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 //
 // Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
 // errors.
-func (c *vpcFlowLogsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *organizationVpcFlowLogsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1735,7 +1461,7 @@ func (c *vpcFlowLogsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 // Note: This operation is designed to be used for building
 // permission-aware UIs and command-line tools, not for authorization
 // checking. This operation may “fail open” without warning.
-func (c *vpcFlowLogsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *organizationVpcFlowLogsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1791,7 +1517,7 @@ func (c *vpcFlowLogsRESTClient) TestIamPermissions(ctx context.Context, req *iam
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
-func (c *vpcFlowLogsRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *organizationVpcFlowLogsRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1832,7 +1558,7 @@ func (c *vpcFlowLogsRESTClient) CancelOperation(ctx context.Context, req *longru
 }
 
 // DeleteOperation is a utility method from google.longrunning.Operations.
-func (c *vpcFlowLogsRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+func (c *organizationVpcFlowLogsRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
@@ -1867,7 +1593,7 @@ func (c *vpcFlowLogsRESTClient) DeleteOperation(ctx context.Context, req *longru
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *vpcFlowLogsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *organizationVpcFlowLogsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1917,7 +1643,7 @@ func (c *vpcFlowLogsRESTClient) GetOperation(ctx context.Context, req *longrunni
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *vpcFlowLogsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *organizationVpcFlowLogsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -1999,7 +1725,7 @@ func (c *vpcFlowLogsRESTClient) ListOperations(ctx context.Context, req *longrun
 
 // CreateVpcFlowLogsConfigOperation returns a new CreateVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created CreateVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *vpcFlowLogsGRPCClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
+func (c *organizationVpcFlowLogsGRPCClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
 	return &CreateVpcFlowLogsConfigOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
@@ -2007,7 +1733,7 @@ func (c *vpcFlowLogsGRPCClient) CreateVpcFlowLogsConfigOperation(name string) *C
 
 // CreateVpcFlowLogsConfigOperation returns a new CreateVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created CreateVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *vpcFlowLogsRESTClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
+func (c *organizationVpcFlowLogsRESTClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVpcFlowLogsConfigOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
@@ -2017,7 +1743,7 @@ func (c *vpcFlowLogsRESTClient) CreateVpcFlowLogsConfigOperation(name string) *C
 
 // DeleteVpcFlowLogsConfigOperation returns a new DeleteVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created DeleteVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *vpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
+func (c *organizationVpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
 	return &DeleteVpcFlowLogsConfigOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
@@ -2025,7 +1751,7 @@ func (c *vpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfigOperation(name string) *D
 
 // DeleteVpcFlowLogsConfigOperation returns a new DeleteVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created DeleteVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *vpcFlowLogsRESTClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
+func (c *organizationVpcFlowLogsRESTClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVpcFlowLogsConfigOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
@@ -2035,7 +1761,7 @@ func (c *vpcFlowLogsRESTClient) DeleteVpcFlowLogsConfigOperation(name string) *D
 
 // UpdateVpcFlowLogsConfigOperation returns a new UpdateVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created UpdateVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *vpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
+func (c *organizationVpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
 	return &UpdateVpcFlowLogsConfigOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
@@ -2043,7 +1769,7 @@ func (c *vpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfigOperation(name string) *U
 
 // UpdateVpcFlowLogsConfigOperation returns a new UpdateVpcFlowLogsConfigOperation from a given name.
 // The name must be that of a previously created UpdateVpcFlowLogsConfigOperation, possibly from a different process.
-func (c *vpcFlowLogsRESTClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
+func (c *organizationVpcFlowLogsRESTClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVpcFlowLogsConfigOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
