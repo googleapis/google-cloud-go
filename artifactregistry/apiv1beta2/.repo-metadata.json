@@ -1,0 +1,10 @@
+{
+  "api_shortname": "artifactregistry",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/artifactregistry/latest/apiv1beta2",
+  "client_library_type": "generated",
+  "description": "Artifact Registry API",
+  "distribution_name": "cloud.google.com/go/artifactregistry/apiv1beta2",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

@@ -4,7 +4,7 @@
 *                       @googleapis/cloud-sdk-go-eng
 
 /ai/                    @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng
-/aiplatform/            @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng
+/aiplatform/            @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /bigtable/              @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng
 /bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng
 /bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng

@@ -1,0 +1,10 @@
+{
+  "api_shortname": "routes",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/routing/apiv2",
+  "client_library_type": "generated",
+  "description": "Routes API",
+  "distribution_name": "cloud.google.com/go/maps/routing/apiv2",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

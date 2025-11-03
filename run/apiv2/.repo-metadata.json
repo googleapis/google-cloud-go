@@ -1,0 +1,10 @@
+{
+  "api_shortname": "run",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/run/latest/apiv2",
+  "client_library_type": "generated",
+  "description": "Cloud Run Admin API",
+  "distribution_name": "cloud.google.com/go/run/apiv2",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

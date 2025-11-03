@@ -1,0 +1,10 @@
+{
+  "api_shortname": "memcache",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/memcache/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Cloud Memorystore for Memcached API",
+  "distribution_name": "cloud.google.com/go/memcache/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}
