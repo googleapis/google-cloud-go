@@ -23,6 +23,7 @@ import (
 	"html/template"
 	"log/slog"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -361,7 +362,7 @@ func updateLibraryState(moduleConfig *config.ModuleConfig, library *request.Libr
 		protobufDir,
 	}
 	for _, generatedPath := range generatedPaths {
-		library.RemoveRegex = append(library.RemoveRegex, "^"+clientDirectory+"/"+generatedPath+"$")
+		library.RemoveRegex = append(library.RemoveRegex, "^"+path.Join(library.ID, clientDirectory, generatedPath)+"$")
 	}
 	return nil
 }
