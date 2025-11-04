@@ -298,8 +298,9 @@ func generateClientVersionFile(cfg *Config, moduleConfig *config.ModuleConfig, a
 		Package            string
 		ModuleRootInternal string
 	}{
-		Year:               time.Now().Year(),
-		Package:            moduleConfig.Name,
+		Year:    time.Now().Year(),
+		Package: filepath.Base(filepath.Dir(fullClientDir)), // The package name is the name of the directory containing the client directory (e.g. `apiv1beta1`).
+
 		ModuleRootInternal: moduleConfig.GetModulePath() + "/internal",
 	}
 	f, err := os.Create(versionPath)

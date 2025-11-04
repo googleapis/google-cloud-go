@@ -20,6 +20,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/execv"
@@ -128,6 +129,16 @@ func (e *testEnv) assertFileNotExist(t *testing.T, path string) {
 	}
 }
 
+func extractPackageName(content string) string {
+	lines := strings.Split(content, "\n")
+	for _, line := range lines {
+		if strings.HasPrefix(line, "package ") {
+			return strings.TrimPrefix(line, "package ")
+		}
+	}
+	return ""
+}
+
 func TestConfigure(t *testing.T) {
 	newLibraryRequest := `{
 		"libraries": [{
@@ -189,14 +200,16 @@ func TestConfigure(t *testing.T) {
 	}
 
 	tests := []struct {
-		name              string
-		setup             func(e *testEnv, t *testing.T)
-		execvErr          error
-		wantErr           bool
-		wantExecvRunCount int
-		wantResponse      *request.Library
-		wantFiles         []string
-		wantNotFiles      []string
+		name                 string
+		clientPath           string
+		setup                func(e *testEnv, t *testing.T)
+		execvErr             error
+		wantErr              bool
+		wantExecvRunCount    int
+		wantResponse         *request.Library
+		wantFiles            []string
+		wantNotFiles         []string
+		wantVersionGoPackage string
 	}{
 		{
 			name: "happy path new library",
@@ -237,6 +250,54 @@ func TestConfigure(t *testing.T) {
 			},
 		},
 		{
+			name:       "happy path new API with complex client directory",
+			clientPath: "saasplatform/saasservicemgmt/apiv1beta1",
+			setup: func(e *testEnv, t *testing.T) {
+				e.writeRequestFile(t, `{
+					"libraries": [{
+						"id": "saasplatform",
+						"apis": [
+							{"path": "google/cloud/saasplatform/saasservicemgmt/v1beta1", "service_config": "service.yaml", "status": "new"}
+						]
+					}]
+				}`)
+				e.writeConfigFile(t)
+				e.writeServiceYAML(t, "google/cloud/saasplatform/saasservicemgmt/v1beta1", "SaaS Service Management API")
+				e.writeRepoGoMod(t)
+			},
+			wantErr:           false,
+			wantExecvRunCount: 1,
+			wantResponse: &request.Library{
+				ID:      "saasplatform",
+				Version: "0.0.0",
+				APIs: []request.API{
+					{Path: "google/cloud/saasplatform/saasservicemgmt/v1beta1", ServiceConfig: "service.yaml", Status: "new"},
+				},
+				SourcePaths: []string{"saasplatform", "internal/generated/snippets/saasplatform"},
+				RemoveRegex: []string{
+					"^internal/generated/snippets/saasplatform/",
+					"^saasservicemgmt/apiv1beta1/[^/]*_client\\.go$",
+					"^saasservicemgmt/apiv1beta1/[^/]*_client_example_go123_test\\.go$",
+					"^saasservicemgmt/apiv1beta1/[^/]*_client_example_test\\.go$",
+					"^saasservicemgmt/apiv1beta1/auxiliary\\.go$",
+					"^saasservicemgmt/apiv1beta1/auxiliary_go123\\.go$",
+					"^saasservicemgmt/apiv1beta1/doc\\.go$",
+					"^saasservicemgmt/apiv1beta1/gapic_metadata\\.json$",
+					"^saasservicemgmt/apiv1beta1/helpers\\.go$",
+					"^saasservicemgmt/apiv1beta1/saasservicemgmtpb/.*$",
+				},
+				TagFormat: "{id}/v{version}",
+			},
+			wantFiles: []string{
+				"saasplatform/README.md",
+				"saasplatform/CHANGES.md",
+				"saasplatform/internal/version.go",
+				"saasplatform/saasservicemgmt/apiv1beta1/version.go",
+				"internal/generated/snippets/go.mod",
+			},
+			wantNotFiles:         []string{},
+			wantVersionGoPackage: "saasservicemgmt",
+		}, {
 			name: "execv fails",
 			setup: func(e *testEnv, t *testing.T) {
 				e.writeRequestFile(t, newLibraryRequest)
@@ -305,7 +366,19 @@ func TestConfigure(t *testing.T) {
 			}
 
 			if diff := cmp.Diff(tt.wantResponse, gotResponse); diff != "" {
-				t.Errorf("Configure() response mismatch (-want +got):\n%s", diff)
+				t.Fatalf("Configure() response mismatch (-want +got):\n%s", diff)
+			}
+
+			if tt.wantVersionGoPackage != "" {
+				versionGoPath := filepath.Join(e.outputDir, tt.clientPath, "version.go")
+				content, err := os.ReadFile(versionGoPath)
+				if err != nil {
+					t.Fatalf("failed to read version.go: %v", err)
+				}
+				gotPackage := extractPackageName(string(content))
+				if gotPackage != tt.wantVersionGoPackage {
+					t.Errorf("version.go package mismatch: got %q, want %q", gotPackage, tt.wantVersionGoPackage)
+				}
 			}
 
 			for _, file := range tt.wantFiles {
