@@ -144,7 +144,7 @@ func TestDynamicChannelScaling(t *testing.T) {
 			var totalLoad int32
 			conns := pool.getConns()
 			for _, entry := range conns {
-				totalLoad += entry.calculateWeightedLoad()
+				totalLoad += entry.calculateConnLoad()
 			}
 			avgLoad := float64(totalLoad) / float64(len(conns))
 			desiredConns := int(math.Ceil(float64(totalLoad) / targetLoadFactor))
