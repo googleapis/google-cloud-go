@@ -131,7 +131,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.108.0
-    last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
+    last_generated_commit: a0066e7bcf48f576999636dab6170b98604b9bfd
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -689,7 +689,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.4.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: a0066e7bcf48f576999636dab6170b98604b9bfd
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -827,25 +827,6 @@ libraries:
       - ^beyondcorp/clientgateways/apiv1/clientgatewayspb/.*$
     release_exclude_paths:
       - internal/generated/snippets/beyondcorp/
-    tag_format: '{id}/v{version}'
-  - id: bigtable
-    version: 1.40.1
-    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
-    apis:
-      - path: google/bigtable/admin/v2
-        service_config: bigtableadmin_v2.yaml
-      - path: google/bigtable/v2
-        service_config: bigtable_v2.yaml
-    source_roots:
-      - bigtable
-    preserve_regex: []
-    remove_regex:
-      - ^bigtable/admin/apiv2/adminpb/.*$
-      - ^bigtable/apiv2/bigtablepb/.*$
-    release_exclude_paths:
-      - bigtable/bttest
-      - bigtable/internal/conformance
-      - bigtable/testdata
     tag_format: '{id}/v{version}'
   - id: bigquery
     version: 1.72.0
@@ -1098,7 +1079,26 @@ libraries:
     release_exclude_paths:
       - bigquery/v2/apiv2_smoketests/
       - internal/generated/snippets/bigquery/v2
-    tag_format: 'bigquery/v{version}'
+    tag_format: bigquery/v{version}
+  - id: bigtable
+    version: 1.40.1
+    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    apis:
+      - path: google/bigtable/admin/v2
+        service_config: bigtableadmin_v2.yaml
+      - path: google/bigtable/v2
+        service_config: bigtable_v2.yaml
+    source_roots:
+      - bigtable
+    preserve_regex: []
+    remove_regex:
+      - ^bigtable/admin/apiv2/adminpb/.*$
+      - ^bigtable/apiv2/bigtablepb/.*$
+    release_exclude_paths:
+      - bigtable/bttest
+      - bigtable/internal/conformance
+      - bigtable/testdata
+    tag_format: '{id}/v{version}'
   - id: billing
     version: 1.21.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -3622,7 +3622,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.20.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: a0066e7bcf48f576999636dab6170b98604b9bfd
     apis:
       - path: google/cloud/networkmanagement/v1
         service_config: networkmanagement_v1.yaml
@@ -3670,7 +3670,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkservices
     version: 0.5.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: a0066e7bcf48f576999636dab6170b98604b9bfd
     apis:
       - path: google/cloud/networkservices/v1
         service_config: networkservices_v1.yaml
@@ -4175,7 +4175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.3.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: a0066e7bcf48f576999636dab6170b98604b9bfd
     apis:
       - path: google/pubsub/v1
         service_config: pubsub_v1.yaml
@@ -4935,7 +4935,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: shopping
     version: 1.2.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: a0066e7bcf48f576999636dab6170b98604b9bfd
     apis:
       - path: google/shopping/css/v1
         service_config: css_v1.yaml
