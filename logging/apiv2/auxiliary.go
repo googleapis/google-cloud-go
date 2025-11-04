@@ -389,12 +389,6 @@ type LogBucketIterator struct {
 	items    []*loggingpb.LogBucket
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
-
-	// Total number of items being processed for this iterator
-	Total int
-	
-	// Total number of API calls for this iterator
-	Calls int
 	
 	// Response is the raw response for the current page.
 	// It must be cast to the RPC response type.
@@ -443,6 +437,12 @@ type LogEntryIterator struct {
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
+	// Total number of items being processed for this iterator
+	Total int
+	
+	// Total number of API calls for this iterator
+	Calls int
+	
 	// Response is the raw response for the current page.
 	// It must be cast to the RPC response type.
 	// Calling Next() or InternalFetch() updates this value.
