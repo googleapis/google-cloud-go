@@ -2288,6 +2288,13 @@ func TestSelectAll(t *testing.T) {
 		Col3 string    `spanner:"taG3"`
 		Col4 time.Time `spanner:"TAG4"`
 	}
+
+	type testStructWithSimpleTag struct {
+		Col1 int64 `spanner:"tag1"`
+		Col2 int64 `spanner:"tag2"`
+		Col3 int64 `spanner:"tag3"`
+		Col4 int64 `spanner:"tag4"`
+	}
 	tests := []struct {
 		name    string
 		args    args
@@ -2514,6 +2521,78 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: timeType()},
 						},
 						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+					},
+					iterator.Done,
+				),
+			},
+			want: &[]testStructWithTag{
+				{Col1: 1, Col2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 2, Col2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
+			},
+		},
+		{
+			name: "success: using slice of structs with simple spanner tag annotations in different order",
+			args: args{
+				destination: &[]testStructWithSimpleTag{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: intType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: intType()},
+							{Name: "Tag3", Type: intType()},
+						},
+						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag2", Type: intType()},
+							{Name: "Tag3", Type: intType()},
+							{Name: "Tag4", Type: intType()},
+						},
+						[]*proto3.Value{intProto(1), intProto(2), intProto(3), intProto(4)},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: intType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: intType()},
+							{Name: "Tag3", Type: intType()},
+						},
+						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+					},
+					iterator.Done,
+				),
+			},
+			want: &[]testStructWithSimpleTag{
+				{Col1: 1, Col2: 2, Col3: 3, Col4: 4},
+				{Col1: 1, Col2: 2, Col3: 3, Col4: 4},
+				{Col1: 1, Col2: 2, Col3: 3, Col4: 4},
+			},
+		},
+		{
+			name: "success: using slice of structs with spanner tag annotations in different order",
+			args: args{
+				destination: &[]testStructWithTag{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: timeType()},
+							{Name: "Tag3", Type: stringType()},
+						},
+						[]*proto3.Value{floatProto(1.1), intProto(1), timeProto(tm), stringProto("value")},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: timeType()},
+							{Name: "Tag3", Type: stringType()},
+						},
+						[]*proto3.Value{floatProto(2.2), intProto(2), timeProto(tm.Add(24 * time.Hour)), stringProto("value2")},
 					},
 					iterator.Done,
 				),
