@@ -2691,15 +2691,15 @@ libraries:
     preserve_regex: []
     remove_regex:
       - ^internal/generated/snippets/gkerecommender/
-      - ^apiv1/[^/]*_client\.go$
-      - ^apiv1/[^/]*_client_example_go123_test\.go$
-      - ^apiv1/[^/]*_client_example_test\.go$
-      - ^apiv1/auxiliary\.go$
-      - ^apiv1/auxiliary_go123\.go$
-      - ^apiv1/doc\.go$
-      - ^apiv1/gapic_metadata\.json$
-      - ^apiv1/helpers\.go$
-      - ^apiv1/gkerecommenderpb/.*$
+      - ^gkerecommender/apiv1/[^/]*_client\.go$
+      - ^gkerecommender/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^gkerecommender/apiv1/[^/]*_client_example_test\.go$
+      - ^gkerecommender/apiv1/auxiliary\.go$
+      - ^gkerecommender/apiv1/auxiliary_go123\.go$
+      - ^gkerecommender/apiv1/doc\.go$
+      - ^gkerecommender/apiv1/gapic_metadata\.json$
+      - ^gkerecommender/apiv1/helpers\.go$
+      - ^gkerecommender/apiv1/gkerecommenderpb/.*$
     tag_format: '{id}/v{version}'
   - id: grafeas
     version: 0.3.17
