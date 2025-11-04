@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:496591304b0d24ab57ea5f2c8a7870921713edab7f6fd002c5b2e78a8d6de396
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:ec5a10e927e3b3cdc457b23974879644572ab204864f353b19bf35d0af227678
 libraries:
   - id: accessapproval
     version: 1.8.8
@@ -828,25 +828,6 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
-  - id: bigtable
-    version: 1.40.1
-    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
-    apis:
-      - path: google/bigtable/admin/v2
-        service_config: bigtableadmin_v2.yaml
-      - path: google/bigtable/v2
-        service_config: bigtable_v2.yaml
-    source_roots:
-      - bigtable
-    preserve_regex: []
-    remove_regex:
-      - ^bigtable/admin/apiv2/adminpb/.*$
-      - ^bigtable/apiv2/bigtablepb/.*$
-    release_exclude_paths:
-      - bigtable/bttest
-      - bigtable/internal/conformance
-      - bigtable/testdata
-    tag_format: '{id}/v{version}'
   - id: bigquery
     version: 1.72.0
     last_generated_commit: 97763d6efb2d35474e0363c254ee6994837a08fa
@@ -1098,7 +1079,26 @@ libraries:
     release_exclude_paths:
       - bigquery/v2/apiv2_smoketests/
       - internal/generated/snippets/bigquery/v2
-    tag_format: 'bigquery/v{version}'
+    tag_format: bigquery/v{version}
+  - id: bigtable
+    version: 1.40.1
+    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    apis:
+      - path: google/bigtable/admin/v2
+        service_config: bigtableadmin_v2.yaml
+      - path: google/bigtable/v2
+        service_config: bigtable_v2.yaml
+    source_roots:
+      - bigtable
+    preserve_regex: []
+    remove_regex:
+      - ^bigtable/admin/apiv2/adminpb/.*$
+      - ^bigtable/apiv2/bigtablepb/.*$
+    release_exclude_paths:
+      - bigtable/bttest
+      - bigtable/internal/conformance
+      - bigtable/testdata
+    tag_format: '{id}/v{version}'
   - id: billing
     version: 1.21.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
