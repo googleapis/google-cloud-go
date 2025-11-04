@@ -549,7 +549,7 @@ func (c *gRPCClient) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLo
 func (c *gRPCClient) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntriesRequest, opts ...gax.CallOption) *LogEntryIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListLogEntries[0:len((*c.CallOptions).ListLogEntries):len((*c.CallOptions).ListLogEntries)], opts...)
-	it := &LogEntryIterator{}
+	it := &LogEntryIterator{Total:0, Calls:0}
 	req = proto.Clone(req).(*loggingpb.ListLogEntriesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogEntry, string, error) {
 		resp := &loggingpb.ListLogEntriesResponse{}
@@ -578,6 +578,8 @@ func (c *gRPCClient) ListLogEntries(ctx context.Context, req *loggingpb.ListLogE
 		if err != nil {
 			return "", err
 		}
+		it.Total += len(items)
+		it.Calls = calls
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
@@ -875,7 +877,7 @@ func (c *restClient) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLo
 // entries, see Exporting
 // Logs (at https://cloud.google.com/logging/docs/export).
 func (c *restClient) ListLogEntries(ctx context.Context, req *loggingpb.ListLogEntriesRequest, opts ...gax.CallOption) *LogEntryIterator {
-	it := &LogEntryIterator{}
+	it := &LogEntryIterator{Total:0, Calls:0}
 	req = proto.Clone(req).(*loggingpb.ListLogEntriesRequest)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -940,6 +942,8 @@ func (c *restClient) ListLogEntries(ctx context.Context, req *loggingpb.ListLogE
 		if err != nil {
 			return "", err
 		}
+		it.Total += len(items)
+		it.Calls = calls
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
