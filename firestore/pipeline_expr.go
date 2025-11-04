@@ -99,8 +99,8 @@ type Expr interface {
 	Concat(others ...any) Expr
 
 	// Key functions
-	CollectionId() Expr
-	DocumentId() Expr
+	GetCollectionID() Expr
+	GetDocumentID() Expr
 
 	// Logical functions
 	IfAbsent(catchExprOrValue any) Expr
@@ -214,8 +214,8 @@ func (b *baseExpr) Reverse() Expr             { return Reverse(b) }
 func (b *baseExpr) Concat(others ...any) Expr { return Concat(b, others...) }
 
 // Key functions
-func (b *baseExpr) CollectionId() Expr { return CollectionID(b) }
-func (b *baseExpr) DocumentId() Expr   { return DocumentIDFrom(b) }
+func (b *baseExpr) GetCollectionID() Expr { return GetCollectionID(b) }
+func (b *baseExpr) GetDocumentID() Expr   { return GetDocumentID(b) }
 
 // Logical functions
 func (b *baseExpr) IfAbsent(catchExprOrValue any) Expr { return IfAbsent(b, catchExprOrValue) }

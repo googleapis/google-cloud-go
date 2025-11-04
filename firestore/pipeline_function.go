@@ -412,15 +412,15 @@ func Concat(exprOrField any, others ...any) Expr {
 	return newBaseFunction("concat", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
 }
 
-// CollectionID creates an expression that returns the ID of the collection that contains the document.
+// GetCollectionID creates an expression that returns the ID of the collection that contains the document.
 // - exprOrField can be a field path string, [FieldPath] or an [Expr] that evaluates to a field path.
-func CollectionID(exprOrField any) Expr {
+func GetCollectionID(exprOrField any) Expr {
 	return newBaseFunction("collection_id", []Expr{asFieldExpr(exprOrField)})
 }
 
-// DocumentIDFrom creates an expression that returns the ID of the document.
+// GetDocumentID creates an expression that returns the ID of the document.
 // - exprStringOrDocRef can be a string, a [DocumentRef], or an [Expr] that evaluates to a document reference.
-func DocumentIDFrom(exprStringOrDocRef any) Expr {
+func GetDocumentID(exprStringOrDocRef any) Expr {
 	var expr Expr
 	switch v := exprStringOrDocRef.(type) {
 	case string:
@@ -444,14 +444,14 @@ func Conditional(condition BooleanExpr, thenVal, elseVal any) Expr {
 	return newBaseFunction("conditional", []Expr{condition, toExprOrConstant(thenVal), toExprOrConstant(elseVal)})
 }
 
-// LogicalMax creates an expression that evaluates to the maximum value in a list of expressions.
+// LogicalMaximum creates an expression that evaluates to the maximum value in a list of expressions.
 // - exprOrField can be a field path string, [FieldPath] or an [Expr].
 // - others can be a list of constants or [Expr].
 func LogicalMaximum(exprOrField any, others ...any) Expr {
 	return newBaseFunction("maximum", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
 }
 
-// LogicalMin creates an expression that evaluates to the minimum value in a list of expressions.
+// LogicalMinimum creates an expression that evaluates to the minimum value in a list of expressions.
 // - exprOrField can be a field path string, [FieldPath] or an [Expr].
 // - others can be a list of constants or [Expr].
 func LogicalMinimum(exprOrField any, others ...any) Expr {

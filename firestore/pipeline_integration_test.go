@@ -1686,12 +1686,12 @@ func keyFuncs(t *testing.T) {
 	}{
 		{
 			name:     "CollectionId",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(CollectionID("__name__").As("collectionId")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(GetCollectionID("__name__").As("collectionId")),
 			want:     map[string]interface{}{"collectionId": coll.ID},
 		},
 		{
 			name:     "DocumentId",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(DocumentIDFrom(docRef1).As("documentId")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(GetDocumentID(docRef1).As("documentId")),
 			want:     map[string]interface{}{"documentId": "doc1"},
 		},
 	}
