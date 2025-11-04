@@ -36,23 +36,26 @@ import (
 // Instead, Firestore only guarantees that the result is the same as if the chained stages were
 // executed in order.
 type Pipeline struct {
-	c      *Client
-	stages []pipelineStage
-	err    error
+	c            *Client
+	stages       []pipelineStage
+	readSettings *readSettings
+	tx           *Transaction
+	err          error
 }
 
 func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 	return &Pipeline{
-		c:      client,
-		stages: []pipelineStage{initialStage},
+		c:            client,
+		stages:       []pipelineStage{initialStage},
+		readSettings: &readSettings{},
 	}
 }
 
 // Execute executes the pipeline and returns an iterator for streaming the results.
-// TODO: Accept PipelineOptions
 func (p *Pipeline) Execute(ctx context.Context) *PipelineResultIterator {
 	ctx = withResourceHeader(ctx, p.c.path())
 	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(p.c.path()))
+
 	return &PipelineResultIterator{
 		iter: newStreamPipelineResultIterator(ctx, p),
 	}
@@ -67,9 +70,19 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 	req := &pb.ExecutePipelineRequest{
 		Database: p.c.path(),
 		PipelineType: &pb.ExecutePipelineRequest_StructuredPipeline{
-			StructuredPipeline: &pb.StructuredPipeline{Pipeline: pipelinePb},
+			StructuredPipeline: &pb.StructuredPipeline{
+				Pipeline: pipelinePb,
+			},
 		},
-		// TODO: Add consistencyselector
+	}
+
+	// Note that transaction ID and other consistency selectors are mutually exclusive.
+	// We respect the transaction first, any read options passed by the caller second,
+	// and any read options stored in the client third.
+	if p.tx != nil {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_Transaction{Transaction: p.tx.id}
+	} else if rt, hasOpts := parseReadTime(p.c, p.readSettings); hasOpts {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_ReadTime{ReadTime: rt}
 	}
 	return req, nil
 }
@@ -89,17 +102,38 @@ func (p *Pipeline) toProto() (*pb.Pipeline, error) {
 	return &pb.Pipeline{Stages: protoStages}, nil
 }
 
+func (p *Pipeline) copy() *Pipeline {
+	newP := &Pipeline{
+		c:            p.c,
+		stages:       make([]pipelineStage, len(p.stages)),
+		readSettings: &readSettings{},
+		tx:           p.tx,
+		err:          p.err,
+	}
+	copy(newP.stages, p.stages)
+	*newP.readSettings = *p.readSettings
+	return newP
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// such as ReadTime.
+func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
+	newP := p.copy()
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(newP.readSettings)
+		}
+	}
+	return newP
+}
+
 // append creates a new Pipeline by adding a stage to the current one.
 func (p *Pipeline) append(s pipelineStage) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	newP := &Pipeline{
-		c:      p.c,
-		stages: make([]pipelineStage, len(p.stages)+1),
-	}
-	copy(newP.stages, p.stages)
-	newP.stages[len(p.stages)] = s
+	newP := p.copy()
+	newP.stages = append(newP.stages, s)
 	return newP
 }
 
@@ -480,6 +514,27 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 	stage, err := newFindNearestStage(vectorField, queryVector, measure, options)
 	if err != nil {
 		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// RawStage adds a generic stage to the pipeline.
+// This method provides a flexible way to extend the pipeline's functionality by adding custom stages.
+//
+// Example:
+//
+//	// Assume we don't have a built-in "where" stage
+//	client.Pipeline().Collection("books").
+//		RawStage(
+//			NewRawStage("where").
+//				WithArguments(
+//					LessThan(FieldOf("published"), 1900),
+//				),
+//		).
+//		Select("title", "author")
+func (p *Pipeline) RawStage(stage *RawStage) *Pipeline {
+	if p.err != nil {
 		return p
 	}
 	return p.append(stage)

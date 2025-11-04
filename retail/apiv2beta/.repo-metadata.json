@@ -1,0 +1,10 @@
+{
+  "api_shortname": "retail",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2beta",
+  "client_library_type": "generated",
+  "description": "Vertex AI Search for commerce API",
+  "distribution_name": "cloud.google.com/go/retail/apiv2beta",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

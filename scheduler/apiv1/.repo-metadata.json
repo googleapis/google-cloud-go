@@ -1,0 +1,10 @@
+{
+  "api_shortname": "cloudscheduler",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/scheduler/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Cloud Scheduler API",
+  "distribution_name": "cloud.google.com/go/scheduler/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

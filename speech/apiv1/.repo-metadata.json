@@ -1,0 +1,10 @@
+{
+  "api_shortname": "speech",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/speech/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Cloud Speech-to-Text API",
+  "distribution_name": "cloud.google.com/go/speech/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

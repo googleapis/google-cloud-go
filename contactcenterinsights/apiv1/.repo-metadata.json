@@ -1,0 +1,10 @@
+{
+  "api_shortname": "contactcenterinsights",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/contactcenterinsights/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Contact Center AI Insights API",
+  "distribution_name": "cloud.google.com/go/contactcenterinsights/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

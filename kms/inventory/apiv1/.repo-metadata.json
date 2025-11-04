@@ -1,0 +1,10 @@
+{
+  "api_shortname": "kmsinventory",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/kms/latest/inventory/apiv1",
+  "client_library_type": "generated",
+  "description": "KMS Inventory API",
+  "distribution_name": "cloud.google.com/go/kms/inventory/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

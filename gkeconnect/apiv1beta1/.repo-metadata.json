@@ -1,0 +1,10 @@
+{
+  "api_shortname": "connectgateway",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/gkeconnect/latest/gateway/apiv1beta1",
+  "client_library_type": "generated",
+  "description": "Connect Gateway API",
+  "distribution_name": "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

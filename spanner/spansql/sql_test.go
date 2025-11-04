@@ -234,7 +234,12 @@ func TestSQL(t *testing.T) {
 				},
 				Position: line(1),
 			},
-			"CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			`CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT
+	SingerId,
+	FullName,
+	Picture
+FROM Singers
+ORDER BY LastName, FirstName`,
 			reparseDDL,
 		},
 		{
@@ -252,7 +257,312 @@ func TestSQL(t *testing.T) {
 				},
 				Position: line(1),
 			},
-			"CREATE VIEW vname SQL SECURITY DEFINER AS SELECT cname FROM tname",
+			`CREATE VIEW vname SQL SECURITY DEFINER AS SELECT
+	cname
+FROM tname`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ViewWithWhere",
+				OrReplace:    false,
+				SecurityType: Invoker,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("id"), ID("name")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "users",
+						}},
+						Where: ComparisonOp{
+							Op:  Gt,
+							LHS: ID("age"),
+							RHS: IntegerLiteral(18),
+						},
+					},
+				},
+				Position: line(1),
+			},
+			`CREATE VIEW ViewWithWhere SQL SECURITY INVOKER AS SELECT
+	id,
+	name
+FROM users
+WHERE age > 18`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ViewWithGroupBy",
+				OrReplace:    true,
+				SecurityType: Definer,
+				Query: Query{
+					Select: Select{
+						List: []Expr{
+							ID("department"),
+							Func{Name: "COUNT", Args: []Expr{Star}},
+						},
+						From: []SelectFrom{SelectFromTable{
+							Table: "employees",
+						}},
+						GroupBy: []Expr{ID("department")},
+					},
+				},
+				Position: line(1),
+			},
+			`CREATE OR REPLACE VIEW ViewWithGroupBy SQL SECURITY DEFINER AS SELECT
+	department,
+	COUNT(*)
+FROM employees
+GROUP BY department`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ViewWithMultiGroupBy",
+				OrReplace:    false,
+				SecurityType: Invoker,
+				Query: Query{
+					Select: Select{
+						List: []Expr{
+							ID("region"),
+							ID("department"),
+							Func{Name: "SUM", Args: []Expr{ID("salary")}},
+						},
+						From: []SelectFrom{SelectFromTable{
+							Table: "employees",
+						}},
+						GroupBy: []Expr{ID("region"), ID("department")},
+					},
+				},
+				Position: line(1),
+			},
+			`CREATE VIEW ViewWithMultiGroupBy SQL SECURITY INVOKER AS SELECT
+	region,
+	department,
+	SUM(salary)
+FROM employees
+GROUP BY region, department`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ViewWithLimit",
+				OrReplace:    false,
+				SecurityType: Invoker,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("id"), ID("name")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "products",
+						}},
+					},
+					Limit: IntegerLiteral(10),
+				},
+				Position: line(1),
+			},
+			`CREATE VIEW ViewWithLimit SQL SECURITY INVOKER AS SELECT
+	id,
+	name
+FROM products
+LIMIT 10`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ViewWithLimitOffset",
+				OrReplace:    true,
+				SecurityType: Definer,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("id"), ID("title")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "articles",
+						}},
+					},
+					Order: []Order{
+						{Expr: ID("created_at"), Desc: true},
+					},
+					Limit:  IntegerLiteral(20),
+					Offset: IntegerLiteral(5),
+				},
+				Position: line(1),
+			},
+			`CREATE OR REPLACE VIEW ViewWithLimitOffset SQL SECURITY DEFINER AS SELECT
+	id,
+	title
+FROM articles
+ORDER BY created_at DESC
+LIMIT 20 OFFSET 5`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ViewWithAllClauses",
+				OrReplace:    true,
+				SecurityType: Invoker,
+				Query: Query{
+					Select: Select{
+						List: []Expr{
+							ID("category"),
+							Func{Name: "COUNT", Args: []Expr{ID("id")}},
+							Func{Name: "AVG", Args: []Expr{ID("price")}},
+						},
+						ListAliases: []ID{"", "total_count", "avg_price"},
+						From: []SelectFrom{SelectFromTable{
+							Table: "products",
+						}},
+						Where: ComparisonOp{
+							Op:  Gt,
+							LHS: ID("price"),
+							RHS: IntegerLiteral(0),
+						},
+						GroupBy: []Expr{ID("category")},
+					},
+					Order: []Order{
+						{Expr: ID("category")},
+					},
+					Limit:  IntegerLiteral(100),
+					Offset: IntegerLiteral(10),
+				},
+				Position: line(1),
+			},
+			`CREATE OR REPLACE VIEW ViewWithAllClauses SQL SECURITY INVOKER AS SELECT
+	category,
+	COUNT(id) AS total_count,
+	AVG(price) AS avg_price
+FROM products
+WHERE price > 0
+GROUP BY category
+ORDER BY category
+LIMIT 100 OFFSET 10`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ComplexViewWithJoins",
+				OrReplace:    true,
+				SecurityType: Definer,
+				Query: Query{
+					Select: Select{
+						List: []Expr{
+							PathExp{"u", "id"},
+							PathExp{"u", "name"},
+							PathExp{"o", "order_id"},
+							PathExp{"o", "total"},
+							PathExp{"p", "product_name"},
+							Func{Name: "COUNT", Args: []Expr{PathExp{"oi", "item_id"}}},
+						},
+						ListAliases: []ID{"user_id", "user_name", "", "order_total", "", "item_count"},
+						From: []SelectFrom{
+							SelectFromJoin{
+								Type: InnerJoin,
+								LHS: SelectFromJoin{
+									Type: LeftJoin,
+									LHS: SelectFromJoin{
+										Type: InnerJoin,
+										LHS: SelectFromTable{
+											Table: "users",
+											Alias: "u",
+										},
+										RHS: SelectFromTable{
+											Table: "orders",
+											Alias: "o",
+										},
+										On: ComparisonOp{
+											Op:  Eq,
+											LHS: PathExp{"u", "id"},
+											RHS: PathExp{"o", "user_id"},
+										},
+									},
+									RHS: SelectFromTable{
+										Table: "order_items",
+										Alias: "oi",
+									},
+									On: ComparisonOp{
+										Op:  Eq,
+										LHS: PathExp{"o", "order_id"},
+										RHS: PathExp{"oi", "order_id"},
+									},
+								},
+								RHS: SelectFromTable{
+									Table: "products",
+									Alias: "p",
+								},
+								On: ComparisonOp{
+									Op:  Eq,
+									LHS: PathExp{"oi", "product_id"},
+									RHS: PathExp{"p", "id"},
+								},
+							},
+						},
+						Where: LogicalOp{
+							Op: And,
+							LHS: LogicalOp{
+								Op: And,
+								LHS: ComparisonOp{
+									Op:  Gt,
+									LHS: PathExp{"o", "total"},
+									RHS: IntegerLiteral(100),
+								},
+								RHS: ComparisonOp{
+									Op:  Eq,
+									LHS: PathExp{"u", "status"},
+									RHS: StringLiteral("active"),
+								},
+							},
+							RHS: ComparisonOp{
+								Op:  Ge,
+								LHS: PathExp{"p", "price"},
+								RHS: IntegerLiteral(10),
+							},
+						},
+						GroupBy: []Expr{PathExp{"u", "id"}, PathExp{"u", "name"}, PathExp{"o", "order_id"}, PathExp{"o", "total"}, PathExp{"p", "product_name"}},
+					},
+					Order: []Order{
+						{Expr: PathExp{"o", "total"}, Desc: true},
+						{Expr: PathExp{"u", "name"}},
+					},
+					Limit:  IntegerLiteral(50),
+					Offset: IntegerLiteral(0),
+				},
+				Position: line(1),
+			},
+			`CREATE OR REPLACE VIEW ComplexViewWithJoins SQL SECURITY DEFINER AS SELECT
+	u.id AS user_id,
+	u.name AS user_name,
+	o.order_id,
+	o.total AS order_total,
+	p.product_name,
+	COUNT(oi.item_id) AS item_count
+FROM users AS u
+INNER JOIN orders AS o ON u.id = o.user_id
+LEFT JOIN order_items AS oi ON o.order_id = oi.order_id
+INNER JOIN products AS p ON oi.product_id = p.id
+WHERE o.total > 100 AND u.status = "active" AND p.price >= 10
+GROUP BY u.id, u.name, o.order_id, o.total, p.product_name
+ORDER BY o.total DESC, u.name
+LIMIT 50 OFFSET 0`,
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "ViewWithDistinct",
+				OrReplace:    false,
+				SecurityType: Invoker,
+				Query: Query{
+					Select: Select{
+						Distinct: true,
+						List:     []Expr{ID("city"), ID("country")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "customers",
+						}},
+					},
+				},
+				Position: line(1),
+			},
+			`CREATE VIEW ViewWithDistinct SQL SECURITY INVOKER AS SELECT DISTINCT
+	city,
+	country
+FROM customers`,
 			reparseDDL,
 		},
 		{
@@ -1222,7 +1532,13 @@ func TestSQL(t *testing.T) {
 				Order: []Order{{Expr: ID("OCol"), Desc: true}},
 				Limit: IntegerLiteral(1000),
 			},
-			`SELECT A, B AS banana FROM Table WHERE C < "whelp" AND D IS NOT NULL ORDER BY OCol DESC LIMIT 1000`,
+			`SELECT
+	A,
+	B AS banana
+FROM Table
+WHERE C < "whelp" AND D IS NOT NULL
+ORDER BY OCol DESC
+LIMIT 1000`,
 			reparseQuery,
 		},
 		{
@@ -1251,7 +1567,12 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT * FROM A WHERE NOT EXISTS (SELECT * FROM B)`,
+			`SELECT
+	*
+FROM A
+WHERE NOT EXISTS (SELECT
+	*
+FROM B)`,
 			reparseQuery,
 		},
 		{
@@ -1269,7 +1590,10 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT A FROM Table@{FORCE_INDEX=Idx} WHERE B = @b`,
+			`SELECT
+	A
+FROM Table@{FORCE_INDEX=Idx}
+WHERE B = @b`,
 			reparseQuery,
 		},
 		{
@@ -1287,7 +1611,10 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT A FROM Table@{FORCE_INDEX=Idx,GROUPBY_SCAN_OPTIMIZATION=TRUE} WHERE B = @b`,
+			`SELECT
+	A
+FROM Table@{FORCE_INDEX=Idx,GROUPBY_SCAN_OPTIMIZATION=TRUE}
+WHERE B = @b`,
 			reparseQuery,
 		},
 		{
@@ -1296,7 +1623,8 @@ func TestSQL(t *testing.T) {
 					List: []Expr{IntegerLiteral(7)},
 				},
 			},
-			`SELECT 7`,
+			`SELECT
+	7`,
 			reparseQuery,
 		},
 		{
@@ -1308,7 +1636,8 @@ func TestSQL(t *testing.T) {
 					}},
 				},
 			},
-			`SELECT CAST(7 AS STRING)`,
+			`SELECT
+	CAST(7 AS STRING)`,
 			reparseQuery,
 		},
 		{
@@ -1320,7 +1649,8 @@ func TestSQL(t *testing.T) {
 					}},
 				},
 			},
-			`SELECT CAST(7 AS ENUM)`,
+			`SELECT
+	CAST(7 AS ENUM)`,
 			reparseQuery,
 		},
 		{
@@ -1332,7 +1662,8 @@ func TestSQL(t *testing.T) {
 					}},
 				},
 			},
-			`SELECT SAFE_CAST(7 AS DATE)`,
+			`SELECT
+	SAFE_CAST(7 AS DATE)`,
 			reparseQuery,
 		},
 		{
@@ -1373,7 +1704,7 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			"SELECT `Desc`",
+			"SELECT\n\t`Desc`",
 			reparseQuery,
 		},
 		{
@@ -1411,7 +1742,11 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A",
+			`SELECT
+	A,
+	B
+FROM Table1
+INNER JOIN Table2 ON Table1.A = Table2.A`,
 			reparseQuery,
 		},
 		{
@@ -1439,7 +1774,12 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A INNER JOIN Table3 USING (X)",
+			`SELECT
+	A,
+	B
+FROM Table1
+INNER JOIN Table2 ON Table1.A = Table2.A
+INNER JOIN Table3 USING (X)`,
 			reparseQuery,
 		},
 		{
@@ -1457,7 +1797,8 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			`SELECT
+	CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
 			reparseQuery,
 		},
 		{
@@ -1473,7 +1814,8 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			`SELECT
+	CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
 			reparseQuery,
 		},
 		{
@@ -1488,7 +1830,8 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT IF(1 < 2, TRUE, FALSE)`,
+			`SELECT
+	IF(1 < 2, TRUE, FALSE)`,
 			reparseQuery,
 		},
 		{
@@ -1502,7 +1845,8 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT IFNULL(10, 0)`,
+			`SELECT
+	IFNULL(10, 0)`,
 			reparseQuery,
 		},
 		{
@@ -1516,7 +1860,8 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT NULLIF(10, 0)`,
+			`SELECT
+	NULLIF(10, 0)`,
 			reparseQuery,
 		},
 		{
@@ -1533,7 +1878,77 @@ func TestSQL(t *testing.T) {
 					},
 				},
 			},
-			`SELECT COALESCE("A", NULL, "C")`,
+			`SELECT
+	COALESCE("A", NULL, "C")`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					Distinct: true,
+					List:     []Expr{ID("city"), ID("country")},
+					From: []SelectFrom{SelectFromTable{
+						Table: "customers",
+					}},
+				},
+			},
+			`SELECT DISTINCT
+	city,
+	country
+FROM customers`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("department"),
+						Func{Name: "COUNT", Args: []Expr{Star}},
+					},
+					From: []SelectFrom{SelectFromTable{
+						Table: "employees",
+					}},
+					GroupBy: []Expr{ID("department")},
+				},
+			},
+			`SELECT
+	department,
+	COUNT(*)
+FROM employees
+GROUP BY department`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					Distinct: true,
+					List: []Expr{
+						ID("region"),
+						Func{Name: "AVG", Args: []Expr{ID("salary")}},
+					},
+					From: []SelectFrom{SelectFromTable{
+						Table: "employees",
+					}},
+					Where: ComparisonOp{
+						Op:  Gt,
+						LHS: ID("salary"),
+						RHS: IntegerLiteral(50000),
+					},
+					GroupBy: []Expr{ID("region")},
+				},
+				Order: []Order{
+					{Expr: ID("region")},
+				},
+				Limit: IntegerLiteral(100),
+			},
+			`SELECT DISTINCT
+	region,
+	AVG(salary)
+FROM employees
+WHERE salary > 50000
+GROUP BY region
+ORDER BY region
+LIMIT 100`,
 			reparseQuery,
 		},
 	}

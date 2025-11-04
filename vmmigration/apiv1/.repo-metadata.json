@@ -1,0 +1,10 @@
+{
+  "api_shortname": "vmmigration",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vmmigration/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "VM Migration API",
+  "distribution_name": "cloud.google.com/go/vmmigration/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

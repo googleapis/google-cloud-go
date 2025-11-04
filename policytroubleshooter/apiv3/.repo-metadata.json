@@ -1,0 +1,10 @@
+{
+  "api_shortname": "policytroubleshooter",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/policytroubleshooter/latest/iam/apiv3",
+  "client_library_type": "generated",
+  "description": "Policy Troubleshooter API",
+  "distribution_name": "cloud.google.com/go/policytroubleshooter/iam/apiv3",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

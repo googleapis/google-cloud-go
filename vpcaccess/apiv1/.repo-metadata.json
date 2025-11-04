@@ -1,0 +1,10 @@
+{
+  "api_shortname": "vpcaccess",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vpcaccess/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Serverless VPC Access API",
+  "distribution_name": "cloud.google.com/go/vpcaccess/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}
