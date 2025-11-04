@@ -97,7 +97,7 @@ func (dsm *DynamicScaleMonitor) evaluateAndScale() {
 
 	var totalWeightedLoad int32
 	for _, entry := range conns {
-		totalWeightedLoad += entry.calculateWeightedLoad()
+		totalWeightedLoad += entry.calculateConnLoad()
 	}
 	avgLoad := totalWeightedLoad / int32(numConns)
 

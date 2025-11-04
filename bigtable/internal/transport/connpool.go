@@ -55,7 +55,7 @@ const (
 var errNoConnections = fmt.Errorf("bigtable_connpool: no connections available in the pool")
 var _ gtransport.ConnPool = &BigtableChannelPool{}
 
-// Ensure monitors implement the interface.
+// Ensure monitors implement the interface
 var _ Monitor = (*DynamicScaleMonitor)(nil)
 
 // BigtableConn wraps grpc.ClientConn to add Bigtable specific methods.
@@ -186,19 +186,17 @@ type BigtableChannelPool struct {
 
 	dialMu sync.Mutex // Serializes dial/replace/resize operations
 
-	poolCtx    context.Context    // Context for the pool's background tasks
+	poolCtx context.Context // Context for the pool's background tasks
+	// Semantics: poolCancel can be called multiple times.
 	poolCancel context.CancelFunc // Function to cancel the poolCtx
 
 	logger *log.Logger // logging events
 
-	// Dynamic Channel Pool fields
 	dynamicConfig btopt.DynamicChannelPoolConfig // Keep the config for options
-
 	// background monitors
 	monitors []Monitor
 }
 
-// WithDynamicChannelPool sets the dynamic channel pool configuration.
 func WithDynamicChannelPool(config btopt.DynamicChannelPoolConfig) BigtableChannelPoolOption {
 	return func(p *BigtableChannelPool) {
 		p.dynamicConfig = config
@@ -303,7 +301,6 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	}
 
 	pool.conns.Store(initialConns)
-	pool.startMonitors()
 	return pool, nil
 }
 
@@ -632,11 +629,9 @@ func (p *BigtableChannelPool) addConnections(n int) bool {
 		go func(e *connEntry) {
 			primeCtx, cancel := context.WithTimeout(p.poolCtx, primeRPCTimeout)
 			defer cancel()
-			isALTS, err := e.conn.Prime(primeCtx)
+			err := e.conn.Prime(primeCtx)
 			if err != nil {
 				btopt.Debugf(p.logger, "bigtable_connpool: failed to prime new connection: %v\n", err)
-			} else if isALTS {
-				e.altsUsed.Store(true)
 			}
 		}(entry)
 	}
@@ -687,7 +682,7 @@ func (p *BigtableChannelPool) removeConnections(n int) bool {
 
 	entries := make([]entryWithLoad, numCurrent)
 	for i, entry := range currentConns {
-		entries[i] = entryWithLoad{entry: entry, load: entry.calculateWeightedLoad(), index: i}
+		entries[i] = entryWithLoad{entry: entry, load: entry.calculateConnLoad(), index: i}
 	}
 
 	sort.Slice(entries, func(i, j int) bool {
