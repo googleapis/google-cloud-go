@@ -103,7 +103,6 @@ type Expr interface {
 	DocumentId() Expr
 
 	// Logical functions
-	IfError(catchExprOrValue any) Expr
 	IfAbsent(catchExprOrValue any) Expr
 
 	// Object functions
@@ -219,7 +218,6 @@ func (b *baseExpr) CollectionId() Expr { return CollectionID(b) }
 func (b *baseExpr) DocumentId() Expr   { return DocumentIDFrom(b) }
 
 // Logical functions
-func (b *baseExpr) IfError(catchExprOrValue any) Expr  { return IfError(b, catchExprOrValue) }
 func (b *baseExpr) IfAbsent(catchExprOrValue any) Expr { return IfAbsent(b, catchExprOrValue) }
 
 // Object functions

@@ -1870,31 +1870,6 @@ func logicalFuncs(t *testing.T) {
 			want:     map[string]interface{}{"min": int64(1)},
 		},
 		{
-			name:     "IfError - no error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfError(FieldOf("a"), ConstantOf(100)).As("result")),
-			want:     map[string]interface{}{"result": int64(1)},
-		},
-		{
-			name:     "IfError - error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayGet("a", 0).IfError(ConstantOf("was error")).As("ifError")),
-			want:     map[string]interface{}{"ifError": "was error"},
-		},
-		{
-			name:     "IfError - null",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfError(FieldOf("c"), ConstantOf(100)).As("result")),
-			want:     map[string]interface{}{"result": int64(100)},
-		},
-		{
-			name:     "IfErrorBoolean - no error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("d"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
-			want:     map[string]interface{}{"result": true},
-		},
-		{
-			name:     "IfErrorBoolean - error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("x"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
-			want:     map[string]interface{}{"result": false},
-		},
-		{
 			name:     "IfAbsent - not absent",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfAbsent(FieldOf("a"), ConstantOf(100)).As("result")),
 			want:     map[string]interface{}{"result": int64(1)},

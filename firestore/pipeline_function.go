@@ -458,22 +458,6 @@ func LogicalMinimum(exprOrField any, others ...any) Expr {
 	return newBaseFunction("minimum", append([]Expr{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(others)...))
 }
 
-// IfError creates an expression that evaluates and returns `tryExpr` if it does not produce an error;
-// otherwise, it evaluates and returns `catchExprOrValue`.
-// - tryExpr is the expression to try.
-// - catchExprOrValue is the expression or value to return if `tryExpr` errors.
-func IfError(tryExpr Expr, catchExprOrValue any) Expr {
-	return newBaseFunction("if_error", []Expr{tryExpr, toExprOrConstant(catchExprOrValue)})
-}
-
-// IfErrorBoolean creates a boolean expression that evaluates and returns `tryExpr` if it does not produce an error;
-// otherwise, it evaluates and returns `catchExpr`.
-// - tryExpr is the boolean expression to try.
-// - catchExpr is the boolean expression to return if `tryExpr` errors.
-func IfErrorBoolean(tryExpr BooleanExpr, catchExpr BooleanExpr) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction("if_error", []Expr{tryExpr, catchExpr})}
-}
-
 // IfAbsent creates an expression that returns a default value if an expression evaluates to an absent value.
 // - exprOrField can be a field path string, [FieldPath] or an [Expr].
 // - elseValue is the value to return if the expression is absent.

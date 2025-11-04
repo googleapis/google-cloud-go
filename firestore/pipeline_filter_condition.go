@@ -20,7 +20,6 @@ type BooleanExpr interface {
 	isBooleanExpr()
 
 	Conditional(thenVal, elseVal any) Expr
-	IfErrorBoolean(catchExpr BooleanExpr) BooleanExpr
 	Not() BooleanExpr
 }
 
@@ -33,9 +32,7 @@ func (b *baseBooleanExpr) isBooleanExpr() {}
 func (b *baseBooleanExpr) Conditional(thenVal, elseVal any) Expr {
 	return Conditional(b, thenVal, elseVal)
 }
-func (b *baseBooleanExpr) IfErrorBoolean(catchExpr BooleanExpr) BooleanExpr {
-	return IfErrorBoolean(b, catchExpr)
-}
+
 func (b *baseBooleanExpr) Not() BooleanExpr {
 	return Not(b)
 }
