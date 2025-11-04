@@ -568,3 +568,5 @@ replace cloud.google.com/go/capacityplanner => ../../../capacityplanner
 replace cloud.google.com/go/locationfinder => ../../../locationfinder
 
 replace cloud.google.com/go/gkerecommender => ../../../gkerecommender
+
+replace cloud.google.com/go/saasplatform => ../../../saasplatform
