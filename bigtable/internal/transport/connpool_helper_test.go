@@ -188,7 +188,7 @@ func dialBigtableserverWithInstanceNameAndAppProfile(addr string, instanceName, 
 	if err != nil {
 		return nil, err
 	}
-	return NewBigtableConn(conn, instanceName, appProfile), nil
+	return newBigtableConn(conn, instanceName, appProfile), nil
 }
 
 // isConnClosed checks if a grpc.ClientConn has been closed.

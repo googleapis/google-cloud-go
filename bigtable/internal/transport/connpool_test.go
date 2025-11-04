@@ -592,7 +592,7 @@ func TestCachingStreamDecrement(t *testing.T) {
 		if err != nil {
 			return nil, err
 		}
-		return NewBigtableConn(conn, "test-instance", "test-profile"), nil
+		return newBigtableConn(conn, "test-instance", "test-profile"), nil
 	}
 
 	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.LeastInFlight, dialFunc, nil, nil)

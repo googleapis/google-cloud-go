@@ -98,11 +98,11 @@ func (bc *BigtableConn) Prime(ctx context.Context) error {
 	return nil
 }
 
-func NewBigtableConn(conn *grpc.ClientConn, instanceName, appProfileId string) *BigtableConn {
+func newBigtableConn(conn *grpc.ClientConn, instanceName, appProfileID string) *BigtableConn {
 	return &BigtableConn{
 		ClientConn:   conn,
 		instanceName: instanceName,
-		appProfile:   appProfileId,
+		appProfile:   appProfileID,
 	}
 }
 
@@ -233,33 +233,30 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		pool.selectFunc = pool.selectRoundRobin
 	}
 
+	var exitSignal error
+
 	initialConns := make([]*connEntry, connPoolSize)
 	for i := 0; i < connPoolSize; i++ {
 		select {
 		case <-pool.poolCtx.Done():
-			// Manually close connections created so far in this loop
-			for j := 0; j < i; j++ {
-				initialConns[j].conn.Close()
-			}
-			pool.poolCancel() // Ensure context is cancelled
-			return nil, pool.poolCtx.Err()
+			exitSignal = errors.New("bigtable_connpool: pool context canceled")
 		default:
 		}
 
-		// TODO Dial the initial connections in parallel using goroutines and a sync.WaitGroup
+		if exitSignal != nil {
+			// Manually close connections
+			break
+		}
+
 		conn, err := dial()
 		if err != nil {
-			// Manually close connections created so far in this loop
-			for j := 0; j < i; j++ {
-				initialConns[j].conn.Close()
-			}
-			pool.poolCancel() // Ensure context is cancelled
-			return nil, err
+			exitSignal = err
+			break
 		}
+
 		entry := &connEntry{conn: conn}
-		initialConns[i] = entry // TODO prime the connection
+		initialConns[i] = entry // Note, we keep non primed conns in conns
 		// Prime the new connection in a non-blocking goroutine to warm it up.
-		// We pass the conn object as an argument to avoid closing over the loop variable.
 		go func(e *connEntry) {
 			primeCtx, cancel := context.WithTimeout(pool.poolCtx, primeRPCTimeout)
 			defer cancel()
@@ -269,6 +266,17 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 			}
 		}(entry)
 	}
+	if exitSignal != nil {
+		btopt.Debugf(pool.logger, "bigtable_connpool: error during initial connection creation: %v\n", exitSignal)
+		// Close populated conns
+		for _, entry := range initialConns {
+			if entry != nil && entry.conn != nil {
+				entry.conn.Close()
+			}
+		}
+		return nil, exitSignal
+	}
+
 	pool.conns.Store(initialConns)
 	return pool, nil
 }
