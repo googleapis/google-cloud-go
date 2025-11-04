@@ -196,7 +196,7 @@ func configureLibrary(ctx context.Context, cfg *Config, library *request.Library
 	var moduleConfig = repoConfig.GetModuleConfig(library.ID)
 
 	moduleRoot := filepath.Join(cfg.OutputDir, library.ID)
-	if err := os.Mkdir(moduleRoot, 0755); err != nil {
+	if err := os.MkdirAll(moduleRoot, 0755); err != nil {
 		return nil, err
 	}
 	// Only a single API path can be added on each configure call, so we can tell
