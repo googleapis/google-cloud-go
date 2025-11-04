@@ -579,7 +579,7 @@ func (c *gRPCClient) ListLogEntries(ctx context.Context, req *loggingpb.ListLogE
 			return "", err
 		}
 		it.Total += len(items)
-		it.Calls = calls
+		it.Calls++
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
@@ -943,7 +943,7 @@ func (c *restClient) ListLogEntries(ctx context.Context, req *loggingpb.ListLogE
 			return "", err
 		}
 		it.Total += len(items)
-		it.Calls = calls
+		it.Calls++
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
