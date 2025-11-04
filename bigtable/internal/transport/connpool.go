@@ -45,7 +45,7 @@ import (
 // We cap the max draining timeout to 30mins as there might be a long running stream (such as full table scan).
 var maxDrainingTimeout = 30 * time.Minute
 
-// BigtableChannelPool options
+// BigtableChannelPoolOption options
 type BigtableChannelPoolOption func(*BigtableChannelPool)
 
 const (
@@ -197,6 +197,7 @@ type BigtableChannelPool struct {
 	monitors []Monitor
 }
 
+// WithDynamicChannelPool provides the configuration for dynamic channel scaling
 func WithDynamicChannelPool(config btopt.DynamicChannelPoolConfig) BigtableChannelPoolOption {
 	return func(p *BigtableChannelPool) {
 		p.dynamicConfig = config
