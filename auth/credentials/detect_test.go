@@ -206,6 +206,63 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 	}
 }
 
+func TestDefaultCredentials_ImpersonatedServiceAccountKey_ScopesFromFile(t *testing.T) {
+	b, err := os.ReadFile("../internal/testdata/imp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := credsfile.ParseImpersonatedServiceAccount(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantScopes := []string{"https://www.googleapis.com/auth/drive"}
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var reqBody struct {
+			Scope []string `json:"scope"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if len(reqBody.Scope) != 1 || reqBody.Scope[0] != wantScopes[0] {
+			t.Errorf("got scopes %v, want %v", reqBody.Scope, wantScopes)
+		}
+		resp := &struct {
+			AccessToken string `json:"accessToken"`
+			ExpireTime  string `json:"expireTime"`
+		}{
+			AccessToken: "a_fake_token",
+			ExpireTime:  "2006-01-02T15:04:05Z",
+		}
+		if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			t.Fatal(err)
+		}
+	}))
+	f.ServiceAccountImpersonationURL = ts.URL + "/v1/projects/-/serviceAccounts/sa3@developer.gserviceaccount.com:generateAccessToken"
+	f.Scopes = wantScopes
+	b, err = json.Marshal(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	creds, err := DetectDefault(&DetectOptions{
+		CredentialsJSON:  b,
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := creds.Token(context.Background())
+	if err != nil {
+		t.Fatalf("creds.Token() = %v", err)
+	}
+	if want := "a_fake_token"; tok.Value != want {
+		t.Fatalf("got %q, want %q", tok.Value, want)
+	}
+	if want := internal.TokenTypeBearer; tok.Type != want {
+		t.Fatalf("got %q, want %q", tok.Type, want)
+	}
+}
+
 func TestDefaultCredentials_UserCredentialsKey(t *testing.T) {
 	ctx := context.Background()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
