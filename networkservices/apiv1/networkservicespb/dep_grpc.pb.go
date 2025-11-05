@@ -45,6 +45,11 @@ const (
 	DepService_CreateLbRouteExtension_FullMethodName   = "/google.cloud.networkservices.v1.DepService/CreateLbRouteExtension"
 	DepService_UpdateLbRouteExtension_FullMethodName   = "/google.cloud.networkservices.v1.DepService/UpdateLbRouteExtension"
 	DepService_DeleteLbRouteExtension_FullMethodName   = "/google.cloud.networkservices.v1.DepService/DeleteLbRouteExtension"
+	DepService_ListLbEdgeExtensions_FullMethodName     = "/google.cloud.networkservices.v1.DepService/ListLbEdgeExtensions"
+	DepService_GetLbEdgeExtension_FullMethodName       = "/google.cloud.networkservices.v1.DepService/GetLbEdgeExtension"
+	DepService_CreateLbEdgeExtension_FullMethodName    = "/google.cloud.networkservices.v1.DepService/CreateLbEdgeExtension"
+	DepService_UpdateLbEdgeExtension_FullMethodName    = "/google.cloud.networkservices.v1.DepService/UpdateLbEdgeExtension"
+	DepService_DeleteLbEdgeExtension_FullMethodName    = "/google.cloud.networkservices.v1.DepService/DeleteLbEdgeExtension"
 	DepService_ListAuthzExtensions_FullMethodName      = "/google.cloud.networkservices.v1.DepService/ListAuthzExtensions"
 	DepService_GetAuthzExtension_FullMethodName        = "/google.cloud.networkservices.v1.DepService/GetAuthzExtension"
 	DepService_CreateAuthzExtension_FullMethodName     = "/google.cloud.networkservices.v1.DepService/CreateAuthzExtension"
@@ -77,6 +82,16 @@ type DepServiceClient interface {
 	UpdateLbRouteExtension(ctx context.Context, in *UpdateLbRouteExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified `LbRouteExtension` resource.
 	DeleteLbRouteExtension(ctx context.Context, in *DeleteLbRouteExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists `LbEdgeExtension` resources in a given project and location.
+	ListLbEdgeExtensions(ctx context.Context, in *ListLbEdgeExtensionsRequest, opts ...grpc.CallOption) (*ListLbEdgeExtensionsResponse, error)
+	// Gets details of the specified `LbEdgeExtension` resource.
+	GetLbEdgeExtension(ctx context.Context, in *GetLbEdgeExtensionRequest, opts ...grpc.CallOption) (*LbEdgeExtension, error)
+	// Creates a new `LbEdgeExtension` resource in a given project and location.
+	CreateLbEdgeExtension(ctx context.Context, in *CreateLbEdgeExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates the parameters of the specified `LbEdgeExtension` resource.
+	UpdateLbEdgeExtension(ctx context.Context, in *UpdateLbEdgeExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes the specified `LbEdgeExtension` resource.
+	DeleteLbEdgeExtension(ctx context.Context, in *DeleteLbEdgeExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists `AuthzExtension` resources in a given project and location.
 	ListAuthzExtensions(ctx context.Context, in *ListAuthzExtensionsRequest, opts ...grpc.CallOption) (*ListAuthzExtensionsResponse, error)
 	// Gets details of the specified `AuthzExtension` resource.
@@ -189,6 +204,51 @@ func (c *depServiceClient) DeleteLbRouteExtension(ctx context.Context, in *Delet
 	return out, nil
 }
 
+func (c *depServiceClient) ListLbEdgeExtensions(ctx context.Context, in *ListLbEdgeExtensionsRequest, opts ...grpc.CallOption) (*ListLbEdgeExtensionsResponse, error) {
+	out := new(ListLbEdgeExtensionsResponse)
+	err := c.cc.Invoke(ctx, DepService_ListLbEdgeExtensions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depServiceClient) GetLbEdgeExtension(ctx context.Context, in *GetLbEdgeExtensionRequest, opts ...grpc.CallOption) (*LbEdgeExtension, error) {
+	out := new(LbEdgeExtension)
+	err := c.cc.Invoke(ctx, DepService_GetLbEdgeExtension_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depServiceClient) CreateLbEdgeExtension(ctx context.Context, in *CreateLbEdgeExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, DepService_CreateLbEdgeExtension_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depServiceClient) UpdateLbEdgeExtension(ctx context.Context, in *UpdateLbEdgeExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, DepService_UpdateLbEdgeExtension_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depServiceClient) DeleteLbEdgeExtension(ctx context.Context, in *DeleteLbEdgeExtensionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, DepService_DeleteLbEdgeExtension_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *depServiceClient) ListAuthzExtensions(ctx context.Context, in *ListAuthzExtensionsRequest, opts ...grpc.CallOption) (*ListAuthzExtensionsResponse, error) {
 	out := new(ListAuthzExtensionsResponse)
 	err := c.cc.Invoke(ctx, DepService_ListAuthzExtensions_FullMethodName, in, out, opts...)
@@ -259,6 +319,16 @@ type DepServiceServer interface {
 	UpdateLbRouteExtension(context.Context, *UpdateLbRouteExtensionRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified `LbRouteExtension` resource.
 	DeleteLbRouteExtension(context.Context, *DeleteLbRouteExtensionRequest) (*longrunningpb.Operation, error)
+	// Lists `LbEdgeExtension` resources in a given project and location.
+	ListLbEdgeExtensions(context.Context, *ListLbEdgeExtensionsRequest) (*ListLbEdgeExtensionsResponse, error)
+	// Gets details of the specified `LbEdgeExtension` resource.
+	GetLbEdgeExtension(context.Context, *GetLbEdgeExtensionRequest) (*LbEdgeExtension, error)
+	// Creates a new `LbEdgeExtension` resource in a given project and location.
+	CreateLbEdgeExtension(context.Context, *CreateLbEdgeExtensionRequest) (*longrunningpb.Operation, error)
+	// Updates the parameters of the specified `LbEdgeExtension` resource.
+	UpdateLbEdgeExtension(context.Context, *UpdateLbEdgeExtensionRequest) (*longrunningpb.Operation, error)
+	// Deletes the specified `LbEdgeExtension` resource.
+	DeleteLbEdgeExtension(context.Context, *DeleteLbEdgeExtensionRequest) (*longrunningpb.Operation, error)
 	// Lists `AuthzExtension` resources in a given project and location.
 	ListAuthzExtensions(context.Context, *ListAuthzExtensionsRequest) (*ListAuthzExtensionsResponse, error)
 	// Gets details of the specified `AuthzExtension` resource.
@@ -306,6 +376,21 @@ func (UnimplementedDepServiceServer) UpdateLbRouteExtension(context.Context, *Up
 }
 func (UnimplementedDepServiceServer) DeleteLbRouteExtension(context.Context, *DeleteLbRouteExtensionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLbRouteExtension not implemented")
+}
+func (UnimplementedDepServiceServer) ListLbEdgeExtensions(context.Context, *ListLbEdgeExtensionsRequest) (*ListLbEdgeExtensionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListLbEdgeExtensions not implemented")
+}
+func (UnimplementedDepServiceServer) GetLbEdgeExtension(context.Context, *GetLbEdgeExtensionRequest) (*LbEdgeExtension, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLbEdgeExtension not implemented")
+}
+func (UnimplementedDepServiceServer) CreateLbEdgeExtension(context.Context, *CreateLbEdgeExtensionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateLbEdgeExtension not implemented")
+}
+func (UnimplementedDepServiceServer) UpdateLbEdgeExtension(context.Context, *UpdateLbEdgeExtensionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLbEdgeExtension not implemented")
+}
+func (UnimplementedDepServiceServer) DeleteLbEdgeExtension(context.Context, *DeleteLbEdgeExtensionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteLbEdgeExtension not implemented")
 }
 func (UnimplementedDepServiceServer) ListAuthzExtensions(context.Context, *ListAuthzExtensionsRequest) (*ListAuthzExtensionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAuthzExtensions not implemented")
@@ -514,6 +599,96 @@ func _DepService_DeleteLbRouteExtension_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DepService_ListLbEdgeExtensions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListLbEdgeExtensionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepServiceServer).ListLbEdgeExtensions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DepService_ListLbEdgeExtensions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepServiceServer).ListLbEdgeExtensions(ctx, req.(*ListLbEdgeExtensionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepService_GetLbEdgeExtension_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLbEdgeExtensionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepServiceServer).GetLbEdgeExtension(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DepService_GetLbEdgeExtension_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepServiceServer).GetLbEdgeExtension(ctx, req.(*GetLbEdgeExtensionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepService_CreateLbEdgeExtension_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateLbEdgeExtensionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepServiceServer).CreateLbEdgeExtension(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DepService_CreateLbEdgeExtension_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepServiceServer).CreateLbEdgeExtension(ctx, req.(*CreateLbEdgeExtensionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepService_UpdateLbEdgeExtension_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateLbEdgeExtensionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepServiceServer).UpdateLbEdgeExtension(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DepService_UpdateLbEdgeExtension_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepServiceServer).UpdateLbEdgeExtension(ctx, req.(*UpdateLbEdgeExtensionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepService_DeleteLbEdgeExtension_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteLbEdgeExtensionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepServiceServer).DeleteLbEdgeExtension(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DepService_DeleteLbEdgeExtension_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepServiceServer).DeleteLbEdgeExtension(ctx, req.(*DeleteLbEdgeExtensionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DepService_ListAuthzExtensions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListAuthzExtensionsRequest)
 	if err := dec(in); err != nil {
@@ -650,6 +825,26 @@ var DepService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteLbRouteExtension",
 			Handler:    _DepService_DeleteLbRouteExtension_Handler,
+		},
+		{
+			MethodName: "ListLbEdgeExtensions",
+			Handler:    _DepService_ListLbEdgeExtensions_Handler,
+		},
+		{
+			MethodName: "GetLbEdgeExtension",
+			Handler:    _DepService_GetLbEdgeExtension_Handler,
+		},
+		{
+			MethodName: "CreateLbEdgeExtension",
+			Handler:    _DepService_CreateLbEdgeExtension_Handler,
+		},
+		{
+			MethodName: "UpdateLbEdgeExtension",
+			Handler:    _DepService_UpdateLbEdgeExtension_Handler,
+		},
+		{
+			MethodName: "DeleteLbEdgeExtension",
+			Handler:    _DepService_DeleteLbEdgeExtension_Handler,
 		},
 		{
 			MethodName: "ListAuthzExtensions",
