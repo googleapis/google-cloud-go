@@ -289,8 +289,8 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		iter := client.Pipeline().Collection(coll.ID, WithCollectionHints(hints)).Execute(ctx)
 		defer iter.Stop()
 		_, err := iter.Next()
-		if err == nil {
-			t.Errorf("Expected error due to non-existent index, but got nil")
+		if s, ok := status.FromError(err); !ok || s.Code() != codes.InvalidArgument {
+			t.Errorf("got err %v, want InvalidArgument", err)
 		}
 	})
 	t.Run("Database", func(t *testing.T) {
