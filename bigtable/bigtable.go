@@ -80,7 +80,7 @@ type Client struct {
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	enableDirectAccess      bool
-	featureFlagsMD          metadata.MD // Reuse it across all api surface
+	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
 
 }
 
