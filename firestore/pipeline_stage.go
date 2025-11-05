@@ -347,7 +347,7 @@ func newReplaceStage(fieldOrSelectable any) (*replaceStage, error) {
 		stageName: stageNameReplace,
 		stagePb: &pb.Pipeline_Stage{
 			Name: stageNameReplace,
-			Args: []*pb.Value{exprPb, {ValueType: &pb.Value_StringValue{StringValue: "full_replace"}}},
+			Args: []*pb.Value{exprPb, &pb.Value{ValueType: &pb.Value_StringValue{StringValue: "full_replace"}}},
 		},
 	}}, nil
 }

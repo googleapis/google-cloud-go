@@ -813,27 +813,25 @@ func typeFuncs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx)
+			defer iter.Stop()
 
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if len(docs) != 1 {
-					r.Fatalf("expected 1 doc, got %d", len(docs))
-				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					r.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-				}
-			})
+			docs, err := iter.GetAll()
+			if isRetryablePipelineExecuteErr(err) {
+				t.Errorf("GetAll: %v. Retrying....", err)
+				return
+			} else if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+			got := docs[0].Data()
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
 		})
 	}
 }
@@ -879,27 +877,25 @@ func objectFuncs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx)
+			defer iter.Stop()
 
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if len(docs) != 1 {
-					r.Fatalf("expected 1 doc, got %d", len(docs))
-				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					r.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-				}
-			})
+			docs, err := iter.GetAll()
+			if isRetryablePipelineExecuteErr(err) {
+				t.Errorf("GetAll: %v. Retrying....", err)
+				return
+			} else if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+			got := docs[0].Data()
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
 		})
 	}
 }
@@ -1017,19 +1013,19 @@ func arrayFuncs(t *testing.T) {
 
 				docs, err := iter.GetAll()
 				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
+					t.Errorf("GetAll: %v. Retrying....", err)
 					return
 				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
+					t.Fatalf("GetAll: %v", err)
 					return
 				}
 				if len(docs) != 1 {
-					r.Fatalf("expected 1 doc, got %d", len(docs))
+					t.Fatalf("expected 1 doc, got %d", len(docs))
 					return
 				}
 				got := docs[0].Data()
 				if diff := testutil.Diff(got, test.want); diff != "" {
-					r.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
 					return
 				}
 			})
@@ -1154,60 +1150,58 @@ func stringFuncs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
+			ctx := context.Background()
 
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
+			iter := test.pipeline.Execute(ctx)
+			defer iter.Stop()
 
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				lastStage := test.pipeline.stages[len(test.pipeline.stages)-1]
-				lastStageName := lastStage.name()
+			docs, err := iter.GetAll()
+			if isRetryablePipelineExecuteErr(err) {
+				t.Errorf("GetAll: %v. Retrying....", err)
+				return
+			} else if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			lastStage := test.pipeline.stages[len(test.pipeline.stages)-1]
+			lastStageName := lastStage.name()
 
-				if lastStageName == stageNameSelect { // This is a select query
-					want, ok := test.want.(map[string]interface{})
-					if !ok {
-						r.Fatalf("invalid test.want type for select query: %T", test.want)
-						return
-					}
-					if len(docs) != 1 {
-						r.Fatalf("expected 1 doc, got %d", len(docs))
-						return
-					}
-					got := docs[0].Data()
-					if diff := testutil.Diff(got, want); diff != "" {
-						r.Errorf("got: %v, want: %v, diff +want -got: %s", got, want, diff)
-					}
-				} else if lastStageName == stageNameWhere { // This is a where query (filter condition)
-					want, ok := test.want.([]map[string]interface{})
-					if !ok {
-						r.Fatalf("invalid test.want type for where query: %T", test.want)
-						return
-					}
-					if len(docs) != len(want) {
-						r.Fatalf("expected %d doc(s), got %d", len(want), len(docs))
-						return
-					}
-					var gots []map[string]interface{}
-					for _, doc := range docs {
-						got := doc.Data()
-						gots = append(gots, got)
-					}
-					if diff := testutil.Diff(gots, want); diff != "" {
-						r.Errorf("got: %v, want: %v, diff +want -got: %s", gots, want, diff)
-					}
-				} else {
-					r.Fatalf("unknown pipeline stage: %s", lastStageName)
+			if lastStageName == stageNameSelect { // This is a select query
+				want, ok := test.want.(map[string]interface{})
+				if !ok {
+					t.Fatalf("invalid test.want type for select query: %T", test.want)
 					return
 				}
-			})
+				if len(docs) != 1 {
+					t.Fatalf("expected 1 doc, got %d", len(docs))
+					return
+				}
+				got := docs[0].Data()
+				if diff := testutil.Diff(got, want); diff != "" {
+					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, want, diff)
+				}
+			} else if lastStageName == stageNameWhere { // This is a where query (filter condition)
+				want, ok := test.want.([]map[string]interface{})
+				if !ok {
+					t.Fatalf("invalid test.want type for where query: %T", test.want)
+					return
+				}
+				if len(docs) != len(want) {
+					t.Fatalf("expected %d doc(s), got %d", len(want), len(docs))
+					return
+				}
+				var gots []map[string]interface{}
+				for _, doc := range docs {
+					got := doc.Data()
+					gots = append(gots, got)
+				}
+				if diff := testutil.Diff(gots, want); diff != "" {
+					t.Errorf("got: %v, want: %v, diff +want -got: %s", gots, want, diff)
+				}
+			} else {
+				t.Fatalf("unknown pipeline stage: %s", lastStageName)
+				return
+			}
 		})
 	}
 
@@ -1270,27 +1264,25 @@ func vectorFuncs(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
+			iter := test.pipeline.Execute(ctx)
+			defer iter.Stop()
 
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if len(docs) != 1 {
-					r.Fatalf("expected 1 doc, got %d", len(docs))
-					return
-				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					r.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-				}
-			})
+			docs, err := iter.GetAll()
+			if isRetryablePipelineExecuteErr(err) {
+				t.Errorf("GetAll: %v. Retrying....", err)
+				return
+			} else if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+				return
+			}
+			got := docs[0].Data()
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
 		})
 	}
 }
@@ -1452,19 +1444,11 @@ func timestampFuncs(t *testing.T) {
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
 				Select(TimestampTruncateWithTimezone("timestamp", "day", "America/New_York").As("timestamp_trunc_day_ny")),
-			want: map[string]interface{}{"timestamp_trunc_day_ny": time.Date(now.In(func() *time.Location {
+			want: map[string]interface{}{"timestamp_trunc_day_ny": func() time.Time {
 				loc, _ := time.LoadLocation("America/New_York")
-				return loc
-			}()).Year(), now.In(func() *time.Location {
-				loc, _ := time.LoadLocation("America/New_York")
-				return loc
-			}()).Month(), now.In(func() *time.Location {
-				loc, _ := time.LoadLocation("America/New_York")
-				return loc
-			}()).Day(), 0, 0, 0, 0, func() *time.Location {
-				loc, _ := time.LoadLocation("America/New_York")
-				return loc
-			}()).Truncate(time.Microsecond)},
+				nowInLoc := now.In(loc)
+				return time.Date(nowInLoc.Year(), nowInLoc.Month(), nowInLoc.Day(), 0, 0, 0, 0, loc).Truncate(time.Microsecond)
+			}()},
 		},
 	}
 
@@ -1864,27 +1848,25 @@ func keyFuncs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx)
+			defer iter.Stop()
 
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if len(docs) != 1 {
-					r.Fatalf("expected 1 doc, got %d", len(docs))
-				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					r.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-				}
-			})
+			docs, err := iter.GetAll()
+			if isRetryablePipelineExecuteErr(err) {
+				t.Errorf("GetAll: %v. Retrying....", err)
+				return
+			} else if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+			got := docs[0].Data()
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
 		})
 	}
 }
@@ -1960,27 +1942,25 @@ func generalFuncs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx)
+			defer iter.Stop()
 
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if len(docs) != 1 {
-					r.Fatalf("expected 1 doc, got %d", len(docs))
-				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-				}
-			})
+			docs, err := iter.GetAll()
+			if isRetryablePipelineExecuteErr(err) {
+				t.Errorf("GetAll: %v. Retrying....", err)
+				return
+			} else if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+			got := docs[0].Data()
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
 		})
 	}
 }
@@ -2036,6 +2016,26 @@ func logicalFuncs(t *testing.T) {
 			want:     map[string]interface{}{"min": int64(1)},
 		},
 		{
+			name:     "IfError - no error",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(IfError(FieldOf("a"), ConstantOf(100)).As("result")),
+			want:     map[string]interface{}{"result": int64(1)},
+		},
+		{
+			name:     "IfError - error",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Divide("a", 0).IfError(ConstantOf("was error")).As("ifError")),
+			want:     map[string]interface{}{"ifError": "was error"},
+		},
+		{
+			name:     "IfErrorBoolean - no error",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("d"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
+			want:     map[string]interface{}{"result": true},
+		},
+		{
+			name:     "IfErrorBoolean - error",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("x"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
+			want:     map[string]interface{}{"result": false},
+		},
+		{
 			name:     "IfAbsent - not absent",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfAbsent(FieldOf("a"), ConstantOf(100)).As("result")),
 			want:     map[string]interface{}{"result": int64(1)},
@@ -2049,27 +2049,25 @@ func logicalFuncs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
-				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
-				defer iter.Stop()
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx)
+			defer iter.Stop()
 
-				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					r.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
-					r.Fatalf("GetAll: %v", err)
-					return
-				}
-				if len(docs) != 1 {
-					r.Fatalf("expected 1 doc, got %d", len(docs))
-				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					r.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-				}
-			})
+			docs, err := iter.GetAll()
+			if isRetryablePipelineExecuteErr(err) {
+				t.Errorf("GetAll: %v. Retrying....", err)
+				return
+			} else if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+			got := docs[0].Data()
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
 		})
 	}
 }

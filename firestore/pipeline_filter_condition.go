@@ -19,7 +19,17 @@ type BooleanExpr interface {
 	Expr // Embed Expr interface
 	isBooleanExpr()
 
+	// Conditional creates an expression that evaluates a condition and returns one of two expressions.
+	//
+	// The parameter 'thenVal' is the expression to return if the condition is true.
+	// The parameter 'elseVal' is the expression to return if the condition is false.
 	Conditional(thenVal, elseVal any) Expr
+	// IfErrorBoolean creates a boolean expression that evaluates and returns the receiver expression if it does not produce an error;
+	// otherwise, it evaluates and returns `catchExpr`.
+	//
+	// The parameter 'catchExpr' is the boolean expression to return if the receiver expression errors.
+	IfErrorBoolean(catchExpr BooleanExpr) BooleanExpr
+	// Not creates an expression that negates a boolean expression.
 	Not() BooleanExpr
 }
 
@@ -32,7 +42,9 @@ func (b *baseBooleanExpr) isBooleanExpr() {}
 func (b *baseBooleanExpr) Conditional(thenVal, elseVal any) Expr {
 	return Conditional(b, thenVal, elseVal)
 }
-
+func (b *baseBooleanExpr) IfErrorBoolean(catchExpr BooleanExpr) BooleanExpr {
+	return IfErrorBoolean(b, catchExpr)
+}
 func (b *baseBooleanExpr) Not() BooleanExpr {
 	return Not(b)
 }

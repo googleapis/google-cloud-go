@@ -218,6 +218,11 @@ type Expr interface {
 	GetDocumentID() Expr
 
 	// Logical functions
+	// IfError creates an expression that evaluates and returns the receiver expression if it does not produce an error;
+	// otherwise, it evaluates and returns `catchExprOrValue`.
+	//
+	// The parameter 'catchExprOrValue' is the expression or value to return if the receiver expression errors.
+	IfError(catchExprOrValue any) Expr
 	// IfAbsent creates an expression that returns a default value if an expression evaluates to an absent value.
 	//
 	// The parameter 'catchExprOrValue' is the value to return if the expression is absent.
@@ -415,6 +420,7 @@ func (b *baseExpr) GetCollectionID() Expr { return GetCollectionID(b) }
 func (b *baseExpr) GetDocumentID() Expr   { return GetDocumentID(b) }
 
 // Logical functions
+func (b *baseExpr) IfError(catchExprOrValue any) Expr  { return IfError(b, catchExprOrValue) }
 func (b *baseExpr) IfAbsent(catchExprOrValue any) Expr { return IfAbsent(b, catchExprOrValue) }
 
 // Object functions
