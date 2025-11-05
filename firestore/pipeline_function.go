@@ -42,7 +42,7 @@ func newBaseFunction(name string, params []Expr) *baseFunction {
 		paramExpr := asFieldExpr(param)
 		pbVal, err := paramExpr.toProto()
 		if err != nil {
-			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("error converting arg %d for function %q: %w", i, name, err)}}
+			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("firestore: error converting arg %d for function %q: %w", i, name, err)}}
 		}
 		argsPbVals = append(argsPbVals, pbVal)
 	}
