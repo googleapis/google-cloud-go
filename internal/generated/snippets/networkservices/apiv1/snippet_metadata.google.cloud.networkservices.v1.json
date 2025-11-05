@@ -103,6 +103,52 @@
       ]
     },
     {
+      "regionTag": "networkservices_v1_generated_DepService_CreateLbEdgeExtension_sync",
+      "title": "networkservices CreateLbEdgeExtension Sample",
+      "description": "CreateLbEdgeExtension creates a new `LbEdgeExtension` resource in a given project and location.",
+      "file": "DepClient/CreateLbEdgeExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateLbEdgeExtension",
+        "fullName": "google.cloud.networkservices.v1.DepClient.CreateLbEdgeExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkservicespb.CreateLbEdgeExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateLbEdgeExtensionOperation",
+        "client": {
+          "shortName": "DepClient",
+          "fullName": "google.cloud.networkservices.v1.DepClient"
+        },
+        "method": {
+          "shortName": "CreateLbEdgeExtension",
+          "fullName": "google.cloud.networkservices.v1.DepService.CreateLbEdgeExtension",
+          "service": {
+            "shortName": "DepService",
+            "fullName": "google.cloud.networkservices.v1.DepService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "networkservices_v1_generated_DepService_CreateLbRouteExtension_sync",
       "title": "networkservices CreateLbRouteExtension Sample",
       "description": "CreateLbRouteExtension creates a new `LbRouteExtension` resource in a given project and location.",
@@ -225,6 +271,52 @@
         "method": {
           "shortName": "DeleteAuthzExtension",
           "fullName": "google.cloud.networkservices.v1.DepService.DeleteAuthzExtension",
+          "service": {
+            "shortName": "DepService",
+            "fullName": "google.cloud.networkservices.v1.DepService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkservices_v1_generated_DepService_DeleteLbEdgeExtension_sync",
+      "title": "networkservices DeleteLbEdgeExtension Sample",
+      "description": "DeleteLbEdgeExtension deletes the specified `LbEdgeExtension` resource.",
+      "file": "DepClient/DeleteLbEdgeExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteLbEdgeExtension",
+        "fullName": "google.cloud.networkservices.v1.DepClient.DeleteLbEdgeExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkservicespb.DeleteLbEdgeExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteLbEdgeExtensionOperation",
+        "client": {
+          "shortName": "DepClient",
+          "fullName": "google.cloud.networkservices.v1.DepClient"
+        },
+        "method": {
+          "shortName": "DeleteLbEdgeExtension",
+          "fullName": "google.cloud.networkservices.v1.DepService.DeleteLbEdgeExtension",
           "service": {
             "shortName": "DepService",
             "fullName": "google.cloud.networkservices.v1.DepService"
@@ -470,6 +562,52 @@
       ]
     },
     {
+      "regionTag": "networkservices_v1_generated_DepService_GetLbEdgeExtension_sync",
+      "title": "networkservices GetLbEdgeExtension Sample",
+      "description": "GetLbEdgeExtension gets details of the specified `LbEdgeExtension` resource.",
+      "file": "DepClient/GetLbEdgeExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLbEdgeExtension",
+        "fullName": "google.cloud.networkservices.v1.DepClient.GetLbEdgeExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkservicespb.GetLbEdgeExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkservicespb.LbEdgeExtension",
+        "client": {
+          "shortName": "DepClient",
+          "fullName": "google.cloud.networkservices.v1.DepClient"
+        },
+        "method": {
+          "shortName": "GetLbEdgeExtension",
+          "fullName": "google.cloud.networkservices.v1.DepService.GetLbEdgeExtension",
+          "service": {
+            "shortName": "DepService",
+            "fullName": "google.cloud.networkservices.v1.DepService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "networkservices_v1_generated_DepService_GetLbRouteExtension_sync",
       "title": "networkservices GetLbRouteExtension Sample",
       "description": "GetLbRouteExtension gets details of the specified `LbRouteExtension` resource.",
@@ -684,6 +822,52 @@
         "method": {
           "shortName": "ListAuthzExtensions",
           "fullName": "google.cloud.networkservices.v1.DepService.ListAuthzExtensions",
+          "service": {
+            "shortName": "DepService",
+            "fullName": "google.cloud.networkservices.v1.DepService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkservices_v1_generated_DepService_ListLbEdgeExtensions_sync",
+      "title": "networkservices ListLbEdgeExtensions Sample",
+      "description": "ListLbEdgeExtensions lists `LbEdgeExtension` resources in a given project and location.",
+      "file": "DepClient/ListLbEdgeExtensions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLbEdgeExtensions",
+        "fullName": "google.cloud.networkservices.v1.DepClient.ListLbEdgeExtensions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkservicespb.ListLbEdgeExtensionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LbEdgeExtensionIterator",
+        "client": {
+          "shortName": "DepClient",
+          "fullName": "google.cloud.networkservices.v1.DepClient"
+        },
+        "method": {
+          "shortName": "ListLbEdgeExtensions",
+          "fullName": "google.cloud.networkservices.v1.DepService.ListLbEdgeExtensions",
           "service": {
             "shortName": "DepService",
             "fullName": "google.cloud.networkservices.v1.DepService"
@@ -1006,6 +1190,52 @@
         "method": {
           "shortName": "UpdateAuthzExtension",
           "fullName": "google.cloud.networkservices.v1.DepService.UpdateAuthzExtension",
+          "service": {
+            "shortName": "DepService",
+            "fullName": "google.cloud.networkservices.v1.DepService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkservices_v1_generated_DepService_UpdateLbEdgeExtension_sync",
+      "title": "networkservices UpdateLbEdgeExtension Sample",
+      "description": "UpdateLbEdgeExtension updates the parameters of the specified `LbEdgeExtension` resource.",
+      "file": "DepClient/UpdateLbEdgeExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateLbEdgeExtension",
+        "fullName": "google.cloud.networkservices.v1.DepClient.UpdateLbEdgeExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkservicespb.UpdateLbEdgeExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateLbEdgeExtensionOperation",
+        "client": {
+          "shortName": "DepClient",
+          "fullName": "google.cloud.networkservices.v1.DepClient"
+        },
+        "method": {
+          "shortName": "UpdateLbEdgeExtension",
+          "fullName": "google.cloud.networkservices.v1.DepService.UpdateLbEdgeExtension",
           "service": {
             "shortName": "DepService",
             "fullName": "google.cloud.networkservices.v1.DepService"

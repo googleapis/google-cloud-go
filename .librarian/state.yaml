@@ -131,7 +131,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.108.0
-    last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
+    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -689,7 +689,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.4.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -1892,7 +1892,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.27.1
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/dataplex/v1
         service_config: dataplex_v1.yaml
@@ -3622,7 +3622,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.20.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/networkmanagement/v1
         service_config: networkmanagement_v1.yaml
@@ -3670,7 +3670,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkservices
     version: 0.5.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/networkservices/v1
         service_config: networkservices_v1.yaml
@@ -4175,7 +4175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.3.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/pubsub/v1
         service_config: pubsub_v1.yaml
@@ -4957,7 +4957,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: shopping
     version: 1.2.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/shopping/css/v1
         service_config: css_v1.yaml
