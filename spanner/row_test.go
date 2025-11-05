@@ -2295,6 +2295,37 @@ func TestSelectAll(t *testing.T) {
 		want    interface{}
 	}{
 		{
+			name: "success: using slice of structs with spanner tag annotations in different order",
+			args: args{
+				destination: &[]testStructWithTag{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: timeType()},
+							{Name: "Tag3", Type: stringType()},
+						},
+						[]*proto3.Value{floatProto(1.1), intProto(1), timeProto(tm), stringProto("value")},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: timeType()},
+							{Name: "Tag3", Type: stringType()},
+						},
+						[]*proto3.Value{floatProto(2.2), intProto(2), timeProto(tm.Add(24 * time.Hour)), stringProto("value2")},
+					},
+					iterator.Done,
+				),
+			},
+			want: &[]testStructWithTag{
+				{Col1: 1, Col2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 2, Col2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
+			},
+		},
+		{
 			name: "success: using slice of primitives",
 			args: args{
 				destination: &[]string{},

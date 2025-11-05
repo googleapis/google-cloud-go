@@ -460,6 +460,7 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 
 	isPrimitive := itemType.Kind() != reflect.Struct
 	var pointers []interface{}
+	var fieldIndexes []int
 	isFirstRow := true
 	var err error
 	return rows.Do(func(row *Row) error {
@@ -469,7 +470,7 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 				defer func() {
 					isFirstRow = false
 				}()
-				if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
+				if pointers, fieldIndexes, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
 					return err
 				}
 			}
@@ -502,7 +503,7 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 				if p == nil {
 					continue
 				}
-				e.Field(idx).Set(reflect.ValueOf(p).Elem())
+				e.Field(fieldIndexes[idx]).Set(reflect.ValueOf(p).Elem())
 				idx++
 			}
 		}
@@ -524,22 +525,26 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 	})
 }
 
-func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, lenient bool) ([]interface{}, error) {
-	pointers := make([]interface{}, 0, len(cols))
+func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, lenient bool) ([]interface{}, []int, error) {
+	pointers := make([]interface{}, len(cols))
+	fieldIndexes := make([]int, len(cols))
 	fieldTag := make(map[string]reflect.Value, len(cols))
-	initFieldTag(sliceItem, &fieldTag)
+	fieldIndexMap := make(map[string]int, len(cols))
+	initFieldTag(sliceItem, &fieldTag, &fieldIndexMap)
 
 	for i, colName := range cols {
 		if colName.Name == "" {
-			return nil, errColNotFound(fmt.Sprintf("column %d", i))
+			return nil, nil, errColNotFound(fmt.Sprintf("column %d", i))
 		}
 
 		var fieldVal reflect.Value
+		fieldIdx := i
 		if v, ok := fieldTag[strings.ToLower(colName.GetName())]; ok {
+			fieldIdx = fieldIndexMap[strings.ToLower(colName.GetName())]
 			fieldVal = v
 		} else {
 			if !lenient {
-				return nil, errNoOrDupGoField(sliceItem, colName.GetName())
+				return nil, nil, errNoOrDupGoField(sliceItem, colName.GetName())
 			}
 			fieldVal = sliceItem.FieldByName(colName.GetName())
 		}
@@ -547,17 +552,18 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, leni
 			// have to add if we found a column because Columns() requires
 			// len(cols) arguments or it will error. This way we can scan to
 			// a useless pointer
-			pointers = append(pointers, nil)
+			pointers[i] = nil
 			continue
 		}
 
-		pointers = append(pointers, fieldVal.Addr().Interface())
+		fieldIndexes[i] = fieldIdx
+		pointers[i] = fieldVal.Addr().Interface()
 	}
-	return pointers, nil
+	return pointers, fieldIndexes, nil
 }
 
 // Initialization the tags from struct.
-func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value) {
+func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value, fieldIndexes *map[string]int) {
 	typ := sliceItem.Type()
 
 	for i := 0; i < sliceItem.NumField(); i++ {
@@ -573,7 +579,7 @@ func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value
 			// found an embedded struct
 			if fieldType.Anonymous {
 				sliceItemOfAnonymous := sliceItem.Field(i)
-				initFieldTag(sliceItemOfAnonymous, fieldTagMap)
+				initFieldTag(sliceItemOfAnonymous, fieldTagMap, fieldIndexes)
 				continue
 			}
 		}
@@ -585,5 +591,6 @@ func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value
 			name = fieldType.Name
 		}
 		(*fieldTagMap)[strings.ToLower(name)] = sliceItem.Field(i)
+		(*fieldIndexes)[strings.ToLower(name)] = i
 	}
 }
