@@ -1,0 +1,10 @@
+{
+  "api_shortname": "generativelanguage",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/ai/latest/generativelanguage/apiv1beta",
+  "client_library_type": "generated",
+  "description": "Generative Language API",
+  "distribution_name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

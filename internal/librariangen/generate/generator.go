@@ -132,6 +132,9 @@ func Generate(ctx context.Context, cfg *Config) error {
 			return fmt.Errorf("librariangen: post-processing failed: %w", err)
 		}
 	}
+	if err := deleteOutputPaths(cfg.OutputDir, moduleConfig.DeleteGenerationOutputPaths); err != nil {
+		return fmt.Errorf("librariangen: failed to delete paths specified in delete_generation_output_paths: %w", err)
+	}
 
 	slog.Debug("librariangen: generate command finished")
 	return nil
@@ -276,6 +279,23 @@ func moveFiles(sourceDir, targetDir string) error {
 		slog.Debug("librariangen: moving file", "from", oldPath, "to", newPath)
 		if err := os.Rename(oldPath, newPath); err != nil {
 			return fmt.Errorf("librariangen: failed to move %s to %s: %w", oldPath, newPath, err)
+		}
+	}
+	return nil
+}
+
+// deleteOutputPaths deletes the specified paths, which may be files
+// or directories, relative to the output directory. This is an emergency
+// escape hatch for situations where files are generated that we don't want
+// to include, such as the internal/generated/snippets/storage/internal directory.
+// This is configured in repo-config.yaml at the library level, with the key
+// delete_generation_output_paths.
+func deleteOutputPaths(outputDir string, pathsToDelete []string) error {
+	for _, path := range pathsToDelete {
+		// This is so rare that it's useful to be able to validate it easily.
+		slog.Info("deleting output path", "path", path)
+		if err := os.RemoveAll(filepath.Join(outputDir, path)); err != nil {
+			return err
 		}
 	}
 	return nil

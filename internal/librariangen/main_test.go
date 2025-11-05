@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/build"
+	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/configure"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/generate"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/release"
 )
@@ -32,6 +33,9 @@ func TestRun(t *testing.T) {
 		return nil
 	}
 	buildFunc = func(ctx context.Context, cfg *build.Config) error {
+		return nil
+	}
+	configureFunc = func(ctx context.Context, cfg *configure.Config) error {
 		return nil
 	}
 
@@ -77,9 +81,19 @@ func TestRun(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "configure command",
+			name:    "configure command no flags",
 			args:    []string{"configure"},
 			wantErr: false,
+		},
+		{
+			name:    "configure command with flags",
+			args:    []string{"configure", "--source=.", "--output=./build_out"},
+			wantErr: false,
+		},
+		{
+			name:    "configure command with bad flag",
+			args:    []string{"configure", "--library=xyz"},
+			wantErr: true,
 		},
 		{
 			name:    "generate command no flags",

@@ -6172,6 +6172,11 @@
                 "DirectRawPredict"
               ]
             },
+            "EmbedContent": {
+              "methods": [
+                "EmbedContent"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
@@ -6300,6 +6305,11 @@
             "DirectRawPredict": {
               "methods": [
                 "DirectRawPredict"
+              ]
+            },
+            "EmbedContent": {
+              "methods": [
+                "EmbedContent"
               ]
             },
             "Explain": {

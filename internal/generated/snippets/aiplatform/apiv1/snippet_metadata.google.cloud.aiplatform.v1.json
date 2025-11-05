@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.107.0",
+    "version": "1.108.0",
     "language": "GO",
     "apis": [
       {
@@ -22195,6 +22195,52 @@
         "method": {
           "shortName": "DirectRawPredict",
           "fullName": "google.cloud.aiplatform.v1.PredictionService.DirectRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_PredictionService_EmbedContent_sync",
+      "title": "aiplatform EmbedContent Sample",
+      "description": "EmbedContent embed content with multimodal inputs.",
+      "file": "PredictionClient/EmbedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EmbedContent",
+        "fullName": "google.cloud.aiplatform.v1.PredictionClient.EmbedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.EmbedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.EmbedContentResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1.PredictionClient"
+        },
+        "method": {
+          "shortName": "EmbedContent",
+          "fullName": "google.cloud.aiplatform.v1.PredictionService.EmbedContent",
           "service": {
             "shortName": "PredictionService",
             "fullName": "google.cloud.aiplatform.v1.PredictionService"

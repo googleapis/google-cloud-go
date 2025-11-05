@@ -2,6 +2,13 @@
 
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.22.0) (2025-10-22)
+
+### Bug Fixes
+
+* Add labels for additional Sessions identification 
+* Include AssistAnswer as a part of the Session 
+
 ## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.21.0...discoveryengine/v1.21.1) (2025-09-16)
 
 

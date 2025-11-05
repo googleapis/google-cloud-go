@@ -1,0 +1,10 @@
+{
+  "api_shortname": "bigqueryreservation",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/reservation/apiv1",
+  "client_library_type": "generated",
+  "description": "BigQuery Reservation API",
+  "distribution_name": "cloud.google.com/go/bigquery/reservation/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
+}

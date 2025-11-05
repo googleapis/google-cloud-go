@@ -1,0 +1,10 @@
+{
+  "api_shortname": "bigquerystorage",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/storage/apiv1beta",
+  "client_library_type": "generated",
+  "description": "BigQuery Storage API",
+  "distribution_name": "cloud.google.com/go/bigquery/storage/apiv1beta",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

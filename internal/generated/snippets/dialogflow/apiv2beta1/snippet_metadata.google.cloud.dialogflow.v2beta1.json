@@ -5240,6 +5240,418 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_CancelOperation_sync",
+      "title": "dialogflow CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "GeneratorEvaluationsClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_CreateGeneratorEvaluation_sync",
+      "title": "dialogflow CreateGeneratorEvaluation Sample",
+      "description": "CreateGeneratorEvaluation creates evaluation of a generator.",
+      "file": "GeneratorEvaluationsClient/CreateGeneratorEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGeneratorEvaluation",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.CreateGeneratorEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.CreateGeneratorEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateGeneratorEvaluationOperation",
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "CreateGeneratorEvaluation",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations.CreateGeneratorEvaluation",
+          "service": {
+            "shortName": "GeneratorEvaluations",
+            "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_DeleteGeneratorEvaluation_sync",
+      "title": "dialogflow DeleteGeneratorEvaluation Sample",
+      "description": "DeleteGeneratorEvaluation deletes an evaluation of generator.",
+      "file": "GeneratorEvaluationsClient/DeleteGeneratorEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGeneratorEvaluation",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.DeleteGeneratorEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.DeleteGeneratorEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "DeleteGeneratorEvaluation",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations.DeleteGeneratorEvaluation",
+          "service": {
+            "shortName": "GeneratorEvaluations",
+            "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_GetGeneratorEvaluation_sync",
+      "title": "dialogflow GetGeneratorEvaluation Sample",
+      "description": "GetGeneratorEvaluation gets an evaluation of generator.",
+      "file": "GeneratorEvaluationsClient/GetGeneratorEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGeneratorEvaluation",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.GetGeneratorEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.GetGeneratorEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.GeneratorEvaluation",
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "GetGeneratorEvaluation",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations.GetGeneratorEvaluation",
+          "service": {
+            "shortName": "GeneratorEvaluations",
+            "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_GetLocation_sync",
+      "title": "dialogflow GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "GeneratorEvaluationsClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_GetOperation_sync",
+      "title": "dialogflow GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "GeneratorEvaluationsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_ListGeneratorEvaluations_sync",
+      "title": "dialogflow ListGeneratorEvaluations Sample",
+      "description": "ListGeneratorEvaluations lists evaluations of generator.",
+      "file": "GeneratorEvaluationsClient/ListGeneratorEvaluations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGeneratorEvaluations",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.ListGeneratorEvaluations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.ListGeneratorEvaluationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GeneratorEvaluationIterator",
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "ListGeneratorEvaluations",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations.ListGeneratorEvaluations",
+          "service": {
+            "shortName": "GeneratorEvaluations",
+            "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_ListLocations_sync",
+      "title": "dialogflow ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "GeneratorEvaluationsClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_GeneratorEvaluations_ListOperations_sync",
+      "title": "dialogflow ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "GeneratorEvaluationsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "GeneratorEvaluationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.GeneratorEvaluationsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v2beta1_generated_Generators_CancelOperation_sync",
       "title": "dialogflow CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -6747,6 +7159,48 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Participants_BidiStreamingAnalyzeContent_sync",
+      "title": "dialogflow BidiStreamingAnalyzeContent Sample",
+      "description": "BidiStreamingAnalyzeContent bidirectional endless streaming version of\n[StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent].\n\n\nThis method is not supported for the REST transport.",
+      "file": "ParticipantsClient/BidiStreamingAnalyzeContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BidiStreamingAnalyzeContent",
+        "fullName": "google.cloud.dialogflow.v2beta1.ParticipantsClient.BidiStreamingAnalyzeContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dialogflowpb.Participants_BidiStreamingAnalyzeContentClient",
+        "client": {
+          "shortName": "ParticipantsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ParticipantsClient"
+        },
+        "method": {
+          "shortName": "BidiStreamingAnalyzeContent",
+          "fullName": "google.cloud.dialogflow.v2beta1.Participants.BidiStreamingAnalyzeContent",
+          "service": {
+            "shortName": "Participants",
+            "fullName": "google.cloud.dialogflow.v2beta1.Participants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -9116,6 +9570,464 @@
           "service": {
             "shortName": "SipTrunks",
             "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_CancelOperation_sync",
+      "title": "dialogflow CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ToolsClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_CreateTool_sync",
+      "title": "dialogflow CreateTool Sample",
+      "description": "CreateTool creates a tool.",
+      "file": "ToolsClient/CreateTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTool",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.CreateTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.CreateToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.Tool",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "CreateTool",
+          "fullName": "google.cloud.dialogflow.v2beta1.Tools.CreateTool",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.v2beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_DeleteTool_sync",
+      "title": "dialogflow DeleteTool Sample",
+      "description": "DeleteTool deletes a tool.",
+      "file": "ToolsClient/DeleteTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTool",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.DeleteTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.DeleteToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "DeleteTool",
+          "fullName": "google.cloud.dialogflow.v2beta1.Tools.DeleteTool",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.v2beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_GetLocation_sync",
+      "title": "dialogflow GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ToolsClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_GetOperation_sync",
+      "title": "dialogflow GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ToolsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_GetTool_sync",
+      "title": "dialogflow GetTool Sample",
+      "description": "GetTool retrieves a tool.",
+      "file": "ToolsClient/GetTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTool",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.GetTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.GetToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.Tool",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "GetTool",
+          "fullName": "google.cloud.dialogflow.v2beta1.Tools.GetTool",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.v2beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_ListLocations_sync",
+      "title": "dialogflow ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ToolsClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_ListOperations_sync",
+      "title": "dialogflow ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ToolsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_ListTools_sync",
+      "title": "dialogflow ListTools Sample",
+      "description": "ListTools lists tools.",
+      "file": "ToolsClient/ListTools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTools",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.ListTools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.ListToolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ToolIterator",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "ListTools",
+          "fullName": "google.cloud.dialogflow.v2beta1.Tools.ListTools",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.v2beta1.Tools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Tools_UpdateTool_sync",
+      "title": "dialogflow UpdateTool Sample",
+      "description": "UpdateTool updates a tool.",
+      "file": "ToolsClient/UpdateTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTool",
+        "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient.UpdateTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.UpdateToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.Tool",
+        "client": {
+          "shortName": "ToolsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ToolsClient"
+        },
+        "method": {
+          "shortName": "UpdateTool",
+          "fullName": "google.cloud.dialogflow.v2beta1.Tools.UpdateTool",
+          "service": {
+            "shortName": "Tools",
+            "fullName": "google.cloud.dialogflow.v2beta1.Tools"
           }
         }
       },

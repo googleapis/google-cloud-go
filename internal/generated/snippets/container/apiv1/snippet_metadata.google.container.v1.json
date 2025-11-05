@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/container/apiv1",
-    "version": "1.44.1",
+    "version": "1.45.0",
     "language": "GO",
     "apis": [
       {
@@ -196,7 +196,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_CreateCluster_sync",
       "title": "container CreateCluster Sample",
-      "description": "CreateCluster creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default\nnetwork](https: //cloud.google.com/compute/docs/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range the cluster is using.",
+      "description": "CreateCluster creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default\nnetwork](https: //cloud.google.com/compute/docs/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range the cluster is using.",
       "file": "ClusterManagerClient/CreateCluster/main.go",
       "language": "GO",
       "clientMethod": {
