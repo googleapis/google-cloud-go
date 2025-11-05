@@ -420,9 +420,9 @@ type Table struct {
 	materializedView string
 }
 
-// createFeatureFlagsMD creates the feature flags `bigtable-features` header
-// to be sent on each request. This includes all features supported and
-// and enabled on the client
+// createFeatureFlagsMD creates the metadata for the `bigtable-features` header.
+// This header is sent on each request and includes all features supported and
+// enabled on the client.
 func createFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirectAccess bool) metadata.MD {
 	ff := btpb.FeatureFlags{
 		RoutingCookie:            true,
