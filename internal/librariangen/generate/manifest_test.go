@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/bazel"
@@ -53,17 +52,15 @@ func TestReleaseLevel(t *testing.T) {
 	tests := []struct {
 		name         string
 		bazelRL      string
-		liRL         string
 		docGoContent string
 		want         string
 	}{
-		{"bazel_ga", "ga", "", "", "stable"},
-		{"bazel_beta", "beta", "", "", "preview"},
-		{"li_preview", "", "preview", "", "preview"},
-		{"li_stable", "", "stable", "", "stable"},
-		{"doc_go_beta", "", "", "NOTE: This package is in beta. It is not stable, and may be subject to changes.", "preview"},
-		{"doc_go_stable", "", "", "Package foo", "stable"},
-		{"default_stable", "", "", "", "stable"},
+		{"bazel_ga", "ga", "", "stable"},
+		{"bazel_beta", "beta", "", "preview"},
+		{"import_path_beta", "", "", "preview"},
+		{"doc_go_beta", "", "NOTE: This package is in beta. It is not stable, and may be subject to changes.", "preview"},
+		{"doc_go_stable", "", "Package foo", "stable"},
+		{"default_stable", "", "", "stable"},
 	}
 
 	for _, tt := range tests {
@@ -82,13 +79,12 @@ func TestReleaseLevel(t *testing.T) {
 			}
 
 			importPath := "cloud.google.com/go/foo/apiv1"
-			if strings.Contains(tt.name, "preview") {
+			if tt.name == "import_path_beta" {
 				importPath = "cloud.google.com/go/foo/apiv1beta"
 			}
 			li := &libraryInfo{
-				ImportPath:   importPath,
-				RelPath:      tmpDir,
-				ReleaseLevel: tt.liRL,
+				ImportPath: importPath,
+				RelPath:    tmpDir,
 			}
 
 			got, err := releaseLevel(docGoPath, li, bazelConfig)
@@ -145,12 +141,12 @@ func TestGenerateRepoMetadata(t *testing.T) {
 		t.Fatalf("os.ReadFile() failed: %v", err)
 	}
 
-	var gotEntry ManifestEntry
+	var gotEntry manifestEntry
 	if err := json.Unmarshal(got, &gotEntry); err != nil {
 		t.Fatalf("json.Unmarshal() failed: %v", err)
 	}
 
-	wantEntry := ManifestEntry{
+	wantEntry := manifestEntry{
 		APIShortname:        "test",
 		ClientDocumentation: "https://cloud.google.com/go/docs/reference/cloud.google.com/go/testlib/latest/apiv1",
 		ClientLibraryType:   "generated",

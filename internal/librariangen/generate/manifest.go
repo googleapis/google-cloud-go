@@ -33,27 +33,19 @@ import (
 
 const betaIndicator = "It is not stable"
 
-// ManifestEntry is used for JSON marshaling in manifest.
-type ManifestEntry struct {
-	APIShortname        string      `json:"api_shortname" yaml:"api-shortname"`
-	ClientDocumentation string      `json:"client_documentation" yaml:"client-documentation"`
-	ClientLibraryType   string      `json:"client_library_type" yaml:"client-library-type"`
-	Description         string      `json:"description" yaml:"description"`
-	DistributionName    string      `json:"distribution_name" yaml:"distribution-name"`
-	Language            string      `json:"language" yaml:"language"`
-	LibraryType         libraryType `json:"library_type" yaml:"library-type"`
-	ReleaseLevel        string      `json:"release_level" yaml:"release-level"`
+// manifestEntry is used for JSON marshaling in manifest.
+type manifestEntry struct {
+	APIShortname        string `json:"api_shortname"`
+	ClientDocumentation string `json:"client_documentation"`
+	ClientLibraryType   string `json:"client_library_type"`
+	Description         string `json:"description"`
+	DistributionName    string `json:"distribution_name"`
+	Language            string `json:"language"`
+	LibraryType         string `json:"library_type"`
+	ReleaseLevel        string `json:"release_level"`
 }
 
-type libraryType string
-
-const (
-	gapicAutoLibraryType   libraryType = "GAPIC_AUTO"
-	gapicManualLibraryType libraryType = "GAPIC_MANUAL"
-	coreLibraryType        libraryType = "CORE"
-	agentLibraryType       libraryType = "AGENT"
-	otherLibraryType       libraryType = "OTHER"
-)
+const gapicAutoLibraryType = "GAPIC_AUTO"
 
 // generateRepoMetadata generates a .repo-metadata.json file for a given API.
 // It gathers metadata from the service YAML, Bazel configuration, and Go module information.
@@ -99,7 +91,7 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 
 	apiShortname := apiShortname(yamlConfig.NameFull)
 
-	entry := ManifestEntry{
+	entry := manifestEntry{
 		APIShortname:        apiShortname,
 		ClientDocumentation: docURL,
 		ClientLibraryType:   "generated",
@@ -142,9 +134,8 @@ func docURL(modulePath, importPath string) (string, error) {
 }
 
 type libraryInfo struct {
-	ImportPath   string
-	RelPath      string
-	ReleaseLevel string
+	ImportPath string
+	RelPath    string
 }
 
 // releaseLevel determines the release level of a library. It prioritizes the release_level
