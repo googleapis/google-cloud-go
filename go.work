@@ -155,6 +155,7 @@ use (
 	./resourcemanager
 	./retail
 	./run
+	./saasplatform
 	./scheduler
 	./secretmanager
 	./securesourcemanager
