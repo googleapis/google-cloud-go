@@ -80,6 +80,8 @@ type Client struct {
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	enableDirectAccess      bool
+	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
+
 }
 
 // ClientConfig has configurations for the client.
@@ -174,6 +176,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		executeQueryRetryOption = clientOnlyExecuteQueryRetryOption
 	}
 
+	// Create the feature flags metadata once
+	ffMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, enableDirectAccess)
+
 	var connPool gtransport.ConnPool
 	var connPoolErr error
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
@@ -201,6 +206,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		retryOption:             retryOption,
 		executeQueryRetryOption: executeQueryRetryOption,
 		enableDirectAccess:      enableDirectAccess,
+		featureFlagsMD:          ffMD,
 	}, nil
 }
 
@@ -414,18 +420,18 @@ type Table struct {
 	materializedView string
 }
 
-// newFeatureFlags creates the feature flags `bigtable-features` header
-// to be sent on each request. This includes all features supported and
-// and enabled on the client
-func (c *Client) newFeatureFlags() metadata.MD {
+// createFeatureFlagsMD creates the metadata for the `bigtable-features` header.
+// This header is sent on each request and includes all features supported and
+// enabled on the client.
+func createFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirectAccess bool) metadata.MD {
 	ff := btpb.FeatureFlags{
 		RoutingCookie:            true,
 		ReverseScans:             true,
 		LastScannedRowResponses:  true,
-		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
-		RetryInfo:                !c.disableRetryInfo,
-		TrafficDirectorEnabled:   c.enableDirectAccess,
-		DirectAccessRequested:    c.enableDirectAccess,
+		ClientSideMetricsEnabled: clientSideMetricsEnabled,
+		RetryInfo:                !disableRetryInfo,
+		TrafficDirectorEnabled:   enableDirectAccess,
+		DirectAccessRequested:    enableDirectAccess,
 	}
 
 	val := ""
@@ -445,7 +451,7 @@ func (c *Client) Open(table string) *Table {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.reqParamsHeaderValTable(table),
-		), c.newFeatureFlags()),
+		), c.featureFlagsMD),
 	}
 }
 
@@ -457,7 +463,7 @@ func (c *Client) OpenTable(table string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.reqParamsHeaderValTable(table),
-		), c.newFeatureFlags()),
+		), c.featureFlagsMD),
 	}}
 }
 
@@ -469,7 +475,7 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
 			requestParamsHeader, c.reqParamsHeaderValTable(table),
-		), c.newFeatureFlags()),
+		), c.featureFlagsMD),
 		authorizedView: authorizedView,
 	}}
 }
@@ -481,7 +487,7 @@ func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullMaterializedViewName(materializedView),
 			requestParamsHeader, c.reqParamsHeaderValTable(materializedView),
-		), c.newFeatureFlags()),
+		), c.featureFlagsMD),
 		materializedView: materializedView,
 	}}
 }
@@ -540,7 +546,7 @@ func (c *Client) PrepareStatement(ctx context.Context, query string, paramTypes 
 	md := metadata.Join(metadata.Pairs(
 		resourcePrefixHeader, c.fullInstanceName(),
 		requestParamsHeader, c.reqParamsHeaderValInstance(),
-	), c.newFeatureFlags())
+	), c.featureFlagsMD)
 
 	ctx = mergeOutgoingMetadata(ctx, md)
 	return c.prepareStatementWithMetadata(ctx, query, paramTypes, opts...)
@@ -724,7 +730,7 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 	md := metadata.Join(metadata.Pairs(
 		resourcePrefixHeader, bs.ps.c.fullInstanceName(),
 		requestParamsHeader, bs.ps.c.reqParamsHeaderValInstance(),
-	), bs.ps.c.newFeatureFlags())
+	), bs.ps.c.featureFlagsMD)
 	ctx = mergeOutgoingMetadata(ctx, md)
 
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable.ExecuteQuery")
@@ -955,7 +961,7 @@ func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	md := metadata.Join(metadata.Pairs(
 		resourcePrefixHeader, c.fullInstanceName(),
 		requestParamsHeader, c.reqParamsHeaderValInstance(),
-	), c.newFeatureFlags())
+	), c.featureFlagsMD)
 
 	ctx = mergeOutgoingMetadata(ctx, md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/PingAndWarm")

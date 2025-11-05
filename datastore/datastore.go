@@ -122,6 +122,7 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
 			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
 			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
+			internaloption.EnableNewAuthLibrary(),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
 		}
