@@ -57,23 +57,11 @@ func newBaseFunction(name string, params []Expr) *baseFunction {
 }
 
 func newBaseFunctionFromBooleans(name string, params []BooleanExpr) *baseFunction {
-	argsPbVals := make([]*pb.Value, 0, len(params))
-	for i, param := range params {
-		paramExpr := asFieldExpr(param)
-		pbVal, err := paramExpr.toProto()
-		if err != nil {
-			return &baseFunction{baseExpr: &baseExpr{err: fmt.Errorf("firestore: error converting arg %d for function %q: %w", i, name, err)}}
-		}
-		argsPbVals = append(argsPbVals, pbVal)
+	exprs := make([]Expr, len(params))
+	for i, p := range params {
+		exprs[i] = p
 	}
-	pbVal := &pb.Value{ValueType: &pb.Value_FunctionValue{
-		FunctionValue: &pb.Function{
-			Name: name,
-			Args: argsPbVals,
-		},
-	}}
-
-	return &baseFunction{baseExpr: &baseExpr{pbVal: pbVal}}
+	return newBaseFunction(name, exprs)
 }
 
 // Add creates an expression that adds two expressions together, returning it as an Expr.
@@ -189,6 +177,28 @@ func TimestampSubtract(timestamp, unit, amount any) Expr {
 	return newBaseFunction("timestamp_subtract", []Expr{asFieldExpr(timestamp), asStringExpr(unit), asInt64Expr(amount)})
 }
 
+// TimestampTruncate creates an expression that truncates a timestamp to a specified granularity.
+//   - timestamp can be a field path string, [FieldPath] or [Expr].
+//   - granularity can be a string or an [Expr]. Valid values are "microsecond",
+//     "millisecond", "second", "minute", "hour", "day", "week", "week(monday)", "week(tuesday)",
+//     "week(wednesday)", "week(thursday)", "week(friday)", "week(saturday)", "week(sunday)",
+//     "isoweek", "month", "quarter", "year", and "isoyear".
+func TimestampTruncate(timestamp, granularity any) Expr {
+	return newBaseFunction("timestamp_trunc", []Expr{asFieldExpr(timestamp), asStringExpr(granularity)})
+}
+
+// TimestampTruncateWithTimezone creates an expression that truncates a timestamp to a specified granularity in a given timezone.
+//   - timestamp can be a field path string, [FieldPath] or [Expr].
+//   - granularity can be a string or an [Expr]. Valid values are "microsecond",
+//     "millisecond", "second", "minute", "hour", "day", "week", "week(monday)", "week(tuesday)",
+//     "week(wednesday)", "week(thursday)", "week(friday)", "week(saturday)", "week(sunday)",
+//     "isoweek", "month", "quarter", "year", and "isoyear".
+//   - timezone can be a string or an [Expr]. Valid values are from the TZ database
+//     (e.g., "America/Los_Angeles") or in the format "Etc/GMT-1".
+func TimestampTruncateWithTimezone(timestamp, granularity any, timezone string) Expr {
+	return newBaseFunction("timestamp_trunc", []Expr{asFieldExpr(timestamp), asStringExpr(granularity), asStringExpr(timezone)})
+}
+
 // TimestampToUnixMicros creates an expression that converts a timestamp expression to the number of microseconds since
 // the Unix epoch (1970-01-01 00:00:00 UTC).
 // - timestamp can be a field path string, [FieldPath] or [Expr].
@@ -292,7 +302,7 @@ func ArrayMinimum(exprOrFieldPath any) Expr {
 }
 
 // ByteLength creates an expression that calculates the length of a string represented by a field or [Expr] in UTF-8
-// bytes, or just the length of a Blob.
+// bytes.
 //   - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
 func ByteLength(exprOrFieldPath any) Expr {
 	return newBaseFunction("byte_length", []Expr{asFieldExpr(exprOrFieldPath)})
@@ -319,9 +329,9 @@ func StringReverse(exprOrFieldPath any) Expr {
 
 // Join creates an expression that joins the elements of a string array into a single string.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to a string array.
-// - separator is the string to use as a separator between elements.
-func Join(exprOrFieldPath any, separator any) Expr {
-	return newBaseFunction("join", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(separator)})
+// - delimiter is the string to use as a separator between elements.
+func Join(exprOrFieldPath any, delimiter any) Expr {
+	return newBaseFunction("join", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(delimiter)})
 }
 
 // Substring creates an expression that returns a substring of a string.
@@ -348,6 +358,19 @@ func ToUpper(exprOrFieldPath any) Expr {
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to a string.
 func Trim(exprOrFieldPath any) Expr {
 	return newBaseFunction("trim", []Expr{asFieldExpr(exprOrFieldPath)})
+}
+
+// Split creates an expression that splits a string by a delimiter.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr] that evaluates to a string.
+// - delimiter is the string to use to split by.
+func Split(exprOrFieldPath any, delimiter any) Expr {
+	return newBaseFunction("split", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(delimiter)})
+}
+
+// Type creates an expression that returns the type of the expression.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expr].
+func Type(exprOrFieldPath any) Expr {
+	return newBaseFunction("type", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
 // CosineDistance creates an expression that calculates the cosine distance between two vectors.
@@ -377,7 +400,7 @@ func VectorLength(exprOrFieldPath any) Expr {
 	return newBaseFunction("vector_length", []Expr{asFieldExpr(exprOrFieldPath)})
 }
 
-// Length creates an expression that calculates the length of string, array, map, vector, or Blob.
+// Length creates an expression that calculates the length of string, array, map or vector.
 // - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, array, map or vector when evaluated.
 //
 // Example:
@@ -388,7 +411,7 @@ func Length(exprOrField any) Expr {
 	return newBaseFunction("length", []Expr{asFieldExpr(exprOrField)})
 }
 
-// Reverse creates an expression that reverses a string, blob, or array.
+// Reverse creates an expression that reverses a string, or array.
 // - exprOrField can be a field path string, [FieldPath] or an [Expr] that returns a string, or array when evaluated.
 //
 // Example:
