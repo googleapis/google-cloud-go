@@ -2343,12 +2343,21 @@ func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator 
 type BucketIterator struct {
 	// Prefix restricts the iterator to buckets whose names begin with it.
 	Prefix string
+	// If true, the response will contain a list of unreachable buckets if the buckets are unavailable.
+	ReturnPartialSuccess bool
 
-	ctx       context.Context
-	projectID string
-	buckets   []*BucketAttrs
-	pageInfo  *iterator.PageInfo
-	nextFunc  func() error
+	ctx         context.Context
+	projectID   string
+	buckets     []*BucketAttrs
+	unreachable []string
+	pageInfo    *iterator.PageInfo
+	nextFunc    func() error
+}
+
+// Unreachable returns a list of bucket names that could not be reached
+// during the iteration if ReturnPartialSuccess was set to true.
+func (it *BucketIterator) Unreachable() []string {
+	return it.unreachable
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
