@@ -28,6 +28,8 @@ import (
 	"cloud.google.com/go/auth/internal/trustboundary"
 )
 
+const cloudPlatformScope = "https://www.googleapis.com/auth/cloud-platform"
+
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	fileType, err := credsfile.ParseFileType(b)
 	if err != nil {
@@ -280,7 +282,7 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	// Source credential needs IAM or Cloud Platform scope to call the
 	// iamcredentials endpoint. The scopes provided by the user are for the
 	// impersonated credentials.
-	sourceOpts.Scopes = []string{"https://www.googleapis.com/auth/cloud-platform"}
+	sourceOpts.Scopes = []string{cloudPlatformScope}
 	sourceTP, err := fileCredentials(f.CredSource, &sourceOpts)
 	if err != nil {
 		return nil, err

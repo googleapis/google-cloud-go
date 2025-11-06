@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -207,7 +208,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_ImpersonatedServiceAccountKey_ScopesFromFile(t *testing.T) {
-	b, err := os.ReadFile("../internal/testdata/imp.json")
+	b, err := os.ReadFile("../internal/testdata/imp_with_scopes.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -216,6 +217,9 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey_ScopesFromFile(t *test
 		t.Fatal(err)
 	}
 	wantScopes := []string{"https://www.googleapis.com/auth/drive"}
+	if !reflect.DeepEqual(f.Scopes, wantScopes) {
+		t.Fatalf("scopes not parsed correctly from file: got %v, want %v", f.Scopes, wantScopes)
+	}
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var reqBody struct {
 			Scope []string `json:"scope"`
@@ -223,7 +227,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey_ScopesFromFile(t *test
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if len(reqBody.Scope) != 1 || reqBody.Scope[0] != wantScopes[0] {
+		if !reflect.DeepEqual(reqBody.Scope, wantScopes) {
 			t.Errorf("got scopes %v, want %v", reqBody.Scope, wantScopes)
 		}
 		resp := &struct {
@@ -237,8 +241,8 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey_ScopesFromFile(t *test
 			t.Fatal(err)
 		}
 	}))
+	defer ts.Close()
 	f.ServiceAccountImpersonationURL = ts.URL + "/v1/projects/-/serviceAccounts/sa3@developer.gserviceaccount.com:generateAccessToken"
-	f.Scopes = wantScopes
 	b, err = json.Marshal(f)
 	if err != nil {
 		t.Fatal(err)
