@@ -614,6 +614,27 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		return nil, err
 	}
 
+	projectID, _, _, _ := parseDatabaseName(database)
+	logf(config.Logger, `
+-----Client Options--------
+Project ID: %v
+Num of gRPC channels: %v
+LAR enabled: %v
+Directpath enabled: %v
+End To End Tracing enabled: %v
+Built-in metrics enabled: %v
+gRPC metrics enabled: %v
+Min Sessions: %v
+Max Sessions: %v
+Multiplex session enabled: %v
+Multiplex session enabled for RW: %v
+Multiplex session enabled for Partition Ops: %v
+-----------------------------`,
+		projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
+		config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled,
+		config.SessionPoolConfig.MinOpened, config.SessionPoolConfig.MaxOpened, config.enableMultiplexSession,
+		config.enableMultiplexedSessionForRW, config.enableMultiplexedSessionForPartitionedOps)
+
 	c = &Client{
 		sc:                   sc,
 		idleSessions:         sp,
