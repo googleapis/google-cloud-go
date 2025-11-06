@@ -15,10 +15,8 @@
 package generate
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -30,8 +28,6 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 	"gopkg.in/yaml.v3"
 )
-
-const betaIndicator = "It is not stable"
 
 // manifestEntry is used for JSON marshaling in manifest.
 type manifestEntry struct {
@@ -73,22 +69,17 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 		return fmt.Errorf("librariangen: failed to decode service YAML: %w", err)
 	}
 
-	// Construct import path and relative path for docURL and releaseLevel.
-	// This is a simplified version of libraryInfo from the legacy postprocessor.
-	li := &libraryInfo{
-		ImportPath: bazelConfig.GAPICImportPath(),
+	importPath := bazelConfig.GAPICImportPath()
+	if i := strings.Index(importPath, ";"); i != -1 {
+		importPath = importPath[:i]
 	}
-	if i := strings.Index(li.ImportPath, ";"); i != -1 {
-		li.ImportPath = li.ImportPath[:i]
-	}
-	li.RelPath = strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
 
-	docURL, err := docURL(moduleConfig.GetModulePath(), li.ImportPath)
+	docURL, err := docURL(moduleConfig.GetModulePath(), importPath)
 	if err != nil {
 		return fmt.Errorf("librariangen: unable to build docs URL: %w", err)
 	}
 
-	releaseLevel, err := releaseLevel(filepath.Join(cfg.OutputDir, li.RelPath, "doc.go"), li, bazelConfig)
+	releaseLevel, err := releaseLevel(importPath, bazelConfig)
 	if err != nil {
 		return fmt.Errorf("librariangen: unable to calculate release level for %v: %w", api.Path, err)
 	}
@@ -100,14 +91,14 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 		ClientDocumentation: docURL,
 		ClientLibraryType:   "generated",
 		Description:         yamlConfig.Title,
-		DistributionName:    li.ImportPath,
+		DistributionName:    importPath,
 		Language:            "go",
 		LibraryType:         gapicAutoLibraryType,
 		ReleaseLevel:        releaseLevel,
 	}
 
 	// Determine output path from the import path.
-	outputPath := filepath.Join(cfg.OutputDir, filepath.FromSlash(li.ImportPath), ".repo-metadata.json")
+	outputPath := filepath.Join(cfg.OutputDir, filepath.FromSlash(importPath), ".repo-metadata.json")
 
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
 		return fmt.Errorf("librariangen: error creating directory for %s: %w", outputPath, err)
@@ -137,51 +128,32 @@ func docURL(modulePath, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + modulePath + "/latest/" + pkgPath, nil
 }
 
-type libraryInfo struct {
-	ImportPath string
-	RelPath    string
-}
-
-// releaseLevel determines the release level of a library. It prioritizes the release_level
-// specified in the BUILD.bazel file. If not present, it falls back to checking the
-// import path for "alpha" or "beta" suffixes, and finally by scanning the doc.go file
-// for a beta disclaimer.
-func releaseLevel(docGoPath string, li *libraryInfo, bazelConfig *bazel.Config) (string, error) {
-	// Prioritize Bazel config if available
-	if bazelConfig.ReleaseLevel() == "ga" {
-		return "stable", nil
-	} else if bazelConfig.ReleaseLevel() == "beta" {
-		return "preview", nil
-	}
-
-	// Fallback to import path and doc.go scan
-	i := strings.LastIndex(li.ImportPath, "/")
-	lastElm := li.ImportPath[i+1:]
+// releaseLevel determines the release level of a library. It prioritizes the
+// import path for "alpha" or "beta" suffixes. If not present, it falls back
+// to checking the release_level specified in the BUILD.bazel file for "alpha"
+// or "beta" , and finally defaults to returning "stable", per the behavior of
+// the [go_gapic_opt protoc plugin option
+// flag](https://github.com/googleapis/gapic-generator-go?tab=readme-ov-file#invocation):
+// - `release-level`: the client library release level.
+//   - Defaults to empty, which is essentially the GA release level.
+//   - Acceptable values are `alpha` and `beta`.
+func releaseLevel(importPath string, bazelConfig *bazel.Config) (string, error) {
+	// 1. Scan import path
+	i := strings.LastIndex(importPath, "/")
+	lastElm := importPath[i+1:]
 	if strings.Contains(lastElm, "alpha") {
 		return "preview", nil
 	} else if strings.Contains(lastElm, "beta") {
 		return "preview", nil
 	}
 
-	// Determine by scanning doc.go for our beta disclaimer
-	f, err := os.Open(docGoPath)
-	if err != nil {
-		// If doc.go doesn't exist, assume stable for now.
-		// This might need refinement if there are cases where doc.go is missing
-		// but the API is still preview.
-		if errors.Is(err, os.ErrNotExist) {
-			return "stable", nil
-		}
+	// 2. Read release_level attribute, if present, from go_gapic_library rule in BUILD.bazel.
+	if bazelConfig.ReleaseLevel() == "alpha" {
+		return "preview", nil
+	} else if bazelConfig.ReleaseLevel() == "beta" {
+		return "preview", nil
 	}
-	defer f.Close()
 
-	scanner := bufio.NewScanner(f)
-	var lineCnt int
-	for scanner.Scan() && lineCnt < 50 {
-		line := scanner.Text()
-		if strings.Contains(line, betaIndicator) {
-			return "preview", nil
-		}
-	}
+	// 3. If alpha or beta are not found in path or build file, default is `stable`.
 	return "stable", nil
 }

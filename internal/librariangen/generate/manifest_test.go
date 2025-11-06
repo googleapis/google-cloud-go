@@ -56,10 +56,10 @@ func TestReleaseLevel(t *testing.T) {
 		want         string
 	}{
 		{"bazel_ga", "ga", "", "stable"},
+		{"bazel_alpha", "alpha", "", "preview"},
 		{"bazel_beta", "beta", "", "preview"},
+		{"import_path_alpha", "", "", "preview"},
 		{"import_path_beta", "", "", "preview"},
-		{"doc_go_beta", "", "NOTE: This package is in beta. It is not stable, and may be subject to changes.", "preview"},
-		{"doc_go_stable", "", "Package foo", "stable"},
 		{"default_stable", "", "", "stable"},
 	}
 
@@ -79,15 +79,14 @@ func TestReleaseLevel(t *testing.T) {
 			}
 
 			importPath := "cloud.google.com/go/foo/apiv1"
+			if tt.name == "import_path_alpha" {
+				importPath = "cloud.google.com/go/foo/apiv1alpha1"
+			}
 			if tt.name == "import_path_beta" {
 				importPath = "cloud.google.com/go/foo/apiv1beta"
 			}
-			li := &libraryInfo{
-				ImportPath: importPath,
-				RelPath:    tmpDir,
-			}
 
-			got, err := releaseLevel(docGoPath, li, bazelConfig)
+			got, err := releaseLevel(importPath, bazelConfig)
 			if err != nil {
 				t.Fatalf("releaseLevel() failed: %v", err)
 			}
