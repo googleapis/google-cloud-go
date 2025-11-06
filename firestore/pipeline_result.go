@@ -179,7 +179,7 @@ func (it *PipelineResultIterator) GetAll() ([]*PipelineResult, error) {
 }
 
 // ExplainStats returns stats from query explain.
-// If [ExecuteExplainOptions.ExecutionMode] was set to [ExecutionExplainOptionsModeExplain] or left unset, then this returns nil
+// If [WithExplainMode] was set to [ExplainModeExplain] or left unset, then this returns nil
 func (it *PipelineResultIterator) ExplainStats() *ExplainStats {
 	if it == nil {
 		return &ExplainStats{err: errors.New("firestore: iterator is nil")}

@@ -78,23 +78,21 @@ func newFuncExecuteOption(f func(*executeSettings)) *funcExecuteOption {
 	}
 }
 
-// ExecutionExplainOptionsMode is the execution mode for pipeline explain.
-type ExecutionExplainOptionsMode string
+// ExplainMode is the execution mode for pipeline explain.
+type ExplainMode string
 
 const (
-	// ExecutionExplainOptionsModeExplain plans the query, but skips over the execution stage.
-	ExecutionExplainOptionsModeExplain ExecutionExplainOptionsMode = "explain"
-	// ExecutionExplainOptionsModeAnalyze both plans and executes the query.
-	ExecutionExplainOptionsModeAnalyze ExecutionExplainOptionsMode = "analyze"
+	// ExplainModeAnalyze both plans and executes the query.
+	ExplainModeAnalyze ExplainMode = "analyze"
 )
 
 // executeExplainOptions are options for explaining a pipeline execution.
 type executeExplainOptions struct {
-	Mode ExecutionExplainOptionsMode
+	Mode ExplainMode
 }
 
-// WithExecutionExplainOptionsMode sets the execution mode for pipeline explain.
-func WithExecutionExplainOptionsMode(mode ExecutionExplainOptionsMode) ExecuteOption {
+// WithExplainMode sets the execution mode for pipeline explain.
+func WithExplainMode(mode ExplainMode) ExecuteOption {
 	return newFuncExecuteOption(func(eo *executeSettings) {
 		eo.ExplainOptions = &executeExplainOptions{Mode: mode}
 	})
