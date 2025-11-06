@@ -1,5 +1,31 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.21.0) (2025-11-06)
+
+### Features
+
+* Enable organization-level support for VPC Flow Logs ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `DeliverInfo.GoogleServiceType` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `Status` to message `InstanceInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `VpcFlowLogsConfig.CrossProjectMetadata` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `VpcFlowLogsConfig.TargetResourceState` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum value `AbortInfo.Cause.GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum value `RouteInfo.NextHopType.SECURE_WEB_PROXY_GATEWAY` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum values `NO_ROUTE_FROM_EXTERNAL_IPV6_SOURCE_TO_PRIVATE_IPV6_ADDRESS`, `TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED`, `NO_MATCHING_NAT64_GATEWAY`, `LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH`, and `NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION` to `DropInfo.Cause` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `google_service_type` to message `DeliverInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `policy_priority` to message `NetworkInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `running` to message `InstanceInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `service_uri` to message `Endpoint.CloudRunRevisionEndpoint` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add fields `cross_project_metadata`, `target_resource_state`, `network`, and `subnet` to message `VpcFlowLogsConfig` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add http additional_bindings ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add message `Endpoint.SingleEdgeResponse` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add rpc `VpcFlowLogsService.QueryOrgVpcFlowLogsConfigs` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add service `OrganizationVpcFlowLogsService` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
+### Documentation
+
+* Various documentation and comment improvements, Enable organization-level support for VPC Flow Logs ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.20.0...networkmanagement/v1.20.1) (2025-09-18)
 
 
