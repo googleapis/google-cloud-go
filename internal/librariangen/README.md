@@ -6,7 +6,7 @@ This directory contains the source code for `librariangen`, a containerized Go a
 
 The `librariangen` binary is designed to be run inside a Docker container orchestrated by the central Librarian tool. It adheres to a specific "container contract" by accepting commands and expecting a set of mounted directories for its inputs and outputs.
 
-The primary commands are `generate` and `release-init`.
+The primary commands are `generate` and `release-stage`.
 
 ### `generate` Command
 
@@ -20,13 +20,13 @@ librariangen generate \
     --output /output
 `
 
-### `release-init` Command
+### `release-stage` Command
 
 This command is the core of the release workflow. It applies version and changelog updates to an existing library's files.
 
-**Example `release-init` command:**
+**Example `release-stage` command:**
 `bash
-librariangen release-init \
+librariangen release-stage \
     --repo /repo \
     --librarian /librarian \
     --output /output
@@ -52,15 +52,15 @@ librariangen release-init \
 
 4.  **Output:** All generated files (`*.pb.go`, `*_gapic.go`, etc.) are written to the `/output` directory. The Librarian tool is then responsible for copying these files to their final destination in the `google-cloud-go` repository.
 
-### `release-init` Command Workflow
+### `release-stage` Command Workflow
 
 1.  **Inputs:** The container is provided with the following mounted directories:
     *   `/repo`: A complete checkout of the `google-cloud-go` repository containing the library to be updated.
-    *   `/librarian`: Contains a `release-init-request.json` file, which specifies the library, the new version, and the changelog entries.
+    *   `/librarian`: Contains a `release-stage-request.json` file, which specifies the library, the new version, and the changelog entries.
     *   `/output`: An empty directory where the modified library files will be written.
 
 2.  **Execution:**
-    *   The `librariangen` binary parses the `release-init-request.json`.
+    *   The `librariangen` binary parses the `release-stage-request.json`.
     *   It reads the specified library files from the `/repo` directory.
     *   It updates the `version.go` file with the new version number.
     *   It prepends the new entries to the `CHANGES.md` file.
@@ -97,9 +97,9 @@ This is the standard way to run the generator, using a pre-built image from Goog
       --api-source="$GOOGLEAPIS_DIR"
     ```
 
-    To run the `release-init` command for the `secretmanager` library:
+    To run the `release stage` command for the `secretmanager` library:
     ```bash
-    go run github.com/googleapis/librarian/cmd/librarian@HEAD release-init \
+    go run github.com/googleapis/librarian/cmd/librarian@HEAD release stage \
       --image="gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest" \
       --repo="$GOOGLE_CLOUD_GO_DIR" \
       --library=secretmanager
@@ -209,11 +209,11 @@ The project has a multi-layered testing strategy.
             ./run-binary-generate-test.sh
             ```
         This script will compile the binary and run it against realistic API fixtures, verifying that the correct Go files are generated.
-    *   **`release-init` command:** (`run-binary-release-init-test.sh`)
+    *   **`release-stage` command:** (`run-binary-release-stage-test.sh`)
         *   **Setup:** The test requires a local checkout of the `google-cloud-go` repository. You must set the `LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR` environment variable to point to this checkout.
         *   **Execution:**
             ```bash
-            ./run-binary-release-init-test.sh
+            ./run-binary-release-stage-test.sh
             ```
         This script will compile the binary and run it against a test library, verifying that the version and changelog files are updated correctly.
 

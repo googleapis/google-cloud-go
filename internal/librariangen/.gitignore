@@ -1,7 +1,8 @@
 librariangen
+librarian-release-stage.log
 librariangen.log
-librariangen-release-init.log
+librariangen-release-stage.log
 librariangen-container.log
-librariangen-container-release-init.log
+librariangen-container-release-stage.log
 build-docker-and-test.log
 doc

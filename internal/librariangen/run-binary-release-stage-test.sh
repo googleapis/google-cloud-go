@@ -14,11 +14,11 @@
 # limitations under the License.
 
 # This script performs an integration test on the compiled librariangen binary
-# for the `release-init` command.
+# for the `release-stage` command.
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
-LIBRARIANGEN_LOG=librariangen-release-init.log
+LIBRARIANGEN_LOG=librariangen-release-stage.log
 echo "Cleaning up from last time: rm -f $LIBRARIANGEN_LOG"
 rm -f "$LIBRARIANGEN_LOG"
 
@@ -50,7 +50,7 @@ echo "Build complete."
 # --- Test Execution ---
 echo ""
 echo "--------------------------------------"
-echo "Running 'release-init' integration test..."
+echo "Running 'release-stage' integration test..."
 echo "--------------------------------------"
 TEST_DIR=$(mktemp -d -t tmp.XXXXXXXXXX)
 echo "Using temporary directory: $TEST_DIR"
@@ -59,8 +59,8 @@ LIBRARIAN_INPUT_DIR="$TEST_DIR/librarian-input"
 mkdir -p "$OUTPUT_DIR" "$LIBRARIAN_INPUT_DIR"
 
 # Prepare a temporary librarian directory with our test fixtures.
-cp -r "testdata/release-init/.librarian/." "$LIBRARIAN_INPUT_DIR/"
-cp -r "testdata/release-init/librarian/." "$LIBRARIAN_INPUT_DIR/"
+cp -r "testdata/release-stage/.librarian/." "$LIBRARIAN_INPUT_DIR/"
+cp -r "testdata/release-stage/librarian/." "$LIBRARIAN_INPUT_DIR/"
 
 # Reset the golden repo to a clean state before running the test.
 (
@@ -72,8 +72,8 @@ cp -r "testdata/release-init/librarian/." "$LIBRARIAN_INPUT_DIR/"
 ) >> "$LIBRARIANGEN_LOG" 2>&1
 
 # Execute
-echo "Running librariangen release-init..."
-GOOGLE_SDK_GO_LOGGING_LEVEL=debug ./librariangen release-init \
+echo "Running librariangen release-stage..."
+GOOGLE_SDK_GO_LOGGING_LEVEL=debug ./librariangen release-stage \
   --librarian="$LIBRARIAN_INPUT_DIR" \
   --repo="$GOLDEN_REPO_DIR" \
   --output="$OUTPUT_DIR" >> "$LIBRARIANGEN_LOG" 2>&1
@@ -104,6 +104,6 @@ if [ -z "$(git -C "$GOLDEN_REPO_DIR" status --porcelain)" ]; then
     exit 1
 fi
 
-echo "'release-init' integration test passed successfully."
+echo "'release-stage' integration test passed successfully."
 echo "Logs are available in: $LIBRARIANGEN_LOG"
 echo "To inspect changes, see the git status of: $GOLDEN_REPO_DIR"

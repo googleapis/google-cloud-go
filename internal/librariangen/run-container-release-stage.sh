@@ -14,12 +14,12 @@
 # limitations under the License.
 
 # This script performs an integration test on the librariangen container
-# for the `release-init` command.
+# for the `release-stage` command.
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
 IMAGE_NAME="gcr.io/cloud-go-infra/librariangen:latest"
-LIBRARIANGEN_LOG=librariangen-container-release-init.log
+LIBRARIANGEN_LOG=librariangen-container-release-stage.log
 echo "Cleaning up from last time: rm -f $LIBRARIANGEN_LOG"
 rm -f "$LIBRARIANGEN_LOG"
 
@@ -46,7 +46,7 @@ GOLDEN_REPO_DIR="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
 # --- Test Execution ---
 echo ""
 echo "--------------------------------------"
-echo "Running 'release-init' integration test..."
+echo "Running 'release-stage' integration test..."
 echo "--------------------------------------"
 TEST_DIR=$(mktemp -d -t tmp.XXXXXXXXXX)
 echo "Using temporary directory: $TEST_DIR"
@@ -55,8 +55,8 @@ LIBRARIAN_INPUT_DIR="$TEST_DIR/librarian-input"
 mkdir -p "$OUTPUT_DIR" "$LIBRARIAN_INPUT_DIR"
 
 # Prepare a temporary librarian directory with our test fixtures.
-cp -r "testdata/release-init/.librarian/." "$LIBRARIAN_INPUT_DIR/"
-cp -r "testdata/release-init/librarian/." "$LIBRARIAN_INPUT_DIR/"
+cp -r "testdata/release-stage/.librarian/." "$LIBRARIAN_INPUT_DIR/"
+cp -r "testdata/release-stage/librarian/." "$LIBRARIAN_INPUT_DIR/"
 
 # Reset the golden repo to a clean state before running the test.
 (
@@ -68,14 +68,14 @@ cp -r "testdata/release-init/librarian/." "$LIBRARIAN_INPUT_DIR/"
 ) >> "$LIBRARIANGEN_LOG" 2>&1
 
 # Execute
-echo "Running librariangen release-init container..."
+echo "Running librariangen release-stage container..."
 docker run --rm \
   --env GOOGLE_SDK_GO_LOGGING_LEVEL=debug \
   --mount type=bind,source="$LIBRARIAN_INPUT_DIR",target=/librarian,readonly \
   --mount type=bind,source="$GOLDEN_REPO_DIR",target=/repo \
   --mount type=bind,source="$OUTPUT_DIR",target=/output \
   "$IMAGE_NAME" \
-  release-init \
+  release-stage \
   --librarian=/librarian \
   --repo=/repo \
   --output=/output >> "$LIBRARIANGEN_LOG" 2>&1
@@ -106,6 +106,6 @@ if [ -z "$(git -C "$GOLDEN_REPO_DIR" status --porcelain)" ]; then
     exit 1
 fi
 
-echo "'release-init' container integration test passed successfully."
+echo "'release-stage' container integration test passed successfully."
 echo "Logs are available in: $LIBRARIANGEN_LOG"
 echo "To inspect changes, see the git status of: $GOLDEN_REPO_DIR"
