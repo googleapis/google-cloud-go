@@ -35,11 +35,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	VpcFlowLogsService_ListVpcFlowLogsConfigs_FullMethodName  = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/ListVpcFlowLogsConfigs"
-	VpcFlowLogsService_GetVpcFlowLogsConfig_FullMethodName    = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/GetVpcFlowLogsConfig"
-	VpcFlowLogsService_CreateVpcFlowLogsConfig_FullMethodName = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/CreateVpcFlowLogsConfig"
-	VpcFlowLogsService_UpdateVpcFlowLogsConfig_FullMethodName = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/UpdateVpcFlowLogsConfig"
-	VpcFlowLogsService_DeleteVpcFlowLogsConfig_FullMethodName = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/DeleteVpcFlowLogsConfig"
+	VpcFlowLogsService_ListVpcFlowLogsConfigs_FullMethodName       = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/ListVpcFlowLogsConfigs"
+	VpcFlowLogsService_GetVpcFlowLogsConfig_FullMethodName         = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/GetVpcFlowLogsConfig"
+	VpcFlowLogsService_CreateVpcFlowLogsConfig_FullMethodName      = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/CreateVpcFlowLogsConfig"
+	VpcFlowLogsService_UpdateVpcFlowLogsConfig_FullMethodName      = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/UpdateVpcFlowLogsConfig"
+	VpcFlowLogsService_DeleteVpcFlowLogsConfig_FullMethodName      = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/DeleteVpcFlowLogsConfig"
+	VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_FullMethodName   = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/QueryOrgVpcFlowLogsConfigs"
+	VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_FullMethodName = "/google.cloud.networkmanagement.v1.VpcFlowLogsService/ShowEffectiveFlowLogsConfigs"
 )
 
 // VpcFlowLogsServiceClient is the client API for VpcFlowLogsService service.
@@ -55,8 +57,8 @@ type VpcFlowLogsServiceClient interface {
 	// ID is different), the creation fails.
 	// Notes:
 	//
-	//  1. Creating a configuration with state=DISABLED will fail
-	//  2. The following fields are not considered as `settings` for the purpose
+	//  1. Creating a configuration with `state=DISABLED` will fail
+	//  2. The following fields are not considered as settings for the purpose
 	//     of the check mentioned above, therefore - creating another configuration
 	//     with the same fields but different values for the following fields will
 	//     fail as well:
@@ -71,8 +73,8 @@ type VpcFlowLogsServiceClient interface {
 	// ID is different), the creation fails.
 	// Notes:
 	//
-	//  1. Updating a configuration with state=DISABLED will fail.
-	//  2. The following fields are not considered as `settings` for the purpose
+	//  1. Updating a configuration with `state=DISABLED` will fail.
+	//  2. The following fields are not considered as settings for the purpose
 	//     of the check mentioned above, therefore - updating another configuration
 	//     with the same fields but different values for the following fields will
 	//     fail as well:
@@ -84,6 +86,12 @@ type VpcFlowLogsServiceClient interface {
 	UpdateVpcFlowLogsConfig(ctx context.Context, in *UpdateVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a specific `VpcFlowLogsConfig`.
 	DeleteVpcFlowLogsConfig(ctx context.Context, in *DeleteVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// QueryOrgVpcFlowLogsConfigs returns a list of all organization-level VPC
+	// Flow Logs configurations applicable to the specified project.
+	QueryOrgVpcFlowLogsConfigs(ctx context.Context, in *QueryOrgVpcFlowLogsConfigsRequest, opts ...grpc.CallOption) (*QueryOrgVpcFlowLogsConfigsResponse, error)
+	// ShowEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs
+	// configurations applicable to a specified resource.
+	ShowEffectiveFlowLogsConfigs(ctx context.Context, in *ShowEffectiveFlowLogsConfigsRequest, opts ...grpc.CallOption) (*ShowEffectiveFlowLogsConfigsResponse, error)
 }
 
 type vpcFlowLogsServiceClient struct {
@@ -139,6 +147,24 @@ func (c *vpcFlowLogsServiceClient) DeleteVpcFlowLogsConfig(ctx context.Context, 
 	return out, nil
 }
 
+func (c *vpcFlowLogsServiceClient) QueryOrgVpcFlowLogsConfigs(ctx context.Context, in *QueryOrgVpcFlowLogsConfigsRequest, opts ...grpc.CallOption) (*QueryOrgVpcFlowLogsConfigsResponse, error) {
+	out := new(QueryOrgVpcFlowLogsConfigsResponse)
+	err := c.cc.Invoke(ctx, VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vpcFlowLogsServiceClient) ShowEffectiveFlowLogsConfigs(ctx context.Context, in *ShowEffectiveFlowLogsConfigsRequest, opts ...grpc.CallOption) (*ShowEffectiveFlowLogsConfigsResponse, error) {
+	out := new(ShowEffectiveFlowLogsConfigsResponse)
+	err := c.cc.Invoke(ctx, VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VpcFlowLogsServiceServer is the server API for VpcFlowLogsService service.
 // All implementations should embed UnimplementedVpcFlowLogsServiceServer
 // for forward compatibility
@@ -152,8 +178,8 @@ type VpcFlowLogsServiceServer interface {
 	// ID is different), the creation fails.
 	// Notes:
 	//
-	//  1. Creating a configuration with state=DISABLED will fail
-	//  2. The following fields are not considered as `settings` for the purpose
+	//  1. Creating a configuration with `state=DISABLED` will fail
+	//  2. The following fields are not considered as settings for the purpose
 	//     of the check mentioned above, therefore - creating another configuration
 	//     with the same fields but different values for the following fields will
 	//     fail as well:
@@ -168,8 +194,8 @@ type VpcFlowLogsServiceServer interface {
 	// ID is different), the creation fails.
 	// Notes:
 	//
-	//  1. Updating a configuration with state=DISABLED will fail.
-	//  2. The following fields are not considered as `settings` for the purpose
+	//  1. Updating a configuration with `state=DISABLED` will fail.
+	//  2. The following fields are not considered as settings for the purpose
 	//     of the check mentioned above, therefore - updating another configuration
 	//     with the same fields but different values for the following fields will
 	//     fail as well:
@@ -181,6 +207,12 @@ type VpcFlowLogsServiceServer interface {
 	UpdateVpcFlowLogsConfig(context.Context, *UpdateVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error)
 	// Deletes a specific `VpcFlowLogsConfig`.
 	DeleteVpcFlowLogsConfig(context.Context, *DeleteVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error)
+	// QueryOrgVpcFlowLogsConfigs returns a list of all organization-level VPC
+	// Flow Logs configurations applicable to the specified project.
+	QueryOrgVpcFlowLogsConfigs(context.Context, *QueryOrgVpcFlowLogsConfigsRequest) (*QueryOrgVpcFlowLogsConfigsResponse, error)
+	// ShowEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs
+	// configurations applicable to a specified resource.
+	ShowEffectiveFlowLogsConfigs(context.Context, *ShowEffectiveFlowLogsConfigsRequest) (*ShowEffectiveFlowLogsConfigsResponse, error)
 }
 
 // UnimplementedVpcFlowLogsServiceServer should be embedded to have forward compatible implementations.
@@ -201,6 +233,12 @@ func (UnimplementedVpcFlowLogsServiceServer) UpdateVpcFlowLogsConfig(context.Con
 }
 func (UnimplementedVpcFlowLogsServiceServer) DeleteVpcFlowLogsConfig(context.Context, *DeleteVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteVpcFlowLogsConfig not implemented")
+}
+func (UnimplementedVpcFlowLogsServiceServer) QueryOrgVpcFlowLogsConfigs(context.Context, *QueryOrgVpcFlowLogsConfigsRequest) (*QueryOrgVpcFlowLogsConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOrgVpcFlowLogsConfigs not implemented")
+}
+func (UnimplementedVpcFlowLogsServiceServer) ShowEffectiveFlowLogsConfigs(context.Context, *ShowEffectiveFlowLogsConfigsRequest) (*ShowEffectiveFlowLogsConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ShowEffectiveFlowLogsConfigs not implemented")
 }
 
 // UnsafeVpcFlowLogsServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -304,6 +342,42 @@ func _VpcFlowLogsService_DeleteVpcFlowLogsConfig_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOrgVpcFlowLogsConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VpcFlowLogsServiceServer).QueryOrgVpcFlowLogsConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VpcFlowLogsServiceServer).QueryOrgVpcFlowLogsConfigs(ctx, req.(*QueryOrgVpcFlowLogsConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShowEffectiveFlowLogsConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VpcFlowLogsServiceServer).ShowEffectiveFlowLogsConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VpcFlowLogsServiceServer).ShowEffectiveFlowLogsConfigs(ctx, req.(*ShowEffectiveFlowLogsConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VpcFlowLogsService_ServiceDesc is the grpc.ServiceDesc for VpcFlowLogsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -330,6 +404,316 @@ var VpcFlowLogsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteVpcFlowLogsConfig",
 			Handler:    _VpcFlowLogsService_DeleteVpcFlowLogsConfig_Handler,
+		},
+		{
+			MethodName: "QueryOrgVpcFlowLogsConfigs",
+			Handler:    _VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_Handler,
+		},
+		{
+			MethodName: "ShowEffectiveFlowLogsConfigs",
+			Handler:    _VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "google/cloud/networkmanagement/v1/vpc_flow_logs.proto",
+}
+
+const (
+	OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_FullMethodName  = "/google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService/ListVpcFlowLogsConfigs"
+	OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_FullMethodName    = "/google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService/GetVpcFlowLogsConfig"
+	OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_FullMethodName = "/google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService/CreateVpcFlowLogsConfig"
+	OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_FullMethodName = "/google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService/UpdateVpcFlowLogsConfig"
+	OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_FullMethodName = "/google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService/DeleteVpcFlowLogsConfig"
+)
+
+// OrganizationVpcFlowLogsServiceClient is the client API for OrganizationVpcFlowLogsService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type OrganizationVpcFlowLogsServiceClient interface {
+	// Lists all `VpcFlowLogsConfigs` in a given organization.
+	ListVpcFlowLogsConfigs(ctx context.Context, in *ListVpcFlowLogsConfigsRequest, opts ...grpc.CallOption) (*ListVpcFlowLogsConfigsResponse, error)
+	// Gets the details of a specific `VpcFlowLogsConfig`.
+	GetVpcFlowLogsConfig(ctx context.Context, in *GetVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*VpcFlowLogsConfig, error)
+	// Creates a new `VpcFlowLogsConfig`.
+	// If a configuration with the exact same settings already exists (even if the
+	// ID is different), the creation fails.
+	// Notes:
+	//
+	//  1. Creating a configuration with `state=DISABLED` will fail
+	//  2. The following fields are not considered as settings for the purpose
+	//     of the check mentioned above, therefore - creating another configuration
+	//     with the same fields but different values for the following fields will
+	//     fail as well:
+	//     * name
+	//     * create_time
+	//     * update_time
+	//     * labels
+	//     * description
+	CreateVpcFlowLogsConfig(ctx context.Context, in *CreateVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates an existing `VpcFlowLogsConfig`.
+	// If a configuration with the exact same settings already exists (even if the
+	// ID is different), the creation fails.
+	// Notes:
+	//
+	//  1. Updating a configuration with `state=DISABLED` will fail
+	//  2. The following fields are not considered as settings for the purpose
+	//     of the check mentioned above, therefore - updating another configuration
+	//     with the same fields but different values for the following fields will
+	//     fail as well:
+	//     * name
+	//     * create_time
+	//     * update_time
+	//     * labels
+	//     * description
+	UpdateVpcFlowLogsConfig(ctx context.Context, in *UpdateVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a specific `VpcFlowLogsConfig`.
+	DeleteVpcFlowLogsConfig(ctx context.Context, in *DeleteVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+}
+
+type organizationVpcFlowLogsServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewOrganizationVpcFlowLogsServiceClient(cc grpc.ClientConnInterface) OrganizationVpcFlowLogsServiceClient {
+	return &organizationVpcFlowLogsServiceClient{cc}
+}
+
+func (c *organizationVpcFlowLogsServiceClient) ListVpcFlowLogsConfigs(ctx context.Context, in *ListVpcFlowLogsConfigsRequest, opts ...grpc.CallOption) (*ListVpcFlowLogsConfigsResponse, error) {
+	out := new(ListVpcFlowLogsConfigsResponse)
+	err := c.cc.Invoke(ctx, OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *organizationVpcFlowLogsServiceClient) GetVpcFlowLogsConfig(ctx context.Context, in *GetVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*VpcFlowLogsConfig, error) {
+	out := new(VpcFlowLogsConfig)
+	err := c.cc.Invoke(ctx, OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *organizationVpcFlowLogsServiceClient) CreateVpcFlowLogsConfig(ctx context.Context, in *CreateVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *organizationVpcFlowLogsServiceClient) UpdateVpcFlowLogsConfig(ctx context.Context, in *UpdateVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *organizationVpcFlowLogsServiceClient) DeleteVpcFlowLogsConfig(ctx context.Context, in *DeleteVpcFlowLogsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// OrganizationVpcFlowLogsServiceServer is the server API for OrganizationVpcFlowLogsService service.
+// All implementations should embed UnimplementedOrganizationVpcFlowLogsServiceServer
+// for forward compatibility
+type OrganizationVpcFlowLogsServiceServer interface {
+	// Lists all `VpcFlowLogsConfigs` in a given organization.
+	ListVpcFlowLogsConfigs(context.Context, *ListVpcFlowLogsConfigsRequest) (*ListVpcFlowLogsConfigsResponse, error)
+	// Gets the details of a specific `VpcFlowLogsConfig`.
+	GetVpcFlowLogsConfig(context.Context, *GetVpcFlowLogsConfigRequest) (*VpcFlowLogsConfig, error)
+	// Creates a new `VpcFlowLogsConfig`.
+	// If a configuration with the exact same settings already exists (even if the
+	// ID is different), the creation fails.
+	// Notes:
+	//
+	//  1. Creating a configuration with `state=DISABLED` will fail
+	//  2. The following fields are not considered as settings for the purpose
+	//     of the check mentioned above, therefore - creating another configuration
+	//     with the same fields but different values for the following fields will
+	//     fail as well:
+	//     * name
+	//     * create_time
+	//     * update_time
+	//     * labels
+	//     * description
+	CreateVpcFlowLogsConfig(context.Context, *CreateVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error)
+	// Updates an existing `VpcFlowLogsConfig`.
+	// If a configuration with the exact same settings already exists (even if the
+	// ID is different), the creation fails.
+	// Notes:
+	//
+	//  1. Updating a configuration with `state=DISABLED` will fail
+	//  2. The following fields are not considered as settings for the purpose
+	//     of the check mentioned above, therefore - updating another configuration
+	//     with the same fields but different values for the following fields will
+	//     fail as well:
+	//     * name
+	//     * create_time
+	//     * update_time
+	//     * labels
+	//     * description
+	UpdateVpcFlowLogsConfig(context.Context, *UpdateVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error)
+	// Deletes a specific `VpcFlowLogsConfig`.
+	DeleteVpcFlowLogsConfig(context.Context, *DeleteVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error)
+}
+
+// UnimplementedOrganizationVpcFlowLogsServiceServer should be embedded to have forward compatible implementations.
+type UnimplementedOrganizationVpcFlowLogsServiceServer struct {
+}
+
+func (UnimplementedOrganizationVpcFlowLogsServiceServer) ListVpcFlowLogsConfigs(context.Context, *ListVpcFlowLogsConfigsRequest) (*ListVpcFlowLogsConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListVpcFlowLogsConfigs not implemented")
+}
+func (UnimplementedOrganizationVpcFlowLogsServiceServer) GetVpcFlowLogsConfig(context.Context, *GetVpcFlowLogsConfigRequest) (*VpcFlowLogsConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVpcFlowLogsConfig not implemented")
+}
+func (UnimplementedOrganizationVpcFlowLogsServiceServer) CreateVpcFlowLogsConfig(context.Context, *CreateVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateVpcFlowLogsConfig not implemented")
+}
+func (UnimplementedOrganizationVpcFlowLogsServiceServer) UpdateVpcFlowLogsConfig(context.Context, *UpdateVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateVpcFlowLogsConfig not implemented")
+}
+func (UnimplementedOrganizationVpcFlowLogsServiceServer) DeleteVpcFlowLogsConfig(context.Context, *DeleteVpcFlowLogsConfigRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteVpcFlowLogsConfig not implemented")
+}
+
+// UnsafeOrganizationVpcFlowLogsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to OrganizationVpcFlowLogsServiceServer will
+// result in compilation errors.
+type UnsafeOrganizationVpcFlowLogsServiceServer interface {
+	mustEmbedUnimplementedOrganizationVpcFlowLogsServiceServer()
+}
+
+func RegisterOrganizationVpcFlowLogsServiceServer(s grpc.ServiceRegistrar, srv OrganizationVpcFlowLogsServiceServer) {
+	s.RegisterService(&OrganizationVpcFlowLogsService_ServiceDesc, srv)
+}
+
+func _OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListVpcFlowLogsConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrganizationVpcFlowLogsServiceServer).ListVpcFlowLogsConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrganizationVpcFlowLogsServiceServer).ListVpcFlowLogsConfigs(ctx, req.(*ListVpcFlowLogsConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVpcFlowLogsConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrganizationVpcFlowLogsServiceServer).GetVpcFlowLogsConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrganizationVpcFlowLogsServiceServer).GetVpcFlowLogsConfig(ctx, req.(*GetVpcFlowLogsConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateVpcFlowLogsConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrganizationVpcFlowLogsServiceServer).CreateVpcFlowLogsConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrganizationVpcFlowLogsServiceServer).CreateVpcFlowLogsConfig(ctx, req.(*CreateVpcFlowLogsConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateVpcFlowLogsConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrganizationVpcFlowLogsServiceServer).UpdateVpcFlowLogsConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrganizationVpcFlowLogsServiceServer).UpdateVpcFlowLogsConfig(ctx, req.(*UpdateVpcFlowLogsConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteVpcFlowLogsConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrganizationVpcFlowLogsServiceServer).DeleteVpcFlowLogsConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrganizationVpcFlowLogsServiceServer).DeleteVpcFlowLogsConfig(ctx, req.(*DeleteVpcFlowLogsConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// OrganizationVpcFlowLogsService_ServiceDesc is the grpc.ServiceDesc for OrganizationVpcFlowLogsService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var OrganizationVpcFlowLogsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService",
+	HandlerType: (*OrganizationVpcFlowLogsServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListVpcFlowLogsConfigs",
+			Handler:    _OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_Handler,
+		},
+		{
+			MethodName: "GetVpcFlowLogsConfig",
+			Handler:    _OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_Handler,
+		},
+		{
+			MethodName: "CreateVpcFlowLogsConfig",
+			Handler:    _OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_Handler,
+		},
+		{
+			MethodName: "UpdateVpcFlowLogsConfig",
+			Handler:    _OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_Handler,
+		},
+		{
+			MethodName: "DeleteVpcFlowLogsConfig",
+			Handler:    _OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

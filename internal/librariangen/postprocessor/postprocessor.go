@@ -68,7 +68,7 @@ func PostProcess(ctx context.Context, req *request.Library, outputDir, moduleDir
 	// We can't even run "go mod init" from configure and just "go mod tidy" here, as files written
 	// by the configure command aren't available during generate.
 	if len(req.APIs) == 1 && req.APIs[0].Status == configure.NewAPIStatus {
-		if err := goModInit(ctx, moduleDir); err != nil {
+		if err := goModInit(ctx, moduleDir, moduleConfig.GetModulePath()); err != nil {
 			return fmt.Errorf("librariangen: failed to run 'go mod init': %w", err)
 		}
 		if err := goModTidy(ctx, moduleDir); err != nil {
@@ -91,9 +91,9 @@ func goimports(ctx context.Context, dir string) error {
 }
 
 // goModInit runs "go mod init" on a directory to initialize the module.
-func goModInit(ctx context.Context, dir string) error {
+func goModInit(ctx context.Context, dir, modulePath string) error {
 	slog.Info("librariangen: running go mod init", "directory", dir)
-	args := []string{"go", "mod", "init"}
+	args := []string{"go", "mod", "init", modulePath}
 	return execvRun(ctx, args, dir)
 }
 
