@@ -99,66 +99,96 @@ func TestReleaseLevel(t *testing.T) {
 }
 
 func TestGenerateRepoMetadata(t *testing.T) {
-	tmpDir := t.TempDir()
-	sourceDir := filepath.Join(tmpDir, "source")
-	outputDir := filepath.Join(tmpDir, "output")
-	if err := os.MkdirAll(filepath.Join(sourceDir, "google/cloud/testlib/v1"), 0755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.MkdirAll(outputDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-
-	bazelPath := createFakeBazelFile(t, "ga")
-	if err := os.WriteFile(filepath.Join(sourceDir, "google/cloud/testlib/v1", "testlib_v1.yaml"), []byte("name: test.googleapis.com\ntitle: Test API"), 0644); err != nil {
-		t.Fatal(err)
-	}
-
-	cfg := &Config{
-		SourceDir: sourceDir,
-		OutputDir: outputDir,
-	}
-	lib := &request.Library{
-		ID: "testlib",
-	}
-	api := &request.API{
-		Path: "google/cloud/testlib/v1",
-	}
-	moduleConfig := &config.ModuleConfig{
-		Name: "testlib",
-	}
-	bazelConfig, err := bazel.Parse(bazelPath)
-	if err != nil {
-		t.Fatalf("bazel.Parse() failed: %v", err)
+	testCases := []struct {
+		name            string
+		serviceConfig   string
+		expectFile      bool
+		expectedContent manifestEntry
+	}{
+		{
+			name:          "with service config",
+			serviceConfig: "testlib_v1.yaml",
+			expectFile:    true,
+			expectedContent: manifestEntry{
+				APIShortname:        "test",
+				ClientDocumentation: "https://cloud.google.com/go/docs/reference/cloud.google.com/go/testlib/latest/apiv1",
+				ClientLibraryType:   "generated",
+				Description:         "Test API",
+				DistributionName:    "cloud.google.com/go/testlib/apiv1",
+				Language:            "go",
+				LibraryType:         "GAPIC_AUTO",
+				ReleaseLevel:        "stable",
+			},
+		},
+		{
+			name:          "without service config",
+			serviceConfig: "",
+			expectFile:    false,
+		},
 	}
 
-	if err := generateRepoMetadata(context.Background(), cfg, lib, api, moduleConfig, bazelConfig); err != nil {
-		t.Fatalf("generateRepoMetadata() failed: %v", err)
-	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			sourceDir := filepath.Join(tmpDir, "source")
+			outputDir := filepath.Join(tmpDir, "output")
+			if err := os.MkdirAll(filepath.Join(sourceDir, "google/cloud/testlib/v1"), 0755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.MkdirAll(outputDir, 0755); err != nil {
+				t.Fatal(err)
+			}
 
-	got, err := os.ReadFile(filepath.Join(outputDir, "cloud.google.com/go/testlib/apiv1/.repo-metadata.json"))
-	if err != nil {
-		t.Fatalf("os.ReadFile() failed: %v", err)
-	}
+			bazelPath := createFakeBazelFile(t, "ga")
+			if err := os.WriteFile(filepath.Join(sourceDir, "google/cloud/testlib/v1", "testlib_v1.yaml"), []byte("name: test.googleapis.com\ntitle: Test API"), 0644); err != nil {
+				t.Fatal(err)
+			}
 
-	var gotEntry manifestEntry
-	if err := json.Unmarshal(got, &gotEntry); err != nil {
-		t.Fatalf("json.Unmarshal() failed: %v", err)
-	}
+			cfg := &Config{
+				SourceDir: sourceDir,
+				OutputDir: outputDir,
+			}
+			lib := &request.Library{
+				ID: "testlib",
+			}
+			api := &request.API{
+				Path:          "google/cloud/testlib/v1",
+				ServiceConfig: tc.serviceConfig,
+			}
+			moduleConfig := &config.ModuleConfig{
+				Name: "testlib",
+			}
+			bazelConfig, err := bazel.Parse(bazelPath)
+			if err != nil {
+				t.Fatalf("bazel.Parse() failed: %v", err)
+			}
 
-	wantEntry := manifestEntry{
-		APIShortname:        "test",
-		ClientDocumentation: "https://cloud.google.com/go/docs/reference/cloud.google.com/go/testlib/latest/apiv1",
-		ClientLibraryType:   "generated",
-		Description:         "Test API",
-		DistributionName:    "cloud.google.com/go/testlib/apiv1",
-		Language:            "go",
-		LibraryType:         "GAPIC_AUTO",
-		ReleaseLevel:        "stable",
-	}
+			if err := generateRepoMetadata(context.Background(), cfg, lib, api, moduleConfig, bazelConfig); err != nil {
+				t.Fatalf("generateRepoMetadata() failed: %v", err)
+			}
 
-	if diff := cmp.Diff(wantEntry, gotEntry); diff != "" {
-		t.Errorf("generateRepoMetadata() mismatch (-want +got):\n%s", diff)
+			filePath := filepath.Join(outputDir, "cloud.google.com/go/testlib/apiv1/.repo-metadata.json")
+			if !tc.expectFile {
+				if _, err := os.Stat(filePath); !os.IsNotExist(err) {
+					t.Errorf("expected file to not exist, but it does")
+				}
+				return
+			}
+
+			got, err := os.ReadFile(filePath)
+			if err != nil {
+				t.Fatalf("os.ReadFile() failed: %v", err)
+			}
+
+			var gotEntry manifestEntry
+			if err := json.Unmarshal(got, &gotEntry); err != nil {
+				t.Fatalf("json.Unmarshal() failed: %v", err)
+			}
+
+			if diff := cmp.Diff(tc.expectedContent, gotEntry); diff != "" {
+				t.Errorf("generateRepoMetadata() mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
 }
 
