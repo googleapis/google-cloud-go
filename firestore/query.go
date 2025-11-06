@@ -34,6 +34,7 @@ import (
 
 var (
 	errMetricsBeforeEnd     = errors.New("firestore: ExplainMetrics are available only after the iterator reaches the end")
+	errStatsBeforeEnd       = errors.New("firestore: ExplainStats are available only after the iterator reaches the end")
 	errInvalidVector        = errors.New("firestore: queryVector must be Vector32 or Vector64")
 	errMalformedVectorQuery = errors.New("firestore: Malformed VectorQuery. Use FindNearest or FindNearestPath to create VectorQuery")
 )

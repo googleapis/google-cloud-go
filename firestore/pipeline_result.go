@@ -26,7 +26,9 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // PipelineResult is a result returned from executing a pipeline.
@@ -176,10 +178,66 @@ func (it *PipelineResultIterator) GetAll() ([]*PipelineResult, error) {
 	return results, nil
 }
 
+// ExplainStats returns stats from query explain.
+// If [ExecuteExplainOptions.ExecutionMode] was set to [ExecutionExplainOptionsModeExplain] or left unset, then this returns nil
+func (it *PipelineResultIterator) ExplainStats() *ExplainStats {
+	if it == nil {
+		return &ExplainStats{err: errors.New("firestore: iterator is nil")}
+	}
+	if it.err == nil || it.err != iterator.Done {
+		return &ExplainStats{err: errStatsBeforeEnd}
+	}
+	statsPb, statsErr := it.iter.getExplainStats()
+	return &ExplainStats{statsPb: statsPb, err: statsErr}
+}
+
+// ExplainStats is query explain stats.
+//
+// Contains all metadata related to pipeline planning and execution, specific
+// contents depend on the supplied pipeline options.
+type ExplainStats struct {
+	statsPb *pb.ExplainStats
+	err     error
+}
+
+// GetRawData returns the explain stats in an encoded proto format, as returned from the Firestore backend.
+// The caller is responsible for unpacking this proto message.
+func (es *ExplainStats) GetRawData() (*anypb.Any, error) {
+	if es.err != nil {
+		return nil, es.err
+	}
+	if es.statsPb == nil {
+		return nil, nil
+	}
+
+	return es.statsPb.GetData(), nil
+}
+
+// GetText returns the explain stats string verbatim as returned from the Firestore backend
+// when explain stats were requested with `outputFormat = 'text'`, this
+// If explain stats were requested with `outputFormat = 'json'`, this returns the explain stats
+// as stringified JSON, which was returned from the Firestore backend.
+func (es *ExplainStats) GetText() (string, error) {
+	if es.err != nil {
+		return "", es.err
+	}
+	if es.statsPb == nil || es.statsPb.GetData() == nil {
+		return "", nil
+	}
+
+	var data wrapperspb.StringValue
+	if err := es.statsPb.GetData().UnmarshalTo(&data); err != nil {
+		return "", fmt.Errorf("firestore: failed to unmarshal Any to wrapperspb.StringValue: %w", err)
+	}
+
+	return data.GetValue(), nil
+}
+
 // pipelineResultIteratorInternal is an unexported interface defining the core iteration logic.
 type pipelineResultIteratorInternal interface {
 	next() (*PipelineResult, error)
 	stop()
+	getExplainStats() (*pb.ExplainStats, error)
 }
 
 // streamPipelineResultIterator is the concrete implementation for gRPC streaming of pipeline results.
@@ -190,7 +248,11 @@ type streamPipelineResultIterator struct {
 	streamClient       pb.Firestore_ExecutePipelineClient
 	currResp           *pb.ExecutePipelineResponse
 	currRespResultsIdx int
+	statsPb            *pb.ExplainStats
 }
+
+// Ensure that streamPipelineResultIterator implements the pipelineResultIteratorInternal interface.
+var _ pipelineResultIteratorInternal = (*streamPipelineResultIterator)(nil)
 
 func newStreamPipelineResultIterator(ctx context.Context, p *Pipeline) *streamPipelineResultIterator {
 	ctx, cancel := context.WithCancel(ctx)
@@ -222,6 +284,7 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		}
 
 		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
+		ctx = withResourceHeader(ctx, client.path())
 
 		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 		if err != nil {
@@ -244,10 +307,10 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 			if res.GetResults() != nil {
 				it.currResp = res
 				it.currRespResultsIdx = 0
+				it.statsPb = res.GetExplainStats()
 				break
 			}
 			// No results => partial progress; keep receiving
-			// TODO: Set ExplainStats
 		}
 	}
 
@@ -273,4 +336,11 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 
 func (it *streamPipelineResultIterator) stop() {
 	it.cancel()
+}
+
+func (it *streamPipelineResultIterator) getExplainStats() (*pb.ExplainStats, error) {
+	if it == nil {
+		return nil, fmt.Errorf("firestore: iterator is nil")
+	}
+	return it.statsPb, nil
 }

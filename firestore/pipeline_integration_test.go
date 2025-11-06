@@ -67,6 +67,46 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 			t.Errorf("got %d documents, want 0", len(res))
 		}
 	})
+
+	t.Run("ExecutionModeAnalyze and recommended index", func(t *testing.T) {
+		doc := coll.NewDoc()
+		_, err := doc.Create(ctx, map[string]interface{}{"a": 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{doc})
+		})
+
+		iter := client.Pipeline().Collection(coll.ID).WithExecuteOptions(WithExecutionExplainOptionsMode(ExecutionExplainOptionsModeAnalyze), WithIndexMode("recommended")).Execute(ctx)
+		defer iter.Stop()
+		_, err = iter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute pipeline with explain mode: %v", err)
+		}
+		stats := iter.ExplainStats()
+		if stats == nil {
+			t.Fatal("ExplainStats should not be nil when WithExplainMode is used")
+		}
+
+		text, err := stats.GetText()
+		if err != nil {
+			t.Fatalf("GetText() error: %v", err)
+		}
+		fmt.Println("text", text)
+		if text == "" {
+			t.Error("GetText() should not be empty")
+		}
+
+		rawData, err := stats.GetRawData()
+		if err != nil {
+			t.Fatalf("GetRawData() error: %v", err)
+		}
+		fmt.Println("rawData", rawData)
+		if rawData == nil {
+			t.Error("GetRawData() should not be nil")
+		}
+	})
 	t.Run("WithTransaction", func(t *testing.T) {
 		h := testHelper{t}
 		type Author struct {
