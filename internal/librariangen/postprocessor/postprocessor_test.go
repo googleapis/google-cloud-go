@@ -154,7 +154,7 @@ func TestPostProcess(t *testing.T) {
 
 			var goModInitCalled, goModTidyCalled bool
 			execvRun = func(ctx context.Context, args []string, dir string) error {
-				if len(args) > 2 && args[1] == "mod" && args[2] == "init" {
+				if len(args) > 3 && args[1] == "mod" && args[2] == "init" && strings.HasPrefix(args[3], "cloud.google.com/go") {
 					goModInitCalled = true
 				}
 				if len(args) > 2 && args[1] == "mod" && args[2] == "tidy" {

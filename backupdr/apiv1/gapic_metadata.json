@@ -70,6 +70,11 @@
                 "FetchBackupPlanAssociationsForResourceType"
               ]
             },
+            "FetchBackupsForResourceType": {
+              "methods": [
+                "FetchBackupsForResourceType"
+              ]
+            },
             "FetchDataSourceReferencesForResourceType": {
               "methods": [
                 "FetchDataSourceReferencesForResourceType"
@@ -163,6 +168,11 @@
             "ListBackups": {
               "methods": [
                 "ListBackups"
+              ]
+            },
+            "ListDataSourceReferences": {
+              "methods": [
+                "ListDataSourceReferences"
               ]
             },
             "ListDataSources": {
@@ -295,6 +305,11 @@
                 "FetchBackupPlanAssociationsForResourceType"
               ]
             },
+            "FetchBackupsForResourceType": {
+              "methods": [
+                "FetchBackupsForResourceType"
+              ]
+            },
             "FetchDataSourceReferencesForResourceType": {
               "methods": [
                 "FetchDataSourceReferencesForResourceType"
@@ -388,6 +403,11 @@
             "ListBackups": {
               "methods": [
                 "ListBackups"
+              ]
+            },
+            "ListDataSourceReferences": {
+              "methods": [
+                "ListDataSourceReferences"
               ]
             },
             "ListDataSources": {

@@ -57,6 +57,11 @@ type DepCallOptions struct {
 	CreateLbRouteExtension   []gax.CallOption
 	UpdateLbRouteExtension   []gax.CallOption
 	DeleteLbRouteExtension   []gax.CallOption
+	ListLbEdgeExtensions     []gax.CallOption
+	GetLbEdgeExtension       []gax.CallOption
+	CreateLbEdgeExtension    []gax.CallOption
+	UpdateLbEdgeExtension    []gax.CallOption
+	DeleteLbEdgeExtension    []gax.CallOption
 	ListAuthzExtensions      []gax.CallOption
 	GetAuthzExtension        []gax.CallOption
 	CreateAuthzExtension     []gax.CallOption
@@ -120,6 +125,21 @@ func defaultDepCallOptions() *DepCallOptions {
 		DeleteLbRouteExtension: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListLbEdgeExtensions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListAuthzExtensions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -179,6 +199,21 @@ func defaultDepRESTCallOptions() *DepCallOptions {
 		DeleteLbRouteExtension: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListLbEdgeExtensions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteLbEdgeExtension: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListAuthzExtensions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -227,6 +262,14 @@ type internalDepClient interface {
 	UpdateLbRouteExtensionOperation(name string) *UpdateLbRouteExtensionOperation
 	DeleteLbRouteExtension(context.Context, *networkservicespb.DeleteLbRouteExtensionRequest, ...gax.CallOption) (*DeleteLbRouteExtensionOperation, error)
 	DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation
+	ListLbEdgeExtensions(context.Context, *networkservicespb.ListLbEdgeExtensionsRequest, ...gax.CallOption) *LbEdgeExtensionIterator
+	GetLbEdgeExtension(context.Context, *networkservicespb.GetLbEdgeExtensionRequest, ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error)
+	CreateLbEdgeExtension(context.Context, *networkservicespb.CreateLbEdgeExtensionRequest, ...gax.CallOption) (*CreateLbEdgeExtensionOperation, error)
+	CreateLbEdgeExtensionOperation(name string) *CreateLbEdgeExtensionOperation
+	UpdateLbEdgeExtension(context.Context, *networkservicespb.UpdateLbEdgeExtensionRequest, ...gax.CallOption) (*UpdateLbEdgeExtensionOperation, error)
+	UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdgeExtensionOperation
+	DeleteLbEdgeExtension(context.Context, *networkservicespb.DeleteLbEdgeExtensionRequest, ...gax.CallOption) (*DeleteLbEdgeExtensionOperation, error)
+	DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdgeExtensionOperation
 	ListAuthzExtensions(context.Context, *networkservicespb.ListAuthzExtensionsRequest, ...gax.CallOption) *AuthzExtensionIterator
 	GetAuthzExtension(context.Context, *networkservicespb.GetAuthzExtensionRequest, ...gax.CallOption) (*networkservicespb.AuthzExtension, error)
 	CreateAuthzExtension(context.Context, *networkservicespb.CreateAuthzExtensionRequest, ...gax.CallOption) (*CreateAuthzExtensionOperation, error)
@@ -371,6 +414,49 @@ func (c *DepClient) DeleteLbRouteExtension(ctx context.Context, req *networkserv
 // The name must be that of a previously created DeleteLbRouteExtensionOperation, possibly from a different process.
 func (c *DepClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation {
 	return c.internalClient.DeleteLbRouteExtensionOperation(name)
+}
+
+// ListLbEdgeExtensions lists LbEdgeExtension resources in a given project and location.
+func (c *DepClient) ListLbEdgeExtensions(ctx context.Context, req *networkservicespb.ListLbEdgeExtensionsRequest, opts ...gax.CallOption) *LbEdgeExtensionIterator {
+	return c.internalClient.ListLbEdgeExtensions(ctx, req, opts...)
+}
+
+// GetLbEdgeExtension gets details of the specified LbEdgeExtension resource.
+func (c *DepClient) GetLbEdgeExtension(ctx context.Context, req *networkservicespb.GetLbEdgeExtensionRequest, opts ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error) {
+	return c.internalClient.GetLbEdgeExtension(ctx, req, opts...)
+}
+
+// CreateLbEdgeExtension creates a new LbEdgeExtension resource in a given project and location.
+func (c *DepClient) CreateLbEdgeExtension(ctx context.Context, req *networkservicespb.CreateLbEdgeExtensionRequest, opts ...gax.CallOption) (*CreateLbEdgeExtensionOperation, error) {
+	return c.internalClient.CreateLbEdgeExtension(ctx, req, opts...)
+}
+
+// CreateLbEdgeExtensionOperation returns a new CreateLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created CreateLbEdgeExtensionOperation, possibly from a different process.
+func (c *DepClient) CreateLbEdgeExtensionOperation(name string) *CreateLbEdgeExtensionOperation {
+	return c.internalClient.CreateLbEdgeExtensionOperation(name)
+}
+
+// UpdateLbEdgeExtension updates the parameters of the specified LbEdgeExtension resource.
+func (c *DepClient) UpdateLbEdgeExtension(ctx context.Context, req *networkservicespb.UpdateLbEdgeExtensionRequest, opts ...gax.CallOption) (*UpdateLbEdgeExtensionOperation, error) {
+	return c.internalClient.UpdateLbEdgeExtension(ctx, req, opts...)
+}
+
+// UpdateLbEdgeExtensionOperation returns a new UpdateLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created UpdateLbEdgeExtensionOperation, possibly from a different process.
+func (c *DepClient) UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdgeExtensionOperation {
+	return c.internalClient.UpdateLbEdgeExtensionOperation(name)
+}
+
+// DeleteLbEdgeExtension deletes the specified LbEdgeExtension resource.
+func (c *DepClient) DeleteLbEdgeExtension(ctx context.Context, req *networkservicespb.DeleteLbEdgeExtensionRequest, opts ...gax.CallOption) (*DeleteLbEdgeExtensionOperation, error) {
+	return c.internalClient.DeleteLbEdgeExtension(ctx, req, opts...)
+}
+
+// DeleteLbEdgeExtensionOperation returns a new DeleteLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created DeleteLbEdgeExtensionOperation, possibly from a different process.
+func (c *DepClient) DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdgeExtensionOperation {
+	return c.internalClient.DeleteLbEdgeExtensionOperation(name)
 }
 
 // ListAuthzExtensions lists AuthzExtension resources in a given project and location.
@@ -911,6 +997,130 @@ func (c *depGRPCClient) DeleteLbRouteExtension(ctx context.Context, req *network
 		return nil, err
 	}
 	return &DeleteLbRouteExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *depGRPCClient) ListLbEdgeExtensions(ctx context.Context, req *networkservicespb.ListLbEdgeExtensionsRequest, opts ...gax.CallOption) *LbEdgeExtensionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListLbEdgeExtensions[0:len((*c.CallOptions).ListLbEdgeExtensions):len((*c.CallOptions).ListLbEdgeExtensions)], opts...)
+	it := &LbEdgeExtensionIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListLbEdgeExtensionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbEdgeExtension, string, error) {
+		resp := &networkservicespb.ListLbEdgeExtensionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.depClient.ListLbEdgeExtensions, req, settings.GRPC, c.logger, "ListLbEdgeExtensions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLbEdgeExtensions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *depGRPCClient) GetLbEdgeExtension(ctx context.Context, req *networkservicespb.GetLbEdgeExtensionRequest, opts ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetLbEdgeExtension[0:len((*c.CallOptions).GetLbEdgeExtension):len((*c.CallOptions).GetLbEdgeExtension)], opts...)
+	var resp *networkservicespb.LbEdgeExtension
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.GetLbEdgeExtension, req, settings.GRPC, c.logger, "GetLbEdgeExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *depGRPCClient) CreateLbEdgeExtension(ctx context.Context, req *networkservicespb.CreateLbEdgeExtensionRequest, opts ...gax.CallOption) (*CreateLbEdgeExtensionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateLbEdgeExtension[0:len((*c.CallOptions).CreateLbEdgeExtension):len((*c.CallOptions).CreateLbEdgeExtension)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.CreateLbEdgeExtension, req, settings.GRPC, c.logger, "CreateLbEdgeExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateLbEdgeExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *depGRPCClient) UpdateLbEdgeExtension(ctx context.Context, req *networkservicespb.UpdateLbEdgeExtensionRequest, opts ...gax.CallOption) (*UpdateLbEdgeExtensionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "lb_edge_extension.name", url.QueryEscape(req.GetLbEdgeExtension().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateLbEdgeExtension[0:len((*c.CallOptions).UpdateLbEdgeExtension):len((*c.CallOptions).UpdateLbEdgeExtension)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.UpdateLbEdgeExtension, req, settings.GRPC, c.logger, "UpdateLbEdgeExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateLbEdgeExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *depGRPCClient) DeleteLbEdgeExtension(ctx context.Context, req *networkservicespb.DeleteLbEdgeExtensionRequest, opts ...gax.CallOption) (*DeleteLbEdgeExtensionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteLbEdgeExtension[0:len((*c.CallOptions).DeleteLbEdgeExtension):len((*c.CallOptions).DeleteLbEdgeExtension)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.depClient.DeleteLbEdgeExtension, req, settings.GRPC, c.logger, "DeleteLbEdgeExtension")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteLbEdgeExtensionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1898,6 +2108,330 @@ func (c *depRESTClient) DeleteLbRouteExtension(ctx context.Context, req *network
 	}, nil
 }
 
+// ListLbEdgeExtensions lists LbEdgeExtension resources in a given project and location.
+func (c *depRESTClient) ListLbEdgeExtensions(ctx context.Context, req *networkservicespb.ListLbEdgeExtensionsRequest, opts ...gax.CallOption) *LbEdgeExtensionIterator {
+	it := &LbEdgeExtensionIterator{}
+	req = proto.Clone(req).(*networkservicespb.ListLbEdgeExtensionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbEdgeExtension, string, error) {
+		resp := &networkservicespb.ListLbEdgeExtensionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/lbEdgeExtensions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLbEdgeExtensions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLbEdgeExtensions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetLbEdgeExtension gets details of the specified LbEdgeExtension resource.
+func (c *depRESTClient) GetLbEdgeExtension(ctx context.Context, req *networkservicespb.GetLbEdgeExtensionRequest, opts ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetLbEdgeExtension[0:len((*c.CallOptions).GetLbEdgeExtension):len((*c.CallOptions).GetLbEdgeExtension)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.LbEdgeExtension{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLbEdgeExtension")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateLbEdgeExtension creates a new LbEdgeExtension resource in a given project and location.
+func (c *depRESTClient) CreateLbEdgeExtension(ctx context.Context, req *networkservicespb.CreateLbEdgeExtensionRequest, opts ...gax.CallOption) (*CreateLbEdgeExtensionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetLbEdgeExtension()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/lbEdgeExtensions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("lbEdgeExtensionId", fmt.Sprintf("%v", req.GetLbEdgeExtensionId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateLbEdgeExtension")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateLbEdgeExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateLbEdgeExtension updates the parameters of the specified LbEdgeExtension resource.
+func (c *depRESTClient) UpdateLbEdgeExtension(ctx context.Context, req *networkservicespb.UpdateLbEdgeExtensionRequest, opts ...gax.CallOption) (*UpdateLbEdgeExtensionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetLbEdgeExtension()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetLbEdgeExtension().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "lb_edge_extension.name", url.QueryEscape(req.GetLbEdgeExtension().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateLbEdgeExtension")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateLbEdgeExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteLbEdgeExtension deletes the specified LbEdgeExtension resource.
+func (c *depRESTClient) DeleteLbEdgeExtension(ctx context.Context, req *networkservicespb.DeleteLbEdgeExtensionRequest, opts ...gax.CallOption) (*DeleteLbEdgeExtensionOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteLbEdgeExtension")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteLbEdgeExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // ListAuthzExtensions lists AuthzExtension resources in a given project and location.
 func (c *depRESTClient) ListAuthzExtensions(ctx context.Context, req *networkservicespb.ListAuthzExtensionsRequest, opts ...gax.CallOption) *AuthzExtensionIterator {
 	it := &AuthzExtensionIterator{}
@@ -2756,6 +3290,24 @@ func (c *depRESTClient) CreateAuthzExtensionOperation(name string) *CreateAuthzE
 	}
 }
 
+// CreateLbEdgeExtensionOperation returns a new CreateLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created CreateLbEdgeExtensionOperation, possibly from a different process.
+func (c *depGRPCClient) CreateLbEdgeExtensionOperation(name string) *CreateLbEdgeExtensionOperation {
+	return &CreateLbEdgeExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateLbEdgeExtensionOperation returns a new CreateLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created CreateLbEdgeExtensionOperation, possibly from a different process.
+func (c *depRESTClient) CreateLbEdgeExtensionOperation(name string) *CreateLbEdgeExtensionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateLbEdgeExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateLbRouteExtensionOperation returns a new CreateLbRouteExtensionOperation from a given name.
 // The name must be that of a previously created CreateLbRouteExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) CreateLbRouteExtensionOperation(name string) *CreateLbRouteExtensionOperation {
@@ -2810,6 +3362,24 @@ func (c *depRESTClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzE
 	}
 }
 
+// DeleteLbEdgeExtensionOperation returns a new DeleteLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created DeleteLbEdgeExtensionOperation, possibly from a different process.
+func (c *depGRPCClient) DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdgeExtensionOperation {
+	return &DeleteLbEdgeExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteLbEdgeExtensionOperation returns a new DeleteLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created DeleteLbEdgeExtensionOperation, possibly from a different process.
+func (c *depRESTClient) DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdgeExtensionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteLbEdgeExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteLbRouteExtensionOperation returns a new DeleteLbRouteExtensionOperation from a given name.
 // The name must be that of a previously created DeleteLbRouteExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation {
@@ -2859,6 +3429,24 @@ func (c *depGRPCClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzE
 func (c *depRESTClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAuthzExtensionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateLbEdgeExtensionOperation returns a new UpdateLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created UpdateLbEdgeExtensionOperation, possibly from a different process.
+func (c *depGRPCClient) UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdgeExtensionOperation {
+	return &UpdateLbEdgeExtensionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateLbEdgeExtensionOperation returns a new UpdateLbEdgeExtensionOperation from a given name.
+// The name must be that of a previously created UpdateLbEdgeExtensionOperation, possibly from a different process.
+func (c *depRESTClient) UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdgeExtensionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateLbEdgeExtensionOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

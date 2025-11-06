@@ -65,6 +65,12 @@ func (it *HttpRouteIterator) All() iter.Seq2[*networkservicespb.HttpRoute, error
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *LbEdgeExtensionIterator) All() iter.Seq2[*networkservicespb.LbEdgeExtension, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *LbRouteExtensionIterator) All() iter.Seq2[*networkservicespb.LbRouteExtension, error] {
 	return iterator.RangeAdapter(it.Next)
 }
