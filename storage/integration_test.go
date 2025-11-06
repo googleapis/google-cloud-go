@@ -6322,9 +6322,7 @@ func TestIntegration_ListBuckets(t *testing.T) {
 			t.Run(fmt.Sprintf("partialSuccess=%v", partialSuccess), func(t *testing.T) {
 				it := client.Buckets(ctx, projectID)
 				// Set only if true, as the default is false.
-				if partialSuccess {
-					it.ReturnPartialSuccess = partialSuccess
-				}
+				it.ReturnPartialSuccess = partialSuccess
 
 				var found bool
 				for {
