@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package release implements the release-init command for librariangen.
+// Package release implements the release-stage command for librariangen.
 package release
 
 import (
@@ -35,17 +35,17 @@ import (
 
 var now = time.Now
 
-// Config holds the configuration for the release-init command.
+// Config holds the configuration for the release-stage command.
 type Config struct {
 	LibrarianDir string
 	RepoDir      string
 	OutputDir    string
 }
 
-// Init is the entrypoint for the release-init command.
-func Init(ctx context.Context, cfg *Config) error {
-	slog.Debug("librariangen: release.Init: starting", "config", cfg)
-	reqPath := filepath.Join(cfg.LibrarianDir, "release-init-request.json")
+// Stage is the entrypoint for the release-stage command.
+func Stage(ctx context.Context, cfg *Config) error {
+	slog.Debug("librariangen: release.Stage: starting", "config", cfg)
+	reqPath := filepath.Join(cfg.LibrarianDir, "release-stage-request.json")
 	b, err := os.ReadFile(reqPath)
 	if err != nil {
 		return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to read request: %w", err))
@@ -84,7 +84,7 @@ func Init(ctx context.Context, cfg *Config) error {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update snippet version for %s: %w", lib.ID, err))
 		}
 	}
-	slog.Debug("librariangen: release.Init: finished successfully")
+	slog.Debug("librariangen: release.Stage: finished successfully")
 	return nil
 }
 
@@ -216,14 +216,14 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 }
 
 func writeErrorResponse(dir string, err error) error {
-	slog.Error("release.Init: failed", "error", err)
+	slog.Error("release.Stage: failed", "error", err)
 	resp := Response{Error: err.Error()}
 	b, marshErr := json.MarshalIndent(resp, "", "  ")
 	if marshErr != nil {
 		slog.Error("failed to marshal error response", "error", marshErr)
 		return err
 	}
-	respPath := filepath.Join(dir, "release-init-response.json")
+	respPath := filepath.Join(dir, "release-stage-response.json")
 	if writeErr := os.WriteFile(respPath, b, 0644); writeErr != nil {
 		slog.Error("failed to write error response", "error", writeErr)
 	}
@@ -259,12 +259,12 @@ func isRootRepoModule(lib *request.Library) bool {
 	return slices.Contains(lib.SourcePaths, ".") || lib.ID == "root-module"
 }
 
-// Request is the structure of the release-init-request.json file.
+// Request is the structure of the release-stage-request.json file.
 type Request struct {
 	Libraries []*request.Library `json:"libraries"`
 }
 
-// Response is the structure of the release-init-response.json file.
+// Response is the structure of the release-stage-response.json file.
 type Response struct {
 	Error string `json:"error,omitempty"`
 }

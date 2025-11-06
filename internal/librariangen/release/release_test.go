@@ -42,7 +42,7 @@ func setupTestDirs(t *testing.T, initialRepoContent map[string]string, requestJS
 	}
 
 	// Create the test request
-	if err := os.WriteFile(filepath.Join(librarianDir, "release-init-request.json"), []byte(requestJSON), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(librarianDir, "release-stage-request.json"), []byte(requestJSON), 0644); err != nil {
 		t.Fatalf("failed to write request file: %v", err)
 	}
 
@@ -102,7 +102,7 @@ func assertVersion(t *testing.T, versionGoPath, wantVersion string) {
 	t.Errorf("could not find Version constant in version.go")
 }
 
-func TestInit(t *testing.T) {
+func TestStage(t *testing.T) {
 	oldNow := now
 	defer func() { now = oldNow }()
 	now = func() time.Time {
@@ -243,9 +243,9 @@ func TestInit(t *testing.T) {
 				OutputDir:    outputDir,
 			}
 
-			err := Init(context.Background(), cfg)
+			err := Stage(context.Background(), cfg)
 			if (err != nil) != tt.wantErr {
-				t.Fatalf("Init() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("Stage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if tt.wantErr {
 				return
