@@ -47,9 +47,7 @@ var maxDrainingTimeout = 2 * time.Minute
 type BigtableChannelPoolOption func(*BigtableChannelPool)
 
 const (
-	primeRPCTimeout     = 10 * time.Second
-	unaryLoadFactor     = 1
-	streamingLoadFactor = 2
+	primeRPCTimeout = 10 * time.Second
 )
 
 var errNoConnections = fmt.Errorf("bigtable_connpool: no connections available in the pool")
