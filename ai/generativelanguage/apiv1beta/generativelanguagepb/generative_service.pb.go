@@ -1474,7 +1474,7 @@ type GenerationConfig struct {
 	// Optional. Presence penalty applied to the next token's logprobs if the
 	// token has already been seen in the response.
 	//
-	// This penalty is binary on/off and not dependant on the number of times the
+	// This penalty is binary on/off and not dependent on the number of times the
 	// token is used (after the first). Use
 	// [frequency_penalty][google.ai.generativelanguage.v1beta.GenerationConfig.frequency_penalty]
 	// for a penalty that increases with each use.
@@ -1486,7 +1486,7 @@ type GenerationConfig struct {
 	// used in the response, decreasing the vocabulary.
 	PresencePenalty *float32 `protobuf:"fixed32,15,opt,name=presence_penalty,json=presencePenalty,proto3,oneof" json:"presence_penalty,omitempty"`
 	// Optional. Frequency penalty applied to the next token's logprobs,
-	// multiplied by the number of times each token has been seen in the respponse
+	// multiplied by the number of times each token has been seen in the response
 	// so far.
 	//
 	// A positive penalty will discourage the use of tokens that have already
