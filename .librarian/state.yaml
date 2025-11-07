@@ -689,7 +689,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.4.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -1525,7 +1525,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.49.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
