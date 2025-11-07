@@ -5391,7 +5391,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storage
     version: 1.57.1
-    last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
+    last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
     apis:
       - path: google/storage/control/v2
         service_config: storage_v2.yaml
