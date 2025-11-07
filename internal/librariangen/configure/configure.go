@@ -359,6 +359,7 @@ func updateLibraryState(moduleConfig *config.ModuleConfig, library *request.Libr
 		"doc\\.go",
 		"gapic_metadata\\.json",
 		"helpers\\.go",
+		"\\.repo-metadata\\.json",
 		protobufDir,
 	}
 	for _, generatedPath := range generatedPaths {

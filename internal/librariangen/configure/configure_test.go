@@ -176,6 +176,7 @@ func TestConfigure(t *testing.T) {
 			"^capacityplanner/apiv1beta/doc\\.go$",
 			"^capacityplanner/apiv1beta/gapic_metadata\\.json$",
 			"^capacityplanner/apiv1beta/helpers\\.go$",
+			"^capacityplanner/apiv1beta/\\.repo-metadata\\.json$",
 			"^capacityplanner/apiv1beta/capacityplannerpb/.*$",
 		},
 		TagFormat: "{id}/v{version}",
@@ -195,6 +196,7 @@ func TestConfigure(t *testing.T) {
 			"^secretmanager/apiv1beta2/doc\\.go$",
 			"^secretmanager/apiv1beta2/gapic_metadata\\.json$",
 			"^secretmanager/apiv1beta2/helpers\\.go$",
+			"^secretmanager/apiv1beta2/\\.repo-metadata\\.json$",
 			"^secretmanager/apiv1beta2/secretmanagerpb/.*$",
 		},
 	}
@@ -284,6 +286,7 @@ func TestConfigure(t *testing.T) {
 					"^saasplatform/saasservicemgmt/apiv1beta1/doc\\.go$",
 					"^saasplatform/saasservicemgmt/apiv1beta1/gapic_metadata\\.json$",
 					"^saasplatform/saasservicemgmt/apiv1beta1/helpers\\.go$",
+					"^saasplatform/saasservicemgmt/apiv1beta1/\\.repo-metadata\\.json$",
 					"^saasplatform/saasservicemgmt/apiv1beta1/saasservicemgmtpb/.*$",
 				},
 				TagFormat: "{id}/v{version}",

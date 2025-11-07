@@ -142,7 +142,7 @@ func Generate(ctx context.Context, cfg *Config) error {
 
 // invokeProtoc handles the protoc GAPIC generation logic for the 'generate' CLI command.
 // It reads a request file, and for each API specified, it invokes protoc
-// to generate the client library. It returns the module path and the path to the service YAML.
+// to generate the client library and its corresponding .repo-metadata.json file.
 func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Library, moduleConfig *config.ModuleConfig) error {
 	for _, api := range generateReq.APIs {
 		apiServiceDir := filepath.Join(cfg.SourceDir, api.Path)
@@ -161,6 +161,10 @@ func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Library
 		}
 		if err := execvRun(ctx, args, cfg.OutputDir); err != nil {
 			return fmt.Errorf("librariangen: protoc failed for api %q in library %q: %w", api.Path, generateReq.ID, err)
+		}
+		// Generate the .repo-metadata.json file for this API.
+		if err := generateRepoMetadata(ctx, cfg, generateReq, &api, moduleConfig, bazelConfig); err != nil {
+			return fmt.Errorf("librariangen: failed to generate .repo-metadata.json for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
 	}
 	return nil
