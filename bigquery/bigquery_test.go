@@ -17,6 +17,7 @@ package bigquery
 import (
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"testing"
@@ -41,6 +42,20 @@ func TestRetryableErrors(t *testing.T) {
 			description: "http stream closed",
 			in:          errors.New("http2: stream closed"),
 			wantRetry:   true,
+		},
+		{
+			description: "http client connection lost",
+			in:          errors.New("http2: client connection lost"),
+			wantRetry:   true,
+		},
+		{
+			description: "tcp timeout error",
+			in: &net.DNSError{
+				Err: "timeout",
+
+				IsTimeout: true,
+			},
+			wantRetry: true,
 		},
 		{
 			description: "io ErrUnexpectedEOF",
