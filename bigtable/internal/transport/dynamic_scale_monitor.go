@@ -80,7 +80,7 @@ func (dsm *DynamicScaleMonitor) evaluateAndScale() {
 	defer dsm.mu.Unlock()
 
 	if time.Since(dsm.lastScalingTime) < dsm.config.MinScalingInterval {
-		return // should not happen
+		return // lastScalingTime is populated after removeConn or addConn succeeds
 	}
 
 	conns := dsm.pool.getConns()
