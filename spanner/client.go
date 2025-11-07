@@ -614,8 +614,9 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		return nil, err
 	}
 
-	projectID, _, _, _ := parseDatabaseName(database)
-	logf(config.Logger, `
+	if enableLogClientOptions() {
+		projectID, _, _, _ := parseDatabaseName(database)
+		logf(config.Logger, `
 -----Client Options--------
 Project ID: %v
 Num of gRPC channels: %v
@@ -626,15 +627,15 @@ Built-in metrics enabled: %v
 gRPC metrics enabled: %v
 Min Sessions: %v
 Max Sessions: %v
-Multiplex session enabled: %v
-Multiplex session enabled for RW: %v
-Multiplex session enabled for Partition Ops: %v
+Multiplexed session enabled: %v
+Multiplexed session enabled for RW: %v
+Multiplexed session enabled for Partition Ops: %v
 -----------------------------`,
-		projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
-		config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled,
-		config.SessionPoolConfig.MinOpened, config.SessionPoolConfig.MaxOpened, config.enableMultiplexSession,
-		config.enableMultiplexedSessionForRW, config.enableMultiplexedSessionForPartitionedOps)
-
+			projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
+			config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled,
+			config.SessionPoolConfig.MinOpened, config.SessionPoolConfig.MaxOpened, config.enableMultiplexSession,
+			config.enableMultiplexedSessionForRW, config.enableMultiplexedSessionForPartitionedOps)
+	}
 	c = &Client{
 		sc:                   sc,
 		idleSessions:         sp,
@@ -1524,4 +1525,14 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 		}
 	}
 	return metrics
+}
+
+// enableLogClientOptions returns true if the environment variable for this doesn't exist or is set to false
+func enableLogClientOptions() bool {
+	if disableLogString, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_DISABLE_LOG_CLIENT_OPTIONS"); found {
+		if disableLog, err := strconv.ParseBool(disableLogString); err == nil {
+			return !disableLog
+		}
+	}
+	return true
 }
