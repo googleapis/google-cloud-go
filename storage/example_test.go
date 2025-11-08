@@ -25,7 +25,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -1055,16 +1054,23 @@ func ExampleMultiRangeDownloader() {
 		// TODO: handle error.
 	}
 
-	var rangeErrs []error
-	var mu sync.Mutex
+	errChan := make(chan error)
 	// Callback registered by user to be called upon completion of a range.
 	callback := func(offset, length int64, err error) {
 		if err != nil {
-			mu.Lock()
-			defer mu.Unlock()
-			rangeErrs = append(rangeErrs, err)
+			errChan <- err
 		}
 	}
+
+	// Goroutine to collect errors from the channel.
+	var rangeErrs []error
+	errDone := make(chan struct{})
+	go func() {
+		for err := range errChan {
+			rangeErrs = append(rangeErrs, err)
+		}
+		close(errDone)
+	}()
 
 	// User creates an io.Writer (e.g. a buffer) and adds it to the
 	// MultiRangeDownloader with a particular range. Data will be downloaded
