@@ -6317,11 +6317,9 @@ func TestIntegration_ListBuckets(t *testing.T) {
 		h.mustCreate(bkt, projectID, nil)
 		t.Cleanup(func() { h.mustDeleteBucket(bkt) })
 
-		// Loop through the boolean cases to test both states of the new feature.
 		for _, partialSuccess := range []bool{true, false} {
 			t.Run(fmt.Sprintf("partialSuccess=%v", partialSuccess), func(t *testing.T) {
 				it := client.Buckets(ctx, projectID)
-				// Set only if true, as the default is false.
 				it.ReturnPartialSuccess = partialSuccess
 
 				var found bool
