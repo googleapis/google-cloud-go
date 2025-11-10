@@ -36,19 +36,73 @@ import (
 // Instead, Firestore only guarantees that the result is the same as if the chained stages were
 // executed in order.
 type Pipeline struct {
-	c            *Client
-	stages       []pipelineStage
-	readSettings *readSettings
-	tx           *Transaction
-	err          error
+	c               *Client
+	stages          []pipelineStage
+	readSettings    *readSettings
+	executeSettings *executeSettings
+	tx              *Transaction
+	err             error
 }
 
 func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 	return &Pipeline{
-		c:            client,
-		stages:       []pipelineStage{initialStage},
-		readSettings: &readSettings{},
+		c:               client,
+		stages:          []pipelineStage{initialStage},
+		readSettings:    &readSettings{},
+		executeSettings: &executeSettings{},
 	}
+}
+
+// executeSettings holds the options for executing a pipeline.
+type executeSettings struct {
+	ExplainOptions *executeExplainOptions
+	IndexMode      string
+}
+
+// ExecuteOption is an option for executing a pipeline query.
+type ExecuteOption interface {
+	apply(*executeSettings)
+}
+
+type funcExecuteOption struct {
+	f func(*executeSettings)
+}
+
+func (fdo *funcExecuteOption) apply(do *executeSettings) {
+	fdo.f(do)
+}
+
+func newFuncExecuteOption(f func(*executeSettings)) *funcExecuteOption {
+	return &funcExecuteOption{
+		f: f,
+	}
+}
+
+// ExplainMode is the execution mode for pipeline explain.
+type ExplainMode string
+
+const (
+	// ExplainModeAnalyze both plans and executes the query.
+	ExplainModeAnalyze ExplainMode = "analyze"
+)
+
+// executeExplainOptions are options for explaining a pipeline execution.
+type executeExplainOptions struct {
+	Mode ExplainMode
+}
+
+// WithExplainMode sets the execution mode for pipeline explain.
+func WithExplainMode(mode ExplainMode) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.ExplainOptions = &executeExplainOptions{Mode: mode}
+	})
+}
+
+// WithIndexMode sets the index mode for the pipeline execution.
+func WithIndexMode(indexMode string) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.IndexMode = indexMode
+	})
 }
 
 // Execute executes the pipeline and returns an iterator for streaming the results.
@@ -67,11 +121,24 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 		return nil, err
 	}
 
+	options := make(map[string]*pb.Value)
+	if p.executeSettings.ExplainOptions != nil {
+		options["explain_options"] = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{
+			Fields: map[string]*pb.Value{
+				"mode": {ValueType: &pb.Value_StringValue{StringValue: string(p.executeSettings.ExplainOptions.Mode)}},
+			},
+		}}}
+	}
+	if p.executeSettings.IndexMode != "" {
+		options["index_mode"] = &pb.Value{ValueType: &pb.Value_StringValue{StringValue: p.executeSettings.IndexMode}}
+	}
+
 	req := &pb.ExecutePipelineRequest{
 		Database: p.c.path(),
 		PipelineType: &pb.ExecutePipelineRequest_StructuredPipeline{
 			StructuredPipeline: &pb.StructuredPipeline{
 				Pipeline: pipelinePb,
+				Options:  options,
 			},
 		},
 	}
@@ -104,14 +171,16 @@ func (p *Pipeline) toProto() (*pb.Pipeline, error) {
 
 func (p *Pipeline) copy() *Pipeline {
 	newP := &Pipeline{
-		c:            p.c,
-		stages:       make([]pipelineStage, len(p.stages)),
-		readSettings: &readSettings{},
-		tx:           p.tx,
-		err:          p.err,
+		c:               p.c,
+		stages:          make([]pipelineStage, len(p.stages)),
+		readSettings:    &readSettings{},
+		executeSettings: &executeSettings{},
+		tx:              p.tx,
+		err:             p.err,
 	}
 	copy(newP.stages, p.stages)
 	*newP.readSettings = *p.readSettings
+	*newP.executeSettings = *p.executeSettings
 	return newP
 }
 
@@ -122,6 +191,17 @@ func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
 	for _, opt := range opts {
 		if opt != nil {
 			opt.apply(newP.readSettings)
+		}
+	}
+	return newP
+}
+
+// WithExecuteOptions specifies options for executing a pipeline.
+func (p *Pipeline) WithExecuteOptions(opts ...ExecuteOption) *Pipeline {
+	newP := p.copy()
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(newP.executeSettings)
 		}
 	}
 	return newP

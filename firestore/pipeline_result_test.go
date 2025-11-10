@@ -27,7 +27,10 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestStreamPipelineResultIterator_Next(t *testing.T) {
@@ -371,4 +374,131 @@ func TestPipelineResult_NoResults(t *testing.T) {
 	if pr.ExecutionTime == nil || !pr.ExecutionTime.Equal(execTime) {
 		t.Errorf("ExecutionTime for non-existent result: got %v, want %v", pr.ExecutionTime, execTime)
 	}
+}
+
+func TestPipelineResultIterator_ExplainStats(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient()
+	p := &Pipeline{c: client}
+
+	// Prepare mock stats data
+	explainText := "Executed in 10ms"
+	stringValue := &wrapperspb.StringValue{Value: explainText}
+	anyText, err := anypb.New(stringValue)
+	if err != nil {
+		t.Fatalf("anypb.New(stringValue): %v", err)
+	}
+	statsTextPb := &pb.ExplainStats{Data: anyText}
+
+	// For raw data test
+	boolValue := &wrapperspb.BoolValue{Value: true}
+	anyBool, err := anypb.New(boolValue)
+	if err != nil {
+		t.Fatalf("anypb.New(boolValue): %v", err)
+	}
+	statsRawPb := &pb.ExplainStats{Data: anyBool}
+
+	t.Run("successful case with text data", func(t *testing.T) {
+		mockIter := &streamPipelineResultIterator{
+			ctx:     ctx,
+			cancel:  func() {},
+			p:       p,
+			statsPb: statsTextPb,
+		}
+		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done} // Pre-set to done
+
+		stats := publicIter.ExplainStats()
+		if stats.err != nil {
+			t.Fatalf("ExplainStats() error: %v", stats.err)
+		}
+
+		text, err := stats.GetText()
+		if err != nil {
+			t.Fatalf("GetText() error: %v", err)
+		}
+		if text != explainText {
+			t.Errorf("GetText(): got %q, want %q", text, explainText)
+		}
+	})
+
+	t.Run("successful case with raw data", func(t *testing.T) {
+		mockIter := &streamPipelineResultIterator{
+			ctx:     ctx,
+			cancel:  func() {},
+			p:       p,
+			statsPb: statsRawPb,
+		}
+		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done}
+
+		stats := publicIter.ExplainStats()
+		if stats.err != nil {
+			t.Fatalf("ExplainStats() error: %v", stats.err)
+		}
+
+		rawData, err := stats.GetRawData()
+		if err != nil {
+			t.Fatalf("GetRawData() error: %v", err)
+		}
+		if !proto.Equal(rawData, anyBool) {
+			t.Errorf("GetRawData(): got %v, want %v", rawData, anyBool)
+		}
+	})
+
+	t.Run("error case - iterator not done", func(t *testing.T) {
+		mockIter := &streamPipelineResultIterator{}
+		publicIter := &PipelineResultIterator{iter: mockIter} // err is nil
+
+		stats := publicIter.ExplainStats()
+		if stats.err == nil {
+			t.Fatal("ExplainStats() expected error, got nil")
+		}
+		if !errors.Is(stats.err, errStatsBeforeEnd) {
+			t.Errorf("ExplainStats() error: got %v, want %v", stats.err, errStatsBeforeEnd)
+		}
+	})
+
+	t.Run("error case - iterator is nil", func(t *testing.T) {
+		var publicIter *PipelineResultIterator
+		stats := publicIter.ExplainStats()
+		if stats.err == nil {
+			t.Fatal("ExplainStats() on nil iterator expected error, got nil")
+		}
+	})
+
+	t.Run("error case - GetText with wrong data type", func(t *testing.T) {
+		mockIter := &streamPipelineResultIterator{statsPb: statsRawPb}
+		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done}
+
+		stats := publicIter.ExplainStats()
+		_, err := stats.GetText()
+		if err == nil {
+			t.Fatal("GetText() with wrong data type expected error, got nil")
+		}
+	})
+
+	t.Run("no stats available", func(t *testing.T) {
+		mockIter := &streamPipelineResultIterator{statsPb: nil} // No stats
+		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done}
+
+		stats := publicIter.ExplainStats()
+		if stats.err != nil {
+			t.Fatalf("ExplainStats() error: %v", stats.err)
+		}
+
+		text, err := stats.GetText()
+		if err != nil {
+			t.Fatalf("GetText() error: %v", err)
+		}
+		if text != "" {
+			t.Errorf("GetText(): got %q, want empty string", text)
+		}
+
+		rawData, err := stats.GetRawData()
+		if err != nil {
+			t.Fatalf("GetRawData() error: %v", err)
+		}
+		if rawData != nil {
+			t.Errorf("GetRawData(): got %v, want nil", rawData)
+		}
+	})
 }
