@@ -2344,6 +2344,7 @@ type BucketIterator struct {
 	// Prefix restricts the iterator to buckets whose names begin with it.
 	Prefix string
 	// If true, the response will contain a list of unreachable buckets if the buckets are unavailable.
+	// Use the Unreachable() method to retrieve the list.
 	ReturnPartialSuccess bool
 
 	ctx         context.Context
