@@ -18,6 +18,19 @@ package firestore
 type BooleanExpr interface {
 	Expr // Embed Expr interface
 	isBooleanExpr()
+
+	// Conditional creates an expression that evaluates a condition and returns one of two expressions.
+	//
+	// The parameter 'thenVal' is the expression to return if the condition is true.
+	// The parameter 'elseVal' is the expression to return if the condition is false.
+	Conditional(thenVal, elseVal any) Expr
+	// IfErrorBoolean creates a boolean expression that evaluates and returns the receiver expression if it does not produce an error;
+	// otherwise, it evaluates and returns `catchExpr`.
+	//
+	// The parameter 'catchExpr' is the boolean expression to return if the receiver expression errors.
+	IfErrorBoolean(catchExpr BooleanExpr) BooleanExpr
+	// Not creates an expression that negates a boolean expression.
+	Not() BooleanExpr
 }
 
 // baseBooleanExpr provides common methods for all BooleanExpr implementations.
@@ -26,6 +39,15 @@ type baseBooleanExpr struct {
 }
 
 func (b *baseBooleanExpr) isBooleanExpr() {}
+func (b *baseBooleanExpr) Conditional(thenVal, elseVal any) Expr {
+	return Conditional(b, thenVal, elseVal)
+}
+func (b *baseBooleanExpr) IfErrorBoolean(catchExpr BooleanExpr) BooleanExpr {
+	return IfErrorBoolean(b, catchExpr)
+}
+func (b *baseBooleanExpr) Not() BooleanExpr {
+	return Not(b)
+}
 
 // Ensure that baseBooleanExpr implements the BooleanExpr interface.
 var _ BooleanExpr = (*baseBooleanExpr)(nil)
@@ -210,28 +232,6 @@ func LessThanOrEqual(left, right any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("less_than_or_equal", left, right)}
 }
 
-// Equivalent creates an expression that checks if field's value or an expression is equal to an expression or a constant value,
-// returning it as a BooleanExpr. This is an alias for Equal.
-//   - left: The field path string, [FieldPath] or [Expr] to compare.
-//   - right: The constant value or [Expr] to compare to.
-//
-// Example:
-//
-//		// Check if the 'age' field is equal to 21
-//		Equivalent(FieldOf("age"), 21)
-//
-//		// Check if the 'age' field is equal to an expression
-//	 	Equivalent(FieldOf("age"), FieldOf("minAge").Add(10))
-//
-//		// Check if the 'age' field is equal to the 'limit' field
-//		Equivalent("age", FieldOf("limit"))
-//
-//		// Check if the 'city' field is equal to string constant "London"
-//		Equivalent("city", "London")
-func Equivalent(left, right any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: leftRightToBaseFunction("equivalent", left, right)}
-}
-
 // EndsWith creates an expression that checks if a string field or expression ends with a given suffix.
 // - exprOrFieldPath can be a field path string, [FieldPath] or [Expr].
 // - suffix string or [Expr] to check for.
@@ -302,4 +302,39 @@ func StartsWith(exprOrFieldPath any, prefix any) BooleanExpr {
 //	StringContains("description", "Firestore")
 func StringContains(exprOrFieldPath any, substring any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: newBaseFunction("string_contains", []Expr{asFieldExpr(exprOrFieldPath), asStringExpr(substring)})}
+}
+
+// And creates an expression that performs a logical 'AND' operation.
+func And(condition BooleanExpr, right ...BooleanExpr) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunctionFromBooleans("and", append([]BooleanExpr{condition}, right...))}
+}
+
+// FieldExists creates an expression that checks if a field exists.
+func FieldExists(exprOrField any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("exists", []Expr{asFieldExpr(exprOrField)})}
+}
+
+// Not creates an expression that negates a boolean expression.
+func Not(condition BooleanExpr) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("not", []Expr{condition})}
+}
+
+// Or creates an expression that performs a logical 'OR' operation.
+func Or(condition BooleanExpr, right ...BooleanExpr) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunctionFromBooleans("or", append([]BooleanExpr{condition}, right...))}
+}
+
+// Xor creates an expression that performs a logical 'XOR' operation.
+func Xor(condition BooleanExpr, right ...BooleanExpr) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunctionFromBooleans("xor", append([]BooleanExpr{condition}, right...))}
+}
+
+// IsError creates an expression that checks if an expression evaluates to an error.
+func IsError(expr Expr) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_error", []Expr{expr})}
+}
+
+// IsAbsent creates an expression that checks if an expression evaluates to an absent value.
+func IsAbsent(exprOrField any) BooleanExpr {
+	return &baseBooleanExpr{baseFunction: newBaseFunction("is_absent", []Expr{asFieldExpr(exprOrField)})}
 }
