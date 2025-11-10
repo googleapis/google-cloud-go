@@ -285,6 +285,15 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Errorf("got %d documents, want 2", len(results))
 		}
 	})
+	t.Run("CollectionWithOptions", func(t *testing.T) {
+		hints := CollectionHints{}.WithForceIndex("title")
+		iter := client.Pipeline().Collection(coll.ID, WithCollectionHints(hints)).Execute(ctx)
+		defer iter.Stop()
+		_, err := iter.Next()
+		if s, ok := status.FromError(err); !ok || s.Code() != codes.InvalidArgument {
+			t.Errorf("got err %v, want InvalidArgument", err)
+		}
+	})
 	t.Run("Database", func(t *testing.T) {
 		dbDoc1 := coll.Doc("db_doc1")
 		otherColl := client.Collection(collectionIDs.New())
