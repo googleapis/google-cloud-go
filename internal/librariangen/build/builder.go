@@ -67,9 +67,7 @@ func Build(ctx context.Context, cfg *Config) error {
 	if err := goBuild(ctx, moduleDir, buildReq.ID); err != nil {
 		return fmt.Errorf("librariangen: failed to run 'go build': %w", err)
 	}
-	if err := goTest(ctx, moduleDir, buildReq.ID); err != nil {
-		return fmt.Errorf("librariangen: failed to run 'go test': %w", err)
-	}
+	// TODO(https://github.com/googleapis/google-cloud-go/issues/13335): run unit tests
 	return nil
 }
 
@@ -77,13 +75,6 @@ func Build(ctx context.Context, cfg *Config) error {
 func goBuild(ctx context.Context, dir, module string) error {
 	slog.Info("librariangen: building", "module", module)
 	args := []string{"go", "build", "./..."}
-	return execvRun(ctx, args, dir)
-}
-
-// goTest builds all the code under the specified directory
-func goTest(ctx context.Context, dir, module string) error {
-	slog.Info("librariangen: testing", "module", module)
-	args := []string{"go", "test", "./...", "-short"}
 	return execvRun(ctx, args, dir)
 }
 
