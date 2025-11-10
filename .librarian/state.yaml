@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.108.0
+    version: 1.109.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/aiplatform/v1
@@ -725,7 +725,7 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.4.0
+    version: 1.5.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/backupdr/v1
@@ -1329,7 +1329,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.15.1
+    version: 0.16.0
     last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/chat/v1
@@ -1999,7 +1999,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: dataplex
-    version: 1.27.1
+    version: 1.28.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/dataplex/v1
@@ -2223,7 +2223,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.70.0
+    version: 1.71.0
     last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -2443,7 +2443,7 @@ libraries:
       - internal/generated/snippets/edgecontainer/
     tag_format: '{id}/v{version}'
   - id: edgenetwork
-    version: 1.2.7
+    version: 1.3.0
     last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
     apis:
       - path: google/cloud/edgenetwork/v1
@@ -2828,7 +2828,7 @@ libraries:
       - internal/generated/snippets/gkemulticloud/
     tag_format: '{id}/v{version}'
   - id: gkerecommender
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/gkerecommender/v1
@@ -3391,7 +3391,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.25.0
+    version: 1.26.0
     last_generated_commit: b61fb21bbac838de7f55cf2c60d371a47fc2799e
     apis:
       - path: google/maps/addressvalidation/v1
@@ -3821,7 +3821,7 @@ libraries:
       - internal/generated/snippets/networkconnectivity/
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.20.1
+    version: 1.21.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/networkmanagement/v1
@@ -3871,7 +3871,7 @@ libraries:
       - internal/generated/snippets/networksecurity/
     tag_format: '{id}/v{version}'
   - id: networkservices
-    version: 0.5.1
+    version: 0.6.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/networkservices/v1
@@ -4769,7 +4769,7 @@ libraries:
       - internal/generated/snippets/run/
     tag_format: '{id}/v{version}'
   - id: saasplatform
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 53af3b727f84acc34e31c23f3b6e7b8aa4b7e837
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
@@ -5225,7 +5225,7 @@ libraries:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.2.1
+    version: 1.3.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/shopping/css/v1

@@ -2,6 +2,13 @@
 
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/edgenetwork%2Fv1.3.0) (2025-11-06)
+
+### Features
+
+* A new field `peering_type` is added to message `google.cloud.edgenetwork.v1.InterconnectAttachment` ([89b5ea2](https://github.com/googleapis/google-cloud-go/commit/89b5ea2fff81893da7181da4e1bab8e4815d326c))
+* A new field `remote_peering_network_type` is added to message `google.cloud.edgenetwork.v1.Interconnect` ([89b5ea2](https://github.com/googleapis/google-cloud-go/commit/89b5ea2fff81893da7181da4e1bab8e4815d326c))
+
 ## [1.2.7](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.2.6...edgenetwork/v1.2.7) (2025-09-16)
 
 

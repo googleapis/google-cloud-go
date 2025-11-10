@@ -1,5 +1,11 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.6.0) (2025-11-06)
+
+### Features
+
+* Add support for LbEdgeExtension resource in NetworkServices API ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.5.0...networkservices/v0.5.1) (2025-09-18)
 
 

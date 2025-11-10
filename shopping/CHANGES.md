@@ -1,6 +1,16 @@
 # Changes
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.3.0) (2025-11-06)
+
+### Bug Fixes
+
+* An existing field `contains_custom_rules` is removed from message `.google.shopping.merchant.datasources.v1.PrimaryProductDataSource` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
+### Documentation
+
+* update documentation for datasources ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.2.0...shopping/v1.2.1) (2025-10-09)
 
 
