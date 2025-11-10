@@ -155,17 +155,17 @@ const (
 
 // Ordering specifies the field and direction for sorting.
 type Ordering struct {
-	Expr      Expr
+	Expr      Expression
 	Direction OrderingDirection
 }
 
 // Ascending creates an Ordering for ascending sort direction.
-func Ascending(expr Expr) Ordering {
+func Ascending(expr Expression) Ordering {
 	return Ordering{Expr: expr, Direction: OrderingAsc}
 }
 
 // Descending creates an Ordering for descending sort direction.
-func Descending(expr Expr) Ordering {
+func Descending(expr Expression) Ordering {
 	return Ordering{Expr: expr, Direction: OrderingDesc}
 }
 
@@ -263,10 +263,10 @@ func (p *Pipeline) RemoveFields(fieldpaths ...any) *Pipeline {
 	return p.append(stage)
 }
 
-// Where filters the documents from previous stages to only include those matching the specified [BooleanExpr].
+// Where filters the documents from previous stages to only include those matching the specified [BooleanExpression].
 //
 // This stage allows you to apply conditions to the data, similar to a "WHERE" clause in SQL.
-func (p *Pipeline) Where(condition BooleanExpr) *Pipeline {
+func (p *Pipeline) Where(condition BooleanExpression) *Pipeline {
 	if p.err != nil {
 		return p
 	}
@@ -370,7 +370,7 @@ func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts *UnnestOpti
 		return p
 	}
 
-	var fieldExpr Expr
+	var fieldExpr Expression
 	switch v := fieldpath.(type) {
 	case string:
 		fieldExpr = FieldOf(v)

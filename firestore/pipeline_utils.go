@@ -22,8 +22,8 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
-func toArrayOfExprOrConstant(val []any) []Expr {
-	exprs := make([]Expr, 0, len(val))
+func toArrayOfExprOrConstant(val []any) []Expression {
+	exprs := make([]Expression, 0, len(val))
 	for _, v := range val {
 		exprs = append(exprs, toExprOrConstant(v))
 	}
@@ -31,14 +31,14 @@ func toArrayOfExprOrConstant(val []any) []Expr {
 }
 
 // newFieldAndArrayBooleanExpr creates a new BooleanExpr for functions that operate on a field/expression and an array of values.
-func newFieldAndArrayBooleanExpr(name string, exprOrFieldPath any, values any) BooleanExpr {
-	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{asFieldExpr(exprOrFieldPath), asArrayFunctionExpr(values)})}
+func newFieldAndArrayBooleanExpr(name string, exprOrFieldPath any, values any) BooleanExpression {
+	return &baseBooleanExpression{baseFunction: newBaseFunction(name, []Expression{asFieldExpr(exprOrFieldPath), asArrayFunctionExpr(values)})}
 }
 
 // toExprs converts a plain Go value or an existing Expr into an Expr.
 // Plain values are wrapped in a Constant.
-func toExprs(val []any) []Expr {
-	exprs := make([]Expr, len(val))
+func toExprs(val []any) []Expression {
+	exprs := make([]Expression, len(val))
 	for i, v := range val {
 		exprs[i] = toExprOrConstant(v)
 	}
@@ -46,8 +46,8 @@ func toExprs(val []any) []Expr {
 }
 
 // toExprsFromSlice converts a slice of any type into a slice of Expr, wrapping plain values in Constants.
-func toExprsFromSlice[T any](val []T) []Expr {
-	exprs := make([]Expr, len(val))
+func toExprsFromSlice[T any](val []T) []Expression {
+	exprs := make([]Expression, len(val))
 	for i, v := range val {
 		exprs[i] = toExprOrConstant(v)
 	}
@@ -55,18 +55,18 @@ func toExprsFromSlice[T any](val []T) []Expr {
 }
 
 // val should be single Expr or array of Expr/constants
-func asArrayFunctionExpr(val any) Expr {
-	if expr, ok := val.(Expr); ok {
+func asArrayFunctionExpr(val any) Expression {
+	if expr, ok := val.(Expression); ok {
 		return expr
 	}
 
 	arrayVal := reflect.ValueOf(val)
 	if arrayVal.Kind() != reflect.Slice {
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a slice or Expr, but got %T", val)}
+		return &baseExpression{err: fmt.Errorf("firestore: value must be a slice or Expr, but got %T", val)}
 	}
 
-	// Convert the slice of any to []Expr
-	var exprs []Expr
+	// Convert the slice of any to []Expression
+	var exprs []Expression
 	for i := 0; i < arrayVal.Len(); i++ {
 		exprs = append(exprs, toExprOrConstant(arrayVal.Index(i).Interface()))
 	}
@@ -74,45 +74,45 @@ func asArrayFunctionExpr(val any) Expr {
 }
 
 // asInt64Expr converts a value to an Expr that evaluates to an int64, or returns an error Expr if conversion is not possible.
-func asInt64Expr(val any) Expr {
+func asInt64Expr(val any) Expression {
 	switch v := val.(type) {
-	case Expr:
+	case Expression:
 		return v
 	case int, int8, int16, int32, int64, uint8, uint16, uint32:
 		return ConstantOf(v)
 	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a int, int8, int16, int32, int64, uint8, uint16, uint32 or Expr, but got %T", val)}
+		return &baseExpression{err: fmt.Errorf("firestore: value must be a int, int8, int16, int32, int64, uint8, uint16, uint32 or Expr, but got %T", val)}
 	}
 }
 
 // asStringExpr converts a value to an Expr that evaluates to a string, or returns an error Expr if conversion is not possible.
-func asStringExpr(val any) Expr {
+func asStringExpr(val any) Expression {
 	switch v := val.(type) {
-	case Expr:
+	case Expression:
 		return v
 	case string:
 		return ConstantOf(v)
 	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
+		return &baseExpression{err: fmt.Errorf("firestore: value must be a string or Expr, but got %T", val)}
 	}
 }
 
 // asVectorExpr converts a value to an Expr that evaluates to a vector type (Vector32, Vector64, []float32, []float64), or returns an error Expr if conversion is not possible.
-func asVectorExpr(val any) Expr {
+func asVectorExpr(val any) Expression {
 	switch v := val.(type) {
-	case Expr:
+	case Expression:
 		return v
 	case Vector32, Vector64, []float32, []float64:
 		return ConstantOf(v)
 	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a []float32, []float64, Vector32, Vector64 or Expr, but got %T", val)}
+		return &baseExpression{err: fmt.Errorf("firestore: value must be a []float32, []float64, Vector32, Vector64 or Expr, but got %T", val)}
 	}
 }
 
 // toExprOrConstant converts a plain Go value or an existing Expr into an Expr.
 // Plain values are wrapped in a Constant.
-func toExprOrConstant(val any) Expr {
-	if expr, ok := val.(Expr); ok {
+func toExprOrConstant(val any) Expression {
+	if expr, ok := val.(Expression); ok {
 		return expr
 	}
 	return ConstantOf(val)
@@ -120,23 +120,23 @@ func toExprOrConstant(val any) Expr {
 
 // asFieldExpr converts a plain Go string or FieldPath into a field expression.
 // If the value is already an Expr, it's returned directly.
-func asFieldExpr(val any) Expr {
+func asFieldExpr(val any) Expression {
 	switch v := val.(type) {
-	case Expr:
+	case Expression:
 		return v
 	case FieldPath:
 		return FieldOf(v)
 	case string:
 		return FieldOf(v)
 	default:
-		return &baseExpr{err: fmt.Errorf("firestore: value must be a string, FieldPath, or Expr, but got %T", val)}
+		return &baseExpression{err: fmt.Errorf("firestore: value must be a string, FieldPath, or Expr, but got %T", val)}
 	}
 }
 
 // leftRightToBaseFunction is a helper for creating binary functions like Add or Eq.
 // It ensures the left operand is a field-like expression and the right is a constant-like expression.
 func leftRightToBaseFunction(name string, left, right any) *baseFunction {
-	return newBaseFunction(name, []Expr{asFieldExpr(left), toExprOrConstant(right)})
+	return newBaseFunction(name, []Expression{asFieldExpr(left), toExprOrConstant(right)})
 }
 
 // projectionsToMapValue converts a slice of Selectable items into a single
@@ -212,7 +212,7 @@ func fieldsOrSelectablesToSelectables(fieldsOrSelectables ...any) ([]Selectable,
 
 // exprToProtoValue converts an Expr to a protobuf Value.
 // If the expression is nil, it returns a Null Value.
-func exprToProtoValue(expr Expr) (*pb.Value, error) {
+func exprToProtoValue(expr Expression) (*pb.Value, error) {
 	if expr == nil {
 		return ConstantOfNull().getBaseExpr().pbVal, nil
 	}

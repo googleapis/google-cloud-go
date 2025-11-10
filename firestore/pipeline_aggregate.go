@@ -39,13 +39,13 @@ func newBaseAggregateFunction(name string, fieldOrExpr any) *baseAggregateFuncti
 	var err error
 
 	if fieldOrExpr != nil {
-		var valueExpr Expr
+		var valueExpr Expression
 		switch value := fieldOrExpr.(type) {
 		case string:
 			valueExpr = FieldOf(value)
 		case FieldPath:
 			valueExpr = FieldOf(value)
-		case Expr:
+		case Expression:
 			valueExpr = value
 		default:
 			err = fmt.Errorf("firestore: invalid type for parameter 'value' for %s: expected string, FieldPath, or Expr, but got %T", name, value)
@@ -110,7 +110,7 @@ func Sum(fieldOrExpr any) AggregateFunction {
 
 // Average creates an aggregation that calculates the average (mean) of values from an expression or a field's values
 // across multiple stage inputs.
-// fieldOrExpr can be a field path string, [FieldPath] or [Expr]
+// fieldOrExpr can be a field path string, [FieldPath] or [Expression]
 // Example:
 //
 //		// Calculate the average age of users
@@ -124,7 +124,7 @@ func Average(fieldOrExpr any) AggregateFunction {
 
 // Count creates an aggregation that counts the number of stage inputs with valid evaluations of the
 // provided field or expression.
-// fieldOrExpr can be a field path string, [FieldPath] or [Expr]
+// fieldOrExpr can be a field path string, [FieldPath] or [Expression]
 // Example:
 //
 //		// Count the number of items where the price is greater than 10
@@ -147,7 +147,7 @@ func CountAll() AggregateFunction {
 
 // CountDistinct creates an aggregation that counts the number of distinct values of the
 // provided field or expression.
-// fieldOrExpr can be a field path string, [FieldPath] or [Expr]
+// fieldOrExpr can be a field path string, [FieldPath] or [Expression]
 // Example:
 //
 //		// CountDistinct the number of distinct items where the price is greater than 10
@@ -160,7 +160,7 @@ func CountDistinct(fieldOrExpr any) AggregateFunction {
 
 // CountIf creates an aggregation that counts the number of values of the
 // provided field or expression evaluates to TRUE.
-// fieldOrExpr can be a field path string, [FieldPath] or [Expr]
+// fieldOrExpr can be a field path string, [FieldPath] or [Expression]
 // Example:
 //
 //	CountIf(FieldOf("published")).As("publishedCount")

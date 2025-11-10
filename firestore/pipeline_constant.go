@@ -24,13 +24,13 @@ import (
 )
 
 // constant represents a constant value that can be used in a Firestore pipeline expression.
-// It implements the [Expr] interface.
+// It implements the [Expression] interface.
 type constant struct {
-	*baseExpr
+	*baseExpression
 }
 
-// ConstantOf creates a new constant [Expr] from a Go value.
-func ConstantOf(value any) Expr {
+// ConstantOf creates a new constant [Expression] from a Go value.
+func ConstantOf(value any) Expression {
 	if value == nil {
 		return ConstantOfNull()
 	}
@@ -38,7 +38,7 @@ func ConstantOf(value any) Expr {
 	switch value := value.(type) {
 	case *constant: // If it's already our private constant type
 		return value
-	case Expr:
+	case Expression:
 		// If it's already an Expr that isn't *constant, we create a new constant from it if possible.
 		// This path is primarily for if a user passes, e.g., a function result to ConstantOf.
 		// if it's not *constant, we fall through to scalar type checking.
@@ -50,26 +50,26 @@ func ConstantOf(value any) Expr {
 	case string, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, time.Time, *ts.Timestamp, []byte, Vector32, Vector64, bool, *latlng.LatLng, *DocumentRef:
 		pbVal, _, err := toProtoValue(reflect.ValueOf(value))
 		if err != nil {
-			return &constant{baseExpr: &baseExpr{err: err}}
+			return &constant{baseExpression: &baseExpression{err: err}}
 		}
-		return &constant{baseExpr: &baseExpr{pbVal: pbVal}}
+		return &constant{baseExpression: &baseExpression{pbVal: pbVal}}
 	default:
-		return &constant{baseExpr: &baseExpr{err: fmt.Errorf("firestore: unknown constant type: %T", value)}}
+		return &constant{baseExpression: &baseExpression{err: fmt.Errorf("firestore: unknown constant type: %T", value)}}
 	}
 }
 
-// ConstantOfNull creates a new constant [Expr] representing a null value.
-func ConstantOfNull() Expr {
+// ConstantOfNull creates a new constant [Expression] representing a null value.
+func ConstantOfNull() Expression {
 	pbVal, _, err := toProtoValue(reflect.ValueOf(nil))
-	return &constant{baseExpr: &baseExpr{pbVal: pbVal, err: err}}
+	return &constant{baseExpression: &baseExpression{pbVal: pbVal, err: err}}
 }
 
-// ConstantOfVector32 creates a new [Vector32] constant [Expr] from a slice of float32s.
-func ConstantOfVector32(value []float32) Expr {
+// ConstantOfVector32 creates a new [Vector32] constant [Expression] from a slice of float32s.
+func ConstantOfVector32(value []float32) Expression {
 	return ConstantOf(Vector32(value))
 }
 
-// ConstantOfVector64 creates a new [Vector64] constant [Expr] from a slice of float64s.
-func ConstantOfVector64(value []float64) Expr {
+// ConstantOfVector64 creates a new [Vector64] constant [Expression] from a slice of float64s.
+func ConstantOfVector64(value []float64) Expression {
 	return ConstantOf(Vector64(value))
 }
