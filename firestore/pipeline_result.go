@@ -222,7 +222,6 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		}
 
 		ctx := withRequestParamsHeader(it.ctx, reqParamsHeaderVal(client.path()))
-
 		it.streamClient, err = client.c.ExecutePipeline(ctx, req)
 		if err != nil {
 			return nil, err

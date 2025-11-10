@@ -22,6 +22,14 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
+func toArrayOfExprOrConstant(val []any) []Expr {
+	exprs := make([]Expr, 0, len(val))
+	for _, v := range val {
+		exprs = append(exprs, toExprOrConstant(v))
+	}
+	return exprs
+}
+
 // newFieldAndArrayBooleanExpr creates a new BooleanExpr for functions that operate on a field/expression and an array of values.
 func newFieldAndArrayBooleanExpr(name string, exprOrFieldPath any, values any) BooleanExpr {
 	return &baseBooleanExpr{baseFunction: newBaseFunction(name, []Expr{asFieldExpr(exprOrFieldPath), asArrayFunctionExpr(values)})}
