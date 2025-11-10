@@ -209,16 +209,16 @@ type findNearestStage struct {
 }
 
 func newFindNearestStage(vectorField any, queryVector any, measure PipelineDistanceMeasure, options *PipelineFindNearestOptions) (*findNearestStage, error) {
-	var propertyExpr Expr
+	var propertyExpr Expression
 	switch v := vectorField.(type) {
 	case string:
 		propertyExpr = FieldOf(v)
 	case FieldPath:
 		propertyExpr = FieldOf(v)
-	case Expr:
+	case Expression:
 		propertyExpr = v
 	default:
-		return nil, errInvalidArg(vectorField, "string", "FieldPath", "Expr")
+		return nil, errInvalidArg(vectorField, "string", "FieldPath", "Expression")
 	}
 	propPb, err := propertyExpr.toProto()
 	if err != nil {
@@ -295,7 +295,7 @@ type removeFieldsStage struct {
 }
 
 func newRemoveFieldsStage(fieldpaths ...any) (*removeFieldsStage, error) {
-	fields := make([]Expr, len(fieldpaths))
+	fields := make([]Expression, len(fieldpaths))
 	for i, fp := range fieldpaths {
 		switch v := fp.(type) {
 		case string:
@@ -328,7 +328,7 @@ type replaceStage struct {
 }
 
 func newReplaceStage(fieldOrSelectable any) (*replaceStage, error) {
-	var expr Expr
+	var expr Expression
 	switch v := fieldOrSelectable.(type) {
 	case string:
 		expr = FieldOf(v)
@@ -450,7 +450,7 @@ type unnestStage struct {
 	baseStage
 }
 
-func newUnnestStage(fieldExpr Expr, alias string, opts *UnnestOptions) (*unnestStage, error) {
+func newUnnestStage(fieldExpr Expression, alias string, opts *UnnestOptions) (*unnestStage, error) {
 	exprPb, err := fieldExpr.toProto()
 	if err != nil {
 		return nil, err
@@ -461,7 +461,7 @@ func newUnnestStage(fieldExpr Expr, alias string, opts *UnnestOptions) (*unnestS
 	}
 	var optionsPb map[string]*pb.Value
 	if opts != nil && opts.IndexField != nil {
-		var indexFieldExpr Expr
+		var indexFieldExpr Expression
 		switch v := opts.IndexField.(type) {
 		case FieldPath:
 			indexFieldExpr = FieldOf(v)
@@ -488,7 +488,7 @@ func newUnnestStage(fieldExpr Expr, alias string, opts *UnnestOptions) (*unnestS
 }
 
 func newUnnestStageFromAny(fieldOrSelectable any) (*unnestStage, error) {
-	var expr Expr
+	var expr Expression
 	var alias string
 	switch v := fieldOrSelectable.(type) {
 	case string:
@@ -515,7 +515,7 @@ func newUnaryStage(name string, val *pb.Value) *pb.Pipeline_Stage {
 	}
 }
 
-func newWhereStage(condition BooleanExpr) (*whereStage, error) {
+func newWhereStage(condition BooleanExpression) (*whereStage, error) {
 	argsPb, err := condition.toProto()
 	if err != nil {
 		return nil, err
