@@ -192,31 +192,6 @@ To compile the binary locally:
 go build .
 ```
 
-### Running Tests
-
-The project has a multi-layered testing strategy.
-
-1.  **Unit Tests:** Each Go package has its own unit tests. To run all of them:
-    ```bash
-    go test ./...
-    ```
-
-2.  **Binary Integration Tests:** Shell scripts provide full, end-to-end tests of the compiled binary. This is the primary way to validate changes to the core logic.
-    *   **`generate` command:** (`run-binary-generate-test.sh`)
-        *   **Setup:** The test requires local checkouts of the `googleapis` and `googleapis-gen` repositories. You must set the `LIBRARIANGEN_GOOGLEAPIS_DIR` and `LIBRARIANGEN_GOOGLEAPIS_GEN_DIR` environment variables to point to these checkouts.
-        *   **Execution:**
-            ```bash
-            ./run-binary-generate-test.sh
-            ```
-        This script will compile the binary and run it against realistic API fixtures, verifying that the correct Go files are generated.
-    *   **`release-stage` command:** (`run-binary-release-stage-test.sh`)
-        *   **Setup:** The test requires a local checkout of the `google-cloud-go` repository. You must set the `LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR` environment variable to point to this checkout.
-        *   **Execution:**
-            ```bash
-            ./run-binary-release-stage-test.sh
-            ```
-        This script will compile the binary and run it against a test library, verifying that the version and changelog files are updated correctly.
-
 ## Docker Container
 
 The `Dockerfile` packages the `librariangen` binary and all its dependencies into a MOSS-compliant container for use in the Librarian pipeline.
