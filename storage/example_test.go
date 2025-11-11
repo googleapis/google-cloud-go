@@ -25,6 +25,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -1054,23 +1055,27 @@ func ExampleMultiRangeDownloader() {
 		// TODO: handle error.
 	}
 
+	// Use a WaitGroup to wait for the error collector goroutine.
+	var wg sync.WaitGroup
+	wg.Add(1)
+	var rangeErrs []error
+
 	errChan := make(chan error)
+
+	// Goroutine to collect errors from the channel.
+	go func() {
+		defer wg.Done()
+		for err := range errChan {
+			rangeErrs = append(rangeErrs, err)
+		}
+	}()
+
 	// Callback registered by user to be called upon completion of a range.
 	callback := func(offset, length int64, err error) {
 		if err != nil {
 			errChan <- err
 		}
 	}
-
-	// Goroutine to collect errors from the channel.
-	var rangeErrs []error
-	errDone := make(chan struct{})
-	go func() {
-		for err := range errChan {
-			rangeErrs = append(rangeErrs, err)
-		}
-		close(errDone)
-	}()
 
 	// User creates an io.Writer (e.g. a buffer) and adds it to the
 	// MultiRangeDownloader with a particular range. Data will be downloaded
@@ -1085,6 +1090,12 @@ func ExampleMultiRangeDownloader() {
 	if err := mrd.Close(); err != nil {
 		// TODO: handle error on close.
 	}
+
+	// Close the channel to signal the collector to stop.
+	close(errChan)
+
+	// Wait for the collector to finish draining the channel.
+	wg.Wait()
 
 	if len(rangeErrs) > 0 {
 		// TODO: handle error from the range download.
