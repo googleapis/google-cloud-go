@@ -1,5 +1,15 @@
 # Changes
 
+## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.16.0) (2025-11-06)
+
+### Features
+
+* add ROLE_ASSISTANT_MANAGER to the MembershipRole enum in the Membership proto and assistant_managers_allowed to the PermissionSetting ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+
+### Documentation
+
+* Update field documentations for space.proto and membership.proto ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+
 ## [0.15.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.15.0...chat/v0.15.1) (2025-09-04)
 
 

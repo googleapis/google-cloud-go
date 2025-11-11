@@ -49,10 +49,10 @@ func main() {
 }
 
 var (
-	generateFunc    = generate.Generate
-	releaseInitFunc = release.Init
-	buildFunc       = build.Build
-	configureFunc   = configure.Configure
+	generateFunc     = generate.Generate
+	releaseStageFunc = release.Stage
+	buildFunc        = build.Build
+	configureFunc    = configure.Configure
 )
 
 // run executes the appropriate command based on the CLI's invocation arguments.
@@ -78,8 +78,8 @@ func run(ctx context.Context, args []string) error {
 	switch cmd {
 	case "generate":
 		return handleGenerate(ctx, flags)
-	case "release-init":
-		return handleReleaseInit(ctx, flags)
+	case "release-stage":
+		return handleReleaseStage(ctx, flags)
 	case "configure":
 		return handleConfigure(ctx, flags)
 	case "build":
@@ -104,17 +104,17 @@ func handleGenerate(ctx context.Context, args []string) error {
 	return generateFunc(ctx, cfg)
 }
 
-// handleReleaseInit parses flags for the release-init command and calls the release tool.
-func handleReleaseInit(ctx context.Context, args []string) error {
+// handleReleaseStage parses flags for the release-stage command and calls the release tool.
+func handleReleaseStage(ctx context.Context, args []string) error {
 	cfg := &release.Config{}
-	releaseFlags := flag.NewFlagSet("release-init", flag.ContinueOnError)
-	releaseFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains release-init-request.json.")
+	releaseFlags := flag.NewFlagSet("release-stage", flag.ContinueOnError)
+	releaseFlags.StringVar(&cfg.LibrarianDir, "librarian", "/librarian", "Path to the librarian-tool input directory. Contains release-stage-request.json.")
 	releaseFlags.StringVar(&cfg.RepoDir, "repo", "/repo", "Path to the language repository checkout.")
 	releaseFlags.StringVar(&cfg.OutputDir, "output", "/output", "Path to the empty directory where librariangen writes its output.")
 	if err := releaseFlags.Parse(args); err != nil {
 		return fmt.Errorf("librariangen: failed to parse flags: %w", err)
 	}
-	return releaseInitFunc(ctx, cfg)
+	return releaseStageFunc(ctx, cfg)
 }
 
 // handleBuild parses flags for the build command and calls the builder.

@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:313c142a607526975c2313348d975b1efe84e2dd68e768e76354dd3a45577637
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:f2cbb6b904fdbf086efec0100536c52a79a654a5b9df21f975a2b6f6d50395a4
 libraries:
   - id: accessapproval
     version: 1.8.8
@@ -21,6 +21,7 @@ libraries:
       - ^accessapproval/apiv1/gapic_metadata\.json$
       - ^accessapproval/apiv1/helpers\.go$
       - ^accessapproval/apiv1/accessapprovalpb/.*$
+      - ^accessapproval/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/accessapproval/
     tag_format: '{id}/v{version}'
@@ -45,6 +46,7 @@ libraries:
       - ^accesscontextmanager/apiv1/gapic_metadata\.json$
       - ^accesscontextmanager/apiv1/helpers\.go$
       - ^accesscontextmanager/apiv1/accesscontextmanagerpb/.*$
+      - ^accesscontextmanager/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/accesscontextmanager/
     tag_format: '{id}/v{version}'
@@ -69,6 +71,7 @@ libraries:
       - ^advisorynotifications/apiv1/gapic_metadata\.json$
       - ^advisorynotifications/apiv1/helpers\.go$
       - ^advisorynotifications/apiv1/advisorynotificationspb/.*$
+      - ^advisorynotifications/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
@@ -99,6 +102,7 @@ libraries:
       - ^ai/generativelanguage/apiv1/gapic_metadata\.json$
       - ^ai/generativelanguage/apiv1/helpers\.go$
       - ^ai/generativelanguage/apiv1/generativelanguagepb/.*$
+      - ^ai/generativelanguage/apiv1/\.repo-metadata\.json$
       - ^ai/generativelanguage/apiv1alpha/[^/]*_client\.go$
       - ^ai/generativelanguage/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^ai/generativelanguage/apiv1alpha/[^/]*_client_example_test\.go$
@@ -108,6 +112,7 @@ libraries:
       - ^ai/generativelanguage/apiv1alpha/gapic_metadata\.json$
       - ^ai/generativelanguage/apiv1alpha/helpers\.go$
       - ^ai/generativelanguage/apiv1alpha/generativelanguagepb/.*$
+      - ^ai/generativelanguage/apiv1alpha/\.repo-metadata\.json$
       - ^ai/generativelanguage/apiv1beta/[^/]*_client\.go$
       - ^ai/generativelanguage/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^ai/generativelanguage/apiv1beta/[^/]*_client_example_test\.go$
@@ -117,6 +122,7 @@ libraries:
       - ^ai/generativelanguage/apiv1beta/gapic_metadata\.json$
       - ^ai/generativelanguage/apiv1beta/helpers\.go$
       - ^ai/generativelanguage/apiv1beta/generativelanguagepb/.*$
+      - ^ai/generativelanguage/apiv1beta/\.repo-metadata\.json$
       - ^ai/generativelanguage/apiv1beta2/[^/]*_client\.go$
       - ^ai/generativelanguage/apiv1beta2/[^/]*_client_example_go123_test\.go$
       - ^ai/generativelanguage/apiv1beta2/[^/]*_client_example_test\.go$
@@ -126,11 +132,12 @@ libraries:
       - ^ai/generativelanguage/apiv1beta2/gapic_metadata\.json$
       - ^ai/generativelanguage/apiv1beta2/helpers\.go$
       - ^ai/generativelanguage/apiv1beta2/generativelanguagepb/.*$
+      - ^ai/generativelanguage/apiv1beta2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.108.0
+    version: 1.109.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/aiplatform/v1
@@ -152,6 +159,7 @@ libraries:
       - ^aiplatform/apiv1/gapic_metadata\.json$
       - ^aiplatform/apiv1/helpers\.go$
       - ^aiplatform/apiv1/aiplatformpb/.*$
+      - ^aiplatform/apiv1/\.repo-metadata\.json$
       - ^aiplatform/apiv1beta1/[^/]*_client\.go$
       - ^aiplatform/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^aiplatform/apiv1beta1/[^/]*_client_example_test\.go$
@@ -161,6 +169,7 @@ libraries:
       - ^aiplatform/apiv1beta1/gapic_metadata\.json$
       - ^aiplatform/apiv1beta1/helpers\.go$
       - ^aiplatform/apiv1beta1/aiplatformpb/.*$
+      - ^aiplatform/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/aiplatform/
     tag_format: '{id}/v{version}'
@@ -195,6 +204,7 @@ libraries:
       - ^alloydb/apiv1/gapic_metadata\.json$
       - ^alloydb/apiv1/helpers\.go$
       - ^alloydb/apiv1/alloydbpb/.*$
+      - ^alloydb/apiv1/\.repo-metadata\.json$
       - ^alloydb/apiv1alpha/[^/]*_client\.go$
       - ^alloydb/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^alloydb/apiv1alpha/[^/]*_client_example_test\.go$
@@ -204,6 +214,7 @@ libraries:
       - ^alloydb/apiv1alpha/gapic_metadata\.json$
       - ^alloydb/apiv1alpha/helpers\.go$
       - ^alloydb/apiv1alpha/alloydbpb/.*$
+      - ^alloydb/apiv1alpha/\.repo-metadata\.json$
       - ^alloydb/apiv1beta/[^/]*_client\.go$
       - ^alloydb/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^alloydb/apiv1beta/[^/]*_client_example_test\.go$
@@ -213,6 +224,7 @@ libraries:
       - ^alloydb/apiv1beta/gapic_metadata\.json$
       - ^alloydb/apiv1beta/helpers\.go$
       - ^alloydb/apiv1beta/alloydbpb/.*$
+      - ^alloydb/apiv1beta/\.repo-metadata\.json$
       - ^alloydb/connectors/apiv1/[^/]*_client\.go$
       - ^alloydb/connectors/apiv1/[^/]*_client_example_go123_test\.go$
       - ^alloydb/connectors/apiv1/[^/]*_client_example_test\.go$
@@ -222,6 +234,7 @@ libraries:
       - ^alloydb/connectors/apiv1/gapic_metadata\.json$
       - ^alloydb/connectors/apiv1/helpers\.go$
       - ^alloydb/connectors/apiv1/connectorspb/.*$
+      - ^alloydb/connectors/apiv1/\.repo-metadata\.json$
       - ^alloydb/connectors/apiv1alpha/[^/]*_client\.go$
       - ^alloydb/connectors/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^alloydb/connectors/apiv1alpha/[^/]*_client_example_test\.go$
@@ -231,6 +244,7 @@ libraries:
       - ^alloydb/connectors/apiv1alpha/gapic_metadata\.json$
       - ^alloydb/connectors/apiv1alpha/helpers\.go$
       - ^alloydb/connectors/apiv1alpha/connectorspb/.*$
+      - ^alloydb/connectors/apiv1alpha/\.repo-metadata\.json$
       - ^alloydb/connectors/apiv1beta/[^/]*_client\.go$
       - ^alloydb/connectors/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^alloydb/connectors/apiv1beta/[^/]*_client_example_test\.go$
@@ -240,6 +254,7 @@ libraries:
       - ^alloydb/connectors/apiv1beta/gapic_metadata\.json$
       - ^alloydb/connectors/apiv1beta/helpers\.go$
       - ^alloydb/connectors/apiv1beta/connectorspb/.*$
+      - ^alloydb/connectors/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/alloydb/
     tag_format: '{id}/v{version}'
@@ -264,6 +279,7 @@ libraries:
       - ^analytics/admin/apiv1alpha/gapic_metadata\.json$
       - ^analytics/admin/apiv1alpha/helpers\.go$
       - ^analytics/admin/apiv1alpha/adminpb/.*$
+      - ^analytics/admin/apiv1alpha/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/analytics/
     tag_format: '{id}/v{version}'
@@ -288,6 +304,7 @@ libraries:
       - ^apigateway/apiv1/gapic_metadata\.json$
       - ^apigateway/apiv1/helpers\.go$
       - ^apigateway/apiv1/apigatewaypb/.*$
+      - ^apigateway/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/apigateway/
     tag_format: '{id}/v{version}'
@@ -312,6 +329,7 @@ libraries:
       - ^apigeeconnect/apiv1/gapic_metadata\.json$
       - ^apigeeconnect/apiv1/helpers\.go$
       - ^apigeeconnect/apiv1/apigeeconnectpb/.*$
+      - ^apigeeconnect/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/apigeeconnect/
     tag_format: '{id}/v{version}'
@@ -336,6 +354,7 @@ libraries:
       - ^apigeeregistry/apiv1/gapic_metadata\.json$
       - ^apigeeregistry/apiv1/helpers\.go$
       - ^apigeeregistry/apiv1/apigeeregistrypb/.*$
+      - ^apigeeregistry/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/apigeeregistry/
     tag_format: '{id}/v{version}'
@@ -360,6 +379,7 @@ libraries:
       - ^apihub/apiv1/gapic_metadata\.json$
       - ^apihub/apiv1/helpers\.go$
       - ^apihub/apiv1/apihubpb/.*$
+      - ^apihub/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/apihub/
     tag_format: '{id}/v{version}'
@@ -384,6 +404,7 @@ libraries:
       - ^apikeys/apiv2/gapic_metadata\.json$
       - ^apikeys/apiv2/helpers\.go$
       - ^apikeys/apiv2/apikeyspb/.*$
+      - ^apikeys/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/apikeys/
     tag_format: '{id}/v{version}'
@@ -408,6 +429,7 @@ libraries:
       - ^appengine/apiv1/gapic_metadata\.json$
       - ^appengine/apiv1/helpers\.go$
       - ^appengine/apiv1/appenginepb/.*$
+      - ^appengine/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/appengine/
     tag_format: '{id}/v{version}'
@@ -432,6 +454,7 @@ libraries:
       - ^apphub/apiv1/gapic_metadata\.json$
       - ^apphub/apiv1/helpers\.go$
       - ^apphub/apiv1/apphubpb/.*$
+      - ^apphub/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/apphub/
     tag_format: '{id}/v{version}'
@@ -462,6 +485,7 @@ libraries:
       - ^apps/events/subscriptions/apiv1/gapic_metadata\.json$
       - ^apps/events/subscriptions/apiv1/helpers\.go$
       - ^apps/events/subscriptions/apiv1/subscriptionspb/.*$
+      - ^apps/events/subscriptions/apiv1/\.repo-metadata\.json$
       - ^apps/events/subscriptions/apiv1beta/[^/]*_client\.go$
       - ^apps/events/subscriptions/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^apps/events/subscriptions/apiv1beta/[^/]*_client_example_test\.go$
@@ -471,6 +495,7 @@ libraries:
       - ^apps/events/subscriptions/apiv1beta/gapic_metadata\.json$
       - ^apps/events/subscriptions/apiv1beta/helpers\.go$
       - ^apps/events/subscriptions/apiv1beta/subscriptionspb/.*$
+      - ^apps/events/subscriptions/apiv1beta/\.repo-metadata\.json$
       - ^apps/meet/apiv2/[^/]*_client\.go$
       - ^apps/meet/apiv2/[^/]*_client_example_go123_test\.go$
       - ^apps/meet/apiv2/[^/]*_client_example_test\.go$
@@ -480,6 +505,7 @@ libraries:
       - ^apps/meet/apiv2/gapic_metadata\.json$
       - ^apps/meet/apiv2/helpers\.go$
       - ^apps/meet/apiv2/meetpb/.*$
+      - ^apps/meet/apiv2/\.repo-metadata\.json$
       - ^apps/meet/apiv2beta/[^/]*_client\.go$
       - ^apps/meet/apiv2beta/[^/]*_client_example_go123_test\.go$
       - ^apps/meet/apiv2beta/[^/]*_client_example_test\.go$
@@ -489,6 +515,7 @@ libraries:
       - ^apps/meet/apiv2beta/gapic_metadata\.json$
       - ^apps/meet/apiv2beta/helpers\.go$
       - ^apps/meet/apiv2beta/meetpb/.*$
+      - ^apps/meet/apiv2beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/apps/
     tag_format: '{id}/v{version}'
@@ -513,6 +540,7 @@ libraries:
       - ^area120/tables/apiv1alpha1/gapic_metadata\.json$
       - ^area120/tables/apiv1alpha1/helpers\.go$
       - ^area120/tables/apiv1alpha1/tablespb/.*$
+      - ^area120/tables/apiv1alpha1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/area120/
     tag_format: '{id}/v{version}'
@@ -539,6 +567,7 @@ libraries:
       - ^artifactregistry/apiv1/gapic_metadata\.json$
       - ^artifactregistry/apiv1/helpers\.go$
       - ^artifactregistry/apiv1/artifactregistrypb/.*$
+      - ^artifactregistry/apiv1/\.repo-metadata\.json$
       - ^artifactregistry/apiv1beta2/[^/]*_client\.go$
       - ^artifactregistry/apiv1beta2/[^/]*_client_example_go123_test\.go$
       - ^artifactregistry/apiv1beta2/[^/]*_client_example_test\.go$
@@ -548,6 +577,7 @@ libraries:
       - ^artifactregistry/apiv1beta2/gapic_metadata\.json$
       - ^artifactregistry/apiv1beta2/helpers\.go$
       - ^artifactregistry/apiv1beta2/artifactregistrypb/.*$
+      - ^artifactregistry/apiv1beta2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/artifactregistry/
     tag_format: '{id}/v{version}'
@@ -576,6 +606,7 @@ libraries:
       - ^asset/apiv1/gapic_metadata\.json$
       - ^asset/apiv1/helpers\.go$
       - ^asset/apiv1/assetpb/.*$
+      - ^asset/apiv1/\.repo-metadata\.json$
       - ^asset/apiv1p2beta1/[^/]*_client\.go$
       - ^asset/apiv1p2beta1/[^/]*_client_example_go123_test\.go$
       - ^asset/apiv1p2beta1/[^/]*_client_example_test\.go$
@@ -585,6 +616,7 @@ libraries:
       - ^asset/apiv1p2beta1/gapic_metadata\.json$
       - ^asset/apiv1p2beta1/helpers\.go$
       - ^asset/apiv1p2beta1/assetpb/.*$
+      - ^asset/apiv1p2beta1/\.repo-metadata\.json$
       - ^asset/apiv1p5beta1/[^/]*_client\.go$
       - ^asset/apiv1p5beta1/[^/]*_client_example_go123_test\.go$
       - ^asset/apiv1p5beta1/[^/]*_client_example_test\.go$
@@ -594,6 +626,7 @@ libraries:
       - ^asset/apiv1p5beta1/gapic_metadata\.json$
       - ^asset/apiv1p5beta1/helpers\.go$
       - ^asset/apiv1p5beta1/assetpb/.*$
+      - ^asset/apiv1p5beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/asset/
     tag_format: '{id}/v{version}'
@@ -620,6 +653,7 @@ libraries:
       - ^assuredworkloads/apiv1/gapic_metadata\.json$
       - ^assuredworkloads/apiv1/helpers\.go$
       - ^assuredworkloads/apiv1/assuredworkloadspb/.*$
+      - ^assuredworkloads/apiv1/\.repo-metadata\.json$
       - ^assuredworkloads/apiv1beta1/[^/]*_client\.go$
       - ^assuredworkloads/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^assuredworkloads/apiv1beta1/[^/]*_client_example_test\.go$
@@ -629,6 +663,7 @@ libraries:
       - ^assuredworkloads/apiv1beta1/gapic_metadata\.json$
       - ^assuredworkloads/apiv1beta1/helpers\.go$
       - ^assuredworkloads/apiv1beta1/assuredworkloadspb/.*$
+      - ^assuredworkloads/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
@@ -675,6 +710,7 @@ libraries:
       - ^automl/apiv1/gapic_metadata\.json$
       - ^automl/apiv1/helpers\.go$
       - ^automl/apiv1/automlpb/.*$
+      - ^automl/apiv1/\.repo-metadata\.json$
       - ^automl/apiv1beta1/[^/]*_client\.go$
       - ^automl/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^automl/apiv1beta1/[^/]*_client_example_test\.go$
@@ -684,11 +720,12 @@ libraries:
       - ^automl/apiv1beta1/gapic_metadata\.json$
       - ^automl/apiv1beta1/helpers\.go$
       - ^automl/apiv1beta1/automlpb/.*$
+      - ^automl/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.4.0
+    version: 1.5.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/backupdr/v1
@@ -708,6 +745,7 @@ libraries:
       - ^backupdr/apiv1/gapic_metadata\.json$
       - ^backupdr/apiv1/helpers\.go$
       - ^backupdr/apiv1/backupdrpb/.*$
+      - ^backupdr/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/backupdr/
     tag_format: '{id}/v{version}'
@@ -732,6 +770,7 @@ libraries:
       - ^baremetalsolution/apiv2/gapic_metadata\.json$
       - ^baremetalsolution/apiv2/helpers\.go$
       - ^baremetalsolution/apiv2/baremetalsolutionpb/.*$
+      - ^baremetalsolution/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/baremetalsolution/
     tag_format: '{id}/v{version}'
@@ -757,6 +796,7 @@ libraries:
       - ^batch/apiv1/gapic_metadata\.json$
       - ^batch/apiv1/helpers\.go$
       - ^batch/apiv1/batchpb/.*$
+      - ^batch/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/batch/
     tag_format: '{id}/v{version}'
@@ -789,6 +829,7 @@ libraries:
       - ^beyondcorp/appconnections/apiv1/gapic_metadata\.json$
       - ^beyondcorp/appconnections/apiv1/helpers\.go$
       - ^beyondcorp/appconnections/apiv1/appconnectionspb/.*$
+      - ^beyondcorp/appconnections/apiv1/\.repo-metadata\.json$
       - ^beyondcorp/appconnectors/apiv1/[^/]*_client\.go$
       - ^beyondcorp/appconnectors/apiv1/[^/]*_client_example_go123_test\.go$
       - ^beyondcorp/appconnectors/apiv1/[^/]*_client_example_test\.go$
@@ -798,6 +839,7 @@ libraries:
       - ^beyondcorp/appconnectors/apiv1/gapic_metadata\.json$
       - ^beyondcorp/appconnectors/apiv1/helpers\.go$
       - ^beyondcorp/appconnectors/apiv1/appconnectorspb/.*$
+      - ^beyondcorp/appconnectors/apiv1/\.repo-metadata\.json$
       - ^beyondcorp/appgateways/apiv1/[^/]*_client\.go$
       - ^beyondcorp/appgateways/apiv1/[^/]*_client_example_go123_test\.go$
       - ^beyondcorp/appgateways/apiv1/[^/]*_client_example_test\.go$
@@ -807,6 +849,7 @@ libraries:
       - ^beyondcorp/appgateways/apiv1/gapic_metadata\.json$
       - ^beyondcorp/appgateways/apiv1/helpers\.go$
       - ^beyondcorp/appgateways/apiv1/appgatewayspb/.*$
+      - ^beyondcorp/appgateways/apiv1/\.repo-metadata\.json$
       - ^beyondcorp/clientconnectorservices/apiv1/[^/]*_client\.go$
       - ^beyondcorp/clientconnectorservices/apiv1/[^/]*_client_example_go123_test\.go$
       - ^beyondcorp/clientconnectorservices/apiv1/[^/]*_client_example_test\.go$
@@ -816,6 +859,7 @@ libraries:
       - ^beyondcorp/clientconnectorservices/apiv1/gapic_metadata\.json$
       - ^beyondcorp/clientconnectorservices/apiv1/helpers\.go$
       - ^beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb/.*$
+      - ^beyondcorp/clientconnectorservices/apiv1/\.repo-metadata\.json$
       - ^beyondcorp/clientgateways/apiv1/[^/]*_client\.go$
       - ^beyondcorp/clientgateways/apiv1/[^/]*_client_example_go123_test\.go$
       - ^beyondcorp/clientgateways/apiv1/[^/]*_client_example_test\.go$
@@ -825,6 +869,7 @@ libraries:
       - ^beyondcorp/clientgateways/apiv1/gapic_metadata\.json$
       - ^beyondcorp/clientgateways/apiv1/helpers\.go$
       - ^beyondcorp/clientgateways/apiv1/clientgatewayspb/.*$
+      - ^beyondcorp/clientgateways/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
@@ -886,6 +931,7 @@ libraries:
       - ^bigquery/analyticshub/apiv1/gapic_metadata\.json$
       - ^bigquery/analyticshub/apiv1/helpers\.go$
       - ^bigquery/analyticshub/apiv1/analyticshubpb/.*$
+      - ^bigquery/analyticshub/apiv1/\.repo-metadata\.json$
       - ^bigquery/biglake/apiv1/[^/]*_client\.go$
       - ^bigquery/biglake/apiv1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/biglake/apiv1/[^/]*_client_example_test\.go$
@@ -895,6 +941,7 @@ libraries:
       - ^bigquery/biglake/apiv1/gapic_metadata\.json$
       - ^bigquery/biglake/apiv1/helpers\.go$
       - ^bigquery/biglake/apiv1/biglakepb/.*$
+      - ^bigquery/biglake/apiv1/\.repo-metadata\.json$
       - ^bigquery/biglake/apiv1alpha1/[^/]*_client\.go$
       - ^bigquery/biglake/apiv1alpha1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/biglake/apiv1alpha1/[^/]*_client_example_test\.go$
@@ -904,6 +951,7 @@ libraries:
       - ^bigquery/biglake/apiv1alpha1/gapic_metadata\.json$
       - ^bigquery/biglake/apiv1alpha1/helpers\.go$
       - ^bigquery/biglake/apiv1alpha1/biglakepb/.*$
+      - ^bigquery/biglake/apiv1alpha1/\.repo-metadata\.json$
       - ^bigquery/connection/apiv1/[^/]*_client\.go$
       - ^bigquery/connection/apiv1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/connection/apiv1/[^/]*_client_example_test\.go$
@@ -913,6 +961,7 @@ libraries:
       - ^bigquery/connection/apiv1/gapic_metadata\.json$
       - ^bigquery/connection/apiv1/helpers\.go$
       - ^bigquery/connection/apiv1/connectionpb/.*$
+      - ^bigquery/connection/apiv1/\.repo-metadata\.json$
       - ^bigquery/connection/apiv1beta1/[^/]*_client\.go$
       - ^bigquery/connection/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/connection/apiv1beta1/[^/]*_client_example_test\.go$
@@ -922,6 +971,7 @@ libraries:
       - ^bigquery/connection/apiv1beta1/gapic_metadata\.json$
       - ^bigquery/connection/apiv1beta1/helpers\.go$
       - ^bigquery/connection/apiv1beta1/connectionpb/.*$
+      - ^bigquery/connection/apiv1beta1/\.repo-metadata\.json$
       - ^bigquery/dataexchange/apiv1beta1/[^/]*_client\.go$
       - ^bigquery/dataexchange/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/dataexchange/apiv1beta1/[^/]*_client_example_test\.go$
@@ -931,6 +981,7 @@ libraries:
       - ^bigquery/dataexchange/apiv1beta1/gapic_metadata\.json$
       - ^bigquery/dataexchange/apiv1beta1/helpers\.go$
       - ^bigquery/dataexchange/apiv1beta1/dataexchangepb/.*$
+      - ^bigquery/dataexchange/apiv1beta1/\.repo-metadata\.json$
       - ^bigquery/datapolicies/apiv1/[^/]*_client\.go$
       - ^bigquery/datapolicies/apiv1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/datapolicies/apiv1/[^/]*_client_example_test\.go$
@@ -940,6 +991,7 @@ libraries:
       - ^bigquery/datapolicies/apiv1/gapic_metadata\.json$
       - ^bigquery/datapolicies/apiv1/helpers\.go$
       - ^bigquery/datapolicies/apiv1/datapoliciespb/.*$
+      - ^bigquery/datapolicies/apiv1/\.repo-metadata\.json$
       - ^bigquery/datapolicies/apiv1beta1/[^/]*_client\.go$
       - ^bigquery/datapolicies/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/datapolicies/apiv1beta1/[^/]*_client_example_test\.go$
@@ -949,6 +1001,7 @@ libraries:
       - ^bigquery/datapolicies/apiv1beta1/gapic_metadata\.json$
       - ^bigquery/datapolicies/apiv1beta1/helpers\.go$
       - ^bigquery/datapolicies/apiv1beta1/datapoliciespb/.*$
+      - ^bigquery/datapolicies/apiv1beta1/\.repo-metadata\.json$
       - ^bigquery/datapolicies/apiv2/[^/]*_client\.go$
       - ^bigquery/datapolicies/apiv2/[^/]*_client_example_go123_test\.go$
       - ^bigquery/datapolicies/apiv2/[^/]*_client_example_test\.go$
@@ -958,6 +1011,7 @@ libraries:
       - ^bigquery/datapolicies/apiv2/gapic_metadata\.json$
       - ^bigquery/datapolicies/apiv2/helpers\.go$
       - ^bigquery/datapolicies/apiv2/datapoliciespb/.*$
+      - ^bigquery/datapolicies/apiv2/\.repo-metadata\.json$
       - ^bigquery/datapolicies/apiv2beta1/[^/]*_client\.go$
       - ^bigquery/datapolicies/apiv2beta1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/datapolicies/apiv2beta1/[^/]*_client_example_test\.go$
@@ -967,6 +1021,7 @@ libraries:
       - ^bigquery/datapolicies/apiv2beta1/gapic_metadata\.json$
       - ^bigquery/datapolicies/apiv2beta1/helpers\.go$
       - ^bigquery/datapolicies/apiv2beta1/datapoliciespb/.*$
+      - ^bigquery/datapolicies/apiv2beta1/\.repo-metadata\.json$
       - ^bigquery/datatransfer/apiv1/[^/]*_client\.go$
       - ^bigquery/datatransfer/apiv1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/datatransfer/apiv1/[^/]*_client_example_test\.go$
@@ -976,6 +1031,7 @@ libraries:
       - ^bigquery/datatransfer/apiv1/gapic_metadata\.json$
       - ^bigquery/datatransfer/apiv1/helpers\.go$
       - ^bigquery/datatransfer/apiv1/datatransferpb/.*$
+      - ^bigquery/datatransfer/apiv1/\.repo-metadata\.json$
       - ^bigquery/migration/apiv2/[^/]*_client\.go$
       - ^bigquery/migration/apiv2/[^/]*_client_example_go123_test\.go$
       - ^bigquery/migration/apiv2/[^/]*_client_example_test\.go$
@@ -985,6 +1041,7 @@ libraries:
       - ^bigquery/migration/apiv2/gapic_metadata\.json$
       - ^bigquery/migration/apiv2/helpers\.go$
       - ^bigquery/migration/apiv2/migrationpb/.*$
+      - ^bigquery/migration/apiv2/\.repo-metadata\.json$
       - ^bigquery/migration/apiv2alpha/[^/]*_client\.go$
       - ^bigquery/migration/apiv2alpha/[^/]*_client_example_go123_test\.go$
       - ^bigquery/migration/apiv2alpha/[^/]*_client_example_test\.go$
@@ -994,6 +1051,7 @@ libraries:
       - ^bigquery/migration/apiv2alpha/gapic_metadata\.json$
       - ^bigquery/migration/apiv2alpha/helpers\.go$
       - ^bigquery/migration/apiv2alpha/migrationpb/.*$
+      - ^bigquery/migration/apiv2alpha/\.repo-metadata\.json$
       - ^bigquery/reservation/apiv1/[^/]*_client\.go$
       - ^bigquery/reservation/apiv1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/reservation/apiv1/[^/]*_client_example_test\.go$
@@ -1003,6 +1061,7 @@ libraries:
       - ^bigquery/reservation/apiv1/gapic_metadata\.json$
       - ^bigquery/reservation/apiv1/helpers\.go$
       - ^bigquery/reservation/apiv1/reservationpb/.*$
+      - ^bigquery/reservation/apiv1/\.repo-metadata\.json$
       - ^bigquery/storage/apiv1/[^/]*_client\.go$
       - ^bigquery/storage/apiv1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/storage/apiv1/[^/]*_client_example_test\.go$
@@ -1012,6 +1071,7 @@ libraries:
       - ^bigquery/storage/apiv1/gapic_metadata\.json$
       - ^bigquery/storage/apiv1/helpers\.go$
       - ^bigquery/storage/apiv1/storagepb/.*$
+      - ^bigquery/storage/apiv1/\.repo-metadata\.json$
       - ^bigquery/storage/apiv1alpha/[^/]*_client\.go$
       - ^bigquery/storage/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^bigquery/storage/apiv1alpha/[^/]*_client_example_test\.go$
@@ -1021,6 +1081,7 @@ libraries:
       - ^bigquery/storage/apiv1alpha/gapic_metadata\.json$
       - ^bigquery/storage/apiv1alpha/helpers\.go$
       - ^bigquery/storage/apiv1alpha/storagepb/.*$
+      - ^bigquery/storage/apiv1alpha/\.repo-metadata\.json$
       - ^bigquery/storage/apiv1beta/[^/]*_client\.go$
       - ^bigquery/storage/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^bigquery/storage/apiv1beta/[^/]*_client_example_test\.go$
@@ -1030,6 +1091,7 @@ libraries:
       - ^bigquery/storage/apiv1beta/gapic_metadata\.json$
       - ^bigquery/storage/apiv1beta/helpers\.go$
       - ^bigquery/storage/apiv1beta/storagepb/.*$
+      - ^bigquery/storage/apiv1beta/\.repo-metadata\.json$
       - ^bigquery/storage/apiv1beta1/[^/]*_client\.go$
       - ^bigquery/storage/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^bigquery/storage/apiv1beta1/[^/]*_client_example_test\.go$
@@ -1039,6 +1101,7 @@ libraries:
       - ^bigquery/storage/apiv1beta1/gapic_metadata\.json$
       - ^bigquery/storage/apiv1beta1/helpers\.go$
       - ^bigquery/storage/apiv1beta1/storagepb/.*$
+      - ^bigquery/storage/apiv1beta1/\.repo-metadata\.json$
       - ^bigquery/storage/apiv1beta2/[^/]*_client\.go$
       - ^bigquery/storage/apiv1beta2/[^/]*_client_example_go123_test\.go$
       - ^bigquery/storage/apiv1beta2/[^/]*_client_example_test\.go$
@@ -1048,6 +1111,7 @@ libraries:
       - ^bigquery/storage/apiv1beta2/gapic_metadata\.json$
       - ^bigquery/storage/apiv1beta2/helpers\.go$
       - ^bigquery/storage/apiv1beta2/storagepb/.*$
+      - ^bigquery/storage/apiv1beta2/\.repo-metadata\.json$
     release_exclude_paths:
       - bigquery/benchmarks/
       - bigquery/storage/managedwriter/testdata/
@@ -1075,7 +1139,9 @@ libraries:
       - ^bigquery/v2/apiv2/gapic_metadata\.json$
       - ^bigquery/v2/apiv2/helpers\.go$
       - ^bigquery/v2/apiv2/bigquerypb/.*$
+      - ^bigquery/v2/apiv2/\.repo-metadata\.json$
       - ^bigquery/v2/apiv2/v2pb/.*$
+      - ^bigquery/v2/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - bigquery/v2/apiv2_smoketests/
       - internal/generated/snippets/bigquery/v2
@@ -1093,7 +1159,9 @@ libraries:
     preserve_regex: []
     remove_regex:
       - ^bigtable/admin/apiv2/adminpb/.*$
+      - ^bigtable/admin/apiv2/\.repo-metadata\.json$
       - ^bigtable/apiv2/bigtablepb/.*$
+      - ^bigtable/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - bigtable/bttest
       - bigtable/internal/conformance
@@ -1124,6 +1192,7 @@ libraries:
       - ^billing/apiv1/gapic_metadata\.json$
       - ^billing/apiv1/helpers\.go$
       - ^billing/apiv1/billingpb/.*$
+      - ^billing/apiv1/\.repo-metadata\.json$
       - ^billing/budgets/apiv1/[^/]*_client\.go$
       - ^billing/budgets/apiv1/[^/]*_client_example_go123_test\.go$
       - ^billing/budgets/apiv1/[^/]*_client_example_test\.go$
@@ -1133,6 +1202,7 @@ libraries:
       - ^billing/budgets/apiv1/gapic_metadata\.json$
       - ^billing/budgets/apiv1/helpers\.go$
       - ^billing/budgets/apiv1/budgetspb/.*$
+      - ^billing/budgets/apiv1/\.repo-metadata\.json$
       - ^billing/budgets/apiv1beta1/[^/]*_client\.go$
       - ^billing/budgets/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^billing/budgets/apiv1beta1/[^/]*_client_example_test\.go$
@@ -1142,6 +1212,7 @@ libraries:
       - ^billing/budgets/apiv1beta1/gapic_metadata\.json$
       - ^billing/budgets/apiv1beta1/helpers\.go$
       - ^billing/budgets/apiv1beta1/budgetspb/.*$
+      - ^billing/budgets/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/billing/
     tag_format: '{id}/v{version}'
@@ -1168,6 +1239,7 @@ libraries:
       - ^binaryauthorization/apiv1/gapic_metadata\.json$
       - ^binaryauthorization/apiv1/helpers\.go$
       - ^binaryauthorization/apiv1/binaryauthorizationpb/.*$
+      - ^binaryauthorization/apiv1/\.repo-metadata\.json$
       - ^binaryauthorization/apiv1beta1/[^/]*_client\.go$
       - ^binaryauthorization/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^binaryauthorization/apiv1beta1/[^/]*_client_example_test\.go$
@@ -1177,6 +1249,7 @@ libraries:
       - ^binaryauthorization/apiv1beta1/gapic_metadata\.json$
       - ^binaryauthorization/apiv1beta1/helpers\.go$
       - ^binaryauthorization/apiv1beta1/binaryauthorizationpb/.*$
+      - ^binaryauthorization/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/binaryauthorization/
     tag_format: '{id}/v{version}'
@@ -1201,6 +1274,7 @@ libraries:
       - ^capacityplanner/apiv1beta/gapic_metadata\.json$
       - ^capacityplanner/apiv1beta/helpers\.go$
       - ^capacityplanner/apiv1beta/capacityplannerpb/.*$
+      - ^capacityplanner/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/capacityplanner/
     tag_format: '{id}/v{version}'
@@ -1225,6 +1299,7 @@ libraries:
       - ^certificatemanager/apiv1/gapic_metadata\.json$
       - ^certificatemanager/apiv1/helpers\.go$
       - ^certificatemanager/apiv1/certificatemanagerpb/.*$
+      - ^certificatemanager/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
@@ -1249,11 +1324,12 @@ libraries:
       - ^channel/apiv1/gapic_metadata\.json$
       - ^channel/apiv1/helpers\.go$
       - ^channel/apiv1/channelpb/.*$
+      - ^channel/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.15.1
+    version: 0.16.0
     last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/chat/v1
@@ -1273,6 +1349,7 @@ libraries:
       - ^chat/apiv1/gapic_metadata\.json$
       - ^chat/apiv1/helpers\.go$
       - ^chat/apiv1/chatpb/.*$
+      - ^chat/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/chat/
     tag_format: '{id}/v{version}'
@@ -1297,6 +1374,7 @@ libraries:
       - ^chronicle/apiv1/gapic_metadata\.json$
       - ^chronicle/apiv1/helpers\.go$
       - ^chronicle/apiv1/chroniclepb/.*$
+      - ^chronicle/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/chronicle/
     tag_format: '{id}/v{version}'
@@ -1323,6 +1401,7 @@ libraries:
       - ^cloudbuild/apiv1/v2/gapic_metadata\.json$
       - ^cloudbuild/apiv1/v2/helpers\.go$
       - ^cloudbuild/apiv1/v2/cloudbuildpb/.*$
+      - ^cloudbuild/apiv1/v2/\.repo-metadata\.json$
       - ^cloudbuild/apiv2/[^/]*_client\.go$
       - ^cloudbuild/apiv2/[^/]*_client_example_go123_test\.go$
       - ^cloudbuild/apiv2/[^/]*_client_example_test\.go$
@@ -1332,6 +1411,7 @@ libraries:
       - ^cloudbuild/apiv2/gapic_metadata\.json$
       - ^cloudbuild/apiv2/helpers\.go$
       - ^cloudbuild/apiv2/cloudbuildpb/.*$
+      - ^cloudbuild/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/cloudbuild/
     tag_format: '{id}/v{version}'
@@ -1358,6 +1438,7 @@ libraries:
       - ^cloudcontrolspartner/apiv1/gapic_metadata\.json$
       - ^cloudcontrolspartner/apiv1/helpers\.go$
       - ^cloudcontrolspartner/apiv1/cloudcontrolspartnerpb/.*$
+      - ^cloudcontrolspartner/apiv1/\.repo-metadata\.json$
       - ^cloudcontrolspartner/apiv1beta/[^/]*_client\.go$
       - ^cloudcontrolspartner/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^cloudcontrolspartner/apiv1beta/[^/]*_client_example_test\.go$
@@ -1367,6 +1448,7 @@ libraries:
       - ^cloudcontrolspartner/apiv1beta/gapic_metadata\.json$
       - ^cloudcontrolspartner/apiv1beta/helpers\.go$
       - ^cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb/.*$
+      - ^cloudcontrolspartner/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/cloudcontrolspartner/
     tag_format: '{id}/v{version}'
@@ -1391,6 +1473,7 @@ libraries:
       - ^clouddms/apiv1/gapic_metadata\.json$
       - ^clouddms/apiv1/helpers\.go$
       - ^clouddms/apiv1/clouddmspb/.*$
+      - ^clouddms/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/clouddms/
     tag_format: '{id}/v{version}'
@@ -1415,6 +1498,7 @@ libraries:
       - ^cloudprofiler/apiv2/gapic_metadata\.json$
       - ^cloudprofiler/apiv2/helpers\.go$
       - ^cloudprofiler/apiv2/cloudprofilerpb/.*$
+      - ^cloudprofiler/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/cloudprofiler/
     tag_format: '{id}/v{version}'
@@ -1441,6 +1525,7 @@ libraries:
       - ^cloudquotas/apiv1/gapic_metadata\.json$
       - ^cloudquotas/apiv1/helpers\.go$
       - ^cloudquotas/apiv1/cloudquotaspb/.*$
+      - ^cloudquotas/apiv1/\.repo-metadata\.json$
       - ^cloudquotas/apiv1beta/[^/]*_client\.go$
       - ^cloudquotas/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^cloudquotas/apiv1beta/[^/]*_client_example_test\.go$
@@ -1450,6 +1535,7 @@ libraries:
       - ^cloudquotas/apiv1beta/gapic_metadata\.json$
       - ^cloudquotas/apiv1beta/helpers\.go$
       - ^cloudquotas/apiv1beta/cloudquotaspb/.*$
+      - ^cloudquotas/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/cloudquotas/
     tag_format: '{id}/v{version}'
@@ -1478,6 +1564,7 @@ libraries:
       - ^cloudtasks/apiv2/gapic_metadata\.json$
       - ^cloudtasks/apiv2/helpers\.go$
       - ^cloudtasks/apiv2/cloudtaskspb/.*$
+      - ^cloudtasks/apiv2/\.repo-metadata\.json$
       - ^cloudtasks/apiv2beta2/[^/]*_client\.go$
       - ^cloudtasks/apiv2beta2/[^/]*_client_example_go123_test\.go$
       - ^cloudtasks/apiv2beta2/[^/]*_client_example_test\.go$
@@ -1487,6 +1574,7 @@ libraries:
       - ^cloudtasks/apiv2beta2/gapic_metadata\.json$
       - ^cloudtasks/apiv2beta2/helpers\.go$
       - ^cloudtasks/apiv2beta2/cloudtaskspb/.*$
+      - ^cloudtasks/apiv2beta2/\.repo-metadata\.json$
       - ^cloudtasks/apiv2beta3/[^/]*_client\.go$
       - ^cloudtasks/apiv2beta3/[^/]*_client_example_go123_test\.go$
       - ^cloudtasks/apiv2beta3/[^/]*_client_example_test\.go$
@@ -1496,6 +1584,7 @@ libraries:
       - ^cloudtasks/apiv2beta3/gapic_metadata\.json$
       - ^cloudtasks/apiv2beta3/helpers\.go$
       - ^cloudtasks/apiv2beta3/cloudtaskspb/.*$
+      - ^cloudtasks/apiv2beta3/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/cloudtasks/
     tag_format: '{id}/v{version}'
@@ -1520,6 +1609,7 @@ libraries:
       - ^commerce/consumer/procurement/apiv1/gapic_metadata\.json$
       - ^commerce/consumer/procurement/apiv1/helpers\.go$
       - ^commerce/consumer/procurement/apiv1/procurementpb/.*$
+      - ^commerce/consumer/procurement/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
@@ -1547,6 +1637,7 @@ libraries:
       - ^compute/apiv1/helpers\.go$
       - ^compute/apiv1/operations\.go$
       - ^compute/apiv1/computepb/.*$
+      - ^compute/apiv1/\.repo-metadata\.json$
       - ^compute/apiv1beta/[^/]*_client\.go$
       - ^compute/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^compute/apiv1beta/[^/]*_client_example_test\.go$
@@ -1557,6 +1648,7 @@ libraries:
       - ^compute/apiv1beta/helpers\.go$
       - ^compute/apiv1beta/operations\.go$
       - ^compute/apiv1beta/computepb/.*$
+      - ^compute/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - compute/metadata/
       - internal/generated/snippets/compute/
@@ -1593,6 +1685,7 @@ libraries:
       - ^confidentialcomputing/apiv1/gapic_metadata\.json$
       - ^confidentialcomputing/apiv1/helpers\.go$
       - ^confidentialcomputing/apiv1/confidentialcomputingpb/.*$
+      - ^confidentialcomputing/apiv1/\.repo-metadata\.json$
       - ^confidentialcomputing/apiv1alpha1/[^/]*_client\.go$
       - ^confidentialcomputing/apiv1alpha1/[^/]*_client_example_go123_test\.go$
       - ^confidentialcomputing/apiv1alpha1/[^/]*_client_example_test\.go$
@@ -1602,6 +1695,7 @@ libraries:
       - ^confidentialcomputing/apiv1alpha1/gapic_metadata\.json$
       - ^confidentialcomputing/apiv1alpha1/helpers\.go$
       - ^confidentialcomputing/apiv1alpha1/confidentialcomputingpb/.*$
+      - ^confidentialcomputing/apiv1alpha1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/confidentialcomputing/
     tag_format: '{id}/v{version}'
@@ -1626,6 +1720,7 @@ libraries:
       - ^config/apiv1/gapic_metadata\.json$
       - ^config/apiv1/helpers\.go$
       - ^config/apiv1/configpb/.*$
+      - ^config/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/config/
     tag_format: '{id}/v{version}'
@@ -1652,6 +1747,7 @@ libraries:
       - ^configdelivery/apiv1/gapic_metadata\.json$
       - ^configdelivery/apiv1/helpers\.go$
       - ^configdelivery/apiv1/configdeliverypb/.*$
+      - ^configdelivery/apiv1/\.repo-metadata\.json$
       - ^configdelivery/apiv1beta/[^/]*_client\.go$
       - ^configdelivery/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^configdelivery/apiv1beta/[^/]*_client_example_test\.go$
@@ -1661,6 +1757,7 @@ libraries:
       - ^configdelivery/apiv1beta/gapic_metadata\.json$
       - ^configdelivery/apiv1beta/helpers\.go$
       - ^configdelivery/apiv1beta/configdeliverypb/.*$
+      - ^configdelivery/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/configdelivery/
     tag_format: '{id}/v{version}'
@@ -1685,6 +1782,7 @@ libraries:
       - ^contactcenterinsights/apiv1/gapic_metadata\.json$
       - ^contactcenterinsights/apiv1/helpers\.go$
       - ^contactcenterinsights/apiv1/contactcenterinsightspb/.*$
+      - ^contactcenterinsights/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
@@ -1709,6 +1807,7 @@ libraries:
       - ^container/apiv1/gapic_metadata\.json$
       - ^container/apiv1/helpers\.go$
       - ^container/apiv1/containerpb/.*$
+      - ^container/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/container/
     tag_format: '{id}/v{version}'
@@ -1733,6 +1832,7 @@ libraries:
       - ^containeranalysis/apiv1beta1/gapic_metadata\.json$
       - ^containeranalysis/apiv1beta1/helpers\.go$
       - ^containeranalysis/apiv1beta1/containeranalysispb/.*$
+      - ^containeranalysis/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/containeranalysis/
     tag_format: '{id}/v{version}'
@@ -1762,6 +1862,7 @@ libraries:
       - ^datacatalog/apiv1/gapic_metadata\.json$
       - ^datacatalog/apiv1/helpers\.go$
       - ^datacatalog/apiv1/datacatalogpb/.*$
+      - ^datacatalog/apiv1/\.repo-metadata\.json$
       - ^datacatalog/apiv1beta1/[^/]*_client\.go$
       - ^datacatalog/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^datacatalog/apiv1beta1/[^/]*_client_example_test\.go$
@@ -1771,6 +1872,7 @@ libraries:
       - ^datacatalog/apiv1beta1/gapic_metadata\.json$
       - ^datacatalog/apiv1beta1/helpers\.go$
       - ^datacatalog/apiv1beta1/datacatalogpb/.*$
+      - ^datacatalog/apiv1beta1/\.repo-metadata\.json$
       - ^datacatalog/lineage/apiv1/[^/]*_client\.go$
       - ^datacatalog/lineage/apiv1/[^/]*_client_example_go123_test\.go$
       - ^datacatalog/lineage/apiv1/[^/]*_client_example_test\.go$
@@ -1780,6 +1882,7 @@ libraries:
       - ^datacatalog/lineage/apiv1/gapic_metadata\.json$
       - ^datacatalog/lineage/apiv1/helpers\.go$
       - ^datacatalog/lineage/apiv1/lineagepb/.*$
+      - ^datacatalog/lineage/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/datacatalog/
     tag_format: '{id}/v{version}'
@@ -1804,6 +1907,7 @@ libraries:
       - ^dataflow/apiv1beta3/gapic_metadata\.json$
       - ^dataflow/apiv1beta3/helpers\.go$
       - ^dataflow/apiv1beta3/dataflowpb/.*$
+      - ^dataflow/apiv1beta3/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/dataflow/
     tag_format: '{id}/v{version}'
@@ -1830,6 +1934,7 @@ libraries:
       - ^dataform/apiv1/gapic_metadata\.json$
       - ^dataform/apiv1/helpers\.go$
       - ^dataform/apiv1/dataformpb/.*$
+      - ^dataform/apiv1/\.repo-metadata\.json$
       - ^dataform/apiv1beta1/[^/]*_client\.go$
       - ^dataform/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^dataform/apiv1beta1/[^/]*_client_example_test\.go$
@@ -1839,6 +1944,7 @@ libraries:
       - ^dataform/apiv1beta1/gapic_metadata\.json$
       - ^dataform/apiv1beta1/helpers\.go$
       - ^dataform/apiv1beta1/dataformpb/.*$
+      - ^dataform/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/dataform/
     tag_format: '{id}/v{version}'
@@ -1863,6 +1969,7 @@ libraries:
       - ^datafusion/apiv1/gapic_metadata\.json$
       - ^datafusion/apiv1/helpers\.go$
       - ^datafusion/apiv1/datafusionpb/.*$
+      - ^datafusion/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/datafusion/
     tag_format: '{id}/v{version}'
@@ -1887,11 +1994,12 @@ libraries:
       - ^datalabeling/apiv1beta1/gapic_metadata\.json$
       - ^datalabeling/apiv1beta1/helpers\.go$
       - ^datalabeling/apiv1beta1/datalabelingpb/.*$
+      - ^datalabeling/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: dataplex
-    version: 1.27.1
+    version: 1.28.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/dataplex/v1
@@ -1911,6 +2019,7 @@ libraries:
       - ^dataplex/apiv1/gapic_metadata\.json$
       - ^dataplex/apiv1/helpers\.go$
       - ^dataplex/apiv1/dataplexpb/.*$
+      - ^dataplex/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/dataplex/
     tag_format: '{id}/v{version}'
@@ -1935,6 +2044,7 @@ libraries:
       - ^dataproc/apiv1/gapic_metadata\.json$
       - ^dataproc/apiv1/helpers\.go$
       - ^dataproc/apiv1/dataprocpb/.*$
+      - ^dataproc/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
@@ -1959,6 +2069,7 @@ libraries:
       - ^dataqna/apiv1alpha/gapic_metadata\.json$
       - ^dataqna/apiv1alpha/helpers\.go$
       - ^dataqna/apiv1alpha/dataqnapb/.*$
+      - ^dataqna/apiv1alpha/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/dataqna/
     tag_format: '{id}/v{version}'
@@ -1985,6 +2096,7 @@ libraries:
       - ^datastore/admin/apiv1/gapic_metadata\.json$
       - ^datastore/admin/apiv1/helpers\.go$
       - ^datastore/admin/apiv1/adminpb/.*$
+      - ^datastore/admin/apiv1/\.repo-metadata\.json$
       - ^datastore/apiv1/[^/]*_client\.go$
       - ^datastore/apiv1/[^/]*_client_example_go123_test\.go$
       - ^datastore/apiv1/[^/]*_client_example_test\.go$
@@ -1994,6 +2106,7 @@ libraries:
       - ^datastore/apiv1/gapic_metadata\.json$
       - ^datastore/apiv1/helpers\.go$
       - ^datastore/apiv1/datastorepb/.*$
+      - ^datastore/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/datastore/
   - id: datastream
@@ -2020,6 +2133,7 @@ libraries:
       - ^datastream/apiv1/gapic_metadata\.json$
       - ^datastream/apiv1/helpers\.go$
       - ^datastream/apiv1/datastreampb/.*$
+      - ^datastream/apiv1/\.repo-metadata\.json$
       - ^datastream/apiv1alpha1/[^/]*_client\.go$
       - ^datastream/apiv1alpha1/[^/]*_client_example_go123_test\.go$
       - ^datastream/apiv1alpha1/[^/]*_client_example_test\.go$
@@ -2029,6 +2143,7 @@ libraries:
       - ^datastream/apiv1alpha1/gapic_metadata\.json$
       - ^datastream/apiv1alpha1/helpers\.go$
       - ^datastream/apiv1alpha1/datastreampb/.*$
+      - ^datastream/apiv1alpha1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/datastream/
     tag_format: '{id}/v{version}'
@@ -2053,6 +2168,7 @@ libraries:
       - ^deploy/apiv1/gapic_metadata\.json$
       - ^deploy/apiv1/helpers\.go$
       - ^deploy/apiv1/deploypb/.*$
+      - ^deploy/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/deploy/
     tag_format: '{id}/v{version}'
@@ -2077,6 +2193,7 @@ libraries:
       - ^developerconnect/apiv1/gapic_metadata\.json$
       - ^developerconnect/apiv1/helpers\.go$
       - ^developerconnect/apiv1/developerconnectpb/.*$
+      - ^developerconnect/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/developerconnect/
     tag_format: '{id}/v{version}'
@@ -2101,11 +2218,12 @@ libraries:
       - ^devicestreaming/apiv1/gapic_metadata\.json$
       - ^devicestreaming/apiv1/helpers\.go$
       - ^devicestreaming/apiv1/devicestreamingpb/.*$
+      - ^devicestreaming/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.70.0
+    version: 1.71.0
     last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -2131,6 +2249,7 @@ libraries:
       - ^dialogflow/apiv2/gapic_metadata\.json$
       - ^dialogflow/apiv2/helpers\.go$
       - ^dialogflow/apiv2/dialogflowpb/.*$
+      - ^dialogflow/apiv2/\.repo-metadata\.json$
       - ^dialogflow/apiv2beta1/[^/]*_client\.go$
       - ^dialogflow/apiv2beta1/[^/]*_client_example_go123_test\.go$
       - ^dialogflow/apiv2beta1/[^/]*_client_example_test\.go$
@@ -2140,6 +2259,7 @@ libraries:
       - ^dialogflow/apiv2beta1/gapic_metadata\.json$
       - ^dialogflow/apiv2beta1/helpers\.go$
       - ^dialogflow/apiv2beta1/dialogflowpb/.*$
+      - ^dialogflow/apiv2beta1/\.repo-metadata\.json$
       - ^dialogflow/cx/apiv3/[^/]*_client\.go$
       - ^dialogflow/cx/apiv3/[^/]*_client_example_go123_test\.go$
       - ^dialogflow/cx/apiv3/[^/]*_client_example_test\.go$
@@ -2149,6 +2269,7 @@ libraries:
       - ^dialogflow/cx/apiv3/gapic_metadata\.json$
       - ^dialogflow/cx/apiv3/helpers\.go$
       - ^dialogflow/cx/apiv3/cxpb/.*$
+      - ^dialogflow/cx/apiv3/\.repo-metadata\.json$
       - ^dialogflow/cx/apiv3beta1/[^/]*_client\.go$
       - ^dialogflow/cx/apiv3beta1/[^/]*_client_example_go123_test\.go$
       - ^dialogflow/cx/apiv3beta1/[^/]*_client_example_test\.go$
@@ -2158,6 +2279,7 @@ libraries:
       - ^dialogflow/cx/apiv3beta1/gapic_metadata\.json$
       - ^dialogflow/cx/apiv3beta1/helpers\.go$
       - ^dialogflow/cx/apiv3beta1/cxpb/.*$
+      - ^dialogflow/cx/apiv3beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/dialogflow/
     tag_format: '{id}/v{version}'
@@ -2186,6 +2308,7 @@ libraries:
       - ^discoveryengine/apiv1/gapic_metadata\.json$
       - ^discoveryengine/apiv1/helpers\.go$
       - ^discoveryengine/apiv1/discoveryenginepb/.*$
+      - ^discoveryengine/apiv1/\.repo-metadata\.json$
       - ^discoveryengine/apiv1alpha/[^/]*_client\.go$
       - ^discoveryengine/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^discoveryengine/apiv1alpha/[^/]*_client_example_test\.go$
@@ -2195,6 +2318,7 @@ libraries:
       - ^discoveryengine/apiv1alpha/gapic_metadata\.json$
       - ^discoveryengine/apiv1alpha/helpers\.go$
       - ^discoveryengine/apiv1alpha/discoveryenginepb/.*$
+      - ^discoveryengine/apiv1alpha/\.repo-metadata\.json$
       - ^discoveryengine/apiv1beta/[^/]*_client\.go$
       - ^discoveryengine/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^discoveryengine/apiv1beta/[^/]*_client_example_test\.go$
@@ -2204,6 +2328,7 @@ libraries:
       - ^discoveryengine/apiv1beta/gapic_metadata\.json$
       - ^discoveryengine/apiv1beta/helpers\.go$
       - ^discoveryengine/apiv1beta/discoveryenginepb/.*$
+      - ^discoveryengine/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/discoveryengine/
     tag_format: '{id}/v{version}'
@@ -2228,6 +2353,7 @@ libraries:
       - ^dlp/apiv2/gapic_metadata\.json$
       - ^dlp/apiv2/helpers\.go$
       - ^dlp/apiv2/dlppb/.*$
+      - ^dlp/apiv2/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: documentai
     version: 1.39.0
@@ -2252,6 +2378,7 @@ libraries:
       - ^documentai/apiv1/gapic_metadata\.json$
       - ^documentai/apiv1/helpers\.go$
       - ^documentai/apiv1/documentaipb/.*$
+      - ^documentai/apiv1/\.repo-metadata\.json$
       - ^documentai/apiv1beta3/[^/]*_client\.go$
       - ^documentai/apiv1beta3/[^/]*_client_example_go123_test\.go$
       - ^documentai/apiv1beta3/[^/]*_client_example_test\.go$
@@ -2261,6 +2388,7 @@ libraries:
       - ^documentai/apiv1beta3/gapic_metadata\.json$
       - ^documentai/apiv1beta3/helpers\.go$
       - ^documentai/apiv1beta3/documentaipb/.*$
+      - ^documentai/apiv1beta3/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/documentai/
     tag_format: '{id}/v{version}'
@@ -2285,6 +2413,7 @@ libraries:
       - ^domains/apiv1beta1/gapic_metadata\.json$
       - ^domains/apiv1beta1/helpers\.go$
       - ^domains/apiv1beta1/domainspb/.*$
+      - ^domains/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/domains/
     tag_format: '{id}/v{version}'
@@ -2309,11 +2438,12 @@ libraries:
       - ^edgecontainer/apiv1/gapic_metadata\.json$
       - ^edgecontainer/apiv1/helpers\.go$
       - ^edgecontainer/apiv1/edgecontainerpb/.*$
+      - ^edgecontainer/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/edgecontainer/
     tag_format: '{id}/v{version}'
   - id: edgenetwork
-    version: 1.2.7
+    version: 1.3.0
     last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
     apis:
       - path: google/cloud/edgenetwork/v1
@@ -2333,6 +2463,7 @@ libraries:
       - ^edgenetwork/apiv1/gapic_metadata\.json$
       - ^edgenetwork/apiv1/helpers\.go$
       - ^edgenetwork/apiv1/edgenetworkpb/.*$
+      - ^edgenetwork/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/edgenetwork/
     tag_format: '{id}/v{version}'
@@ -2357,6 +2488,7 @@ libraries:
       - ^errorreporting/apiv1beta1/gapic_metadata\.json$
       - ^errorreporting/apiv1beta1/helpers\.go$
       - ^errorreporting/apiv1beta1/errorreportingpb/.*$
+      - ^errorreporting/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/errorreporting/
     tag_format: '{id}/v{version}'
@@ -2381,6 +2513,7 @@ libraries:
       - ^essentialcontacts/apiv1/gapic_metadata\.json$
       - ^essentialcontacts/apiv1/helpers\.go$
       - ^essentialcontacts/apiv1/essentialcontactspb/.*$
+      - ^essentialcontacts/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/essentialcontacts/
     tag_format: '{id}/v{version}'
@@ -2407,6 +2540,7 @@ libraries:
       - ^eventarc/apiv1/gapic_metadata\.json$
       - ^eventarc/apiv1/helpers\.go$
       - ^eventarc/apiv1/eventarcpb/.*$
+      - ^eventarc/apiv1/\.repo-metadata\.json$
       - ^eventarc/publishing/apiv1/[^/]*_client\.go$
       - ^eventarc/publishing/apiv1/[^/]*_client_example_go123_test\.go$
       - ^eventarc/publishing/apiv1/[^/]*_client_example_test\.go$
@@ -2416,6 +2550,7 @@ libraries:
       - ^eventarc/publishing/apiv1/gapic_metadata\.json$
       - ^eventarc/publishing/apiv1/helpers\.go$
       - ^eventarc/publishing/apiv1/publishingpb/.*$
+      - ^eventarc/publishing/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/eventarc/
     tag_format: '{id}/v{version}'
@@ -2440,6 +2575,7 @@ libraries:
       - ^filestore/apiv1/gapic_metadata\.json$
       - ^filestore/apiv1/helpers\.go$
       - ^filestore/apiv1/filestorepb/.*$
+      - ^filestore/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/filestore/
     tag_format: '{id}/v{version}'
@@ -2464,6 +2600,7 @@ libraries:
       - ^financialservices/apiv1/gapic_metadata\.json$
       - ^financialservices/apiv1/helpers\.go$
       - ^financialservices/apiv1/financialservicespb/.*$
+      - ^financialservices/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/financialservices/
     tag_format: '{id}/v{version}'
@@ -2490,6 +2627,7 @@ libraries:
       - ^firestore/apiv1/gapic_metadata\.json$
       - ^firestore/apiv1/helpers\.go$
       - ^firestore/apiv1/firestorepb/.*$
+      - ^firestore/apiv1/\.repo-metadata\.json$
       - ^firestore/apiv1/admin/[^/]*_client\.go$
       - ^firestore/apiv1/admin/[^/]*_client_example_go123_test\.go$
       - ^firestore/apiv1/admin/[^/]*_client_example_test\.go$
@@ -2499,6 +2637,7 @@ libraries:
       - ^firestore/apiv1/admin/gapic_metadata\.json$
       - ^firestore/apiv1/admin/helpers\.go$
       - ^firestore/apiv1/admin/adminpb/.*$
+      - ^firestore/apiv1/admin/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/firestore/
     tag_format: '{id}/v{version}'
@@ -2527,6 +2666,7 @@ libraries:
       - ^functions/apiv1/gapic_metadata\.json$
       - ^functions/apiv1/helpers\.go$
       - ^functions/apiv1/functionspb/.*$
+      - ^functions/apiv1/\.repo-metadata\.json$
       - ^functions/apiv2/[^/]*_client\.go$
       - ^functions/apiv2/[^/]*_client_example_go123_test\.go$
       - ^functions/apiv2/[^/]*_client_example_test\.go$
@@ -2536,6 +2676,7 @@ libraries:
       - ^functions/apiv2/gapic_metadata\.json$
       - ^functions/apiv2/helpers\.go$
       - ^functions/apiv2/functionspb/.*$
+      - ^functions/apiv2/\.repo-metadata\.json$
       - ^functions/apiv2beta/[^/]*_client\.go$
       - ^functions/apiv2beta/[^/]*_client_example_go123_test\.go$
       - ^functions/apiv2beta/[^/]*_client_example_test\.go$
@@ -2545,6 +2686,7 @@ libraries:
       - ^functions/apiv2beta/gapic_metadata\.json$
       - ^functions/apiv2beta/helpers\.go$
       - ^functions/apiv2beta/functionspb/.*$
+      - ^functions/apiv2beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
@@ -2569,6 +2711,7 @@ libraries:
       - ^geminidataanalytics/apiv1beta/gapic_metadata\.json$
       - ^geminidataanalytics/apiv1beta/helpers\.go$
       - ^geminidataanalytics/apiv1beta/geminidataanalyticspb/.*$
+      - ^geminidataanalytics/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/geminidataanalytics/
     tag_format: '{id}/v{version}'
@@ -2593,6 +2736,7 @@ libraries:
       - ^gkebackup/apiv1/gapic_metadata\.json$
       - ^gkebackup/apiv1/helpers\.go$
       - ^gkebackup/apiv1/gkebackuppb/.*$
+      - ^gkebackup/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/gkebackup/
     tag_format: '{id}/v{version}'
@@ -2619,6 +2763,7 @@ libraries:
       - ^gkeconnect/gateway/apiv1/gapic_metadata\.json$
       - ^gkeconnect/gateway/apiv1/helpers\.go$
       - ^gkeconnect/gateway/apiv1/gatewaypb/.*$
+      - ^gkeconnect/gateway/apiv1/\.repo-metadata\.json$
       - ^gkeconnect/gateway/apiv1beta1/[^/]*_client\.go$
       - ^gkeconnect/gateway/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^gkeconnect/gateway/apiv1beta1/[^/]*_client_example_test\.go$
@@ -2628,6 +2773,7 @@ libraries:
       - ^gkeconnect/gateway/apiv1beta1/gapic_metadata\.json$
       - ^gkeconnect/gateway/apiv1beta1/helpers\.go$
       - ^gkeconnect/gateway/apiv1beta1/gatewaypb/.*$
+      - ^gkeconnect/gateway/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/gkeconnect/
     tag_format: '{id}/v{version}'
@@ -2652,6 +2798,7 @@ libraries:
       - ^gkehub/apiv1beta1/gapic_metadata\.json$
       - ^gkehub/apiv1beta1/helpers\.go$
       - ^gkehub/apiv1beta1/gkehubpb/.*$
+      - ^gkehub/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/gkehub/
     tag_format: '{id}/v{version}'
@@ -2676,11 +2823,12 @@ libraries:
       - ^gkemulticloud/apiv1/gapic_metadata\.json$
       - ^gkemulticloud/apiv1/helpers\.go$
       - ^gkemulticloud/apiv1/gkemulticloudpb/.*$
+      - ^gkemulticloud/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/gkemulticloud/
     tag_format: '{id}/v{version}'
   - id: gkerecommender
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/gkerecommender/v1
@@ -2700,6 +2848,7 @@ libraries:
       - ^gkerecommender/apiv1/gapic_metadata\.json$
       - ^gkerecommender/apiv1/helpers\.go$
       - ^gkerecommender/apiv1/gkerecommenderpb/.*$
+      - ^gkerecommender/apiv1/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: grafeas
     version: 0.3.17
@@ -2718,6 +2867,7 @@ libraries:
       - ^grafeas/apiv1/gapic_metadata\.json$
       - ^grafeas/apiv1/helpers\.go$
       - ^grafeas/apiv1/grafeaspb/.*$
+      - ^grafeas/apiv1/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: gsuiteaddons
     version: 1.7.8
@@ -2740,6 +2890,7 @@ libraries:
       - ^gsuiteaddons/apiv1/gapic_metadata\.json$
       - ^gsuiteaddons/apiv1/helpers\.go$
       - ^gsuiteaddons/apiv1/gsuiteaddonspb/.*$
+      - ^gsuiteaddons/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/gsuiteaddons/
     tag_format: '{id}/v{version}'
@@ -2772,6 +2923,7 @@ libraries:
       - ^iam/apiv1/gapic_metadata\.json$
       - ^iam/apiv1/helpers\.go$
       - ^iam/apiv1/iampb/.*$
+      - ^iam/apiv1/\.repo-metadata\.json$
       - ^iam/apiv2/[^/]*_client\.go$
       - ^iam/apiv2/[^/]*_client_example_go123_test\.go$
       - ^iam/apiv2/[^/]*_client_example_test\.go$
@@ -2781,6 +2933,7 @@ libraries:
       - ^iam/apiv2/gapic_metadata\.json$
       - ^iam/apiv2/helpers\.go$
       - ^iam/apiv2/iampb/.*$
+      - ^iam/apiv2/\.repo-metadata\.json$
       - ^iam/apiv3/[^/]*_client\.go$
       - ^iam/apiv3/[^/]*_client_example_go123_test\.go$
       - ^iam/apiv3/[^/]*_client_example_test\.go$
@@ -2790,6 +2943,7 @@ libraries:
       - ^iam/apiv3/gapic_metadata\.json$
       - ^iam/apiv3/helpers\.go$
       - ^iam/apiv3/iampb/.*$
+      - ^iam/apiv3/\.repo-metadata\.json$
       - ^iam/apiv3beta/[^/]*_client\.go$
       - ^iam/apiv3beta/[^/]*_client_example_go123_test\.go$
       - ^iam/apiv3beta/[^/]*_client_example_test\.go$
@@ -2799,6 +2953,7 @@ libraries:
       - ^iam/apiv3beta/gapic_metadata\.json$
       - ^iam/apiv3beta/helpers\.go$
       - ^iam/apiv3beta/iampb/.*$
+      - ^iam/apiv3beta/\.repo-metadata\.json$
       - ^iam/credentials/apiv1/[^/]*_client\.go$
       - ^iam/credentials/apiv1/[^/]*_client_example_go123_test\.go$
       - ^iam/credentials/apiv1/[^/]*_client_example_test\.go$
@@ -2808,6 +2963,7 @@ libraries:
       - ^iam/credentials/apiv1/gapic_metadata\.json$
       - ^iam/credentials/apiv1/helpers\.go$
       - ^iam/credentials/apiv1/credentialspb/.*$
+      - ^iam/credentials/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/iam/
     tag_format: '{id}/v{version}'
@@ -2832,6 +2988,7 @@ libraries:
       - ^iap/apiv1/gapic_metadata\.json$
       - ^iap/apiv1/helpers\.go$
       - ^iap/apiv1/iappb/.*$
+      - ^iap/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/iap/
     tag_format: '{id}/v{version}'
@@ -2856,6 +3013,7 @@ libraries:
       - ^identitytoolkit/apiv2/gapic_metadata\.json$
       - ^identitytoolkit/apiv2/helpers\.go$
       - ^identitytoolkit/apiv2/identitytoolkitpb/.*$
+      - ^identitytoolkit/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/identitytoolkit/
     tag_format: '{id}/v{version}'
@@ -2880,6 +3038,7 @@ libraries:
       - ^ids/apiv1/gapic_metadata\.json$
       - ^ids/apiv1/helpers\.go$
       - ^ids/apiv1/idspb/.*$
+      - ^ids/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/ids/
     tag_format: '{id}/v{version}'
@@ -2904,6 +3063,7 @@ libraries:
       - ^iot/apiv1/gapic_metadata\.json$
       - ^iot/apiv1/helpers\.go$
       - ^iot/apiv1/iotpb/.*$
+      - ^iot/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
@@ -2930,6 +3090,7 @@ libraries:
       - ^kms/apiv1/gapic_metadata\.json$
       - ^kms/apiv1/helpers\.go$
       - ^kms/apiv1/kmspb/.*$
+      - ^kms/apiv1/\.repo-metadata\.json$
       - ^kms/inventory/apiv1/[^/]*_client\.go$
       - ^kms/inventory/apiv1/[^/]*_client_example_go123_test\.go$
       - ^kms/inventory/apiv1/[^/]*_client_example_test\.go$
@@ -2939,6 +3100,7 @@ libraries:
       - ^kms/inventory/apiv1/gapic_metadata\.json$
       - ^kms/inventory/apiv1/helpers\.go$
       - ^kms/inventory/apiv1/inventorypb/.*$
+      - ^kms/inventory/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/kms/
     tag_format: '{id}/v{version}'
@@ -2967,6 +3129,7 @@ libraries:
       - ^language/apiv1/gapic_metadata\.json$
       - ^language/apiv1/helpers\.go$
       - ^language/apiv1/languagepb/.*$
+      - ^language/apiv1/\.repo-metadata\.json$
       - ^language/apiv1beta2/[^/]*_client\.go$
       - ^language/apiv1beta2/[^/]*_client_example_go123_test\.go$
       - ^language/apiv1beta2/[^/]*_client_example_test\.go$
@@ -2976,6 +3139,7 @@ libraries:
       - ^language/apiv1beta2/gapic_metadata\.json$
       - ^language/apiv1beta2/helpers\.go$
       - ^language/apiv1beta2/languagepb/.*$
+      - ^language/apiv1beta2/\.repo-metadata\.json$
       - ^language/apiv2/[^/]*_client\.go$
       - ^language/apiv2/[^/]*_client_example_go123_test\.go$
       - ^language/apiv2/[^/]*_client_example_test\.go$
@@ -2985,6 +3149,7 @@ libraries:
       - ^language/apiv2/gapic_metadata\.json$
       - ^language/apiv2/helpers\.go$
       - ^language/apiv2/languagepb/.*$
+      - ^language/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/language/
     tag_format: '{id}/v{version}'
@@ -3009,6 +3174,7 @@ libraries:
       - ^licensemanager/apiv1/gapic_metadata\.json$
       - ^licensemanager/apiv1/helpers\.go$
       - ^licensemanager/apiv1/licensemanagerpb/.*$
+      - ^licensemanager/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/licensemanager/
     tag_format: '{id}/v{version}'
@@ -3033,6 +3199,7 @@ libraries:
       - ^lifesciences/apiv2beta/gapic_metadata\.json$
       - ^lifesciences/apiv2beta/helpers\.go$
       - ^lifesciences/apiv2beta/lifesciencespb/.*$
+      - ^lifesciences/apiv2beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/lifesciences/
     tag_format: '{id}/v{version}'
@@ -3057,6 +3224,7 @@ libraries:
       - ^locationfinder/apiv1/gapic_metadata\.json$
       - ^locationfinder/apiv1/helpers\.go$
       - ^locationfinder/apiv1/locationfinderpb/.*$
+      - ^locationfinder/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/locationfinder/
     tag_format: '{id}/v{version}'
@@ -3081,6 +3249,7 @@ libraries:
       - ^logging/apiv2/gapic_metadata\.json$
       - ^logging/apiv2/helpers\.go$
       - ^logging/apiv2/loggingpb/.*$
+      - ^logging/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/logging/
     tag_format: '{id}/v{version}'
@@ -3105,6 +3274,7 @@ libraries:
       - ^longrunning/autogen/gapic_metadata\.json$
       - ^longrunning/autogen/helpers\.go$
       - ^longrunning/autogen/longrunningpb/.*$
+      - ^longrunning/autogen/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/longrunning/
     tag_format: '{id}/v{version}'
@@ -3129,6 +3299,7 @@ libraries:
       - ^lustre/apiv1/gapic_metadata\.json$
       - ^lustre/apiv1/helpers\.go$
       - ^lustre/apiv1/lustrepb/.*$
+      - ^lustre/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/lustre/
     tag_format: '{id}/v{version}'
@@ -3153,6 +3324,7 @@ libraries:
       - ^maintenance/api/apiv1beta/gapic_metadata\.json$
       - ^maintenance/api/apiv1beta/helpers\.go$
       - ^maintenance/api/apiv1beta/apipb/.*$
+      - ^maintenance/api/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/maintenance/
     tag_format: '{id}/v{version}'
@@ -3177,6 +3349,7 @@ libraries:
       - ^managedidentities/apiv1/gapic_metadata\.json$
       - ^managedidentities/apiv1/helpers\.go$
       - ^managedidentities/apiv1/managedidentitiespb/.*$
+      - ^managedidentities/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/managedidentities/
     tag_format: '{id}/v{version}'
@@ -3203,6 +3376,7 @@ libraries:
       - ^managedkafka/apiv1/gapic_metadata\.json$
       - ^managedkafka/apiv1/helpers\.go$
       - ^managedkafka/apiv1/managedkafkapb/.*$
+      - ^managedkafka/apiv1/\.repo-metadata\.json$
       - ^managedkafka/schemaregistry/apiv1/[^/]*_client\.go$
       - ^managedkafka/schemaregistry/apiv1/[^/]*_client_example_go123_test\.go$
       - ^managedkafka/schemaregistry/apiv1/[^/]*_client_example_test\.go$
@@ -3212,11 +3386,12 @@ libraries:
       - ^managedkafka/schemaregistry/apiv1/gapic_metadata\.json$
       - ^managedkafka/schemaregistry/apiv1/helpers\.go$
       - ^managedkafka/schemaregistry/apiv1/schemaregistrypb/.*$
+      - ^managedkafka/schemaregistry/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.25.0
+    version: 1.26.0
     last_generated_commit: b61fb21bbac838de7f55cf2c60d371a47fc2799e
     apis:
       - path: google/maps/addressvalidation/v1
@@ -3250,6 +3425,7 @@ libraries:
       - ^maps/addressvalidation/apiv1/gapic_metadata\.json$
       - ^maps/addressvalidation/apiv1/helpers\.go$
       - ^maps/addressvalidation/apiv1/addressvalidationpb/.*$
+      - ^maps/addressvalidation/apiv1/\.repo-metadata\.json$
       - ^maps/areainsights/apiv1/[^/]*_client\.go$
       - ^maps/areainsights/apiv1/[^/]*_client_example_go123_test\.go$
       - ^maps/areainsights/apiv1/[^/]*_client_example_test\.go$
@@ -3259,6 +3435,7 @@ libraries:
       - ^maps/areainsights/apiv1/gapic_metadata\.json$
       - ^maps/areainsights/apiv1/helpers\.go$
       - ^maps/areainsights/apiv1/areainsightspb/.*$
+      - ^maps/areainsights/apiv1/\.repo-metadata\.json$
       - ^maps/fleetengine/apiv1/[^/]*_client\.go$
       - ^maps/fleetengine/apiv1/[^/]*_client_example_go123_test\.go$
       - ^maps/fleetengine/apiv1/[^/]*_client_example_test\.go$
@@ -3268,6 +3445,7 @@ libraries:
       - ^maps/fleetengine/apiv1/gapic_metadata\.json$
       - ^maps/fleetengine/apiv1/helpers\.go$
       - ^maps/fleetengine/apiv1/fleetenginepb/.*$
+      - ^maps/fleetengine/apiv1/\.repo-metadata\.json$
       - ^maps/fleetengine/delivery/apiv1/[^/]*_client\.go$
       - ^maps/fleetengine/delivery/apiv1/[^/]*_client_example_go123_test\.go$
       - ^maps/fleetengine/delivery/apiv1/[^/]*_client_example_test\.go$
@@ -3277,6 +3455,7 @@ libraries:
       - ^maps/fleetengine/delivery/apiv1/gapic_metadata\.json$
       - ^maps/fleetengine/delivery/apiv1/helpers\.go$
       - ^maps/fleetengine/delivery/apiv1/deliverypb/.*$
+      - ^maps/fleetengine/delivery/apiv1/\.repo-metadata\.json$
       - ^maps/places/apiv1/[^/]*_client\.go$
       - ^maps/places/apiv1/[^/]*_client_example_go123_test\.go$
       - ^maps/places/apiv1/[^/]*_client_example_test\.go$
@@ -3286,6 +3465,7 @@ libraries:
       - ^maps/places/apiv1/gapic_metadata\.json$
       - ^maps/places/apiv1/helpers\.go$
       - ^maps/places/apiv1/placespb/.*$
+      - ^maps/places/apiv1/\.repo-metadata\.json$
       - ^maps/routeoptimization/apiv1/[^/]*_client\.go$
       - ^maps/routeoptimization/apiv1/[^/]*_client_example_go123_test\.go$
       - ^maps/routeoptimization/apiv1/[^/]*_client_example_test\.go$
@@ -3295,6 +3475,7 @@ libraries:
       - ^maps/routeoptimization/apiv1/gapic_metadata\.json$
       - ^maps/routeoptimization/apiv1/helpers\.go$
       - ^maps/routeoptimization/apiv1/routeoptimizationpb/.*$
+      - ^maps/routeoptimization/apiv1/\.repo-metadata\.json$
       - ^maps/routing/apiv2/[^/]*_client\.go$
       - ^maps/routing/apiv2/[^/]*_client_example_go123_test\.go$
       - ^maps/routing/apiv2/[^/]*_client_example_test\.go$
@@ -3304,6 +3485,7 @@ libraries:
       - ^maps/routing/apiv2/gapic_metadata\.json$
       - ^maps/routing/apiv2/helpers\.go$
       - ^maps/routing/apiv2/routingpb/.*$
+      - ^maps/routing/apiv2/\.repo-metadata\.json$
       - ^maps/solar/apiv1/[^/]*_client\.go$
       - ^maps/solar/apiv1/[^/]*_client_example_go123_test\.go$
       - ^maps/solar/apiv1/[^/]*_client_example_test\.go$
@@ -3313,6 +3495,7 @@ libraries:
       - ^maps/solar/apiv1/gapic_metadata\.json$
       - ^maps/solar/apiv1/helpers\.go$
       - ^maps/solar/apiv1/solarpb/.*$
+      - ^maps/solar/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/maps/
     tag_format: '{id}/v{version}'
@@ -3337,6 +3520,7 @@ libraries:
       - ^mediatranslation/apiv1beta1/gapic_metadata\.json$
       - ^mediatranslation/apiv1beta1/helpers\.go$
       - ^mediatranslation/apiv1beta1/mediatranslationpb/.*$
+      - ^mediatranslation/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/mediatranslation/
     tag_format: '{id}/v{version}'
@@ -3363,6 +3547,7 @@ libraries:
       - ^memcache/apiv1/gapic_metadata\.json$
       - ^memcache/apiv1/helpers\.go$
       - ^memcache/apiv1/memcachepb/.*$
+      - ^memcache/apiv1/\.repo-metadata\.json$
       - ^memcache/apiv1beta2/[^/]*_client\.go$
       - ^memcache/apiv1beta2/[^/]*_client_example_go123_test\.go$
       - ^memcache/apiv1beta2/[^/]*_client_example_test\.go$
@@ -3372,6 +3557,7 @@ libraries:
       - ^memcache/apiv1beta2/gapic_metadata\.json$
       - ^memcache/apiv1beta2/helpers\.go$
       - ^memcache/apiv1beta2/memcachepb/.*$
+      - ^memcache/apiv1beta2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/memcache/
     tag_format: '{id}/v{version}'
@@ -3398,6 +3584,7 @@ libraries:
       - ^memorystore/apiv1/gapic_metadata\.json$
       - ^memorystore/apiv1/helpers\.go$
       - ^memorystore/apiv1/memorystorepb/.*$
+      - ^memorystore/apiv1/\.repo-metadata\.json$
       - ^memorystore/apiv1beta/[^/]*_client\.go$
       - ^memorystore/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^memorystore/apiv1beta/[^/]*_client_example_test\.go$
@@ -3407,6 +3594,7 @@ libraries:
       - ^memorystore/apiv1beta/gapic_metadata\.json$
       - ^memorystore/apiv1beta/helpers\.go$
       - ^memorystore/apiv1beta/memorystorepb/.*$
+      - ^memorystore/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/memorystore/
     tag_format: '{id}/v{version}'
@@ -3435,6 +3623,7 @@ libraries:
       - ^metastore/apiv1/gapic_metadata\.json$
       - ^metastore/apiv1/helpers\.go$
       - ^metastore/apiv1/metastorepb/.*$
+      - ^metastore/apiv1/\.repo-metadata\.json$
       - ^metastore/apiv1alpha/[^/]*_client\.go$
       - ^metastore/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^metastore/apiv1alpha/[^/]*_client_example_test\.go$
@@ -3444,6 +3633,7 @@ libraries:
       - ^metastore/apiv1alpha/gapic_metadata\.json$
       - ^metastore/apiv1alpha/helpers\.go$
       - ^metastore/apiv1alpha/metastorepb/.*$
+      - ^metastore/apiv1alpha/\.repo-metadata\.json$
       - ^metastore/apiv1beta/[^/]*_client\.go$
       - ^metastore/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^metastore/apiv1beta/[^/]*_client_example_test\.go$
@@ -3453,6 +3643,7 @@ libraries:
       - ^metastore/apiv1beta/gapic_metadata\.json$
       - ^metastore/apiv1beta/helpers\.go$
       - ^metastore/apiv1beta/metastorepb/.*$
+      - ^metastore/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/metastore/
     tag_format: '{id}/v{version}'
@@ -3477,6 +3668,7 @@ libraries:
       - ^migrationcenter/apiv1/gapic_metadata\.json$
       - ^migrationcenter/apiv1/helpers\.go$
       - ^migrationcenter/apiv1/migrationcenterpb/.*$
+      - ^migrationcenter/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/migrationcenter/
     tag_format: '{id}/v{version}'
@@ -3503,6 +3695,7 @@ libraries:
       - ^modelarmor/apiv1/gapic_metadata\.json$
       - ^modelarmor/apiv1/helpers\.go$
       - ^modelarmor/apiv1/modelarmorpb/.*$
+      - ^modelarmor/apiv1/\.repo-metadata\.json$
       - ^modelarmor/apiv1beta/[^/]*_client\.go$
       - ^modelarmor/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^modelarmor/apiv1beta/[^/]*_client_example_test\.go$
@@ -3512,6 +3705,7 @@ libraries:
       - ^modelarmor/apiv1beta/gapic_metadata\.json$
       - ^modelarmor/apiv1beta/helpers\.go$
       - ^modelarmor/apiv1beta/modelarmorpb/.*$
+      - ^modelarmor/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/modelarmor/
     tag_format: '{id}/v{version}'
@@ -3540,6 +3734,7 @@ libraries:
       - ^monitoring/apiv3/v2/gapic_metadata\.json$
       - ^monitoring/apiv3/v2/helpers\.go$
       - ^monitoring/apiv3/v2/monitoringpb/.*$
+      - ^monitoring/apiv3/v2/\.repo-metadata\.json$
       - ^monitoring/dashboard/apiv1/[^/]*_client\.go$
       - ^monitoring/dashboard/apiv1/[^/]*_client_example_go123_test\.go$
       - ^monitoring/dashboard/apiv1/[^/]*_client_example_test\.go$
@@ -3549,6 +3744,7 @@ libraries:
       - ^monitoring/dashboard/apiv1/gapic_metadata\.json$
       - ^monitoring/dashboard/apiv1/helpers\.go$
       - ^monitoring/dashboard/apiv1/dashboardpb/.*$
+      - ^monitoring/dashboard/apiv1/\.repo-metadata\.json$
       - ^monitoring/metricsscope/apiv1/[^/]*_client\.go$
       - ^monitoring/metricsscope/apiv1/[^/]*_client_example_go123_test\.go$
       - ^monitoring/metricsscope/apiv1/[^/]*_client_example_test\.go$
@@ -3558,6 +3754,7 @@ libraries:
       - ^monitoring/metricsscope/apiv1/gapic_metadata\.json$
       - ^monitoring/metricsscope/apiv1/helpers\.go$
       - ^monitoring/metricsscope/apiv1/metricsscopepb/.*$
+      - ^monitoring/metricsscope/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/monitoring/
     tag_format: '{id}/v{version}'
@@ -3582,6 +3779,7 @@ libraries:
       - ^netapp/apiv1/gapic_metadata\.json$
       - ^netapp/apiv1/helpers\.go$
       - ^netapp/apiv1/netapppb/.*$
+      - ^netapp/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/netapp/
     tag_format: '{id}/v{version}'
@@ -3608,6 +3806,7 @@ libraries:
       - ^networkconnectivity/apiv1/gapic_metadata\.json$
       - ^networkconnectivity/apiv1/helpers\.go$
       - ^networkconnectivity/apiv1/networkconnectivitypb/.*$
+      - ^networkconnectivity/apiv1/\.repo-metadata\.json$
       - ^networkconnectivity/apiv1alpha1/[^/]*_client\.go$
       - ^networkconnectivity/apiv1alpha1/[^/]*_client_example_go123_test\.go$
       - ^networkconnectivity/apiv1alpha1/[^/]*_client_example_test\.go$
@@ -3617,11 +3816,12 @@ libraries:
       - ^networkconnectivity/apiv1alpha1/gapic_metadata\.json$
       - ^networkconnectivity/apiv1alpha1/helpers\.go$
       - ^networkconnectivity/apiv1alpha1/networkconnectivitypb/.*$
+      - ^networkconnectivity/apiv1alpha1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/networkconnectivity/
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.20.1
+    version: 1.21.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/networkmanagement/v1
@@ -3641,6 +3841,7 @@ libraries:
       - ^networkmanagement/apiv1/gapic_metadata\.json$
       - ^networkmanagement/apiv1/helpers\.go$
       - ^networkmanagement/apiv1/networkmanagementpb/.*$
+      - ^networkmanagement/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/networkmanagement/
     tag_format: '{id}/v{version}'
@@ -3665,11 +3866,12 @@ libraries:
       - ^networksecurity/apiv1beta1/gapic_metadata\.json$
       - ^networksecurity/apiv1beta1/helpers\.go$
       - ^networksecurity/apiv1beta1/networksecuritypb/.*$
+      - ^networksecurity/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/networksecurity/
     tag_format: '{id}/v{version}'
   - id: networkservices
-    version: 0.5.1
+    version: 0.6.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/cloud/networkservices/v1
@@ -3689,6 +3891,7 @@ libraries:
       - ^networkservices/apiv1/gapic_metadata\.json$
       - ^networkservices/apiv1/helpers\.go$
       - ^networkservices/apiv1/networkservicespb/.*$
+      - ^networkservices/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/networkservices/
     tag_format: '{id}/v{version}'
@@ -3717,6 +3920,7 @@ libraries:
       - ^notebooks/apiv1/gapic_metadata\.json$
       - ^notebooks/apiv1/helpers\.go$
       - ^notebooks/apiv1/notebookspb/.*$
+      - ^notebooks/apiv1/\.repo-metadata\.json$
       - ^notebooks/apiv1beta1/[^/]*_client\.go$
       - ^notebooks/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^notebooks/apiv1beta1/[^/]*_client_example_test\.go$
@@ -3726,6 +3930,7 @@ libraries:
       - ^notebooks/apiv1beta1/gapic_metadata\.json$
       - ^notebooks/apiv1beta1/helpers\.go$
       - ^notebooks/apiv1beta1/notebookspb/.*$
+      - ^notebooks/apiv1beta1/\.repo-metadata\.json$
       - ^notebooks/apiv2/[^/]*_client\.go$
       - ^notebooks/apiv2/[^/]*_client_example_go123_test\.go$
       - ^notebooks/apiv2/[^/]*_client_example_test\.go$
@@ -3735,6 +3940,7 @@ libraries:
       - ^notebooks/apiv2/gapic_metadata\.json$
       - ^notebooks/apiv2/helpers\.go$
       - ^notebooks/apiv2/notebookspb/.*$
+      - ^notebooks/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/notebooks/
     tag_format: '{id}/v{version}'
@@ -3759,6 +3965,7 @@ libraries:
       - ^optimization/apiv1/gapic_metadata\.json$
       - ^optimization/apiv1/helpers\.go$
       - ^optimization/apiv1/optimizationpb/.*$
+      - ^optimization/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/optimization/
     tag_format: '{id}/v{version}'
@@ -3783,6 +3990,7 @@ libraries:
       - ^oracledatabase/apiv1/gapic_metadata\.json$
       - ^oracledatabase/apiv1/helpers\.go$
       - ^oracledatabase/apiv1/oracledatabasepb/.*$
+      - ^oracledatabase/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/oracledatabase/
     tag_format: '{id}/v{version}'
@@ -3807,6 +4015,7 @@ libraries:
       - ^orchestration/airflow/service/apiv1/gapic_metadata\.json$
       - ^orchestration/airflow/service/apiv1/helpers\.go$
       - ^orchestration/airflow/service/apiv1/servicepb/.*$
+      - ^orchestration/airflow/service/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/orchestration/
     tag_format: '{id}/v{version}'
@@ -3833,6 +4042,7 @@ libraries:
       - ^orgpolicy/apiv1/gapic_metadata\.json$
       - ^orgpolicy/apiv1/helpers\.go$
       - ^orgpolicy/apiv1/orgpolicypb/.*$
+      - ^orgpolicy/apiv1/\.repo-metadata\.json$
       - ^orgpolicy/apiv2/[^/]*_client\.go$
       - ^orgpolicy/apiv2/[^/]*_client_example_go123_test\.go$
       - ^orgpolicy/apiv2/[^/]*_client_example_test\.go$
@@ -3842,6 +4052,7 @@ libraries:
       - ^orgpolicy/apiv2/gapic_metadata\.json$
       - ^orgpolicy/apiv2/helpers\.go$
       - ^orgpolicy/apiv2/orgpolicypb/.*$
+      - ^orgpolicy/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/orgpolicy/
     tag_format: '{id}/v{version}'
@@ -3874,6 +4085,7 @@ libraries:
       - ^osconfig/agentendpoint/apiv1/gapic_metadata\.json$
       - ^osconfig/agentendpoint/apiv1/helpers\.go$
       - ^osconfig/agentendpoint/apiv1/agentendpointpb/.*$
+      - ^osconfig/agentendpoint/apiv1/\.repo-metadata\.json$
       - ^osconfig/agentendpoint/apiv1beta/[^/]*_client\.go$
       - ^osconfig/agentendpoint/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^osconfig/agentendpoint/apiv1beta/[^/]*_client_example_test\.go$
@@ -3883,6 +4095,7 @@ libraries:
       - ^osconfig/agentendpoint/apiv1beta/gapic_metadata\.json$
       - ^osconfig/agentendpoint/apiv1beta/helpers\.go$
       - ^osconfig/agentendpoint/apiv1beta/agentendpointpb/.*$
+      - ^osconfig/agentendpoint/apiv1beta/\.repo-metadata\.json$
       - ^osconfig/apiv1/[^/]*_client\.go$
       - ^osconfig/apiv1/[^/]*_client_example_go123_test\.go$
       - ^osconfig/apiv1/[^/]*_client_example_test\.go$
@@ -3892,6 +4105,7 @@ libraries:
       - ^osconfig/apiv1/gapic_metadata\.json$
       - ^osconfig/apiv1/helpers\.go$
       - ^osconfig/apiv1/osconfigpb/.*$
+      - ^osconfig/apiv1/\.repo-metadata\.json$
       - ^osconfig/apiv1alpha/[^/]*_client\.go$
       - ^osconfig/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^osconfig/apiv1alpha/[^/]*_client_example_test\.go$
@@ -3901,6 +4115,7 @@ libraries:
       - ^osconfig/apiv1alpha/gapic_metadata\.json$
       - ^osconfig/apiv1alpha/helpers\.go$
       - ^osconfig/apiv1alpha/osconfigpb/.*$
+      - ^osconfig/apiv1alpha/\.repo-metadata\.json$
       - ^osconfig/apiv1beta/[^/]*_client\.go$
       - ^osconfig/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^osconfig/apiv1beta/[^/]*_client_example_test\.go$
@@ -3910,6 +4125,7 @@ libraries:
       - ^osconfig/apiv1beta/gapic_metadata\.json$
       - ^osconfig/apiv1beta/helpers\.go$
       - ^osconfig/apiv1beta/osconfigpb/.*$
+      - ^osconfig/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/osconfig/
     tag_format: '{id}/v{version}'
@@ -3938,6 +4154,7 @@ libraries:
       - ^oslogin/apiv1/gapic_metadata\.json$
       - ^oslogin/apiv1/helpers\.go$
       - ^oslogin/apiv1/osloginpb/.*$
+      - ^oslogin/apiv1/\.repo-metadata\.json$
       - ^oslogin/apiv1beta/[^/]*_client\.go$
       - ^oslogin/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^oslogin/apiv1beta/[^/]*_client_example_test\.go$
@@ -3947,7 +4164,9 @@ libraries:
       - ^oslogin/apiv1beta/gapic_metadata\.json$
       - ^oslogin/apiv1beta/helpers\.go$
       - ^oslogin/apiv1beta/osloginpb/.*$
+      - ^oslogin/apiv1beta/\.repo-metadata\.json$
       - ^oslogin/common/commonpb/.*$
+      - ^oslogin/common/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/oslogin/
     tag_format: '{id}/v{version}'
@@ -3974,6 +4193,7 @@ libraries:
       - ^parallelstore/apiv1/gapic_metadata\.json$
       - ^parallelstore/apiv1/helpers\.go$
       - ^parallelstore/apiv1/parallelstorepb/.*$
+      - ^parallelstore/apiv1/\.repo-metadata\.json$
       - ^parallelstore/apiv1beta/[^/]*_client\.go$
       - ^parallelstore/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^parallelstore/apiv1beta/[^/]*_client_example_test\.go$
@@ -3983,6 +4203,7 @@ libraries:
       - ^parallelstore/apiv1beta/gapic_metadata\.json$
       - ^parallelstore/apiv1beta/helpers\.go$
       - ^parallelstore/apiv1beta/parallelstorepb/.*$
+      - ^parallelstore/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/parallelstore/
     tag_format: '{id}/v{version}'
@@ -4007,6 +4228,7 @@ libraries:
       - ^parametermanager/apiv1/gapic_metadata\.json$
       - ^parametermanager/apiv1/helpers\.go$
       - ^parametermanager/apiv1/parametermanagerpb/.*$
+      - ^parametermanager/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/parametermanager/
     tag_format: '{id}/v{version}'
@@ -4031,6 +4253,7 @@ libraries:
       - ^phishingprotection/apiv1beta1/gapic_metadata\.json$
       - ^phishingprotection/apiv1beta1/helpers\.go$
       - ^phishingprotection/apiv1beta1/phishingprotectionpb/.*$
+      - ^phishingprotection/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/phishingprotection/
     tag_format: '{id}/v{version}'
@@ -4055,6 +4278,7 @@ libraries:
       - ^policysimulator/apiv1/gapic_metadata\.json$
       - ^policysimulator/apiv1/helpers\.go$
       - ^policysimulator/apiv1/policysimulatorpb/.*$
+      - ^policysimulator/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/policysimulator/
     tag_format: '{id}/v{version}'
@@ -4081,6 +4305,7 @@ libraries:
       - ^policytroubleshooter/apiv1/gapic_metadata\.json$
       - ^policytroubleshooter/apiv1/helpers\.go$
       - ^policytroubleshooter/apiv1/policytroubleshooterpb/.*$
+      - ^policytroubleshooter/apiv1/\.repo-metadata\.json$
       - ^policytroubleshooter/iam/apiv3/[^/]*_client\.go$
       - ^policytroubleshooter/iam/apiv3/[^/]*_client_example_go123_test\.go$
       - ^policytroubleshooter/iam/apiv3/[^/]*_client_example_test\.go$
@@ -4090,6 +4315,7 @@ libraries:
       - ^policytroubleshooter/iam/apiv3/gapic_metadata\.json$
       - ^policytroubleshooter/iam/apiv3/helpers\.go$
       - ^policytroubleshooter/iam/apiv3/iampb/.*$
+      - ^policytroubleshooter/iam/apiv3/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/policytroubleshooter/
     tag_format: '{id}/v{version}'
@@ -4114,6 +4340,7 @@ libraries:
       - ^privatecatalog/apiv1beta1/gapic_metadata\.json$
       - ^privatecatalog/apiv1beta1/helpers\.go$
       - ^privatecatalog/apiv1beta1/privatecatalogpb/.*$
+      - ^privatecatalog/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/privatecatalog/
     tag_format: '{id}/v{version}'
@@ -4138,6 +4365,7 @@ libraries:
       - ^privilegedaccessmanager/apiv1/gapic_metadata\.json$
       - ^privilegedaccessmanager/apiv1/helpers\.go$
       - ^privilegedaccessmanager/apiv1/privilegedaccessmanagerpb/.*$
+      - ^privilegedaccessmanager/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/privilegedaccessmanager/
     tag_format: '{id}/v{version}'
@@ -4169,6 +4397,7 @@ libraries:
       - ^pubsub/apiv1/gapic_metadata\.json$
       - ^pubsub/apiv1/helpers\.go$
       - ^pubsub/apiv1/pubsubpb/.*$
+      - ^pubsub/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - pubsub/v2
       - internal/generated/snippets/pubsub/
@@ -4194,6 +4423,7 @@ libraries:
       - ^pubsub/v2/apiv1/gapic_metadata\.json$
       - ^pubsub/v2/apiv1/helpers\.go$
       - ^pubsub/v2/apiv1/pubsubpb/.*$
+      - ^pubsub/v2/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/pubsub/v2/
     tag_format: pubsub/v{version}
@@ -4218,6 +4448,7 @@ libraries:
       - ^pubsublite/apiv1/gapic_metadata\.json$
       - ^pubsublite/apiv1/helpers\.go$
       - ^pubsublite/apiv1/pubsublitepb/.*$
+      - ^pubsublite/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/pubsublite/
     tag_format: '{id}/v{version}'
@@ -4242,6 +4473,7 @@ libraries:
       - ^rapidmigrationassessment/apiv1/gapic_metadata\.json$
       - ^rapidmigrationassessment/apiv1/helpers\.go$
       - ^rapidmigrationassessment/apiv1/rapidmigrationassessmentpb/.*$
+      - ^rapidmigrationassessment/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/rapidmigrationassessment/
     tag_format: '{id}/v{version}'
@@ -4268,6 +4500,7 @@ libraries:
       - ^recaptchaenterprise/apiv1/gapic_metadata\.json$
       - ^recaptchaenterprise/apiv1/helpers\.go$
       - ^recaptchaenterprise/apiv1/recaptchaenterprisepb/.*$
+      - ^recaptchaenterprise/apiv1/\.repo-metadata\.json$
       - ^recaptchaenterprise/apiv1beta1/[^/]*_client\.go$
       - ^recaptchaenterprise/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^recaptchaenterprise/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4277,6 +4510,7 @@ libraries:
       - ^recaptchaenterprise/apiv1beta1/gapic_metadata\.json$
       - ^recaptchaenterprise/apiv1beta1/helpers\.go$
       - ^recaptchaenterprise/apiv1beta1/recaptchaenterprisepb/.*$
+      - ^recaptchaenterprise/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/recaptchaenterprise/
     tag_format: '{id}/v{version}'
@@ -4301,6 +4535,7 @@ libraries:
       - ^recommendationengine/apiv1beta1/gapic_metadata\.json$
       - ^recommendationengine/apiv1beta1/helpers\.go$
       - ^recommendationengine/apiv1beta1/recommendationenginepb/.*$
+      - ^recommendationengine/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/recommendationengine/
     tag_format: '{id}/v{version}'
@@ -4327,6 +4562,7 @@ libraries:
       - ^recommender/apiv1/gapic_metadata\.json$
       - ^recommender/apiv1/helpers\.go$
       - ^recommender/apiv1/recommenderpb/.*$
+      - ^recommender/apiv1/\.repo-metadata\.json$
       - ^recommender/apiv1beta1/[^/]*_client\.go$
       - ^recommender/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^recommender/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4336,6 +4572,7 @@ libraries:
       - ^recommender/apiv1beta1/gapic_metadata\.json$
       - ^recommender/apiv1beta1/helpers\.go$
       - ^recommender/apiv1beta1/recommenderpb/.*$
+      - ^recommender/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/recommender/
     tag_format: '{id}/v{version}'
@@ -4364,6 +4601,7 @@ libraries:
       - ^redis/apiv1/gapic_metadata\.json$
       - ^redis/apiv1/helpers\.go$
       - ^redis/apiv1/redispb/.*$
+      - ^redis/apiv1/\.repo-metadata\.json$
       - ^redis/apiv1beta1/[^/]*_client\.go$
       - ^redis/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^redis/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4373,6 +4611,7 @@ libraries:
       - ^redis/apiv1beta1/gapic_metadata\.json$
       - ^redis/apiv1beta1/helpers\.go$
       - ^redis/apiv1beta1/redispb/.*$
+      - ^redis/apiv1beta1/\.repo-metadata\.json$
       - ^redis/cluster/apiv1/[^/]*_client\.go$
       - ^redis/cluster/apiv1/[^/]*_client_example_go123_test\.go$
       - ^redis/cluster/apiv1/[^/]*_client_example_test\.go$
@@ -4382,6 +4621,7 @@ libraries:
       - ^redis/cluster/apiv1/gapic_metadata\.json$
       - ^redis/cluster/apiv1/helpers\.go$
       - ^redis/cluster/apiv1/clusterpb/.*$
+      - ^redis/cluster/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/redis/
     tag_format: '{id}/v{version}'
@@ -4408,6 +4648,7 @@ libraries:
       - ^resourcemanager/apiv2/gapic_metadata\.json$
       - ^resourcemanager/apiv2/helpers\.go$
       - ^resourcemanager/apiv2/resourcemanagerpb/.*$
+      - ^resourcemanager/apiv2/\.repo-metadata\.json$
       - ^resourcemanager/apiv3/[^/]*_client\.go$
       - ^resourcemanager/apiv3/[^/]*_client_example_go123_test\.go$
       - ^resourcemanager/apiv3/[^/]*_client_example_test\.go$
@@ -4417,6 +4658,7 @@ libraries:
       - ^resourcemanager/apiv3/gapic_metadata\.json$
       - ^resourcemanager/apiv3/helpers\.go$
       - ^resourcemanager/apiv3/resourcemanagerpb/.*$
+      - ^resourcemanager/apiv3/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/resourcemanager/
     tag_format: '{id}/v{version}'
@@ -4445,6 +4687,7 @@ libraries:
       - ^retail/apiv2/gapic_metadata\.json$
       - ^retail/apiv2/helpers\.go$
       - ^retail/apiv2/retailpb/.*$
+      - ^retail/apiv2/\.repo-metadata\.json$
       - ^retail/apiv2alpha/[^/]*_client\.go$
       - ^retail/apiv2alpha/[^/]*_client_example_go123_test\.go$
       - ^retail/apiv2alpha/[^/]*_client_example_test\.go$
@@ -4454,6 +4697,7 @@ libraries:
       - ^retail/apiv2alpha/gapic_metadata\.json$
       - ^retail/apiv2alpha/helpers\.go$
       - ^retail/apiv2alpha/retailpb/.*$
+      - ^retail/apiv2alpha/\.repo-metadata\.json$
       - ^retail/apiv2beta/[^/]*_client\.go$
       - ^retail/apiv2beta/[^/]*_client_example_go123_test\.go$
       - ^retail/apiv2beta/[^/]*_client_example_test\.go$
@@ -4463,6 +4707,7 @@ libraries:
       - ^retail/apiv2beta/gapic_metadata\.json$
       - ^retail/apiv2beta/helpers\.go$
       - ^retail/apiv2beta/retailpb/.*$
+      - ^retail/apiv2beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/retail/
     tag_format: '{id}/v{version}'
@@ -4519,11 +4764,12 @@ libraries:
       - ^run/apiv2/gapic_metadata\.json$
       - ^run/apiv2/helpers\.go$
       - ^run/apiv2/runpb/.*$
+      - ^run/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/run/
     tag_format: '{id}/v{version}'
   - id: saasplatform
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 53af3b727f84acc34e31c23f3b6e7b8aa4b7e837
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
@@ -4543,6 +4789,7 @@ libraries:
       - ^saasplatform/saasservicemgmt/apiv1beta1/gapic_metadata\.json$
       - ^saasplatform/saasservicemgmt/apiv1beta1/helpers\.go$
       - ^saasplatform/saasservicemgmt/apiv1beta1/saasservicemgmtpb/.*$
+      - ^saasplatform/saasservicemgmt/apiv1beta1/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: scheduler
     version: 1.11.8
@@ -4567,6 +4814,7 @@ libraries:
       - ^scheduler/apiv1/gapic_metadata\.json$
       - ^scheduler/apiv1/helpers\.go$
       - ^scheduler/apiv1/schedulerpb/.*$
+      - ^scheduler/apiv1/\.repo-metadata\.json$
       - ^scheduler/apiv1beta1/[^/]*_client\.go$
       - ^scheduler/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^scheduler/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4576,6 +4824,7 @@ libraries:
       - ^scheduler/apiv1beta1/gapic_metadata\.json$
       - ^scheduler/apiv1beta1/helpers\.go$
       - ^scheduler/apiv1beta1/schedulerpb/.*$
+      - ^scheduler/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/scheduler/
     tag_format: '{id}/v{version}'
@@ -4602,6 +4851,7 @@ libraries:
       - ^secretmanager/apiv1/gapic_metadata\.json$
       - ^secretmanager/apiv1/helpers\.go$
       - ^secretmanager/apiv1/secretmanagerpb/.*$
+      - ^secretmanager/apiv1/\.repo-metadata\.json$
       - ^secretmanager/apiv1beta2/[^/]*_client\.go$
       - ^secretmanager/apiv1beta2/[^/]*_client_example_go123_test\.go$
       - ^secretmanager/apiv1beta2/[^/]*_client_example_test\.go$
@@ -4611,6 +4861,7 @@ libraries:
       - ^secretmanager/apiv1beta2/gapic_metadata\.json$
       - ^secretmanager/apiv1beta2/helpers\.go$
       - ^secretmanager/apiv1beta2/secretmanagerpb/.*$
+      - ^secretmanager/apiv1beta2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/secretmanager/
     tag_format: '{id}/v{version}'
@@ -4635,6 +4886,7 @@ libraries:
       - ^securesourcemanager/apiv1/gapic_metadata\.json$
       - ^securesourcemanager/apiv1/helpers\.go$
       - ^securesourcemanager/apiv1/securesourcemanagerpb/.*$
+      - ^securesourcemanager/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/securesourcemanager/
     tag_format: '{id}/v{version}'
@@ -4663,6 +4915,7 @@ libraries:
       - ^security/privateca/apiv1/gapic_metadata\.json$
       - ^security/privateca/apiv1/helpers\.go$
       - ^security/privateca/apiv1/privatecapb/.*$
+      - ^security/privateca/apiv1/\.repo-metadata\.json$
       - ^security/publicca/apiv1/[^/]*_client\.go$
       - ^security/publicca/apiv1/[^/]*_client_example_go123_test\.go$
       - ^security/publicca/apiv1/[^/]*_client_example_test\.go$
@@ -4672,6 +4925,7 @@ libraries:
       - ^security/publicca/apiv1/gapic_metadata\.json$
       - ^security/publicca/apiv1/helpers\.go$
       - ^security/publicca/apiv1/publiccapb/.*$
+      - ^security/publicca/apiv1/\.repo-metadata\.json$
       - ^security/publicca/apiv1beta1/[^/]*_client\.go$
       - ^security/publicca/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^security/publicca/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4681,6 +4935,7 @@ libraries:
       - ^security/publicca/apiv1beta1/gapic_metadata\.json$
       - ^security/publicca/apiv1beta1/helpers\.go$
       - ^security/publicca/apiv1beta1/publiccapb/.*$
+      - ^security/publicca/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/security/
     tag_format: '{id}/v{version}'
@@ -4713,6 +4968,7 @@ libraries:
       - ^securitycenter/apiv1/gapic_metadata\.json$
       - ^securitycenter/apiv1/helpers\.go$
       - ^securitycenter/apiv1/securitycenterpb/.*$
+      - ^securitycenter/apiv1/\.repo-metadata\.json$
       - ^securitycenter/apiv1beta1/[^/]*_client\.go$
       - ^securitycenter/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^securitycenter/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4722,6 +4978,7 @@ libraries:
       - ^securitycenter/apiv1beta1/gapic_metadata\.json$
       - ^securitycenter/apiv1beta1/helpers\.go$
       - ^securitycenter/apiv1beta1/securitycenterpb/.*$
+      - ^securitycenter/apiv1beta1/\.repo-metadata\.json$
       - ^securitycenter/apiv1p1beta1/[^/]*_client\.go$
       - ^securitycenter/apiv1p1beta1/[^/]*_client_example_go123_test\.go$
       - ^securitycenter/apiv1p1beta1/[^/]*_client_example_test\.go$
@@ -4731,6 +4988,7 @@ libraries:
       - ^securitycenter/apiv1p1beta1/gapic_metadata\.json$
       - ^securitycenter/apiv1p1beta1/helpers\.go$
       - ^securitycenter/apiv1p1beta1/securitycenterpb/.*$
+      - ^securitycenter/apiv1p1beta1/\.repo-metadata\.json$
       - ^securitycenter/apiv2/[^/]*_client\.go$
       - ^securitycenter/apiv2/[^/]*_client_example_go123_test\.go$
       - ^securitycenter/apiv2/[^/]*_client_example_test\.go$
@@ -4740,6 +4998,7 @@ libraries:
       - ^securitycenter/apiv2/gapic_metadata\.json$
       - ^securitycenter/apiv2/helpers\.go$
       - ^securitycenter/apiv2/securitycenterpb/.*$
+      - ^securitycenter/apiv2/\.repo-metadata\.json$
       - ^securitycenter/settings/apiv1beta1/[^/]*_client\.go$
       - ^securitycenter/settings/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^securitycenter/settings/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4749,6 +5008,7 @@ libraries:
       - ^securitycenter/settings/apiv1beta1/gapic_metadata\.json$
       - ^securitycenter/settings/apiv1beta1/helpers\.go$
       - ^securitycenter/settings/apiv1beta1/settingspb/.*$
+      - ^securitycenter/settings/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/securitycenter/
     tag_format: '{id}/v{version}'
@@ -4773,6 +5033,7 @@ libraries:
       - ^securitycentermanagement/apiv1/gapic_metadata\.json$
       - ^securitycentermanagement/apiv1/helpers\.go$
       - ^securitycentermanagement/apiv1/securitycentermanagementpb/.*$
+      - ^securitycentermanagement/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/securitycentermanagement/
     tag_format: '{id}/v{version}'
@@ -4797,6 +5058,7 @@ libraries:
       - ^securityposture/apiv1/gapic_metadata\.json$
       - ^securityposture/apiv1/helpers\.go$
       - ^securityposture/apiv1/securityposturepb/.*$
+      - ^securityposture/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/securityposture/
     tag_format: '{id}/v{version}'
@@ -4821,6 +5083,7 @@ libraries:
       - ^servicecontrol/apiv1/gapic_metadata\.json$
       - ^servicecontrol/apiv1/helpers\.go$
       - ^servicecontrol/apiv1/servicecontrolpb/.*$
+      - ^servicecontrol/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/servicecontrol/
     tag_format: '{id}/v{version}'
@@ -4847,6 +5110,7 @@ libraries:
       - ^servicedirectory/apiv1/gapic_metadata\.json$
       - ^servicedirectory/apiv1/helpers\.go$
       - ^servicedirectory/apiv1/servicedirectorypb/.*$
+      - ^servicedirectory/apiv1/\.repo-metadata\.json$
       - ^servicedirectory/apiv1beta1/[^/]*_client\.go$
       - ^servicedirectory/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^servicedirectory/apiv1beta1/[^/]*_client_example_test\.go$
@@ -4856,6 +5120,7 @@ libraries:
       - ^servicedirectory/apiv1beta1/gapic_metadata\.json$
       - ^servicedirectory/apiv1beta1/helpers\.go$
       - ^servicedirectory/apiv1beta1/servicedirectorypb/.*$
+      - ^servicedirectory/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/servicedirectory/
     tag_format: '{id}/v{version}'
@@ -4880,6 +5145,7 @@ libraries:
       - ^servicehealth/apiv1/gapic_metadata\.json$
       - ^servicehealth/apiv1/helpers\.go$
       - ^servicehealth/apiv1/servicehealthpb/.*$
+      - ^servicehealth/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/servicehealth/
     tag_format: '{id}/v{version}'
@@ -4904,6 +5170,7 @@ libraries:
       - ^servicemanagement/apiv1/gapic_metadata\.json$
       - ^servicemanagement/apiv1/helpers\.go$
       - ^servicemanagement/apiv1/servicemanagementpb/.*$
+      - ^servicemanagement/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/servicemanagement/
     tag_format: '{id}/v{version}'
@@ -4928,6 +5195,7 @@ libraries:
       - ^serviceusage/apiv1/gapic_metadata\.json$
       - ^serviceusage/apiv1/helpers\.go$
       - ^serviceusage/apiv1/serviceusagepb/.*$
+      - ^serviceusage/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/serviceusage/
     tag_format: '{id}/v{version}'
@@ -4952,11 +5220,12 @@ libraries:
       - ^shell/apiv1/gapic_metadata\.json$
       - ^shell/apiv1/helpers\.go$
       - ^shell/apiv1/shellpb/.*$
+      - ^shell/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.2.1
+    version: 1.3.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
     apis:
       - path: google/shopping/css/v1
@@ -5030,6 +5299,7 @@ libraries:
       - ^shopping/css/apiv1/gapic_metadata\.json$
       - ^shopping/css/apiv1/helpers\.go$
       - ^shopping/css/apiv1/csspb/.*$
+      - ^shopping/css/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/accounts/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/accounts/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/accounts/apiv1/[^/]*_client_example_test\.go$
@@ -5039,6 +5309,7 @@ libraries:
       - ^shopping/merchant/accounts/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/accounts/apiv1/helpers\.go$
       - ^shopping/merchant/accounts/apiv1/accountspb/.*$
+      - ^shopping/merchant/accounts/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/accounts/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/accounts/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/accounts/apiv1beta/[^/]*_client_example_test\.go$
@@ -5048,6 +5319,7 @@ libraries:
       - ^shopping/merchant/accounts/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/accounts/apiv1beta/helpers\.go$
       - ^shopping/merchant/accounts/apiv1beta/accountspb/.*$
+      - ^shopping/merchant/accounts/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/conversions/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/conversions/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/conversions/apiv1/[^/]*_client_example_test\.go$
@@ -5057,6 +5329,7 @@ libraries:
       - ^shopping/merchant/conversions/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/conversions/apiv1/helpers\.go$
       - ^shopping/merchant/conversions/apiv1/conversionspb/.*$
+      - ^shopping/merchant/conversions/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/conversions/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/conversions/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/conversions/apiv1beta/[^/]*_client_example_test\.go$
@@ -5066,6 +5339,7 @@ libraries:
       - ^shopping/merchant/conversions/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/conversions/apiv1beta/helpers\.go$
       - ^shopping/merchant/conversions/apiv1beta/conversionspb/.*$
+      - ^shopping/merchant/conversions/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/datasources/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/datasources/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/datasources/apiv1/[^/]*_client_example_test\.go$
@@ -5075,6 +5349,7 @@ libraries:
       - ^shopping/merchant/datasources/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/datasources/apiv1/helpers\.go$
       - ^shopping/merchant/datasources/apiv1/datasourcespb/.*$
+      - ^shopping/merchant/datasources/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/datasources/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/datasources/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/datasources/apiv1beta/[^/]*_client_example_test\.go$
@@ -5084,6 +5359,7 @@ libraries:
       - ^shopping/merchant/datasources/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/datasources/apiv1beta/helpers\.go$
       - ^shopping/merchant/datasources/apiv1beta/datasourcespb/.*$
+      - ^shopping/merchant/datasources/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/inventories/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/inventories/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/inventories/apiv1/[^/]*_client_example_test\.go$
@@ -5093,6 +5369,7 @@ libraries:
       - ^shopping/merchant/inventories/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/inventories/apiv1/helpers\.go$
       - ^shopping/merchant/inventories/apiv1/inventoriespb/.*$
+      - ^shopping/merchant/inventories/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/inventories/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/inventories/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/inventories/apiv1beta/[^/]*_client_example_test\.go$
@@ -5102,6 +5379,7 @@ libraries:
       - ^shopping/merchant/inventories/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/inventories/apiv1beta/helpers\.go$
       - ^shopping/merchant/inventories/apiv1beta/inventoriespb/.*$
+      - ^shopping/merchant/inventories/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/issueresolution/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/issueresolution/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/issueresolution/apiv1/[^/]*_client_example_test\.go$
@@ -5111,6 +5389,7 @@ libraries:
       - ^shopping/merchant/issueresolution/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/issueresolution/apiv1/helpers\.go$
       - ^shopping/merchant/issueresolution/apiv1/issueresolutionpb/.*$
+      - ^shopping/merchant/issueresolution/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/issueresolution/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/issueresolution/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/issueresolution/apiv1beta/[^/]*_client_example_test\.go$
@@ -5120,6 +5399,7 @@ libraries:
       - ^shopping/merchant/issueresolution/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/issueresolution/apiv1beta/helpers\.go$
       - ^shopping/merchant/issueresolution/apiv1beta/issueresolutionpb/.*$
+      - ^shopping/merchant/issueresolution/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/lfp/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/lfp/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/lfp/apiv1/[^/]*_client_example_test\.go$
@@ -5129,6 +5409,7 @@ libraries:
       - ^shopping/merchant/lfp/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/lfp/apiv1/helpers\.go$
       - ^shopping/merchant/lfp/apiv1/lfppb/.*$
+      - ^shopping/merchant/lfp/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/lfp/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/lfp/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/lfp/apiv1beta/[^/]*_client_example_test\.go$
@@ -5138,6 +5419,7 @@ libraries:
       - ^shopping/merchant/lfp/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/lfp/apiv1beta/helpers\.go$
       - ^shopping/merchant/lfp/apiv1beta/lfppb/.*$
+      - ^shopping/merchant/lfp/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/notifications/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/notifications/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/notifications/apiv1/[^/]*_client_example_test\.go$
@@ -5147,6 +5429,7 @@ libraries:
       - ^shopping/merchant/notifications/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/notifications/apiv1/helpers\.go$
       - ^shopping/merchant/notifications/apiv1/notificationspb/.*$
+      - ^shopping/merchant/notifications/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/notifications/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/notifications/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/notifications/apiv1beta/[^/]*_client_example_test\.go$
@@ -5156,6 +5439,7 @@ libraries:
       - ^shopping/merchant/notifications/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/notifications/apiv1beta/helpers\.go$
       - ^shopping/merchant/notifications/apiv1beta/notificationspb/.*$
+      - ^shopping/merchant/notifications/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/ordertracking/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/ordertracking/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/ordertracking/apiv1/[^/]*_client_example_test\.go$
@@ -5165,6 +5449,7 @@ libraries:
       - ^shopping/merchant/ordertracking/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/ordertracking/apiv1/helpers\.go$
       - ^shopping/merchant/ordertracking/apiv1/ordertrackingpb/.*$
+      - ^shopping/merchant/ordertracking/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/ordertracking/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/ordertracking/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/ordertracking/apiv1beta/[^/]*_client_example_test\.go$
@@ -5174,6 +5459,7 @@ libraries:
       - ^shopping/merchant/ordertracking/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/ordertracking/apiv1beta/helpers\.go$
       - ^shopping/merchant/ordertracking/apiv1beta/ordertrackingpb/.*$
+      - ^shopping/merchant/ordertracking/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/products/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/products/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/products/apiv1/[^/]*_client_example_test\.go$
@@ -5183,6 +5469,7 @@ libraries:
       - ^shopping/merchant/products/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/products/apiv1/helpers\.go$
       - ^shopping/merchant/products/apiv1/productspb/.*$
+      - ^shopping/merchant/products/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/products/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/products/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/products/apiv1beta/[^/]*_client_example_test\.go$
@@ -5192,6 +5479,7 @@ libraries:
       - ^shopping/merchant/products/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/products/apiv1beta/helpers\.go$
       - ^shopping/merchant/products/apiv1beta/productspb/.*$
+      - ^shopping/merchant/products/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/productstudio/apiv1alpha/[^/]*_client\.go$
       - ^shopping/merchant/productstudio/apiv1alpha/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/productstudio/apiv1alpha/[^/]*_client_example_test\.go$
@@ -5201,6 +5489,7 @@ libraries:
       - ^shopping/merchant/productstudio/apiv1alpha/gapic_metadata\.json$
       - ^shopping/merchant/productstudio/apiv1alpha/helpers\.go$
       - ^shopping/merchant/productstudio/apiv1alpha/productstudiopb/.*$
+      - ^shopping/merchant/productstudio/apiv1alpha/\.repo-metadata\.json$
       - ^shopping/merchant/promotions/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/promotions/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/promotions/apiv1/[^/]*_client_example_test\.go$
@@ -5210,6 +5499,7 @@ libraries:
       - ^shopping/merchant/promotions/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/promotions/apiv1/helpers\.go$
       - ^shopping/merchant/promotions/apiv1/promotionspb/.*$
+      - ^shopping/merchant/promotions/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/promotions/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/promotions/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/promotions/apiv1beta/[^/]*_client_example_test\.go$
@@ -5219,6 +5509,7 @@ libraries:
       - ^shopping/merchant/promotions/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/promotions/apiv1beta/helpers\.go$
       - ^shopping/merchant/promotions/apiv1beta/promotionspb/.*$
+      - ^shopping/merchant/promotions/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/quota/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/quota/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/quota/apiv1/[^/]*_client_example_test\.go$
@@ -5228,6 +5519,7 @@ libraries:
       - ^shopping/merchant/quota/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/quota/apiv1/helpers\.go$
       - ^shopping/merchant/quota/apiv1/quotapb/.*$
+      - ^shopping/merchant/quota/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/quota/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/quota/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/quota/apiv1beta/[^/]*_client_example_test\.go$
@@ -5237,6 +5529,7 @@ libraries:
       - ^shopping/merchant/quota/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/quota/apiv1beta/helpers\.go$
       - ^shopping/merchant/quota/apiv1beta/quotapb/.*$
+      - ^shopping/merchant/quota/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/reports/apiv1/[^/]*_client\.go$
       - ^shopping/merchant/reports/apiv1/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/reports/apiv1/[^/]*_client_example_test\.go$
@@ -5246,6 +5539,7 @@ libraries:
       - ^shopping/merchant/reports/apiv1/gapic_metadata\.json$
       - ^shopping/merchant/reports/apiv1/helpers\.go$
       - ^shopping/merchant/reports/apiv1/reportspb/.*$
+      - ^shopping/merchant/reports/apiv1/\.repo-metadata\.json$
       - ^shopping/merchant/reports/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/reports/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/reports/apiv1beta/[^/]*_client_example_test\.go$
@@ -5255,6 +5549,7 @@ libraries:
       - ^shopping/merchant/reports/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/reports/apiv1beta/helpers\.go$
       - ^shopping/merchant/reports/apiv1beta/reportspb/.*$
+      - ^shopping/merchant/reports/apiv1beta/\.repo-metadata\.json$
       - ^shopping/merchant/reviews/apiv1beta/[^/]*_client\.go$
       - ^shopping/merchant/reviews/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^shopping/merchant/reviews/apiv1beta/[^/]*_client_example_test\.go$
@@ -5264,7 +5559,9 @@ libraries:
       - ^shopping/merchant/reviews/apiv1beta/gapic_metadata\.json$
       - ^shopping/merchant/reviews/apiv1beta/helpers\.go$
       - ^shopping/merchant/reviews/apiv1beta/reviewspb/.*$
+      - ^shopping/merchant/reviews/apiv1beta/\.repo-metadata\.json$
       - ^shopping/type/typepb/.*$
+      - ^shopping/type/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
@@ -5297,6 +5594,7 @@ libraries:
       - ^spanner/adapter/apiv1/gapic_metadata\.json$
       - ^spanner/adapter/apiv1/helpers\.go$
       - ^spanner/adapter/apiv1/adapterpb/.*$
+      - ^spanner/adapter/apiv1/\.repo-metadata\.json$
       - ^spanner/admin/database/apiv1/[^/]*_client\.go$
       - ^spanner/admin/database/apiv1/[^/]*_client_example_go123_test\.go$
       - ^spanner/admin/database/apiv1/[^/]*_client_example_test\.go$
@@ -5306,6 +5604,7 @@ libraries:
       - ^spanner/admin/database/apiv1/gapic_metadata\.json$
       - ^spanner/admin/database/apiv1/helpers\.go$
       - ^spanner/admin/database/apiv1/databasepb/.*$
+      - ^spanner/admin/database/apiv1/\.repo-metadata\.json$
       - ^spanner/admin/instance/apiv1/[^/]*_client\.go$
       - ^spanner/admin/instance/apiv1/[^/]*_client_example_go123_test\.go$
       - ^spanner/admin/instance/apiv1/[^/]*_client_example_test\.go$
@@ -5315,6 +5614,7 @@ libraries:
       - ^spanner/admin/instance/apiv1/gapic_metadata\.json$
       - ^spanner/admin/instance/apiv1/helpers\.go$
       - ^spanner/admin/instance/apiv1/instancepb/.*$
+      - ^spanner/admin/instance/apiv1/\.repo-metadata\.json$
       - ^spanner/apiv1/[^/]*_client\.go$
       - ^spanner/apiv1/[^/]*_client_example_go123_test\.go$
       - ^spanner/apiv1/[^/]*_client_example_test\.go$
@@ -5324,6 +5624,7 @@ libraries:
       - ^spanner/apiv1/gapic_metadata\.json$
       - ^spanner/apiv1/helpers\.go$
       - ^spanner/apiv1/spannerpb/.*$
+      - ^spanner/apiv1/\.repo-metadata\.json$
       - ^spanner/executor/apiv1/[^/]*_client\.go$
       - ^spanner/executor/apiv1/[^/]*_client_example_go123_test\.go$
       - ^spanner/executor/apiv1/[^/]*_client_example_test\.go$
@@ -5333,6 +5634,7 @@ libraries:
       - ^spanner/executor/apiv1/gapic_metadata\.json$
       - ^spanner/executor/apiv1/helpers\.go$
       - ^spanner/executor/apiv1/executorpb/.*$
+      - ^spanner/executor/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/spanner/
       - spanner/benchmarks
@@ -5368,6 +5670,7 @@ libraries:
       - ^speech/apiv1/gapic_metadata\.json$
       - ^speech/apiv1/helpers\.go$
       - ^speech/apiv1/speechpb/.*$
+      - ^speech/apiv1/\.repo-metadata\.json$
       - ^speech/apiv1p1beta1/[^/]*_client\.go$
       - ^speech/apiv1p1beta1/[^/]*_client_example_go123_test\.go$
       - ^speech/apiv1p1beta1/[^/]*_client_example_test\.go$
@@ -5377,6 +5680,7 @@ libraries:
       - ^speech/apiv1p1beta1/gapic_metadata\.json$
       - ^speech/apiv1p1beta1/helpers\.go$
       - ^speech/apiv1p1beta1/speechpb/.*$
+      - ^speech/apiv1p1beta1/\.repo-metadata\.json$
       - ^speech/apiv2/[^/]*_client\.go$
       - ^speech/apiv2/[^/]*_client_example_go123_test\.go$
       - ^speech/apiv2/[^/]*_client_example_test\.go$
@@ -5386,12 +5690,13 @@ libraries:
       - ^speech/apiv2/gapic_metadata\.json$
       - ^speech/apiv2/helpers\.go$
       - ^speech/apiv2/speechpb/.*$
+      - ^speech/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
     version: 1.57.1
-    last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
+    last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
     apis:
       - path: google/storage/control/v2
         service_config: storage_v2.yaml
@@ -5412,6 +5717,7 @@ libraries:
       - ^storage/control/apiv2/gapic_metadata\.json$
       - ^storage/control/apiv2/helpers\.go$
       - ^storage/control/apiv2/controlpb/.*$
+      - ^storage/control/apiv2/\.repo-metadata\.json$
       - ^storage/internal/apiv2/[^/]*_client\.go$
       - ^storage/internal/apiv2/[^/]*_client_example_go123_test\.go$
       - ^storage/internal/apiv2/[^/]*_client_example_test\.go$
@@ -5421,6 +5727,7 @@ libraries:
       - ^storage/internal/apiv2/gapic_metadata\.json$
       - ^storage/internal/apiv2/helpers\.go$
       - ^storage/internal/apiv2/storagepb/.*$
+      - ^storage/internal/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/storage/
       - storage/internal/benchmarks
@@ -5447,6 +5754,7 @@ libraries:
       - ^storagebatchoperations/apiv1/gapic_metadata\.json$
       - ^storagebatchoperations/apiv1/helpers\.go$
       - ^storagebatchoperations/apiv1/storagebatchoperationspb/.*$
+      - ^storagebatchoperations/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/storagebatchoperations/
     tag_format: '{id}/v{version}'
@@ -5471,6 +5779,7 @@ libraries:
       - ^storageinsights/apiv1/gapic_metadata\.json$
       - ^storageinsights/apiv1/helpers\.go$
       - ^storageinsights/apiv1/storageinsightspb/.*$
+      - ^storageinsights/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/storageinsights/
     tag_format: '{id}/v{version}'
@@ -5495,6 +5804,7 @@ libraries:
       - ^storagetransfer/apiv1/gapic_metadata\.json$
       - ^storagetransfer/apiv1/helpers\.go$
       - ^storagetransfer/apiv1/storagetransferpb/.*$
+      - ^storagetransfer/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/storagetransfer/
     tag_format: '{id}/v{version}'
@@ -5519,6 +5829,7 @@ libraries:
       - ^streetview/publish/apiv1/gapic_metadata\.json$
       - ^streetview/publish/apiv1/helpers\.go$
       - ^streetview/publish/apiv1/publishpb/.*$
+      - ^streetview/publish/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/streetview/
     tag_format: '{id}/v{version}'
@@ -5545,6 +5856,7 @@ libraries:
       - ^support/apiv2/gapic_metadata\.json$
       - ^support/apiv2/helpers\.go$
       - ^support/apiv2/supportpb/.*$
+      - ^support/apiv2/\.repo-metadata\.json$
       - ^support/apiv2beta/[^/]*_client\.go$
       - ^support/apiv2beta/[^/]*_client_example_go123_test\.go$
       - ^support/apiv2beta/[^/]*_client_example_test\.go$
@@ -5554,6 +5866,7 @@ libraries:
       - ^support/apiv2beta/gapic_metadata\.json$
       - ^support/apiv2beta/helpers\.go$
       - ^support/apiv2beta/supportpb/.*$
+      - ^support/apiv2beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/support/
     tag_format: '{id}/v{version}'
@@ -5580,6 +5893,7 @@ libraries:
       - ^talent/apiv4/gapic_metadata\.json$
       - ^talent/apiv4/helpers\.go$
       - ^talent/apiv4/talentpb/.*$
+      - ^talent/apiv4/\.repo-metadata\.json$
       - ^talent/apiv4beta1/[^/]*_client\.go$
       - ^talent/apiv4beta1/[^/]*_client_example_go123_test\.go$
       - ^talent/apiv4beta1/[^/]*_client_example_test\.go$
@@ -5589,6 +5903,7 @@ libraries:
       - ^talent/apiv4beta1/gapic_metadata\.json$
       - ^talent/apiv4beta1/helpers\.go$
       - ^talent/apiv4beta1/talentpb/.*$
+      - ^talent/apiv4beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/talent/
     tag_format: '{id}/v{version}'
@@ -5613,6 +5928,7 @@ libraries:
       - ^telcoautomation/apiv1/gapic_metadata\.json$
       - ^telcoautomation/apiv1/helpers\.go$
       - ^telcoautomation/apiv1/telcoautomationpb/.*$
+      - ^telcoautomation/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/telcoautomation/
     tag_format: '{id}/v{version}'
@@ -5637,6 +5953,7 @@ libraries:
       - ^texttospeech/apiv1/gapic_metadata\.json$
       - ^texttospeech/apiv1/helpers\.go$
       - ^texttospeech/apiv1/texttospeechpb/.*$
+      - ^texttospeech/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/texttospeech/
     tag_format: '{id}/v{version}'
@@ -5661,6 +5978,7 @@ libraries:
       - ^tpu/apiv1/gapic_metadata\.json$
       - ^tpu/apiv1/helpers\.go$
       - ^tpu/apiv1/tpupb/.*$
+      - ^tpu/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/tpu/
     tag_format: '{id}/v{version}'
@@ -5687,6 +6005,7 @@ libraries:
       - ^trace/apiv1/gapic_metadata\.json$
       - ^trace/apiv1/helpers\.go$
       - ^trace/apiv1/tracepb/.*$
+      - ^trace/apiv1/\.repo-metadata\.json$
       - ^trace/apiv2/[^/]*_client\.go$
       - ^trace/apiv2/[^/]*_client_example_go123_test\.go$
       - ^trace/apiv2/[^/]*_client_example_test\.go$
@@ -5696,6 +6015,7 @@ libraries:
       - ^trace/apiv2/gapic_metadata\.json$
       - ^trace/apiv2/helpers\.go$
       - ^trace/apiv2/tracepb/.*$
+      - ^trace/apiv2/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/trace/
     tag_format: '{id}/v{version}'
@@ -5720,6 +6040,7 @@ libraries:
       - ^translate/apiv3/gapic_metadata\.json$
       - ^translate/apiv3/helpers\.go$
       - ^translate/apiv3/translatepb/.*$
+      - ^translate/apiv3/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
@@ -5757,6 +6078,7 @@ libraries:
       - ^video/livestream/apiv1/gapic_metadata\.json$
       - ^video/livestream/apiv1/helpers\.go$
       - ^video/livestream/apiv1/livestreampb/.*$
+      - ^video/livestream/apiv1/\.repo-metadata\.json$
       - ^video/stitcher/apiv1/[^/]*_client\.go$
       - ^video/stitcher/apiv1/[^/]*_client_example_go123_test\.go$
       - ^video/stitcher/apiv1/[^/]*_client_example_test\.go$
@@ -5766,6 +6088,7 @@ libraries:
       - ^video/stitcher/apiv1/gapic_metadata\.json$
       - ^video/stitcher/apiv1/helpers\.go$
       - ^video/stitcher/apiv1/stitcherpb/.*$
+      - ^video/stitcher/apiv1/\.repo-metadata\.json$
       - ^video/transcoder/apiv1/[^/]*_client\.go$
       - ^video/transcoder/apiv1/[^/]*_client_example_go123_test\.go$
       - ^video/transcoder/apiv1/[^/]*_client_example_test\.go$
@@ -5775,6 +6098,7 @@ libraries:
       - ^video/transcoder/apiv1/gapic_metadata\.json$
       - ^video/transcoder/apiv1/helpers\.go$
       - ^video/transcoder/apiv1/transcoderpb/.*$
+      - ^video/transcoder/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/video/
     tag_format: '{id}/v{version}'
@@ -5803,6 +6127,7 @@ libraries:
       - ^videointelligence/apiv1/gapic_metadata\.json$
       - ^videointelligence/apiv1/helpers\.go$
       - ^videointelligence/apiv1/videointelligencepb/.*$
+      - ^videointelligence/apiv1/\.repo-metadata\.json$
       - ^videointelligence/apiv1beta2/[^/]*_client\.go$
       - ^videointelligence/apiv1beta2/[^/]*_client_example_go123_test\.go$
       - ^videointelligence/apiv1beta2/[^/]*_client_example_test\.go$
@@ -5812,6 +6137,7 @@ libraries:
       - ^videointelligence/apiv1beta2/gapic_metadata\.json$
       - ^videointelligence/apiv1beta2/helpers\.go$
       - ^videointelligence/apiv1beta2/videointelligencepb/.*$
+      - ^videointelligence/apiv1beta2/\.repo-metadata\.json$
       - ^videointelligence/apiv1p3beta1/[^/]*_client\.go$
       - ^videointelligence/apiv1p3beta1/[^/]*_client_example_go123_test\.go$
       - ^videointelligence/apiv1p3beta1/[^/]*_client_example_test\.go$
@@ -5821,6 +6147,7 @@ libraries:
       - ^videointelligence/apiv1p3beta1/gapic_metadata\.json$
       - ^videointelligence/apiv1p3beta1/helpers\.go$
       - ^videointelligence/apiv1p3beta1/videointelligencepb/.*$
+      - ^videointelligence/apiv1p3beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/videointelligence/
     tag_format: '{id}/v{version}'
@@ -5847,6 +6174,7 @@ libraries:
       - ^vision/apiv1/gapic_metadata\.json$
       - ^vision/apiv1/helpers\.go$
       - ^vision/apiv1/visionpb/.*$
+      - ^vision/apiv1/\.repo-metadata\.json$
       - ^vision/apiv1p1beta1/[^/]*_client\.go$
       - ^vision/apiv1p1beta1/[^/]*_client_example_go123_test\.go$
       - ^vision/apiv1p1beta1/[^/]*_client_example_test\.go$
@@ -5856,6 +6184,7 @@ libraries:
       - ^vision/apiv1p1beta1/gapic_metadata\.json$
       - ^vision/apiv1p1beta1/helpers\.go$
       - ^vision/apiv1p1beta1/visionpb/.*$
+      - ^vision/apiv1p1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/vision/
     tag_format: '{id}/v{version}'
@@ -5880,6 +6209,7 @@ libraries:
       - ^visionai/apiv1/gapic_metadata\.json$
       - ^visionai/apiv1/helpers\.go$
       - ^visionai/apiv1/visionaipb/.*$
+      - ^visionai/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/visionai/
     tag_format: '{id}/v{version}'
@@ -5905,6 +6235,7 @@ libraries:
       - ^vmmigration/apiv1/gapic_metadata\.json$
       - ^vmmigration/apiv1/helpers\.go$
       - ^vmmigration/apiv1/vmmigrationpb/.*$
+      - ^vmmigration/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/vmmigration/
     tag_format: '{id}/v{version}'
@@ -5929,6 +6260,7 @@ libraries:
       - ^vmwareengine/apiv1/gapic_metadata\.json$
       - ^vmwareengine/apiv1/helpers\.go$
       - ^vmwareengine/apiv1/vmwareenginepb/.*$
+      - ^vmwareengine/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/vmwareengine/
     tag_format: '{id}/v{version}'
@@ -5953,6 +6285,7 @@ libraries:
       - ^vpcaccess/apiv1/gapic_metadata\.json$
       - ^vpcaccess/apiv1/helpers\.go$
       - ^vpcaccess/apiv1/vpcaccesspb/.*$
+      - ^vpcaccess/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/vpcaccess/
     tag_format: '{id}/v{version}'
@@ -5979,6 +6312,7 @@ libraries:
       - ^webrisk/apiv1/gapic_metadata\.json$
       - ^webrisk/apiv1/helpers\.go$
       - ^webrisk/apiv1/webriskpb/.*$
+      - ^webrisk/apiv1/\.repo-metadata\.json$
       - ^webrisk/apiv1beta1/[^/]*_client\.go$
       - ^webrisk/apiv1beta1/[^/]*_client_example_go123_test\.go$
       - ^webrisk/apiv1beta1/[^/]*_client_example_test\.go$
@@ -5988,6 +6322,7 @@ libraries:
       - ^webrisk/apiv1beta1/gapic_metadata\.json$
       - ^webrisk/apiv1beta1/helpers\.go$
       - ^webrisk/apiv1beta1/webriskpb/.*$
+      - ^webrisk/apiv1beta1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/webrisk/
     tag_format: '{id}/v{version}'
@@ -6012,6 +6347,7 @@ libraries:
       - ^websecurityscanner/apiv1/gapic_metadata\.json$
       - ^websecurityscanner/apiv1/helpers\.go$
       - ^websecurityscanner/apiv1/websecurityscannerpb/.*$
+      - ^websecurityscanner/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/websecurityscanner/
     tag_format: '{id}/v{version}'
@@ -6042,6 +6378,7 @@ libraries:
       - ^workflows/apiv1/gapic_metadata\.json$
       - ^workflows/apiv1/helpers\.go$
       - ^workflows/apiv1/workflowspb/.*$
+      - ^workflows/apiv1/\.repo-metadata\.json$
       - ^workflows/apiv1beta/[^/]*_client\.go$
       - ^workflows/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^workflows/apiv1beta/[^/]*_client_example_test\.go$
@@ -6051,6 +6388,7 @@ libraries:
       - ^workflows/apiv1beta/gapic_metadata\.json$
       - ^workflows/apiv1beta/helpers\.go$
       - ^workflows/apiv1beta/workflowspb/.*$
+      - ^workflows/apiv1beta/\.repo-metadata\.json$
       - ^workflows/executions/apiv1/[^/]*_client\.go$
       - ^workflows/executions/apiv1/[^/]*_client_example_go123_test\.go$
       - ^workflows/executions/apiv1/[^/]*_client_example_test\.go$
@@ -6060,6 +6398,7 @@ libraries:
       - ^workflows/executions/apiv1/gapic_metadata\.json$
       - ^workflows/executions/apiv1/helpers\.go$
       - ^workflows/executions/apiv1/executionspb/.*$
+      - ^workflows/executions/apiv1/\.repo-metadata\.json$
       - ^workflows/executions/apiv1beta/[^/]*_client\.go$
       - ^workflows/executions/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^workflows/executions/apiv1beta/[^/]*_client_example_test\.go$
@@ -6069,6 +6408,7 @@ libraries:
       - ^workflows/executions/apiv1beta/gapic_metadata\.json$
       - ^workflows/executions/apiv1beta/helpers\.go$
       - ^workflows/executions/apiv1beta/executionspb/.*$
+      - ^workflows/executions/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/workflows/
     tag_format: '{id}/v{version}'
@@ -6095,6 +6435,7 @@ libraries:
       - ^workstations/apiv1/gapic_metadata\.json$
       - ^workstations/apiv1/helpers\.go$
       - ^workstations/apiv1/workstationspb/.*$
+      - ^workstations/apiv1/\.repo-metadata\.json$
       - ^workstations/apiv1beta/[^/]*_client\.go$
       - ^workstations/apiv1beta/[^/]*_client_example_go123_test\.go$
       - ^workstations/apiv1beta/[^/]*_client_example_test\.go$
@@ -6104,6 +6445,7 @@ libraries:
       - ^workstations/apiv1beta/gapic_metadata\.json$
       - ^workstations/apiv1beta/helpers\.go$
       - ^workstations/apiv1beta/workstationspb/.*$
+      - ^workstations/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/workstations/
     tag_format: '{id}/v{version}'

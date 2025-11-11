@@ -420,6 +420,7 @@ const (
 )
 
 func TestMain(m *testing.M) {
+	_ = os.Setenv("GOOGLE_CLOUD_SPANNER_DISABLE_LOG_CLIENT_OPTIONS", "true")
 	cleanup := initIntegrationTests()
 	defer cleanup()
 	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL, adminpb.DatabaseDialect_POSTGRESQL} {

@@ -14,12 +14,12 @@
 # limitations under the License.
 
 # This script performs an integration test on the librarian CLI
-# for the `release-init` command.
+# for the `release-stage` command.
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
 IMAGE_NAME="gcr.io/cloud-devrel-public-resources/librarian-go:infrastructure-public-image-latest"
-LIBRARIANGEN_LOG=librarian-release-init.log
+LIBRARIANGEN_LOG=librarian-release-stage.log
 echo "Cleaning up from last time: rm -f $LIBRARIANGEN_LOG"
 rm -f "$LIBRARIANGEN_LOG"
 
@@ -46,7 +46,7 @@ GOLDEN_REPO_DIR="$LIBRARIANGEN_GOOGLE_CLOUD_GO_DIR"
 # --- Test Execution ---
 echo ""
 echo "--------------------------------------"
-echo "Running 'release-init' integration test..."
+echo "Running 'release-stage' integration test..."
 echo "--------------------------------------"
 
 # Reset the golden repo to a clean state before running the test.
@@ -59,8 +59,8 @@ echo "--------------------------------------"
 ) >> "$LIBRARIANGEN_LOG" 2>&1
 
 # Execute
-echo "Running librarian release-init..."
-go run github.com/googleapis/librarian/cmd/librarian@HEAD release-init \
+echo "Running librarian release-stage..."
+go run github.com/googleapis/librarian/cmd/librarian@HEAD release stage \
   --image="$IMAGE_NAME" \
   --repo="$GOLDEN_REPO_DIR" \
   --library=secretmanager >> "$LIBRARIANGEN_LOG" 2>&1
@@ -88,6 +88,6 @@ if [ -z "$(git -C "$GOLDEN_REPO_DIR" status --porcelain)" ]; then
     exit 1
 fi
 
-echo "'release-init' integration test passed successfully."
+echo "'release-stage' integration test passed successfully."
 echo "Logs are available in: $LIBRARIANGEN_LOG"
 echo "To inspect changes, see the git status of: $GOLDEN_REPO_DIR"

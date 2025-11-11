@@ -46,7 +46,7 @@ func TestBuild(t *testing.T) {
 				e.writeRequestFile(t, singleAPIRequest)
 			},
 			wantErr:        false,
-			wantExecvCount: 2,
+			wantExecvCount: 1,
 		},
 		{
 			name:    "missing request file",
@@ -60,15 +60,6 @@ func TestBuild(t *testing.T) {
 			buildErr:       errors.New("build failed"),
 			wantErr:        true,
 			wantExecvCount: 1,
-		},
-		{
-			name: "go test fails",
-			setup: func(e *testEnv, t *testing.T) {
-				e.writeRequestFile(t, singleAPIRequest)
-			},
-			testErr:        errors.New("test failed"),
-			wantErr:        true,
-			wantExecvCount: 2,
 		},
 	}
 
@@ -91,8 +82,6 @@ func TestBuild(t *testing.T) {
 				switch {
 				case slices.Equal(args, []string{"go", "build", "./..."}):
 					return tt.buildErr
-				case slices.Equal(args, []string{"go", "test", "./...", "-short"}):
-					return tt.testErr
 				default:
 					t.Errorf("execv called with unexpected args %v", args)
 					return nil
