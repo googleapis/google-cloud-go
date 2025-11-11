@@ -2138,62 +2138,62 @@ func logicalFuncs(t *testing.T) {
 		{
 			name:     "Conditional - true",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(ConstantOf(1), ConstantOf(1)), FieldOf("a"), FieldOf("b")).As("result")),
-			want:     map[string]interface{}{"result": int64(1)},
+			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "Conditional - false",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(ConstantOf(1), ConstantOf(0)), FieldOf("a"), FieldOf("b")).As("result")),
-			want:     map[string]interface{}{"result": int64(2)},
+			want:     []map[string]interface{}{{"result": int64(2)}, {"result": int64(1)}},
 		},
 		{
 			name:     "Conditional - field true",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(FieldOf("d"), ConstantOf(true)), FieldOf("a"), FieldOf("b")).As("result")),
-			want:     map[string]interface{}{"result": int64(1)},
+			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "Conditional - field false",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(FieldOf("e"), ConstantOf(true)), FieldOf("a"), FieldOf("b")).As("result")),
-			want:     map[string]interface{}{"result": int64(2)},
+			want:     []map[string]interface{}{{"result": int64(2)}, {"result": int64(1)}},
 		},
 		{
 			name:     "LogicalMax",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(LogicalMaximum(FieldOf("a"), FieldOf("b")).As("max")),
-			want:     map[string]interface{}{"max": int64(2)},
+			want:     []map[string]interface{}{{"max": int64(2)}, {"max": int64(1)}},
 		},
 		{
 			name:     "LogicalMin",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(LogicalMinimum(FieldOf("a"), FieldOf("b")).As("min")),
-			want:     map[string]interface{}{"min": int64(1)},
+			want:     []map[string]interface{}{{"min": int64(1)}, {"min": int64(1)}},
 		},
 		{
 			name:     "IfError - no error",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfError(FieldOf("a"), ConstantOf(100)).As("result")),
-			want:     map[string]interface{}{"result": int64(1)},
+			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "IfError - error",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Divide("a", 0).IfError(ConstantOf("was error")).As("ifError")),
-			want:     map[string]interface{}{"ifError": "was error"},
+			want:     []map[string]interface{}{{"ifError": "was error"}, {"ifError": "was error"}},
 		},
 		{
 			name:     "IfErrorBoolean - no error",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("d"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
-			want:     map[string]interface{}{"result": true},
+			want:     []map[string]interface{}{{"result": true}, {"result": true}},
 		},
 		{
 			name:     "IfErrorBoolean - error",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("x"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
-			want:     map[string]interface{}{"result": false},
+			want:     []map[string]interface{}{{"result": false}, {"result": false}},
 		},
 		{
 			name:     "IfAbsent - not absent",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfAbsent(FieldOf("a"), ConstantOf(100)).As("result")),
-			want:     map[string]interface{}{"result": int64(1)},
+			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "IfAbsent - absent",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfAbsent(FieldOf("x"), ConstantOf(100)).As("result")),
-			want:     map[string]interface{}{"result": int64(100)},
+			want:     []map[string]interface{}{{"result": int64(100)}, {"result": int64(100)}},
 		},
 		{
 			name: "And",
@@ -2265,18 +2265,43 @@ func logicalFuncs(t *testing.T) {
 			lastStageName := lastStage.name()
 
 			if lastStageName == stageNameSelect { // This is a select query
-				want, ok := test.want.(map[string]interface{})
+				want, ok := test.want.([]map[string]interface{})
 				if !ok {
 					t.Fatalf("invalid test.want type for select query: %T", test.want)
 					return
 				}
-				if len(docs) != 1 {
-					t.Fatalf("expected 1 doc, got %d", len(docs))
+				if len(docs) != len(want) {
+					t.Fatalf("expected %d doc(s), got %d", len(want), len(docs))
 					return
 				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, want); diff != "" {
-					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, want, diff)
+				var gots []map[string]interface{}
+				for _, doc := range docs {
+					gots = append(gots, doc.Data())
+				}
+				if diff := testutil.Diff(gots, want, cmpopts.SortSlices(func(a, b map[string]interface{}) bool {
+					// A stable sort for the results.
+					// Try to sort by "result", "max", "min", "ifError"
+					if v1, ok := a["result"]; ok {
+						v2 := b["result"]
+						switch v1 := v1.(type) {
+						case int64:
+							return v1 < v2.(int64)
+						case bool:
+							return !v1 && v2.(bool)
+						}
+					}
+					if v1, ok := a["max"]; ok {
+						return v1.(int64) < b["max"].(int64)
+					}
+					if v1, ok := a["min"]; ok {
+						return v1.(int64) < b["min"].(int64)
+					}
+					if v1, ok := a["ifError"]; ok {
+						return v1.(string) < b["ifError"].(string)
+					}
+					return false
+				})); diff != "" {
+					t.Errorf("got: %v, want: %v, diff +want -got: %s", gots, want, diff)
 				}
 			} else if lastStageName == stageNameWhere { // This is a where query (filter condition)
 				want, ok := test.want.([]map[string]interface{})
@@ -2295,9 +2320,15 @@ func logicalFuncs(t *testing.T) {
 				}
 				// Sort slices before comparing for consistent test results
 				sort.Slice(gots, func(i, j int) bool {
+					if gots[i]["a"].(int64) == gots[j]["a"].(int64) {
+						return gots[i]["b"].(int64) < gots[j]["b"].(int64)
+					}
 					return gots[i]["a"].(int64) < gots[j]["a"].(int64)
 				})
 				sort.Slice(want, func(i, j int) bool {
+					if want[i]["a"].(int64) == want[j]["a"].(int64) {
+						return want[i]["b"].(int64) < want[j]["b"].(int64)
+					}
 					return want[i]["a"].(int64) < want[j]["a"].(int64)
 				})
 				if diff := testutil.Diff(gots, want); diff != "" {
