@@ -41,7 +41,8 @@ import (
 )
 
 // A safety net to prevent a connection from draining indefinitely if a stream hangs.
-var maxDrainingTimeout = 2 * time.Minute
+// We cap the max draining timeout to 30mins as there might be a long running stream (such as full table scan).
+var maxDrainingTimeout = 30 * time.Minute
 
 // BigtableChannelPool options
 type BigtableChannelPoolOption func(*BigtableChannelPool)
@@ -71,7 +72,8 @@ func (bc *BigtableConn) Prime(ctx context.Context) error {
 
 	}
 
-	// TODO : Plumb featureflag and instanceName header
+	// TODO: Plumb featureflag
+	// TODO: Plumb RLS headers
 	client := btpb.NewBigtableClient(bc.ClientConn)
 	req := &btpb.PingAndWarmRequest{
 		Name:         bc.instanceName,
