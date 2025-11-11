@@ -162,3 +162,15 @@ func (ps *PipelineSource) Database() *Pipeline {
 func (ps *PipelineSource) Documents(refs ...*DocumentRef) *Pipeline {
 	return newPipeline(ps.client, newInputStageDocuments(refs...))
 }
+
+// CreateFromQuery creates a new [Pipeline] from the given [Query]. Under the hood, this will
+// translate the query semantics (order by document ID, etc.) to an equivalent pipeline.
+func (ps *PipelineSource) CreateFromQuery(query Query) *Pipeline {
+	return query.Pipeline()
+}
+
+// CreateFromAggregationQuery creates a new [Pipeline] from the given [AggregationQuery]. Under the hood, this will
+// translate the query semantics (order by document ID, etc.) to an equivalent pipeline.
+func (ps *PipelineSource) CreateFromAggregationQuery(query *AggregationQuery) *Pipeline {
+	return query.Pipeline()
+}

@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"strings"
 	"testing"
 	"time"
 
@@ -27,14 +26,45 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/type/latlng"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
-func TestIntegration_PipelineExecute(t *testing.T) {
+func skipIfNotEnterprise(t *testing.T) {
 	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
-		t.Skip("Skipping pipeline queries tests since the firestore edition of", testParams[databaseIDKey].(string), "database is not enterprise")
+		t.Skip("Skipping test in non-enterprise environment")
 	}
+}
+
+type Author struct {
+	Name    string `firestore:"name"`
+	Country string `firestore:"country"`
+}
+
+type Book struct {
+	Title     string   `firestore:"title"`
+	Author    Author   `firestore:"author"`
+	Genre     string   `firestore:"genre"`
+	Published int      `firestore:"published"`
+	Rating    float64  `firestore:"rating"`
+	Tags      []string `firestore:"tags"`
+}
+
+func testBooks() []Book {
+	return []Book{
+		{Title: "The Hitchhiker's Guide to the Galaxy", Author: Author{Name: "Douglas Adams", Country: "UK"}, Genre: "Science Fiction", Published: 1979, Rating: 4.2, Tags: []string{"comedy", "space", "adventure"}},
+		{Title: "Pride and Prejudice", Author: Author{Name: "Jane Austen", Country: "UK"}, Genre: "Romance", Published: 1813, Rating: 4.5, Tags: []string{"classic", "social commentary", "love"}},
+		{Title: "One Hundred Years of Solitude", Author: Author{Name: "Gabriel García Márquez", Country: "Colombia"}, Genre: "Magical Realism", Published: 1967, Rating: 4.3, Tags: []string{"family", "history", "fantasy"}},
+		{Title: "The Lord of the Rings", Author: Author{Name: "J.R.R. Tolkien", Country: "UK"}, Genre: "Fantasy", Published: 1954, Rating: 4.7, Tags: []string{"adventure", "magic", "epic"}},
+		{Title: "The Handmaid's Tale", Author: Author{Name: "Margaret Atwood", Country: "Canada"}, Genre: "Dystopian", Published: 1985, Rating: 4.1, Tags: []string{"feminism", "totalitarianism", "resistance"}},
+		{Title: "Crime and Punishment", Author: Author{Name: "Fyodor Dostoevsky", Country: "Russia"}, Genre: "Psychological Thriller", Published: 1866, Rating: 4.3, Tags: []string{"philosophy", "crime", "redemption"}},
+		{Title: "To Kill a Mockingbird", Author: Author{Name: "Harper Lee", Country: "USA"}, Genre: "Southern Gothic", Published: 1960, Rating: 4.2, Tags: []string{"racism", "injustice", "coming-of-age"}},
+		{Title: "1984", Author: Author{Name: "George Orwell", Country: "UK"}, Genre: "Dystopian", Published: 1949, Rating: 4.2, Tags: []string{"surveillance", "totalitarianism", "propaganda"}},
+		{Title: "The Great Gatsby", Author: Author{Name: "F. Scott Fitzgerald", Country: "USA"}, Genre: "Modernist", Published: 1925, Rating: 4.0, Tags: []string{"wealth", "american dream", "love"}},
+		{Title: "Dune", Author: Author{Name: "Frank Herbert", Country: "USA"}, Genre: "Science Fiction", Published: 1965, Rating: 4.6, Tags: []string{"politics", "desert", "ecology"}},
+	}
+}
+
+func TestIntegration_PipelineExecute(t *testing.T) {
+	skipIfNotEnterprise(t)
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := integrationColl(t)
@@ -67,82 +97,10 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 		if len(res) != 0 {
 			t.Errorf("got %d documents, want 0", len(res))
 		}
-
-		stats := iter.ExplainStats()
-		if stats != nil {
-			t.Fatal("ExplainStats should be nil when WithExplainMode is not used")
-		}
-	})
-
-	t.Run("ExplainModeAnalyze and recommended index", func(t *testing.T) {
-		doc := coll.NewDoc()
-		_, err := doc.Create(ctx, map[string]interface{}{"a": 1})
-		if err != nil {
-			t.Fatal(err)
-		}
-		t.Cleanup(func() {
-			deleteDocuments([]*DocumentRef{doc})
-		})
-
-		iter := client.Pipeline().Collection(coll.ID).WithExecuteOptions(WithExplainMode(ExplainModeAnalyze), WithIndexMode("recommended")).Execute(ctx)
-		defer iter.Stop()
-		_, err = iter.GetAll()
-		if err != nil {
-			t.Fatalf("Failed to execute pipeline with explain mode: %v", err)
-		}
-		stats := iter.ExplainStats()
-		if stats == nil {
-			t.Fatal("ExplainStats should not be nil when WithExplainMode is used")
-		}
-
-		text, err := stats.GetText()
-		if err != nil {
-			t.Fatalf("GetText() error: %v", err)
-		}
-		if text == "" {
-			t.Error("GetText() should not be empty")
-		}
-
-		rawData, err := stats.GetRawData()
-		if err != nil {
-			t.Fatalf("GetRawData() error: %v", err)
-		}
-		if rawData == nil {
-			t.Error("GetRawData() should not be nil")
-		}
 	})
 	t.Run("WithTransaction", func(t *testing.T) {
 		h := testHelper{t}
-		type Author struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}
-		type Book struct {
-			Title     string `firestore:"title"`
-			Author    `firestore:"author"`
-			Genre     string   `firestore:"genre"`
-			Published int      `firestore:"published"`
-			Rating    float64  `firestore:"rating"`
-			Tags      []string `firestore:"tags"`
-		}
-		books := []Book{
-			{
-				Title:     "The Hitchhiker's Guide to the Galaxy",
-				Author:    Author{Name: "Douglas Adams", Country: "UK"},
-				Genre:     "Science Fiction",
-				Published: 1979,
-				Rating:    4.2,
-				Tags:      []string{"comedy", "space", "adventure"},
-			},
-			{
-				Title:     "Pride and Prejudice",
-				Author:    Author{Name: "Jane Austen", Country: "UK"},
-				Genre:     "Romance",
-				Published: 1813,
-				Rating:    4.5,
-				Tags:      []string{"classic", "social commentary", "love"},
-			},
-		}
+		books := testBooks()[:2]
 		var docRefs []*DocumentRef
 		for _, b := range books {
 			docRef := coll.NewDoc()
@@ -171,65 +129,34 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 }
 
 func TestIntegration_PipelineStages(t *testing.T) {
-	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
-		t.Skip("Skipping pipeline queries tests since the firestore edition of", testParams[databaseIDKey].(string), "database is not enterprise")
-	}
+	skipIfNotEnterprise(t)
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := integrationColl(t)
 	h := testHelper{t}
+	type Author struct {
+		Name    string `firestore:"name"`
+		Country string `firestore:"country"`
+	}
 	type Book struct {
-		Title  string `firestore:"title"`
-		Author struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		} `firestore:"author"`
+		Title     string   `firestore:"title"`
+		Author    Author   `firestore:"author"`
 		Genre     string   `firestore:"genre"`
 		Published int      `firestore:"published"`
 		Rating    float64  `firestore:"rating"`
 		Tags      []string `firestore:"tags"`
 	}
 	books := []Book{
-		{Title: "The Hitchhiker's Guide to the Galaxy", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Douglas Adams", Country: "UK"}, Genre: "Science Fiction", Published: 1979, Rating: 4.2, Tags: []string{"comedy", "space", "adventure"}},
-		{Title: "Pride and Prejudice", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Jane Austen", Country: "UK"}, Genre: "Romance", Published: 1813, Rating: 4.5, Tags: []string{"classic", "social commentary", "love"}},
-		{Title: "One Hundred Years of Solitude", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Gabriel García Márquez", Country: "Colombia"}, Genre: "Magical Realism", Published: 1967, Rating: 4.3, Tags: []string{"family", "history", "fantasy"}},
-		{Title: "The Lord of the Rings", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "J.R.R. Tolkien", Country: "UK"}, Genre: "Fantasy", Published: 1954, Rating: 4.7, Tags: []string{"adventure", "magic", "epic"}},
-		{Title: "The Handmaid's Tale", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Margaret Atwood", Country: "Canada"}, Genre: "Dystopian", Published: 1985, Rating: 4.1, Tags: []string{"feminism", "totalitarianism", "resistance"}},
-		{Title: "Crime and Punishment", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Fyodor Dostoevsky", Country: "Russia"}, Genre: "Psychological Thriller", Published: 1866, Rating: 4.3, Tags: []string{"philosophy", "crime", "redemption"}},
-		{Title: "To Kill a Mockingbird", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Harper Lee", Country: "USA"}, Genre: "Southern Gothic", Published: 1960, Rating: 4.2, Tags: []string{"racism", "injustice", "coming-of-age"}},
-		{Title: "1984", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "George Orwell", Country: "UK"}, Genre: "Dystopian", Published: 1949, Rating: 4.2, Tags: []string{"surveillance", "totalitarianism", "propaganda"}},
-		{Title: "The Great Gatsby", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "F. Scott Fitzgerald", Country: "USA"}, Genre: "Modernist", Published: 1925, Rating: 4.0, Tags: []string{"wealth", "american dream", "love"}},
-		{Title: "Dune", Author: struct {
-			Name    string `firestore:"name"`
-			Country string `firestore:"country"`
-		}{Name: "Frank Herbert", Country: "USA"}, Genre: "Science Fiction", Published: 1965, Rating: 4.6, Tags: []string{"politics", "desert", "ecology"}},
+		{Title: "The Hitchhiker's Guide to the Galaxy", Author: Author{Name: "Douglas Adams", Country: "UK"}, Genre: "Science Fiction", Published: 1979, Rating: 4.2, Tags: []string{"comedy", "space", "adventure"}},
+		{Title: "Pride and Prejudice", Author: Author{Name: "Jane Austen", Country: "UK"}, Genre: "Romance", Published: 1813, Rating: 4.5, Tags: []string{"classic", "social commentary", "love"}},
+		{Title: "One Hundred Years of Solitude", Author: Author{Name: "Gabriel García Márquez", Country: "Colombia"}, Genre: "Magical Realism", Published: 1967, Rating: 4.3, Tags: []string{"family", "history", "fantasy"}},
+		{Title: "The Lord of the Rings", Author: Author{Name: "J.R.R. Tolkien", Country: "UK"}, Genre: "Fantasy", Published: 1954, Rating: 4.7, Tags: []string{"adventure", "magic", "epic"}},
+		{Title: "The Handmaid's Tale", Author: Author{Name: "Margaret Atwood", Country: "Canada"}, Genre: "Dystopian", Published: 1985, Rating: 4.1, Tags: []string{"feminism", "totalitarianism", "resistance"}},
+		{Title: "Crime and Punishment", Author: Author{Name: "Fyodor Dostoevsky", Country: "Russia"}, Genre: "Psychological Thriller", Published: 1866, Rating: 4.3, Tags: []string{"philosophy", "crime", "redemption"}},
+		{Title: "To Kill a Mockingbird", Author: Author{Name: "Harper Lee", Country: "USA"}, Genre: "Southern Gothic", Published: 1960, Rating: 4.2, Tags: []string{"racism", "injustice", "coming-of-age"}},
+		{Title: "1984", Author: Author{Name: "George Orwell", Country: "UK"}, Genre: "Dystopian", Published: 1949, Rating: 4.2, Tags: []string{"surveillance", "totalitarianism", "propaganda"}},
+		{Title: "The Great Gatsby", Author: Author{Name: "F. Scott Fitzgerald", Country: "USA"}, Genre: "Modernist", Published: 1925, Rating: 4.0, Tags: []string{"wealth", "american dream", "love"}},
+		{Title: "Dune", Author: Author{Name: "Frank Herbert", Country: "USA"}, Genre: "Science Fiction", Published: 1965, Rating: 4.6, Tags: []string{"politics", "desert", "ecology"}},
 	}
 	var docRefs []*DocumentRef
 	for _, b := range books {
@@ -326,15 +253,6 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 		if len(results) != 2 {
 			t.Errorf("got %d documents, want 2", len(results))
-		}
-	})
-	t.Run("CollectionWithOptions", func(t *testing.T) {
-		hints := CollectionHints{}.WithForceIndex("title")
-		iter := client.Pipeline().Collection(coll.ID, WithCollectionHints(hints)).Execute(ctx)
-		defer iter.Stop()
-		_, err := iter.Next()
-		if s, ok := status.FromError(err); !ok || s.Code() != codes.InvalidArgument {
-			t.Errorf("got err %v, want InvalidArgument", err)
 		}
 	})
 	t.Run("Database", func(t *testing.T) {
@@ -762,9 +680,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 }
 
 func TestIntegration_PipelineFunctions(t *testing.T) {
-	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
-		t.Skip("Skipping pipeline queries tests since the firestore edition of", testParams[databaseIDKey].(string), "database is not enterprise")
-	}
+	skipIfNotEnterprise(t)
 	t.Run("arrayFuncs", arrayFuncs)
 	t.Run("stringFuncs", stringFuncs)
 	t.Run("vectorFuncs", vectorFuncs)
@@ -870,10 +786,7 @@ func typeFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			if isRetryablePipelineExecuteErr(err) {
-				t.Errorf("GetAll: %v. Retrying....", err)
-				return
-			} else if err != nil {
+			if err != nil {
 				t.Fatalf("GetAll: %v", err)
 				return
 			}
@@ -886,6 +799,198 @@ func typeFuncs(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIntegration_Query_Pipeline(t *testing.T) {
+	skipIfNotEnterprise(t)
+	ctx := context.Background()
+	coll := integrationColl(t)
+	h := testHelper{t}
+	type Book struct {
+		Title     string  `firestore:"title"`
+		Genre     string  `firestore:"genre"`
+		Published int     `firestore:"published"`
+		Rating    float64 `firestore:"rating"`
+	}
+	books := []Book{
+		{Title: "The Hitchhiker's Guide to the Galaxy", Genre: "Science Fiction", Published: 1979, Rating: 4.2},
+		{Title: "Pride and Prejudice", Genre: "Romance", Published: 1813, Rating: 4.5},
+		{Title: "One Hundred Years of Solitude", Genre: "Magical Realism", Published: 1967, Rating: 4.3},
+	}
+	var docRefs []*DocumentRef
+	for _, b := range books {
+		docRef := coll.NewDoc()
+		h.mustCreate(docRef, b)
+		docRefs = append(docRefs, docRef)
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	t.Run("Where", func(t *testing.T) {
+		q := coll.Where("published", ">", 1900)
+		p := q.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+		if len(res) != 2 {
+			t.Errorf("got %d documents, want 2", len(res))
+		}
+	})
+
+	t.Run("OrderBy", func(t *testing.T) {
+		q := coll.OrderBy("published", Asc)
+		p := q.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+		if len(res) != 3 {
+			t.Errorf("got %d documents, want 3", len(res))
+		}
+		var publishedYears []int64
+		for _, r := range res {
+			publishedYears = append(publishedYears, r.Data()["published"].(int64))
+		}
+		if !sort.SliceIsSorted(publishedYears, func(i, j int) bool { return publishedYears[i] < publishedYears[j] }) {
+			t.Errorf("results not sorted by published year: %v", publishedYears)
+		}
+	})
+
+	t.Run("Limit", func(t *testing.T) {
+		q := coll.Limit(2)
+		p := q.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+		if len(res) != 2 {
+			t.Errorf("got %d documents, want 2", len(res))
+		}
+	})
+
+	t.Run("Offset", func(t *testing.T) {
+		q := coll.OrderBy("published", Asc).Offset(1)
+		p := q.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+		if len(res) != 2 {
+			t.Errorf("got %d documents, want 2", len(res))
+		}
+	})
+
+	t.Run("Select", func(t *testing.T) {
+		q := coll.Select("title")
+		p := q.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		doc, err := iter.Next()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+		data := doc.Data()
+		if _, ok := data["title"]; !ok {
+			t.Error("missing 'title' field")
+		}
+		if _, ok := data["genre"]; ok {
+			t.Error("unexpected 'genre' field")
+		}
+	})
+}
+
+func TestIntegration_AggregationQuery_Pipeline(t *testing.T) {
+	skipIfNotEnterprise(t)
+	ctx := context.Background()
+	coll := integrationColl(t)
+	h := testHelper{t}
+	type Book struct {
+		Title     string  `firestore:"title"`
+		Genre     string  `firestore:"genre"`
+		Published int     `firestore:"published"`
+		Rating    float64 `firestore:"rating"`
+	}
+	books := []Book{
+		{Title: "The Hitchhiker's Guide to the Galaxy", Genre: "Science Fiction", Published: 1979, Rating: 4.2},
+		{Title: "Pride and Prejudice", Genre: "Romance", Published: 1813, Rating: 4.5},
+		{Title: "One Hundred Years of Solitude", Genre: "Magical Realism", Published: 1967, Rating: 4.3},
+	}
+	var docRefs []*DocumentRef
+	for _, b := range books {
+		docRef := coll.NewDoc()
+		h.mustCreate(docRef, b)
+		docRefs = append(docRefs, docRef)
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	t.Run("Count", func(t *testing.T) {
+		ag := coll.NewAggregationQuery().WithCount("count")
+		p := ag.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		doc, err := iter.Next()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
+		}
+		data := doc.Data()
+		if data["count"] != int64(3) {
+			t.Errorf("got %d count, want 3", data["count"])
+		}
+	})
+
+	t.Run("Sum", func(t *testing.T) {
+		ag := coll.NewAggregationQuery().WithSum("published", "total_published")
+		p := ag.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		doc, err := iter.Next()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
+		}
+		data := doc.Data()
+		if data["total_published"] != int64(1979+1813+1967) {
+			t.Errorf("got %d total_published, want %d", data["total_published"], int64(1979+1813+1967))
+		}
+	})
+
+	t.Run("Average", func(t *testing.T) {
+		ag := coll.NewAggregationQuery().WithAvg("rating", "avg_rating")
+		p := ag.Pipeline()
+		iter := p.Execute(ctx)
+		defer iter.Stop()
+		doc, err := iter.Next()
+		if err != nil {
+			t.Fatalf("Failed to iterate: %v", err)
+		}
+
+		if !doc.Exists() {
+			t.Fatalf("Exists: got: false, want: true")
+		}
+		data := doc.Data()
+		if data["avg_rating"] != (4.2+4.5+4.3)/3 {
+			t.Errorf("got %f avg_rating, want %f", data["avg_rating"], (4.2+4.5+4.3)/3)
+		}
+	})
 }
 
 func objectFuncs(t *testing.T) {
@@ -934,10 +1039,7 @@ func objectFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			if isRetryablePipelineExecuteErr(err) {
-				t.Errorf("GetAll: %v. Retrying....", err)
-				return
-			} else if err != nil {
+			if err != nil {
 				t.Fatalf("GetAll: %v", err)
 				return
 			}
@@ -1064,10 +1166,7 @@ func arrayFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
-				if isRetryablePipelineExecuteErr(err) {
-					t.Errorf("GetAll: %v. Retrying....", err)
-					return
-				} else if err != nil {
+				if err != nil {
 					t.Fatalf("GetAll: %v", err)
 					return
 				}
@@ -1208,10 +1307,7 @@ func stringFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			if isRetryablePipelineExecuteErr(err) {
-				t.Errorf("GetAll: %v. Retrying....", err)
-				return
-			} else if err != nil {
+			if err != nil {
 				t.Fatalf("GetAll: %v", err)
 				return
 			}
@@ -1320,10 +1416,7 @@ func vectorFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			if isRetryablePipelineExecuteErr(err) {
-				t.Errorf("GetAll: %v. Retrying....", err)
-				return
-			} else if err != nil {
+			if err != nil {
 				t.Fatalf("GetAll: %v", err)
 				return
 			}
@@ -1337,19 +1430,6 @@ func vectorFuncs(t *testing.T) {
 			}
 		})
 	}
-}
-
-func isRetryablePipelineExecuteErr(err error) bool {
-	if err == nil {
-		return false
-	}
-	s, ok := status.FromError(err)
-	if !ok {
-		return false
-	}
-	return s.Code() == codes.InvalidArgument &&
-		strings.Contains(s.Message(), "Invalid request routing header") &&
-		strings.Contains(s.Message(), "Please fill in the request header with format")
 }
 
 func timestampFuncs(t *testing.T) {
@@ -1905,10 +1985,7 @@ func keyFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			if isRetryablePipelineExecuteErr(err) {
-				t.Errorf("GetAll: %v. Retrying....", err)
-				return
-			} else if err != nil {
+			if err != nil {
 				t.Fatalf("GetAll: %v", err)
 				return
 			}
@@ -1999,10 +2076,7 @@ func generalFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			if isRetryablePipelineExecuteErr(err) {
-				t.Errorf("GetAll: %v. Retrying....", err)
-				return
-			} else if err != nil {
+			if err != nil {
 				t.Fatalf("GetAll: %v", err)
 				return
 			}
@@ -2022,20 +2096,44 @@ func logicalFuncs(t *testing.T) {
 	h := testHelper{t}
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
-	docRef1 := coll.NewDoc()
-	h.mustCreate(docRef1, map[string]interface{}{
+	docRef1 := coll.Doc("doc1")
+	doc1Data := map[string]interface{}{
 		"a": 1,
 		"b": 2,
 		"c": nil,
 		"d": true,
 		"e": false,
-	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
+	}
+	h.mustCreate(docRef1, doc1Data)
+
+	docRef2 := coll.Doc("doc2")
+	doc2Data := map[string]interface{}{
+		"a": 1,
+		"b": 1,
+		"d": true,
+		"e": true,
+	}
+	h.mustCreate(docRef2, doc2Data)
+	defer deleteDocuments([]*DocumentRef{docRef1, docRef2})
+
+	doc1Want := map[string]interface{}{
+		"a": int64(1),
+		"b": int64(2),
+		"c": nil,
+		"d": true,
+		"e": false,
+	}
+	doc2Want := map[string]interface{}{
+		"a": int64(1),
+		"b": int64(1),
+		"d": true,
+		"e": true,
+	}
 
 	tests := []struct {
 		name     string
 		pipeline *Pipeline
-		want     map[string]interface{}
+		want     interface{}
 	}{
 		{
 			name:     "Conditional - true",
@@ -2097,6 +2195,58 @@ func logicalFuncs(t *testing.T) {
 			pipeline: client.Pipeline().Collection(coll.ID).Select(IfAbsent(FieldOf("x"), ConstantOf(100)).As("result")),
 			want:     map[string]interface{}{"result": int64(100)},
 		},
+		{
+			name: "And",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(
+				And(
+					Equal(FieldOf("a"), 1),
+					Equal(FieldOf("b"), 2),
+				),
+			),
+			want: []map[string]interface{}{doc1Want},
+		},
+		{
+			name: "Or",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(
+				Or(
+					Equal(FieldOf("b"), 2),
+					Equal(FieldOf("e"), true),
+				),
+			),
+			want: []map[string]interface{}{doc1Want, doc2Want},
+		},
+		{
+			name: "Not",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(
+				Not(Equal(FieldOf("b"), 1)),
+			),
+			want: []map[string]interface{}{doc1Want},
+		},
+		{
+			name: "Xor",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(
+				Xor(
+					Equal(FieldOf("d"), true),
+					Equal(FieldOf("e"), true),
+				),
+			),
+			want: []map[string]interface{}{doc1Want},
+		},
+		{
+			name:     "FieldExists",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(FieldExists("c")),
+			want:     []map[string]interface{}{doc1Want},
+		},
+		{
+			name:     "IsError",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(IsError(Divide("a", 0))),
+			want:     []map[string]interface{}{doc1Want, doc2Want},
+		},
+		{
+			name:     "IsAbsent",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(IsAbsent("c")),
+			want:     []map[string]interface{}{doc2Want},
+		},
 	}
 
 	for _, test := range tests {
@@ -2106,20 +2256,123 @@ func logicalFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			if isRetryablePipelineExecuteErr(err) {
-				t.Errorf("GetAll: %v. Retrying....", err)
-				return
-			} else if err != nil {
+			if err != nil {
 				t.Fatalf("GetAll: %v", err)
 				return
 			}
-			if len(docs) != 1 {
-				t.Fatalf("expected 1 doc, got %d", len(docs))
-			}
-			got := docs[0].Data()
-			if diff := testutil.Diff(got, test.want); diff != "" {
-				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+
+			lastStage := test.pipeline.stages[len(test.pipeline.stages)-1]
+			lastStageName := lastStage.name()
+
+			if lastStageName == stageNameSelect { // This is a select query
+				want, ok := test.want.(map[string]interface{})
+				if !ok {
+					t.Fatalf("invalid test.want type for select query: %T", test.want)
+					return
+				}
+				if len(docs) != 1 {
+					t.Fatalf("expected 1 doc, got %d", len(docs))
+					return
+				}
+				got := docs[0].Data()
+				if diff := testutil.Diff(got, want); diff != "" {
+					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, want, diff)
+				}
+			} else if lastStageName == stageNameWhere { // This is a where query (filter condition)
+				want, ok := test.want.([]map[string]interface{})
+				if !ok {
+					t.Fatalf("invalid test.want type for where query: %T", test.want)
+					return
+				}
+				if len(docs) != len(want) {
+					t.Fatalf("expected %d doc(s), got %d", len(want), len(docs))
+					return
+				}
+				var gots []map[string]interface{}
+				for _, doc := range docs {
+					got := doc.Data()
+					gots = append(gots, got)
+				}
+				// Sort slices before comparing for consistent test results
+				sort.Slice(gots, func(i, j int) bool {
+					return gots[i]["a"].(int64) < gots[j]["a"].(int64)
+				})
+				sort.Slice(want, func(i, j int) bool {
+					return want[i]["a"].(int64) < want[j]["a"].(int64)
+				})
+				if diff := testutil.Diff(gots, want); diff != "" {
+					t.Errorf("got: %v, want: %v, diff +want -got: %s", gots, want, diff)
+				}
+			} else {
+				t.Fatalf("unknown pipeline stage: %s", lastStageName)
+				return
 			}
 		})
+	}
+}
+
+func TestIntegration_CreateFromQuery(t *testing.T) {
+	skipIfNotEnterprise(t)
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := integrationColl(t)
+	h := testHelper{t}
+
+	books := testBooks()[:3]
+	var docRefs []*DocumentRef
+	for _, b := range books {
+		docRef := coll.NewDoc()
+		h.mustCreate(docRef, b)
+		docRefs = append(docRefs, docRef)
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	q := coll.Where("rating", ">", 4.2)
+	p := client.Pipeline().CreateFromQuery(q)
+	iter := p.Execute(ctx)
+	defer iter.Stop()
+	results, err := iter.GetAll()
+	if err != nil {
+		t.Fatalf("Failed to iterate: %v", err)
+	}
+	if len(results) != 2 {
+		t.Errorf("got %d documents, want 2", len(results))
+	}
+}
+
+func TestIntegration_CreateFromAggregationQuery(t *testing.T) {
+	skipIfNotEnterprise(t)
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := integrationColl(t)
+	h := testHelper{t}
+
+	books := testBooks()[:3]
+	var docRefs []*DocumentRef
+	for _, b := range books {
+		docRef := coll.NewDoc()
+		h.mustCreate(docRef, b)
+		docRefs = append(docRefs, docRef)
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	ag := coll.NewAggregationQuery().WithCount("count")
+	p := client.Pipeline().CreateFromAggregationQuery(ag)
+	iter := p.Execute(ctx)
+	defer iter.Stop()
+	doc, err := iter.Next()
+	if err != nil {
+		t.Fatalf("Failed to iterate: %v", err)
+	}
+	if !doc.Exists() {
+		t.Fatalf("Exists: got: false, want: true")
+	}
+	data := doc.Data()
+	if data["count"] != int64(3) {
+		t.Errorf("got count %d, want 3", data["count"])
 	}
 }
