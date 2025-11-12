@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	cloud.google.com/go v0.121.6
-	cloud.google.com/go/longrunning v0.6.7
+	cloud.google.com/go/longrunning v0.7.0
 	cloud.google.com/go/pubsub v1.50.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0

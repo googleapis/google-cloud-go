@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	cloud.google.com/go v0.121.6
 	cloud.google.com/go/iam v1.5.2
-	cloud.google.com/go/longrunning v0.6.7
+	cloud.google.com/go/longrunning v0.7.0
 	cloud.google.com/go/monitoring v1.24.2
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.53.0
 	github.com/google/btree v1.1.3
