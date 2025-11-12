@@ -6305,25 +6305,34 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 	})
 }
 
+// storage/integration_test.go
+
 func TestIntegration_ListBuckets(t *testing.T) {
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		projectID := testutil.ProjID()
+		newBucketsPrefix := prefix + "new-"
 
-		newBucketName := prefix + uidSpace.New()
-		bkt := client.Bucket(newBucketName)
-
-		h.mustCreate(bkt, projectID, nil)
-		t.Cleanup(func() { h.mustDeleteBucket(bkt) })
+		// Create two buckets to force pagination with a page size of 1.
+		var bucketNames []string
+		for i := 0; i < 2; i++ {
+			newBucketName := newBucketsPrefix + uidSpace.New()
+			bkt := client.Bucket(newBucketName)
+			h.mustCreate(bkt, projectID, nil)
+			t.Cleanup(func() { h.mustDeleteBucket(bkt) })
+			bucketNames = append(bucketNames, newBucketName)
+		}
 
 		for _, partialSuccess := range []bool{true, false} {
 			t.Run(fmt.Sprintf("partialSuccess=%v", partialSuccess), func(t *testing.T) {
 				it := client.Buckets(ctx, projectID)
-				it.Prefix = newBucketName
+				it.Prefix = newBucketsPrefix
 				it.ReturnPartialSuccess = partialSuccess
 
-				var found bool
+				it.PageInfo().MaxSize = 1 // Force pagination.
+
+				var foundBuckets []string
 				for {
 					attrs, err := it.Next()
 					if err == iterator.Done {
@@ -6332,14 +6341,13 @@ func TestIntegration_ListBuckets(t *testing.T) {
 					if err != nil {
 						t.Fatalf("it.Next: %v", err)
 					}
-					if attrs.Name == newBucketName {
-						found = true
-					}
+					foundBuckets = append(foundBuckets, attrs.Name)
 				}
 
-				if !found {
-					t.Errorf("created bucket %q not found in list", newBucketName)
+				if len(foundBuckets) < len(bucketNames) {
+					t.Errorf("got %d buckets, want at least %d", len(foundBuckets), len(bucketNames))
 				}
+
 				if len(it.Unreachable()) > 0 {
 					t.Errorf("got unreachable buckets %v, want none", it.Unreachable())
 				}
