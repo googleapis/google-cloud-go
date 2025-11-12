@@ -364,16 +364,15 @@ func (c *vehicleGRPCClient) Close() error {
 }
 
 func (c *vehicleGRPCClient) CreateVehicle(ctx context.Context, req *fleetenginepb.CreateVehicleRequest, opts ...gax.CallOption) (*fleetenginepb.Vehicle, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+		if !seen["provider_id"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
+			seen["provider_id"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -391,16 +390,15 @@ func (c *vehicleGRPCClient) CreateVehicle(ctx context.Context, req *fleetenginep
 }
 
 func (c *vehicleGRPCClient) GetVehicle(ctx context.Context, req *fleetenginepb.GetVehicleRequest, opts ...gax.CallOption) (*fleetenginepb.Vehicle, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+		if !seen["provider_id"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
+			seen["provider_id"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -418,16 +416,15 @@ func (c *vehicleGRPCClient) GetVehicle(ctx context.Context, req *fleetenginepb.G
 }
 
 func (c *vehicleGRPCClient) DeleteVehicle(ctx context.Context, req *fleetenginepb.DeleteVehicleRequest, opts ...gax.CallOption) error {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+		if !seen["provider_id"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
+			seen["provider_id"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -441,16 +438,15 @@ func (c *vehicleGRPCClient) DeleteVehicle(ctx context.Context, req *fleetenginep
 }
 
 func (c *vehicleGRPCClient) UpdateVehicle(ctx context.Context, req *fleetenginepb.UpdateVehicleRequest, opts ...gax.CallOption) (*fleetenginepb.Vehicle, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+		if !seen["provider_id"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
+			seen["provider_id"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -468,16 +464,15 @@ func (c *vehicleGRPCClient) UpdateVehicle(ctx context.Context, req *fleetenginep
 }
 
 func (c *vehicleGRPCClient) UpdateVehicleAttributes(ctx context.Context, req *fleetenginepb.UpdateVehicleAttributesRequest, opts ...gax.CallOption) (*fleetenginepb.UpdateVehicleAttributesResponse, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+		if !seen["provider_id"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
+			seen["provider_id"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -495,16 +490,15 @@ func (c *vehicleGRPCClient) UpdateVehicleAttributes(ctx context.Context, req *fl
 }
 
 func (c *vehicleGRPCClient) ListVehicles(ctx context.Context, req *fleetenginepb.ListVehiclesRequest, opts ...gax.CallOption) *VehicleIterator {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+		if !seen["provider_id"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
+			seen["provider_id"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -550,16 +544,15 @@ func (c *vehicleGRPCClient) ListVehicles(ctx context.Context, req *fleetenginepb
 }
 
 func (c *vehicleGRPCClient) SearchVehicles(ctx context.Context, req *fleetenginepb.SearchVehiclesRequest, opts ...gax.CallOption) (*fleetenginepb.SearchVehiclesResponse, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+		if !seen["provider_id"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
+			seen["provider_id"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)

@@ -1039,16 +1039,15 @@ func (c *gRPCClient) Close() error {
 }
 
 func (c *gRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBucketRequest, opts ...gax.CallOption) error {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1062,16 +1061,15 @@ func (c *gRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBuck
 }
 
 func (c *gRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1089,19 +1087,21 @@ func (c *gRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequ
 }
 
 func (c *gRPCClient) CreateBucket(ctx context.Context, req *storagepb.CreateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+		if !seen["project"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "project", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
+			seen["project"] = true
+		}
 	}
 	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetBucket().GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetProject())[1])) > 0 {
-		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetProject())[1])
+		if !seen["project"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "project", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetProject())[1])))
+			seen["project"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1119,16 +1119,15 @@ func (c *gRPCClient) CreateBucket(ctx context.Context, req *storagepb.CreateBuck
 }
 
 func (c *gRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBucketsRequest, opts ...gax.CallOption) *BucketIterator {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+		if !seen["project"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "project", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
+			seen["project"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1174,16 +1173,15 @@ func (c *gRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBuckets
 }
 
 func (c *gRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.LockBucketRetentionPolicyRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1201,19 +1199,21 @@ func (c *gRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storage
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])))
+			seen["bucket"] = true
+		}
 	}
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1231,19 +1231,21 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 }
 
 func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])))
+			seen["bucket"] = true
+		}
 	}
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1261,22 +1263,27 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 }
 
 func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])))
+			seen["bucket"] = true
+		}
 	}
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)/objects(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])))
+			seen["bucket"] = true
+		}
 	}
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)/managedFolders(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1294,16 +1301,15 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 }
 
 func (c *gRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetName())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetName())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetName())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1321,16 +1327,15 @@ func (c *gRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBuck
 }
 
 func (c *gRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetDestination().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDestination().GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDestination().GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetDestination().GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1348,16 +1353,15 @@ func (c *gRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeOb
 }
 
 func (c *gRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest, opts ...gax.CallOption) error {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1371,16 +1375,15 @@ func (c *gRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObje
 }
 
 func (c *gRPCClient) RestoreObject(ctx context.Context, req *storagepb.RestoreObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1398,16 +1401,15 @@ func (c *gRPCClient) RestoreObject(ctx context.Context, req *storagepb.RestoreOb
 }
 
 func (c *gRPCClient) CancelResumableWrite(ctx context.Context, req *storagepb.CancelResumableWriteRequest, opts ...gax.CallOption) (*storagepb.CancelResumableWriteResponse, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetUploadId()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1425,16 +1427,15 @@ func (c *gRPCClient) CancelResumableWrite(ctx context.Context, req *storagepb.Ca
 }
 
 func (c *gRPCClient) GetObject(ctx context.Context, req *storagepb.GetObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1452,16 +1453,15 @@ func (c *gRPCClient) GetObject(ctx context.Context, req *storagepb.GetObjectRequ
 }
 
 func (c *gRPCClient) ReadObject(ctx context.Context, req *storagepb.ReadObjectRequest, opts ...gax.CallOption) (storagepb.Storage_ReadObjectClient, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1498,16 +1498,15 @@ func (c *gRPCClient) BidiReadObject(ctx context.Context, opts ...gax.CallOption)
 }
 
 func (c *gRPCClient) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetObject().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetObject().GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetObject().GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetObject().GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1559,16 +1558,15 @@ func (c *gRPCClient) BidiWriteObject(ctx context.Context, opts ...gax.CallOption
 }
 
 func (c *gRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjectsRequest, opts ...gax.CallOption) *ObjectIterator {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1614,19 +1612,21 @@ func (c *gRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjects
 }
 
 func (c *gRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteObjectRequest, opts ...gax.CallOption) (*storagepb.RewriteResponse, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetSourceBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetSourceBucket())[1])) > 0 {
-		routingHeadersMap["source_bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetSourceBucket())[1])
+		if !seen["source_bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "source_bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetSourceBucket())[1])))
+			seen["source_bucket"] = true
+		}
 	}
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetDestinationBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDestinationBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDestinationBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetDestinationBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1644,16 +1644,15 @@ func (c *gRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteOb
 }
 
 func (c *gRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest, opts ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetWriteObjectSpec().GetResource().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetWriteObjectSpec().GetResource().GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetWriteObjectSpec().GetResource().GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetWriteObjectSpec().GetResource().GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1671,16 +1670,15 @@ func (c *gRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.Sta
 }
 
 func (c *gRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest, opts ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetUploadId()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1698,16 +1696,15 @@ func (c *gRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryW
 }
 
 func (c *gRPCClient) MoveObject(ctx context.Context, req *storagepb.MoveObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
+	var routingHeaders []string
+	seen := make(map[string]bool)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+		if !seen["bucket"] {
+			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "bucket", url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])))
+			seen["bucket"] = true
+		}
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
