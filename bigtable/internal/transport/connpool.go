@@ -598,13 +598,9 @@ func (p *BigtableChannelPool) addConnections(n int) bool {
 
 	currentConns := p.getConns()
 	numCurrent := len(currentConns)
-	if numCurrent >= p.dynamicConfig.MaxConns {
-		return false
-	}
 
-	if numCurrent+n > p.dynamicConfig.MaxConns {
-		n = p.dynamicConfig.MaxConns - numCurrent
-	}
+	maxDelta := p.dynamicConfig.MaxConns - numCurrent
+	n = min(n, maxDelta)
 
 	if n <= 0 {
 		return false
