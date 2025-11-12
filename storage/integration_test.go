@@ -6320,6 +6320,7 @@ func TestIntegration_ListBuckets(t *testing.T) {
 		for _, partialSuccess := range []bool{true, false} {
 			t.Run(fmt.Sprintf("partialSuccess=%v", partialSuccess), func(t *testing.T) {
 				it := client.Buckets(ctx, projectID)
+				it.Prefix = newBucketName
 				it.ReturnPartialSuccess = partialSuccess
 
 				var found bool
