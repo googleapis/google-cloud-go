@@ -409,6 +409,9 @@ func (c *restClient) GetProduct(ctx context.Context, req *productspb.GetProductR
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

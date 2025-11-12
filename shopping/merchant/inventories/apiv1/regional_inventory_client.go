@@ -487,6 +487,9 @@ func (c *regionalInventoryRESTClient) ListRegionalInventories(ctx context.Contex
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetProductIdBase64UrlEncoded() {
+			params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -561,6 +564,9 @@ func (c *regionalInventoryRESTClient) InsertRegionalInventory(ctx context.Contex
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -615,6 +621,9 @@ func (c *regionalInventoryRESTClient) DeleteRegionalInventory(ctx context.Contex
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

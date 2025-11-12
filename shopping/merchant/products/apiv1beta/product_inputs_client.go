@@ -154,7 +154,6 @@ type internalProductInputsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service to use ProductInput resource.
-// This service works for products with online channel only.
 type ProductInputsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalProductInputsClient
@@ -187,13 +186,15 @@ func (c *ProductInputsClient) Connection() *grpc.ClientConn {
 }
 
 // InsertProductInput Uploads a product input to your Merchant Center
-// account (at /merchant/api/guides/products/overview#upload-product-input). You
-// must have a products data source to be able to insert a product. The unique
-// identifier of the data source is passed as a query parameter in the request
-// URL.
+// account (at /merchant/api/guides/products/add-manage#add_a_product). You
+// must have a products data
+// source (at /merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+// to be able to insert a product. The unique identifier of the data source is
+// passed as a query parameter in the request URL.
 //
-// If an input with the same contentLanguage, offerId, and dataSource already
-// exists, this method replaces that entry.
+// If a product input with the same contentLanguage, offerId, and dataSource
+// already exists, then the product input inserted by this method replaces
+// that entry.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
@@ -240,7 +241,6 @@ type productInputsGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to use ProductInput resource.
-// This service works for products with online channel only.
 func NewProductInputsClient(ctx context.Context, opts ...option.ClientOption) (*ProductInputsClient, error) {
 	clientOpts := defaultProductInputsGRPCClientOptions()
 	if newProductInputsClientHook != nil {
@@ -315,7 +315,6 @@ type productInputsRESTClient struct {
 // NewProductInputsRESTClient creates a new product inputs service rest client.
 //
 // Service to use ProductInput resource.
-// This service works for products with online channel only.
 func NewProductInputsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProductInputsClient, error) {
 	clientOpts := append(defaultProductInputsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -423,13 +422,15 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 }
 
 // InsertProductInput Uploads a product input to your Merchant Center
-// account (at /merchant/api/guides/products/overview#upload-product-input). You
-// must have a products data source to be able to insert a product. The unique
-// identifier of the data source is passed as a query parameter in the request
-// URL.
+// account (at /merchant/api/guides/products/add-manage#add_a_product). You
+// must have a products data
+// source (at /merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+// to be able to insert a product. The unique identifier of the data source is
+// passed as a query parameter in the request URL.
 //
-// If an input with the same contentLanguage, offerId, and dataSource already
-// exists, this method replaces that entry.
+// If a product input with the same contentLanguage, offerId, and dataSource
+// already exists, then the product input inserted by this method replaces
+// that entry.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
@@ -511,6 +512,9 @@ func (c *productInputsRESTClient) UpdateProductInput(ctx context.Context, req *p
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("dataSource", fmt.Sprintf("%v", req.GetDataSource()))
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 	if req.GetUpdateMask() != nil {
 		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -572,6 +576,9 @@ func (c *productInputsRESTClient) DeleteProductInput(ctx context.Context, req *p
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("dataSource", fmt.Sprintf("%v", req.GetDataSource()))
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

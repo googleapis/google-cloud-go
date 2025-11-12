@@ -158,17 +158,22 @@ func (c *RegionTargetHttpsProxiesClient) Get(ctx context.Context, req *computepb
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetHttpsProxy resource in the specified project and region
+// using the data included in the request.
 func (c *RegionTargetHttpsProxiesClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
+// List retrieves the list of TargetHttpsProxy resources available
+// to the specified project in the specified region.
 func (c *RegionTargetHttpsProxiesClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified regional TargetHttpsProxy resource with the data
+// included in the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *RegionTargetHttpsProxiesClient) Patch(ctx context.Context, req *computepb.PatchRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -386,7 +391,8 @@ func (c *regionTargetHttpsProxiesRESTClient) Get(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Insert creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetHttpsProxy resource in the specified project and region
+// using the data included in the request.
 func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
@@ -453,7 +459,8 @@ func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *co
 	return op, nil
 }
 
-// List retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
+// List retrieves the list of TargetHttpsProxy resources available
+// to the specified project in the specified region.
 func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	it := &TargetHttpsProxyIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionTargetHttpsProxiesRequest)
@@ -539,7 +546,10 @@ func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *comp
 	return it
 }
 
-// Patch patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified regional TargetHttpsProxy resource with the data
+// included in the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *regionTargetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()

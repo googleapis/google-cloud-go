@@ -59,7 +59,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_ProductInputsService_InsertProductInput_sync",
       "title": "merchantapi InsertProductInput Sample",
-      "description": "InsertProductInput [Uploads a product input to your Merchant Center\naccount](/merchant/api/guides/products/overview#upload-product-input). You\nmust have a products data source to be able to insert a product. The unique\nidentifier of the data source is passed as a query parameter in the request\nURL.\n\nIf an input with the same contentLanguage, offerId, and dataSource already\nexists, this method replaces that entry.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the processed product can be retrieved.",
+      "description": "InsertProductInput [Uploads a product input to your Merchant Center\naccount](/merchant/api/guides/products/add-manage#add_a_product). You\nmust have a products [data\nsource](/merchant/api/guides/data-sources/api-sources#create-primary-data-source)\nto be able to insert a product. The unique identifier of the data source is\npassed as a query parameter in the request URL.\n\nIf a product input with the same contentLanguage, offerId, and dataSource\nalready exists, then the product input inserted by this method replaces\nthat entry.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the processed product can be retrieved.",
       "file": "ProductInputsClient/InsertProductInput/main.go",
       "language": "GO",
       "clientMethod": {

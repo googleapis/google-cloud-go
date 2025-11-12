@@ -511,6 +511,9 @@ func (c *restClient) RenderProductIssues(ctx context.Context, req *issueresoluti
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 	if req.GetTimeZone() != "" {
 		params.Add("timeZone", fmt.Sprintf("%v", req.GetTimeZone()))
 	}

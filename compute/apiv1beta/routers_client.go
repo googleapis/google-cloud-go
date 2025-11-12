@@ -262,7 +262,10 @@ func (c *RoutersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of routers.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *RoutersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -302,7 +305,8 @@ func (c *RoutersClient) GetRouterStatus(ctx context.Context, req *computepb.GetR
 	return c.internalClient.GetRouterStatus(ctx, req, opts...)
 }
 
-// Insert creates a Router resource in the specified project and region using the data included in the request.
+// Insert creates a Router resource in the specified project and region using
+// the data included in the request.
 func (c *RoutersClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -317,12 +321,16 @@ func (c *RoutersClient) ListBgpRoutes(ctx context.Context, req *computepb.ListBg
 	return c.internalClient.ListBgpRoutes(ctx, req, opts...)
 }
 
-// ListRoutePolicies retrieves a list of router route policy subresources available to the specified project.
+// ListRoutePolicies retrieves a list of router route policy subresources available to the
+// specified project.
 func (c *RoutersClient) ListRoutePolicies(ctx context.Context, req *computepb.ListRoutePoliciesRoutersRequest, opts ...gax.CallOption) *RoutePolicyIterator {
 	return c.internalClient.ListRoutePolicies(ctx, req, opts...)
 }
 
-// Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified Router resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *RoutersClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -332,7 +340,8 @@ func (c *RoutersClient) PatchRoutePolicy(ctx context.Context, req *computepb.Pat
 	return c.internalClient.PatchRoutePolicy(ctx, req, opts...)
 }
 
-// Preview preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
+// Preview preview fields auto-generated during router create andupdate operations.
+// Calling this method does NOT create or update the router.
 func (c *RoutersClient) Preview(ctx context.Context, req *computepb.PreviewRouterRequest, opts ...gax.CallOption) (*computepb.RoutersPreviewResponse, error) {
 	return c.internalClient.Preview(ctx, req, opts...)
 }
@@ -342,7 +351,10 @@ func (c *RoutersClient) TestIamPermissions(ctx context.Context, req *computepb.T
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
+// Update updates the specified Router resource with the data included in the
+// request.  This method conforms toPUT semantics, which requests that the state of the
+// target resource be created or replaced with the state defined by the
+// representation enclosed in the request message payload.
 func (c *RoutersClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -445,7 +457,10 @@ func (c *routersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of routers.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	it := &RoutersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRoutersRequest)
@@ -950,7 +965,8 @@ func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.
 	return resp, nil
 }
 
-// Insert creates a Router resource in the specified project and region using the data included in the request.
+// Insert creates a Router resource in the specified project and region using
+// the data included in the request.
 func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
@@ -1204,7 +1220,8 @@ func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// ListRoutePolicies retrieves a list of router route policy subresources available to the specified project.
+// ListRoutePolicies retrieves a list of router route policy subresources available to the
+// specified project.
 func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computepb.ListRoutePoliciesRoutersRequest, opts ...gax.CallOption) *RoutePolicyIterator {
 	it := &RoutePolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListRoutePoliciesRoutersRequest)
@@ -1290,7 +1307,10 @@ func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computep
 	return it
 }
 
-// Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified Router resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
@@ -1424,7 +1444,8 @@ func (c *routersRESTClient) PatchRoutePolicy(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// Preview preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
+// Preview preview fields auto-generated during router create andupdate operations.
+// Calling this method does NOT create or update the router.
 func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewRouterRequest, opts ...gax.CallOption) (*computepb.RoutersPreviewResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
@@ -1528,7 +1549,10 @@ func (c *routersRESTClient) TestIamPermissions(ctx context.Context, req *compute
 	return resp, nil
 }
 
-// Update updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
+// Update updates the specified Router resource with the data included in the
+// request.  This method conforms toPUT semantics, which requests that the state of the
+// target resource be created or replaced with the state defined by the
+// representation enclosed in the request message payload.
 func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()

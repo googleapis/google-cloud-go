@@ -45,13 +45,15 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductInputsServiceClient interface {
 	// [Uploads a product input to your Merchant Center
-	// account](/merchant/api/guides/products/overview#upload-product-input). You
-	// must have a products data source to be able to insert a product. The unique
-	// identifier of the data source is passed as a query parameter in the request
-	// URL.
+	// account](/merchant/api/guides/products/add-manage#add_a_product). You
+	// must have a products [data
+	// source](/merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+	// to be able to insert a product. The unique identifier of the data source is
+	// passed as a query parameter in the request URL.
 	//
-	// If an input with the same contentLanguage, offerId, and dataSource already
-	// exists, this method replaces that entry.
+	// If a product input with the same contentLanguage, offerId, and dataSource
+	// already exists, then the product input inserted by this method replaces
+	// that entry.
 	//
 	// After inserting, updating, or deleting a product input, it may take several
 	// minutes before the processed product can be retrieved.
@@ -108,13 +110,15 @@ func (c *productInputsServiceClient) DeleteProductInput(ctx context.Context, in 
 // for forward compatibility
 type ProductInputsServiceServer interface {
 	// [Uploads a product input to your Merchant Center
-	// account](/merchant/api/guides/products/overview#upload-product-input). You
-	// must have a products data source to be able to insert a product. The unique
-	// identifier of the data source is passed as a query parameter in the request
-	// URL.
+	// account](/merchant/api/guides/products/add-manage#add_a_product). You
+	// must have a products [data
+	// source](/merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+	// to be able to insert a product. The unique identifier of the data source is
+	// passed as a query parameter in the request URL.
 	//
-	// If an input with the same contentLanguage, offerId, and dataSource already
-	// exists, this method replaces that entry.
+	// If a product input with the same contentLanguage, offerId, and dataSource
+	// already exists, then the product input inserted by this method replaces
+	// that entry.
 	//
 	// After inserting, updating, or deleting a product input, it may take several
 	// minutes before the processed product can be retrieved.

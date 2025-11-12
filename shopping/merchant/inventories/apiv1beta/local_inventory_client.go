@@ -484,6 +484,9 @@ func (c *localInventoryRESTClient) ListLocalInventories(ctx context.Context, req
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetProductIdBase64UrlEncoded() {
+			params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -558,6 +561,9 @@ func (c *localInventoryRESTClient) InsertLocalInventory(ctx context.Context, req
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -612,6 +618,9 @@ func (c *localInventoryRESTClient) DeleteLocalInventory(ctx context.Context, req
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetProductIdBase64UrlEncoded() {
+		params.Add("productIdBase64UrlEncoded", fmt.Sprintf("%v", req.GetProductIdBase64UrlEncoded()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
