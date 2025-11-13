@@ -3,10 +3,6 @@
 
 ## [1.57.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.57.2) (2025-11-13)
 
-### Features
-
-* make return_partial_success and unreachable fields public for list Bucket ([93ca68d](https://github.com/googleapis/google-cloud-go/commit/93ca68d54b6d213f22e0d67ae01d135cf26d37c6))
-
 ### Bug Fixes
 
 * add env var to allow disabling bound token (#13236) ([cdaf6a6](https://github.com/googleapis/google-cloud-go/commit/cdaf6a6da006a19db932a74885ea3722b4e42311))
