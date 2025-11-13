@@ -500,15 +500,16 @@ func (c *servicesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *servicesGRPCClient) CreateService(ctx context.Context, req *runpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -528,15 +529,16 @@ func (c *servicesGRPCClient) CreateService(ctx context.Context, req *runpb.Creat
 }
 
 func (c *servicesGRPCClient) GetService(ctx context.Context, req *runpb.GetServiceRequest, opts ...gax.CallOption) (*runpb.Service, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -554,15 +556,16 @@ func (c *servicesGRPCClient) GetService(ctx context.Context, req *runpb.GetServi
 }
 
 func (c *servicesGRPCClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -608,15 +611,16 @@ func (c *servicesGRPCClient) ListServices(ctx context.Context, req *runpb.ListSe
 }
 
 func (c *servicesGRPCClient) UpdateService(ctx context.Context, req *runpb.UpdateServiceRequest, opts ...gax.CallOption) (*UpdateServiceOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetService().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetService().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetService().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetService().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -636,15 +640,16 @@ func (c *servicesGRPCClient) UpdateService(ctx context.Context, req *runpb.Updat
 }
 
 func (c *servicesGRPCClient) DeleteService(ctx context.Context, req *runpb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -838,15 +843,16 @@ func (c *servicesRESTClient) CreateService(ctx context.Context, req *runpb.Creat
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -899,15 +905,16 @@ func (c *servicesRESTClient) GetService(ctx context.Context, req *runpb.GetServi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1058,15 +1065,16 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *runpb.Updat
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetService().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetService().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetService().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetService().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1127,15 +1135,16 @@ func (c *servicesRESTClient) DeleteService(ctx context.Context, req *runpb.Delet
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")

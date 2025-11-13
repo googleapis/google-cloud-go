@@ -458,15 +458,16 @@ func (c *jobsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *jobsGRPCClient) CreateJob(ctx context.Context, req *runpb.CreateJobRequest, opts ...gax.CallOption) (*CreateJobOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -486,15 +487,16 @@ func (c *jobsGRPCClient) CreateJob(ctx context.Context, req *runpb.CreateJobRequ
 }
 
 func (c *jobsGRPCClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, opts ...gax.CallOption) (*runpb.Job, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -512,15 +514,16 @@ func (c *jobsGRPCClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, o
 }
 
 func (c *jobsGRPCClient) ListJobs(ctx context.Context, req *runpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -566,15 +569,16 @@ func (c *jobsGRPCClient) ListJobs(ctx context.Context, req *runpb.ListJobsReques
 }
 
 func (c *jobsGRPCClient) UpdateJob(ctx context.Context, req *runpb.UpdateJobRequest, opts ...gax.CallOption) (*UpdateJobOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetJob().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetJob().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetJob().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetJob().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -594,15 +598,16 @@ func (c *jobsGRPCClient) UpdateJob(ctx context.Context, req *runpb.UpdateJobRequ
 }
 
 func (c *jobsGRPCClient) DeleteJob(ctx context.Context, req *runpb.DeleteJobRequest, opts ...gax.CallOption) (*DeleteJobOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -622,15 +627,16 @@ func (c *jobsGRPCClient) DeleteJob(ctx context.Context, req *runpb.DeleteJobRequ
 }
 
 func (c *jobsGRPCClient) RunJob(ctx context.Context, req *runpb.RunJobRequest, opts ...gax.CallOption) (*RunJobOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -824,15 +830,16 @@ func (c *jobsRESTClient) CreateJob(ctx context.Context, req *runpb.CreateJobRequ
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -885,15 +892,16 @@ func (c *jobsRESTClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, o
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1037,15 +1045,16 @@ func (c *jobsRESTClient) UpdateJob(ctx context.Context, req *runpb.UpdateJobRequ
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetJob().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetJob().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetJob().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetJob().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1104,15 +1113,16 @@ func (c *jobsRESTClient) DeleteJob(ctx context.Context, req *runpb.DeleteJobRequ
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1171,15 +1181,16 @@ func (c *jobsRESTClient) RunJob(ctx context.Context, req *runpb.RunJobRequest, o
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")

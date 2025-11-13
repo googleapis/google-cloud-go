@@ -834,27 +834,22 @@ func (c *gRPCClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 }
 
 func (c *gRPCClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb.CreateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -922,27 +917,22 @@ func (c *gRPCClient) DeleteBigQueryExport(ctx context.Context, req *securitycent
 }
 
 func (c *gRPCClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb.DeleteMuteConfigRequest, opts ...gax.CallOption) error {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1056,27 +1046,22 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 }
 
 func (c *gRPCClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.GetMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1332,27 +1317,22 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 }
 
 func (c *gRPCClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.ListMuteConfigsRequest, opts ...gax.CallOption) *MuteConfigIterator {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/muteConfigs"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)/muteConfigs"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)/muteConfigs"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1708,27 +1688,22 @@ func (c *gRPCClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 }
 
 func (c *gRPCClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb.UpdateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetMuteConfig().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetMuteConfig().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetMuteConfig().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -2167,27 +2142,22 @@ func (c *restClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2388,27 +2358,22 @@ func (c *restClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2721,27 +2686,22 @@ func (c *restClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.Ge
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -4132,27 +4092,22 @@ func (c *restClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetMuteConfig().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])
 	}
 	if reg := regexp.MustCompile("organizations/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetMuteConfig().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])
 	}
 	if reg := regexp.MustCompile("folders/[^/]+/locations/(?P<location>[^/]+)/muteConfigs/[^/]+"); reg.MatchString(req.GetMuteConfig().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetMuteConfig().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")

@@ -442,15 +442,16 @@ func (c *workerPoolsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *workerPoolsGRPCClient) CreateWorkerPool(ctx context.Context, req *runpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*CreateWorkerPoolOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -470,15 +471,16 @@ func (c *workerPoolsGRPCClient) CreateWorkerPool(ctx context.Context, req *runpb
 }
 
 func (c *workerPoolsGRPCClient) GetWorkerPool(ctx context.Context, req *runpb.GetWorkerPoolRequest, opts ...gax.CallOption) (*runpb.WorkerPool, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -496,15 +498,16 @@ func (c *workerPoolsGRPCClient) GetWorkerPool(ctx context.Context, req *runpb.Ge
 }
 
 func (c *workerPoolsGRPCClient) ListWorkerPools(ctx context.Context, req *runpb.ListWorkerPoolsRequest, opts ...gax.CallOption) *WorkerPoolIterator {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -550,15 +553,16 @@ func (c *workerPoolsGRPCClient) ListWorkerPools(ctx context.Context, req *runpb.
 }
 
 func (c *workerPoolsGRPCClient) UpdateWorkerPool(ctx context.Context, req *runpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*UpdateWorkerPoolOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetWorkerPool().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetWorkerPool().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetWorkerPool().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetWorkerPool().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -578,15 +582,16 @@ func (c *workerPoolsGRPCClient) UpdateWorkerPool(ctx context.Context, req *runpb
 }
 
 func (c *workerPoolsGRPCClient) DeleteWorkerPool(ctx context.Context, req *runpb.DeleteWorkerPoolRequest, opts ...gax.CallOption) (*DeleteWorkerPoolOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -780,15 +785,16 @@ func (c *workerPoolsRESTClient) CreateWorkerPool(ctx context.Context, req *runpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -841,15 +847,16 @@ func (c *workerPoolsRESTClient) GetWorkerPool(ctx context.Context, req *runpb.Ge
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1003,15 +1010,16 @@ func (c *workerPoolsRESTClient) UpdateWorkerPool(ctx context.Context, req *runpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetWorkerPool().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetWorkerPool().GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetWorkerPool().GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetWorkerPool().GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1070,15 +1078,16 @@ func (c *workerPoolsRESTClient) DeleteWorkerPool(ctx context.Context, req *runpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["location"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "location", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["location"] = true
-		}
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
