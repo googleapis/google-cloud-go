@@ -1,10 +1,10 @@
 {
   "api_shortname": "dataproc",
-  "distribution_name": "cloud.google.com/go/dataproc/v2/apiv1",
-  "description": "Cloud Dataproc API",
-  "language": "go",
-  "client_library_type": "generated",
   "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/dataproc/v2/latest/apiv1",
-  "release_level": "stable",
-  "library_type": "GAPIC_AUTO"
+  "client_library_type": "generated",
+  "description": "Cloud Dataproc API",
+  "distribution_name": "cloud.google.com/go/dataproc/v2/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "stable"
 }

@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.109.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.109.0) (2025-11-06)
+
+### Features
+
+* Add EmbedContent method v1 ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* Add order_by to list_events ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add new fields `SUCCESSFULLY_DEPLOYED` and `FAILED_TO_DEPLOY` to `DeploymentStage` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
+### Bug Fixes
+
+* An existing field `transfer_to_agent` is removed from message `.google.cloud.aiplatform.v1beta1.EventActions` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* updating `bigtable_metadata` field name in `FeatureOnlineStore` ([89b5ea2](https://github.com/googleapis/google-cloud-go/commit/89b5ea2fff81893da7181da4e1bab8e4815d326c))
+* updating `bigtable_metadata` field name in `FeatureView` ([89b5ea2](https://github.com/googleapis/google-cloud-go/commit/89b5ea2fff81893da7181da4e1bab8e4815d326c))
+* updating `enableDirectBigtableAccess` field name in FeatureOnlineStore` ([89b5ea2](https://github.com/googleapis/google-cloud-go/commit/89b5ea2fff81893da7181da4e1bab8e4815d326c))
+
+### Documentation
+
+* A comment for field `filter` in message `.google.cloud.aiplatform.v1beta1.ListSessionsRequest` is changed ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* Remove comments for a non public feature ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* fix idle_scaledown_period minimum from 3600 to 300 (5 minutes) ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [1.108.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.108.0) (2025-10-22)
 
 ### Features

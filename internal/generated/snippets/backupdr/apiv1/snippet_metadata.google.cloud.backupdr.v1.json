@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/backupdr/apiv1",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "language": "GO",
     "apis": [
       {
@@ -546,6 +546,52 @@
         "method": {
           "shortName": "FetchBackupPlanAssociationsForResourceType",
           "fullName": "google.cloud.backupdr.v1.BackupDR.FetchBackupPlanAssociationsForResourceType",
+          "service": {
+            "shortName": "BackupDR",
+            "fullName": "google.cloud.backupdr.v1.BackupDR"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "backupdr_v1_generated_BackupDR_FetchBackupsForResourceType_sync",
+      "title": "backupdr FetchBackupsForResourceType Sample",
+      "description": "FetchBackupsForResourceType fetch Backups for a given resource type.",
+      "file": "Client/FetchBackupsForResourceType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchBackupsForResourceType",
+        "fullName": "google.cloud.backupdr.v1.Client.FetchBackupsForResourceType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "backupdrpb.FetchBackupsForResourceTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.backupdr.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchBackupsForResourceType",
+          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchBackupsForResourceType",
           "service": {
             "shortName": "BackupDR",
             "fullName": "google.cloud.backupdr.v1.BackupDR"
@@ -1420,6 +1466,52 @@
         "method": {
           "shortName": "ListBackups",
           "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackups",
+          "service": {
+            "shortName": "BackupDR",
+            "fullName": "google.cloud.backupdr.v1.BackupDR"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "backupdr_v1_generated_BackupDR_ListDataSourceReferences_sync",
+      "title": "backupdr ListDataSourceReferences Sample",
+      "description": "ListDataSourceReferences lists DataSourceReferences for a given project and location.",
+      "file": "Client/ListDataSourceReferences/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataSourceReferences",
+        "fullName": "google.cloud.backupdr.v1.Client.ListDataSourceReferences",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "backupdrpb.ListDataSourceReferencesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataSourceReferenceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.backupdr.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDataSourceReferences",
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListDataSourceReferences",
           "service": {
             "shortName": "BackupDR",
             "fullName": "google.cloud.backupdr.v1.BackupDR"

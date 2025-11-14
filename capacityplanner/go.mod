@@ -3,7 +3,7 @@ module cloud.google.com/go/capacityplanner
 go 1.24.0
 
 require (
-	cloud.google.com/go/longrunning v0.6.7
+	cloud.google.com/go/longrunning v0.7.0
 	github.com/googleapis/gax-go/v2 v2.15.0
 	google.golang.org/api v0.249.0
 	google.golang.org/genproto v0.0.0-20250908214217-97024824d090
@@ -13,7 +13,7 @@ require (
 )
 
 require (
-	cloud.google.com/go v0.120.0 // indirect
+	cloud.google.com/go v0.121.6 // indirect
 	cloud.google.com/go/auth v0.16.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.8.0 // indirect

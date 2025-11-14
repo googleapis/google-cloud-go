@@ -1,5 +1,28 @@
 # Changes
 
+## [1.71.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.71.0) (2025-11-06)
+
+### Features
+
+* A new field &#39;security_settings&#39; is added to GenerateStatelessSuggestionRequest ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Added Vertex extension tool support to v2/v2beta1 ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Added support for AI Coach feature ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Added support for Build Your Own Assist feature ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Added tool support for AI Coach feature ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Context references added to conversation for dynamic data ingestion ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Expose debug info field in ConversationProfile ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Expose flexible safety filter change, rai_settings in ConversationProfile ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Expose skip_empty_event_based_suggestion in ConversationProfile ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Improved generator quota management ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* add Agent Assist Generator Evaluation feature ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* add a turn complete signal to BidiStreamingAnalyzeContent ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+
+### Documentation
+
+* Updated comments for the `SuggestionInput` message, documenting how it is used with tools ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* minor formatting ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* update documentation for transcription language code configuration ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+
 ## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.69.1...dialogflow/v1.70.0) (2025-10-13)
 
 
