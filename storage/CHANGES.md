@@ -3,10 +3,6 @@
 
 ## [1.57.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.57.2) (2025-11-14)
 
-### Features
-
-* make return_partial_success and unreachable fields public for list Bucket ([93ca68d](https://github.com/googleapis/google-cloud-go/commit/93ca68d54b6d213f22e0d67ae01d135cf26d37c6))
-
 ### Bug Fixes
 
 * Handle redirect on takeover. (#13354) ([b0f1362](https://github.com/googleapis/google-cloud-go/commit/b0f136268be1e4c629e288353bc277549ac5c663))
