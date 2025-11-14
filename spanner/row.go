@@ -573,9 +573,9 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, leni
 			if !lenient {
 				return nil, nil, nil, errNoOrDupGoField(sliceItem, colName.GetName())
 			}
-			fieldVal := sliceItem.FieldByName(colName.GetName())
-			if fieldVal.IsValid() && fieldVal.CanSet() {
-				if structField, okField := sliceItem.Type().FieldByName(colName.GetName()); okField {
+			if structField, okField := sliceItem.Type().FieldByName(colName.GetName()); okField {
+				fieldVal := sliceItem.FieldByIndex(structField.Index)
+				if fieldVal.CanSet() {
 					info = fieldInfo{value: fieldVal, indexPath: append([]int(nil), structField.Index...)}
 				}
 			}
