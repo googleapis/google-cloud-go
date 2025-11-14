@@ -27,7 +27,7 @@
 # We mark the librarian state file as unowned to avoid gatekeeping librarian operations on 
 # a single owner.  This allows multiple teams to interact with librarian operations that cause
 # changes to librarian state.
-/.library/state.yaml
+/.librarian/state.yaml
 
 # Owned by all
 go.work
