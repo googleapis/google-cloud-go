@@ -2296,9 +2296,9 @@ func TestSelectAll(t *testing.T) {
 		Col4 int64 `spanner:"tag4"`
 	}
 	type Address struct {
-		Street  string `spanner:"ZipCode"`
-		ZipCode string `spanner:"Street"`
-		City    string `spanner:"City"`
+		AddressZip    string `spanner:"ZipCode"`
+		AddressStreet string `spanner:"Street"`
+		AddressCity   string `spanner:"City"`
 	}
 
 	type Person struct {
@@ -2796,18 +2796,18 @@ func TestSelectAll(t *testing.T) {
 				{
 					Name: "Name1",
 					Address: Address{
-						Street:  "ZipCode1",
-						ZipCode: "Street1",
-						City:    "City1",
+						AddressZip:    "ZipCode1",
+						AddressStreet: "Street1",
+						AddressCity:   "City1",
 					},
 					BirthDate: civil.Date{Year: 2000, Month: 11, Day: 14},
 				},
 				{
 					Name: "Name2",
 					Address: Address{
-						Street:  "ZipCode2",
-						ZipCode: "Street2",
-						City:    "City2",
+						AddressZip:    "ZipCode2",
+						AddressStreet: "Street2",
+						AddressCity:   "City2",
 					},
 					BirthDate: civil.Date{Year: 2001, Month: 11, Day: 14},
 				},
