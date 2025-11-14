@@ -25,26 +25,35 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // Helper for running queries in BigQuery. It is a lightweight wrapper
 // around the auto-generated BigQuery v2 client, focused on query operations.
 type Helper struct {
-	c         *apiv2_client.Client
-	projectID string
+	c               *apiv2_client.Client
+	projectID       string
+	location        *wrapperspb.StringValue
+	jobCreationMode bigquerypb.QueryRequest_JobCreationMode
 }
 
 // NewHelper creates a new query helper. This helper should be reused instead of
 // created per-request.
 func NewHelper(c *apiv2_client.Client, projectID string, opts ...option.ClientOption) (*Helper, error) {
-	qc := &Helper{
-		c:         c,
-		projectID: projectID,
+	qh := &Helper{
+		c:               c,
+		projectID:       projectID,
+		jobCreationMode: bigquerypb.QueryRequest_JOB_CREATION_MODE_UNSPECIFIED,
 	}
-	if qc.c == nil {
+	if qh.c == nil {
 		return nil, errors.New("missing bigquery client")
 	}
-	return qc, nil
+	for _, opt := range opts {
+		if cOpt, ok := opt.(*customClientOption); ok {
+			cOpt.ApplyCustomClientOpt(qh)
+		}
+	}
+	return qh, nil
 }
 
 // StartQuery executes a query using the stateless jobs.query RPC. It returns a
@@ -58,6 +67,15 @@ func (h *Helper) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 	}
 	if qr.GetRequestId() == "" {
 		qr.RequestId = uid.NewSpace("request", nil).New()
+	}
+	if qr.GetJobCreationMode() == bigquerypb.QueryRequest_JOB_CREATION_MODE_UNSPECIFIED {
+		qr.JobCreationMode = h.jobCreationMode
+	}
+	if qr.GetLocation() == "" && h.location != nil {
+		qr.Location = h.location.GetValue()
+	}
+	if req.GetProjectId() == "" {
+		req.ProjectId = h.projectID
 	}
 
 	return newQueryJobFromQueryRequest(ctx, h, req, opts...), nil
@@ -85,6 +103,9 @@ func (h *Helper) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 	}
 	if jobRef.GetProjectId() == "" {
 		jobRef.ProjectId = h.projectID
+	}
+	if jobRef.GetLocation() == nil {
+		jobRef.Location = h.location
 	}
 
 	return newQueryJobFromJob(ctx, h, h.projectID, job, opts...), nil
