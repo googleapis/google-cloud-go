@@ -26,6 +26,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -36,6 +37,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	DataChatService_Chat_FullMethodName               = "/google.cloud.geminidataanalytics.v1beta.DataChatService/Chat"
 	DataChatService_CreateConversation_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataChatService/CreateConversation"
+	DataChatService_DeleteConversation_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataChatService/DeleteConversation"
 	DataChatService_GetConversation_FullMethodName    = "/google.cloud.geminidataanalytics.v1beta.DataChatService/GetConversation"
 	DataChatService_ListConversations_FullMethodName  = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListConversations"
 	DataChatService_ListMessages_FullMethodName       = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListMessages"
@@ -51,6 +53,8 @@ type DataChatServiceClient interface {
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
+	// Deletes a conversation.
+	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
 	// Lists all conversations for a given parent.
@@ -108,6 +112,15 @@ func (c *dataChatServiceClient) CreateConversation(ctx context.Context, in *Crea
 	return out, nil
 }
 
+func (c *dataChatServiceClient) DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, DataChatService_DeleteConversation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataChatServiceClient) GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error) {
 	out := new(Conversation)
 	err := c.cc.Invoke(ctx, DataChatService_GetConversation_FullMethodName, in, out, opts...)
@@ -145,6 +158,8 @@ type DataChatServiceServer interface {
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error)
+	// Deletes a conversation.
+	DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error)
 	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(context.Context, *GetConversationRequest) (*Conversation, error)
 	// Lists all conversations for a given parent.
@@ -162,6 +177,9 @@ func (UnimplementedDataChatServiceServer) Chat(*ChatRequest, DataChatService_Cha
 }
 func (UnimplementedDataChatServiceServer) CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConversation not implemented")
+}
+func (UnimplementedDataChatServiceServer) DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteConversation not implemented")
 }
 func (UnimplementedDataChatServiceServer) GetConversation(context.Context, *GetConversationRequest) (*Conversation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConversation not implemented")
@@ -219,6 +237,24 @@ func _DataChatService_CreateConversation_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataChatServiceServer).CreateConversation(ctx, req.(*CreateConversationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataChatService_DeleteConversation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteConversationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataChatServiceServer).DeleteConversation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataChatService_DeleteConversation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataChatServiceServer).DeleteConversation(ctx, req.(*DeleteConversationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -287,6 +323,10 @@ var DataChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateConversation",
 			Handler:    _DataChatService_CreateConversation_Handler,
+		},
+		{
+			MethodName: "DeleteConversation",
+			Handler:    _DataChatService_DeleteConversation_Handler,
 		},
 		{
 			MethodName: "GetConversation",
