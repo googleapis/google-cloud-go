@@ -2753,40 +2753,40 @@ func TestSelectAll(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "failure: nested unnamed structs",
+			name: "success: nested unnamed structs",
 			args: args{
 				destination: &[]*PersonEmbedded{},
 				mock: newMockIterator(
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Name", Type: stringType()},
-							{Name: "Street", Type: stringType()},
-							{Name: "ZipCode", Type: stringType()},
 							{Name: "City", Type: stringType()},
+							{Name: "Street", Type: stringType()},
 							{Name: "BirthDate", Type: dateType()},
+							{Name: "ZipCode", Type: stringType()},
 						},
 						[]*proto3.Value{
 							stringProto("Name1"),
-							stringProto("Street1"),
-							stringProto("ZipCode1"),
 							stringProto("City1"),
+							stringProto("Street1"),
 							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
+							stringProto("ZipCode1"),
 						},
 					},
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Name", Type: stringType()},
-							{Name: "Street", Type: stringType()},
-							{Name: "ZipCode", Type: stringType()},
 							{Name: "City", Type: stringType()},
+							{Name: "Street", Type: stringType()},
 							{Name: "BirthDate", Type: dateType()},
+							{Name: "ZipCode", Type: stringType()},
 						},
 						[]*proto3.Value{
 							stringProto("Name2"),
-							stringProto("Street2"),
-							stringProto("ZipCode2"),
 							stringProto("City2"),
+							stringProto("Street2"),
 							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
+							stringProto("ZipCode2"),
 						},
 					},
 					iterator.Done,
