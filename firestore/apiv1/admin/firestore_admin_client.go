@@ -1642,21 +1642,19 @@ func (c *firestoreAdminGRPCClient) DeleteBackupSchedule(ctx context.Context, req
 }
 
 func (c *firestoreAdminGRPCClient) CloneDatabase(ctx context.Context, req *adminpb.CloneDatabaseRequest, opts ...gax.CallOption) (*CloneDatabaseOperation, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
-		if !seen["project_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "project_id", url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])))
-			seen["project_id"] = true
-		}
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
 	}
 	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
-		if !seen["database_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "database_id", url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])))
-			seen["database_id"] = true
-		}
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -3572,21 +3570,19 @@ func (c *firestoreAdminRESTClient) CloneDatabase(ctx context.Context, req *admin
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
-		if !seen["project_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "project_id", url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])))
-			seen["project_id"] = true
-		}
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
 	}
 	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
-		if !seen["database_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "database_id", url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])))
-			seen["database_id"] = true
-		}
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")

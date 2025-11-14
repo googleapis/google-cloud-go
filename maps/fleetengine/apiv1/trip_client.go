@@ -278,15 +278,16 @@ func (c *tripGRPCClient) Close() error {
 }
 
 func (c *tripGRPCClient) CreateTrip(ctx context.Context, req *fleetenginepb.CreateTripRequest, opts ...gax.CallOption) (*fleetenginepb.Trip, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["provider_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["provider_id"] = true
-		}
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -304,15 +305,16 @@ func (c *tripGRPCClient) CreateTrip(ctx context.Context, req *fleetenginepb.Crea
 }
 
 func (c *tripGRPCClient) GetTrip(ctx context.Context, req *fleetenginepb.GetTripRequest, opts ...gax.CallOption) (*fleetenginepb.Trip, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["provider_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["provider_id"] = true
-		}
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -330,15 +332,16 @@ func (c *tripGRPCClient) GetTrip(ctx context.Context, req *fleetenginepb.GetTrip
 }
 
 func (c *tripGRPCClient) DeleteTrip(ctx context.Context, req *fleetenginepb.DeleteTripRequest, opts ...gax.CallOption) error {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["provider_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["provider_id"] = true
-		}
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -352,15 +355,16 @@ func (c *tripGRPCClient) DeleteTrip(ctx context.Context, req *fleetenginepb.Dele
 }
 
 func (c *tripGRPCClient) ReportBillableTrip(ctx context.Context, req *fleetenginepb.ReportBillableTripRequest, opts ...gax.CallOption) error {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["provider_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["provider_id"] = true
-		}
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -374,15 +378,16 @@ func (c *tripGRPCClient) ReportBillableTrip(ctx context.Context, req *fleetengin
 }
 
 func (c *tripGRPCClient) SearchTrips(ctx context.Context, req *fleetenginepb.SearchTripsRequest, opts ...gax.CallOption) *TripIterator {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		if !seen["provider_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])))
-			seen["provider_id"] = true
-		}
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -428,15 +433,16 @@ func (c *tripGRPCClient) SearchTrips(ctx context.Context, req *fleetenginepb.Sea
 }
 
 func (c *tripGRPCClient) UpdateTrip(ctx context.Context, req *fleetenginepb.UpdateTripRequest, opts ...gax.CallOption) (*fleetenginepb.Trip, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
-		if !seen["provider_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "provider_id", url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])))
-			seen["provider_id"] = true
-		}
+		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
