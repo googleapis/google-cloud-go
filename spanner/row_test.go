@@ -2288,11 +2288,30 @@ func TestSelectAll(t *testing.T) {
 		Col3 string    `spanner:"taG3"`
 		Col4 time.Time `spanner:"TAG4"`
 	}
+
+	type Address struct {
+		Street  string
+		ZipCode string
+		City    string
+	}
+
+	type Person struct {
+		Name      string
+		Address   Address
+		BirthDate civil.Date
+	}
+	type PersonEmbedded struct {
+		Name string
+		Address
+		BirthDate civil.Date
+	}
+
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-		want    interface{}
+		name      string
+		args      args
+		wantErr   bool
+		wantPanic bool
+		want      interface{}
 	}{
 		{
 			name: "success: using slice of primitives",
@@ -2612,9 +2631,101 @@ func TestSelectAll(t *testing.T) {
 			want:    &[]int64{},
 			wantErr: true,
 		},
+		{
+			name: "failure: nested named structs",
+			args: args{
+				destination: &[]*Person{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "ZipCode", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name1"),
+							stringProto("Street1"),
+							stringProto("ZipCode1"),
+							stringProto("City1"),
+							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
+						},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "ZipCode", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name2"),
+							stringProto("Street2"),
+							stringProto("ZipCode2"),
+							stringProto("City2"),
+							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
+						},
+					},
+					iterator.Done,
+				),
+			},
+			want:    &[]*Person{},
+			wantErr: true,
+		},
+		{
+			name: "failure: nested unnamed structs",
+			args: args{
+				destination: &[]*PersonEmbedded{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "ZipCode", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name1"),
+							stringProto("Street1"),
+							stringProto("ZipCode1"),
+							stringProto("City1"),
+							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
+						},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "ZipCode", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name2"),
+							stringProto("Street2"),
+							stringProto("ZipCode2"),
+							stringProto("City2"),
+							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
+						},
+					},
+					iterator.Done,
+				),
+			},
+			wantPanic: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantPanic {
+				defer func() {
+					if r := recover(); r == nil {
+						t.Error("SelectAll() did not panic")
+					}
+				}()
+			}
 			mockIterator := tt.args.mock
 			if err := SelectAll(mockIterator, tt.args.destination, tt.args.options...); (err != nil) != tt.wantErr {
 				t.Errorf("SelectAll() error = %v, wantErr %v", err, tt.wantErr)
