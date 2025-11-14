@@ -183,9 +183,23 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	var connPoolErr error
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	if enableBigtableConnPool {
-		connPool, connPoolErr = btransport.NewBigtableChannelPool(defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), func() (*grpc.ClientConn, error) {
-			return gtransport.Dial(ctx, o...)
-		})
+		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
+		connPool, connPoolErr = btransport.NewBigtableChannelPool(ctx,
+			defaultBigtableConnPoolSize,
+			btopt.LeastInFlight,
+			func() (*btransport.BigtableConn, error) {
+				grpcConn, err := gtransport.Dial(ctx, o...)
+				if err != nil {
+					return nil, err
+				}
+				return btransport.NewBigtableConn(grpcConn), nil
+			},
+			// options
+			btransport.WithInstanceName(fullInstanceName),
+			btransport.WithAppProfile(config.AppProfile),
+			btransport.WithFeatureFlagsMetadata(ffMD),
+		)
+
 	} else {
 		// use to regular ConnPool
 		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
