@@ -64,7 +64,7 @@
         {"name": "storage.objects.copy",                                         "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.delete",                                       "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.insert",                                       "resources": ["BUCKET"]},
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []},
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]},
         {"name": "storage.objects.patch",                                        "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.rewrite",                                      "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.update",                                       "resources": ["BUCKET", "OBJECT"]}
@@ -183,7 +183,7 @@
         {"name": "storage.objects.delete",                                       "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.get",                                          "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.insert",                                       "resources": ["BUCKET"]},
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []},
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]},
         {"name": "storage.objects.list",                                         "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.patch",                                        "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.rewrite",                                      "resources": ["BUCKET", "OBJECT"]},
@@ -234,7 +234,7 @@
         {"name": "storage.objects.get",                                          "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.list",                                         "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.insert",                                       "resources": ["BUCKET"]},
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []},
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]},
         {"name": "storage.objects.patch",                                        "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.rewrite",                                      "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.update",                                       "resources": ["BUCKET", "OBJECT"]},
@@ -295,7 +295,7 @@
         }
       ],
       "methods": [
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]}
       ],
       "preconditionProvided": true,
       "expectSuccess": true
@@ -312,7 +312,7 @@
         }
       ],
       "methods": [
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]}
       ],
       "preconditionProvided": false,
       "expectSuccess": false
@@ -326,7 +326,7 @@
         }
       ],
       "methods": [
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]}
       ],
       "preconditionProvided": true,
       "expectSuccess": false
@@ -340,7 +340,7 @@
         }
       ],
       "methods": [
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]}
       ],
       "preconditionProvided": false,
       "expectSuccess": true
@@ -354,7 +354,7 @@
         }
       ],
       "methods": [
-        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": ["BUCKET"]}
       ],
       "preconditionProvided": false,
       "expectSuccess": true

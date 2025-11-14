@@ -23,6 +23,7 @@ import (
 	"html/template"
 	"log/slog"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -298,8 +299,9 @@ func generateClientVersionFile(cfg *Config, moduleConfig *config.ModuleConfig, a
 		Package            string
 		ModuleRootInternal string
 	}{
-		Year:               time.Now().Year(),
-		Package:            moduleConfig.Name,
+		Year:    time.Now().Year(),
+		Package: filepath.Base(filepath.Dir(fullClientDir)), // The package name is the name of the directory containing the client directory (e.g. `apiv1beta1`).
+
 		ModuleRootInternal: moduleConfig.GetModulePath() + "/internal",
 	}
 	f, err := os.Create(versionPath)
@@ -357,10 +359,11 @@ func updateLibraryState(moduleConfig *config.ModuleConfig, library *request.Libr
 		"doc\\.go",
 		"gapic_metadata\\.json",
 		"helpers\\.go",
+		"\\.repo-metadata\\.json",
 		protobufDir,
 	}
 	for _, generatedPath := range generatedPaths {
-		library.RemoveRegex = append(library.RemoveRegex, "^"+clientDirectory+"/"+generatedPath+"$")
+		library.RemoveRegex = append(library.RemoveRegex, "^"+path.Join(library.ID, clientDirectory, generatedPath)+"$")
 	}
 	return nil
 }

@@ -20,6 +20,11 @@
                 "CreateAuthzExtension"
               ]
             },
+            "CreateLbEdgeExtension": {
+              "methods": [
+                "CreateLbEdgeExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -33,6 +38,11 @@
             "DeleteAuthzExtension": {
               "methods": [
                 "DeleteAuthzExtension"
+              ]
+            },
+            "DeleteLbEdgeExtension": {
+              "methods": [
+                "DeleteLbEdgeExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -60,6 +70,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLbEdgeExtension": {
+              "methods": [
+                "GetLbEdgeExtension"
+              ]
+            },
             "GetLbRouteExtension": {
               "methods": [
                 "GetLbRouteExtension"
@@ -83,6 +98,11 @@
             "ListAuthzExtensions": {
               "methods": [
                 "ListAuthzExtensions"
+              ]
+            },
+            "ListLbEdgeExtensions": {
+              "methods": [
+                "ListLbEdgeExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -118,6 +138,11 @@
             "UpdateAuthzExtension": {
               "methods": [
                 "UpdateAuthzExtension"
+              ]
+            },
+            "UpdateLbEdgeExtension": {
+              "methods": [
+                "UpdateLbEdgeExtension"
               ]
             },
             "UpdateLbRouteExtension": {
@@ -145,6 +170,11 @@
                 "CreateAuthzExtension"
               ]
             },
+            "CreateLbEdgeExtension": {
+              "methods": [
+                "CreateLbEdgeExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -158,6 +188,11 @@
             "DeleteAuthzExtension": {
               "methods": [
                 "DeleteAuthzExtension"
+              ]
+            },
+            "DeleteLbEdgeExtension": {
+              "methods": [
+                "DeleteLbEdgeExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -185,6 +220,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLbEdgeExtension": {
+              "methods": [
+                "GetLbEdgeExtension"
+              ]
+            },
             "GetLbRouteExtension": {
               "methods": [
                 "GetLbRouteExtension"
@@ -208,6 +248,11 @@
             "ListAuthzExtensions": {
               "methods": [
                 "ListAuthzExtensions"
+              ]
+            },
+            "ListLbEdgeExtensions": {
+              "methods": [
+                "ListLbEdgeExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -243,6 +288,11 @@
             "UpdateAuthzExtension": {
               "methods": [
                 "UpdateAuthzExtension"
+              ]
+            },
+            "UpdateLbEdgeExtension": {
+              "methods": [
+                "UpdateLbEdgeExtension"
               ]
             },
             "UpdateLbRouteExtension": {

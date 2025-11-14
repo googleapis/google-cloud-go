@@ -3,6 +3,15 @@
 
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.5.0) (2025-11-06)
+
+### Features
+
+* Adding `FetchBackupsForResourceType` API ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* Adding `ListDataSourceReferences` API ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* Adding `source_resource` fields to Backup resource ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* Adding new workload specific fields for Cloud SQL ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.3.2...backupdr/v1.4.0) (2025-07-23)
 
 
