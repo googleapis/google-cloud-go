@@ -2288,11 +2288,36 @@ func TestSelectAll(t *testing.T) {
 		Col3 string    `spanner:"taG3"`
 		Col4 time.Time `spanner:"TAG4"`
 	}
+
+	type testStructWithSimpleTag struct {
+		Col1 int64 `spanner:"tag1"`
+		Col2 int64 `spanner:"tag2"`
+		Col3 int64 `spanner:"tag3"`
+		Col4 int64 `spanner:"tag4"`
+	}
+	type Address struct {
+		AddressZip    string `spanner:"ZipCode"`
+		AddressStreet string `spanner:"Street"`
+		AddressCity   string `spanner:"City"`
+	}
+
+	type Person struct {
+		Name      string
+		Address   Address
+		BirthDate civil.Date
+	}
+	type PersonEmbedded struct {
+		Name string
+		Address
+		BirthDate civil.Date
+	}
+
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-		want    interface{}
+		name      string
+		args      args
+		wantErr   bool
+		wantPanic bool
+		want      interface{}
 	}{
 		{
 			name: "success: using slice of primitives",
@@ -2524,6 +2549,78 @@ func TestSelectAll(t *testing.T) {
 			},
 		},
 		{
+			name: "success: using slice of structs with simple spanner tag annotations in different order",
+			args: args{
+				destination: &[]testStructWithSimpleTag{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: intType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: intType()},
+							{Name: "Tag3", Type: intType()},
+						},
+						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag2", Type: intType()},
+							{Name: "Tag3", Type: intType()},
+							{Name: "Tag4", Type: intType()},
+						},
+						[]*proto3.Value{intProto(1), intProto(2), intProto(3), intProto(4)},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: intType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: intType()},
+							{Name: "Tag3", Type: intType()},
+						},
+						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+					},
+					iterator.Done,
+				),
+			},
+			want: &[]testStructWithSimpleTag{
+				{Col1: 1, Col2: 2, Col3: 3, Col4: 4},
+				{Col1: 1, Col2: 2, Col3: 3, Col4: 4},
+				{Col1: 1, Col2: 2, Col3: 3, Col4: 4},
+			},
+		},
+		{
+			name: "success: using slice of structs with spanner tag annotations in different order",
+			args: args{
+				destination: &[]testStructWithTag{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: timeType()},
+							{Name: "Tag3", Type: stringType()},
+						},
+						[]*proto3.Value{floatProto(1.1), intProto(1), timeProto(tm), stringProto("value")},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag4", Type: timeType()},
+							{Name: "Tag3", Type: stringType()},
+						},
+						[]*proto3.Value{floatProto(2.2), intProto(2), timeProto(tm.Add(24 * time.Hour)), stringProto("value2")},
+					},
+					iterator.Done,
+				),
+			},
+			want: &[]testStructWithTag{
+				{Col1: 1, Col2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 2, Col2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
+			},
+		},
+		{
 			name: "failure: in case of error destination will have the partial result",
 			args: args{
 				destination: &[]*testStruct{{Col1: 3, COL2: 3.3, Col3: "value3"}},
@@ -2612,9 +2709,120 @@ func TestSelectAll(t *testing.T) {
 			want:    &[]int64{},
 			wantErr: true,
 		},
+		{
+			name: "failure: nested named structs",
+			args: args{
+				destination: &[]*Person{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "ZipCode", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name1"),
+							stringProto("Street1"),
+							stringProto("ZipCode1"),
+							stringProto("City1"),
+							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
+						},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "ZipCode", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name2"),
+							stringProto("Street2"),
+							stringProto("ZipCode2"),
+							stringProto("City2"),
+							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
+						},
+					},
+					iterator.Done,
+				),
+			},
+			want:    &[]*Person{},
+			wantErr: true,
+		},
+		{
+			name: "success: nested unnamed structs",
+			args: args{
+				destination: &[]*PersonEmbedded{},
+				mock: newMockIterator(
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+							{Name: "ZipCode", Type: stringType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name1"),
+							stringProto("City1"),
+							stringProto("Street1"),
+							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
+							stringProto("ZipCode1"),
+						},
+					},
+					&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Name", Type: stringType()},
+							{Name: "City", Type: stringType()},
+							{Name: "Street", Type: stringType()},
+							{Name: "BirthDate", Type: dateType()},
+							{Name: "ZipCode", Type: stringType()},
+						},
+						[]*proto3.Value{
+							stringProto("Name2"),
+							stringProto("City2"),
+							stringProto("Street2"),
+							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
+							stringProto("ZipCode2"),
+						},
+					},
+					iterator.Done,
+				),
+			},
+			want: &[]*PersonEmbedded{
+				{
+					Name: "Name1",
+					Address: Address{
+						AddressZip:    "ZipCode1",
+						AddressStreet: "Street1",
+						AddressCity:   "City1",
+					},
+					BirthDate: civil.Date{Year: 2000, Month: 11, Day: 14},
+				},
+				{
+					Name: "Name2",
+					Address: Address{
+						AddressZip:    "ZipCode2",
+						AddressStreet: "Street2",
+						AddressCity:   "City2",
+					},
+					BirthDate: civil.Date{Year: 2001, Month: 11, Day: 14},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantPanic {
+				defer func() {
+					if r := recover(); r == nil {
+						t.Error("SelectAll() did not panic")
+					}
+				}()
+			}
 			mockIterator := tt.args.mock
 			if err := SelectAll(mockIterator, tt.args.destination, tt.args.options...); (err != nil) != tt.wantErr {
 				t.Errorf("SelectAll() error = %v, wantErr %v", err, tt.wantErr)
