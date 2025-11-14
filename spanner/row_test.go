@@ -2792,7 +2792,26 @@ func TestSelectAll(t *testing.T) {
 					iterator.Done,
 				),
 			},
-			wantPanic: true,
+			want: &[]*PersonEmbedded{
+				{
+					Name: "Name1",
+					Address: Address{
+						Street:  "Street1",
+						ZipCode: "ZipCode1",
+						City:    "City1",
+					},
+					BirthDate: civil.Date{Year: 2000, Month: 11, Day: 14},
+				},
+				{
+					Name: "Name2",
+					Address: Address{
+						Street:  "Street2",
+						ZipCode: "ZipCode2",
+						City:    "City2",
+					},
+					BirthDate: civil.Date{Year: 2001, Month: 11, Day: 14},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
