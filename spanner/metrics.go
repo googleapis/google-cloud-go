@@ -68,6 +68,7 @@ const (
 	metricLabelKeyDirectPathUsed        = "directpath_used"
 	metricLabelKeyGRPCLBPickResult      = "grpc.lb.pick_result"
 	metricLabelKeyGRPCLBDataPlaneTarget = "grpc.lb.rls.data_plane_target"
+	metricLabelKeyGRPCXDSResourceType   = "grpc.xds.resource_type"
 
 	// Metric names
 	metricNameOperationLatencies        = "operation_latencies"
