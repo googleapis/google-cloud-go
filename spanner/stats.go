@@ -139,6 +139,22 @@ var (
 		TagKeys:     tagCommonKeys,
 	}
 
+	// NumLongRunningSessionsRemovedCount is a measure of the number of long-running sessions
+	// removed from the session pool.
+	NumLongRunningSessionsRemovedCount = stats.Int64(
+		statsPrefix+"num_long_running_sessions_removed",
+		"The number of long-running sessions removed from the session pool.",
+		stats.UnitDimensionless,
+	)
+
+	// NumLongRunningSessionsRemovedCountView is a view of the last value of
+	// NumLongRunningSessionsRemovedCount.
+	NumLongRunningSessionsRemovedCountView = &view.View{
+		Measure:     NumLongRunningSessionsRemovedCount,
+		Aggregation: view.LastValue(),
+		TagKeys:     tagCommonKeys,
+	}
+
 	// GetSessionTimeoutsCount is a measure of the number of get sessions
 	// timeouts due to pool exhaustion.
 	//
@@ -256,6 +272,7 @@ func EnableStatViews() error {
 		GetSessionTimeoutsCountView,
 		AcquiredSessionsCountView,
 		ReleasedSessionsCountView,
+		NumLongRunningSessionsRemovedCountView,
 	)
 }
 
