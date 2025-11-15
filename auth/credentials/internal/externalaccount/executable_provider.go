@@ -24,10 +24,10 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/auth/internal"
+	"github.com/mattn/go-shellwords"
 )
 
 const (
@@ -77,7 +77,13 @@ func (r runtimeEnvironment) now() time.Time {
 }
 
 func (r runtimeEnvironment) run(ctx context.Context, command string, env []string) ([]byte, error) {
-	splitCommand := strings.Fields(command)
+	splitCommand, err := shellwords.Parse(command)
+	if err != nil {
+		return nil, err
+	}
+	if len(splitCommand) == 0 {
+		return nil, errors.New("credentials: executable command is empty")
+	}
 	cmd := exec.CommandContext(ctx, splitCommand[0], splitCommand[1:]...)
 	cmd.Env = env
 
