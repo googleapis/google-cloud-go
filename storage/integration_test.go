@@ -6305,6 +6305,57 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 	})
 }
 
+// storage/integration_test.go
+
+func TestIntegration_ListBuckets(t *testing.T) {
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		projectID := testutil.ProjID()
+		newBucketsPrefix := prefix + "new-"
+
+		// Create two buckets to force pagination with a page size of 1.
+		var bucketNames []string
+		for i := 0; i < 2; i++ {
+			newBucketName := newBucketsPrefix + uidSpace.New()
+			bkt := client.Bucket(newBucketName)
+			h.mustCreate(bkt, projectID, nil)
+			t.Cleanup(func() { h.mustDeleteBucket(bkt) })
+			bucketNames = append(bucketNames, newBucketName)
+		}
+
+		for _, partialSuccess := range []bool{true, false} {
+			t.Run(fmt.Sprintf("partialSuccess=%v", partialSuccess), func(t *testing.T) {
+				it := client.Buckets(ctx, projectID)
+				it.Prefix = newBucketsPrefix
+				it.ReturnPartialSuccess = partialSuccess
+
+				it.PageInfo().MaxSize = 1 // Force pagination.
+
+				var foundBuckets []string
+				for {
+					attrs, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						t.Fatalf("it.Next: %v", err)
+					}
+					foundBuckets = append(foundBuckets, attrs.Name)
+				}
+
+				if len(foundBuckets) < len(bucketNames) {
+					t.Errorf("got %d buckets, want at least %d", len(foundBuckets), len(bucketNames))
+				}
+
+				if len(it.Unreachable()) > 0 {
+					t.Errorf("got unreachable buckets %v, want none", it.Unreachable())
+				}
+			})
+		}
+	})
+}
+
 // Ensures that a file stored with a:
 // * Content-Encoding of "gzip"
 // * Content-Type of "text/plain"

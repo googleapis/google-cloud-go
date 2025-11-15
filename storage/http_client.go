@@ -224,6 +224,7 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 		req.Projection("full")
 		req.Prefix(it.Prefix)
 		req.PageToken(pageToken)
+		req.ReturnPartialSuccess(it.ReturnPartialSuccess)
 		if pageSize > 0 {
 			req.MaxResults(int64(pageSize))
 		}
@@ -242,6 +243,7 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 			}
 			it.buckets = append(it.buckets, b)
 		}
+		it.unreachable = resp.Unreachable
 		return resp.NextPageToken, nil
 	}
 
