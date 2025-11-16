@@ -206,7 +206,6 @@ func setupTestServer(t testing.TB, service *fakeService) string {
 		srv.Stop()
 		lis.Close()
 	})
-
 	return lis.Addr().String()
 }
 
