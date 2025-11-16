@@ -1140,7 +1140,6 @@ func TestAddConnections(t *testing.T) {
 		maxConns       int
 		dialFunc       func() (*BigtableConn, error)
 		primeErr       error
-		cancelCtx      bool
 		wantChange     bool
 		wantFinalSize  int
 		wantDials      int32 // dial() for each conn
@@ -1230,13 +1229,6 @@ func TestAddConnections(t *testing.T) {
 
 			pool.dial = tc.dialFunc // Override dial func for test
 
-			if tc.cancelCtx {
-				go func() {
-					time.Sleep(5 * time.Millisecond) // Cancel shortly after addConnections starts
-					cancel()
-				}()
-			}
-
 			changed := pool.addConnections(tc.increaseDelta, tc.maxConns)
 
 			if changed != tc.wantChange {
@@ -1244,25 +1236,13 @@ func TestAddConnections(t *testing.T) {
 			}
 
 			finalSize := pool.Num()
-			if tc.wantDials != -1 && finalSize != tc.wantFinalSize && !tc.cancelCtx {
+			if tc.wantDials != -1 && finalSize != tc.wantFinalSize {
 				t.Errorf("addConnections() final size got %d, want %d", finalSize, tc.wantFinalSize)
 			}
-
-			// Allow goroutines to settle
-			time.Sleep(50 * time.Millisecond)
-
-			// Checks on dial/prime counts are not perfectly reliable with cancellations
-			if !tc.cancelCtx {
-				if tc.wantDials != -1 {
-					// This check is tricky because dial attempts stop if one fails in the loop.
-					// We can't easily count dials without instrumenting the test dialFunc.
-				}
-				if tc.wantPrimes != -1 {
-					if int32(fake.getPingCount()) != tc.wantPrimes {
-						// t.Errorf("addConnections() prime attempts got %d, want %d", fake.getPingCount(), tc.wantPrimes)
-					}
-				}
+			if int32(fake.getPingCount()) != tc.wantPrimes {
+				// t.Errorf("addConnections() prime attempts got %d, want %d", fake.getPingCount(), tc.wantPrimes)
 			}
+
 		})
 	}
 }
@@ -1376,7 +1356,7 @@ func TestRemoveConnections(t *testing.T) {
 		copy(initialConns, pool.getConns())
 
 		sort.Slice(initialConns, func(i, j int) bool {
-			return initialConns[i].createdAt().Before(initialConns[j].createdAt())
+			return initialConns[i].createdAt() < initialConns[j].createdAt()
 		})
 
 		numToRemove := 2

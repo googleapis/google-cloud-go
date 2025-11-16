@@ -185,4 +185,38 @@ func TestDynamicChannelScaling(t *testing.T) {
 			t.Logf("Scaled up to %d connections", gotSize)
 		}
 	})
+	t.Run("EmptyPoolNoAction", func(t *testing.T) {
+		config := baseConfig
+
+		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, poolOpts()...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		conns := []*connEntry{}
+		// use an empty slice.
+		pool.conns.Store(&conns)
+
+		dsm := NewDynamicScaleMonitor(config, pool)
+		// record lastscaling time
+		dsm.mu.Lock()
+		lastScalingTime := time.Now().Add(-1 * time.Minute)
+		dsm.lastScalingTime = lastScalingTime
+		dsm.mu.Unlock()
+
+		dsm.evaluateAndScale() // no-op.
+
+		if gotSize := pool.Num(); gotSize != 0 {
+			t.Errorf("evaluateAndScale() with empty pool resulted in size %d, want 0", gotSize)
+		}
+
+		// Check that lastScalingTime was NOT updated.
+		dsm.mu.Lock()
+		defer dsm.mu.Unlock()
+		if !dsm.lastScalingTime.Equal(lastScalingTime) {
+			t.Errorf("lastScalingTime was updated to %v on empty pool, but should not have been", dsm.lastScalingTime)
+		}
+	})
+
 }
