@@ -16,7 +16,6 @@ package internal
 
 import (
 	"context"
-	"math"
 	"testing"
 	"time"
 
@@ -33,14 +32,12 @@ func TestDynamicChannelScaling(t *testing.T) {
 		Enabled:              true,
 		MinConns:             2,
 		MaxConns:             10,
-		AvgLoadHighThreshold: 10,               // Scale up if avg load >= 10
-		AvgLoadLowThreshold:  3,                // Scale down if avg load <= 3
+		AvgLoadHighThreshold: 10.0,             // Scale up if avg load >= 10
+		AvgLoadLowThreshold:  3.0,              // Scale down if avg load <= 3
 		MinScalingInterval:   0,                // Disable time throttling for most tests
 		CheckInterval:        10 * time.Second, // Not directly used by calling evaluateAndScale
 		MaxRemoveConns:       3,
 	}
-	targetLoadFactor := float64(baseConfig.AvgLoadLowThreshold+baseConfig.AvgLoadHighThreshold) / 2.0
-
 	tests := []struct {
 		name        string
 		initialSize int
@@ -130,31 +127,20 @@ func TestDynamicChannelScaling(t *testing.T) {
 				tc.configOpt(&config)
 			}
 
-			pool, err := NewBigtableChannelPool(ctx, tc.initialSize, btopt.RoundRobin, dialFunc, nil, nil, WithDynamicChannelPool(config))
+			pool, err := NewBigtableChannelPool(ctx, tc.initialSize, btopt.RoundRobin, dialFunc, poolOpts()...)
 			if err != nil {
 				t.Fatalf("Failed to create pool: %v", err)
 			}
 			defer pool.Close()
 
+			dsm := NewDynamicScaleMonitor(config, pool)
+
 			if tc.setLoad != nil {
 				tc.setLoad(pool.getConns())
 			}
 
-			// Capture the load for debugging
-			var totalLoad int32
-			conns := pool.getConns()
-			for _, entry := range conns {
-				totalLoad += entry.calculateConnLoad()
-			}
-			avgLoad := float64(totalLoad) / float64(len(conns))
-			desiredConns := int(math.Ceil(float64(totalLoad) / targetLoadFactor))
-			t.Logf("Initial size: %d, Avg load: %.2f, Total load: %d, Target desired conns: %d", tc.initialSize, avgLoad, totalLoad, desiredConns)
-
-			dynamicMonitor, ok := findMonitor[*DynamicScaleMonitor](pool)
-			if !ok {
-				t.Fatal("Could not find ChannelHealthMonitor in pool")
-			}
-			dynamicMonitor.evaluateAndScale()
+			dsm.evaluateAndScale()
+			time.Sleep(50 * time.Millisecond) // Allow add/remove goroutines to potentially run
 
 			if gotSize := pool.Num(); gotSize != tc.wantSize {
 				t.Errorf("evaluateAndScale() resulted in pool size %d, want %d", gotSize, tc.wantSize)
@@ -167,35 +153,32 @@ func TestDynamicChannelScaling(t *testing.T) {
 		config.MinScalingInterval = 5 * time.Minute
 		initialSize := 3
 
-		pool, err := NewBigtableChannelPool(ctx, initialSize, btopt.RoundRobin, dialFunc, nil, nil, WithDynamicChannelPool(config))
+		pool, err := NewBigtableChannelPool(ctx, initialSize, btopt.RoundRobin, dialFunc, poolOpts()...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
 		defer pool.Close()
 
+		dsm := NewDynamicScaleMonitor(config, pool)
+
 		// Set load to trigger scale up
 		setConnLoads(pool.getConns(), 15, 0)
 
-		// 1. Simulate recent scaling
-		dynamicMonitor, ok := findMonitor[*DynamicScaleMonitor](pool)
-		if !ok {
-			t.Fatal("Could not find ChannelHealthMonitor in pool")
-		}
-		dynamicMonitor.mu.Lock()
-		dynamicMonitor.lastScalingTime = time.Now()
-		dynamicMonitor.mu.Unlock()
+		dsm.mu.Lock()
+		dsm.lastScalingTime = time.Now() // Simulate recent scaling
+		dsm.mu.Unlock()
 
-		dynamicMonitor.evaluateAndScale()
+		dsm.evaluateAndScale()
 		if gotSize := pool.Num(); gotSize != initialSize {
 			t.Errorf("Pool size changed to %d, want %d (should be throttled)", gotSize, initialSize)
 		}
 
 		// 2. Allow scaling again by moving lastScalingTime to the past
-		dynamicMonitor.mu.Lock()
-		dynamicMonitor.lastScalingTime = time.Now().Add(-10 * time.Minute)
-		dynamicMonitor.mu.Unlock()
+		dsm.mu.Lock()
+		dsm.lastScalingTime = time.Now().Add(-10 * time.Minute) // Allow scaling again
+		dsm.mu.Unlock()
 
-		dynamicMonitor.evaluateAndScale()
+		dsm.evaluateAndScale()
 		if gotSize := pool.Num(); gotSize == initialSize {
 			t.Errorf("Pool size %d, want > %d (should have scaled up)", gotSize, initialSize)
 		} else {
@@ -205,21 +188,18 @@ func TestDynamicChannelScaling(t *testing.T) {
 
 	t.Run("EmptyPoolScaleUp", func(t *testing.T) {
 		config := baseConfig
-		// Pool creation requires size > 0. So, create and then manually empty it.
-		pool, err := NewBigtableChannelPool(ctx, config.MinConns, btopt.RoundRobin, dialFunc, nil, nil, WithDynamicChannelPool(config))
+		pool, err := NewBigtableChannelPool(ctx, config.MinConns, btopt.RoundRobin, dialFunc, poolOpts()...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
 		defer pool.Close()
 
-		// Manually empty the pool to test the zero-connection code path
-		pool.conns.Store(([]*connEntry)(nil))
+		pool.conns.Store(&[]*connEntry{}) // Manually empty
 
-		dynamicMonitor, ok := findMonitor[*DynamicScaleMonitor](pool)
-		if !ok {
-			t.Fatal("Could not find ChannelHealthMonitor in pool")
-		}
-		dynamicMonitor.evaluateAndScale()
+		dsm := NewDynamicScaleMonitor(config, pool)
+		dsm.evaluateAndScale()
+		time.Sleep(50 * time.Millisecond)
+
 		if gotSize := pool.Num(); gotSize != config.MinConns {
 			t.Errorf("Pool size after empty scale-up is %d, want %d", gotSize, config.MinConns)
 		}

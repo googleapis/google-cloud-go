@@ -232,8 +232,8 @@ type DynamicChannelPoolConfig struct {
 	Enabled              bool          // Whether dynamic scaling is enabled.
 	MinConns             int           // Minimum conns allowed
 	MaxConns             int           // Maximum conns allowed.
-	AvgLoadHighThreshold int32         // Average weighted load per connection to trigger scale-up.
-	AvgLoadLowThreshold  int32         // Average weighted load per connection to trigger scale-down.
+	AvgLoadHighThreshold float64       // Average weighted load per connection to trigger scale-up.
+	AvgLoadLowThreshold  float64       // Average weighted load per connection to trigger scale-down.
 	MinScalingInterval   time.Duration // Minimum time between scaling operations (both up and down).
 	CheckInterval        time.Duration // How often to check if scaling is needed.
 	MaxRemoveConns       int           // Maximum number of connections to remove at once.

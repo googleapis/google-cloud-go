@@ -27,22 +27,24 @@ import (
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
+	"google.golang.org/grpc/metadata"
 )
 
 // fakeService is a mock gRPC server that implements both BenchmarkService and BigtableServer.
 type fakeService struct {
 	testpb.UnimplementedBenchmarkServiceServer
 	btpb.UnimplementedBigtableServer
-	mu            sync.Mutex
-	pingCount     int
-	callCount     int
-	streamSema    chan struct{} // To control stream lifetime
-	delay         time.Duration // To simulate work
-	serverErr     error         // Error to return from server
-	pingErr       error         // Error to return from PingAndWarm
-	pingErrMu     sync.Mutex    // Protects pingErr
-	streamRecvErr error         // Error to return from stream.Recv()
-	streamSendErr error         // Error to return from stream.Send()
+	mu                      sync.Mutex
+	pingCount               int
+	callCount               int
+	streamSema              chan struct{} // To control stream lifetime
+	delay                   time.Duration // To simulate work
+	serverErr               error         // Error to return from server
+	lastPingAndWarmMetadata metadata.MD   // Stores metadata from the last PingAndWarm call
+	pingErr                 error         // Error to return from PingAndWarm
+	pingErrMu               sync.Mutex    // Protects pingErr
+	streamRecvErr           error         // Error to return from stream.Recv()
+	streamSendErr           error         // Error to return from stream.Send()
 }
 
 func (s *fakeService) setPingErr(err error) {
@@ -121,6 +123,11 @@ func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequ
 	s.pingCount++
 	defer s.mu.Unlock()
 
+	// Capture metadata
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		s.lastPingAndWarmMetadata = md.Copy()
+	}
+
 	delay := s.getDelay()
 
 	if delay > 0 {
@@ -144,6 +151,12 @@ func (s *fakeService) getCallCount() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.callCount
+}
+
+func (s *fakeService) getPrimeMetadata() metadata.MD {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.lastPingAndWarmMetadata
 }
 
 func (s *fakeService) getPingCount() int {
@@ -180,15 +193,11 @@ func setupTestServer(t testing.TB, service *fakeService) string {
 }
 
 func dialBigtableserver(addr string) (*BigtableConn, error) {
-	return dialBigtableserverWithInstanceNameAndAppProfile(addr, "test-instance", "test-profile")
-}
-
-func dialBigtableserverWithInstanceNameAndAppProfile(addr string, instanceName, appProfile string) (*BigtableConn, error) {
 	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}
-	return newBigtableConn(conn, instanceName, appProfile), nil
+	return NewBigtableConn(conn), nil
 }
 
 // isConnClosed checks if a grpc.ClientConn has been closed.
@@ -202,15 +211,4 @@ func setConnLoads(conns []*connEntry, unary, stream int32) {
 		entry.unaryLoad.Store(unary)
 		entry.streamingLoad.Store(stream)
 	}
-}
-
-// findMonitor safely finds a monitor of a specific type from the pool's slice.
-func findMonitor[T Monitor](pool *BigtableChannelPool) (T, bool) {
-	for _, m := range pool.monitors {
-		if monitor, ok := m.(T); ok {
-			return monitor, true
-		}
-	}
-	var zero T
-	return zero, false
 }
