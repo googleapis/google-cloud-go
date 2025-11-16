@@ -26,14 +26,13 @@ import (
 
 // DynamicScaleMonitor manages upscale and downscale of the connection pool.
 type DynamicScaleMonitor struct {
-	config          btopt.DynamicChannelPoolConfig
-	pool            *BigtableChannelPool
-	lastScalingTime time.Time
-	mu              sync.Mutex
-	ticker          *time.Ticker
-	done            chan struct{}
-	stopOnce        sync.Once
-
+	config            btopt.DynamicChannelPoolConfig
+	pool              *BigtableChannelPool
+	lastScalingTime   time.Time
+	mu                sync.Mutex
+	ticker            *time.Ticker
+	done              chan struct{}
+	stopOnce          sync.Once
 	targetLoadPerConn float64 // target average load
 
 }
@@ -41,9 +40,9 @@ type DynamicScaleMonitor struct {
 // NewDynamicScaleMonitor creates a new DynamicScaleMonitor.
 func NewDynamicScaleMonitor(config btopt.DynamicChannelPoolConfig, pool *BigtableChannelPool) *DynamicScaleMonitor {
 
-	targetLoadPerConn := math.Ceil(float64(config.AvgLoadLowThreshold+config.AvgLoadHighThreshold) / 2.0)
+	targetLoadPerConn := math.Floor(config.AvgLoadLowThreshold+config.AvgLoadHighThreshold) / 2.0
 	if targetLoadPerConn < 1.0 {
-		targetLoadPerConn = 1.0 // Ensure targetLoad is at least 1.
+		targetLoadPerConn = 1.0 //  targetLoad is at least 1 per channel
 	}
 	return &DynamicScaleMonitor{
 		config:            config,
@@ -85,6 +84,7 @@ func (dsm *DynamicScaleMonitor) Stop() {
 }
 
 func (dsm *DynamicScaleMonitor) evaluateAndScale() {
+	// we use mu for making sure only one evaluateAndScale runs.
 	dsm.mu.Lock()
 	defer dsm.mu.Unlock()
 
@@ -94,27 +94,17 @@ func (dsm *DynamicScaleMonitor) evaluateAndScale() {
 
 	conns := dsm.pool.getConns()
 	numConns := len(conns)
-	if numConns == 0 {
-		if dsm.config.MinConns > 0 {
-			// likely a bug if numConns is zero as monitor runs after conn pool is setup
-			// or misuse of monitor (if monitor runs before channel pool is fully setup)
-			btopt.Debugf(dsm.pool.logger, "bigtable_connpool: BUG: Pool empty, attempting to scale up to MinConns\n")
-			if dsm.pool.addConnections(dsm.config.MinConns, dsm.config.MaxConns) {
-				dsm.lastScalingTime = time.Now()
-			}
-		}
-		return
-	}
+
 	var loadSum int32
 	for _, entry := range conns {
 		loadSum += entry.calculateConnLoad()
 	}
 	avgLoadPerConn := float64(loadSum) / float64(numConns)
 
-	if avgLoadPerConn >= dsm.targetLoadPerConn {
-		dsm.scaleUp(loadSum, numConns, avgLoadPerConn)
-	} else if avgLoadPerConn <= dsm.targetLoadPerConn {
-		dsm.scaleDown(loadSum, numConns, avgLoadPerConn)
+	if avgLoadPerConn >= dsm.config.AvgLoadHighThreshold {
+		dsm.scaleUp(loadSum, numConns)
+	} else if avgLoadPerConn <= dsm.config.AvgLoadLowThreshold {
+		dsm.scaleDown(loadSum, numConns)
 	}
 }
 
@@ -147,13 +137,14 @@ func ValidateDynamicConfig(config btopt.DynamicChannelPoolConfig, connPoolSize i
 // scaleUp handles the logic for increasing the number of connections.
 //
 //	dsm.mu is already held.
-func (dsm *DynamicScaleMonitor) scaleUp(loadSum int32, numConns int, avgLoadPerConn float64) {
+func (dsm *DynamicScaleMonitor) scaleUp(loadSum int32, numConns int) {
+	fmt.Println("LoadSum", loadSum, "targetLoadPerConn", dsm.targetLoadPerConn)
 	desiredConns := int(math.Ceil(float64(loadSum) / dsm.targetLoadPerConn))
 	fmt.Println("desiredConns: ", desiredConns, "numConns: ", numConns)
 	addCount := desiredConns - numConns
 	fmt.Println("addCount: ", addCount, "numConns: ", numConns, "desiredConns: ", desiredConns)
 	if addCount > 0 {
-		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Scaling up: AvgLoad=%.2f, CurrentSize=%d, Adding=%d, TargetLoadPerConn=%.2f\n", avgLoad, numConns, addCount, dsm.targetLoadPerConn)
+		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Scaling up: CurrentSize=%d, Adding=%d, TargetLoadPerConn=%.2f\n", numConns, addCount, dsm.targetLoadPerConn)
 		if dsm.pool.addConnections(addCount, dsm.config.MaxConns) {
 			dsm.lastScalingTime = time.Now()
 		}
@@ -163,11 +154,11 @@ func (dsm *DynamicScaleMonitor) scaleUp(loadSum int32, numConns int, avgLoadPerC
 // scaleDown handles the logic for decreasing the number of connections.
 //
 //	dsm.mu is already held.
-func (dsm *DynamicScaleMonitor) scaleDown(loadSum int32, numConns int, avgLoad float64) {
+func (dsm *DynamicScaleMonitor) scaleDown(loadSum int32, numConns int) {
 	desiredConns := int(math.Ceil(float64(loadSum) / dsm.targetLoadPerConn))
 	removeCount := numConns - desiredConns
 	if removeCount > 0 {
-		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Scaling down: AvgLoad=%.2f, CurrentSize=%d, Removing=%d, TargetLoadPerConn=%.2f\n", avgLoad, numConns, removeCount, dsm.targetLoadPerConn)
+		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Scaling down: CurrentSize=%d, Removing=%d, TargetLoadPerConn=%.2f\n", numConns, removeCount, dsm.targetLoadPerConn)
 		if dsm.pool.removeConnections(removeCount, dsm.config.MinConns, dsm.config.MaxRemoveConns) {
 			dsm.lastScalingTime = time.Now()
 		}

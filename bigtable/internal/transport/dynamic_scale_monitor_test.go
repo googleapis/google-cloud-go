@@ -185,23 +185,4 @@ func TestDynamicChannelScaling(t *testing.T) {
 			t.Logf("Scaled up to %d connections", gotSize)
 		}
 	})
-
-	t.Run("EmptyPoolScaleUp", func(t *testing.T) {
-		config := baseConfig
-		pool, err := NewBigtableChannelPool(ctx, config.MinConns, btopt.RoundRobin, dialFunc, poolOpts()...)
-		if err != nil {
-			t.Fatalf("Failed to create pool: %v", err)
-		}
-		defer pool.Close()
-
-		pool.conns.Store(&[]*connEntry{}) // Manually empty
-
-		dsm := NewDynamicScaleMonitor(config, pool)
-		dsm.evaluateAndScale()
-		time.Sleep(50 * time.Millisecond)
-
-		if gotSize := pool.Num(); gotSize != config.MinConns {
-			t.Errorf("Pool size after empty scale-up is %d, want %d", gotSize, config.MinConns)
-		}
-	})
 }

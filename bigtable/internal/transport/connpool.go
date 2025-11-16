@@ -606,7 +606,7 @@ func (s *refCountedStream) decrementLoad() {
 
 // addConnections returns true if the pool size changed.
 func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
-	// dialMu access until we get all relevant number
+	// dialMu access
 	p.dialMu.Lock()
 	numCurrent := len(p.getConns())
 
@@ -618,12 +618,14 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 		return false
 	}
 
-	// Compromise for extra checks below
 	// Release lock for the long-running dial/prime operations.
-	// This in intended as we have very expensive operations next
-	// We do this tradeoff here for unlocking the dialMu.
+	// This in intended as we have very expensive operations and replaceConnection
+	// takes this dialMu lock.
 	p.dialMu.Unlock()
 
+	// LONG SECTION<START>
+	// This section can take time as it involves creating conn and Prime()
+	// Avoid taking dialMu here.
 	results := make(chan *connEntry, cappedIncrease)
 	var wg sync.WaitGroup
 
@@ -671,17 +673,23 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 		return false
 	}
 
-	// Acquire lock to update the connection pool slice.
+	// LONG SECTION<END>
+
+	// Acquire dialMu() again.
 	p.dialMu.Lock()
 	defer p.dialMu.Unlock()
 
-	// Compromise for extra checks below (for checking if we can still add)
+	// After long section, get a snapshot of current conns as it might have changed.
+	// Note that DynamicScaleMonitor allows only one evaluateAndScale as it takes a mutex
+	//  during evaluateAndScale
+	// Expect this to match the previous section as only thing that could change conns is replaceConnection
+	//
 	latestConns := p.getConns()
 	latestConnsLen := len(latestConns)
 	canAdd := maxConns - latestConnsLen
 	numToAdd := min(len(newEntries), canAdd)
 
-	// safety check, SKIP
+	// safety check, Unlikely
 	if numToAdd <= 0 {
 		btopt.Debugf(p.logger, "bigtable_connpool: Pool size changed, no room to add %d new connections.\n", len(newEntries))
 		for _, entry := range newEntries {
@@ -700,6 +708,7 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 	btopt.Debugf(p.logger, "bigtable_connpool: Added %d connections, new size: %d\n", numToAdd, len(combinedConns))
 
 	// if we created more conns than we could add.
+	// Unlikely but handle it.
 	if len(newEntries) > numToAdd {
 		// remove surplus connections
 		btopt.Debugf(p.logger, "bigtable_connpool: Closing %d surplus prepared connections.\n", len(newEntries)-numToAdd)
@@ -717,6 +726,8 @@ type entryWithAge struct {
 
 // removeConnections returns true if the pool size changed.
 func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemoveConns int) bool {
+	// the critical section is very short
+	// as we just need to sort the conns and get rid of n old connections.
 	p.dialMu.Lock()
 
 	if decreaseDelta <= 0 {
@@ -728,7 +739,6 @@ func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemo
 
 	if numSnapshot <= minConns {
 		p.dialMu.Unlock()
-
 		btopt.Debugf(p.logger, "bigtable_connpool: Removal skippped, current size %d <= minConns %d\n", numSnapshot, minConns)
 		return false
 	}
@@ -738,7 +748,6 @@ func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemo
 
 	if cappedDecrease <= 0 {
 		p.dialMu.Unlock()
-
 		return false
 	}
 

@@ -118,6 +118,24 @@ func (s *fakeService) StreamingCall(stream testpb.BenchmarkService_StreamingCall
 	}
 }
 
+func (f *fakeService) reset() {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.callCount = 0
+	f.pingCount = 0
+	f.serverErr = nil
+	f.pingErr = nil
+	f.delay = 0
+	f.lastPingAndWarmMetadata = nil
+	if f.streamSema != nil {
+		select {
+		case <-f.streamSema: // Drain if not closed
+		default:
+		}
+	}
+	f.streamSema = nil
+}
+
 func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error) {
 	s.mu.Lock()
 	s.pingCount++
