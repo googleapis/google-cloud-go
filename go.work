@@ -186,6 +186,7 @@ use (
 	./tpu
 	./trace
 	./translate
+	./vectorsearch
 	./vertexai
 	./video
 	./videointelligence
