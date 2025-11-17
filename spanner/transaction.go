@@ -432,6 +432,10 @@ func errMultipleRowsFound(table string, key Key, index string) error {
 	return spannerErrorf(codes.FailedPrecondition, "more than one row found by index(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
 }
 
+func errTransactionNoLongerActive() error {
+	return spannerError(codes.FailedPrecondition, "the transaction that was used to execute this statement is no longer active")
+}
+
 const errInlineBeginTransactionFailedMsg = "failed inline begin transaction"
 
 // errInlineBeginTransactionFailed creates an error that indicates that the first statement in the
@@ -701,6 +705,12 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		sh.session.logger,
 		t.sp.sc.metricsTracerFactory,
 		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
+			// The session handle is removed from the transaction when the transaction is committed or rolled back.
+			// This ensures that we return a reasonable error instead of panic if the application tries to use the
+			// stream after the transaction has finished.
+			if t.sh == nil {
+				return nil, errTransactionNoLongerActive()
+			}
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
 			req.Transaction = t.getTransactionSelector()
