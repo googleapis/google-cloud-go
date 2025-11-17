@@ -121,14 +121,6 @@ func (mr *MetricsReporter) Stop() {
 // snapshotAndRecordMetrics collects and records metrics for the current state of the connection pool.
 func (mr *MetricsReporter) snapshotAndRecordMetrics(ctx context.Context) {
 	stats := mr.connPoolStatsSupplier()
-	for _, stat := range stats {
-		fmt.Println(stat.ErrorCount)
-		fmt.Println(stat.OutstandingStreamingLoad)
-		fmt.Println(stat.OutstandingUnaryLoad)
-		fmt.Println(stat.IsALTSUsed)
-		fmt.Println(stat.LBPolicy)
-	}
-
 	if len(stats) == 0 {
 		return
 	}
