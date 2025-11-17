@@ -102,7 +102,6 @@ use (
 	./internal/generated/snippets
 	./internal/godocfx
 	./internal/librariangen
-	./internal/postprocessor
 	./internal/protoveneer
 	./iot
 	./kms
