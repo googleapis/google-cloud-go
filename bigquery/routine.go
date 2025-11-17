@@ -314,7 +314,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	if !rm.LastModifiedTime.IsZero() {
 		r.LastModifiedTime = rm.LastModifiedTime.UnixMilli()
 	}
-	rm.ETag = r.Etag
+	r.Etag = rm.ETag
 	return r, nil
 }
 
