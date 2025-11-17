@@ -855,32 +855,18 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 		t.ExternalDataConfiguration = &edc
 	}
 	t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
-	if tm.FullID != "" {
-		return nil, errors.New("cannot set FullID on create")
-	}
-	if tm.Type != "" {
-		return nil, errors.New("cannot set Type on create")
-	}
+	// Propagate read-only fields.
+	t.Id = tm.FullID
+	t.Type = string(tm.Type)
+	t.NumBytes = tm.NumBytes
+	t.NumLongTermBytes = tm.NumLongTermBytes
+	t.NumRows = tm.NumRows
+	t.Etag = tm.ETag
 	if !tm.CreationTime.IsZero() {
-		return nil, errors.New("cannot set CreationTime on create")
+		t.CreationTime = tm.CreationTime.UnixMilli()
 	}
 	if !tm.LastModifiedTime.IsZero() {
-		return nil, errors.New("cannot set LastModifiedTime on create")
-	}
-	if tm.NumBytes != 0 {
-		return nil, errors.New("cannot set NumBytes on create")
-	}
-	if tm.NumLongTermBytes != 0 {
-		return nil, errors.New("cannot set NumLongTermBytes on create")
-	}
-	if tm.NumRows != 0 {
-		return nil, errors.New("cannot set NumRows on create")
-	}
-	if tm.StreamingBuffer != nil {
-		return nil, errors.New("cannot set StreamingBuffer on create")
-	}
-	if tm.ETag != "" {
-		return nil, errors.New("cannot set ETag on create")
+		t.LastModifiedTime = uint64(tm.LastModifiedTime.UnixMilli())
 	}
 	t.DefaultCollation = string(tm.DefaultCollation)
 
