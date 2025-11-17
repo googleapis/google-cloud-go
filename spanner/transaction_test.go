@@ -2222,6 +2222,44 @@ func TestReadWriteTransactionUsesNewContextForRollback(t *testing.T) {
 	}
 }
 
+func TestReadFromQueryAfterCommitOrRollback(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, commit := range []bool{true, false} {
+		// Create a new transaction and execute a query using that transaction.
+		// Then try to read data from the row iterator after the transaction has finished.
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if err != nil {
+			t.Fatalf("failed to create transaction: %v", err)
+		}
+		// 'Execute' the query using the transaction. Note that the query is only actually executed the first time
+		// that RowIterator.Next() is called.
+		it := tx.Query(ctx, NewStatement(SelectFooFromBar))
+		// Commit or rollback the transaction before reading any data.
+		if commit {
+			if _, err := tx.Commit(ctx); err != nil {
+				t.Fatalf("failed to commit: %v", err)
+			}
+		} else {
+			tx.Rollback(ctx)
+		}
+
+		// Now try to read the data from the RowIterator that was returned for the query.
+		_, err = it.Next()
+		if g, w := ErrCode(err), codes.FailedPrecondition; g != w {
+			t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		if g, w := err.Error(), `spanner: code = "FailedPrecondition", desc = "the transaction that was used to execute this statement is no longer active"`; g != w {
+			t.Fatalf("error message mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		it.Stop()
+	}
+}
+
 // shouldHaveReceived asserts that exactly expectedRequests were present in
 // the server's ReceivedRequests channel. It only looks at type, not contents.
 //
