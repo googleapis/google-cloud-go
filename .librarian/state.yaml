@@ -4735,7 +4735,6 @@ libraries:
       - internal/kokoro
       - internal/leakcheck
       - internal/librariangen
-      - internal/postprocessor
       - internal/pretty
       - internal/protoveneer
       - internal/testutil
