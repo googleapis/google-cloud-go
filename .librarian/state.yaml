@@ -6043,6 +6043,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
+  - id: vectorsearch
+    version: 0.0.0
+    last_generated_commit: 7c0dcbba70fc5dd64655a77e74dbbf8aaf04c1bf
+    apis:
+      - path: google/cloud/vectorsearch/v1beta
+        service_config: vectorsearch_v1beta.yaml
+    source_roots:
+      - vectorsearch
+      - internal/generated/snippets/vectorsearch
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/vectorsearch/
+      - ^vectorsearch/apiv1beta/[^/]*_client\.go$
+      - ^vectorsearch/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^vectorsearch/apiv1beta/[^/]*_client_example_test\.go$
+      - ^vectorsearch/apiv1beta/auxiliary\.go$
+      - ^vectorsearch/apiv1beta/auxiliary_go123\.go$
+      - ^vectorsearch/apiv1beta/doc\.go$
+      - ^vectorsearch/apiv1beta/gapic_metadata\.json$
+      - ^vectorsearch/apiv1beta/helpers\.go$
+      - ^vectorsearch/apiv1beta/\.repo-metadata\.json$
+      - ^vectorsearch/apiv1beta/vectorsearchpb/.*$
+    tag_format: '{id}/v{version}'
   - id: vertexai
     version: 0.15.0
     last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea

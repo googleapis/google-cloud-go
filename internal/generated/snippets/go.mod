@@ -574,3 +574,5 @@ replace cloud.google.com/go/locationfinder => ../../../locationfinder
 replace cloud.google.com/go/gkerecommender => ../../../gkerecommender
 
 replace cloud.google.com/go/saasplatform => ../../../saasplatform
+
+replace cloud.google.com/go/vectorsearch => ../../../vectorsearch
