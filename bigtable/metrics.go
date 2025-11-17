@@ -71,6 +71,10 @@ const (
 	metricNameDebugTags               = "debug_tags"
 	metricNameConnErrCount            = "connectivity_error_count"
 
+	// Client specific metric Names
+	metricNameClientStartupTime    = "startup_time"
+	metricNameDirectAccessEligible = "direct_access/compatible"
+
 	// Metric units
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"
@@ -196,8 +200,7 @@ type builtinMetricsTracerFactory struct {
 	clientAttributes []attribute.KeyValue
 
 	// otelMeterProvider
-	otelMeterProvider metric.MeterProvider
-
+	otelMeterProvider       metric.MeterProvider
 	operationLatencies      metric.Float64Histogram
 	serverLatencies         metric.Float64Histogram
 	attemptLatencies        metric.Float64Histogram
@@ -207,6 +210,10 @@ type builtinMetricsTracerFactory struct {
 	retryCount              metric.Int64Counter
 	connErrCount            metric.Int64Counter
 	debugTags               metric.Int64Counter
+
+	// client specific metrics
+	clientStartupTime    metric.Float64Histogram
+	directAccessEligible metric.Int64Gauge
 }
 
 // Returns error only if metricsProvider is of unknown type. Rest all errors are swallowed
@@ -272,6 +279,13 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		meterProvider.Shutdown(ctx)
 	}
 
+	if tracerFactory.otelMeterProvider != nil {
+		err := tracerFactory.createClientInstruments(tracerFactory.otelMeterProvider)
+		if err != nil {
+			return disabledMetricsTracerFactory, nil
+		}
+	}
+
 	// Create meter and instruments
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
 	err = tracerFactory.createInstruments(meter)
@@ -279,6 +293,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		// Swallow the error and disable metrics
 		return disabledMetricsTracerFactory, nil
 	}
+
 	// Swallow the error and disable metrics
 	return tracerFactory, nil
 }
@@ -316,6 +331,51 @@ func (tf *builtinMetricsTracerFactory) newAsyncRefreshErrHandler() func() {
 		tf.debugTags.Add(context.Background(), 1,
 			metric.WithAttributes(asyncRefreshMetricAttrs...))
 	}
+}
+
+// reportDirectAccessEligibleMetric sets the value of the DirectPath eligibility gauge.
+func (tf *builtinMetricsTracerFactory) reportDirectAccessEligibleMetric(ctx context.Context, isEligible bool) {
+	if tf.directAccessEligible == nil {
+		return
+	}
+	val := int64(0)
+	if isEligible {
+		val = 1
+	}
+	fmt.Println("Reporting DirectAccess eligible metric")
+	tf.directAccessEligible.Record(ctx, val)
+}
+
+func (tf *builtinMetricsTracerFactory) reportClientStartupLatency(ctx context.Context, startTime time.Time, transportType string) {
+	if tf.clientStartupTime == nil {
+		return
+	}
+	duration := time.Since(startTime)
+	attrs := attribute.NewSet(attribute.String("transport_type", transportType))
+	tf.clientStartupTime.Record(ctx, float64(duration.Milliseconds()), metric.WithAttributeSet(attrs))
+}
+
+func (tf *builtinMetricsTracerFactory) createClientInstruments(clientMeterProvider metric.MeterProvider) error {
+	meter := clientMeterProvider.Meter(builtInMetricsMeterName)
+	var err error
+
+	tf.clientStartupTime, err = meter.Float64Histogram(
+		metricNameClientStartupTime,
+		metric.WithDescription("Total time for completion of logic of NewClientWithConfig i"),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+
+	if err != nil {
+		return err
+	}
+
+	tf.directAccessEligible, err = meter.Int64Gauge(
+		metricNameDirectAccessEligible,
+		metric.WithDescription("Reports 1 if the environment is eligible for DirectPath, 0 otherwise. Based on a  connection attempt at startup."),
+		metric.WithUnit("1"),
+	)
+	return err
 }
 
 func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {

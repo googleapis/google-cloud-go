@@ -189,6 +189,23 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if enableBigtableConnPool {
 		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
+		directAccessOptions := append(o, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
+
+		directAccessDialOptions := func() (*btransport.BigtableConn, error) {
+			grpcConn, err := gtransport.Dial(ctx, directAccessOptions...)
+			if err != nil {
+				return nil, err
+			}
+			return btransport.NewBigtableConn(grpcConn), nil
+		}
+
+		var eligibilityReporterOption btransport.BigtableChannelPoolOption
+		if metricsTracerFactory.enabled {
+			eligibilityReporterOption = btransport.WithDirectAccessEligibleReporter(metricsTracerFactory.reportDirectAccessEligibleMetric)
+		} else {
+			eligibilityReporterOption = func(p *btransport.BigtableChannelPool) {}
+		}
+
 		btPool, err := btransport.NewBigtableChannelPool(ctx,
 			defaultBigtableConnPoolSize,
 			btopt.LeastInFlight,
@@ -205,6 +222,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			btransport.WithFeatureFlagsMetadata(ffMD),
 			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 			btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
+			btransport.WithDirectAccessDialFunc(directAccessDialOptions),
+			eligibilityReporterOption,
 		)
 
 		if err != nil {

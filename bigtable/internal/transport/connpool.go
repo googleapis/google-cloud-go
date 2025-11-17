@@ -98,6 +98,20 @@ func WithFeatureFlagsMetadata(featureFlagsMd metadata.MD) BigtableChannelPoolOpt
 	}
 }
 
+// WithDirectAccessDialFunc provides the dial function for DirectPath eligibility checking.
+func WithDirectAccessDialFunc(dial func() (*BigtableConn, error)) BigtableChannelPoolOption {
+	return func(p *BigtableChannelPool) {
+		p.directAccessDialFunc = dial
+	}
+}
+
+// WithDirectAccessEligibleReporter provides the callback to report DirectPath eligibility.
+func WithDirectAccessEligibleReporter(reporter func(context.Context, bool)) BigtableChannelPoolOption {
+	return func(p *BigtableChannelPool) {
+		p.directAccessEligibleReporter = reporter
+	}
+}
+
 const (
 	primeRPCTimeout = 10 * time.Second
 )
@@ -144,6 +158,7 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 		if _, ok := p.AuthInfo.(alts.AuthInfo); ok {
 			bc.isALTSConn.Store(true)
 		}
+		fmt.Println("Using Peer Address", p.Addr)
 	}
 	return nil
 }
@@ -283,6 +298,9 @@ type BigtableChannelPool struct {
 
 	// background monitors
 	monitors []Monitor
+
+	directAccessDialFunc         func() (*BigtableConn, error)
+	directAccessEligibleReporter func(context.Context, bool)
 }
 
 func WithMetricsReporterConfig(config btopt.MetricsReporterConfig) BigtableChannelPoolOption {
@@ -375,8 +393,12 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	}
 
 	pool.conns.Store(&initialConns)
+	btopt.Debugf(pool.logger, "bigtable_connpool: started pool with load balancing strategy: %s\n", strategy)
 
-	btopt.Debugf(pool.logger, "bigtable_connpool: using load balancing strategy: %s\n", strategy)
+	// Start DirectAccess eligibility check in background.
+	if pool.directAccessDialFunc != nil && pool.directAccessEligibleReporter != nil {
+		go pool.checkDirectAccessEligibility(pool.poolCtx)
+	}
 
 	metricsReporter, err := NewMetricsReporter(pool.metricsConfig, pool.connPoolStatsSupplier, pool.logger, pool.meterProvider)
 	if err == nil {
@@ -387,6 +409,42 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	}
 	pool.startMonitors()
 	return pool, nil
+}
+
+func (p *BigtableChannelPool) checkDirectAccessEligibility(ctx context.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			btopt.Debugf(p.logger, "bigtable_connpool: Recovered from panic in checkDirectAccessEligibility: %v", r)
+			p.directAccessEligibleReporter(ctx, false)
+		}
+	}()
+	btopt.Debugf(p.logger, "bigtable_connpool: Starting DirectPath eligibility check.")
+
+	isEligible := false
+	conn, err := p.directAccessDialFunc()
+	defer conn.Close()
+
+	if err != nil {
+		p.directAccessEligibleReporter(ctx, isEligible)
+		return
+	}
+
+	err = conn.Prime(ctx, p.instanceName, p.appProfile, p.featureFlagsMD)
+
+	if err != nil {
+		p.directAccessEligibleReporter(ctx, isEligible)
+		return
+	}
+
+	if conn.isALTSConn.Load() {
+		btopt.Debugf(p.logger, "bigtable_connpool: DirectPath Prime succeeded with ALTS.")
+		isEligible = true
+	} else {
+		btopt.Debugf(p.logger, "bigtable_connpool: DirectPath Prime succeeded but not via ALTS.")
+	}
+
+	p.directAccessEligibleReporter(ctx, isEligible)
+
 }
 
 func (p *BigtableChannelPool) startMonitors() {
