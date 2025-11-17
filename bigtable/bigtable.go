@@ -203,6 +203,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			btransport.WithInstanceName(fullInstanceName),
 			btransport.WithAppProfile(config.AppProfile),
 			btransport.WithFeatureFlagsMetadata(ffMD),
+			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+			btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
 		)
 
 		if err != nil {
@@ -212,7 +214,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 			// Validate dynamic config early if enabled
 			if config.EnableDynamicChannelPool {
-				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(defaultBigtableConnPoolSize)); err != nil {
+				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(defaultBigtableConnPoolSize), defaultBigtableConnPoolSize); err != nil {
 					return nil, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
 				}
 

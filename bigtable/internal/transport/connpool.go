@@ -376,6 +376,8 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 	pool.conns.Store(&initialConns)
 
+	btopt.Debugf(pool.logger, "bigtable_connpool: using load balancing strategy: %s\n", strategy)
+
 	metricsReporter, err := NewMetricsReporter(pool.metricsConfig, pool.connPoolStatsSupplier, pool.logger, pool.meterProvider)
 	if err == nil {
 		// ignore
@@ -383,11 +385,13 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	} else {
 		btopt.Debugf(pool.logger, "bigtable_connpool: failed to create metrics reporter: %v\n", err)
 	}
+	pool.startMonitors()
 	return pool, nil
 }
 
 func (p *BigtableChannelPool) startMonitors() {
 	for _, m := range p.monitors {
+		btopt.Debugf(p.logger, "bigtable_connpool: Starting monitor %T\n", m)
 		m.Start(p.poolCtx)
 	}
 }

@@ -48,6 +48,7 @@ type MetricsReporter struct {
 	perConnectionErrorCountHistogram metric.Float64Histogram
 }
 
+// NewMetricsReporter starts a monitor to export periodic metrics
 func NewMetricsReporter(config btopt.MetricsReporterConfig, connPoolStatsSupplier connPoolStatsSupplier, logger *log.Logger, mp metric.MeterProvider) (*MetricsReporter, error) {
 	mr := &MetricsReporter{
 		config:                config,
@@ -85,13 +86,12 @@ func NewMetricsReporter(config btopt.MetricsReporterConfig, connPoolStatsSupplie
 	return mr, nil
 }
 
+// Start starts the reporter.
 func (mr *MetricsReporter) Start(ctx context.Context) {
 	// config.Enabled should ensure that all relevant thing (meterProvider and meter should exists)
 	if !mr.config.Enabled {
 		return
 	}
-
-	// If config.Enabled is true, mr exists
 
 	mr.ticker = time.NewTicker(mr.config.ReportingInterval)
 	go func() {
@@ -109,6 +109,7 @@ func (mr *MetricsReporter) Start(ctx context.Context) {
 	}()
 }
 
+// Stop stops the reporter gracefully
 func (mr *MetricsReporter) Stop() {
 	mr.stopOnce.Do(func() {
 		if mr.config.Enabled {
@@ -120,11 +121,23 @@ func (mr *MetricsReporter) Stop() {
 // snapshotAndRecordMetrics collects and records metrics for the current state of the connection pool.
 func (mr *MetricsReporter) snapshotAndRecordMetrics(ctx context.Context) {
 	stats := mr.connPoolStatsSupplier()
+	for _, stat := range stats {
+		fmt.Println(stat.ErrorCount)
+		fmt.Println(stat.OutstandingStreamingLoad)
+		fmt.Println(stat.OutstandingUnaryLoad)
+		fmt.Println(stat.IsALTSUsed)
+		fmt.Println(stat.LBPolicy)
+	}
+
 	if len(stats) == 0 {
 		return
 	}
 
 	for _, stat := range stats {
+		// Record per-connection error count for the interval
+		if mr.perConnectionErrorCountHistogram != nil {
+			mr.perConnectionErrorCountHistogram.Record(ctx, float64(stat.ErrorCount))
+		}
 		transportType := "cloudpath"
 		if stat.IsALTSUsed {
 			transportType = "directpath"
@@ -135,7 +148,6 @@ func (mr *MetricsReporter) snapshotAndRecordMetrics(ctx context.Context) {
 			attribute.String("transport_type", transportType),
 			attribute.String("lb_policy", stat.LBPolicy),
 		}
-		baseAttrSet := attribute.NewSet(baseAttrs...)
 
 		if mr.outstandingRPCsHistogram != nil {
 			// Record distribution sample for unary load
@@ -146,9 +158,6 @@ func (mr *MetricsReporter) snapshotAndRecordMetrics(ctx context.Context) {
 			streamingAttrs := attribute.NewSet(append(baseAttrs, attribute.Bool("streaming", true))...)
 			mr.outstandingRPCsHistogram.Record(ctx, float64(stat.OutstandingStreamingLoad), metric.WithAttributeSet(streamingAttrs))
 		}
-		// Record per-connection error count for the interval
-		if mr.perConnectionErrorCountHistogram != nil {
-			mr.perConnectionErrorCountHistogram.Record(ctx, float64(stat.ErrorCount), metric.WithAttributeSet(baseAttrSet))
-		}
+
 	}
 }
