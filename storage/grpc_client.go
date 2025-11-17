@@ -245,8 +245,9 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 			// BucketIterator is returned to them from the veneer.
 			if pageToken == "" {
 				req := &storagepb.ListBucketsRequest{
-					Parent: toProjectResource(it.projectID),
-					Prefix: it.Prefix,
+					Parent:               toProjectResource(it.projectID),
+					Prefix:               it.Prefix,
+					ReturnPartialSuccess: it.ReturnPartialSuccess,
 				}
 				gitr = c.raw.ListBuckets(ctx, req, s.gax...)
 			}
@@ -262,6 +263,9 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 			it.buckets = append(it.buckets, b)
 		}
 
+		if resp, ok := gitr.Response.(*storagepb.ListBucketsResponse); ok {
+			it.unreachable = resp.Unreachable
+		}
 		return next, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
