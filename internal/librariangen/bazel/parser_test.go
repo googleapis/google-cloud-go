@@ -206,7 +206,7 @@ go_grpc_library(
 	}
 }
 
-func TestParse_legacyProtocPlugin_noGrpc(t *testing.T) {
+func TestParse_goProtoLibrary_noGrpc(t *testing.T) {
 	content := `
 go_proto_library(
     name = "asset_go_proto",
@@ -241,9 +241,6 @@ go_gapic_library(
 	// Only test the bits related to protoc plugins
 	if got.HasGoGRPC() {
 		t.Error("HasGoGRPC() = true; want false")
-	}
-	if got.HasLegacyGRPC() {
-		t.Error("HasLegacyGRPC() = true; want false")
 	}
 }
 
@@ -275,17 +272,9 @@ go_gapic_library(
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
-	got, err := Parse(tmpDir)
-	if err != nil {
-		t.Fatalf("Parse() failed: %v", err)
-	}
-
-	// Only test the bits related to protoc plugins
-	if got.HasGoGRPC() {
-		t.Error("HasGoGRPC() = true; want false")
-	}
-	if !got.HasLegacyGRPC() {
-		t.Error("HasLegacyGRPC() = false; want true")
+	_, err := Parse(tmpDir)
+	if err == nil {
+		t.Error("Parse() succeeded; want error")
 	}
 }
 
@@ -302,6 +291,6 @@ func TestDisableGAPIC(t *testing.T) {
 	}
 	cfg.DisableGAPIC()
 	if cfg.HasGAPIC() {
-		t.Error("HasLegacyGRPC() = true; want false")
+		t.Error("HasGAPIC() = true; want false")
 	}
 }

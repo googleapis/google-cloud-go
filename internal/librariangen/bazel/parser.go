@@ -48,9 +48,6 @@ type Config struct {
 
 	// Whether this library has a GAPIC rule at all.
 	hasGAPIC bool
-
-	// Whether the go_proto_library rule uses @io_bazel_rules_go//proto:go_grpc
-	hasLegacyGRPC bool
 }
 
 // HasGAPIC indicates whether the GAPIC generator should be run.
@@ -103,11 +100,6 @@ func (c *Config) HasRESTNumericEnums() bool { return c.restNumericEnums }
 // from go_proto_library to go_grpc_library is complete and --go-grpc_out is always
 // used. This is trending toward typically true.
 func (c *Config) HasGoGRPC() bool { return c.hasGoGRPC }
-
-// HasLegacyGRPC indicates whether a go_proto_library rule uses
-// @io_bazel_rules_go//proto:go_grpc to generate gRPC code. If so,
-// the "plugins=grpc" option is passed to the legacy Go plugin.
-func (c *Config) HasLegacyGRPC() bool { return c.hasLegacyGRPC }
 
 // Validate ensures that the configuration is valid.
 func (c *Config) Validate() error {
@@ -167,7 +159,9 @@ func Parse(dir string) (*Config, error) {
 		if c.hasGoGRPC {
 			return nil, fmt.Errorf("librariangen: misconfiguration in BUILD.bazel file, only one of go_grpc_library and go_proto_library rules should be present: %s", fp)
 		}
-		c.hasLegacyGRPC = strings.Contains(goProtoLibraryBlock, "@io_bazel_rules_go//proto:go_grpc")
+		if strings.Contains(goProtoLibraryBlock, "@io_bazel_rules_go//proto:go_grpc") {
+			return nil, fmt.Errorf("librariangen: BUILD.bazel requires legacy gRPC plugin: %s", fp)
+		}
 	}
 	if err := c.Validate(); err != nil {
 		return nil, fmt.Errorf("librariangen: invalid bazel config in %s: %w", dir, err)
