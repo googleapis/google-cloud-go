@@ -5566,7 +5566,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.86.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 6a7d453e1bd3f1ed759e6ab4546fe96a45b6bd1c
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
