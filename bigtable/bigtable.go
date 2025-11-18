@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/url"
 	"os"
 	"strconv"
@@ -188,10 +189,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	if enableBigtableConnPool {
 		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
-
-		directAccessOptions := append(o, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
-
 		directAccessDialOptions := func() (*btransport.BigtableConn, error) {
+			btopt.Debugf(log.Default(), "dialing with direct access option")
+			directAccessOptions := append(o, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 			grpcConn, err := gtransport.Dial(ctx, directAccessOptions...)
 			if err != nil {
 				return nil, err
