@@ -423,6 +423,7 @@ func (p *BigtableChannelPool) checkDirectAccessEligibility(ctx context.Context) 
 	btopt.Debugf(p.logger, "bigtable_connpool: Starting DirectPath eligibility check.")
 
 	isEligible := false
+	timeStart := time.Now()
 	conn, err := p.directAccessDialFunc()
 	if err != nil {
 		p.directAccessEligibleReporter(ctx, isEligible)
@@ -461,6 +462,8 @@ func (p *BigtableChannelPool) checkDirectAccessEligibility(ctx context.Context) 
 	} else {
 		btopt.Debugf(p.logger, "bigtable_connpool: DirectPath Prime succeeded but not via ALTS.")
 	}
+
+	btopt.Debugf(p.logger, "bigtable_connpool: DirectPath eligibility %v", time.Since(timeStart))
 
 	p.directAccessEligibleReporter(ctx, isEligible)
 
