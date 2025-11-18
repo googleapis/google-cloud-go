@@ -16,6 +16,7 @@ package internal
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -34,6 +35,7 @@ import (
 	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/protobuf/proto"
 
 	btopt "cloud.google.com/go/bigtable/internal/option"
 
@@ -422,14 +424,31 @@ func (p *BigtableChannelPool) checkDirectAccessEligibility(ctx context.Context) 
 
 	isEligible := false
 	conn, err := p.directAccessDialFunc()
-	defer conn.Close()
-
 	if err != nil {
 		p.directAccessEligibleReporter(ctx, isEligible)
 		return
 	}
+	defer conn.Close()
 
-	err = conn.Prime(ctx, p.instanceName, p.appProfile, p.featureFlagsMD)
+	customFeatures := btpb.FeatureFlags{
+		RoutingCookie:            true,
+		ReverseScans:             true,
+		LastScannedRowResponses:  true,
+		ClientSideMetricsEnabled: true,
+		RetryInfo:                true,
+		TrafficDirectorEnabled:   true,
+		DirectAccessRequested:    true,
+	}
+
+	val := ""
+	b, err := proto.Marshal(&customFeatures)
+	if err == nil {
+		val = base64.URLEncoding.EncodeToString(b)
+	}
+
+	ffMd := metadata.Pairs("bigtable-features", val)
+
+	err = conn.Prime(ctx, p.instanceName, p.appProfile, ffMd)
 
 	if err != nil {
 		p.directAccessEligibleReporter(ctx, isEligible)
