@@ -334,7 +334,7 @@ func (tf *builtinMetricsTracerFactory) newAsyncRefreshErrHandler() func() {
 }
 
 // reportDirectAccessEligibleMetric sets the value of the DirectPath eligibility gauge.
-func (tf *builtinMetricsTracerFactory) reportDirectAccessEligibleMetric(ctx context.Context, isEligible bool) {
+func (tf *builtinMetricsTracerFactory) reportDirectAccessEligibleMetric(ctx context.Context, isEligible bool, ipPreference string) {
 	if tf.directAccessEligible == nil {
 		return
 	}
@@ -346,11 +346,10 @@ func (tf *builtinMetricsTracerFactory) reportDirectAccessEligibleMetric(ctx cont
 	tf.directAccessEligible.Record(ctx, val)
 }
 
-func (tf *builtinMetricsTracerFactory) reportClientStartupLatency(ctx context.Context, startTime time.Time, transportType string) {
+func (tf *builtinMetricsTracerFactory) reportClientStartupLatency(ctx context.Context, duration time.Duration, transportType string) {
 	if tf.clientStartupTime == nil {
 		return
 	}
-	duration := time.Since(startTime)
 	attrs := attribute.NewSet(attribute.String("transport_type", transportType))
 	tf.clientStartupTime.Record(ctx, float64(duration.Milliseconds()), metric.WithAttributeSet(attrs))
 }

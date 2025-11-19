@@ -120,6 +120,7 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
+	clientStartTime := time.Now()
 	metricsProvider := config.MetricsProvider
 	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
 		// Do not emit metrics when emulator is being used
@@ -229,6 +230,14 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		if err != nil {
 			connPoolErr = err
 		} else {
+
+			// Report client startup latency
+			if metricsTracerFactory.enabled {
+				btopt.Debugf(log.Default(), "recording client startup latency %v", time.Since(clientStartTime))
+				clientStartupTime := time.Since(clientStartTime)
+				metricsTracerFactory.reportClientStartupLatency(ctx, clientStartupTime, "cloudpath")
+			}
+
 			connPool = btPool
 
 			// Validate dynamic config early if enabled
