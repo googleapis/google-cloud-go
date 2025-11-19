@@ -158,7 +158,11 @@ func (c *TargetTcpProxiesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetTcpProxiesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxiesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -173,12 +177,14 @@ func (c *TargetTcpProxiesClient) Get(ctx context.Context, req *computepb.GetTarg
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetTcpProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetTcpProxy resource in the specified project using
+// the data included in the request.
 func (c *TargetTcpProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetTcpProxy resources available to the specified project.
+// List retrieves the list of TargetTcpProxy resources
+// available to the specified project.
 func (c *TargetTcpProxiesClient) List(ctx context.Context, req *computepb.ListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -291,7 +297,11 @@ func (c *targetTcpProxiesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetTcpProxiesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxiesScopedListPairIterator {
 	it := &TargetTcpProxiesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetTcpProxiesRequest)
@@ -494,7 +504,8 @@ func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// Insert creates a TargetTcpProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetTcpProxy resource in the specified project using
+// the data included in the request.
 func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxyResource()
@@ -560,7 +571,8 @@ func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves the list of TargetTcpProxy resources available to the specified project.
+// List retrieves the list of TargetTcpProxy resources
+// available to the specified project.
 func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxyIterator {
 	it := &TargetTcpProxyIterator{}
 	req = proto.Clone(req).(*computepb.ListTargetTcpProxiesRequest)

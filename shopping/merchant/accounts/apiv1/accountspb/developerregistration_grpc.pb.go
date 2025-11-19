@@ -35,9 +35,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	DeveloperRegistrationService_RegisterGcp_FullMethodName              = "/google.shopping.merchant.accounts.v1.DeveloperRegistrationService/RegisterGcp"
-	DeveloperRegistrationService_GetDeveloperRegistration_FullMethodName = "/google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetDeveloperRegistration"
-	DeveloperRegistrationService_UnregisterGcp_FullMethodName            = "/google.shopping.merchant.accounts.v1.DeveloperRegistrationService/UnregisterGcp"
+	DeveloperRegistrationService_RegisterGcp_FullMethodName                  = "/google.shopping.merchant.accounts.v1.DeveloperRegistrationService/RegisterGcp"
+	DeveloperRegistrationService_GetDeveloperRegistration_FullMethodName     = "/google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetDeveloperRegistration"
+	DeveloperRegistrationService_UnregisterGcp_FullMethodName                = "/google.shopping.merchant.accounts.v1.DeveloperRegistrationService/UnregisterGcp"
+	DeveloperRegistrationService_GetAccountForGcpRegistration_FullMethodName = "/google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetAccountForGcpRegistration"
 )
 
 // DeveloperRegistrationServiceClient is the client API for DeveloperRegistrationService service.
@@ -55,6 +56,8 @@ type DeveloperRegistrationServiceClient interface {
 	// GCP will still be able to access the API for at most 1 day from the
 	// unregister succussful call.
 	UnregisterGcp(ctx context.Context, in *UnregisterGcpRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Retrieves the merchant account that the calling GCP is registered with.
+	GetAccountForGcpRegistration(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAccountForGcpRegistrationResponse, error)
 }
 
 type developerRegistrationServiceClient struct {
@@ -92,6 +95,15 @@ func (c *developerRegistrationServiceClient) UnregisterGcp(ctx context.Context, 
 	return out, nil
 }
 
+func (c *developerRegistrationServiceClient) GetAccountForGcpRegistration(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAccountForGcpRegistrationResponse, error) {
+	out := new(GetAccountForGcpRegistrationResponse)
+	err := c.cc.Invoke(ctx, DeveloperRegistrationService_GetAccountForGcpRegistration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DeveloperRegistrationServiceServer is the server API for DeveloperRegistrationService service.
 // All implementations should embed UnimplementedDeveloperRegistrationServiceServer
 // for forward compatibility
@@ -107,6 +119,8 @@ type DeveloperRegistrationServiceServer interface {
 	// GCP will still be able to access the API for at most 1 day from the
 	// unregister succussful call.
 	UnregisterGcp(context.Context, *UnregisterGcpRequest) (*emptypb.Empty, error)
+	// Retrieves the merchant account that the calling GCP is registered with.
+	GetAccountForGcpRegistration(context.Context, *emptypb.Empty) (*GetAccountForGcpRegistrationResponse, error)
 }
 
 // UnimplementedDeveloperRegistrationServiceServer should be embedded to have forward compatible implementations.
@@ -121,6 +135,9 @@ func (UnimplementedDeveloperRegistrationServiceServer) GetDeveloperRegistration(
 }
 func (UnimplementedDeveloperRegistrationServiceServer) UnregisterGcp(context.Context, *UnregisterGcpRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterGcp not implemented")
+}
+func (UnimplementedDeveloperRegistrationServiceServer) GetAccountForGcpRegistration(context.Context, *emptypb.Empty) (*GetAccountForGcpRegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountForGcpRegistration not implemented")
 }
 
 // UnsafeDeveloperRegistrationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -188,6 +205,24 @@ func _DeveloperRegistrationService_UnregisterGcp_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DeveloperRegistrationService_GetAccountForGcpRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperRegistrationServiceServer).GetAccountForGcpRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperRegistrationService_GetAccountForGcpRegistration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperRegistrationServiceServer).GetAccountForGcpRegistration(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DeveloperRegistrationService_ServiceDesc is the grpc.ServiceDesc for DeveloperRegistrationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +241,10 @@ var DeveloperRegistrationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnregisterGcp",
 			Handler:    _DeveloperRegistrationService_UnregisterGcp_Handler,
+		},
+		{
+			MethodName: "GetAccountForGcpRegistration",
+			Handler:    _DeveloperRegistrationService_GetAccountForGcpRegistration_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
