@@ -413,6 +413,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 }
 
 func (p *BigtableChannelPool) checkDirectAccessEligibility(ctx context.Context) {
+	// deferred recover for avoiding crash
 	defer func() {
 		if r := recover(); r != nil {
 			btopt.Debugf(p.logger, "bigtable_connpool: Recovered from panic in checkDirectAccessEligibility: %v", r)
@@ -430,6 +431,7 @@ func (p *BigtableChannelPool) checkDirectAccessEligibility(ctx context.Context) 
 	}
 	defer conn.Close()
 
+	// this is sad. send this feature flags.
 	customFeatures := btpb.FeatureFlags{
 		RoutingCookie:            true,
 		ReverseScans:             true,
@@ -451,6 +453,7 @@ func (p *BigtableChannelPool) checkDirectAccessEligibility(ctx context.Context) 
 	err = conn.Prime(ctx, p.instanceName, p.appProfile, ffMd)
 
 	if err != nil {
+		// invoke the callback
 		p.directAccessEligibleReporter(ctx, isEligible)
 		return
 	}

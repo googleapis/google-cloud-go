@@ -20,12 +20,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -188,6 +190,8 @@ type metricInfo struct {
 }
 
 type builtinMetricsTracerFactory struct {
+	exporter *monitoringExporter
+
 	enabled bool
 
 	clientOpts []option.ClientOption
@@ -247,7 +251,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	}
 
 	// Create default meter provider
-	mpOptions, err := builtInMeterProviderOptions(project, opts...)
+	metricsExporter, mpOptions, err := builtInMeterProviderOptions(project, opts...)
 	if err != nil {
 		// Swallow the error and disable metrics
 		return disabledMetricsTracerFactory, nil
@@ -294,18 +298,20 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		return disabledMetricsTracerFactory, nil
 	}
 
+	tracerFactory.exporter = metricsExporter
+
 	// Swallow the error and disable metrics
 	return tracerFactory, nil
 }
 
-func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+func builtInMeterProviderOptions(project string, opts ...option.ClientOption) (*monitoringExporter, []sdkmetric.Option, error) {
 	allOpts := createExporterOptions(opts...)
 	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return []sdkmetric.Option{sdkmetric.WithReader(
+	return defaultExporter, []sdkmetric.Option{sdkmetric.WithReader(
 		sdkmetric.NewPeriodicReader(
 			defaultExporter,
 			sdkmetric.WithInterval(defaultSamplePeriod),
@@ -335,14 +341,14 @@ func (tf *builtinMetricsTracerFactory) newAsyncRefreshErrHandler() func() {
 
 // reportDirectAccessEligibleMetric sets the value of the DirectPath eligibility gauge.
 func (tf *builtinMetricsTracerFactory) reportDirectAccessEligibleMetric(ctx context.Context, isEligible bool) {
-	if tf.directAccessEligible == nil {
+	if !tf.enabled || tf.exporter == nil {
 		return
 	}
 	val := int64(0)
 	if isEligible {
 		val = 1
 	}
-	fmt.Println("Reporting DirectAccess eligible metric")
+	btopt.Debugf(log.Default(), "Reporting DirectAccess eligible metric: %v", isEligible)
 	tf.directAccessEligible.Record(ctx, val)
 }
 
