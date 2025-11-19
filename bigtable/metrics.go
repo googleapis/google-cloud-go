@@ -334,7 +334,7 @@ func (tf *builtinMetricsTracerFactory) newAsyncRefreshErrHandler() func() {
 }
 
 // reportDirectAccessEligibleMetric sets the value of the DirectPath eligibility gauge.
-func (tf *builtinMetricsTracerFactory) reportDirectAccessEligibleMetric(ctx context.Context, isEligible bool, ipPreference string) {
+func (tf *builtinMetricsTracerFactory) reportDirectAccessEligibleMetric(ctx context.Context, isEligible bool) {
 	if tf.directAccessEligible == nil {
 		return
 	}

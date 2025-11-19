@@ -155,12 +155,11 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 	if err != nil {
 		return err
 	}
-
 	if p.AuthInfo != nil {
 		if _, ok := p.AuthInfo.(alts.AuthInfo); ok {
 			bc.isALTSConn.Store(true)
 		}
-		fmt.Println("Using Peer Address", p.Addr)
+		btopt.Debugf(log.Default(), "Using Peer Address %v", p.Addr.String())
 	}
 	return nil
 }
