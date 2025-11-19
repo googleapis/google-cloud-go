@@ -206,9 +206,6 @@ func initIntegrationTest() func() {
 			// We can't check universally because option.WithHTTPClient is
 			// incompatible with gRPC options.
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
-			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
-			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
-			connOpts = append(connOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
