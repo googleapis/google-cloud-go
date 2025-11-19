@@ -39,12 +39,6 @@ func (mc *Client) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRouti
 	return mc.routClient.UpdateRoutine(ctx, req, opts...)
 }
 
-// PatchRoutine patches information in an existing routine. The patch method does a partial
-// update to an existing Routine resource.
-func (mc *Client) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
-	return mc.routClient.PatchRoutine(ctx, req, opts...)
-}
-
 // DeleteRoutine deletes the routine specified by routineId from the dataset.
 func (mc *Client) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	return mc.routClient.DeleteRoutine(ctx, req, opts...)
