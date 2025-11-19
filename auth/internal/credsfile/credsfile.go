@@ -55,27 +55,6 @@ const (
 	ExternalAccountAuthorizedUserKey
 )
 
-// parseCredentialType returns the associated filetype based on the parsed
-// typeString provided.
-func parseCredentialType(typeString string) CredentialType {
-	switch typeString {
-	case "service_account":
-		return ServiceAccountKey
-	case "authorized_user":
-		return UserCredentialsKey
-	case "impersonated_service_account":
-		return ImpersonatedServiceAccountKey
-	case "external_account":
-		return ExternalAccountKey
-	case "external_account_authorized_user":
-		return ExternalAccountAuthorizedUserKey
-	case "gdch_service_account":
-		return GDCHServiceAccountKey
-	default:
-		return UnknownCredType
-	}
-}
-
 // GetFileNameFromEnv returns the override if provided or detects a filename
 // from the environment.
 func GetFileNameFromEnv(override string) string {

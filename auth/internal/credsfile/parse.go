@@ -89,10 +89,54 @@ type fileTypeChecker struct {
 }
 
 // ParseFileType determines the [CredentialType] based on bytes provided.
+// Only returns error for json.Unmarshal.
+// Returns UnknownCredType if no match.
 func ParseFileType(b []byte) (CredentialType, error) {
 	var f fileTypeChecker
 	if err := json.Unmarshal(b, &f); err != nil {
 		return 0, err
 	}
 	return parseCredentialType(f.Type), nil
+}
+
+// parseCredentialType returns the associated filetype based on the parsed
+// typeString provided.
+func parseCredentialType(typeString string) CredentialType {
+	switch typeString {
+	case "service_account":
+		return ServiceAccountKey
+	case "authorized_user":
+		return UserCredentialsKey
+	case "impersonated_service_account":
+		return ImpersonatedServiceAccountKey
+	case "external_account":
+		return ExternalAccountKey
+	case "external_account_authorized_user":
+		return ExternalAccountAuthorizedUserKey
+	case "gdch_service_account":
+		return GDCHServiceAccountKey
+	default:
+		return UnknownCredType
+	}
+}
+
+// ParseCredentialTypeString returns the associated filetype string based
+// on the parsed type code int provided.
+func ParseCredentialTypeString(credType CredentialType) string {
+	switch credType {
+	case ServiceAccountKey:
+		return "service_account"
+	case UserCredentialsKey:
+		return "authorized_user"
+	case ImpersonatedServiceAccountKey:
+		return "impersonated_service_account"
+	case ExternalAccountKey:
+		return "external_account"
+	case ExternalAccountAuthorizedUserKey:
+		return "external_account_authorized_user"
+	case GDCHServiceAccountKey:
+		return "gdch_service_account"
+	default:
+		return "unknown"
+	}
 }
