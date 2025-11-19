@@ -268,6 +268,9 @@ func retryableError(err error, allowedReasons []string) bool {
 	if err.Error() == "http2: stream closed" {
 		return true
 	}
+	if err.Error() == "http2: client connection lost" {
+		return true
+	}
 
 	switch e := err.(type) {
 	case *googleapi.Error:
@@ -292,6 +295,10 @@ func retryableError(err error, allowedReasons []string) bool {
 			if strings.Contains(e.Error(), s) {
 				return true
 			}
+		}
+	case interface{ Timeout() bool }:
+		if e.Timeout() {
+			return true
 		}
 	case interface{ Temporary() bool }:
 		if e.Temporary() {

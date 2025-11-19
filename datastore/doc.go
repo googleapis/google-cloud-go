@@ -377,7 +377,9 @@ also want to implement the KeyLoader interface.
 The KeyLoader interface exists to allow implementations of PropertyLoadSaver
 to also load an Entity's Key into the Go type. This type may be a struct
 pointer, but it does not have to be. The datastore package will call LoadKey
-when getting the entity's contents, after calling Load.
+// when getting the entity's contents, before calling Load. If LoadKey returns
+// an error, Load will still be called, but the error from LoadKey will be
+// returned.
 
 Example code:
 

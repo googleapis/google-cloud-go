@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:f2cbb6b904fdbf086efec0100536c52a79a654a5b9df21f975a2b6f6d50395a4
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:718167d5c23ed389b41f617b3a00ac839bdd938a6bd2d48ae0c2f1fa51ab1c3d
 libraries:
   - id: accessapproval
     version: 1.8.8
@@ -4735,7 +4735,6 @@ libraries:
       - internal/kokoro
       - internal/leakcheck
       - internal/librariangen
-      - internal/postprocessor
       - internal/pretty
       - internal/protoveneer
       - internal/testutil
@@ -5695,7 +5694,7 @@ libraries:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
-    version: 1.57.1
+    version: 1.57.2
     last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
     apis:
       - path: google/storage/control/v2
@@ -6043,6 +6042,29 @@ libraries:
       - ^translate/apiv3/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/translate/
+    tag_format: '{id}/v{version}'
+  - id: vectorsearch
+    version: 0.0.0
+    last_generated_commit: 7c0dcbba70fc5dd64655a77e74dbbf8aaf04c1bf
+    apis:
+      - path: google/cloud/vectorsearch/v1beta
+        service_config: vectorsearch_v1beta.yaml
+    source_roots:
+      - vectorsearch
+      - internal/generated/snippets/vectorsearch
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/vectorsearch/
+      - ^vectorsearch/apiv1beta/[^/]*_client\.go$
+      - ^vectorsearch/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^vectorsearch/apiv1beta/[^/]*_client_example_test\.go$
+      - ^vectorsearch/apiv1beta/auxiliary\.go$
+      - ^vectorsearch/apiv1beta/auxiliary_go123\.go$
+      - ^vectorsearch/apiv1beta/doc\.go$
+      - ^vectorsearch/apiv1beta/gapic_metadata\.json$
+      - ^vectorsearch/apiv1beta/helpers\.go$
+      - ^vectorsearch/apiv1beta/\.repo-metadata\.json$
+      - ^vectorsearch/apiv1beta/vectorsearchpb/.*$
     tag_format: '{id}/v{version}'
   - id: vertexai
     version: 0.15.0
