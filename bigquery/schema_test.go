@@ -250,6 +250,26 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// Timestamp with precision
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Description:        "desc",
+						Name:               "name",
+						Type:               "TIMESTAMP",
+						TimestampPrecision: int64ptr(12),
+					},
+				}},
+			schema: Schema{
+				{
+					Description:        "desc",
+					Name:               "name",
+					Type:               "TIMESTAMP",
+					TimestampPrecision: 12,
+				},
+			},
+		},
+		{
 			// civil times
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{

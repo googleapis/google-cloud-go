@@ -95,6 +95,7 @@ func TestIntegration_TableCreateWithConstraints(t *testing.T) {
 		{Name: "bytes_col", Type: BytesFieldType, MaxLength: 150},
 		{Name: "num_col", Type: NumericFieldType, Precision: 20},
 		{Name: "bignumeric_col", Type: BigNumericFieldType, Precision: 30, Scale: 5},
+		{Name: "timestamp_col", Type: TimeFieldType, TimestampPrecision: 12},
 	}
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema:         schema,

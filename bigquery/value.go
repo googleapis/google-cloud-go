@@ -28,6 +28,9 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+// Utility functions to deal with byproducts of wrapper types in discovery.
+func int64ptr(v int64) *int64 { return &v }
+
 // Value stores the contents of a single cell from a BigQuery result.
 type Value interface{}
 
