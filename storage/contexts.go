@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
@@ -61,17 +62,15 @@ func toRawObjectContexts(c *ObjectContexts) *raw.ObjectContexts {
 	}
 	customContexts := make(map[string]raw.ObjectCustomContextPayload)
 	for k, v := range c.Custom {
-		var payload raw.ObjectCustomContextPayload
 		if v.Delete {
 			// If Delete is true, populate null fields to signify deletion.
-			payload.NullFields = []string{k}
+			customContexts[k] = raw.ObjectCustomContextPayload{NullFields: []string{k}}
 		} else {
-			payload = raw.ObjectCustomContextPayload{
+			customContexts[k] = raw.ObjectCustomContextPayload{
 				Value:           v.Value,
 				ForceSendFields: []string{k},
 			}
 		}
-		customContexts[k] = payload
 	}
 	return &raw.ObjectContexts{
 		Custom: customContexts,
@@ -101,17 +100,29 @@ func toProtoObjectContexts(c *ObjectContexts) *storagepb.ObjectContexts {
 	}
 	customContexts := make(map[string]*storagepb.ObjectCustomContextPayload)
 	for k, v := range c.Custom {
-		var payload *storagepb.ObjectCustomContextPayload
-		if v.Delete {
-			continue
-		} else {
-			payload = &storagepb.ObjectCustomContextPayload{
+		if !v.Delete {
+			customContexts[k] = &storagepb.ObjectCustomContextPayload{
 				Value: v.Value,
 			}
 		}
-		customContexts[k] = payload
 	}
 	return &storagepb.ObjectContexts{
 		Custom: customContexts,
 	}
+}
+
+func toStringCustomContext(cc *CustomContext) string {
+	if cc == nil || cc.Key == "" {
+		return ""
+	}
+	var filter string
+	if cc.Value != "" {
+		filter = fmt.Sprintf(`contexts."%s"="%s"`, cc.Key, cc.Value)
+	} else {
+		filter = fmt.Sprintf(`contexts."%s":*`, cc.Key)
+	}
+	if cc.Absence {
+		filter = fmt.Sprintf(`-%s`, filter)
+	}
+	return filter
 }

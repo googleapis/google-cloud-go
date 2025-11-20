@@ -1123,7 +1123,7 @@ type ObjectAttrsToUpdate struct {
 	// Contexts allows adding, modifying, or deleting individual object contexts.
 	// To add or modify a context, set the value field in ObjectCustomContextPayload.
 	// To delete a context, set the Delete field in ObjectCustomContextPayload to true.
-	// to remove al contexts, pass &ObjectContexts{} in Contexts making sure Custom is empty.
+	// to remove all contexts, pass &ObjectContexts{} in Contexts making sure Custom is empty.
 	Contexts *ObjectContexts
 }
 
@@ -1954,12 +1954,13 @@ type Query struct {
 	// By default, soft-deleted objects are not listed.
 	SoftDeleted bool
 
-	// CustomContext is used to filter results to objects that have a matching
-	// context key and value. Absence can also be passed which will result in objects
-	// not matching key and value
+	// See CustomContext for more details.
 	CustomContext *CustomContext
 }
 
+// CustomContext is used to filter results to objects that have a matching
+// context key and value. Absence can also be passed which will result in objects
+// not matching key and value
 type CustomContext struct {
 	Key     string
 	Value   string
@@ -2002,6 +2003,7 @@ var attrToFieldMap = map[string]string{
 	"Retention":               "retention",
 	"HardDeleteTime":          "hardDeleteTime",
 	"SoftDeleteTime":          "softDeleteTime",
+	"Contexts":                "contexts",
 }
 
 // attrToProtoFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -2037,6 +2039,7 @@ var attrToProtoFieldMap = map[string]string{
 	"ComponentCount":          "component_count",
 	"HardDeleteTime":          "hard_delete_time",
 	"SoftDeleteTime":          "soft_delete_time",
+	"Contexts":                "contexts",
 	// MediaLink was explicitly excluded from the proto as it is an HTTP-ism.
 	// "MediaLink":               "mediaLink",
 	// TODO: add object retention - b/308194853

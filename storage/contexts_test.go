@@ -130,23 +130,10 @@ func TestToRawObjectContexts(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := toRawObjectContexts(tc.obj)
-			// Use a custom comparer for maps because order of ForceSendFields doesn't matter,
-			// and map iteration order is not guaranteed.
-			if diff := cmp.Diff(tc.want, got, cmpopts.IgnoreFields(raw.ObjectCustomContextPayload{}, "ForceSendFields")); diff != "" {
+			// cmp.Diff on maps is order-independent. We only need to sort the slice fields.
+			opts := cmpopts.SortSlices(func(a, b string) bool { return a < b })
+			if diff := cmp.Diff(tc.want, got, opts); diff != "" {
 				t.Errorf("toRawObjectContexts() mismatch (-want +got): %s", diff)
-			}
-			// Additionally check ForceSendFields as it is ignored by the above diff.
-			if tc.want != nil && got != nil {
-				for k, wantPayload := range tc.want.Custom {
-					if gotPayload, ok := got.Custom[k]; ok {
-						if len(wantPayload.ForceSendFields) > 0 && len(gotPayload.ForceSendFields) == 0 {
-							t.Errorf("toRawObjectContexts() mismatch for key %s: ForceSendFields missing", k)
-						}
-						if len(wantPayload.NullFields) > 0 && len(gotPayload.NullFields) == 0 {
-							t.Errorf("toRawObjectContexts() mismatch for key %s: NullFields missing", k)
-						}
-					}
-				}
 			}
 		})
 	}
@@ -246,6 +233,54 @@ func TestToProtoObjectContexts(t *testing.T) {
 			got := toProtoObjectContexts(tc.obj)
 			if diff := cmp.Diff(tc.want, got, protocmp.Transform()); diff != "" {
 				t.Errorf("toProtoObjectContexts() mismatch (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+func TestToStringCustomContext(t *testing.T) {
+	testCases := []struct {
+		name string
+		cc   *CustomContext
+		want string
+	}{
+		{
+			name: "nil custom context",
+			cc:   nil,
+			want: "",
+		},
+		{
+			name: "empty key",
+			cc:   &CustomContext{Key: ""},
+			want: "",
+		},
+		{
+			name: "with value",
+			cc:   &CustomContext{Key: "key1", Value: "value1"},
+			want: "contexts.\"key1\"=\"value1\"",
+		},
+		{
+			name: "without value",
+			cc:   &CustomContext{Key: "key1"},
+			want: "contexts.\"key1\":*",
+		},
+		{
+			name: "with value and absence",
+			cc:   &CustomContext{Key: "key1", Value: "value1", Absence: true},
+			want: "-contexts.\"key1\"=\"value1\"",
+		},
+		{
+			name: "without value and with absence",
+			cc:   &CustomContext{Key: "key1", Absence: true},
+			want: "-contexts.\"key1\":*",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := toStringCustomContext(tc.cc)
+			if got != tc.want {
+				t.Errorf("toStringCustomContext() = %q, want %q", got, tc.want)
 			}
 		})
 	}
