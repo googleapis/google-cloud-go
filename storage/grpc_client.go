@@ -460,6 +460,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
 		SoftDeleted:              it.query.SoftDeleted,
 		IncludeFoldersAsPrefixes: it.query.IncludeFoldersAsPrefixes,
+		Filter:                   toStringCustomContext(it.query.CustomContext),
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -626,6 +627,18 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 			// We can, however, use dot notation for adding keys
 			for key := range uattrs.Metadata {
 				fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("metadata.%s", key))
+			}
+		}
+	}
+
+	if uattrs.Contexts != nil {
+		if len(uattrs.Contexts.Custom) == 0 {
+			// pass fieldMask with no key value and empty map to delete all keys
+			fieldMask.Paths = append(fieldMask.Paths, "contexts.custom")
+		} else {
+			for key := range uattrs.Contexts.Custom {
+				// pass fieldMask with key value with empty value in map to delete key
+				fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("contexts.custom.%s", key))
 			}
 		}
 	}
@@ -2661,4 +2674,20 @@ func (r *gRPCReader) reopenStream() error {
 	r.currMsg = res.decoder
 	r.cancel = cancel
 	return nil
+}
+
+func toStringCustomContext(cc *CustomContext) string {
+	if cc == nil || cc.Key == "" {
+		return ""
+	}
+	var filter string
+	if cc.Value != "" {
+		filter = fmt.Sprintf(`contexts."%s"="%s"`, cc.Key, cc.Value)
+	} else {
+		filter = fmt.Sprintf(`contexts."%s":*`, cc.Key)
+	}
+	if cc.Absence {
+		filter = fmt.Sprintf(`-%s`, filter)
+	}
+	return filter
 }

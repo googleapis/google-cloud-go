@@ -1119,6 +1119,12 @@ type ObjectAttrsToUpdate struct {
 	// extending the RetainUntil time on the object retention must be done
 	// on an ObjectHandle with OverrideUnlockedRetention set to true.
 	Retention *ObjectRetention
+
+	// Contexts allows adding, modifying, or deleting individual object contexts.
+	// To add or modify a context, set the value field in ObjectCustomContextPayload.
+	// To delete a context, set the Delete field in ObjectCustomContextPayload to true.
+	// to remove al contexts, pass &ObjectContexts{} in Contexts making sure Custom is empty.
+	Contexts *ObjectContexts
 }
 
 // Delete deletes the single specified object.
@@ -1411,6 +1417,7 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		Metadata:                o.Metadata,
 		CustomTime:              ct,
 		Retention:               o.Retention.toRawObjectRetention(),
+		Contexts:                toRawObjectContexts(o.Contexts),
 	}
 }
 
@@ -1445,6 +1452,7 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		KmsKey:              o.KMSKeyName,
 		Generation:          o.Generation,
 		Size:                o.Size,
+		Contexts:            toProtoObjectContexts(o.Contexts),
 	}
 }
 
@@ -1487,6 +1495,10 @@ func (uattrs *ObjectAttrsToUpdate) toProtoObject(bucket, object string) *storage
 	}
 
 	o.Metadata = uattrs.Metadata
+
+	if uattrs.Contexts != nil {
+		o.Contexts = toProtoObjectContexts(uattrs.Contexts)
+	}
 
 	return o
 }
@@ -1670,6 +1682,12 @@ type ObjectAttrs struct {
 	// ObjectHandle.Attrs will return ErrObjectNotExist if the object is soft-deleted.
 	// This field is read-only.
 	HardDeleteTime time.Time
+
+	// Contexts store custom key-value metadata that the user could
+	// annotate object with. These key-value pairs can be used to filter objects
+	// during list calls. See https://cloud.google.com/storage/docs/object-contexts
+	// for more details.
+	Contexts *ObjectContexts `json:"contexts,omitempty"`
 }
 
 // isZero reports whether the ObjectAttrs struct is empty (i.e. all the
@@ -1783,6 +1801,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Retention:               toObjectRetention(o.Retention),
 		SoftDeleteTime:          convertTime(o.SoftDeleteTime),
 		HardDeleteTime:          convertTime(o.HardDeleteTime),
+		Contexts:                toObjectContexts(o.Contexts),
 	}
 }
 
@@ -1821,6 +1840,7 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 		ComponentCount:    int64(o.ComponentCount),
 		SoftDeleteTime:    convertProtoTime(o.GetSoftDeleteTime()),
 		HardDeleteTime:    convertProtoTime(o.GetHardDeleteTime()),
+		Contexts:          toObjectContextsFromProto(o.GetContexts()),
 	}
 }
 
@@ -1933,6 +1953,17 @@ type Query struct {
 	// If true, only objects that have been soft-deleted will be listed.
 	// By default, soft-deleted objects are not listed.
 	SoftDeleted bool
+
+	// CustomContext is used to filter results to objects that have a matching
+	// context key and value. Absence can also be passed which will result in objects
+	// not matching key and value
+	CustomContext *CustomContext
+}
+
+type CustomContext struct {
+	Key     string
+	Value   string
+	Absence bool
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
