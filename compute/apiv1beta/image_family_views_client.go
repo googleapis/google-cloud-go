@@ -100,7 +100,8 @@ func (c *ImageFamilyViewsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get returns the latest image that is part of an image family, is not deprecated and is rolled out in the specified zone.
+// Get returns the latest image that is part of an image family, is not
+// deprecated and is rolled out in the specified zone.
 func (c *ImageFamilyViewsClient) Get(ctx context.Context, req *computepb.GetImageFamilyViewRequest, opts ...gax.CallOption) (*computepb.ImageFamilyView, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -182,7 +183,8 @@ func (c *imageFamilyViewsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get returns the latest image that is part of an image family, is not deprecated and is rolled out in the specified zone.
+// Get returns the latest image that is part of an image family, is not
+// deprecated and is rolled out in the specified zone.
 func (c *imageFamilyViewsRESTClient) Get(ctx context.Context, req *computepb.GetImageFamilyViewRequest, opts ...gax.CallOption) (*computepb.ImageFamilyView, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

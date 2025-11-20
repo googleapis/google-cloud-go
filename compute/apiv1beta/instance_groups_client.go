@@ -168,42 +168,71 @@ func (c *InstanceGroupsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read Adding instances for more information.
+// AddInstances adds a list of instances to the specified instance group.  All of the
+// instances in the instance group must be in the same network/subnetwork.
+// Read
+// Adding instances for more information.
 func (c *InstanceGroupsClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddInstances(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of instance groups and sorts them by zone.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *InstanceGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read Deleting an instance group for more information.
+// Delete deletes the specified instance group. The instances in the group are not
+// deleted. Note that instance group must not belong to a backend service.
+// Read
+// Deleting an instance group for more information.
 func (c *InstanceGroupsClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// Get returns the specified zonal instance group. Get a list of available zonal
+// instance groups by making a list() request.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *InstanceGroupsClient) Get(ctx context.Context, req *computepb.GetInstanceGroupRequest, opts ...gax.CallOption) (*computepb.InstanceGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an instance group in the specified project using the parameters that are included in the request.
+// Insert creates an instance group in the specified project using the
+// parameters that are included in the request.
 func (c *InstanceGroupsClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of zonal instance group resources contained within the specified zone. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// List retrieves the list of zonal instance group resources contained within the
+// specified zone.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *InstanceGroupsClient) List(ctx context.Context, req *computepb.ListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use eq (equal) or ne (not equal) operators.
+// ListInstances lists the instances in the specified instance group.
+// The orderBy query parameter is not supported.
+// The filter query parameter is supported, but only for
+// expressions that use eq (equal) or ne (not equal) operators.
 func (c *InstanceGroupsClient) ListInstances(ctx context.Context, req *computepb.ListInstancesInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	return c.internalClient.ListInstances(ctx, req, opts...)
 }
 
-// RemoveInstances removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
+// RemoveInstances removes one or more instances from the specified instance group, but does
+// not delete those instances.
+//
+// If the group is part of a backend
+// service that has enabled
+// connection draining, it can take up to 60 seconds after the connection
+// draining duration before the VM instance is removed or deleted.
 func (c *InstanceGroupsClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveInstances(ctx, req, opts...)
 }
@@ -311,7 +340,10 @@ func (c *instanceGroupsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read Adding instances for more information.
+// AddInstances adds a list of instances to the specified instance group.  All of the
+// instances in the instance group must be in the same network/subnetwork.
+// Read
+// Adding instances for more information.
 func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsAddInstancesRequestResource()
@@ -378,7 +410,10 @@ func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *comput
 	return op, nil
 }
 
-// AggregatedList retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of instance groups and sorts them by zone.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupsScopedListPairIterator {
 	it := &InstanceGroupsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstanceGroupsRequest)
@@ -477,7 +512,10 @@ func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *comp
 	return it
 }
 
-// Delete deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read Deleting an instance group for more information.
+// Delete deletes the specified instance group. The instances in the group are not
+// deleted. Note that instance group must not belong to a backend service.
+// Read
+// Deleting an instance group for more information.
 func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -537,7 +575,12 @@ func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 	return op, nil
 }
 
-// Get returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// Get returns the specified zonal instance group. Get a list of available zonal
+// instance groups by making a list() request.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetInstanceGroupRequest, opts ...gax.CallOption) (*computepb.InstanceGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -582,7 +625,8 @@ func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetIn
 	return resp, nil
 }
 
-// Insert creates an instance group in the specified project using the parameters that are included in the request.
+// Insert creates an instance group in the specified project using the
+// parameters that are included in the request.
 func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupResource()
@@ -649,7 +693,12 @@ func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 	return op, nil
 }
 
-// List retrieves the list of zonal instance group resources contained within the specified zone. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// List retrieves the list of zonal instance group resources contained within the
+// specified zone.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.ListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	it := &InstanceGroupIterator{}
 	req = proto.Clone(req).(*computepb.ListInstanceGroupsRequest)
@@ -735,7 +784,10 @@ func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.List
 	return it
 }
 
-// ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use eq (equal) or ne (not equal) operators.
+// ListInstances lists the instances in the specified instance group.
+// The orderBy query parameter is not supported.
+// The filter query parameter is supported, but only for
+// expressions that use eq (equal) or ne (not equal) operators.
 func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	it := &InstanceWithNamedPortsIterator{}
 	req = proto.Clone(req).(*computepb.ListInstancesInstanceGroupsRequest)
@@ -827,7 +879,13 @@ func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *compu
 	return it
 }
 
-// RemoveInstances removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
+// RemoveInstances removes one or more instances from the specified instance group, but does
+// not delete those instances.
+//
+// If the group is part of a backend
+// service that has enabled
+// connection draining, it can take up to 60 seconds after the connection
+// draining duration before the VM instance is removed or deleted.
 func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsRemoveInstancesRequestResource()

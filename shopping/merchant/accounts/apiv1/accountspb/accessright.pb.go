@@ -35,7 +35,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The access right.
+// The access right defines the level of permission a
+// user has within a Merchant Center account.
 type AccessRight int32
 
 const (
@@ -51,7 +52,8 @@ const (
 	// Users with this right have access to performance and insights.
 	AccessRight_PERFORMANCE_REPORTING AccessRight = 3
 	// Users with this right have access to Merchant API and its notifications.
-	// This role is only accessible to accounts that has a developer registration.
+	// This role is only accessible to accounts that have a developer
+	// registration.
 	AccessRight_API_DEVELOPER AccessRight = 5
 )
 
