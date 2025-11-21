@@ -27,6 +27,7 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
@@ -273,4 +274,85 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNewCredentials_TypeValidation(t *testing.T) {
+	tests := []struct {
+		name       string
+		credType   credentials.CredType
+		json       []byte // Use raw JSON to test NewCredentialsFromJSON
+		file       string // For NewCredentialsFromFile
+		wantErr    bool
+		wantErrMsg string // Expected substring in the error message
+	}{
+		{
+			name:     "ServiceAccount_FromFile_Success",
+			credType: credentials.ServiceAccount,
+			file:     "../../internal/testdata/sa.json",
+			wantErr:  false,
+		},
+		{
+			name:       "ServiceAccount_FromFile_Mismatch",
+			credType:   credentials.ServiceAccount,
+			file:       "../../internal/testdata/user.json",
+			wantErr:    true,
+			wantErrMsg: `credentials: expected type "service_account", found "authorized_user"`,
+		},
+		{
+			name:       "UserCredentials_FromJSON_Unsupported",
+			credType:   credentials.AuthorizedUser,
+			json:       readTestFile(t, "../../internal/testdata/user.json"),
+			wantErr:    true,
+			wantErrMsg: "idtoken: unsupported credentials type: authorized_user",
+		},
+		{
+			name:       "UserCredentials_FromJSON_Mismatch",
+			credType:   credentials.AuthorizedUser,
+			json:       readTestFile(t, "../../internal/testdata/sa.json"),
+			wantErr:    true,
+			wantErrMsg: `credentials: expected type "authorized_user", found "service_account"`,
+		},
+		{
+			name:       "Error_NonExistentFile",
+			credType:   credentials.ServiceAccount,
+			file:       "nonexistent.json",
+			wantErr:    true,
+			wantErrMsg: "no such file or directory",
+		},
+		{
+			name:       "Error_MalformedJSON",
+			credType:   credentials.ServiceAccount,
+			json:       []byte(`{"type": "service_account",}`), // Invalid JSON with trailing comma
+			wantErr:    true,
+			wantErrMsg: "invalid character",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var err error
+			opts := &Options{Audience: "aud"}
+			if tt.file != "" {
+				_, err = NewCredentialsFromFile(tt.credType, tt.file, opts)
+			} else {
+				_, err = NewCredentialsFromJSON(tt.credType, tt.json, opts)
+			}
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("test %q: got error %v, want error %v", tt.name, err, tt.wantErr)
+			}
+			if tt.wantErr && tt.wantErrMsg != "" && !strings.Contains(err.Error(), tt.wantErrMsg) {
+				t.Errorf("test %q: got error message %q, want error message containing %q", tt.name, err.Error(), tt.wantErrMsg)
+			}
+		})
+	}
+}
+
+func readTestFile(t *testing.T, filename string) []byte {
+	t.Helper()
+	b, err := os.ReadFile(filename)
+	if err != nil {
+		t.Fatalf("os.ReadFile(%q) = %v", filename, err)
+	}
+	return b
 }
