@@ -52,16 +52,16 @@ var (
 	allowOnGCECheck = true
 )
 
-// CredentialsType specifies the type of JSON credentials being provided
+// CredType specifies the type of JSON credentials being provided
 // to a loading function such as [NewCredentialsFromFile] or
 // [NewCredentialsFromJSON].
-type CredentialsType string
+type CredType string
 
 const (
 	// ServiceAccount represents a service account file type.
-	ServiceAccount CredentialsType = "service_account"
-	// User represents a user credentials file type.
-	UserCredentials CredentialsType = "authorized_user"
+	ServiceAccount CredType = "service_account"
+	// AuthorizedUser represents a user credentials file type.
+	AuthorizedUser CredType = "authorized_user"
 	// ExternalAccount represents an external account file type.
 	//
 	// IMPORTANT:
@@ -72,7 +72,7 @@ const (
 	// See [Security requirements when using credential configurations from an external
 	// source] https://cloud.google.com/docs/authentication/external/externally-sourced-credentials
 	// for more details.
-	ExternalAccount CredentialsType = "external_account"
+	ExternalAccount CredType = "external_account"
 	// ImpersonatedServiceAccount represents an impersonated service account file type.
 	//
 	// IMPORTANT:
@@ -83,11 +83,11 @@ const (
 	// See [Security requirements when using credential configurations from an external
 	// source] https://cloud.google.com/docs/authentication/external/externally-sourced-credentials
 	// for more details.
-	ImpersonatedServiceAccount CredentialsType = "impersonated_service_account"
+	ImpersonatedServiceAccount CredType = "impersonated_service_account"
 	// GDCHServiceAccount represents a GDCH service account credentials.
-	GDCHServiceAccount CredentialsType = "gdch_service_account"
+	GDCHServiceAccount CredType = "gdch_service_account"
 	// ExternalAccountAuthorizedUser represents an external account authorized user credentials.
-	ExternalAccountAuthorizedUser CredentialsType = "external_account_authorized_user"
+	ExternalAccountAuthorizedUser CredType = "external_account_authorized_user"
 )
 
 // TokenBindingType specifies the type of binding used when requesting a token
@@ -321,7 +321,7 @@ type DetectOptions struct {
 // Google APIs can compromise the security of your systems and data. For
 // more information, refer to [Validate credential configurations from
 // external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromFile(ctx context.Context, credType CredentialsType, filename string, opts *DetectOptions) (*auth.Credentials, error) {
+func NewCredentialsFromFile(ctx context.Context, credType CredType, filename string, opts *DetectOptions) (*auth.Credentials, error) {
 	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -341,7 +341,7 @@ func NewCredentialsFromFile(ctx context.Context, credType CredentialsType, filen
 // Google APIs can compromise the security of your systems and data. For
 // more information, refer to [Validate credential configurations from
 // external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromJSON(ctx context.Context, credType CredentialsType, b []byte, opts *DetectOptions) (*auth.Credentials, error) {
+func NewCredentialsFromJSON(ctx context.Context, credType CredType, b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	if err := checkCredentialType(b, credType); err != nil {
 		return nil, err
 	}
@@ -352,13 +352,13 @@ func NewCredentialsFromJSON(ctx context.Context, credType CredentialsType, b []b
 	return fileCredentials(b, opts)
 }
 
-func checkCredentialType(b []byte, expected CredentialsType) error {
+func checkCredentialType(b []byte, expected CredType) error {
 
 	fileType, err := credsfile.ParseFileType(b)
 	if err != nil {
 		return err
 	}
-	if CredentialsType(fileType) != expected {
+	if CredType(fileType) != expected {
 		return fmt.Errorf("credentials: expected type %q, found %q", expected, fileType)
 	}
 	return nil

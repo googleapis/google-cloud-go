@@ -40,7 +40,7 @@ func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials
 	if err != nil {
 		return nil, err
 	}
-	switch credentials.CredentialsType(t) {
+	switch credentials.CredType(t) {
 	case credentials.ServiceAccount:
 		f, err := credsfile.ParseServiceAccount(b)
 		if err != nil {

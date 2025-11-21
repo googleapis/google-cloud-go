@@ -229,7 +229,7 @@ func (o *Options) jsonBytes() []byte {
 // credential configuration to Google APIs can compromise the security of your
 // systems and data. For more information, refer to [Validate credential
 // configurations from external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromJSON(ctx context.Context, credType credentials.CredentialsType, b []byte, opts *Options) (*auth.Credentials, error) {
+func NewCredentialsFromJSON(ctx context.Context, credType credentials.CredType, b []byte, opts *Options) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
@@ -260,7 +260,7 @@ func NewCredentialsFromJSON(ctx context.Context, credType credentials.Credential
 // credential configuration to Google APIs can compromise the security of your
 // systems and data. For more information, refer to [Validate credential
 // configurations from external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromFile(ctx context.Context, credType credentials.CredentialsType, filename string, opts *Options) (*auth.Credentials, error) {
+func NewCredentialsFromFile(ctx context.Context, credType credentials.CredType, filename string, opts *Options) (*auth.Credentials, error) {
 	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err

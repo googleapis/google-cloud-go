@@ -41,7 +41,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 
 	var projectID, universeDomain string
 	var tp auth.TokenProvider
-	switch CredentialsType(fileType) {
+	switch CredType(fileType) {
 	case ServiceAccount:
 		f, err := credsfile.ParseServiceAccount(b)
 		if err != nil {
@@ -53,7 +53,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		}
 		projectID = f.ProjectID
 		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	case UserCredentials:
+	case AuthorizedUser:
 		f, err := credsfile.ParseUserCredentials(b)
 		if err != nil {
 			return nil, err

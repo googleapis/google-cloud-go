@@ -29,7 +29,7 @@ func TestNewCredentials(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		credType   CredentialsType
+		credType   CredType
 		json       []byte // Use raw JSON to test more cases
 		file       string // For file-based tests
 		wantErr    bool
@@ -46,7 +46,7 @@ func TestNewCredentials(t *testing.T) {
 		},
 		{
 			name:      "UserCredentials_Success_FromJSON",
-			credType:  UserCredentials,
+			credType:  AuthorizedUser,
 			json:      readTestFile(t, "../internal/testdata/user.json"),
 			wantErr:   false,
 			wantCreds: true,
@@ -75,7 +75,7 @@ func TestNewCredentials(t *testing.T) {
 		},
 		{
 			name:       "UserCredentials_Mismatch_FromJSON",
-			credType:   UserCredentials,
+			credType:   AuthorizedUser,
 			json:       readTestFile(t, "../internal/testdata/sa.json"),
 			wantErr:    true,
 			wantErrMsg: `credentials: expected type "authorized_user", found "service_account"`,

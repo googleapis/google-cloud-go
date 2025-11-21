@@ -281,7 +281,7 @@ func TestNewCredentials_TypeValidation(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		credType   credentials.CredentialsType
+		credType   credentials.CredType
 		json       []byte // Use raw JSON to test NewCredentialsFromJSON
 		file       string // For NewCredentialsFromFile
 		wantErr    bool
@@ -302,14 +302,14 @@ func TestNewCredentials_TypeValidation(t *testing.T) {
 		},
 		{
 			name:       "UserCredentials_FromJSON_Unsupported",
-			credType:   credentials.UserCredentials,
+			credType:   credentials.AuthorizedUser,
 			json:       readTestFile(t, "../../internal/testdata/user.json"),
 			wantErr:    true,
 			wantErrMsg: "idtoken: unsupported credentials type: authorized_user",
 		},
 		{
 			name:       "UserCredentials_FromJSON_Mismatch",
-			credType:   credentials.UserCredentials,
+			credType:   credentials.AuthorizedUser,
 			json:       readTestFile(t, "../../internal/testdata/sa.json"),
 			wantErr:    true,
 			wantErrMsg: `credentials: expected type "authorized_user", found "service_account"`,
