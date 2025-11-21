@@ -35,13 +35,14 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	if err != nil {
 		return nil, err
 	}
+	if fileType == "" {
+		return nil, errors.New("credentials: unsupported unidentified file type")
+	}
 
 	var projectID, universeDomain string
 	var tp auth.TokenProvider
-	switch fileType {
-	case credsfile.UnknownCredType:
-		return nil, errors.New("credentials: unsupported unidentified file type")
-	case credsfile.ServiceAccountKey:
+	switch CredentialsType(fileType) {
+	case ServiceAccount:
 		f, err := credsfile.ParseServiceAccount(b)
 		if err != nil {
 			return nil, err
@@ -52,7 +53,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		}
 		projectID = f.ProjectID
 		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	case credsfile.UserCredentialsKey:
+	case UserCredentials:
 		f, err := credsfile.ParseUserCredentials(b)
 		if err != nil {
 			return nil, err
@@ -62,7 +63,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		universeDomain = f.UniverseDomain
-	case credsfile.ExternalAccountKey:
+	case ExternalAccount:
 		f, err := credsfile.ParseExternalAccount(b)
 		if err != nil {
 			return nil, err
@@ -72,7 +73,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	case credsfile.ExternalAccountAuthorizedUserKey:
+	case ExternalAccountAuthorizedUser:
 		f, err := credsfile.ParseExternalAccountAuthorizedUser(b)
 		if err != nil {
 			return nil, err
@@ -82,7 +83,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		universeDomain = f.UniverseDomain
-	case credsfile.ImpersonatedServiceAccountKey:
+	case ImpersonatedServiceAccount:
 		f, err := credsfile.ParseImpersonatedServiceAccount(b)
 		if err != nil {
 			return nil, err
@@ -92,7 +93,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	case credsfile.GDCHServiceAccountKey:
+	case GDCHServiceAccount:
 		f, err := credsfile.ParseGDCHServiceAccount(b)
 		if err != nil {
 			return nil, err

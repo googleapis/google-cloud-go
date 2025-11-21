@@ -55,13 +55,13 @@ var (
 // CredentialsType specifies the type of JSON credentials being provided
 // to a loading function such as [NewCredentialsFromFile] or
 // [NewCredentialsFromJSON].
-type CredentialsType = credsfile.CredentialType
+type CredentialsType string
 
 const (
 	// ServiceAccount represents a service account file type.
-	ServiceAccount CredentialsType = credsfile.ServiceAccountKey
+	ServiceAccount CredentialsType = "service_account"
 	// User represents a user credentials file type.
-	UserCredentials CredentialsType = credsfile.UserCredentialsKey
+	UserCredentials CredentialsType = "authorized_user"
 	// ExternalAccount represents an external account file type.
 	//
 	// IMPORTANT:
@@ -72,7 +72,7 @@ const (
 	// See [Security requirements when using credential configurations from an external
 	// source] https://cloud.google.com/docs/authentication/external/externally-sourced-credentials
 	// for more details.
-	ExternalAccount CredentialsType = credsfile.ExternalAccountKey
+	ExternalAccount CredentialsType = "external_account"
 	// ImpersonatedServiceAccount represents an impersonated service account file type.
 	//
 	// IMPORTANT:
@@ -83,11 +83,11 @@ const (
 	// See [Security requirements when using credential configurations from an external
 	// source] https://cloud.google.com/docs/authentication/external/externally-sourced-credentials
 	// for more details.
-	ImpersonatedServiceAccount CredentialsType = credsfile.ImpersonatedServiceAccountKey
+	ImpersonatedServiceAccount CredentialsType = "impersonated_service_account"
 	// GDCHServiceAccount represents a GDCH service account credentials.
-	GDCHServiceAccount CredentialsType = credsfile.GDCHServiceAccountKey
+	GDCHServiceAccount CredentialsType = "gdch_service_account"
 	// ExternalAccountAuthorizedUser represents an external account authorized user credentials.
-	ExternalAccountAuthorizedUser CredentialsType = credsfile.ExternalAccountAuthorizedUserKey
+	ExternalAccountAuthorizedUser CredentialsType = "external_account_authorized_user"
 )
 
 // TokenBindingType specifies the type of binding used when requesting a token
@@ -353,16 +353,13 @@ func NewCredentialsFromJSON(ctx context.Context, credType CredentialsType, b []b
 }
 
 func checkCredentialType(b []byte, expected CredentialsType) error {
+
 	fileType, err := credsfile.ParseFileType(b)
 	if err != nil {
 		return err
 	}
-	// ParseFileType may return auth/internal/credsfile.UnknownCredType,
-	// but it won't be matched here because we don't expose it.
-	if fileType != expected {
-		expectedS := credsfile.ParseCredentialTypeString(expected)
-		fileTypeS := credsfile.ParseCredentialTypeString(fileType)
-		return fmt.Errorf("credentials: expected type %q, found %q", expectedS, fileTypeS)
+	if CredentialsType(fileType) != expected {
+		return fmt.Errorf("credentials: expected type %q, found %q", expected, fileType)
 	}
 	return nil
 }
