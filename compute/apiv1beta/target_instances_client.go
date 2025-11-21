@@ -153,7 +153,10 @@ func (c *TargetInstancesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target instances.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetInstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstancesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -168,17 +171,21 @@ func (c *TargetInstancesClient) Get(ctx context.Context, req *computepb.GetTarge
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
+// Insert creates a TargetInstance resource in the specified project and zone using
+// the data included in the request.
 func (c *TargetInstancesClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of TargetInstance resources available to the specified project and zone.
+// List retrieves a list of TargetInstance resources available to the specified
+// project and zone.
 func (c *TargetInstancesClient) List(ctx context.Context, req *computepb.ListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstanceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target
+// instance. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *TargetInstancesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
@@ -281,7 +288,10 @@ func (c *targetInstancesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target instances.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstancesScopedListPairIterator {
 	it := &TargetInstancesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetInstancesRequest)
@@ -485,7 +495,8 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 	return resp, nil
 }
 
-// Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
+// Insert creates a TargetInstance resource in the specified project and zone using
+// the data included in the request.
 func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetInstanceResource()
@@ -552,7 +563,8 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 	return op, nil
 }
 
-// List retrieves a list of TargetInstance resources available to the specified project and zone.
+// List retrieves a list of TargetInstance resources available to the specified
+// project and zone.
 func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.ListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstanceIterator {
 	it := &TargetInstanceIterator{}
 	req = proto.Clone(req).(*computepb.ListTargetInstancesRequest)
@@ -638,7 +650,9 @@ func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target
+// instance. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *targetInstancesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()

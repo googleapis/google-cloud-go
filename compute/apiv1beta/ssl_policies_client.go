@@ -167,12 +167,18 @@ func (c *SslPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SslPolicy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *SslPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslPoliciesRequest, opts ...gax.CallOption) *SslPoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+// Delete deletes the specified SSL policy. The SSL policy resource can be deleted
+// only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+// resources.
 func (c *SslPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -187,12 +193,14 @@ func (c *SslPoliciesClient) Insert(ctx context.Context, req *computepb.InsertSsl
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the SSL policies that have been configured for the specified project.
+// List lists all the SSL policies that have been configured for the specified
+// project.
 func (c *SslPoliciesClient) List(ctx context.Context, req *computepb.ListSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.
+// ListAvailableFeatures lists all features that can be specified in the SSL policy when using
+// custom profile.
 func (c *SslPoliciesClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	return c.internalClient.ListAvailableFeatures(ctx, req, opts...)
 }
@@ -300,7 +308,11 @@ func (c *sslPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SslPolicy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *sslPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslPoliciesRequest, opts ...gax.CallOption) *SslPoliciesScopedListPairIterator {
 	it := &SslPoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListSslPoliciesRequest)
@@ -399,7 +411,9 @@ func (c *sslPoliciesRESTClient) AggregatedList(ctx context.Context, req *compute
 	return it
 }
 
-// Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+// Delete deletes the specified SSL policy. The SSL policy resource can be deleted
+// only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+// resources.
 func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -569,7 +583,8 @@ func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List lists all the SSL policies that have been configured for the specified project.
+// List lists all the SSL policies that have been configured for the specified
+// project.
 func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	it := &SslPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListSslPoliciesRequest)
@@ -655,7 +670,8 @@ func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSsl
 	return it
 }
 
-// ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.
+// ListAvailableFeatures lists all features that can be specified in the SSL policy when using
+// custom profile.
 func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

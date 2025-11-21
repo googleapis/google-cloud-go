@@ -178,7 +178,11 @@ func (c *TargetHttpsProxiesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetHttpsProxiesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxiesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -193,17 +197,22 @@ func (c *TargetHttpsProxiesClient) Get(ctx context.Context, req *computepb.GetTa
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetHttpsProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetHttpsProxy resource in the specified
+// project using the data included in the request.
 func (c *TargetHttpsProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetHttpsProxy resources available to the specified project.
+// List retrieves the list of TargetHttpsProxy resources
+// available to the specified project.
 func (c *TargetHttpsProxiesClient) List(ctx context.Context, req *computepb.ListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified TargetHttpsProxy resource with the data included in
+// the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *TargetHttpsProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -223,7 +232,10 @@ func (c *TargetHttpsProxiesClient) SetSslCertificates(ctx context.Context, req *
 	return c.internalClient.SetSslCertificates(ctx, req, opts...)
 }
 
-// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the HTTPS proxy load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *TargetHttpsProxiesClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslPolicy(ctx, req, opts...)
 }
@@ -331,7 +343,11 @@ func (c *targetHttpsProxiesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetHttpsProxiesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxiesScopedListPairIterator {
 	it := &TargetHttpsProxiesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetHttpsProxiesRequest)
@@ -534,7 +550,8 @@ func (c *targetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.G
 	return resp, nil
 }
 
-// Insert creates a TargetHttpsProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetHttpsProxy resource in the specified
+// project using the data included in the request.
 func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
@@ -600,7 +617,8 @@ func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computep
 	return op, nil
 }
 
-// List retrieves the list of TargetHttpsProxy resources available to the specified project.
+// List retrieves the list of TargetHttpsProxy resources
+// available to the specified project.
 func (c *targetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	it := &TargetHttpsProxyIterator{}
 	req = proto.Clone(req).(*computepb.ListTargetHttpsProxiesRequest)
@@ -686,7 +704,10 @@ func (c *targetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.
 	return it
 }
 
-// Patch patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified TargetHttpsProxy resource with the data included in
+// the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *targetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
@@ -950,7 +971,10 @@ func (c *targetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, r
 	return op, nil
 }
 
-// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the HTTPS proxy load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *targetHttpsProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyReferenceResource()

@@ -48,6 +48,8 @@ const (
 	ConversationEvent_CONVERSATION_STARTED ConversationEvent_Type = 1
 	// An existing conversation has closed. This is fired when a telephone call
 	// is terminated, or a conversation is closed via the API.
+	// The event is fired for every CompleteConversation call, even if the
+	// conversation is already closed.
 	ConversationEvent_CONVERSATION_FINISHED ConversationEvent_Type = 2
 	// An existing conversation has received notification from Dialogflow that
 	// human intervention is required.

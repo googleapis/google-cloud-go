@@ -158,7 +158,10 @@ func (c *AddressesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of addresses.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *AddressesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) *AddressesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -173,12 +176,14 @@ func (c *AddressesClient) Get(ctx context.Context, req *computepb.GetAddressRequ
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an address resource in the specified project by using the data included in the request.
+// Insert creates an address resource in the specified project by using the data
+// included in the request.
 func (c *AddressesClient) Insert(ctx context.Context, req *computepb.InsertAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of addresses contained within the specified region.
+// List retrieves a list of addresses contained within
+// the specified region.
 func (c *AddressesClient) List(ctx context.Context, req *computepb.ListAddressesRequest, opts ...gax.CallOption) *AddressIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -188,7 +193,8 @@ func (c *AddressesClient) Move(ctx context.Context, req *computepb.MoveAddressRe
 	return c.internalClient.Move(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an Address. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *AddressesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -291,7 +297,10 @@ func (c *addressesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of addresses.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) *AddressesScopedListPairIterator {
 	it := &AddressesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListAddressesRequest)
@@ -495,7 +504,8 @@ func (c *addressesRESTClient) Get(ctx context.Context, req *computepb.GetAddress
 	return resp, nil
 }
 
-// Insert creates an address resource in the specified project by using the data included in the request.
+// Insert creates an address resource in the specified project by using the data
+// included in the request.
 func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAddressResource()
@@ -562,7 +572,8 @@ func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertA
 	return op, nil
 }
 
-// List retrieves a list of addresses contained within the specified region.
+// List retrieves a list of addresses contained within
+// the specified region.
 func (c *addressesRESTClient) List(ctx context.Context, req *computepb.ListAddressesRequest, opts ...gax.CallOption) *AddressIterator {
 	it := &AddressIterator{}
 	req = proto.Clone(req).(*computepb.ListAddressesRequest)
@@ -715,7 +726,8 @@ func (c *addressesRESTClient) Move(ctx context.Context, req *computepb.MoveAddre
 	return op, nil
 }
 
-// SetLabels sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an Address. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *addressesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()

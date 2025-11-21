@@ -945,8 +945,8 @@ type AppendRowsRequest struct {
 	MissingValueInterpretations map[string]AppendRowsRequest_MissingValueInterpretation `protobuf:"bytes,7,rep,name=missing_value_interpretations,json=missingValueInterpretations,proto3" json:"missing_value_interpretations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3,enum=google.cloud.bigquery.storage.v1.AppendRowsRequest_MissingValueInterpretation"`
 	// Optional. Default missing value interpretation for all columns in the
 	// table. When a value is specified on an `AppendRowsRequest`, it is applied
-	// to all requests on the connection from that point forward, until a
-	// subsequent `AppendRowsRequest` sets it to a different value.
+	// to all requests from that point forward, until a subsequent
+	// `AppendRowsRequest` sets it to a different value.
 	// `missing_value_interpretation` can override
 	// `default_missing_value_interpretation`. For example, if you want to write
 	// `NULL` instead of using default values for some columns, you can set
@@ -1051,8 +1051,7 @@ type AppendRowsRequest_ProtoRows struct {
 }
 
 type AppendRowsRequest_ArrowRows struct {
-	// Rows in arrow format. This is an experimental feature only selected for
-	// allowlisted customers.
+	// Rows in arrow format.
 	ArrowRows *AppendRowsRequest_ArrowData `protobuf:"bytes,5,opt,name=arrow_rows,json=arrowRows,proto3,oneof"`
 }
 
@@ -1770,8 +1769,6 @@ func (x *StreamStats_Progress) GetAtResponseEnd() float64 {
 }
 
 // Arrow schema and data.
-// Arrow format is an experimental feature only selected for allowlisted
-// customers.
 type AppendRowsRequest_ArrowData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1834,8 +1831,8 @@ type AppendRowsRequest_ProtoData struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The protocol buffer schema used to serialize the data. Provide this value
-	// whenever:
+	// Optional. The protocol buffer schema used to serialize the data. Provide
+	// this value whenever:
 	//
 	// * You send the first request of an RPC connection.
 	//
@@ -1843,7 +1840,7 @@ type AppendRowsRequest_ProtoData struct {
 	//
 	// * You specify a new destination table.
 	WriterSchema *ProtoSchema `protobuf:"bytes,1,opt,name=writer_schema,json=writerSchema,proto3" json:"writer_schema,omitempty"`
-	// Serialized row data in protobuf message format.
+	// Required. Serialized row data in protobuf message format.
 	// Currently, the backend expects the serialized rows to adhere to
 	// proto2 semantics when appending rows, particularly with respect to
 	// how default values are encoded.

@@ -153,7 +153,11 @@ func (c *RegionHealthSourcesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all HealthSource resources (all regional) available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all HealthSource resources (all
+// regional) available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *RegionHealthSourcesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionHealthSourcesRequest, opts ...gax.CallOption) *HealthSourcesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -168,7 +172,8 @@ func (c *RegionHealthSourcesClient) Get(ctx context.Context, req *computepb.GetR
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert create a HealthSource in the specified project in the given region using the parameters that are included in the request.
+// Insert create a HealthSource in the specified project in the given region
+// using the parameters that are included in the request.
 func (c *RegionHealthSourcesClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthSourceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -178,7 +183,10 @@ func (c *RegionHealthSourcesClient) List(ctx context.Context, req *computepb.Lis
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified regional HealthSource resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional HealthSource resource
+// with the data included in the request.  This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *RegionHealthSourcesClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthSourceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -281,7 +289,11 @@ func (c *regionHealthSourcesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all HealthSource resources (all regional) available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all HealthSource resources (all
+// regional) available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *regionHealthSourcesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionHealthSourcesRequest, opts ...gax.CallOption) *HealthSourcesScopedListPairIterator {
 	it := &HealthSourcesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRegionHealthSourcesRequest)
@@ -485,7 +497,8 @@ func (c *regionHealthSourcesRESTClient) Get(ctx context.Context, req *computepb.
 	return resp, nil
 }
 
-// Insert create a HealthSource in the specified project in the given region using the parameters that are included in the request.
+// Insert create a HealthSource in the specified project in the given region
+// using the parameters that are included in the request.
 func (c *regionHealthSourcesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthSourceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthSourceResource()
@@ -638,7 +651,10 @@ func (c *regionHealthSourcesRESTClient) List(ctx context.Context, req *computepb
 	return it
 }
 
-// Patch updates the specified regional HealthSource resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional HealthSource resource
+// with the data included in the request.  This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *regionHealthSourcesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthSourceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthSourceResource()

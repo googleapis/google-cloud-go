@@ -35,15 +35,17 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 var newDeveloperRegistrationClientHook clientHook
 
 // DeveloperRegistrationCallOptions contains the retry settings for each method of DeveloperRegistrationClient.
 type DeveloperRegistrationCallOptions struct {
-	RegisterGcp              []gax.CallOption
-	GetDeveloperRegistration []gax.CallOption
-	UnregisterGcp            []gax.CallOption
+	RegisterGcp                  []gax.CallOption
+	GetDeveloperRegistration     []gax.CallOption
+	UnregisterGcp                []gax.CallOption
+	GetAccountForGcpRegistration []gax.CallOption
 }
 
 func defaultDeveloperRegistrationGRPCClientOptions() []option.ClientOption {
@@ -99,6 +101,18 @@ func defaultDeveloperRegistrationCallOptions() *DeveloperRegistrationCallOptions
 				})
 			}),
 		},
+		GetAccountForGcpRegistration: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -137,6 +151,17 @@ func defaultDeveloperRegistrationRESTCallOptions() *DeveloperRegistrationCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetAccountForGcpRegistration: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -148,6 +173,7 @@ type internalDeveloperRegistrationClient interface {
 	RegisterGcp(context.Context, *accountspb.RegisterGcpRequest, ...gax.CallOption) (*accountspb.DeveloperRegistration, error)
 	GetDeveloperRegistration(context.Context, *accountspb.GetDeveloperRegistrationRequest, ...gax.CallOption) (*accountspb.DeveloperRegistration, error)
 	UnregisterGcp(context.Context, *accountspb.UnregisterGcpRequest, ...gax.CallOption) error
+	GetAccountForGcpRegistration(context.Context, *emptypb.Empty, ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error)
 }
 
 // DeveloperRegistrationClient is a client for interacting with Merchant API.
@@ -203,6 +229,11 @@ func (c *DeveloperRegistrationClient) GetDeveloperRegistration(ctx context.Conte
 // unregister succussful call.
 func (c *DeveloperRegistrationClient) UnregisterGcp(ctx context.Context, req *accountspb.UnregisterGcpRequest, opts ...gax.CallOption) error {
 	return c.internalClient.UnregisterGcp(ctx, req, opts...)
+}
+
+// GetAccountForGcpRegistration retrieves the merchant account that the calling GCP is registered with.
+func (c *DeveloperRegistrationClient) GetAccountForGcpRegistration(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error) {
+	return c.internalClient.GetAccountForGcpRegistration(ctx, req, opts...)
 }
 
 // developerRegistrationGRPCClient is a client for interacting with Merchant API over gRPC transport.
@@ -408,6 +439,21 @@ func (c *developerRegistrationGRPCClient) UnregisterGcp(ctx context.Context, req
 	return err
 }
 
+func (c *developerRegistrationGRPCClient) GetAccountForGcpRegistration(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).GetAccountForGcpRegistration[0:len((*c.CallOptions).GetAccountForGcpRegistration):len((*c.CallOptions).GetAccountForGcpRegistration)], opts...)
+	var resp *accountspb.GetAccountForGcpRegistrationResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.developerRegistrationClient.GetAccountForGcpRegistration, req, settings.GRPC, c.logger, "GetAccountForGcpRegistration")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // RegisterGcp registers the GCP used for the API call to the shopping account passed in
 // the request. Will create a user with an “API developer” and add the
 // “developer_email” as a contact with “API notifications” email preference
@@ -558,4 +604,51 @@ func (c *developerRegistrationRESTClient) UnregisterGcp(ctx context.Context, req
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnregisterGcp")
 		return err
 	}, opts...)
+}
+
+// GetAccountForGcpRegistration retrieves the merchant account that the calling GCP is registered with.
+func (c *developerRegistrationRESTClient) GetAccountForGcpRegistration(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1/accounts:getAccountForGcpRegistration")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAccountForGcpRegistration[0:len((*c.CallOptions).GetAccountForGcpRegistration):len((*c.CallOptions).GetAccountForGcpRegistration)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.GetAccountForGcpRegistrationResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccountForGcpRegistration")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

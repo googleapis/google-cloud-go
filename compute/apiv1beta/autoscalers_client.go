@@ -158,7 +158,10 @@ func (c *AutoscalersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of autoscalers.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *AutoscalersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAutoscalersRequest, opts ...gax.CallOption) *AutoscalersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -173,17 +176,22 @@ func (c *AutoscalersClient) Get(ctx context.Context, req *computepb.GetAutoscale
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an autoscaler in the specified project using the data included in the request.
+// Insert creates an autoscaler in the specified project using the data
+// included in the request.
 func (c *AutoscalersClient) Insert(ctx context.Context, req *computepb.InsertAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of autoscalers contained within the specified zone.
+// List retrieves a list of autoscalers contained within
+// the specified zone.
 func (c *AutoscalersClient) List(ctx context.Context, req *computepb.ListAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates an autoscaler in the specified project using the data
+// included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *AutoscalersClient) Patch(ctx context.Context, req *computepb.PatchAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -193,7 +201,8 @@ func (c *AutoscalersClient) TestIamPermissions(ctx context.Context, req *compute
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates an autoscaler in the specified project using the data included in the request.
+// Update updates an autoscaler in the specified project using the data
+// included in the request.
 func (c *AutoscalersClient) Update(ctx context.Context, req *computepb.UpdateAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -291,7 +300,10 @@ func (c *autoscalersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of autoscalers.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAutoscalersRequest, opts ...gax.CallOption) *AutoscalersScopedListPairIterator {
 	it := &AutoscalersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListAutoscalersRequest)
@@ -495,7 +507,8 @@ func (c *autoscalersRESTClient) Get(ctx context.Context, req *computepb.GetAutos
 	return resp, nil
 }
 
-// Insert creates an autoscaler in the specified project using the data included in the request.
+// Insert creates an autoscaler in the specified project using the data
+// included in the request.
 func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
@@ -562,7 +575,8 @@ func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List retrieves a list of autoscalers contained within the specified zone.
+// List retrieves a list of autoscalers contained within
+// the specified zone.
 func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	it := &AutoscalerIterator{}
 	req = proto.Clone(req).(*computepb.ListAutoscalersRequest)
@@ -648,7 +662,10 @@ func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAut
 	return it
 }
 
-// Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates an autoscaler in the specified project using the data
+// included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *autoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
@@ -770,7 +787,8 @@ func (c *autoscalersRESTClient) TestIamPermissions(ctx context.Context, req *com
 	return resp, nil
 }
 
-// Update updates an autoscaler in the specified project using the data included in the request.
+// Update updates an autoscaler in the specified project using the data
+// included in the request.
 func (c *autoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()

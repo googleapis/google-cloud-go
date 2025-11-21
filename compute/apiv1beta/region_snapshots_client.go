@@ -157,7 +157,14 @@ func (c *RegionSnapshotsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.
+// Delete deletes the specified Snapshot resource. Keep in mind that deleting
+// a single snapshot might not necessarily delete all the data on that
+// snapshot. If any data on the snapshot that is marked for deletion is
+// needed for subsequent snapshots, the data will be moved to the next
+// corresponding snapshot.
+//
+// For more information, seeDeleting
+// snapshots.
 func (c *RegionSnapshotsClient) Delete(ctx context.Context, req *computepb.DeleteRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -167,27 +174,33 @@ func (c *RegionSnapshotsClient) Get(ctx context.Context, req *computepb.GetRegio
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *RegionSnapshotsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a snapshot in the specified region using the data included in the request.
+// Insert creates a snapshot in the specified region using the data included
+// in the request.
 func (c *RegionSnapshotsClient) Insert(ctx context.Context, req *computepb.InsertRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of Snapshot resources contained within the specified region.
+// List retrieves the list of Snapshot resources contained within
+// the specified region.
 func (c *RegionSnapshotsClient) List(ctx context.Context, req *computepb.ListRegionSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *RegionSnapshotsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a regional snapshot. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a regional snapshot. To learn more about labels, read
+// the Labeling Resources
+// documentation.
 func (c *RegionSnapshotsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -290,7 +303,14 @@ func (c *regionSnapshotsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.
+// Delete deletes the specified Snapshot resource. Keep in mind that deleting
+// a single snapshot might not necessarily delete all the data on that
+// snapshot. If any data on the snapshot that is marked for deletion is
+// needed for subsequent snapshots, the data will be moved to the next
+// corresponding snapshot.
+//
+// For more information, seeDeleting
+// snapshots.
 func (c *regionSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -395,7 +415,8 @@ func (c *regionSnapshotsRESTClient) Get(ctx context.Context, req *computepb.GetR
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *regionSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -447,7 +468,8 @@ func (c *regionSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Insert creates a snapshot in the specified region using the data included in the request.
+// Insert creates a snapshot in the specified region using the data included
+// in the request.
 func (c *regionSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
@@ -514,7 +536,8 @@ func (c *regionSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.I
 	return op, nil
 }
 
-// List retrieves the list of Snapshot resources contained within the specified region.
+// List retrieves the list of Snapshot resources contained within
+// the specified region.
 func (c *regionSnapshotsRESTClient) List(ctx context.Context, req *computepb.ListRegionSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionSnapshotsRequest)
@@ -600,7 +623,8 @@ func (c *regionSnapshotsRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *regionSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
@@ -652,7 +676,9 @@ func (c *regionSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// SetLabels sets the labels on a regional snapshot. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a regional snapshot. To learn more about labels, read
+// the Labeling Resources
+// documentation.
 func (c *regionSnapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()

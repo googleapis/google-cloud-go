@@ -211,7 +211,8 @@ func (c *NetworksClient) GetEffectiveFirewalls(ctx context.Context, req *compute
 	return c.internalClient.GetEffectiveFirewalls(ctx, req, opts...)
 }
 
-// Insert creates a network in the specified project using the data included in the request.
+// Insert creates a network in the specified project using the data included
+// in the request.
 func (c *NetworksClient) Insert(ctx context.Context, req *computepb.InsertNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -226,7 +227,8 @@ func (c *NetworksClient) ListPeeringRoutes(ctx context.Context, req *computepb.L
 	return c.internalClient.ListPeeringRoutes(ctx, req, opts...)
 }
 
-// Patch patches the specified network with the data included in the request. Only routingConfig can be modified.
+// Patch patches the specified network with the data included in the request.
+// Only routingConfig can be modified.
 func (c *NetworksClient) Patch(ctx context.Context, req *computepb.PatchNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -236,7 +238,8 @@ func (c *NetworksClient) RemovePeering(ctx context.Context, req *computepb.Remov
 	return c.internalClient.RemovePeering(ctx, req, opts...)
 }
 
-// RequestRemovePeering requests to remove a peering from the specified network. Applicable only for PeeringConnection with update_strategy=CONSENSUS.
+// RequestRemovePeering requests to remove a peering from the specified network. Applicable only
+// for PeeringConnection with update_strategy=CONSENSUS.
 func (c *NetworksClient) RequestRemovePeering(ctx context.Context, req *computepb.RequestRemovePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RequestRemovePeering(ctx, req, opts...)
 }
@@ -251,7 +254,9 @@ func (c *NetworksClient) TestIamPermissions(ctx context.Context, req *computepb.
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// UpdatePeering updates the specified network peering with the data included in the request. You can only modify the NetworkPeering.export_custom_routes field and the NetworkPeering.import_custom_routes field.
+// UpdatePeering updates the specified network peering with the data included in the
+// request. You can only modify the NetworkPeering.export_custom_routes field
+// and the NetworkPeering.import_custom_routes field.
 func (c *NetworksClient) UpdatePeering(ctx context.Context, req *computepb.UpdatePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdatePeering(ctx, req, opts...)
 }
@@ -564,7 +569,8 @@ func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *com
 	return resp, nil
 }
 
-// Insert creates a network in the specified project using the data included in the request.
+// Insert creates a network in the specified project using the data included
+// in the request.
 func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkResource()
@@ -811,7 +817,8 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 	return it
 }
 
-// Patch patches the specified network with the data included in the request. Only routingConfig can be modified.
+// Patch patches the specified network with the data included in the request.
+// Only routingConfig can be modified.
 func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkResource()
@@ -943,7 +950,8 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 	return op, nil
 }
 
-// RequestRemovePeering requests to remove a peering from the specified network. Applicable only for PeeringConnection with update_strategy=CONSENSUS.
+// RequestRemovePeering requests to remove a peering from the specified network. Applicable only
+// for PeeringConnection with update_strategy=CONSENSUS.
 func (c *networksRESTClient) RequestRemovePeering(ctx context.Context, req *computepb.RequestRemovePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksRequestRemovePeeringRequestResource()
@@ -1120,7 +1128,9 @@ func (c *networksRESTClient) TestIamPermissions(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// UpdatePeering updates the specified network peering with the data included in the request. You can only modify the NetworkPeering.export_custom_routes field and the NetworkPeering.import_custom_routes field.
+// UpdatePeering updates the specified network peering with the data included in the
+// request. You can only modify the NetworkPeering.export_custom_routes field
+// and the NetworkPeering.import_custom_routes field.
 func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.UpdatePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksUpdatePeeringRequestResource()

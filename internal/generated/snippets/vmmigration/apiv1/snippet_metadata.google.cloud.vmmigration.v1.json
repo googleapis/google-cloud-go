@@ -198,7 +198,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_CancelImageImportJob_sync",
       "title": "vmmigration CancelImageImportJob Sample",
-      "description": "CancelImageImportJob initiates the cancellation of a running clone job.",
+      "description": "CancelImageImportJob initiates the cancellation of a running ImageImportJob.",
       "file": "Client/CancelImageImportJob/main.go",
       "language": "GO",
       "clientMethod": {

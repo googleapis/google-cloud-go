@@ -38,7 +38,6 @@ const (
 	RoutineService_GetRoutine_FullMethodName    = "/google.cloud.bigquery.v2.RoutineService/GetRoutine"
 	RoutineService_InsertRoutine_FullMethodName = "/google.cloud.bigquery.v2.RoutineService/InsertRoutine"
 	RoutineService_UpdateRoutine_FullMethodName = "/google.cloud.bigquery.v2.RoutineService/UpdateRoutine"
-	RoutineService_PatchRoutine_FullMethodName  = "/google.cloud.bigquery.v2.RoutineService/PatchRoutine"
 	RoutineService_DeleteRoutine_FullMethodName = "/google.cloud.bigquery.v2.RoutineService/DeleteRoutine"
 	RoutineService_ListRoutines_FullMethodName  = "/google.cloud.bigquery.v2.RoutineService/ListRoutines"
 )
@@ -54,9 +53,6 @@ type RoutineServiceClient interface {
 	// Updates information in an existing routine. The update method replaces the
 	// entire Routine resource.
 	UpdateRoutine(ctx context.Context, in *UpdateRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
-	// Patches information in an existing routine. The patch method does a partial
-	// update to an existing Routine resource.
-	PatchRoutine(ctx context.Context, in *PatchRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
 	// Deletes the routine specified by routineId from the dataset.
 	DeleteRoutine(ctx context.Context, in *DeleteRoutineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all routines in the specified dataset. Requires the READER dataset
@@ -99,15 +95,6 @@ func (c *routineServiceClient) UpdateRoutine(ctx context.Context, in *UpdateRout
 	return out, nil
 }
 
-func (c *routineServiceClient) PatchRoutine(ctx context.Context, in *PatchRoutineRequest, opts ...grpc.CallOption) (*Routine, error) {
-	out := new(Routine)
-	err := c.cc.Invoke(ctx, RoutineService_PatchRoutine_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *routineServiceClient) DeleteRoutine(ctx context.Context, in *DeleteRoutineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, RoutineService_DeleteRoutine_FullMethodName, in, out, opts...)
@@ -137,9 +124,6 @@ type RoutineServiceServer interface {
 	// Updates information in an existing routine. The update method replaces the
 	// entire Routine resource.
 	UpdateRoutine(context.Context, *UpdateRoutineRequest) (*Routine, error)
-	// Patches information in an existing routine. The patch method does a partial
-	// update to an existing Routine resource.
-	PatchRoutine(context.Context, *PatchRoutineRequest) (*Routine, error)
 	// Deletes the routine specified by routineId from the dataset.
 	DeleteRoutine(context.Context, *DeleteRoutineRequest) (*emptypb.Empty, error)
 	// Lists all routines in the specified dataset. Requires the READER dataset
@@ -159,9 +143,6 @@ func (UnimplementedRoutineServiceServer) InsertRoutine(context.Context, *InsertR
 }
 func (UnimplementedRoutineServiceServer) UpdateRoutine(context.Context, *UpdateRoutineRequest) (*Routine, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoutine not implemented")
-}
-func (UnimplementedRoutineServiceServer) PatchRoutine(context.Context, *PatchRoutineRequest) (*Routine, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatchRoutine not implemented")
 }
 func (UnimplementedRoutineServiceServer) DeleteRoutine(context.Context, *DeleteRoutineRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoutine not implemented")
@@ -235,24 +216,6 @@ func _RoutineService_UpdateRoutine_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RoutineService_PatchRoutine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PatchRoutineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RoutineServiceServer).PatchRoutine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: RoutineService_PatchRoutine_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoutineServiceServer).PatchRoutine(ctx, req.(*PatchRoutineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _RoutineService_DeleteRoutine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRoutineRequest)
 	if err := dec(in); err != nil {
@@ -307,10 +270,6 @@ var RoutineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateRoutine",
 			Handler:    _RoutineService_UpdateRoutine_Handler,
-		},
-		{
-			MethodName: "PatchRoutine",
-			Handler:    _RoutineService_PatchRoutine_Handler,
 		},
 		{
 			MethodName: "DeleteRoutine",

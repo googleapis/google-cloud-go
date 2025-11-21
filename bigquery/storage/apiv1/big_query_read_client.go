@@ -170,9 +170,9 @@ func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storage
 }
 
 // ReadRows reads rows from the stream in the format prescribed by the ReadSession.
-// Each response contains one or more table rows, up to a maximum of 100 MiB
+// Each response contains one or more table rows, up to a maximum of 128 MB
 // per response; read requests which attempt to read individual rows larger
-// than 100 MiB will fail.
+// than 128 MB will fail.
 //
 // Each request also returns a set of stream statistics reflecting the current
 // state of the stream.

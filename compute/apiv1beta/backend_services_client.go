@@ -230,12 +230,17 @@ func (c *BackendServicesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend service.
+// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend
+// service.
 func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all BackendService resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -245,7 +250,8 @@ func (c *BackendServicesClient) Delete(ctx context.Context, req *computepb.Delet
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend service.
+// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend
+// service.
 func (c *BackendServicesClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteSignedUrlKey(ctx, req, opts...)
 }
@@ -260,22 +266,33 @@ func (c *BackendServicesClient) GetEffectiveSecurityPolicies(ctx context.Context
 	return c.internalClient.GetEffectiveSecurityPolicies(ctx, req, opts...)
 }
 
-// GetHealth gets the most recent health check results for this BackendService. Example request body: { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
+// GetHealth gets the most recent health check results for this
+// BackendService.
+//
+// Example request body:
+//
+// {
+// “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example”
+// }
 func (c *BackendServicesClient) GetHealth(ctx context.Context, req *computepb.GetHealthBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
 	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *BackendServicesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview .
+// Insert creates a BackendService resource in the specified project using
+// the data included in the request. For more information, see
+// Backend services overview.
 func (c *BackendServicesClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of BackendService resources available to the specified project.
+// List retrieves the list of BackendService resources available to the specified
+// project.
 func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -285,7 +302,11 @@ func (c *BackendServicesClient) ListUsable(ctx context.Context, req *computepb.L
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
 
-// Patch patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified BackendService resource with the data included in the
+// request. For more information, see
+// Backend services overview. This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *BackendServicesClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -295,12 +316,15 @@ func (c *BackendServicesClient) SetEdgeSecurityPolicy(ctx context.Context, req *
 	return c.internalClient.SetEdgeSecurityPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *BackendServicesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend
+// service. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *BackendServicesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
@@ -310,7 +334,9 @@ func (c *BackendServicesClient) TestIamPermissions(ctx context.Context, req *com
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
+// Update updates the specified BackendService resource with the data included in the
+// request. For more information, seeBackend
+// services overview.
 func (c *BackendServicesClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -408,7 +434,8 @@ func (c *backendServicesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend service.
+// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend
+// service.
 func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSignedUrlKeyResource()
@@ -474,7 +501,11 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	return op, nil
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all BackendService resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	it := &BackendServicesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListBackendServicesRequest)
@@ -632,7 +663,8 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	return op, nil
 }
 
-// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend service.
+// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend
+// service.
 func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -782,7 +814,14 @@ func (c *backendServicesRESTClient) GetEffectiveSecurityPolicies(ctx context.Con
 	return resp, nil
 }
 
-// GetHealth gets the most recent health check results for this BackendService. Example request body: { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
+// GetHealth gets the most recent health check results for this
+// BackendService.
+//
+// Example request body:
+//
+// {
+// “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example”
+// }
 func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourceGroupReferenceResource()
@@ -834,7 +873,8 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *backendServicesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -886,7 +926,9 @@ func (c *backendServicesRESTClient) GetIamPolicy(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview .
+// Insert creates a BackendService resource in the specified project using
+// the data included in the request. For more information, see
+// Backend services overview.
 func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
@@ -952,7 +994,8 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 	return op, nil
 }
 
-// List retrieves the list of BackendService resources available to the specified project.
+// List retrieves the list of BackendService resources available to the specified
+// project.
 func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
 	req = proto.Clone(req).(*computepb.ListBackendServicesRequest)
@@ -1124,7 +1167,11 @@ func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *compute
 	return it
 }
 
-// Patch patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified BackendService resource with the data included in the
+// request. For more information, see
+// Backend services overview. This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
@@ -1256,7 +1303,8 @@ func (c *backendServicesRESTClient) SetEdgeSecurityPolicy(ctx context.Context, r
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *backendServicesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
@@ -1308,7 +1356,9 @@ func (c *backendServicesRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend
+// service. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()
@@ -1426,7 +1476,9 @@ func (c *backendServicesRESTClient) TestIamPermissions(ctx context.Context, req 
 	return resp, nil
 }
 
-// Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
+// Update updates the specified BackendService resource with the data included in the
+// request. For more information, seeBackend
+// services overview.
 func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()

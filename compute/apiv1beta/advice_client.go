@@ -92,7 +92,10 @@ func (c *AdviceClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CalendarMode advise how, where and when to create the requested amount of instances with specified accelerators, within the specified time and location limits. The method recommends creating future reservations for the requested resources.
+// CalendarMode advise how, where and when to create the requested amount of instances
+// with specified accelerators, within the specified time and location limits.
+// The method recommends creating future reservations for the requested
+// resources.
 func (c *AdviceClient) CalendarMode(ctx context.Context, req *computepb.CalendarModeAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CalendarModeAdviceResponse, error) {
 	return c.internalClient.CalendarMode(ctx, req, opts...)
 }
@@ -174,7 +177,10 @@ func (c *adviceRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// CalendarMode advise how, where and when to create the requested amount of instances with specified accelerators, within the specified time and location limits. The method recommends creating future reservations for the requested resources.
+// CalendarMode advise how, where and when to create the requested amount of instances
+// with specified accelerators, within the specified time and location limits.
+// The method recommends creating future reservations for the requested
+// resources.
 func (c *adviceRESTClient) CalendarMode(ctx context.Context, req *computepb.CalendarModeAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CalendarModeAdviceResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCalendarModeAdviceRequestResource()
