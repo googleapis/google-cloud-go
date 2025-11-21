@@ -2134,3 +2134,90 @@ func getSessionsPerChannel(sp *sessionPool) map[string]int {
 	}
 	return sessionsPerChannel
 }
+
+func TestSessionRecycleAfterPoolClose_NoDoubleDecrement(t *testing.T) {
+	t.Parallel()
+	ctx := t.Context()
+	var buf bytes.Buffer
+	logger := log.New(&buf, "", 0)
+
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		Logger: logger,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+		DisableNativeMetrics: true,
+	})
+	defer teardown()
+
+	sp := client.idleSessions
+
+	// Take a session
+	sh, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("failed to take session: %v", err)
+	}
+
+	// Simulate the race condition where the pool is closed but the session is still valid.
+	// We cannot use client.Close() because it invalidates all sessions in the health check queue.
+	// Instead, we manually set the pool to invalid.
+	sp.mu.Lock()
+	sp.valid = false
+	sp.mu.Unlock()
+
+	sh.recycle()
+
+	// Check logs for the error message
+	logOutput := buf.String()
+	if strings.Contains(logOutput, "Number of sessions in use is negative") {
+		t.Errorf("Unexpected error \"Number of sessions in use is negative\" logged: %s", logOutput)
+	}
+}
+
+func TestSessionRecycle_AlreadyInvalidSession(t *testing.T) {
+	t.Parallel()
+	ctx := t.Context()
+	var buf bytes.Buffer
+	logger := log.New(&buf, "", 0)
+
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		Logger:               logger,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 10,
+		},
+	})
+	defer teardown()
+
+	sp := client.idleSessions
+	sh, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("failed to take session: %v", err)
+	}
+
+	// Manually invalidate the session to simulate it being closed/expired by another process.
+	// We need to access the underlying session.
+	s := sh.session
+
+	// Calling destroy() on the session will invalidate it and decrement numInUse.
+	// We want to simulate the case where it IS already invalid when recycle is called.
+	// So we call destroy first.
+	s.destroy(false, true)
+
+	// Now s is invalid.
+	// And numInUse has been decremented once.
+
+	sh.recycle()
+
+	// If the bug exists (double decrement), numInUse will be decremented AGAIN.
+	// Since we started with 1 session in use, destroy made it 0.
+	// Recycle would make it -1 (which triggers the log).
+
+	// Check logs for the error message
+	logOutput := buf.String()
+	if strings.Contains(logOutput, "Number of sessions in use is negative") {
+		t.Errorf("Unexpected error \"Number of sessions in use is negative\" logged: %s", logOutput)
+	}
+}
