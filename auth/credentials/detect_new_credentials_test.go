@@ -16,7 +16,6 @@
 package credentials
 
 import (
-	"context"
 	"os"
 	"strings"
 	"testing"
@@ -25,8 +24,6 @@ import (
 )
 
 func TestNewCredentials(t *testing.T) {
-	ctx := context.Background()
-
 	tests := []struct {
 		name       string
 		credType   CredType
@@ -118,10 +115,10 @@ func TestNewCredentials(t *testing.T) {
 
 			if tt.file != "" {
 				// Test NewCredentialsFromFile
-				creds, err = NewCredentialsFromFile(ctx, tt.credType, tt.file, &DetectOptions{})
+				creds, err = NewCredentialsFromFile(tt.credType, tt.file, &DetectOptions{})
 			} else {
 				// Test NewCredentialsFromJSON
-				creds, err = NewCredentialsFromJSON(ctx, tt.credType, tt.json, &DetectOptions{})
+				creds, err = NewCredentialsFromJSON(tt.credType, tt.json, &DetectOptions{})
 			}
 
 			if (err != nil) != tt.wantErr {

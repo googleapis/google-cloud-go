@@ -277,8 +277,6 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 }
 
 func TestNewCredentials_TypeValidation(t *testing.T) {
-	ctx := context.Background()
-
 	tests := []struct {
 		name       string
 		credType   credentials.CredType
@@ -335,9 +333,9 @@ func TestNewCredentials_TypeValidation(t *testing.T) {
 			var err error
 			opts := &Options{Audience: "aud"}
 			if tt.file != "" {
-				_, err = NewCredentialsFromFile(ctx, tt.credType, tt.file, opts)
+				_, err = NewCredentialsFromFile(tt.credType, tt.file, opts)
 			} else {
-				_, err = NewCredentialsFromJSON(ctx, tt.credType, tt.json, opts)
+				_, err = NewCredentialsFromJSON(tt.credType, tt.json, opts)
 			}
 
 			if (err != nil) != tt.wantErr {

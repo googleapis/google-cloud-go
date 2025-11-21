@@ -321,12 +321,12 @@ type DetectOptions struct {
 // Google APIs can compromise the security of your systems and data. For
 // more information, refer to [Validate credential configurations from
 // external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromFile(ctx context.Context, credType CredType, filename string, opts *DetectOptions) (*auth.Credentials, error) {
+func NewCredentialsFromFile(credType CredType, filename string, opts *DetectOptions) (*auth.Credentials, error) {
 	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return NewCredentialsFromJSON(ctx, credType, b, opts)
+	return NewCredentialsFromJSON(credType, b, opts)
 }
 
 // NewCredentialsFromJSON creates a [cloud.google.com/go/auth.Credentials] from
@@ -341,7 +341,7 @@ func NewCredentialsFromFile(ctx context.Context, credType CredType, filename str
 // Google APIs can compromise the security of your systems and data. For
 // more information, refer to [Validate credential configurations from
 // external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromJSON(ctx context.Context, credType CredType, b []byte, opts *DetectOptions) (*auth.Credentials, error) {
+func NewCredentialsFromJSON(credType CredType, b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	if err := checkCredentialType(b, credType); err != nil {
 		return nil, err
 	}

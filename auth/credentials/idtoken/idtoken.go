@@ -21,7 +21,6 @@
 package idtoken
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -229,12 +228,12 @@ func (o *Options) jsonBytes() []byte {
 // credential configuration to Google APIs can compromise the security of your
 // systems and data. For more information, refer to [Validate credential
 // configurations from external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromJSON(ctx context.Context, credType credentials.CredType, b []byte, opts *Options) (*auth.Credentials, error) {
+func NewCredentialsFromJSON(credType credentials.CredType, b []byte, opts *Options) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
 	// Use credentials.NewCredentialsFromJSON to validate type and create base credentials.
-	creds, err := credentials.NewCredentialsFromJSON(ctx, credType, b, &credentials.DetectOptions{
+	creds, err := credentials.NewCredentialsFromJSON(credType, b, &credentials.DetectOptions{
 		Client:         opts.Client,
 		Logger:         opts.Logger,
 		UniverseDomain: opts.UniverseDomain,
@@ -260,10 +259,10 @@ func NewCredentialsFromJSON(ctx context.Context, credType credentials.CredType, 
 // credential configuration to Google APIs can compromise the security of your
 // systems and data. For more information, refer to [Validate credential
 // configurations from external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
-func NewCredentialsFromFile(ctx context.Context, credType credentials.CredType, filename string, opts *Options) (*auth.Credentials, error) {
+func NewCredentialsFromFile(credType credentials.CredType, filename string, opts *Options) (*auth.Credentials, error) {
 	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return NewCredentialsFromJSON(ctx, credType, b, opts)
+	return NewCredentialsFromJSON(credType, b, opts)
 }
