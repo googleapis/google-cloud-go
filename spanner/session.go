@@ -393,8 +393,9 @@ func (s *session) recycle() {
 		// s is rejected by its home session pool because it expired and the
 		// session pool currently has enough open sessions.
 		s.pool.mu.Unlock()
+		// s.destroy internally calls decNumInUseLocked.
 		s.destroy(false, true)
-		s.pool.mu.Lock()
+		return
 	}
 	s.pool.decNumInUseLocked(context.Background())
 	s.pool.mu.Unlock()
@@ -1367,6 +1368,7 @@ func (p *sessionPool) remove(s *session, isExpire bool, wasInUse bool) bool {
 	}
 	p.mu.Lock()
 	defer p.mu.Unlock()
+
 	if isExpire && (p.numOpened <= p.MinOpened || s.getIdleList() == nil) {
 		// Don't expire session if the session is not in idle list (in use), or
 		// if number of open sessions is going below p.MinOpened.
