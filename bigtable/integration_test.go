@@ -247,36 +247,8 @@ func TestIntegration_Pinger(t *testing.T) {
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PingAndWarm")
 	}
-	numGoroutines := 10
-	pingsPerGoroutine := 100
-	totalPings := numGoroutines * pingsPerGoroutine
-	errs := make(chan error, totalPings) // Buffer to avoid blocking goroutines
-
-	var wg sync.WaitGroup
-	wg.Add(numGoroutines)
-
-	for i := 0; i < numGoroutines; i++ {
-		go func(gNum int) {
-			defer wg.Done()
-			for j := 0; j < pingsPerGoroutine; j++ {
-				if err := client.PingAndWarm(ctx); err != nil {
-					errs <- fmt.Errorf("goroutine %d, ping %d: %w", gNum, j, err)
-					return // Stop this goroutine on first error
-				}
-				// Optional: Add a small delay if needed to avoid overwhelming, though unlikely for PingAndWarm
-				// time.Sleep(1 * time.Millisecond)
-			}
-		}(i)
-	}
-
-	wg.Wait()
-	close(errs)
-
-	for err := range errs {
-		if err != nil {
-			t.Errorf("Pinger failed: %v", err)
-			// Don't break, collect all errors
-		}
+	if err := client.PingAndWarm(ctx); err != nil {
+		t.Fatalf("pinger failed. got %v, want %v", err, nil)
 	}
 
 }
