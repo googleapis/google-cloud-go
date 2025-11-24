@@ -7140,7 +7140,9 @@ func TestIntegration_Object_Create_CustomContexts(t *testing.T) {
 			}
 
 			// Create an update payload with nil Custom map to delete all existing contexts.
-			contextsToDelete := &ObjectContexts{}
+			contextsToDelete := &ObjectContexts{
+				ClearCustomContexts: true,
+			}
 			ua := ObjectAttrsToUpdate{Contexts: contextsToDelete}
 			updatedAttrs := h.mustUpdateObject(obj, ua, attrs.Metageneration)
 

@@ -527,7 +527,7 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObje
 	}
 
 	if uattrs.Contexts != nil {
-		if len(uattrs.Contexts.Custom) == 0 {
+		if uattrs.Contexts.ClearCustomContexts || len(uattrs.Contexts.Custom) == 0 {
 			// Sending the empty map is a no-op. Pass it in null fields
 			nullFields = append(nullFields, "Contexts")
 		} else {

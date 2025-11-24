@@ -25,6 +25,8 @@ import (
 // ObjectContexts is a container for object contexts.
 type ObjectContexts struct {
 	Custom map[string]ObjectContextValue
+	// Custom field is ignored when ClearCustomContexts is set to true.
+	ClearCustomContexts bool
 }
 
 // ObjectContextValue holds the value of a user-defined object context.
@@ -59,6 +61,9 @@ func toObjectContexts(c *raw.ObjectContexts) *ObjectContexts {
 func toRawObjectContexts(c *ObjectContexts) *raw.ObjectContexts {
 	if c == nil {
 		return nil
+	}
+	if c.ClearCustomContexts {
+		return &raw.ObjectContexts{}
 	}
 	customContexts := make(map[string]raw.ObjectCustomContextPayload)
 	for k, v := range c.Custom {
@@ -98,8 +103,14 @@ func toProtoObjectContexts(c *ObjectContexts) *storagepb.ObjectContexts {
 	if c == nil {
 		return nil
 	}
+	if c.ClearCustomContexts {
+		return &storagepb.ObjectContexts{}
+	}
 	customContexts := make(map[string]*storagepb.ObjectCustomContextPayload)
 	for k, v := range c.Custom {
+		// To delete a key, it is added to gRPC fieldMask and with an empty value
+		// in gRPC request body. Hence, the key is skipped here in customContexts map.
+		// See grpcStorageClient.UpdateObject method for more details.
 		if !v.Delete {
 			customContexts[k] = &storagepb.ObjectCustomContextPayload{
 				Value: v.Value,

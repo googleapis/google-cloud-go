@@ -1123,7 +1123,8 @@ type ObjectAttrsToUpdate struct {
 	// Contexts allows adding, modifying, or deleting individual object contexts.
 	// To add or modify a context, set the value field in ObjectCustomContextPayload.
 	// To delete a context, set the Delete field in ObjectCustomContextPayload to true.
-	// to remove all contexts, pass &ObjectContexts{} in Contexts making sure Custom is empty.
+	// to remove all contexts, pass ClearCustomContexts as true in Contexts. Custom field
+	// will be ignored when ClearCustomContexts is set to true
 	Contexts *ObjectContexts
 }
 
