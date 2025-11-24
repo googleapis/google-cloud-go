@@ -1844,6 +1844,146 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 	})
 }
 
+func TestIntegration_WriterCRC32CValidation(t *testing.T) {
+	ctx := skipZonalBucket(context.Background(), "Test for resumable and oneshot writers")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		testCases := []struct {
+			name       string
+			content    []byte
+			chunkSize  int
+			sendCrc32c bool
+		}{
+			{
+				name:       "oneshot with user-sent CRC32C",
+				content:    []byte("small content for oneshot upload"),
+				chunkSize:  0,
+				sendCrc32c: true,
+			},
+			{
+				name:      "oneshot with default CRC32",
+				content:   []byte("small content for oneshot upload"),
+				chunkSize: 0,
+			},
+			{
+				name:       "resumable with user-sent CRC32C",
+				content:    bytes.Repeat([]byte("a"), 1024*1024),
+				chunkSize:  256 * 1024,
+				sendCrc32c: true,
+			},
+			{
+				name:      "resumable with default CRC32",
+				content:   bytes.Repeat([]byte("a"), 1024*1024),
+				chunkSize: 256 * 1024,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
+
+				// Test case 1: Upload with correct checksum should succeed.
+				t.Run("correct checksum", func(t *testing.T) {
+					obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+					t.Cleanup(func() {
+						if err := obj.Delete(context.Background()); err != nil {
+							// Log cleanup errors but don't fail the test.
+							t.Logf("cleanup failed for object %q: %v", obj.ObjectName(), err)
+						}
+					})
+
+					w := obj.NewWriter(ctx)
+					w.ChunkSize = tc.chunkSize
+					w.SendCRC32C = tc.sendCrc32c
+					w.CRC32C = correctCRC32C
+
+					if _, err := w.Write(tc.content); err != nil {
+						t.Fatalf("Writer.Write: %v", err)
+					}
+					// Flush the buffer to finish the upload.
+					if err := w.Close(); err != nil {
+						t.Fatalf("Writer.Close: %v", err)
+					}
+
+					// Verify content.
+					r, err := obj.NewReader(ctx)
+					if err != nil {
+						t.Fatalf("NewReader failed: %v", err)
+					}
+					defer r.Close()
+					gotContent, err := io.ReadAll(r)
+					if err != nil {
+						t.Fatalf("ReadAll failed: %v", err)
+					}
+					if !bytes.Equal(gotContent, tc.content) {
+						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					}
+				})
+
+				// Test case 2: Upload with incorrect checksum should fail.
+				t.Run("incorrect checksum", func(t *testing.T) {
+					obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+					incorrectCRC32C := correctCRC32C + 1
+
+					w := obj.NewWriter(ctx)
+					w.ChunkSize = tc.chunkSize
+					w.SendCRC32C = true
+					w.CRC32C = incorrectCRC32C
+
+					if _, err := w.Write(tc.content); err != nil {
+						t.Fatalf("Writer.Write: %v", err)
+					}
+					// Flush the buffer to finish the upload.
+					err := w.Close()
+					if err == nil {
+						t.Fatal("expected an error for incorrect checksum, but got nil")
+					}
+					if !errorIsInvalidArgument(err) {
+						t.Fatalf("expected error code = InvalidArgument, got %T: %v", err, err)
+					}
+				})
+
+				// Test case 3: Auto Checksum disabled
+				t.Run("disabled checksum", func(t *testing.T) {
+					obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+					t.Cleanup(func() {
+						if err := obj.Delete(context.Background()); err != nil {
+							t.Logf("cleanup failed for object %q: %v", obj.ObjectName(), err)
+						}
+					})
+
+					w := obj.NewWriter(ctx)
+					w.ChunkSize = tc.chunkSize
+					w.SendCRC32C = tc.sendCrc32c
+					w.CRC32C = correctCRC32C
+					w.DisableAutoChecksum = true
+
+					if _, err := w.Write(tc.content); err != nil {
+						t.Fatalf("Writer.Write: %v", err)
+					}
+					// Flush the buffer to finish the upload.
+					if err := w.Close(); err != nil {
+						t.Fatalf("Writer.Close: %v", err)
+					}
+
+					// Verify content.
+					r, err := obj.NewReader(ctx)
+					if err != nil {
+						t.Fatalf("NewReader failed: %v", err)
+					}
+					defer r.Close()
+					gotContent, err := io.ReadAll(r)
+					if err != nil {
+						t.Fatalf("ReadAll failed: %v", err)
+					}
+					if !bytes.Equal(gotContent, tc.content) {
+						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					}
+				})
+			})
+		}
+	})
+}
+
 func TestIntegration_ConditionalDownload(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
@@ -3276,11 +3416,13 @@ func TestIntegration_WriterAppend(t *testing.T) {
 		bkt := client.Bucket(bucket)
 
 		testCases := []struct {
-			name        string
-			finalize    bool
-			content     []byte
-			chunkSize   int
-			flushOffset int64
+			name                string
+			finalize            bool
+			content             []byte
+			chunkSize           int
+			flushOffset         int64
+			sendCRC             bool
+			disableAutoChecksum bool
 		}{
 			{
 				name:        "finalized_object",
@@ -3288,6 +3430,22 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				content:     randomBytes9MiB,
 				chunkSize:   4 * MiB,
 				flushOffset: -1, // no flush
+			},
+			{
+				name:        "finalized_object with user checksum",
+				finalize:    true,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				sendCRC:     true,
+				flushOffset: -1, // no flush
+			},
+			{
+				name:                "finalized_object with disabled checksum",
+				finalize:            true,
+				content:             randomBytes9MiB,
+				chunkSize:           4 * MiB,
+				disableAutoChecksum: true,
+				flushOffset:         -1, // no flush
 			},
 			{
 				name:        "unfinalized_object",
@@ -3334,6 +3492,9 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				w.Append = true
 				w.FinalizeOnClose = tc.finalize
 				w.ChunkSize = tc.chunkSize
+				w.SendCRC32C = tc.sendCRC
+				w.DisableAutoChecksum = tc.disableAutoChecksum
+				w.CRC32C = crc32.Checksum(tc.content, crc32cTable)
 				content := tc.content
 
 				// If flushOffset is 0, just do a flush and check the attributes.
@@ -7805,4 +7966,15 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 
 func crc32c(b []byte) uint32 {
 	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
+}
+
+func errorIsInvalidArgument(err error) bool {
+	var e *googleapi.Error
+	if errors.As(err, &e) {
+		return e.Code == 400
+	}
+	if st, ok := status.FromError(err); ok {
+		return st.Code() == codes.InvalidArgument
+	}
+	return false
 }

@@ -86,12 +86,14 @@ func TestGetObjectChecksums(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := getObjectChecksums(&getObjectChecksumsParams{
-				fullObjectChecksum:  tt.fullObjectChecksum,
-				finishWrite:         tt.finishWrite,
-				sendCRC32C:          tt.sendCRC32C,
-				disableAutoChecksum: tt.disableAutoChecksum,
-				attrs:               tt.attrs,
-				takeoverWriter:      tt.takeoverWriter,
+				checksumAttrs: checksumAttrs{
+					disableAutoChecksum: tt.disableAutoChecksum,
+					sendCRC32C:          tt.sendCRC32C,
+					objectAttrs:         tt.attrs,
+					fullObjectChecksum:  tt.fullObjectChecksum,
+				},
+				finishWrite:    tt.finishWrite,
+				takeoverWriter: tt.takeoverWriter,
 			})
 			if !proto.Equal(got, tt.want) {
 				t.Errorf("getObjectChecksums() = %v, want %v", got, tt.want)
