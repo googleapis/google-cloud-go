@@ -1846,12 +1846,16 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 
 func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 	ctx := skipZonalBucket(context.Background(), "Test for resumable and oneshot writers")
+	h := testHelper{t}
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		testCases := []struct {
-			name       string
-			content    []byte
-			chunkSize  int
-			sendCrc32c bool
+			name                string
+			content             []byte
+			chunkSize           int
+			sendCrc32c          bool
+			disableAutoChecksum bool
+			incorrectChecksum   bool
+			wantErr             bool
 		}{
 			{
 				name:       "oneshot with user-sent CRC32C",
@@ -1865,6 +1869,12 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				chunkSize: 0,
 			},
 			{
+				name:                "oneshot with disabled auto checksum",
+				content:             []byte("small content for oneshot upload"),
+				chunkSize:           0,
+				disableAutoChecksum: true,
+			},
+			{
 				name:       "resumable with user-sent CRC32C",
 				content:    bytes.Repeat([]byte("a"), 1024*1024),
 				chunkSize:  256 * 1024,
@@ -1875,110 +1885,65 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				content:   bytes.Repeat([]byte("a"), 1024*1024),
 				chunkSize: 256 * 1024,
 			},
+			{
+				name:                "resumable with disabled auto checksum",
+				content:             bytes.Repeat([]byte("a"), 1024*1024),
+				chunkSize:           256 * 1024,
+				disableAutoChecksum: true,
+			},
+			{
+				name:              "resumable with incorrect checksum",
+				content:           bytes.Repeat([]byte("a"), 1024*1024),
+				chunkSize:         256 * 1024,
+				sendCrc32c:        true,
+				incorrectChecksum: true,
+				wantErr:           true,
+			},
 		}
 
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
 				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
-
-				// Test case 1: Upload with correct checksum should succeed.
-				t.Run("correct checksum", func(t *testing.T) {
-					obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
-					t.Cleanup(func() {
-						if err := obj.Delete(context.Background()); err != nil {
-							// Log cleanup errors but don't fail the test.
-							t.Logf("cleanup failed for object %q: %v", obj.ObjectName(), err)
-						}
-					})
-
-					w := obj.NewWriter(ctx)
-					w.ChunkSize = tc.chunkSize
-					w.SendCRC32C = tc.sendCrc32c
-					w.CRC32C = correctCRC32C
-
-					if _, err := w.Write(tc.content); err != nil {
-						t.Fatalf("Writer.Write: %v", err)
-					}
-					// Flush the buffer to finish the upload.
-					if err := w.Close(); err != nil {
-						t.Fatalf("Writer.Close: %v", err)
-					}
-
-					// Verify content.
-					r, err := obj.NewReader(ctx)
-					if err != nil {
-						t.Fatalf("NewReader failed: %v", err)
-					}
-					defer r.Close()
-					gotContent, err := io.ReadAll(r)
-					if err != nil {
-						t.Fatalf("ReadAll failed: %v", err)
-					}
-					if !bytes.Equal(gotContent, tc.content) {
-						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
-					}
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
 				})
 
-				// Test case 2: Upload with incorrect checksum should fail.
-				t.Run("incorrect checksum", func(t *testing.T) {
-					obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
-					incorrectCRC32C := correctCRC32C + 1
+				w := obj.NewWriter(ctx)
+				w.ChunkSize = tc.chunkSize
+				w.SendCRC32C = tc.sendCrc32c
+				w.CRC32C = correctCRC32C
+				if tc.incorrectChecksum {
+					w.CRC32C = correctCRC32C + 1
+				}
+				w.DisableAutoChecksum = tc.disableAutoChecksum
 
-					w := obj.NewWriter(ctx)
-					w.ChunkSize = tc.chunkSize
-					w.SendCRC32C = true
-					w.CRC32C = incorrectCRC32C
-
-					if _, err := w.Write(tc.content); err != nil {
-						t.Fatalf("Writer.Write: %v", err)
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				err := w.Close()
+				if tc.incorrectChecksum {
+					if !incorrectChecksumError(err) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
 					}
-					// Flush the buffer to finish the upload.
-					err := w.Close()
-					if err == nil {
-						t.Fatal("expected an error for incorrect checksum, but got nil")
-					}
-					if !errorIsInvalidArgument(err) {
-						t.Fatalf("expected error code = InvalidArgument, got %T: %v", err, err)
-					}
-				})
-
-				// Test case 3: Auto Checksum disabled
-				t.Run("disabled checksum", func(t *testing.T) {
-					obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
-					t.Cleanup(func() {
-						if err := obj.Delete(context.Background()); err != nil {
-							t.Logf("cleanup failed for object %q: %v", obj.ObjectName(), err)
-						}
-					})
-
-					w := obj.NewWriter(ctx)
-					w.ChunkSize = tc.chunkSize
-					w.SendCRC32C = tc.sendCrc32c
-					w.CRC32C = correctCRC32C
-					w.DisableAutoChecksum = true
-
-					if _, err := w.Write(tc.content); err != nil {
-						t.Fatalf("Writer.Write: %v", err)
-					}
-					// Flush the buffer to finish the upload.
-					if err := w.Close(); err != nil {
-						t.Fatalf("Writer.Close: %v", err)
-					}
-
-					// Verify content.
-					r, err := obj.NewReader(ctx)
-					if err != nil {
-						t.Fatalf("NewReader failed: %v", err)
-					}
-					defer r.Close()
-					gotContent, err := io.ReadAll(r)
-					if err != nil {
-						t.Fatalf("ReadAll failed: %v", err)
-					}
-					if !bytes.Equal(gotContent, tc.content) {
-						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
-					}
-				})
+					return
+				}
+				if err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+				// Verify content.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+				}
 			})
 		}
 	})
@@ -7968,13 +7933,16 @@ func crc32c(b []byte) uint32 {
 	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }
 
-func errorIsInvalidArgument(err error) bool {
+func incorrectChecksumError(err error) bool {
+	if err == nil {
+		return false
+	}
 	var e *googleapi.Error
 	if errors.As(err, &e) {
-		return e.Code == 400
+		return strings.Contains(e.Body, "doesn't match calculated CRC32C")
 	}
-	if st, ok := status.FromError(err); ok {
-		return st.Code() == codes.InvalidArgument
+	if _, ok := status.FromError(err); ok {
+		return strings.Contains(err.Error(), "crc32c mismatch")
 	}
 	return false
 }

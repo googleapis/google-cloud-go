@@ -818,7 +818,7 @@ func bidiWriteObjectRequest(r gRPCBidiWriteRequest, bufChecksum *uint32, objectC
 	return req
 }
 
-// checksumAttrs contains all parameters required from writer in senders.
+// checksumAttrs contains all parameters required from writer in senders,
 // helps avoid piping in writer to the individual senders.
 type checksumAttrs struct {
 	sendCRC32C          bool
