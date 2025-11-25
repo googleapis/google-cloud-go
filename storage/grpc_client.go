@@ -631,8 +631,8 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 		}
 	}
 
-	if uattrs.Contexts != nil {
-		if uattrs.Contexts.ClearCustomContexts || len(uattrs.Contexts.Custom) == 0 {
+	if uattrs.Contexts != nil && uattrs.Contexts.Custom != nil {
+		if len(uattrs.Contexts.Custom) == 0 {
 			// pass fieldMask with no key value and empty map to delete all keys
 			fieldMask.Paths = append(fieldMask.Paths, "contexts.custom")
 		} else {

@@ -2328,11 +2328,17 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			b.Object("obj/with/slashes" + uidSpaceObjects.New()),
 			b.Object("obj/" + uidSpaceObjects.New()),
 		}
+		wantCustomContexts := map[string]ObjectCustomContextPayload{
+			"key_0": {Value: "val_0"},
+			"key_1": {Value: "val_1"},
+			"key_2": {Value: "val_2"},
+			"key_3": {Value: "val_3"},
+		}
 		var compSrcs []*ObjectHandle
 		wantContents := make([]byte, 0)
 
 		// Write objects to compose
-		for _, obj := range objects {
+		for i, obj := range objects {
 			c := randomContents()
 			if err := writeObject(ctx, obj, "text/plain", c); err != nil {
 				t.Errorf("Write for %v failed with %v", obj, err)
@@ -2340,9 +2346,15 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			compSrcs = append(compSrcs, obj)
 			wantContents = append(wantContents, c...)
 			defer obj.Delete(ctx)
+			initialContexts := &ObjectContexts{
+				Custom: map[string]ObjectCustomContextPayload{fmt.Sprintf("key_%v", i): {Value: wantCustomContexts[fmt.Sprintf("key_%v", i)].Value}},
+			}
+			if _, err := obj.Update(ctx, ObjectAttrsToUpdate{Contexts: initialContexts}); err != nil {
+				t.Fatalf("obj.Update: %v", err)
+			}
 		}
 
-		checkCompose := func(obj *ObjectHandle, contentTypeSet *string) {
+		checkCompose := func(obj *ObjectHandle, contentTypeSet *string, wantCustomContexts map[string]ObjectCustomContextPayload) {
 			r, err := obj.NewReader(ctx)
 			if err != nil {
 				t.Fatalf("new reader: %v", err)
@@ -2362,6 +2374,17 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			if !(contentTypeSet == nil && (got == "" || got == "application/octet-stream")) && got != *contentTypeSet {
 				t.Errorf("Composed object content-type = %q, want %q", got, *contentTypeSet)
 			}
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				t.Fatalf("obj.Attrs: %v", err)
+			}
+			var gotCustomContexts map[string]ObjectCustomContextPayload
+			if attrs.Contexts != nil {
+				gotCustomContexts = attrs.Contexts.Custom
+			}
+			if diff := cmp.Diff(wantCustomContexts, gotCustomContexts, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+				t.Errorf("custom contexts mismatch (-want +got):\n%s", diff)
+			}
 		}
 
 		// Compose should work even if the user sets no destination attributes.
@@ -2374,7 +2397,7 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 		if attrs.ComponentCount != int64(len(objects)) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
-		checkCompose(compDst, nil)
+		checkCompose(compDst, nil, wantCustomContexts)
 
 		// It should also work if we do.
 		contentType := "text/json"
@@ -2388,7 +2411,23 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 		if attrs.ComponentCount != int64(len(objects)) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
-		checkCompose(compDst, &contentType)
+		checkCompose(compDst, &contentType, wantCustomContexts)
+
+		// overriding contexts.
+		customContexts := &ObjectContexts{
+			Custom: map[string]ObjectCustomContextPayload{"some-key": {Value: "some-value"}},
+		}
+		compDst = b.Object("composed3")
+		c = compDst.ComposerFrom(compSrcs...)
+		c.Contexts = customContexts
+		attrs, err = c.Run(ctx)
+		if err != nil {
+			t.Fatalf("ComposeFrom with contexts error: %v", err)
+		}
+		if attrs.ComponentCount != int64(len(objects)) {
+			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
+		}
+		checkCompose(compDst, nil, customContexts.Custom)
 	})
 }
 
@@ -2438,10 +2477,16 @@ func TestIntegration_Copy(t *testing.T) {
 			h.mustDeleteObject(obj)
 		})
 
-		// Set metadata on the source object to check if it's copied.
+		// Set metadata and custom contexts on the source object to check if it's copied.
+		initialContexts := &ObjectContexts{
+			Custom: map[string]ObjectCustomContextPayload{
+				"sourceKey": {Value: "sourceValue"},
+			},
+		}
 		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{
 			ContentLanguage:    "en",
 			ContentDisposition: "inline",
+			Contexts:           initialContexts,
 		}); err != nil {
 			t.Fatalf("obj.Update: %v", err)
 		}
@@ -2456,6 +2501,7 @@ func TestIntegration_Copy(t *testing.T) {
 		type copierAttrs struct {
 			contentEncoding string
 			maxBytesPerCall int64
+			contexts        *ObjectContexts
 		}
 
 		for _, test := range []struct {
@@ -2493,6 +2539,19 @@ func TestIntegration_Copy(t *testing.T) {
 				copierAttrs:             &copierAttrs{maxBytesPerCall: 1048576},
 				numExpectedRewriteCalls: 3,
 			},
+			{
+				desc:     "copy with custom contexts",
+				toObj:    "copy-with-custom-contexts",
+				toBucket: bucketInSameRegion,
+				copierAttrs: &copierAttrs{
+					contexts: &ObjectContexts{
+						Custom: map[string]ObjectCustomContextPayload{
+							"newKey": {Value: "newValue"},
+						},
+					},
+				},
+				numExpectedRewriteCalls: 1,
+			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				copyObj := test.toBucket.Object(test.toObj)
@@ -2504,6 +2563,9 @@ func TestIntegration_Copy(t *testing.T) {
 					}
 					if attrs.maxBytesPerCall != 0 {
 						copier.maxBytesRewrittenPerCall = attrs.maxBytesPerCall
+					}
+					if attrs.contexts != nil {
+						copier.Contexts = attrs.contexts
 					}
 				}
 
@@ -2530,6 +2592,15 @@ func TestIntegration_Copy(t *testing.T) {
 					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
 						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
 					}
+					want := initialContexts.Custom
+					if test.copierAttrs.contexts != nil {
+						want = test.copierAttrs.contexts.Custom
+					}
+					if attrs.Contexts != nil {
+						if diff := cmp.Diff(attrs.Contexts.Custom, want, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+							t.Errorf("custom contexts mismatch (-got +want):\n%s", diff)
+						}
+					}
 				} else {
 					// Check that metadata is copied when no destination attributes are provided.
 					if attrs.ContentLanguage != "en" {
@@ -2537,6 +2608,9 @@ func TestIntegration_Copy(t *testing.T) {
 					}
 					if attrs.ContentDisposition != "inline" {
 						t.Errorf("unexpected ContentDisposition; got: %s, want: inline", attrs.ContentDisposition)
+					}
+					if diff := cmp.Diff(attrs.Contexts.Custom, initialContexts.Custom, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+						t.Errorf("inherited custom contexts mismatch (-got +want):\n%s", diff)
 					}
 				}
 
@@ -7032,442 +7106,125 @@ func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 	te.tp.Shutdown(ctx)
 }
 
-func TestIntegration_Object_Create_CustomContexts(t *testing.T) {
+func TestIntegration_ObjectPatchCustomContexts(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
-		obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
-		// 1. Create a new object with valid contexts.
-		t.Run("CreateWithValidContexts", func(t *testing.T) {
-			wantContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"key1": {Value: "value1"},
-					"key2": {Value: "value2"},
+
+		testCases := []struct {
+			name             string
+			initialContexts  *ObjectContexts
+			patchContexts    *ObjectContexts
+			expectedContexts map[string]ObjectCustomContextPayload
+		}{
+			{
+				name: "add individual contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"basekey-unicode-å": {Value: "baseval-unicode-é"},
+					},
 				},
-			}
-			wc := obj.NewWriter(ctx)
-			defer h.mustDeleteObject(obj)
-
-			wc.Contexts = wantContexts
-			if _, err := wc.Write([]byte("hello")); err != nil {
-				t.Fatalf("Writer.Write: %v", err)
-			}
-			if err := wc.Close(); err != nil {
-				t.Fatalf("Writer.Close: %v", err)
-			}
-
-			attrs, err := obj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj.Attrs: %v", err)
-			}
-			if attrs.Contexts == nil {
-				t.Fatalf("Expected Custom contexts but got nil")
-			}
-			if diff := cmp.Diff(attrs.Contexts.Custom["key1"].Value, wantContexts.Custom["key1"].Value); diff != "" {
-				t.Errorf("CustomContext mismatch (-got +want):\n%s", diff)
-			}
-			if diff := cmp.Diff(attrs.Contexts.Custom["key2"].Value, wantContexts.Custom["key2"].Value); diff != "" {
-				t.Errorf("CustomContext mismatch (-got +want):\n%s", diff)
-			}
-		})
-
-		// 2. Attempt to create an object with invalid contexts.
-		t.Run("CreateWithInvalidContexts", func(t *testing.T) {
-			invalidContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"key\"1": {Value: "value1"},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"newKey": {Value: "newValue"},
+					},
 				},
-			}
-			wc := obj.NewWriter(ctx)
-			wc.Contexts = invalidContexts
-			if _, err := wc.Write([]byte("hello")); err != nil {
-				t.Fatalf("Writer.Write: %v", err)
-			}
-			err := wc.Close()
-			if err == nil {
-				t.Error("expected error for invalid custom context, got nil")
-			}
-		})
-
-		// 3. Create an object with Unicode characters in contexts.
-		t.Run("CreateWithUnicodeContexts", func(t *testing.T) {
-			wantContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"key-unicode-å": {Value: "value-unicode-é"},
+				expectedContexts: map[string]ObjectCustomContextPayload{
+					"basekey-unicode-å": {Value: "baseval-unicode-é"},
+					"newKey":            {Value: "newValue"},
 				},
-			}
-			wc := obj.NewWriter(ctx)
-			defer h.mustDeleteObject(obj)
-
-			wc.Contexts = wantContexts
-			if _, err := wc.Write([]byte("hello")); err != nil {
-				t.Fatalf("Writer.Write: %v", err)
-			}
-			if err := wc.Close(); err != nil {
-				t.Fatalf("Writer.Close: %v", err)
-			}
-
-			attrs, err := obj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj.Attrs: %v", err)
-			}
-			if attrs.Contexts == nil {
-				t.Fatalf("Expected Custom contexts but got nil")
-			}
-			if diff := cmp.Diff(attrs.Contexts.Custom["key-unicode-å"].Value, wantContexts.Custom["key-unicode-å"].Value); diff != "" {
-				t.Errorf("CustomContext mismatch (-got +want):\n%s", diff)
-			}
-		})
-		// 4. Clearing all contexts from an existing object.
-		t.Run("ClearingAllContexts", func(t *testing.T) {
-			initialContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"keyToClear1": {Value: "valueToClear1"},
-					"keyToClear2": {Value: "valueToClear2"},
+			},
+			{
+				name: "modify individual contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToModify": {Value: "oldValue"},
+						"otherKey":    {Value: "otherValue"},
+					},
 				},
-			}
-			wc := obj.NewWriter(ctx)
-			wc.Contexts = initialContexts
-			h.mustWrite(wc, []byte("hello"))
-			defer h.mustDeleteObject(obj)
-
-			// Verify initial contexts
-			attrs, err := obj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj.Attrs: %v", err)
-			}
-			if len(attrs.Contexts.Custom) != 2 {
-				t.Fatalf("Expected 2 initial custom contexts, got %d", len(attrs.Contexts.Custom))
-			}
-
-			// Create an update payload with nil Custom map to delete all existing contexts.
-			contextsToDelete := &ObjectContexts{
-				ClearCustomContexts: true,
-			}
-			ua := ObjectAttrsToUpdate{Contexts: contextsToDelete}
-			updatedAttrs := h.mustUpdateObject(obj, ua, attrs.Metageneration)
-
-			// Verify no custom contexts remain
-			if updatedAttrs.Contexts != nil && len(updatedAttrs.Contexts.Custom) > 0 {
-				t.Errorf("Expected no custom contexts after clearing, got %v", updatedAttrs.Contexts.Custom)
-			}
-			h.mustDeleteObject(obj)
-		})
-	})
-}
-
-func TestIntegration_Object_Patch_CustomContexts(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		h := testHelper{t}
-		obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
-		// 1. Patch an existing object: Adding individual contexts.
-		t.Run("PatchAddIndividualContexts", func(t *testing.T) {
-			initialContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"baseKey": {Value: "baseValue"},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToModify": {Value: "newValue"},
+					},
 				},
-			}
-			wc := obj.NewWriter(ctx)
-			wc.Contexts = initialContexts
-			h.mustWrite(wc, []byte("hello"))
-			defer h.mustDeleteObject(obj)
-
-			attrs, err := obj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj.Attrs: %v", err)
-			}
-			if len(attrs.Contexts.Custom) != 1 || attrs.Contexts.Custom["baseKey"].Value != "baseValue" {
-				t.Fatalf("Expected initial context 'baseKey':'baseValue', got %v", attrs.Contexts.Custom)
-			}
-
-			// Add a new context
-			addContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"newKey": {Value: "newValue"},
-				},
-			}
-			ua := ObjectAttrsToUpdate{Contexts: addContexts}
-			updatedAttrs := h.mustUpdateObject(obj, ua, attrs.Metageneration)
-
-			// Verify both old and new contexts are present
-			if len(updatedAttrs.Contexts.Custom) != 2 {
-				t.Errorf("Expected 2 custom contexts after adding, got %d", len(updatedAttrs.Contexts.Custom))
-			}
-			if updatedAttrs.Contexts.Custom["baseKey"].Value != "baseValue" {
-				t.Errorf("Base context 'baseKey' value mismatch, got %q, want 'baseValue'", updatedAttrs.Contexts.Custom["baseKey"].Value)
-			}
-			if updatedAttrs.Contexts.Custom["newKey"].Value != "newValue" {
-				t.Errorf("New context 'newKey' value mismatch, got %q, want 'newValue'", updatedAttrs.Contexts.Custom["newKey"].Value)
-			}
-		})
-
-		// 2. Patch an existing object: Modifying individual contexts.
-		t.Run("PatchModifyIndividualContexts", func(t *testing.T) {
-			initialContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"keyToModify": {Value: "oldValue"},
+				expectedContexts: map[string]ObjectCustomContextPayload{
+					"keyToModify": {Value: "newValue"},
 					"otherKey":    {Value: "otherValue"},
 				},
-			}
-			wc := obj.NewWriter(ctx)
-			wc.Contexts = initialContexts
-			h.mustWrite(wc, []byte("hello"))
-			defer h.mustDeleteObject(obj)
-
-			attrs, err := obj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj.Attrs: %v", err)
-			}
-			if len(attrs.Contexts.Custom) != 2 || attrs.Contexts.Custom["keyToModify"].Value != "oldValue" {
-				t.Fatalf("Expected initial context 'keyToModify':'oldValue', got %v", attrs.Contexts.Custom)
-			}
-
-			// Modify an existing context
-			modifyContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"keyToModify": {Value: "newValue"},
+			},
+			{
+				name: "remove individual contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToRemove": {Value: "valueToRemove"},
+						"anotherKey":  {Value: "anotherValue"},
+					},
 				},
-			}
-			ua := ObjectAttrsToUpdate{Contexts: modifyContexts}
-			updatedAttrs := h.mustUpdateObject(obj, ua, attrs.Metageneration)
-
-			// Verify context is modified and others are untouched
-			if len(updatedAttrs.Contexts.Custom) != 2 {
-				t.Errorf("Expected 2 custom contexts after modification, got %d", len(updatedAttrs.Contexts.Custom))
-			}
-			if updatedAttrs.Contexts.Custom["keyToModify"].Value != "newValue" {
-				t.Errorf("Modified context 'keyToModify' value mismatch, got %q, want 'newValue'", updatedAttrs.Contexts.Custom["keyToModify"].Value)
-			}
-			if updatedAttrs.Contexts.Custom["otherKey"].Value != "otherValue" {
-				t.Errorf("Unmodified context 'otherKey' value mismatch, got %q, want 'otherValue'", updatedAttrs.Contexts.Custom["otherKey"].Value)
-			}
-		})
-
-		// 3. Patch an existing object: Removing individual contexts.
-		t.Run("PatchRemoveIndividualContexts", func(t *testing.T) {
-			initialContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"keyToRemove": {Value: "valueToRemove"},
-					"anotherKey":  {Value: "anotherValue"},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToRemove": {Delete: true},
+					},
 				},
-			}
-			wc := obj.NewWriter(ctx)
-			wc.Contexts = initialContexts
-			h.mustWrite(wc, []byte("hello"))
-			defer h.mustDeleteObject(obj)
-
-			attrs, err := obj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj.Attrs: %v", err)
-			}
-			if len(attrs.Contexts.Custom) != 2 || attrs.Contexts.Custom["keyToRemove"].Value != "valueToRemove" {
-				t.Fatalf("Expected initial context 'keyToRemove':'valueToRemove', got %v", attrs.Contexts.Custom)
-			}
-
-			// Remove an individual context
-			removeContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"keyToRemove": {Delete: true},
+				expectedContexts: map[string]ObjectCustomContextPayload{
+					"anotherKey": {Value: "anotherValue"},
 				},
-			}
-			ua := ObjectAttrsToUpdate{Contexts: removeContexts}
-			updatedAttrs := h.mustUpdateObject(obj, ua, attrs.Metageneration)
+			},
+			{
+				name: "remove all contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToRemove": {Value: "valueToRemove"},
+						"anotherKey":  {Value: "anotherValue"},
+					},
+				},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{},
+				},
+				expectedContexts: nil,
+			},
+		}
 
-			// Verify context is removed and others are untouched
-			if len(updatedAttrs.Contexts.Custom) != 1 {
-				t.Errorf("Expected 1 custom context after removal, got %d", len(updatedAttrs.Contexts.Custom))
-			}
-			if _, ok := updatedAttrs.Contexts.Custom["keyToRemove"]; ok {
-				t.Error("Removed context 'keyToRemove' still present")
-			}
-			if updatedAttrs.Contexts.Custom["anotherKey"].Value != "anotherValue" {
-				t.Errorf("Unmodified context 'anotherKey' value mismatch, got %q, want 'anotherValue'", updatedAttrs.Contexts.Custom["anotherKey"].Value)
-			}
-		})
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+
+				// Create object with initial contexts.
+				wc := obj.NewWriter(ctx)
+				wc.Contexts = tc.initialContexts
+				h.mustWrite(wc, []byte("hello"))
+				defer h.mustDeleteObject(obj)
+
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if len(attrs.Contexts.Custom) != len(tc.initialContexts.Custom) {
+					t.Fatalf("got initial contexts %v, want %v", attrs.Contexts.Custom, tc.initialContexts.Custom)
+				}
+
+				// Patch the object with new contexts.
+				ua := ObjectAttrsToUpdate{Contexts: tc.patchContexts}
+				updatedAttrs := h.mustUpdateObject(obj, ua, attrs.Metageneration)
+
+				// Verify contexts are updated as expected.
+				if tc.expectedContexts == nil {
+					if updatedAttrs.Contexts != nil && updatedAttrs.Contexts.Custom != nil {
+						t.Fatalf("expected nil contexts but got: %v", updatedAttrs.Contexts.Custom)
+					}
+					return
+				}
+				if len(updatedAttrs.Contexts.Custom) != len(tc.expectedContexts) {
+					t.Errorf("got %d custom contexts, want %d. got: %v, want: %v", len(updatedAttrs.Contexts.Custom), len(tc.expectedContexts), updatedAttrs.Contexts.Custom, tc.expectedContexts)
+				}
+
+				if diff := cmp.Diff(updatedAttrs.Contexts.Custom, tc.expectedContexts, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+					t.Errorf("%s: name mismatch (-got +want):\n%s", tc.name, diff)
+				}
+			})
+		}
 	})
 }
 
-func TestIntegration_Object_CopyRewrite_CustomContexts(t *testing.T) {
-	multiTransportTest(skipZonalBucket(context.Background(), "Rewrite not supported in zonal buckets"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		h := testHelper{t}
-
-		// Source object with custom contexts
-		srcObjectName := uidSpaceObjects.New() + "-src"
-		srcObj := client.Bucket(bucket).Object(srcObjectName)
-		initialContexts := &ObjectContexts{
-			Custom: map[string]ObjectContextValue{
-				"sourceKey1": {Value: "sourceValue1"},
-				"sourceKey2": {Value: "sourceValue2"},
-			},
-		}
-		wc := srcObj.NewWriter(ctx)
-		wc.Contexts = initialContexts
-		h.mustWrite(wc, []byte("source content"))
-		defer h.mustDeleteObject(srcObj)
-
-		// 1. Inheriting contexts from the source object.
-		t.Run("InheritContexts", func(t *testing.T) {
-			dstObjectName := uidSpaceObjects.New() + "-dst-inherit"
-			dstObj := client.Bucket(bucket).Object(dstObjectName)
-			defer h.mustDeleteObject(dstObj)
-			srcAttrs, err := srcObj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj.Attrs: %v", err)
-			}
-			copier := dstObj.CopierFrom(srcObj)
-			if _, err := copier.Run(ctx); err != nil {
-				t.Fatalf("Copier.Run failed: %v", err)
-			}
-
-			// Verify destination object has inherited contexts
-			dstAttrs, err := dstObj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("dstObj.Attrs: %v", err)
-			}
-			if diff := cmp.Diff(dstAttrs.Contexts.Custom, srcAttrs.Contexts.Custom, cmpopts.IgnoreFields(ObjectContextValue{}, "UpdateTime", "CreateTime")); diff != "" {
-				t.Errorf("Inherited CustomContext mismatch (-got +want):\n%s", diff)
-			}
-		})
-
-		// 2. Overriding contexts during rewrite/copy.
-		t.Run("OverrideContexts", func(t *testing.T) {
-			dstObjectName := uidSpaceObjects.New() + "-dst-override"
-			dstObj := client.Bucket(bucket).Object(dstObjectName)
-			defer h.mustDeleteObject(dstObj)
-
-			overridingContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"overrideKey1": {Value: "overrideValue1"},
-					"sourceKey2":   {Value: "updatedSourceValue2"}, // Modify an existing source key
-					"newKey":       {Value: "newValue"},            // Add a new key
-				},
-			}
-
-			copier := dstObj.CopierFrom(srcObj)
-			copier.ObjectAttrs.Contexts = overridingContexts // Set contexts on the destination attrs
-			if _, err := copier.Run(ctx); err != nil {
-				t.Fatalf("Copier.Run failed: %v", err)
-			}
-
-			// Verify destination object has overridden contexts
-			dstAttrs, err := dstObj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("dstObj.Attrs: %v", err)
-			}
-
-			expectedContexts := map[string]ObjectContextValue{
-				"overrideKey1": {Value: "overrideValue1"},
-				"sourceKey2":   {Value: "updatedSourceValue2"},
-				"newKey":       {Value: "newValue"},
-			}
-			if diff := cmp.Diff(dstAttrs.Contexts.Custom, expectedContexts, cmpopts.IgnoreFields(ObjectContextValue{}, "UpdateTime", "CreateTime")); diff != "" {
-				t.Errorf("Overridden CustomContext mismatch (-got +want):\n%s", diff)
-			}
-			if _, ok := dstAttrs.Contexts.Custom["sourceKey1"]; ok {
-				t.Error("Original sourceKey1 should be removed after override, but is present")
-			}
-		})
-	})
-}
-
-func TestIntegration_Object_Compose_CustomContexts(t *testing.T) {
-	multiTransportTest(skipZonalBucket(context.Background(), "Rewrite not supported in zonal buckets"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		h := testHelper{t}
-
-		// Source objects with custom contexts
-		srcObjectName1 := uidSpaceObjects.New() + "-src1"
-		srcObj1 := client.Bucket(bucket).Object(srcObjectName1)
-		initialContexts1 := &ObjectContexts{
-			Custom: map[string]ObjectContextValue{
-				"source1Key1": {Value: "source1Value1"},
-			},
-		}
-		wc1 := srcObj1.NewWriter(ctx)
-		wc1.Contexts = initialContexts1
-		h.mustWrite(wc1, []byte("content1"))
-		defer h.mustDeleteObject(srcObj1)
-
-		srcObjectName2 := uidSpaceObjects.New() + "-src2"
-		srcObj2 := client.Bucket(bucket).Object(srcObjectName2)
-		initialContexts2 := &ObjectContexts{
-			Custom: map[string]ObjectContextValue{
-				"source2Key1": {Value: "source2Value1"},
-			},
-		}
-		wc2 := srcObj2.NewWriter(ctx)
-		wc2.Contexts = initialContexts2
-		h.mustWrite(wc2, []byte("content2"))
-		defer h.mustDeleteObject(srcObj2)
-
-		// 1. Inheriting contexts from the source objects (compose preserves contexts of first source).
-		t.Run("ComposeInheritContexts", func(t *testing.T) {
-			dstObjectName := uidSpaceObjects.New() + "-compose-inherit"
-			dstObj := client.Bucket(bucket).Object(dstObjectName)
-			defer h.mustDeleteObject(dstObj)
-
-			composer := dstObj.ComposerFrom(srcObj1, srcObj2)
-			if _, err := composer.Run(ctx); err != nil {
-				t.Fatalf("Composer.Run failed: %v", err)
-			}
-
-			// Verify destination object has contexts from the first source
-			dstAttrs, err := dstObj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("dstObj.Attrs: %v", err)
-			}
-			wantContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"source1Key1": {Value: "source1Value1"},
-					"source2Key1": {Value: "source2Value1"},
-				},
-			}
-			if diff := cmp.Diff(dstAttrs.Contexts.Custom, wantContexts.Custom, cmpopts.IgnoreFields(ObjectContextValue{}, "UpdateTime", "CreateTime")); diff != "" {
-				t.Errorf("Inherited CustomContext mismatch (-got +want):\n%s", diff)
-			}
-		})
-
-		// 2. Overriding contexts during compose.
-		t.Run("ComposeOverrideContexts", func(t *testing.T) {
-			dstObjectName := uidSpaceObjects.New() + "-compose-override"
-			dstObj := client.Bucket(bucket).Object(dstObjectName)
-			defer h.mustDeleteObject(dstObj)
-
-			overridingContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"overrideComposeKey": {Value: "overrideComposeValue"},
-					"source1Key2":        {Value: "updatedSource1Value2"}, // Modify existing
-				},
-			}
-
-			composer := dstObj.ComposerFrom(srcObj1, srcObj2)
-			composer.ObjectAttrs.Contexts = overridingContexts // Set contexts on the destination attrs
-			if _, err := composer.Run(ctx); err != nil {
-				t.Fatalf("Composer.Run failed: %v", err)
-			}
-
-			// Verify destination object has overridden contexts
-			dstAttrs, err := dstObj.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("dstObj.Attrs: %v", err)
-			}
-
-			expectedContexts := map[string]ObjectContextValue{
-				"overrideComposeKey": {Value: "overrideComposeValue"},
-				"source1Key2":        {Value: "updatedSource1Value2"},
-			}
-			if diff := cmp.Diff(dstAttrs.Contexts.Custom, expectedContexts, cmpopts.IgnoreFields(ObjectContextValue{}, "UpdateTime", "CreateTime")); diff != "" {
-				t.Errorf("Overridden CustomContext mismatch (-got +want):\n%s", diff)
-			}
-			if _, ok := dstAttrs.Contexts.Custom["source1Key1"]; ok {
-				t.Error("Original source1Key1 should be removed after override, but is present")
-			}
-			if _, ok := dstAttrs.Contexts.Custom["source2Key1"]; ok {
-				t.Error("Context from second source should not be present after override")
-			}
-		})
-	})
-}
-
-func TestIntegration_Object_GetList_CustomContexts(t *testing.T) {
+func TestIntegration_ObjectGetListCustomContexts(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -7475,9 +7232,10 @@ func TestIntegration_Object_GetList_CustomContexts(t *testing.T) {
 		object1Name := prefix + uidSpaceObjects.New() + "-ctx1"
 		obj1 := client.Bucket(bucket).Object(object1Name)
 		contexts1 := &ObjectContexts{
-			Custom: map[string]ObjectContextValue{
-				"keyA": {Value: "valueA"},
-				"keyB": {Value: "valueB"},
+			Custom: map[string]ObjectCustomContextPayload{
+				"keyA":          {Value: "valueA"},
+				"keyB":          {Value: "valueB"},
+				"key-unicode-á": {Value: "value-unicode-é"},
 			},
 		}
 		wc1 := obj1.NewWriter(ctx)
@@ -7488,7 +7246,7 @@ func TestIntegration_Object_GetList_CustomContexts(t *testing.T) {
 		object2Name := prefix + uidSpaceObjects.New() + "-ctx2"
 		obj2 := client.Bucket(bucket).Object(object2Name)
 		contexts2 := &ObjectContexts{
-			Custom: map[string]ObjectContextValue{
+			Custom: map[string]ObjectCustomContextPayload{
 				"keyA": {Value: "valueX"}, // Different value for keyA
 				"keyC": {Value: "valueC"},
 			},
@@ -7503,215 +7261,75 @@ func TestIntegration_Object_GetList_CustomContexts(t *testing.T) {
 		h.mustWrite(obj3.NewWriter(ctx), []byte("content3"))
 		defer h.mustDeleteObject(obj3)
 
-		// 1. Get an existing object's metadata: Contexts included in the response.
-		t.Run("GetMetadataWithContexts", func(t *testing.T) {
-			attrs, err := obj1.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj1.Attrs failed: %v", err)
-			}
-			if attrs.Contexts == nil || len(attrs.Contexts.Custom) != 2 {
-				t.Errorf("Expected 2 custom contexts, got %v", attrs.Contexts.Custom)
-			}
-			if diff := cmp.Diff(attrs.Contexts.Custom, contexts1.Custom, cmpopts.IgnoreFields(ObjectContextValue{}, "UpdateTime", "CreateTime")); diff != "" {
-				t.Errorf("GetAttrs CustomContext mismatch (-got +want):\n%s", diff)
-			}
-
-			attrsNoCtx, err := obj3.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("obj3.Attrs failed: %v", err)
-			}
-			if attrsNoCtx.Contexts != nil && len(attrsNoCtx.Contexts.Custom) > 0 {
-				t.Errorf("Expected no custom contexts, got %v", attrsNoCtx.Contexts.Custom)
-			}
-		})
-
-		// 2. List existing objects: Contexts included in the response.
-		t.Run("ListObjectsWithContexts", func(t *testing.T) {
-			query := &Query{Prefix: prefix}
-			it := client.Bucket(bucket).Objects(ctx, query)
-
-			foundObjects := make(map[string]*ObjectAttrs)
-			for {
-				attrs, err := it.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					t.Fatalf("ListObjects iterator.Next failed: %v", err)
-				}
-				foundObjects[attrs.Name] = attrs
-			}
-
-			// Verify contexts are present for object1
-			if attrs, ok := foundObjects[object1Name]; !ok || attrs.Contexts == nil || len(attrs.Contexts.Custom) != 2 {
-				t.Errorf("Object %q: Expected 2 custom contexts, got %v", object1Name, attrs.Contexts.Custom)
-			} else if diff := cmp.Diff(attrs.Contexts.Custom, contexts1.Custom, cmpopts.IgnoreFields(ObjectContextValue{}, "UpdateTime", "CreateTime")); diff != "" {
-				t.Errorf("Object %q: CustomContext mismatch (-got +want):\n%s", object1Name, diff)
-			}
-
-			// Verify contexts are present for object2
-			if attrs, ok := foundObjects[object2Name]; !ok || attrs.Contexts == nil || len(attrs.Contexts.Custom) != 2 {
-				t.Errorf("Object %q: Expected 2 custom contexts, got %v", object2Name, attrs.Contexts.Custom)
-			} else if diff := cmp.Diff(attrs.Contexts.Custom, contexts2.Custom, cmpopts.IgnoreFields(ObjectContextValue{}, "UpdateTime", "CreateTime")); diff != "" {
-				t.Errorf("Object %q: CustomContext mismatch (-got +want):\n%s", object2Name, diff)
-			}
-
-			// Verify no contexts for object3
-			if attrs, ok := foundObjects[object3Name]; !ok || (attrs.Contexts != nil && len(attrs.Contexts.Custom) > 0) {
-				t.Errorf("Object %q: Expected no custom contexts, got %v", object3Name, attrs.Contexts.Custom)
-			}
-		})
-
-		// 3. Filtering by the presence of a context key/value pair.
-		t.Run("FilterByKeyValue", func(t *testing.T) {
-			query := &Query{
-				Prefix: prefix,
-				CustomContext: &CustomContext{
-					Key:   "keyA",
-					Value: "valueA",
+		filterTests := []struct {
+			name          string
+			query         *Query
+			expectedNames []string
+		}{
+			{
+				name: "FilterByKeyValue",
+				query: &Query{
+					Prefix:        prefix,
+					CustomContext: &CustomContext{Key: "keyA", Value: "valueA"},
 				},
-			}
-			it := client.Bucket(bucket).Objects(ctx, query)
-			foundNames := []string{}
-			for {
-				attrs, err := it.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					t.Fatalf("FilterByKeyValue iterator.Next failed: %v", err)
-				}
-				foundNames = append(foundNames, attrs.Name)
-			}
-			if len(foundNames) != 1 || foundNames[0] != object1Name {
-				t.Errorf("Expected to find only %q, got %v", object1Name, foundNames)
-			}
-		})
-
-		// 4. Filtering by the absence of a context key/value pair.
-		t.Run("FilterByAbsenceOfKeyValue", func(t *testing.T) {
-			query := &Query{
-				Prefix: prefix,
-				CustomContext: &CustomContext{
-					Key:     "keyB",
-					Value:   "valueB",
-					Absence: true,
+				expectedNames: []string{object1Name},
+			},
+			{
+				name: "FilterByAbsenceOfKeyValue",
+				query: &Query{
+					Prefix:        prefix,
+					CustomContext: &CustomContext{Key: "keyB", Value: "valueB", Absence: true},
 				},
-			}
-			it := client.Bucket(bucket).Objects(ctx, query)
-			foundNames := []string{}
-			for {
-				attrs, err := it.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					t.Fatalf("FilterByAbsenceOfKeyValue iterator.Next failed: %v", err)
-				}
-				foundNames = append(foundNames, attrs.Name)
-			}
-			expectedNames := []string{object2Name, object3Name} // obj1 has keyB:valueB
-			sort.Strings(foundNames)
-			sort.Strings(expectedNames)
-			if diff := cmp.Diff(foundNames, expectedNames); diff != "" {
-				t.Errorf("FilterByAbsenceOfKeyValue mismatch (-got +want):\n%s", diff)
-			}
-		})
-
-		// 5. Filtering by the presence of a context key regardless of value.
-		t.Run("FilterByKeyPresence", func(t *testing.T) {
-			query := &Query{
-				Prefix: prefix,
-				CustomContext: &CustomContext{
-					Key: "keyA",
+				expectedNames: []string{object2Name, object3Name},
+			},
+			{
+				name: "FilterByKeyPresence",
+				query: &Query{
+					Prefix:        prefix,
+					CustomContext: &CustomContext{Key: "keyA"},
 				},
-			}
-			it := client.Bucket(bucket).Objects(ctx, query)
-			foundNames := []string{}
-			for {
-				attrs, err := it.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					t.Fatalf("FilterByKeyPresence iterator.Next failed: %v", err)
-				}
-				foundNames = append(foundNames, attrs.Name)
-			}
-			expectedNames := []string{object1Name, object2Name}
-			sort.Strings(foundNames)
-			sort.Strings(expectedNames)
-			if diff := cmp.Diff(foundNames, expectedNames); diff != "" {
-				t.Errorf("FilterByKeyPresence mismatch (-got +want):\n%s", diff)
-			}
-		})
-
-		// 6. Filtering by the absence of a context key regardless of value.
-		t.Run("FilterByKeyAbsence", func(t *testing.T) {
-			query := &Query{
-				Prefix: prefix,
-				CustomContext: &CustomContext{
-					Key:     "keyD", // Key that doesn't exist in any object
-					Absence: true,
+				expectedNames: []string{object1Name, object2Name},
+			},
+			{
+				name: "FilterByKeyAbsence",
+				query: &Query{
+					Prefix:        prefix,
+					CustomContext: &CustomContext{Key: "keyD", Absence: true},
 				},
-			}
-			it := client.Bucket(bucket).Objects(ctx, query)
-			foundNames := []string{}
-			for {
-				attrs, err := it.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					t.Fatalf("FilterByKeyAbsence iterator.Next failed: %v", err)
-				}
-				foundNames = append(foundNames, attrs.Name)
-			}
-			expectedNames := []string{object1Name, object2Name, object3Name}
-			sort.Strings(foundNames)
-			sort.Strings(expectedNames)
-			if diff := cmp.Diff(foundNames, expectedNames); diff != "" {
-				t.Errorf("FilterByKeyAbsence mismatch (-got +want):\n%s", diff)
-			}
-		})
-
-		// 7. Test context key/value containing Unicode characters to ensure they are handled correctly.
-		t.Run("FilterByUnicodeKeyValue", func(t *testing.T) {
-			objectUnicodeName := prefix + uidSpaceObjects.New() + "-unicode-ctx"
-			objUnicode := client.Bucket(bucket).Object(objectUnicodeName)
-			unicodeContexts := &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
-					"key-unicode-á": {Value: "value-unicode-é"},
+				expectedNames: []string{object1Name, object2Name, object3Name},
+			},
+			{
+				name: "FilterByUnicodeKeyValue",
+				query: &Query{
+					Prefix:        prefix,
+					CustomContext: &CustomContext{Key: "key-unicode-á", Value: "value-unicode-é"},
 				},
-			}
-			wcUnicode := objUnicode.NewWriter(ctx)
-			wcUnicode.Contexts = unicodeContexts
-			h.mustWrite(wcUnicode, []byte("unicode content"))
-			defer h.mustDeleteObject(objUnicode)
+				expectedNames: []string{object1Name},
+			},
+		}
 
-			query := &Query{
-				Prefix: prefix,
-				CustomContext: &CustomContext{
-					Key:   "key-unicode-á",
-					Value: "value-unicode-é",
-				},
-			}
-			it := client.Bucket(bucket).Objects(ctx, query)
-			foundNames := []string{}
-			for {
-				attrs, err := it.Next()
-				if err == iterator.Done {
-					break
+		for _, tc := range filterTests {
+			t.Run(tc.name, func(t *testing.T) {
+				it := client.Bucket(bucket).Objects(ctx, tc.query)
+				var foundNames []string
+				for {
+					attrs, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						t.Fatalf("%s iterator.Next failed: %v", tc.name, err)
+					}
+					foundNames = append(foundNames, attrs.Name)
 				}
-				if err != nil {
-					t.Fatalf("FilterByUnicodeKeyValue iterator.Next failed: %v", err)
+
+				sort.Strings(foundNames)
+				sort.Strings(tc.expectedNames)
+				if diff := cmp.Diff(foundNames, tc.expectedNames); diff != "" {
+					t.Errorf("%s: name mismatch (-got +want):\n%s", tc.name, diff)
 				}
-				foundNames = append(foundNames, attrs.Name)
-			}
-			if len(foundNames) != 1 || foundNames[0] != objectUnicodeName {
-				t.Errorf("Expected to find only %q, got %v", objectUnicodeName, foundNames)
-			}
-		})
+			})
+		}
 	})
 }
 

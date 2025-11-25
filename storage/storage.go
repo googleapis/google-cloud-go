@@ -1123,8 +1123,8 @@ type ObjectAttrsToUpdate struct {
 	// Contexts allows adding, modifying, or deleting individual object contexts.
 	// To add or modify a context, set the value field in ObjectCustomContextPayload.
 	// To delete a context, set the Delete field in ObjectCustomContextPayload to true.
-	// to remove all contexts, pass ClearCustomContexts as true in Contexts. Custom field
-	// will be ignored when ClearCustomContexts is set to true
+	// To remove all contexts, pass Custom as an empty map in Contexts. Passing nil Custom
+	// map will be no-op.
 	Contexts *ObjectContexts
 }
 
@@ -1688,7 +1688,7 @@ type ObjectAttrs struct {
 	// annotate object with. These key-value pairs can be used to filter objects
 	// during list calls. See https://cloud.google.com/storage/docs/object-contexts
 	// for more details.
-	Contexts *ObjectContexts `json:"contexts,omitempty"`
+	Contexts *ObjectContexts
 }
 
 // isZero reports whether the ObjectAttrs struct is empty (i.e. all the

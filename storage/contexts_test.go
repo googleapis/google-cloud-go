@@ -20,14 +20,13 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestToObjectContexts(t *testing.T) {
-	now := time.Now().UTC().Truncate(time.Millisecond)
+	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 
 	testCases := []struct {
 		name string
@@ -45,7 +44,7 @@ func TestToObjectContexts(t *testing.T) {
 				Custom: map[string]raw.ObjectCustomContextPayload{},
 			},
 			want: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{},
+				Custom: map[string]ObjectCustomContextPayload{},
 			},
 		},
 		{
@@ -57,7 +56,7 @@ func TestToObjectContexts(t *testing.T) {
 				},
 			},
 			want: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
+				Custom: map[string]ObjectCustomContextPayload{
 					"key1": {Value: "value1", CreateTime: now, UpdateTime: now},
 					"key2": {Value: "value2", CreateTime: now, UpdateTime: now},
 				},
@@ -68,7 +67,7 @@ func TestToObjectContexts(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := toObjectContexts(tc.raw)
-			if diff := cmp.Diff(tc.want, got, cmpopts.EquateApproxTime(time.Millisecond)); diff != "" {
+			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("toObjectContexts() mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -89,7 +88,7 @@ func TestToRawObjectContexts(t *testing.T) {
 		{
 			name: "empty custom contexts",
 			obj: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{},
+				Custom: map[string]ObjectCustomContextPayload{},
 			},
 			want: &raw.ObjectContexts{
 				Custom: map[string]raw.ObjectCustomContextPayload{},
@@ -98,7 +97,7 @@ func TestToRawObjectContexts(t *testing.T) {
 		{
 			name: "with custom contexts",
 			obj: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
+				Custom: map[string]ObjectCustomContextPayload{
 					"key1": {Value: "value1"},
 					"key2": {Value: "value2", Delete: true}, // Should have NullFields
 				},
@@ -113,7 +112,7 @@ func TestToRawObjectContexts(t *testing.T) {
 		{
 			name: "with custom contexts, no delete",
 			obj: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
+				Custom: map[string]ObjectCustomContextPayload{
 					"key1": {Value: "value1"},
 					"key2": {Value: "value2"},
 				},
@@ -130,9 +129,7 @@ func TestToRawObjectContexts(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := toRawObjectContexts(tc.obj)
-			// cmp.Diff on maps is order-independent. We only need to sort the slice fields.
-			opts := cmpopts.SortSlices(func(a, b string) bool { return a < b })
-			if diff := cmp.Diff(tc.want, got, opts); diff != "" {
+			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("toRawObjectContexts() mismatch (-want +got): %s", diff)
 			}
 		})
@@ -140,7 +137,7 @@ func TestToRawObjectContexts(t *testing.T) {
 }
 
 func TestToObjectContextsFromProto(t *testing.T) {
-	now := time.Now().UTC().Truncate(time.Millisecond)
+	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 
 	testCases := []struct {
 		name  string
@@ -158,7 +155,7 @@ func TestToObjectContextsFromProto(t *testing.T) {
 				Custom: map[string]*storagepb.ObjectCustomContextPayload{},
 			},
 			want: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{},
+				Custom: map[string]ObjectCustomContextPayload{},
 			},
 		},
 		{
@@ -170,7 +167,7 @@ func TestToObjectContextsFromProto(t *testing.T) {
 				},
 			},
 			want: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
+				Custom: map[string]ObjectCustomContextPayload{
 					"key1": {Value: "value1", CreateTime: now, UpdateTime: now},
 					"key2": {Value: "value2", CreateTime: now, UpdateTime: now},
 				},
@@ -181,7 +178,7 @@ func TestToObjectContextsFromProto(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := toObjectContextsFromProto(tc.proto)
-			if diff := cmp.Diff(tc.want, got, cmpopts.EquateApproxTime(time.Millisecond)); diff != "" {
+			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("toObjectContextsFromProto() mismatch (-want +got): %s", diff)
 			}
 		})
@@ -189,7 +186,7 @@ func TestToObjectContextsFromProto(t *testing.T) {
 }
 
 func TestToProtoObjectContexts(t *testing.T) {
-	now := time.Now().UTC().Truncate(time.Millisecond)
+	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 
 	testCases := []struct {
 		name string
@@ -204,7 +201,7 @@ func TestToProtoObjectContexts(t *testing.T) {
 		{
 			name: "empty custom contexts",
 			obj: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{},
+				Custom: map[string]ObjectCustomContextPayload{},
 			},
 			want: &storagepb.ObjectContexts{
 				Custom: map[string]*storagepb.ObjectCustomContextPayload{},
@@ -213,7 +210,7 @@ func TestToProtoObjectContexts(t *testing.T) {
 		{
 			name: "with custom contexts",
 			obj: &ObjectContexts{
-				Custom: map[string]ObjectContextValue{
+				Custom: map[string]ObjectCustomContextPayload{
 					"key1": {Value: "value1", CreateTime: now, UpdateTime: now},
 					"key2": {Value: "value2", Delete: true}, // Should be skipped in proto conversion
 					"key3": {Value: "value3"},

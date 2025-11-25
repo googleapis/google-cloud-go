@@ -22,15 +22,14 @@ import (
 	raw "google.golang.org/api/storage/v1"
 )
 
-// ObjectContexts is a container for object contexts.
+// ObjectContexts is a container for custom object contexts.
 type ObjectContexts struct {
-	Custom map[string]ObjectContextValue
-	// Custom field is ignored when ClearCustomContexts is set to true.
-	ClearCustomContexts bool
+	Custom map[string]ObjectCustomContextPayload
 }
 
-// ObjectContextValue holds the value of a user-defined object context.
-type ObjectContextValue struct {
+// ObjectCustomContextPayload holds the value of a user-defined object context and
+// other metadata. To delete a key from Custom object contexts, set Delete as true.
+type ObjectCustomContextPayload struct {
 	Value  string
 	Delete bool
 	// Read-only fields. Any updates to CreateTime and UpdateTime will be ignored.
@@ -44,9 +43,9 @@ func toObjectContexts(c *raw.ObjectContexts) *ObjectContexts {
 	if c == nil {
 		return nil
 	}
-	customContexts := make(map[string]ObjectContextValue)
+	customContexts := make(map[string]ObjectCustomContextPayload, len(c.Custom))
 	for k, v := range c.Custom {
-		customContexts[k] = ObjectContextValue{
+		customContexts[k] = ObjectCustomContextPayload{
 			Value:      v.Value,
 			CreateTime: convertTime(v.CreateTime),
 			UpdateTime: convertTime(v.UpdateTime),
@@ -61,9 +60,6 @@ func toObjectContexts(c *raw.ObjectContexts) *ObjectContexts {
 func toRawObjectContexts(c *ObjectContexts) *raw.ObjectContexts {
 	if c == nil {
 		return nil
-	}
-	if c.ClearCustomContexts {
-		return &raw.ObjectContexts{}
 	}
 	customContexts := make(map[string]raw.ObjectCustomContextPayload)
 	for k, v := range c.Custom {
@@ -86,9 +82,9 @@ func toObjectContextsFromProto(c *storagepb.ObjectContexts) *ObjectContexts {
 	if c == nil {
 		return nil
 	}
-	customContexts := make(map[string]ObjectContextValue)
+	customContexts := make(map[string]ObjectCustomContextPayload, len(c.GetCustom()))
 	for k, v := range c.GetCustom() {
-		customContexts[k] = ObjectContextValue{
+		customContexts[k] = ObjectCustomContextPayload{
 			Value:      v.GetValue(),
 			CreateTime: v.GetCreateTime().AsTime(),
 			UpdateTime: v.GetUpdateTime().AsTime(),
@@ -102,9 +98,6 @@ func toObjectContextsFromProto(c *storagepb.ObjectContexts) *ObjectContexts {
 func toProtoObjectContexts(c *ObjectContexts) *storagepb.ObjectContexts {
 	if c == nil {
 		return nil
-	}
-	if c.ClearCustomContexts {
-		return &storagepb.ObjectContexts{}
 	}
 	customContexts := make(map[string]*storagepb.ObjectCustomContextPayload)
 	for k, v := range c.Custom {
