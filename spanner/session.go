@@ -1068,6 +1068,7 @@ func (p *sessionPool) close(ctx context.Context) {
 	}
 	p.mu.Unlock()
 	p.hc.close()
+	close(p.multiplexedSessionReq)
 	// destroy all the sessions
 	p.hc.mu.Lock()
 	allSessions := make([]*session, len(p.hc.queue.sessions))
