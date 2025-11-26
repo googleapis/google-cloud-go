@@ -407,6 +407,9 @@ roles which must be enabled in order to do the export successfully. To
 disable this export, you can use the [WithDisabledClientMetrics] client
 option.
 
+The gRPC client's default auto checksumming can introduce increased CPU overhead during writes
+because of checksum computation. Users can disable automatic checksumming for gRPC writer using [Writer.DisableAutoChecksum].
+
 # Storage Control API
 
 Certain control plane and long-running operations for Cloud Storage (including Folder
