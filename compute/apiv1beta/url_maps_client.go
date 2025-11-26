@@ -168,7 +168,11 @@ func (c *UrlMapsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *UrlMapsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -183,22 +187,31 @@ func (c *UrlMapsClient) Get(ctx context.Context, req *computepb.GetUrlMapRequest
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a UrlMap resource in the specified project using the data included in the request.
+// Insert creates a UrlMap resource in the specified project using
+// the data included in the request.
 func (c *UrlMapsClient) Insert(ctx context.Context, req *computepb.InsertUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path,
+// scoped to the specified UrlMap.
+//
+// For more information, see Invalidating cached
+// content (at /cdn/docs/invalidating-cached-content).
 func (c *UrlMapsClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.InvalidateCache(ctx, req, opts...)
 }
 
-// List retrieves the list of UrlMap resources available to the specified project.
+// List retrieves the list of UrlMap resources available to the specified
+// project.
 func (c *UrlMapsClient) List(ctx context.Context, req *computepb.ListUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified UrlMap resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *UrlMapsClient) Patch(ctx context.Context, req *computepb.PatchUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -208,12 +221,15 @@ func (c *UrlMapsClient) TestIamPermissions(ctx context.Context, req *computepb.T
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified UrlMap resource with the data included in the request.
+// Update updates the specified UrlMap resource with the data included in the
+// request.
 func (c *UrlMapsClient) Update(ctx context.Context, req *computepb.UpdateUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
-// Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+// Validate runs static validation for the UrlMap. In particular, the tests of the
+// provided UrlMap will be run. Calling this method does NOT create the
+// UrlMap.
 func (c *UrlMapsClient) Validate(ctx context.Context, req *computepb.ValidateUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
 	return c.internalClient.Validate(ctx, req, opts...)
 }
@@ -311,7 +327,11 @@ func (c *urlMapsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	it := &UrlMapsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListUrlMapsRequest)
@@ -514,7 +534,8 @@ func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapReq
 	return resp, nil
 }
 
-// Insert creates a UrlMap resource in the specified project using the data included in the request.
+// Insert creates a UrlMap resource in the specified project using
+// the data included in the request.
 func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -580,7 +601,11 @@ func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrl
 	return op, nil
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path,
+// scoped to the specified UrlMap.
+//
+// For more information, see Invalidating cached
+// content (at /cdn/docs/invalidating-cached-content).
 func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCacheInvalidationRuleResource()
@@ -646,7 +671,8 @@ func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves the list of UrlMap resources available to the specified project.
+// List retrieves the list of UrlMap resources available to the specified
+// project.
 func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	it := &UrlMapIterator{}
 	req = proto.Clone(req).(*computepb.ListUrlMapsRequest)
@@ -732,7 +758,10 @@ func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMaps
 	return it
 }
 
-// Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified UrlMap resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -850,7 +879,8 @@ func (c *urlMapsRESTClient) TestIamPermissions(ctx context.Context, req *compute
 	return resp, nil
 }
 
-// Update updates the specified UrlMap resource with the data included in the request.
+// Update updates the specified UrlMap resource with the data included in the
+// request.
 func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -916,7 +946,9 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 	return op, nil
 }
 
-// Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+// Validate runs static validation for the UrlMap. In particular, the tests of the
+// provided UrlMap will be run. Calling this method does NOT create the
+// UrlMap.
 func (c *urlMapsRESTClient) Validate(ctx context.Context, req *computepb.ValidateUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapsValidateRequestResource()
