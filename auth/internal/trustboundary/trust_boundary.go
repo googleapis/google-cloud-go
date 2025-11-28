@@ -262,29 +262,21 @@ func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
 }
 
 // GetTrustBoundaryData retrieves the trust boundary data.
-// It first checks the universe domain: if it's non-default, a NoOp is returned.
-// Otherwise, it checks a local cache. If the data is not cached as NoOp,
-// it fetches new data from the endpoint provided by its ConfigProvider,
+// It first checks the universe domain: if it's non-default, nil is returned.
+// It fetches new data from the endpoint provided by its ConfigProvider,
 // using the given accessToken for authentication. Results are cached.
 // If fetching fails, it returns previously cached data if available, otherwise the fetch error.
 func (p *DataProvider) GetTrustBoundaryData(ctx context.Context, token *auth.Token) (*internal.TrustBoundaryData, error) {
-	// Check the universe domain.
 	uniDomain, err := p.configProvider.GetUniverseDomain(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("trustboundary: error getting universe domain: %w", err)
 	}
 	if uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
-		if p.data == nil || p.data.EncodedLocations != internal.TrustBoundaryNoOp {
-			p.data = internal.NewNoOpTrustBoundaryData()
-		}
-		return p.data, nil
+		return nil, nil
 	}
 
-	// Check cache for a no-op result from a previous API call.
+	// Check cache for results from a previous API call.
 	cachedData := p.data
-	if cachedData != nil && cachedData.EncodedLocations == internal.TrustBoundaryNoOp {
-		return cachedData, nil
-	}
 
 	// Get the endpoint
 	url, err := p.configProvider.GetTrustBoundaryEndpoint(ctx)

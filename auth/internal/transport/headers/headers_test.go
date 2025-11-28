@@ -52,18 +52,6 @@ func TestSetAuth(t *testing.T) {
 			wantGRPCMeta:   map[string]string{"authorization": "Bearer token_val"},
 		},
 		{
-			name: "auth with no-op tbd",
-			baseToken: &auth.Token{
-				Value: "token_val",
-				Type:  "Bearer",
-			},
-			tbd:             internal.NewNoOpTrustBoundaryData(),
-			wantAuthHeader:  "Bearer token_val",
-			wantTBHeader:    true,
-			wantTBHeaderVal: "",
-			wantGRPCMeta:    map[string]string{"authorization": "Bearer token_val", "x-allowed-locations": ""},
-		},
-		{
 			name: "auth with tbd",
 			baseToken: &auth.Token{
 				Value: "token_val",

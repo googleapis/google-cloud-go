@@ -80,28 +80,6 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			wantRequestCount: 2,
 		},
 		{
-			name: "Success - OK No-Op response",
-			serverResponse: &serverResponse{
-				status: http.StatusOK,
-				body:   `{"encodedLocations": "0x0"}`,
-			},
-			token:            &auth.Token{Value: "test-token"},
-			ctx:              context.Background(),
-			wantData:         internal.NewTrustBoundaryData(nil, "0x0"),
-			wantRequestCount: 1,
-		},
-		{
-			name: "Success - OK No-Op response with empty locations array",
-			serverResponse: &serverResponse{
-				status: http.StatusOK,
-				body:   `{"locations": [], "encodedLocations": "0x0"}`,
-			},
-			token:            &auth.Token{Value: "test-token"},
-			ctx:              context.Background(),
-			wantData:         internal.NewTrustBoundaryData([]string{}, "0x0"),
-			wantRequestCount: 1,
-		},
-		{
 			name: "Error - Non-200 Status",
 			serverResponse: &serverResponse{
 				status: http.StatusInternalServerError,
@@ -675,14 +653,14 @@ func TestDataProvider_Token(t *testing.T) {
 		}
 	}{
 		{
-			name: "Non-default universe domain returns NoOp",
+			name: "Non-default universe domain returns nil",
 			mockConfig: &mockConfigProvider{
 				universeToReturn: "example.com",
 			},
 			baseProvider: &mockTokenProvider{
 				TokenToReturn: &auth.Token{Value: "base-token"},
 			},
-			wantDataOnToken:       internal.NewNoOpTrustBoundaryData(),
+			wantDataOnToken:       nil,
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 0,
 		},
@@ -779,62 +757,6 @@ func TestDataProvider_Token(t *testing.T) {
 				wantEndpointCallCount: 1,
 			},
 		},
-		{
-			name: "Non-default universe caches NoOp",
-			mockConfig: &mockConfigProvider{
-				universeToReturn: "example.com",
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			wantDataOnToken:       internal.NewNoOpTrustBoundaryData(),
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 0,
-			secondRun: &struct {
-				serverResponse        *serverResponse
-				wantDataOnToken       *internal.TrustBoundaryData
-				wantErr               string
-				wantUniverseCallCount int
-				wantEndpointCallCount int
-			}{
-				wantDataOnToken: internal.NewNoOpTrustBoundaryData(),
-				// Universe is checked again, but endpoint call is skipped.
-				wantUniverseCallCount: 1,
-				wantEndpointCallCount: 0,
-			},
-		},
-		{
-			name: "API-retrieved NoOp is cached",
-			mockConfig: &mockConfigProvider{
-				universeToReturn: internal.DefaultUniverseDomain,
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			serverResponse: &serverResponse{ // First call returns NoOp from API
-				status: http.StatusOK,
-				body:   `{"encodedLocations": "0x0"}`,
-			},
-			wantDataOnToken:       internal.NewTrustBoundaryData(nil, internal.TrustBoundaryNoOp),
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 1,
-			secondRun: &struct {
-				serverResponse        *serverResponse
-				wantDataOnToken       *internal.TrustBoundaryData
-				wantErr               string
-				wantUniverseCallCount int
-				wantEndpointCallCount int
-			}{
-				serverResponse: &serverResponse{ // This server would fail, but shouldn't be called
-					status: http.StatusInternalServerError,
-					body:   "server error",
-				},
-				wantDataOnToken: internal.NewTrustBoundaryData(nil, internal.TrustBoundaryNoOp),
-				// Universe is checked, but cached NoOp prevents endpoint call.
-				wantUniverseCallCount: 1,
-				wantEndpointCallCount: 0,
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -876,11 +798,18 @@ func TestDataProvider_Token(t *testing.T) {
 					t.Errorf("provider.Token() value = %q, want %q", token.Value, tt.baseProvider.TokenToReturn.Value)
 				}
 				var gotData internal.TrustBoundaryData
-				if data, ok := token.Metadata[internal.TrustBoundaryDataKey]; ok {
-					gotData, _ = data.(internal.TrustBoundaryData)
-				}
-				if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
-					t.Errorf("provider.Token() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
+				data, ok := token.Metadata[internal.TrustBoundaryDataKey]
+				if tt.wantDataOnToken == nil {
+					if ok {
+						t.Errorf("provider.Token() data on token = %+v, want nil", data)
+					}
+				} else {
+					if ok {
+						gotData, _ = data.(internal.TrustBoundaryData)
+					}
+					if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
+						t.Errorf("provider.Token() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
+					}
 				}
 			}
 
