@@ -136,25 +136,18 @@ func TestNewTrustBoundaryData(t *testing.T) {
 			wantEncoded:      "0xABC123",
 		},
 		{
-			name:             "Empty locations, not no-op encoded",
+			name:             "Empty locations, with encoded locations",
 			locations:        []string{},
 			encodedLocations: "0xDEF456",
 			wantLocations:    []string{},
 			wantEncoded:      "0xDEF456",
 		},
 		{
-			name:             "Nil locations, not no-op encoded",
+			name:             "Nil locations, with encoded locations",
 			locations:        nil,
 			encodedLocations: "0xGHI789",
 			wantLocations:    []string{}, // Expect empty slice, not nil
 			wantEncoded:      "0xGHI789",
-		},
-		{
-			name:             "No-op encoded locations",
-			locations:        []string{"us-east1"},
-			encodedLocations: TrustBoundaryNoOp,
-			wantLocations:    []string{"us-east1"},
-			wantEncoded:      TrustBoundaryNoOp,
 		},
 		{
 			name:             "Empty string encoded locations",
@@ -181,18 +174,6 @@ func TestNewTrustBoundaryData(t *testing.T) {
 	}
 }
 
-func TestNewNoOpTrustBoundaryData(t *testing.T) {
-	data := NewNoOpTrustBoundaryData()
-
-	if data == nil {
-		t.Fatal("NewNoOpTrustBoundaryData() returned nil")
-	}
-
-	if got := data.EncodedLocations; got != TrustBoundaryNoOp {
-		t.Errorf("NewNoOpTrustBoundaryData().EncodedLocations = %q, want %q", got, TrustBoundaryNoOp)
-	}
-}
-
 func TestTrustBoundaryHeader(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -205,12 +186,6 @@ func TestTrustBoundaryHeader(t *testing.T) {
 			tbd:         TrustBoundaryData{},
 			wantValue:   "",
 			wantPresent: false,
-		},
-		{
-			name:        "no-op data",
-			tbd:         *NewNoOpTrustBoundaryData(),
-			wantValue:   "",
-			wantPresent: true,
 		},
 		{
 			name:        "regular data",
