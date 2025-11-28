@@ -1955,8 +1955,10 @@ type Query struct {
 	// By default, soft-deleted objects are not listed.
 	SoftDeleted bool
 
-	// See CustomContext for more details.
-	CustomContext *CustomContext
+	// Filters objects based on object attributes like custom contexts.
+	// See https://docs.cloud.google.com/storage/docs/listing-objects#filter-by-object-contexts
+	// for more details.
+	Filter string
 }
 
 // CustomContext is used to filter results to objects that have a matching

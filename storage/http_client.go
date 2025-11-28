@@ -365,12 +365,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
 		req.MatchGlob(it.query.MatchGlob)
 		req.IncludeFoldersAsPrefixes(it.query.IncludeFoldersAsPrefixes)
-
-		// filter by custom contexts
-		customContextFilter := toStringCustomContext(it.query.CustomContext)
-		if customContextFilter != "" {
-			req.Filter(customContextFilter)
-		}
+		req.Filter(it.query.Filter)
 
 		if selection := it.query.toFieldSelection(); selection != "" {
 			req.Fields("nextPageToken", googleapi.Field(selection))

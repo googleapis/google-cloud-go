@@ -7269,40 +7269,40 @@ func TestIntegration_ObjectGetListCustomContexts(t *testing.T) {
 			{
 				name: "FilterByKeyValue",
 				query: &Query{
-					Prefix:        prefix,
-					CustomContext: &CustomContext{Key: "keyA", Value: "valueA"},
+					Prefix: prefix,
+					Filter: "contexts.\"keyA\"=\"valueA\"",
 				},
 				expectedNames: []string{object1Name},
 			},
 			{
 				name: "FilterByAbsenceOfKeyValue",
 				query: &Query{
-					Prefix:        prefix,
-					CustomContext: &CustomContext{Key: "keyB", Value: "valueB", Absence: true},
+					Prefix: prefix,
+					Filter: "-contexts.\"keyB\"=\"valueB\"",
 				},
 				expectedNames: []string{object2Name, object3Name},
 			},
 			{
 				name: "FilterByKeyPresence",
 				query: &Query{
-					Prefix:        prefix,
-					CustomContext: &CustomContext{Key: "keyA"},
+					Prefix: prefix,
+					Filter: "contexts.\"keyA\":*",
 				},
 				expectedNames: []string{object1Name, object2Name},
 			},
 			{
 				name: "FilterByKeyAbsence",
 				query: &Query{
-					Prefix:        prefix,
-					CustomContext: &CustomContext{Key: "keyD", Absence: true},
+					Prefix: prefix,
+					Filter: "-contexts.\"keyD\":*",
 				},
 				expectedNames: []string{object1Name, object2Name, object3Name},
 			},
 			{
 				name: "FilterByUnicodeKeyValue",
 				query: &Query{
-					Prefix:        prefix,
-					CustomContext: &CustomContext{Key: "key-unicode-á", Value: "value-unicode-é"},
+					Prefix: prefix,
+					Filter: "contexts.\"key-unicode-á\"=\"value-unicode-é\"",
 				},
 				expectedNames: []string{object1Name},
 			},

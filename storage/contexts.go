@@ -15,7 +15,6 @@
 package storage
 
 import (
-	"fmt"
 	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
@@ -113,20 +112,4 @@ func toProtoObjectContexts(c *ObjectContexts) *storagepb.ObjectContexts {
 	return &storagepb.ObjectContexts{
 		Custom: customContexts,
 	}
-}
-
-func toStringCustomContext(cc *CustomContext) string {
-	if cc == nil || cc.Key == "" {
-		return ""
-	}
-	var filter string
-	if cc.Value != "" {
-		filter = fmt.Sprintf(`contexts."%s"="%s"`, cc.Key, cc.Value)
-	} else {
-		filter = fmt.Sprintf(`contexts."%s":*`, cc.Key)
-	}
-	if cc.Absence {
-		filter = fmt.Sprintf(`-%s`, filter)
-	}
-	return filter
 }
