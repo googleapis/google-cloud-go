@@ -993,50 +993,40 @@ func TestTagInference(t *testing.T) {
 	}
 }
 
-func defaultField(name, typ string, defaultValueExpression string) *FieldSchema {
-	return &FieldSchema{
-		Name:                   name,
-		Type:                   FieldType(typ),
-		Required:               false,
-		DefaultValueExpression: defaultValueExpression,
+func TestTagInferenceErrors(t *testing.T) {
+	testCases := []interface{}{
+		struct {
+			LongTag int `bigquery:"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"`
+		}{},
+		struct {
+			UnsupporedStartChar int `bigquery:"øab"`
+		}{},
+		struct {
+			UnsupportedEndChar int `bigquery:"abø"`
+		}{},
+		struct {
+			UnsupportedMiddleChar int `bigquery:"aøb"`
+		}{},
+		struct {
+			StartInt int `bigquery:"1abc"`
+		}{},
+		struct {
+			Hyphens int `bigquery:"a-b"`
+		}{},
 	}
-}
+	for i, tc := range testCases {
 
-func TestTagDefaultInference(t *testing.T) {
-	type withDefaults struct {
-		Bytes         []byte        `bigquery:",nullable,default=b'hey now'"`
-		Rat           *big.Rat      `bigquery:",nullable,default=3.1415"`
-		NullInt64     NullInt64     `bigquery:",default=77"`
-		NullFloat64   NullFloat64   `bigquery:",default=77.24"`
-		NullBool      NullBool      `bigquery:",default=false"`
-		NullString    NullString    `bigquery:",default='hey now'"`
-		NullJSON      NullJSON      `bigquery:",default='{}'"`
-		NullTimestamp NullTimestamp `bigquery:",default=CURRENT_TIMESTAMP()"`
-		NullDate      NullDate      `bigquery:",default=CURRENT_DATE()"`
-		NullTime      NullTime      `bigquery:",default=CURRENT_TIME()"`
-		NullDateTime  NullDateTime  `bigquery:",default='CURRENT_DATETIME()'"`
-	}
-
-	expectedWithTagsSchema := Schema{
-		defaultField("Bytes", "BYTES", "b'hey now'"),
-		defaultField("Rat", "NUMERIC", "3.1415"),
-		defaultField("NullInt64", "INTEGER", "77"),
-		defaultField("NullFloat64", "FLOAT", "77.24"),
-		defaultField("NullBool", "BOOLEAN", "false"),
-		defaultField("NullString", "STRING", "'hey now'"),
-		defaultField("NullJSON", "JSON", "'{}'"),
-		defaultField("NullTimestamp", "TIMESTAMP", "CURRENT_TIMESTAMP()"),
-		defaultField("NullDate", "DATE", "CURRENT_DATE()"),
-		defaultField("NullTime", "TIME", "CURRENT_TIME()"),
-		defaultField("NullDateTime", "DATETIME", "'CURRENT_DATETIME()'"),
+		_, got := InferSchema(tc)
+		if _, ok := got.(invalidFieldNameError); !ok {
+			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant invalidFieldNameError", i, got)
+		}
 	}
 
-	inferredSchema, err := InferSchema(withDefaults{})
-	if err != nil {
-		t.Fatalf("expected no errors from InferSchema, got %v", err)
-	}
-	if !testutil.Equal(inferredSchema, expectedWithTagsSchema) {
-		t.Errorf("expected schema:\n%v\ngot:\n%v", expectedWithTagsSchema, inferredSchema)
+	_, err := InferSchema(struct {
+		X int `bigquery:",optional"`
+	}{})
+	if err == nil {
+		t.Error("got nil, want error")
 	}
 }
 

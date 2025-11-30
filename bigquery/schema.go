@@ -587,7 +587,7 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool, de
 		}
 		return &FieldSchema{Required: !nullable, Type: RecordFieldType, Schema: nested}, nil
 	case reflect.String:
-		return &FieldSchema{Required: !nullable, Type: StringFieldType, DefaultValueExpression: defaultValueExpression}, nil
+		return &FieldSchema{Required: !nullable, Type: StringFieldType}, nil
 	case reflect.Bool:
 		return &FieldSchema{Required: !nullable, Type: BooleanFieldType}, nil
 	case reflect.Float32, reflect.Float64:
@@ -780,7 +780,7 @@ type unsupportedDefaultError struct {
 }
 
 func (e unsupportedDefaultError) Error() string {
-	return fmt.Sprintf(`bigquery: field %q of type %s: %s does not support default value expressions`, e.name, e.typ, e.typ)
+	return fmt.Sprintf(`bigquery: field %q of type %s does not support default value expressions`, e.name, e.typ)
 }
 
 type unsupportedDefaultUnlessNullableError struct {
@@ -789,7 +789,7 @@ type unsupportedDefaultUnlessNullableError struct {
 }
 
 func (e unsupportedDefaultUnlessNullableError) Error() string {
-	return fmt.Sprintf(`bigquery: field %q of type %s: %s does not support default value expressions unless the field is not required`, e.name, e.typ, e.typ)
+	return fmt.Sprintf(`bigquery: field %q of type %s does not support default value expressions unless the field is not required`, e.name, e.typ)
 }
 
 type unsupportedFieldTypeError struct {

@@ -58,8 +58,8 @@ func bqTagParser(t reflect.StructTag) (name string, keep bool, other interface{}
 	for _, opt := range opts {
 		if opt != nullableTagOption && opt != jsonTagOption && !strings.HasPrefix(opt, defaultTagOption+"=") {
 			return "", false, nil, fmt.Errorf(
-				"bigquery: invalid tag option %q. The only valid options are %q, %q and %q",
-				opt, nullableTagOption, jsonTagOption, defaultTagOption)
+				"bigquery: invalid tag option %q. Valid options are %q, %q, and 'default=<value>'",
+				opt, nullableTagOption, jsonTagOption)
 		}
 	}
 	return name, keep, opts, nil
