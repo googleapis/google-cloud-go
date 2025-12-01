@@ -1259,6 +1259,12 @@ func TestSchemaErrors(t *testing.T) {
 			}{},
 			want: unsupportedDefaultError{},
 		},
+		{
+			in: struct {
+				X IntervalValue `bigquery:",default=x,default=y"`
+			}{},
+			want: fmt.Errorf(""),
+		},
 	}
 	for _, tc := range testCases {
 		_, got := InferSchema(tc.in)

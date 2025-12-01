@@ -558,10 +558,10 @@ func isDefaultable(rt reflect.Type) bool {
 	switch rt.Kind() {
 	case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64:
 		return true
-case reflect.Array, reflect.Slice:
-	// decision: Not supporting arrays/slices to avoid
-	// problems parsing a tag with a comma
-	return false
+	case reflect.Array, reflect.Slice:
+		// decision: Not supporting arrays/slices to avoid
+		// problems parsing a tag with a comma
+		return false
 	}
 
 	return false
@@ -678,6 +678,9 @@ func inferFields(rt reflect.Type) (Schema, error) {
 			case opt == jsonTagOption:
 				json = true
 			case strings.HasPrefix(opt, defaultTagOption+"="):
+				if defaultValueExpression != "" {
+					return nil, fmt.Errorf("bigquery: field %q has multiple default tags", field.Name)
+				}
 				defaultValueExpression = strings.TrimPrefix(opt, defaultTagOption+"=")
 			}
 		}
