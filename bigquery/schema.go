@@ -535,8 +535,8 @@ func inferStruct(t reflect.Type) (Schema, error) {
 func isDefaultable(rt reflect.Type) bool {
 	nft := nullableFieldType(rt)
 
-	// handle types for which we *DON'T* support default values
 	switch {
+	// handle types for which we *DON'T* support default values
 	case nft == GeographyFieldType:
 		// decision: don't support default values for GeographyFieldType to avoid
 		// problems parsing a tag with a comma, as in ST_GEOGPOINT(longitude, latitude)
@@ -550,10 +550,8 @@ func isDefaultable(rt reflect.Type) bool {
 		// problems parsing a tag with a comma
 		// except byte slices, which don't require commas
 		return false
-	}
 
 	// handle types for which we *DO* support default values
-	switch {
 	case nft != "", isSupportedIntType(rt), isSupportedUintType(rt):
 		return true
 	case rt == typeOfByteSlice, rt == typeOfGoTime, rt == typeOfDate, rt == typeOfTime, rt == typeOfDateTime, rt == typeOfRat:
