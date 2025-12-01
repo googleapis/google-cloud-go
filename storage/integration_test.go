@@ -1876,24 +1876,24 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 			},
 			{
 				name:       "resumable with user-sent CRC32C",
-				content:    bytes.Repeat([]byte("a"), 1024*1024),
+				content:    bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize:  256 * 1024,
 				sendCrc32c: true,
 			},
 			{
 				name:      "resumable with default CRC32",
-				content:   bytes.Repeat([]byte("a"), 1024*1024),
+				content:   bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize: 256 * 1024,
 			},
 			{
 				name:                "resumable with disabled auto checksum",
-				content:             bytes.Repeat([]byte("a"), 1024*1024),
+				content:             bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize:           256 * 1024,
 				disableAutoChecksum: true,
 			},
 			{
 				name:              "resumable with incorrect checksum",
-				content:           bytes.Repeat([]byte("a"), 1024*1024),
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize:         256 * 1024,
 				sendCrc32c:        true,
 				incorrectChecksum: true,
@@ -3388,6 +3388,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 			flushOffset         int64
 			sendCRC             bool
 			disableAutoChecksum bool
+			incorrectChecksum   bool
 		}{
 			{
 				name:        "finalized_object",
@@ -3411,6 +3412,13 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				chunkSize:           4 * MiB,
 				disableAutoChecksum: true,
 				flushOffset:         -1, // no flush
+			},
+			{
+				name:              "finalized_object with incorrect checksum",
+				finalize:          true,
+				content:           randomBytes9MiB,
+				chunkSize:         4 * MiB,
+				incorrectChecksum: true,
 			},
 			{
 				name:        "unfinalized_object",
@@ -3461,6 +3469,20 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				w.DisableAutoChecksum = tc.disableAutoChecksum
 				w.CRC32C = crc32.Checksum(tc.content, crc32cTable)
 				content := tc.content
+
+				// If incorrectChecksum is true, write data and close writer
+				// immediately to validate if writer returns error
+				if tc.incorrectChecksum {
+					w.CRC32C++ // simulate incorrect checksum
+					w.SendCRC32C = true
+					if _, err := w.Write(content); err != nil {
+						t.Fatalf("writer.Write: %v", err)
+					}
+					if err := w.Close(); !incorrectChecksumError(err) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
 
 				// If flushOffset is 0, just do a flush and check the attributes.
 				if tc.flushOffset == 0 {
