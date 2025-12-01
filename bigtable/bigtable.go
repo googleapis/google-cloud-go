@@ -186,7 +186,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 		connPool, connPoolErr = btransport.NewBigtableChannelPool(ctx,
 			defaultBigtableConnPoolSize,
-			btopt.LeastInFlight,
+			btopt.BigtableLoadBalancingStrategy(),
 			func() (*btransport.BigtableConn, error) {
 				grpcConn, err := gtransport.Dial(ctx, o...)
 				if err != nil {

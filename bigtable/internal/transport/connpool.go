@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"math/rand"
 	"net/url"
 	"slices"
@@ -107,12 +108,8 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 	requestParamsMD := metadata.Pairs(requestParamsHeader,
 		fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(fullInstanceName), url.QueryEscape(appProfileID)))
 
-	mds := metadata.Join(
-		requestParamsMD, featureFlagsMd)
-
 	originalContextMd, _ := metadata.FromOutgoingContext(ctx)
-	allMDs := append([]metadata.MD{originalContextMd}, mds)
-	ctx = metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
+	ctx = metadata.NewOutgoingContext(ctx, metadata.Join(originalContextMd, requestParamsMD, featureFlagsMd))
 
 	// Use a timeout for the prime operation
 	primeCtx, cancel := context.WithTimeout(ctx, primeRPCTimeout)
@@ -526,7 +523,7 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 	}
 
 	minIndex := -1
-	minLoad := int32(1<<31 - 1) // maxInt32
+	minLoad := int32(math.MaxInt32)
 
 	for i, entry := range conns {
 		if entry.isDraining() {
