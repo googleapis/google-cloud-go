@@ -534,37 +534,35 @@ func inferStruct(t reflect.Type) (Schema, error) {
 
 func isDefaultable(rt reflect.Type) bool {
 	nft := nullableFieldType(rt)
-	if nft == GeographyFieldType {
+
+	// handle types for which we *DON'T* support default values
+	switch {
+	case nft == GeographyFieldType:
 		// decision: don't support default values for GeographyFieldType to avoid
 		// problems parsing a tag with a comma, as in ST_GEOGPOINT(longitude, latitude)
 		return false
-	} else if nft != "" {
-		return true
-	}
-
-	if isSupportedIntType(rt) || isSupportedUintType(rt) {
-		return true
-	}
-
-	switch rt {
-	case typeOfByteSlice, typeOfGoTime, typeOfDate, typeOfTime, typeOfDateTime, typeOfRat:
-		return true
-	case typeOfIntervalValue, typeOfRangeValue:
+	case rt == typeOfIntervalValue, rt == typeOfRangeValue:
 		// BigQuery itself doesn't support defaults for these types
 		// returning false here to be explicit that we won't handle it
 		return false
-	}
-
-	switch rt.Kind() {
-	case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64:
-		return true
-	case reflect.Array, reflect.Slice:
+	case rt != typeOfByteSlice && (rt.Kind() == reflect.Array || rt.Kind() == reflect.Slice):
 		// decision: Not supporting arrays/slices to avoid
 		// problems parsing a tag with a comma
+		// except byte slices, which don't require commas
 		return false
 	}
 
-	return false
+	// handle types for which we *DO* support default values
+	switch {
+	case nft != "", isSupportedIntType(rt), isSupportedUintType(rt):
+		return true
+	case rt == typeOfByteSlice, rt == typeOfGoTime, rt == typeOfDate, rt == typeOfTime, rt == typeOfDateTime, rt == typeOfRat:
+		return true
+	case rt.Kind() == reflect.String, rt.Kind() == reflect.Bool, rt.Kind() == reflect.Float32, rt.Kind() == reflect.Float64:
+		return true
+	default:
+		return false
+	}
 }
 
 // inferFieldSchema infers the FieldSchema for a Go type
