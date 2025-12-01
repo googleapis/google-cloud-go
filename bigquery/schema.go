@@ -438,10 +438,33 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //
 // The "default" option specifies a default value expression for the field.
 // It is not supported for arrays, structs, geography, range and interval
-// fields. In this example, the Go name of the field is retained.
+// fields.
 //
-//	bigquery:",default=42"
-//
+// 	type ExampleDefaultValues struct {
+// 	    Bytes         []byte         `bigquery:",nullable,default=b'hey now'"`
+// 	    Rat           *big.Rat       `bigquery:",nullable,default=3.1415"`
+// 	    RequiredBytes []byte         `bigquery:",default=b'hey now'"`
+// 	    RequiredRat   *big.Rat       `bigquery:",default=3.1415"`
+// 	    NullInt64     NullInt64      `bigquery:",default=77"`
+// 	    NullFloat64   NullFloat64    `bigquery:",default=77.24"`
+// 	    NullBool      NullBool       `bigquery:",default=false"`
+// 	    NullString    NullString     `bigquery:",default='hey now'"`
+// 	    NullJSON      NullJSON       `bigquery:",default='{}'"`
+// 	    NullTimestamp NullTimestamp  `bigquery:",default=CURRENT_TIMESTAMP()"`
+// 	    NullDate      NullDate       `bigquery:",default=CURRENT_DATE()"`
+// 	    NullTime      NullTime       `bigquery:",default=CURRENT_TIME()"`
+// 	    NullDateTime  NullDateTime   `bigquery:",default=CURRENT_DATETIME()"`
+// 	    GoTime        time.Time      `bigquery:",default=CURRENT_DATETIME()"`
+// 	    Time          civil.Time     `bigquery:",default=CURRENT_TIME()"`
+// 	    Date          civil.Date     `bigquery:",default=CURRENT_DATE()"`
+// 	    DateTime      civil.DateTime `bigquery:",default=CURRENT_DATETIME()"`
+// 	    String        string         `bigquery:",default='hey now'"`
+// 	    Bool          bool           `bigquery:",default=true"`
+// 	    Float32       float32        `bigquery:",default=3.14"`
+// 	    Float64       float64        `bigquery:",default=3.1415"`
+// 	    Int32         int32          `bigquery:",default=77"`
+// 	    Int64         int64          `bigquery:",default=7777"`
+// 	}
 
 func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
