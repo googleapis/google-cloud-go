@@ -522,9 +522,9 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObje
 	}
 
 	if uattrs.Contexts != nil && uattrs.Contexts.Custom != nil {
-
 		if len(uattrs.Contexts.Custom) == 0 {
-			// Sending the empty map is a no-op. Pass it in null fields
+			// To delete all contexts, "Contexts" must be added to nullFields.
+			// Sending empty Custom map in the request body is a no-op without this.
 			nullFields = append(nullFields, "Contexts")
 		} else {
 			attrs.Contexts = uattrs.Contexts

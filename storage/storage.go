@@ -1961,15 +1961,6 @@ type Query struct {
 	Filter string
 }
 
-// CustomContext is used to filter results to objects that have a matching
-// context key and value. Absence can also be passed which will result in objects
-// not matching key and value
-type CustomContext struct {
-	Key     string
-	Value   string
-	Absence bool
-}
-
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
 // names in the API call. Only the ObjectAttrs field names are visible to users
 // because they are already part of the public API of the package.
