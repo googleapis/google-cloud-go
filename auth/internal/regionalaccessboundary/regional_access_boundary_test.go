@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package trustboundary
+package regionalaccessboundary
 
 import (
 	"context"
@@ -31,7 +31,7 @@ import (
 	"cloud.google.com/go/compute/metadata"
 )
 
-func TestFetchTrustBoundaryData(t *testing.T) {
+func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 	type serverResponse struct {
 		status int
 		body   string
@@ -45,7 +45,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 		urlOverride      *string // To test empty URL
 		useNilClient     bool
 		ctx              context.Context
-		wantData         *internal.TrustBoundaryData
+		wantData         *internal.RegionalAccessBoundaryData
 		wantErr          string
 		wantReqHeaders   map[string]string
 		wantRequestCount int
@@ -58,7 +58,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			},
 			token:    &auth.Token{Value: "test-token"},
 			ctx:      context.Background(),
-			wantData: internal.NewTrustBoundaryData([]string{"us-central1"}, "0xABC"),
+			wantData: internal.NewRegionalAccessBoundaryData([]string{"us-central1"}, "0xABC"),
 			wantReqHeaders: map[string]string{
 				"Authorization": "Bearer test-token",
 			},
@@ -76,7 +76,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			},
 			token:            &auth.Token{Value: "test-token"},
 			ctx:              context.Background(),
-			wantData:         internal.NewTrustBoundaryData([]string{"us-central1"}, "0xABC"),
+			wantData:         internal.NewRegionalAccessBoundaryData([]string{"us-central1"}, "0xABC"),
 			wantRequestCount: 2,
 		},
 		{
@@ -87,7 +87,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			},
 			token:   &auth.Token{Value: "test-token"},
 			ctx:     context.Background(),
-			wantErr: "trust boundary request failed with status: 500 Internal Server Error, body: server error",
+			wantErr: "Regional Access Boundary request failed with status: 500 Internal Server Error, body: server error",
 		},
 		{
 			name: "Error - Malformed JSON",
@@ -97,7 +97,7 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 			},
 			token:   &auth.Token{Value: "test-token"},
 			ctx:     context.Background(),
-			wantErr: "failed to unmarshal trust boundary response",
+			wantErr: "failed to unmarshal Regional Access Boundary response",
 		},
 		{
 			name: "Error - Missing encodedLocations",
@@ -188,106 +188,143 @@ func TestFetchTrustBoundaryData(t *testing.T) {
 				client = http.DefaultClient
 			}
 
-			data, err := fetchTrustBoundaryData(tt.ctx, client, url, tt.token, nil)
+			data, err := fetchRegionalAccessBoundaryData(tt.ctx, client, url, tt.token, nil)
 
 			if tt.wantRequestCount > 0 && requestCount != tt.wantRequestCount {
-				t.Errorf("fetchTrustBoundaryData() requestCount = %d, want %d", requestCount, tt.wantRequestCount)
+				t.Errorf("fetchRegionalAccessBoundaryData() requestCount = %d, want %d", requestCount, tt.wantRequestCount)
 			}
 
 			if tt.wantErr != "" {
 				if err == nil {
-					t.Fatalf("fetchTrustBoundaryData() error = nil, want substring %q", tt.wantErr)
+					t.Fatalf("fetchRegionalAccessBoundaryData() error = nil, want substring %q", tt.wantErr)
 				}
 				// Strip the common prefix before checking the specific error message part.
-				gotError := strings.TrimPrefix(err.Error(), "trustboundary: ")
+				gotError := strings.TrimPrefix(err.Error(), "regionalaccessboundary: ")
 				if !strings.HasPrefix(gotError, tt.wantErr) {
-					t.Errorf("fetchTrustBoundaryData() error = %q, want error: %q", gotError, tt.wantErr)
+					t.Errorf("fetchRegionalAccessBoundaryData() error = %q, want error: %q", gotError, tt.wantErr)
 				}
 			} else {
 				if err != nil {
-					t.Fatalf("fetchTrustBoundaryData() unexpected error: %v", err)
+					t.Fatalf("fetchRegionalAccessBoundaryData() unexpected error: %v", err)
 				}
 				if !reflect.DeepEqual(data, tt.wantData) {
-					t.Errorf("fetchTrustBoundaryData() data = %+v, want %+v", data, tt.wantData)
+					t.Errorf("fetchRegionalAccessBoundaryData() data = %+v, want %+v", data, tt.wantData)
 				}
 			}
 		})
 	}
 }
 
-func TestIsTrustBoundaryEnabled(t *testing.T) {
+func TestIsRegionalAccessBoundaryEnabled(t *testing.T) {
+	newEnvVar := "GOOGLE_AUTH_REGIONAL_ACCESS_BOUNDARY_ENABLE_EXPERIMENT"
+	oldEnvVar := "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
+
 	tests := []struct {
-		name    string
-		envVal  string
-		setEnv  bool
-		want    bool
-		wantErr bool
+		name              string
+		newEnvVal         string
+		oldEnvVal         string
+		setNewEnv         bool
+		setOldEnv         bool
+		want              bool
 	}{
 		{
-			name:   "unset",
-			setEnv: false,
-			want:   false,
+			name:      "new env unset, old env unset",
+			setNewEnv: false,
+			setOldEnv: false,
+			want:      false,
 		},
 		{
-			name:    "empty",
-			envVal:  "",
-			setEnv:  true,
-			wantErr: true,
+			name:      "new env empty, old env unset",
+			newEnvVal: "",
+			setNewEnv: true,
+			setOldEnv: false,
+			want:      false,
 		},
 		{
-			name:   "true",
-			envVal: "true",
-			setEnv: true,
-			want:   true,
+			name:      "new env true, old env unset",
+			newEnvVal: "true",
+			setNewEnv: true,
+			setOldEnv: false,
+			want:      true,
 		},
 		{
-			name:   "TRUE",
-			envVal: "TRUE",
-			setEnv: true,
-			want:   true,
+			name:      "new env 1, old env unset",
+			newEnvVal: "1",
+			setNewEnv: true,
+			setOldEnv: false,
+			want:      true,
 		},
 		{
-			name:   "1",
-			envVal: "1",
-			setEnv: true,
-			want:   true,
+			name:      "new env false, old env unset",
+			newEnvVal: "false",
+			setNewEnv: true,
+			setOldEnv: false,
+			want:      false,
 		},
 		{
-			name:   "false",
-			envVal: "false",
-			setEnv: true,
-			want:   false,
+			name:      "new env 0, old env unset",
+			newEnvVal: "0",
+			setNewEnv: true,
+			setOldEnv: false,
+			want:      false,
 		},
 		{
-			name:   "FALSE",
-			envVal: "FALSE",
-			setEnv: true,
-			want:   false,
+			name:      "new env invalid, old env unset",
+			newEnvVal: "invalid",
+			setNewEnv: true,
+			setOldEnv: false,
+			want:      false,
 		},
 		{
-			name:   "0",
-			envVal: "0",
-			setEnv: true,
-			want:   false,
+			name:      "new env unset, old env true",
+			setNewEnv: false,
+			oldEnvVal: "true",
+			setOldEnv: true,
+			want:      true,
 		},
 		{
-			name:    "invalid",
-			envVal:  "invalid",
-			setEnv:  true,
-			wantErr: true,
+			name:      "new env unset, old env invalid",
+			setNewEnv: false,
+			oldEnvVal: "invalid",
+			setOldEnv: true,
+			want:      false,
+		},
+		{
+			name:      "new env true, old env false (new takes precedence)",
+			newEnvVal: "true",
+			setNewEnv: true,
+			oldEnvVal: "false",
+			setOldEnv: true,
+			want:      true,
+		},
+		{
+			name:      "new env false, old env true (new takes precedence)",
+			newEnvVal: "false",
+			setNewEnv: true,
+			oldEnvVal: "true",
+			setOldEnv: true,
+			want:      false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.setEnv {
-				t.Setenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED", tt.envVal)
+			if tt.setNewEnv {
+				t.Setenv(newEnvVar, tt.newEnvVal)
+			} else {
+				os.Unsetenv(newEnvVar)
 			}
-			got, err := isTrustBoundaryEnabled()
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("isTrustBoundaryEnabled() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.setOldEnv {
+				t.Setenv(oldEnvVar, tt.oldEnvVal)
+			} else {
+				os.Unsetenv(oldEnvVar)
+			}
+
+			got, err := isRegionalAccessBoundaryEnabled()
+			if err != nil {
+				t.Fatalf("isRegionalAccessBoundaryEnabled() unexpected error: %v", err)
 			}
 			if got != tt.want {
-				t.Errorf("isTrustBoundaryEnabled() = %v, want %v", got, tt.want)
+				t.Errorf("isRegionalAccessBoundaryEnabled() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -306,7 +343,7 @@ func TestServiceAccountConfig(t *testing.T) {
 		t.Errorf("NewServiceAccountConfigProvider().UniverseDomain = %q, want %q", cfg.UniverseDomain, ud)
 	}
 
-	t.Run("GetTrustBoundaryEndpoint", func(t *testing.T) {
+	t.Run("GetRegionalAccessBoundaryEndpoint", func(t *testing.T) {
 		tests := []struct {
 			name    string
 			saEmail string
@@ -323,7 +360,7 @@ func TestServiceAccountConfig(t *testing.T) {
 			{
 				name:    "Empty SA Email",
 				saEmail: "",
-				wantErr: "trustboundary: service account email cannot be empty for config",
+				wantErr: "regionalaccessboundary: service account email cannot be empty for config",
 			},
 			{
 				name:    "Empty UD defaults to googleapis.com",
@@ -335,13 +372,13 @@ func TestServiceAccountConfig(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				cfg := NewServiceAccountConfigProvider(tt.saEmail, tt.ud)
-				url, err := cfg.GetTrustBoundaryEndpoint(context.Background())
+				url, err := cfg.GetRegionalAccessBoundaryEndpoint(context.Background())
 				if (err != nil && err.Error() != tt.wantErr) || (err == nil && tt.wantErr != "") {
-					t.Errorf("GetTrustBoundaryEndpoint() error = %v, wantErr %q", err, tt.wantErr)
+					t.Errorf("GetRegionalAccessBoundaryEndpoint() error = %v, wantErr %q", err, tt.wantErr)
 					return
 				}
 				if url != tt.wantURL {
-					t.Errorf("GetTrustBoundaryEndpoint() url = %q, wantURL %q", url, tt.wantURL)
+					t.Errorf("GetRegionalAccessBoundaryEndpoint() url = %q, wantURL %q", url, tt.wantURL)
 				}
 			})
 		}
@@ -429,7 +466,7 @@ func TestGCEConfigProvider(t *testing.T) {
 					http.NotFound(w, r)
 				}
 			},
-			wantErrEndpoint: "trustboundary: GCE config: failed to get service account email",
+			wantErrEndpoint: "regionalaccessboundary: GCE config: failed to get service account email",
 			expectedUD:      defaultTestUD,
 		},
 		{
@@ -447,14 +484,14 @@ func TestGCEConfigProvider(t *testing.T) {
 					http.NotFound(w, r)
 				}
 			},
-			wantErrEndpoint: "trustboundary: GCE config: failed to get universe domain",
-			wantErrUD:       "trustboundary: GCE config: failed to get universe domain",
+			wantErrEndpoint: "regionalaccessboundary: GCE config: failed to get universe domain",
+			wantErrUD: "regionalaccessboundary: GCE config: failed to get universe domain",
 		},
 		{
 			name:                    "Nil ComputeUniverseDomainProvider",
 			gceUDP:                  nil,
-			wantErrEndpoint:         "trustboundary: GCEConfigProvider not properly initialized",
-			wantErrUD:               "trustboundary: GCEConfigProvider not properly initialized",
+			wantErrEndpoint:         "regionalaccessboundary: GCEConfigProvider not properly initialized",
+			wantErrUD:               "regionalaccessboundary: GCEConfigProvider not properly initialized",
 			skipServerConfiguration: true,
 		},
 		{
@@ -462,8 +499,8 @@ func TestGCEConfigProvider(t *testing.T) {
 			gceUDP: &internal.ComputeUniverseDomainProvider{
 				MetadataClient: nil,
 			},
-			wantErrEndpoint:         "trustboundary: GCEConfigProvider not properly initialized",
-			wantErrUD:               "trustboundary: GCEConfigProvider not properly initialized",
+			wantErrEndpoint:         "regionalaccessboundary: GCEConfigProvider not properly initialized",
+			wantErrUD:               "regionalaccessboundary: GCEConfigProvider not properly initialized",
 			skipServerConfiguration: true,
 		},
 		{
@@ -481,7 +518,7 @@ func TestGCEConfigProvider(t *testing.T) {
 					http.NotFound(w, r)
 				}
 			},
-			wantErrEndpoint: "trustboundary: GCE config: failed to get service account email: metadata: GCE metadata \"instance/service-accounts/default/email\" not defined",
+			wantErrEndpoint: "regionalaccessboundary: GCE config: failed to get service account email: metadata: GCE metadata \"instance/service-accounts/default/email\" not defined",
 			expectedUD:      defaultTestUD,
 		},
 		{
@@ -527,17 +564,17 @@ func TestGCEConfigProvider(t *testing.T) {
 				provider = NewGCEConfigProvider(tt.gceUDP)
 			}
 
-			endpoint, err := provider.GetTrustBoundaryEndpoint(ctx)
+			endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
 			if tt.wantErrEndpoint != "" {
 				if err == nil {
-					t.Errorf("GetTrustBoundaryEndpoint() error = nil, want  %q", tt.wantErrEndpoint)
+					t.Errorf("GetRegionalAccessBoundaryEndpoint() error = nil, want  %q", tt.wantErrEndpoint)
 				} else if !strings.Contains(err.Error(), tt.wantErrEndpoint) {
-					t.Errorf("GetTrustBoundaryEndpoint() error = %q, want  %q", err.Error(), tt.wantErrEndpoint)
+					t.Errorf("GetRegionalAccessBoundaryEndpoint() error = %q, want  %q", err.Error(), tt.wantErrEndpoint)
 				}
 			} else if err != nil {
-				t.Errorf("GetTrustBoundaryEndpoint() unexpected error: %v", err)
+				t.Errorf("GetRegionalAccessBoundaryEndpoint() unexpected error: %v", err)
 			} else if endpoint != tt.expectedEndpoint {
-				t.Errorf("GetTrustBoundaryEndpoint() = %q, want %q", endpoint, tt.expectedEndpoint)
+				t.Errorf("GetRegionalAccessBoundaryEndpoint() = %q, want %q", endpoint, tt.expectedEndpoint)
 			}
 
 			ud, err := provider.GetUniverseDomain(ctx)
@@ -582,7 +619,7 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 
 	for i := 0; i < 5; i++ {
 		t.Run(fmt.Sprintf("call-%d", i+1), func(t *testing.T) {
-			provider.GetTrustBoundaryEndpoint(context.Background())
+			provider.GetRegionalAccessBoundaryEndpoint(context.Background())
 			provider.GetUniverseDomain(context.Background())
 			// The actual number of requests to the metadata server is 2 (one for email, one for UD)
 			if requestCount > 2 {
@@ -601,7 +638,7 @@ type mockConfigProvider struct {
 	universeErrToReturn error
 }
 
-func (m *mockConfigProvider) GetTrustBoundaryEndpoint(ctx context.Context) (string, error) {
+func (m *mockConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
 	m.endpointCallCount++
 	return m.endpointToReturn, m.endpointErrToReturn
 }
@@ -636,9 +673,9 @@ func TestDataProvider_Token(t *testing.T) {
 	tests := []struct {
 		name                  string
 		mockConfig            *mockConfigProvider
-		serverResponse        *serverResponse // for fetchTrustBoundaryData
+		serverResponse        *serverResponse // for fetchRegionalAccessBoundaryData
 		baseProvider          *mockTokenProvider
-		wantDataOnToken       *internal.TrustBoundaryData
+		wantDataOnToken       *internal.RegionalAccessBoundaryData
 		wantErr               string
 		wantUniverseCallCount int
 		wantEndpointCallCount int
@@ -646,7 +683,7 @@ func TestDataProvider_Token(t *testing.T) {
 		// with a different server/mock configuration.
 		secondRun *struct {
 			serverResponse        *serverResponse
-			wantDataOnToken       *internal.TrustBoundaryData
+			wantDataOnToken       *internal.RegionalAccessBoundaryData
 			wantErr               string
 			wantUniverseCallCount int
 			wantEndpointCallCount int
@@ -676,7 +713,7 @@ func TestDataProvider_Token(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`,
 			},
-			wantDataOnToken:       internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"),
+			wantDataOnToken:       internal.NewRegionalAccessBoundaryData([]string{"us-east1"}, "0xABC"),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 		},
@@ -692,7 +729,7 @@ func TestDataProvider_Token(t *testing.T) {
 				status: http.StatusInternalServerError,
 				body:   "server error",
 			},
-			wantDataOnToken:       &internal.TrustBoundaryData{},
+			wantDataOnToken:       &internal.RegionalAccessBoundaryData{},
 			wantErr:               "and no cache available",
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
@@ -705,13 +742,13 @@ func TestDataProvider_Token(t *testing.T) {
 			baseProvider: &mockTokenProvider{
 				TokenToReturn: &auth.Token{Value: "base-token"},
 			},
-			wantDataOnToken:       &internal.TrustBoundaryData{},
+			wantDataOnToken:       &internal.RegionalAccessBoundaryData{},
 			wantErr:               "error getting universe domain",
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 0,
 		},
 		{
-			name: "Error from GetTrustBoundaryEndpoint",
+			name: "Error from GetRegionalAccessBoundaryEndpoint",
 			mockConfig: &mockConfigProvider{
 				universeToReturn:    internal.DefaultUniverseDomain,
 				endpointErrToReturn: errors.New("endpoint error"),
@@ -719,7 +756,7 @@ func TestDataProvider_Token(t *testing.T) {
 			baseProvider: &mockTokenProvider{
 				TokenToReturn: &auth.Token{Value: "base-token"},
 			},
-			wantDataOnToken:       &internal.TrustBoundaryData{},
+			wantDataOnToken:       &internal.RegionalAccessBoundaryData{},
 			wantErr:               "error getting the lookup endpoint",
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
@@ -736,12 +773,12 @@ func TestDataProvider_Token(t *testing.T) {
 				status: http.StatusOK,
 				body:   `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`,
 			},
-			wantDataOnToken:       internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"),
+			wantDataOnToken:       internal.NewRegionalAccessBoundaryData([]string{"us-east1"}, "0xABC"),
 			wantUniverseCallCount: 1,
 			wantEndpointCallCount: 1,
 			secondRun: &struct {
 				serverResponse        *serverResponse
-				wantDataOnToken       *internal.TrustBoundaryData
+				wantDataOnToken       *internal.RegionalAccessBoundaryData
 				wantErr               string
 				wantUniverseCallCount int
 				wantEndpointCallCount int
@@ -750,7 +787,7 @@ func TestDataProvider_Token(t *testing.T) {
 					status: http.StatusInternalServerError,
 					body:   "server error",
 				},
-				wantDataOnToken: internal.NewTrustBoundaryData([]string{"us-east1"}, "0xABC"), // Should get cached data
+				wantDataOnToken: internal.NewRegionalAccessBoundaryData([]string{"us-east1"}, "0xABC"), // Should get cached data
 				wantErr:         "",                                                           // No error due to fallback
 				// It tries to fetch again, but falls back to cache.
 				wantUniverseCallCount: 1,
@@ -797,15 +834,15 @@ func TestDataProvider_Token(t *testing.T) {
 				if token.Value != tt.baseProvider.TokenToReturn.Value {
 					t.Errorf("provider.Token() value = %q, want %q", token.Value, tt.baseProvider.TokenToReturn.Value)
 				}
-				var gotData internal.TrustBoundaryData
-				data, ok := token.Metadata[internal.TrustBoundaryDataKey]
+				var gotData internal.RegionalAccessBoundaryData
+				data, ok := token.Metadata[internal.RegionalAccessBoundaryDataKey]
 				if tt.wantDataOnToken == nil {
 					if ok {
 						t.Errorf("provider.Token() data on token = %+v, want nil", data)
 					}
 				} else {
 					if ok {
-						gotData, _ = data.(internal.TrustBoundaryData)
+						gotData, _ = data.(internal.RegionalAccessBoundaryData)
 					}
 					if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
 						t.Errorf("provider.Token() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
@@ -817,7 +854,7 @@ func TestDataProvider_Token(t *testing.T) {
 				t.Errorf("GetUniverseDomain call count = %d, want %d", tt.mockConfig.universeCallCount, tt.wantUniverseCallCount)
 			}
 			if tt.mockConfig.endpointCallCount != tt.wantEndpointCallCount {
-				t.Errorf("GetTrustBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.wantEndpointCallCount)
+				t.Errorf("GetRegionalAccessBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.wantEndpointCallCount)
 			}
 
 			// Second run, if configured
@@ -846,9 +883,9 @@ func TestDataProvider_Token(t *testing.T) {
 				} else if err != nil {
 					t.Fatalf("provider.Token() second run unexpected error: %v", err)
 				} else {
-					var gotData internal.TrustBoundaryData
-					if data, ok := secondToken.Metadata[internal.TrustBoundaryDataKey]; ok {
-						gotData, _ = data.(internal.TrustBoundaryData)
+					var gotData internal.RegionalAccessBoundaryData
+					if data, ok := secondToken.Metadata[internal.RegionalAccessBoundaryDataKey]; ok {
+						gotData, _ = data.(internal.RegionalAccessBoundaryData)
 					}
 					if !reflect.DeepEqual(gotData, *tt.secondRun.wantDataOnToken) {
 						t.Errorf("provider.Token() second run data on token = %+v, want %+v", gotData, *tt.secondRun.wantDataOnToken)
@@ -859,7 +896,7 @@ func TestDataProvider_Token(t *testing.T) {
 					t.Errorf("second run GetUniverseDomain call count = %d, want %d", tt.mockConfig.universeCallCount, tt.secondRun.wantUniverseCallCount)
 				}
 				if tt.mockConfig.endpointCallCount != tt.secondRun.wantEndpointCallCount {
-					t.Errorf("second run GetTrustBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.secondRun.wantEndpointCallCount)
+					t.Errorf("second run GetRegionalAccessBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.secondRun.wantEndpointCallCount)
 				}
 			}
 		})

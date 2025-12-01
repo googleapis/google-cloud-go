@@ -27,7 +27,7 @@ func TestSetAuth(t *testing.T) {
 	tests := []struct {
 		name            string
 		baseToken       *auth.Token
-		tbd             *internal.TrustBoundaryData
+		tbd             *internal.RegionalAccessBoundaryData
 		wantAuthHeader  string
 		wantTBHeader    bool
 		wantTBHeaderVal string
@@ -46,7 +46,7 @@ func TestSetAuth(t *testing.T) {
 				Value: "token_val",
 				Type:  "Bearer",
 			},
-			tbd:            &internal.TrustBoundaryData{},
+			tbd:            &internal.RegionalAccessBoundaryData{},
 			wantAuthHeader: "Bearer token_val",
 			wantTBHeader:   false,
 			wantGRPCMeta:   map[string]string{"authorization": "Bearer token_val"},
@@ -57,7 +57,7 @@ func TestSetAuth(t *testing.T) {
 				Value: "token_val",
 				Type:  "Bearer",
 			},
-			tbd:             internal.NewTrustBoundaryData(nil, "some_value"),
+			tbd:             internal.NewRegionalAccessBoundaryData(nil, "some_value"),
 			wantAuthHeader:  "Bearer token_val",
 			wantTBHeader:    true,
 			wantTBHeaderVal: "some_value",
@@ -71,7 +71,7 @@ func TestSetAuth(t *testing.T) {
 				Type:  tt.baseToken.Type,
 			}
 			if tt.tbd != nil {
-				token.Metadata = map[string]interface{}{internal.TrustBoundaryDataKey: *tt.tbd}
+				token.Metadata = map[string]interface{}{internal.RegionalAccessBoundaryDataKey: *tt.tbd}
 			}
 			// Test HTTP
 			req := httptest.NewRequest("GET", "/", nil)

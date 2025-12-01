@@ -120,7 +120,7 @@ func TestDefaultClient(t *testing.T) {
 	}
 }
 
-func TestNewTrustBoundaryData(t *testing.T) {
+func TestNewRegionalAccessBoundaryData(t *testing.T) {
 	tests := []struct {
 		name             string
 		locations        []string
@@ -160,48 +160,48 @@ func TestNewTrustBoundaryData(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			data := NewTrustBoundaryData(tt.locations, tt.encodedLocations)
+			data := NewRegionalAccessBoundaryData(tt.locations, tt.encodedLocations)
 
 			if got := data.EncodedLocations; got != tt.wantEncoded {
-				t.Errorf("NewTrustBoundaryData().EncodedLocations = %q, want %q", got, tt.wantEncoded)
+				t.Errorf("NewRegionalAccessBoundaryData().EncodedLocations = %q, want %q", got, tt.wantEncoded)
 			}
 
 			gotLocations := data.Locations
 			if !reflect.DeepEqual(gotLocations, tt.wantLocations) {
-				t.Errorf("NewTrustBoundaryData().Locations = %v, want %v", gotLocations, tt.wantLocations)
+				t.Errorf("NewRegionalAccessBoundaryData().Locations = %v, want %v", gotLocations, tt.wantLocations)
 			}
 		})
 	}
 }
 
-func TestTrustBoundaryHeader(t *testing.T) {
+func TestRegionalAccessBoundaryHeader(t *testing.T) {
 	tests := []struct {
 		name        string
-		tbd         TrustBoundaryData
+		tbd         RegionalAccessBoundaryData
 		wantValue   string
 		wantPresent bool
 	}{
 		{
 			name:        "empty data",
-			tbd:         TrustBoundaryData{},
+			tbd:         RegionalAccessBoundaryData{},
 			wantValue:   "",
 			wantPresent: false,
 		},
 		{
 			name:        "regular data",
-			tbd:         *NewTrustBoundaryData(nil, "some-encoded-locations"),
+			tbd:         *NewRegionalAccessBoundaryData(nil, "some-encoded-locations"),
 			wantValue:   "some-encoded-locations",
 			wantPresent: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotValue, gotPresent := tt.tbd.TrustBoundaryHeader()
+			gotValue, gotPresent := tt.tbd.RegionalAccessBoundaryHeader()
 			if gotValue != tt.wantValue {
-				t.Errorf("TrustBoundaryHeader() gotValue = %v, want %v", gotValue, tt.wantValue)
+				t.Errorf("RegionalAccessBoundaryHeader() gotValue = %v, want %v", gotValue, tt.wantValue)
 			}
 			if gotPresent != tt.wantPresent {
-				t.Errorf("TrustBoundaryHeader() gotPresent = %v, want %v", gotPresent, tt.wantPresent)
+				t.Errorf("RegionalAccessBoundaryHeader() gotPresent = %v, want %v", gotPresent, tt.wantPresent)
 			}
 		})
 	}
