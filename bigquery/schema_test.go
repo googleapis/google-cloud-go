@@ -1030,21 +1030,11 @@ func TestTagInferenceErrors(t *testing.T) {
 	}
 }
 
-func defaultField(name, typ string, defaultValueExpression string) *FieldSchema {
+func defaultField(name, typ string, defaultValueExpression string, required bool) *FieldSchema {
 	return &FieldSchema{
 		Name:                   name,
 		Type:                   FieldType(typ),
-		Required:               false,
-		DefaultValueExpression: defaultValueExpression,
-	}
-
-}
-
-func requiredColumnDefaultField(name, typ string, defaultValueExpression string) *FieldSchema {
-	return &FieldSchema{
-		Name:                   name,
-		Type:                   FieldType(typ),
-		Required:               true,
+		Required:               required,
 		DefaultValueExpression: defaultValueExpression,
 	}
 
@@ -1078,29 +1068,29 @@ func TestTagDefaultInference(t *testing.T) {
 	}
 
 	expectedWithTagsSchema := Schema{
-		defaultField("Bytes", "BYTES", "b'hey now'"),
-		defaultField("Rat", "NUMERIC", "3.1415"),
-		requiredColumnDefaultField("RequiredBytes", "BYTES", "b'hey now'"),
-		requiredColumnDefaultField("RequiredRat", "NUMERIC", "3.1415"),
-		defaultField("NullInt64", "INTEGER", "77"),
-		defaultField("NullFloat64", "FLOAT", "77.24"),
-		defaultField("NullBool", "BOOLEAN", "false"),
-		defaultField("NullString", "STRING", "'hey now'"),
-		defaultField("NullJSON", "JSON", "'{}'"),
-		defaultField("NullTimestamp", "TIMESTAMP", "CURRENT_TIMESTAMP()"),
-		defaultField("NullDate", "DATE", "CURRENT_DATE()"),
-		defaultField("NullTime", "TIME", "CURRENT_TIME()"),
-		defaultField("NullDateTime", "DATETIME", "CURRENT_DATETIME()"),
-		requiredColumnDefaultField("GoTime", "TIMESTAMP", "CURRENT_DATETIME()"),
-		requiredColumnDefaultField("Time", "TIME", "CURRENT_TIME()"),
-		requiredColumnDefaultField("Date", "DATE", "CURRENT_DATE()"),
-		requiredColumnDefaultField("DateTime", "DATETIME", "CURRENT_DATETIME()"),
-		requiredColumnDefaultField("String", "STRING", "'hey now'"),
-		requiredColumnDefaultField("Bool", "BOOLEAN", "true"),
-		requiredColumnDefaultField("Float32", "FLOAT", "3.14"),
-		requiredColumnDefaultField("Float64", "FLOAT", "3.1415"),
-		requiredColumnDefaultField("Int32", "INTEGER", "77"),
-		requiredColumnDefaultField("Int64", "INTEGER", "7777"),
+		defaultField("Bytes", "BYTES", "b'hey now'", false),
+		defaultField("Rat", "NUMERIC", "3.1415", false),
+		defaultField("RequiredBytes", "BYTES", "b'hey now'", true),
+		defaultField("RequiredRat", "NUMERIC", "3.1415", true),
+		defaultField("NullInt64", "INTEGER", "77", false),
+		defaultField("NullFloat64", "FLOAT", "77.24", false),
+		defaultField("NullBool", "BOOLEAN", "false", false),
+		defaultField("NullString", "STRING", "'hey now'", false),
+		defaultField("NullJSON", "JSON", "'{}'", false),
+		defaultField("NullTimestamp", "TIMESTAMP", "CURRENT_TIMESTAMP()", false),
+		defaultField("NullDate", "DATE", "CURRENT_DATE()", false),
+		defaultField("NullTime", "TIME", "CURRENT_TIME()", false),
+		defaultField("NullDateTime", "DATETIME", "CURRENT_DATETIME()", false),
+		defaultField("GoTime", "TIMESTAMP", "CURRENT_DATETIME()", true),
+		defaultField("Time", "TIME", "CURRENT_TIME()", true),
+		defaultField("Date", "DATE", "CURRENT_DATE()", true),
+		defaultField("DateTime", "DATETIME", "CURRENT_DATETIME()", true),
+		defaultField("String", "STRING", "'hey now'", true),
+		defaultField("Bool", "BOOLEAN", "true", true),
+		defaultField("Float32", "FLOAT", "3.14", true),
+		defaultField("Float64", "FLOAT", "3.1415", true),
+		defaultField("Int32", "INTEGER", "77", true),
+		defaultField("Int64", "INTEGER", "7777", true),
 	}
 	inferredSchema, err := InferSchema(withDefaults{})
 	if err != nil {
