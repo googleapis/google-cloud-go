@@ -535,10 +535,10 @@ func isDefaultable(rt reflect.Type) bool {
 	switch rt.Kind() {
 	case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64:
 		return true
-	case reflect.Array:
-		// decision: Not supporting arrays to avoid
-		// problems parsing a tag with a comma
-		return false
+case reflect.Array, reflect.Slice:
+	// decision: Not supporting arrays/slices to avoid
+	// problems parsing a tag with a comma
+	return false
 	}
 
 	return false
