@@ -1073,6 +1073,8 @@ func TestTagDefaultInference(t *testing.T) {
 		Bool          bool           `bigquery:",default=true"`
 		Float32       float32        `bigquery:",default=3.14"`
 		Float64       float64        `bigquery:",default=3.1415"`
+		Int32         int32          `bigquery:",default=77"`
+		Int64         int64          `bigquery:",default=7777"`
 	}
 
 	expectedWithTagsSchema := Schema{
@@ -1097,6 +1099,8 @@ func TestTagDefaultInference(t *testing.T) {
 		requiredColumnDefaultField("Bool", "BOOLEAN", "true"),
 		requiredColumnDefaultField("Float32", "FLOAT", "3.14"),
 		requiredColumnDefaultField("Float64", "FLOAT", "3.1415"),
+		requiredColumnDefaultField("Int32", "INTEGER", "77"),
+		requiredColumnDefaultField("Int64", "INTEGER", "7777"),
 	}
 	inferredSchema, err := InferSchema(withDefaults{})
 	if err != nil {

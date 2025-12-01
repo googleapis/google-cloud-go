@@ -570,7 +570,7 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool, de
 		return &FieldSchema{Required: false, Type: ft, DefaultValueExpression: defaultValueExpression}, nil
 	}
 	if isSupportedIntType(rt) || isSupportedUintType(rt) {
-		return &FieldSchema{Required: true, Type: IntegerFieldType}, nil
+		return &FieldSchema{Required: true, Type: IntegerFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	}
 
 	switch rt.Kind() {
@@ -639,11 +639,7 @@ func inferFields(rt reflect.Type) (Schema, error) {
 			case opt == jsonTagOption:
 				json = true
 			case strings.HasPrefix(opt, defaultTagOption+"="):
-				var ok bool
-				defaultValueExpression, ok = strings.CutPrefix(opt, defaultTagOption+"=")
-				if !ok {
-					defaultValueExpression = ""
-				}
+				defaultValueExpression = strings.TrimPrefix(opt, defaultTagOption+"=")
 			}
 		}
 		f, err := inferFieldSchema(field.Name, field.Type, nullable, json, defaultValueExpression)
