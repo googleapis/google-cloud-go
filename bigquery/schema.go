@@ -435,6 +435,14 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // fields. In this example, the Go name of the field is retained:
 //
 //	bigquery:",nullable"
+//
+// The "default" option specifies a default value expression for the field.
+// It is not supported for arrays, structs, geography, range and interval
+// fields. In this example, the Go name of the field is retained.
+//
+//	bigquery:",default=42"
+//
+
 func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
@@ -518,11 +526,19 @@ func isDefaultable(rt reflect.Type) bool {
 	switch rt {
 	case typeOfByteSlice, typeOfGoTime, typeOfDate, typeOfTime, typeOfDateTime, typeOfRat:
 		return true
+	case typeOfIntervalValue, typeOfRangeValue:
+		// BigQuery itself doesn't support defaults for these types
+		// returning false here to be explicit that we won't handle it
+		return false
 	}
 
 	switch rt.Kind() {
 	case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64:
 		return true
+	case reflect.Array:
+		// decision: Not supporting arrays to avoid
+		// problems parsing a tag with a comma
+		return false
 	}
 
 	return false
