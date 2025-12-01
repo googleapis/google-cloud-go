@@ -290,7 +290,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		}()
 	}
 	call := src.t.c.bqs.Tabledata.List(src.t.ProjectID, src.t.DatasetID, src.t.TableID)
-	call = call.FormatOptionsUseInt64Timestamp(true)
+	call = call.FormatOptionsTimestampOutputFormat("INT64")
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -328,7 +328,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	// reduce data transferred by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
-	call = call.FormatOptionsUseInt64Timestamp(true)
+	call = call.FormatOptionsTimestampOutputFormat("INT64")
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")

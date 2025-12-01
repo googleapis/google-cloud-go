@@ -470,7 +470,7 @@ func TestProbeFastPath(t *testing.T) {
 				Query:        "foo",
 				UseLegacySql: &pfalse,
 				FormatOptions: &bq.DataFormatOptions{
-					UseInt64Timestamp: true,
+					TimestampOutputFormat: "INT64",
 				},
 			},
 		},
@@ -509,7 +509,7 @@ func TestProbeFastPath(t *testing.T) {
 				},
 				UseQueryCache: &pfalse,
 				FormatOptions: &bq.DataFormatOptions{
-					UseInt64Timestamp: true,
+					TimestampOutputFormat: "INT64",
 				},
 				Reservation: "reservation/1",
 				MaxSlots:    222,
