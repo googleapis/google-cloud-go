@@ -501,6 +501,33 @@ func inferStruct(t reflect.Type) (Schema, error) {
 	}
 }
 
+func isDefaultable(rt reflect.Type) bool {
+	nft := nullableFieldType(rt)
+	if nft == GeographyFieldType {
+		// decision: don't support default values for GeographyFieldType to avoid
+		// problems parsing a tag with a comma, as in ST_GEOGPOINT(longitude, latitude)
+		return false
+	} else if nft != "" {
+		return true
+	}
+
+	if isSupportedIntType(rt) || isSupportedUintType(rt) {
+		return true
+	}
+
+	switch rt {
+	case typeOfByteSlice, typeOfGoTime, typeOfDate, typeOfTime, typeOfDateTime, typeOfRat:
+		return true
+	}
+
+	switch rt.Kind() {
+	case reflect.String, reflect.Bool, reflect.Float32, reflect.Float64:
+		return true
+	}
+
+	return false
+}
+
 // inferFieldSchema infers the FieldSchema for a Go type
 func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool, defaultValueExpression string) (*FieldSchema, error) {
 	// Only []byte and struct pointers can be tagged nullable.
@@ -511,30 +538,21 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool, de
 	if json && !(rt.Kind() == reflect.Struct || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
 		return nil, badJSONError{fieldName, rt}
 	}
-	nft := nullableFieldType(rt)
-	// decision: don't support default values for GeographyFieldType
-	// to avoid problems parsing a tag with a comma, as in ST_GEOGPOINT(longitude, latitude)
-	if defaultValueExpression != "" && (!(rt == typeOfByteSlice || rt == typeOfRat || nft != "") || nft == GeographyFieldType) {
+	if defaultValueExpression != "" && !isDefaultable(rt) {
 		return nil, unsupportedDefaultError{name: fieldName, typ: rt}
 	}
 	switch rt {
 	case typeOfByteSlice:
-		if !nullable && defaultValueExpression != "" {
-			return nil, unsupportedDefaultUnlessNullableError{name: fieldName, typ: rt}
-		}
 		return &FieldSchema{Required: !nullable, Type: BytesFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfGoTime:
-		return &FieldSchema{Required: true, Type: TimestampFieldType}, nil
+		return &FieldSchema{Required: true, Type: TimestampFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfDate:
-		return &FieldSchema{Required: true, Type: DateFieldType}, nil
+		return &FieldSchema{Required: true, Type: DateFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfTime:
-		return &FieldSchema{Required: true, Type: TimeFieldType}, nil
+		return &FieldSchema{Required: true, Type: TimeFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfDateTime:
-		return &FieldSchema{Required: true, Type: DateTimeFieldType}, nil
+		return &FieldSchema{Required: true, Type: DateTimeFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfRat:
-		if !nullable && defaultValueExpression != "" {
-			return nil, unsupportedDefaultUnlessNullableError{name: fieldName, typ: rt}
-		}
 		// We automatically infer big.Rat values as NUMERIC as we cannot
 		// determine precision/scale from the type.  Users who want the
 		// larger precision of BIGNUMERIC need to manipulate the inferred
@@ -547,12 +565,14 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool, de
 		// information, and don't set the RangeElementType when inferred.
 		return &FieldSchema{Required: !nullable, Type: RangeFieldType}, nil
 	}
+
 	if ft := nullableFieldType(rt); ft != "" {
 		return &FieldSchema{Required: false, Type: ft, DefaultValueExpression: defaultValueExpression}, nil
 	}
 	if isSupportedIntType(rt) || isSupportedUintType(rt) {
 		return &FieldSchema{Required: true, Type: IntegerFieldType}, nil
 	}
+
 	switch rt.Kind() {
 	case reflect.Slice, reflect.Array:
 		et := rt.Elem()
@@ -587,11 +607,11 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool, de
 		}
 		return &FieldSchema{Required: !nullable, Type: RecordFieldType, Schema: nested}, nil
 	case reflect.String:
-		return &FieldSchema{Required: !nullable, Type: StringFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: StringFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case reflect.Bool:
-		return &FieldSchema{Required: !nullable, Type: BooleanFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: BooleanFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case reflect.Float32, reflect.Float64:
-		return &FieldSchema{Required: !nullable, Type: FloatFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: FloatFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case reflect.Map:
 		if rt.Key().Kind() != reflect.String {
 			return nil, unsupportedFieldTypeError{fieldName, rt}
@@ -613,15 +633,17 @@ func inferFields(rt reflect.Type) (Schema, error) {
 		var nullable, json bool
 		var defaultValueExpression string
 		for _, opt := range field.ParsedTag.([]string) {
-			if opt == nullableTagOption {
+			switch {
+			case opt == nullableTagOption:
 				nullable = true
-			}
-			if opt == jsonTagOption {
+			case opt == jsonTagOption:
 				json = true
-			}
-			tagDefaultFieldExpression, found := strings.CutPrefix(opt, defaultTagOption+"=")
-			if found {
-				defaultValueExpression = tagDefaultFieldExpression
+			case strings.HasPrefix(opt, defaultTagOption+"="):
+				var ok bool
+				defaultValueExpression, ok = strings.CutPrefix(opt, defaultTagOption+"=")
+				if !ok {
+					defaultValueExpression = ""
+				}
 			}
 		}
 		f, err := inferFieldSchema(field.Name, field.Type, nullable, json, defaultValueExpression)
@@ -781,15 +803,6 @@ type unsupportedDefaultError struct {
 
 func (e unsupportedDefaultError) Error() string {
 	return fmt.Sprintf(`bigquery: field %q of type %s does not support default value expressions`, e.name, e.typ)
-}
-
-type unsupportedDefaultUnlessNullableError struct {
-	name string
-	typ  reflect.Type
-}
-
-func (e unsupportedDefaultUnlessNullableError) Error() string {
-	return fmt.Sprintf(`bigquery: field %q of type %s does not support default value expressions unless the field is not required`, e.name, e.typ)
 }
 
 type unsupportedFieldTypeError struct {
