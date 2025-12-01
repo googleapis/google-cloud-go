@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package trustboundary
+package regionalaccessboundary
 
 import (
 	"context"
@@ -48,7 +48,7 @@ func NewExternalAccountConfigProvider(audience, inputUniverseDomain string) (Con
 			poolID = matches[2]
 			isWorkload = false
 		} else {
-			return nil, fmt.Errorf("trustboundary: unknown audience format: %q", audience)
+			return nil, fmt.Errorf("regionalaccessboundary: unknown audience format: %q", audience)
 		}
 	}
 
@@ -56,7 +56,7 @@ func NewExternalAccountConfigProvider(audience, inputUniverseDomain string) (Con
 	if effectiveUniverseDomain == "" {
 		effectiveUniverseDomain = audienceDomain
 	} else if audienceDomain != "" && effectiveUniverseDomain != audienceDomain {
-		return nil, fmt.Errorf("trustboundary: provided universe domain (%q) does not match domain in audience (%q)", inputUniverseDomain, audienceDomain)
+		return nil, fmt.Errorf("regionalaccessboundary: provided universe domain (%q) does not match domain in audience (%q)", inputUniverseDomain, audienceDomain)
 	}
 
 	if isWorkload {
@@ -77,7 +77,7 @@ type workforcePoolConfigProvider struct {
 	universeDomain string
 }
 
-func (p *workforcePoolConfigProvider) GetTrustBoundaryEndpoint(ctx context.Context) (string, error) {
+func (p *workforcePoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
 	return fmt.Sprintf(workforceAllowedLocationsEndpoint, p.universeDomain, p.poolID), nil
 }
 
@@ -91,7 +91,7 @@ type workloadIdentityPoolConfigProvider struct {
 	universeDomain string
 }
 
-func (p *workloadIdentityPoolConfigProvider) GetTrustBoundaryEndpoint(ctx context.Context) (string, error) {
+func (p *workloadIdentityPoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
 	return fmt.Sprintf(workloadAllowedLocationsEndpoint, p.universeDomain, p.projectNumber, p.poolID), nil
 }
 

@@ -21,8 +21,8 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
-// SetAuthHeader uses the provided token to set the Authorization and trust
-// boundary headers on a request. If the token.Type is empty, the type is
+// SetAuthHeader uses the provided token to set the Authorization and regional
+// access boundary headers on a request. If the token.Type is empty, the type is
 // assumed to be Bearer.
 func SetAuthHeader(token *auth.Token, req *http.Request) {
 	typ := token.Type
@@ -31,13 +31,13 @@ func SetAuthHeader(token *auth.Token, req *http.Request) {
 	}
 	req.Header.Set("Authorization", typ+" "+token.Value)
 
-	if headerVal, setHeader := getTrustBoundaryHeader(token); setHeader {
+	if headerVal, setHeader := getRegionalAccessBoundaryHeader(token); setHeader {
 		req.Header.Set("x-allowed-locations", headerVal)
 	}
 }
 
-// SetAuthMetadata uses the provided token to set the Authorization and trust
-// boundary metadata. If the token.Type is empty, the type is assumed to be
+// SetAuthMetadata uses the provided token to set the Authorization and regional
+// access boundary metadata. If the token.Type is empty, the type is assumed to be
 // Bearer.
 func SetAuthMetadata(token *auth.Token, m map[string]string) {
 	typ := token.Type
@@ -46,15 +46,15 @@ func SetAuthMetadata(token *auth.Token, m map[string]string) {
 	}
 	m["authorization"] = typ + " " + token.Value
 
-	if headerVal, setHeader := getTrustBoundaryHeader(token); setHeader {
+	if headerVal, setHeader := getRegionalAccessBoundaryHeader(token); setHeader {
 		m["x-allowed-locations"] = headerVal
 	}
 }
 
-func getTrustBoundaryHeader(token *auth.Token) (val string, present bool) {
-	if data, ok := token.Metadata[internal.TrustBoundaryDataKey]; ok {
-		if tbd, ok := data.(internal.TrustBoundaryData); ok {
-			return tbd.TrustBoundaryHeader()
+func getRegionalAccessBoundaryHeader(token *auth.Token) (val string, present bool) {
+	if data, ok := token.Metadata[internal.RegionalAccessBoundaryDataKey]; ok {
+		if tbd, ok := data.(internal.RegionalAccessBoundaryData); ok {
+			return tbd.RegionalAccessBoundaryHeader()
 		}
 	}
 	return "", false
