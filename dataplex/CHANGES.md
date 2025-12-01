@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataplex%2Fv1.28.0) (2025-11-06)
+
+### Features
+
+* A new data scan type Data documentation added. ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* A new field `data_documentation_result` is added for Data Documentation Result in `.google.cloud.dataplex.v1.DataScanJob` ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* A new field `data_documentation_result` is added for Data Documentation Result to message `.google.cloud.dataplex.v1.DataScan` ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* A new field `data_documentation_spec` is added for Data Documentation Spec to message `.google.cloud.dataplex.v1.DataScanJob` ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* A new field `data_documentation_spec` is added for Data Documentation Spec to message `.google.cloud.dataplex.v1.DataScan` ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* A new message `DataDocumentationResult` is added representing Data Documentation Result ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* A new message `DataDocumentationSpec` is added representing Data Documentation Spec ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* Add GetIamPolicy method for DataProduct resources ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* Allow publishing Data Profile scan results to the Dataplex Catalog ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
+### Documentation
+
+* A comment for field `resource` in message `.google.cloud.dataplex.v1.DataSource` is changed ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* A comment for message `DataScan` is changed ([612e608](https://github.com/googleapis/google-cloud-go/commit/612e608d8b000d0564bd4fbe7619bfa60de232ff))
+* Update documentation for Catalog SearchEntries filter options, including `parent_entry` and wildcard usage ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.27.0...dataplex/v1.27.1) (2025-09-16)
 
 

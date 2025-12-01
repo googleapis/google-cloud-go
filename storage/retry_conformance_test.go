@@ -630,13 +630,7 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.appendable.upload": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
-			b := c.Bucket(bucketName)
-			if err := b.Create(ctx, projectID, nil); err != nil {
-				return err
-			}
-			defer b.Delete(ctx)
-
+			b := c.Bucket(fs.bucket.Name)
 			obj := b.Object(objectIDs.New())
 			if preconditions {
 				obj = obj.If(Conditions{DoesNotExist: true})
@@ -681,13 +675,7 @@ var methods = map[string][]retryFunc{
 		},
 		// Appendable upload using Flush() and FinalizeOnClose=false.
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
-			b := c.Bucket(bucketName)
-			if err := b.Create(ctx, projectID, nil); err != nil {
-				return err
-			}
-			defer b.Delete(ctx)
-
+			b := c.Bucket(fs.bucket.Name)
 			obj := b.Object(objectIDs.New())
 			if preconditions {
 				obj = obj.If(Conditions{DoesNotExist: true})
@@ -741,13 +729,7 @@ var methods = map[string][]retryFunc{
 		},
 		// Appendable upload using a takeover.
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
-			b := c.Bucket(bucketName)
-			if err := b.Create(ctx, projectID, nil); err != nil {
-				return err
-			}
-			defer b.Delete(ctx)
-
+			b := c.Bucket(fs.bucket.Name)
 			obj := b.Object(objectIDs.New())
 			if preconditions {
 				obj = obj.If(Conditions{DoesNotExist: true})

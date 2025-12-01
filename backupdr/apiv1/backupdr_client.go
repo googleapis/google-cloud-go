@@ -62,6 +62,7 @@ type CallOptions struct {
 	GetDataSource                              []gax.CallOption
 	UpdateDataSource                           []gax.CallOption
 	ListBackups                                []gax.CallOption
+	FetchBackupsForResourceType                []gax.CallOption
 	GetBackup                                  []gax.CallOption
 	UpdateBackup                               []gax.CallOption
 	DeleteBackup                               []gax.CallOption
@@ -81,6 +82,7 @@ type CallOptions struct {
 	DeleteBackupPlanAssociation                []gax.CallOption
 	TriggerBackup                              []gax.CallOption
 	GetDataSourceReference                     []gax.CallOption
+	ListDataSourceReferences                   []gax.CallOption
 	FetchDataSourceReferencesForResourceType   []gax.CallOption
 	InitializeService                          []gax.CallOption
 	GetLocation                                []gax.CallOption
@@ -243,6 +245,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		FetchBackupsForResourceType: []gax.CallOption{},
 		GetBackup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -277,6 +280,7 @@ func defaultCallOptions() *CallOptions {
 		DeleteBackupPlanAssociation:                []gax.CallOption{},
 		TriggerBackup:                              []gax.CallOption{},
 		GetDataSourceReference:                     []gax.CallOption{},
+		ListDataSourceReferences:                   []gax.CallOption{},
 		FetchDataSourceReferencesForResourceType:   []gax.CallOption{},
 		InitializeService: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -426,6 +430,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		FetchBackupsForResourceType: []gax.CallOption{},
 		GetBackup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -459,6 +464,7 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteBackupPlanAssociation:                []gax.CallOption{},
 		TriggerBackup:                              []gax.CallOption{},
 		GetDataSourceReference:                     []gax.CallOption{},
+		ListDataSourceReferences:                   []gax.CallOption{},
 		FetchDataSourceReferencesForResourceType:   []gax.CallOption{},
 		InitializeService: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -508,6 +514,7 @@ type internalClient interface {
 	UpdateDataSource(context.Context, *backupdrpb.UpdateDataSourceRequest, ...gax.CallOption) (*UpdateDataSourceOperation, error)
 	UpdateDataSourceOperation(name string) *UpdateDataSourceOperation
 	ListBackups(context.Context, *backupdrpb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
+	FetchBackupsForResourceType(context.Context, *backupdrpb.FetchBackupsForResourceTypeRequest, ...gax.CallOption) *BackupIterator
 	GetBackup(context.Context, *backupdrpb.GetBackupRequest, ...gax.CallOption) (*backupdrpb.Backup, error)
 	UpdateBackup(context.Context, *backupdrpb.UpdateBackupRequest, ...gax.CallOption) (*UpdateBackupOperation, error)
 	UpdateBackupOperation(name string) *UpdateBackupOperation
@@ -537,6 +544,7 @@ type internalClient interface {
 	TriggerBackup(context.Context, *backupdrpb.TriggerBackupRequest, ...gax.CallOption) (*TriggerBackupOperation, error)
 	TriggerBackupOperation(name string) *TriggerBackupOperation
 	GetDataSourceReference(context.Context, *backupdrpb.GetDataSourceReferenceRequest, ...gax.CallOption) (*backupdrpb.DataSourceReference, error)
+	ListDataSourceReferences(context.Context, *backupdrpb.ListDataSourceReferencesRequest, ...gax.CallOption) *DataSourceReferenceIterator
 	FetchDataSourceReferencesForResourceType(context.Context, *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, ...gax.CallOption) *DataSourceReferenceIterator
 	InitializeService(context.Context, *backupdrpb.InitializeServiceRequest, ...gax.CallOption) (*InitializeServiceOperation, error)
 	InitializeServiceOperation(name string) *InitializeServiceOperation
@@ -699,6 +707,11 @@ func (c *Client) ListBackups(ctx context.Context, req *backupdrpb.ListBackupsReq
 	return c.internalClient.ListBackups(ctx, req, opts...)
 }
 
+// FetchBackupsForResourceType fetch Backups for a given resource type.
+func (c *Client) FetchBackupsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupsForResourceTypeRequest, opts ...gax.CallOption) *BackupIterator {
+	return c.internalClient.FetchBackupsForResourceType(ctx, req, opts...)
+}
+
 // GetBackup gets details of a Backup.
 func (c *Client) GetBackup(ctx context.Context, req *backupdrpb.GetBackupRequest, opts ...gax.CallOption) (*backupdrpb.Backup, error) {
 	return c.internalClient.GetBackup(ctx, req, opts...)
@@ -852,6 +865,11 @@ func (c *Client) TriggerBackupOperation(name string) *TriggerBackupOperation {
 // GetDataSourceReference gets details of a single DataSourceReference.
 func (c *Client) GetDataSourceReference(ctx context.Context, req *backupdrpb.GetDataSourceReferenceRequest, opts ...gax.CallOption) (*backupdrpb.DataSourceReference, error) {
 	return c.internalClient.GetDataSourceReference(ctx, req, opts...)
+}
+
+// ListDataSourceReferences lists DataSourceReferences for a given project and location.
+func (c *Client) ListDataSourceReferences(ctx context.Context, req *backupdrpb.ListDataSourceReferencesRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
+	return c.internalClient.ListDataSourceReferences(ctx, req, opts...)
 }
 
 // FetchDataSourceReferencesForResourceType fetch DataSourceReferences for a given project, location and resource type.
@@ -1523,6 +1541,52 @@ func (c *gRPCClient) ListBackups(ctx context.Context, req *backupdrpb.ListBackup
 	return it
 }
 
+func (c *gRPCClient) FetchBackupsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupsForResourceTypeRequest, opts ...gax.CallOption) *BackupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchBackupsForResourceType[0:len((*c.CallOptions).FetchBackupsForResourceType):len((*c.CallOptions).FetchBackupsForResourceType)], opts...)
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*backupdrpb.FetchBackupsForResourceTypeRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.Backup, string, error) {
+		resp := &backupdrpb.FetchBackupsForResourceTypeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchBackupsForResourceType, req, settings.GRPC, c.logger, "FetchBackupsForResourceType")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) GetBackup(ctx context.Context, req *backupdrpb.GetBackupRequest, opts ...gax.CallOption) (*backupdrpb.Backup, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1995,6 +2059,52 @@ func (c *gRPCClient) GetDataSourceReference(ctx context.Context, req *backupdrpb
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) ListDataSourceReferences(ctx context.Context, req *backupdrpb.ListDataSourceReferencesRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDataSourceReferences[0:len((*c.CallOptions).ListDataSourceReferences):len((*c.CallOptions).ListDataSourceReferences)], opts...)
+	it := &DataSourceReferenceIterator{}
+	req = proto.Clone(req).(*backupdrpb.ListDataSourceReferencesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
+		resp := &backupdrpb.ListDataSourceReferencesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListDataSourceReferences, req, settings.GRPC, c.logger, "ListDataSourceReferences")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDataSourceReferences(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) FetchDataSourceReferencesForResourceType(ctx context.Context, req *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
@@ -3264,6 +3374,94 @@ func (c *restClient) ListBackups(ctx context.Context, req *backupdrpb.ListBackup
 	return it
 }
 
+// FetchBackupsForResourceType fetch Backups for a given resource type.
+func (c *restClient) FetchBackupsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupsForResourceTypeRequest, opts ...gax.CallOption) *BackupIterator {
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*backupdrpb.FetchBackupsForResourceTypeRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.Backup, string, error) {
+		resp := &backupdrpb.FetchBackupsForResourceTypeResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backups:fetchForResourceType", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("resourceType", fmt.Sprintf("%v", req.GetResourceType()))
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchBackupsForResourceType")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetBackup gets details of a Backup.
 func (c *restClient) GetBackup(ctx context.Context, req *backupdrpb.GetBackupRequest, opts ...gax.CallOption) (*backupdrpb.Backup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4469,6 +4667,90 @@ func (c *restClient) GetDataSourceReference(ctx context.Context, req *backupdrpb
 	return resp, nil
 }
 
+// ListDataSourceReferences lists DataSourceReferences for a given project and location.
+func (c *restClient) ListDataSourceReferences(ctx context.Context, req *backupdrpb.ListDataSourceReferencesRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
+	it := &DataSourceReferenceIterator{}
+	req = proto.Clone(req).(*backupdrpb.ListDataSourceReferencesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
+		resp := &backupdrpb.ListDataSourceReferencesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/dataSourceReferences", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataSourceReferences")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDataSourceReferences(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // FetchDataSourceReferencesForResourceType fetch DataSourceReferences for a given project, location and resource type.
 func (c *restClient) FetchDataSourceReferencesForResourceType(ctx context.Context, req *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
 	it := &DataSourceReferenceIterator{}
@@ -5077,6 +5359,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

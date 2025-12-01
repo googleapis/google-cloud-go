@@ -420,6 +420,7 @@ const (
 )
 
 func TestMain(m *testing.M) {
+	_ = os.Setenv("GOOGLE_CLOUD_SPANNER_DISABLE_LOG_CLIENT_OPTIONS", "true")
 	cleanup := initIntegrationTests()
 	defer cleanup()
 	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL, adminpb.DatabaseDialect_POSTGRESQL} {
@@ -4744,8 +4745,7 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 }
 
 func TestIntegration_DML(t *testing.T) {
-	//t.Parallel()
-	fmt.Printf("Starting the test")
+	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()

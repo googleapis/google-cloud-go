@@ -29,7 +29,7 @@ func TestRun(t *testing.T) {
 	generateFunc = func(ctx context.Context, cfg *generate.Config) error {
 		return nil
 	}
-	releaseInitFunc = func(ctx context.Context, cfg *release.Config) error {
+	releaseStageFunc = func(ctx context.Context, cfg *release.Config) error {
 		return nil
 	}
 	buildFunc = func(ctx context.Context, cfg *build.Config) error {
@@ -111,18 +111,18 @@ func TestRun(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "release-init command no flags",
-			args:    []string{"release-init"},
+			name:    "release-stage command no flags",
+			args:    []string{"release-stage"},
 			wantErr: false,
 		},
 		{
-			name:    "release-init command with flags",
-			args:    []string{"release-init", "--repo=.", "--output=./build_out"},
+			name:    "release-stage command with flags",
+			args:    []string{"release-stage", "--repo=.", "--output=./build_out"},
 			wantErr: false,
 		},
 		{
-			name:    "release-init command with bad flag",
-			args:    []string{"release-init", "--source=."},
+			name:    "release-stage command with bad flag",
+			args:    []string{"release-stage", "--source=."},
 			wantErr: true,
 		},
 	}

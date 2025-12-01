@@ -2,6 +2,13 @@
 
 
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.26.0) (2025-11-06)
+
+### Features
+
+* Add Place.consumerAlert field for suspicious review activity ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+* Add Review.visitDate field to indicate when the review author visited ([84cf55a](https://github.com/googleapis/google-cloud-go/commit/84cf55a9adab99b310134e04b562eddfa4d63c67))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.25.0) (2025-10-22)
 
 ### Features
