@@ -993,6 +993,43 @@ func TestTagInference(t *testing.T) {
 	}
 }
 
+func TestTagInferenceErrors(t *testing.T) {
+	testCases := []interface{}{
+		struct {
+			LongTag int `bigquery:"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"`
+		}{},
+		struct {
+			UnsupporedStartChar int `bigquery:"øab"`
+		}{},
+		struct {
+			UnsupportedEndChar int `bigquery:"abø"`
+		}{},
+		struct {
+			UnsupportedMiddleChar int `bigquery:"aøb"`
+		}{},
+		struct {
+			StartInt int `bigquery:"1abc"`
+		}{},
+		struct {
+			Hyphens int `bigquery:"a-b"`
+		}{},
+	}
+	for i, tc := range testCases {
+
+		_, got := InferSchema(tc)
+		if _, ok := got.(invalidFieldNameError); !ok {
+			t.Errorf("%d: inferring TableSchema: got:\n%#v\nwant invalidFieldNameError", i, got)
+		}
+	}
+
+	_, err := InferSchema(struct {
+		X int `bigquery:",optional"`
+	}{})
+	if err == nil {
+		t.Error("got nil, want error")
+	}
+}
+
 func defaultField(name, typ string, defaultValueExpression string) *FieldSchema {
 	return &FieldSchema{
 		Name:                   name,
