@@ -7306,6 +7306,13 @@ func TestIntegration_ObjectGetListCustomContexts(t *testing.T) {
 				},
 				expectedNames: []string{object1Name},
 			},
+			{
+				name: "NoFilter",
+				query: &Query{
+					Prefix: prefix,
+				},
+				expectedNames: []string{object1Name, object2Name, object3Name},
+			},
 		}
 
 		for _, tc := range filterTests {
