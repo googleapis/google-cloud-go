@@ -88,6 +88,7 @@ use (
 	./gkerecommender
 	./grafeas
 	./gsuiteaddons
+	./hypercomputecluster
 	./iam
 	./iap
 	./identitytoolkit

@@ -576,3 +576,5 @@ replace cloud.google.com/go/gkerecommender => ../../../gkerecommender
 replace cloud.google.com/go/saasplatform => ../../../saasplatform
 
 replace cloud.google.com/go/vectorsearch => ../../../vectorsearch
+
+replace cloud.google.com/go/hypercomputecluster => ../../../hypercomputecluster
