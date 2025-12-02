@@ -157,6 +157,12 @@ type FieldSchema struct {
 	// values of NUMERIC and BIGNUMERIC type.
 	// If unspecified, default value is RoundHalfAwayFromZero.
 	RoundingMode RoundingMode
+
+	// Precision (maximum number of total digits in
+	// base 10) for seconds of TIMESTAMP type. Possible values include:
+	// * 6 (Default, for TIMESTAMP type with microsecond precision)
+	// * 12 (For TIMESTAMP type with picosecond precision)
+	TimestampPrecision int64
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -172,6 +178,10 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		Collation:              string(fs.Collation),
 		RangeElementType:       fs.RangeElementType.toBQ(),
 		RoundingMode:           string(fs.RoundingMode),
+	}
+
+	if fs.TimestampPrecision > 0 {
+		tfs.TimestampPrecision = &fs.TimestampPrecision
 	}
 
 	if fs.Repeated {
@@ -260,6 +270,9 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		Collation:              tfs.Collation,
 		RangeElementType:       bqToRangeElementType(tfs.RangeElementType),
 		RoundingMode:           RoundingMode(tfs.RoundingMode),
+	}
+	if tfs.TimestampPrecision != nil {
+		fs.TimestampPrecision = *tfs.TimestampPrecision
 	}
 
 	for _, f := range tfs.Fields {
