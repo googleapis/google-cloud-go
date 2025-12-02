@@ -2894,6 +2894,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/gsuiteaddons/
     tag_format: '{id}/v{version}'
+  - id: hypercomputecluster
+    version: 0.0.0
+    last_generated_commit: 53af3b727f84acc34e31c23f3b6e7b8aa4b7e837
+    apis:
+      - path: google/cloud/hypercomputecluster/v1beta
+        service_config: hypercomputecluster_v1beta.yaml
+    source_roots:
+      - hypercomputecluster
+      - internal/generated/snippets/hypercomputecluster
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/hypercomputecluster/
+      - ^hypercomputecluster/apiv1beta/[^/]*_client\.go$
+      - ^hypercomputecluster/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^hypercomputecluster/apiv1beta/[^/]*_client_example_test\.go$
+      - ^hypercomputecluster/apiv1beta/auxiliary\.go$
+      - ^hypercomputecluster/apiv1beta/auxiliary_go123\.go$
+      - ^hypercomputecluster/apiv1beta/doc\.go$
+      - ^hypercomputecluster/apiv1beta/gapic_metadata\.json$
+      - ^hypercomputecluster/apiv1beta/helpers\.go$
+      - ^hypercomputecluster/apiv1beta/\.repo-metadata\.json$
+      - ^hypercomputecluster/apiv1beta/hypercomputeclusterpb/.*$
+    tag_format: '{id}/v{version}'
   - id: iam
     version: 1.5.3
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
