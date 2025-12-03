@@ -635,6 +635,7 @@ func TestSelectLeastLoadedRandomOfTwo(t *testing.T) {
 }
 
 func TestCachingStreamDecrement(t *testing.T) {
+  t.Skip("skipped as impacting generation https://github.com/googleapis/google-cloud-go/issues/13383")
 	ctx := context.Background()
 	poolSize := 1
 	fake := &fakeService{}

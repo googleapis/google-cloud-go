@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.109.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -546,7 +546,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: artifactregistry
     version: 1.17.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/devtools/artifactregistry/v1
         service_config: artifactregistry_v1.yaml
@@ -726,7 +726,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.5.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -776,7 +776,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: batch
     version: 1.13.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/batch/v1
         service_config: batch_v1.yaml
@@ -875,7 +875,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: bigquery
     version: 1.72.0
-    last_generated_commit: 97763d6efb2d35474e0363c254ee6994837a08fa
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/bigquery/analyticshub/v1
         service_config: analyticshub_v1.yaml
@@ -1120,7 +1120,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: bigquery/v2
     version: 0.0.0
-    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/bigquery/v2
         service_config: bigquery_v2.yaml
@@ -1148,7 +1148,7 @@ libraries:
     tag_format: bigquery/v{version}
   - id: bigtable
     version: 1.40.1
-    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/bigtable/admin/v2
         service_config: bigtableadmin_v2.yaml
@@ -1305,7 +1305,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: channel
     version: 1.20.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/channel/v1
         service_config: cloudchannel_v1.yaml
@@ -1380,7 +1380,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudbuild
     version: 1.23.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/devtools/cloudbuild/v1
         service_config: cloudbuild_v1.yaml
@@ -1615,7 +1615,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.49.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -2224,7 +2224,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dialogflow
     version: 1.71.0
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -2519,7 +2519,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: eventarc
     version: 1.17.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/eventarc/v1
         service_config: eventarc_v1.yaml
@@ -2692,7 +2692,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
     version: 0.2.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
         service_config: geminidataanalytics_v1beta.yaml
@@ -2804,7 +2804,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkemulticloud
     version: 1.5.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/gkemulticloud/v1
         service_config: gkemulticloud_v1.yaml
@@ -2893,6 +2893,29 @@ libraries:
       - ^gsuiteaddons/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/gsuiteaddons/
+    tag_format: '{id}/v{version}'
+  - id: hypercomputecluster
+    version: 0.0.0
+    last_generated_commit: 53af3b727f84acc34e31c23f3b6e7b8aa4b7e837
+    apis:
+      - path: google/cloud/hypercomputecluster/v1beta
+        service_config: hypercomputecluster_v1beta.yaml
+    source_roots:
+      - hypercomputecluster
+      - internal/generated/snippets/hypercomputecluster
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/hypercomputecluster/
+      - ^hypercomputecluster/apiv1beta/[^/]*_client\.go$
+      - ^hypercomputecluster/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^hypercomputecluster/apiv1beta/[^/]*_client_example_test\.go$
+      - ^hypercomputecluster/apiv1beta/auxiliary\.go$
+      - ^hypercomputecluster/apiv1beta/auxiliary_go123\.go$
+      - ^hypercomputecluster/apiv1beta/doc\.go$
+      - ^hypercomputecluster/apiv1beta/gapic_metadata\.json$
+      - ^hypercomputecluster/apiv1beta/helpers\.go$
+      - ^hypercomputecluster/apiv1beta/\.repo-metadata\.json$
+      - ^hypercomputecluster/apiv1beta/hypercomputeclusterpb/.*$
     tag_format: '{id}/v{version}'
   - id: iam
     version: 1.5.3
@@ -3255,7 +3278,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.7.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/longrunning
         service_config: longrunning.yaml
@@ -3760,7 +3783,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: netapp
     version: 1.10.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/netapp/v1
         service_config: netapp_v1.yaml
@@ -3847,7 +3870,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networksecurity
     version: 0.10.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/networksecurity/v1beta1
         service_config: networksecurity_v1beta1.yaml
@@ -4172,7 +4195,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: parallelstore
     version: 0.11.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/parallelstore/v1
         service_config: parallelstore_v1.yaml
@@ -5225,7 +5248,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: shopping
     version: 1.3.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/shopping/css/v1
         service_config: css_v1.yaml
@@ -5566,7 +5589,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.86.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
@@ -5695,7 +5718,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storage
     version: 1.57.2
-    last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/storage/control/v2
         service_config: storage_v2.yaml
@@ -6045,7 +6068,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vectorsearch
     version: 0.0.0
-    last_generated_commit: 7c0dcbba70fc5dd64655a77e74dbbf8aaf04c1bf
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/vectorsearch/v1beta
         service_config: vectorsearch_v1beta.yaml
@@ -6237,7 +6260,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vmmigration
     version: 1.9.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/vmmigration/v1
         service_config: vmmigration_v1.yaml

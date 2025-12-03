@@ -143,7 +143,8 @@ func (c *RoutesClient) Get(ctx context.Context, req *computepb.GetRouteRequest, 
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a Route resource in the specified project using the data included in the request.
+// Insert creates a Route resource in the specified project using the data included
+// in the request.
 func (c *RoutesClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -355,7 +356,8 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 	return resp, nil
 }
 
-// Insert creates a Route resource in the specified project using the data included in the request.
+// Insert creates a Route resource in the specified project using the data included
+// in the request.
 func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouteResource()

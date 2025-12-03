@@ -48,24 +48,25 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateBuild           []gax.CallOption
-	GetBuild              []gax.CallOption
-	ListBuilds            []gax.CallOption
-	CancelBuild           []gax.CallOption
-	RetryBuild            []gax.CallOption
-	ApproveBuild          []gax.CallOption
-	CreateBuildTrigger    []gax.CallOption
-	GetBuildTrigger       []gax.CallOption
-	ListBuildTriggers     []gax.CallOption
-	DeleteBuildTrigger    []gax.CallOption
-	UpdateBuildTrigger    []gax.CallOption
-	RunBuildTrigger       []gax.CallOption
-	ReceiveTriggerWebhook []gax.CallOption
-	CreateWorkerPool      []gax.CallOption
-	GetWorkerPool         []gax.CallOption
-	DeleteWorkerPool      []gax.CallOption
-	UpdateWorkerPool      []gax.CallOption
-	ListWorkerPools       []gax.CallOption
+	CreateBuild              []gax.CallOption
+	GetBuild                 []gax.CallOption
+	ListBuilds               []gax.CallOption
+	CancelBuild              []gax.CallOption
+	RetryBuild               []gax.CallOption
+	ApproveBuild             []gax.CallOption
+	CreateBuildTrigger       []gax.CallOption
+	GetBuildTrigger          []gax.CallOption
+	ListBuildTriggers        []gax.CallOption
+	DeleteBuildTrigger       []gax.CallOption
+	UpdateBuildTrigger       []gax.CallOption
+	RunBuildTrigger          []gax.CallOption
+	ReceiveTriggerWebhook    []gax.CallOption
+	CreateWorkerPool         []gax.CallOption
+	GetWorkerPool            []gax.CallOption
+	DeleteWorkerPool         []gax.CallOption
+	UpdateWorkerPool         []gax.CallOption
+	ListWorkerPools          []gax.CallOption
+	GetDefaultServiceAccount []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -205,6 +206,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		GetDefaultServiceAccount: []gax.CallOption{},
 	}
 }
 
@@ -323,6 +325,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		GetDefaultServiceAccount: []gax.CallOption{},
 	}
 }
 
@@ -356,6 +359,7 @@ type internalClient interface {
 	UpdateWorkerPool(context.Context, *cloudbuildpb.UpdateWorkerPoolRequest, ...gax.CallOption) (*UpdateWorkerPoolOperation, error)
 	UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation
 	ListWorkerPools(context.Context, *cloudbuildpb.ListWorkerPoolsRequest, ...gax.CallOption) *WorkerPoolIterator
+	GetDefaultServiceAccount(context.Context, *cloudbuildpb.GetDefaultServiceAccountRequest, ...gax.CallOption) (*cloudbuildpb.DefaultServiceAccount, error)
 }
 
 // Client is a client for interacting with Cloud Build API.
@@ -482,8 +486,8 @@ func (c *Client) RetryBuildOperation(name string) *RetryBuildOperation {
 
 // ApproveBuild approves or rejects a pending build.
 //
-// If approved, the returned LRO will be analogous to the LRO returned from
-// a CreateBuild call.
+// If approved, the returned long-running operation (LRO) will be analogous to
+// the LRO returned from a CreateBuild call.
 //
 // If rejected, the returned LRO will be immediately done.
 func (c *Client) ApproveBuild(ctx context.Context, req *cloudbuildpb.ApproveBuildRequest, opts ...gax.CallOption) (*ApproveBuildOperation, error) {
@@ -497,36 +501,26 @@ func (c *Client) ApproveBuildOperation(name string) *ApproveBuildOperation {
 }
 
 // CreateBuildTrigger creates a new BuildTrigger.
-//
-// This API is experimental.
 func (c *Client) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.CreateBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	return c.internalClient.CreateBuildTrigger(ctx, req, opts...)
 }
 
 // GetBuildTrigger returns information about a BuildTrigger.
-//
-// This API is experimental.
 func (c *Client) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	return c.internalClient.GetBuildTrigger(ctx, req, opts...)
 }
 
 // ListBuildTriggers lists existing BuildTriggers.
-//
-// This API is experimental.
 func (c *Client) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBuildTriggersRequest, opts ...gax.CallOption) *BuildTriggerIterator {
 	return c.internalClient.ListBuildTriggers(ctx, req, opts...)
 }
 
 // DeleteBuildTrigger deletes a BuildTrigger by its project ID and trigger ID.
-//
-// This API is experimental.
 func (c *Client) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.DeleteBuildTriggerRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteBuildTrigger(ctx, req, opts...)
 }
 
 // UpdateBuildTrigger updates a BuildTrigger by its project ID and trigger ID.
-//
-// This API is experimental.
 func (c *Client) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.UpdateBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	return c.internalClient.UpdateBuildTrigger(ctx, req, opts...)
 }
@@ -595,6 +589,11 @@ func (c *Client) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperati
 // ListWorkerPools lists WorkerPools.
 func (c *Client) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) *WorkerPoolIterator {
 	return c.internalClient.ListWorkerPools(ctx, req, opts...)
+}
+
+// GetDefaultServiceAccount returns the DefaultServiceAccount used by the project.
+func (c *Client) GetDefaultServiceAccount(ctx context.Context, req *cloudbuildpb.GetDefaultServiceAccountRequest, opts ...gax.CallOption) (*cloudbuildpb.DefaultServiceAccount, error) {
+	return c.internalClient.GetDefaultServiceAccount(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Build API over gRPC transport.
@@ -1366,6 +1365,33 @@ func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 	return it
 }
 
+func (c *gRPCClient) GetDefaultServiceAccount(ctx context.Context, req *cloudbuildpb.GetDefaultServiceAccountRequest, opts ...gax.CallOption) (*cloudbuildpb.DefaultServiceAccount, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/defaultServiceAccount"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDefaultServiceAccount[0:len((*c.CallOptions).GetDefaultServiceAccount):len((*c.CallOptions).GetDefaultServiceAccount)], opts...)
+	var resp *cloudbuildpb.DefaultServiceAccount
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetDefaultServiceAccount, req, settings.GRPC, c.logger, "GetDefaultServiceAccount")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // CreateBuild starts a build with the specified configuration.
 //
 // This method returns a long-running Operation, which includes the build
@@ -1757,8 +1783,8 @@ func (c *restClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 
 // ApproveBuild approves or rejects a pending build.
 //
-// If approved, the returned LRO will be analogous to the LRO returned from
-// a CreateBuild call.
+// If approved, the returned long-running operation (LRO) will be analogous to
+// the LRO returned from a CreateBuild call.
 //
 // If rejected, the returned LRO will be immediately done.
 func (c *restClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.ApproveBuildRequest, opts ...gax.CallOption) (*ApproveBuildOperation, error) {
@@ -1829,8 +1855,6 @@ func (c *restClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 }
 
 // CreateBuildTrigger creates a new BuildTrigger.
-//
-// This API is experimental.
 func (c *restClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.CreateBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTrigger()
@@ -1900,8 +1924,6 @@ func (c *restClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 }
 
 // GetBuildTrigger returns information about a BuildTrigger.
-//
-// This API is experimental.
 func (c *restClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1964,8 +1986,6 @@ func (c *restClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 }
 
 // ListBuildTriggers lists existing BuildTriggers.
-//
-// This API is experimental.
 func (c *restClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBuildTriggersRequest, opts ...gax.CallOption) *BuildTriggerIterator {
 	it := &BuildTriggerIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
@@ -2047,8 +2067,6 @@ func (c *restClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 }
 
 // DeleteBuildTrigger deletes a BuildTrigger by its project ID and trigger ID.
-//
-// This API is experimental.
 func (c *restClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.DeleteBuildTriggerRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2096,8 +2114,6 @@ func (c *restClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.D
 }
 
 // UpdateBuildTrigger updates a BuildTrigger by its project ID and trigger ID.
-//
-// This API is experimental.
 func (c *restClient) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.UpdateBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTrigger()
@@ -2670,6 +2686,65 @@ func (c *restClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetDefaultServiceAccount returns the DefaultServiceAccount used by the project.
+func (c *restClient) GetDefaultServiceAccount(ctx context.Context, req *cloudbuildpb.GetDefaultServiceAccountRequest, opts ...gax.CallOption) (*cloudbuildpb.DefaultServiceAccount, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)/defaultServiceAccount"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDefaultServiceAccount[0:len((*c.CallOptions).GetDefaultServiceAccount):len((*c.CallOptions).GetDefaultServiceAccount)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cloudbuildpb.DefaultServiceAccount{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDefaultServiceAccount")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ApproveBuildOperation returns a new ApproveBuildOperation from a given name.

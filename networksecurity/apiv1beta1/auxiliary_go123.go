@@ -41,6 +41,12 @@ func (it *ClientTlsPolicyIterator) All() iter.Seq2[*networksecuritypb.ClientTlsP
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DnsThreatDetectorIterator) All() iter.Seq2[*networksecuritypb.DnsThreatDetector, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 	return iterator.RangeAdapter(it.Next)
 }

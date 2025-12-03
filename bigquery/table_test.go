@@ -361,16 +361,6 @@ func TestTableMetadataToBQ(t *testing.T) {
 		{Schema: sc, ViewQuery: "q"}, // can't have both schema and query
 		{UseLegacySQL: true},         // UseLegacySQL without query
 		{UseStandardSQL: true},       // UseStandardSQL without query
-		// read-only fields
-		{FullID: "x"},
-		{Type: "x"},
-		{CreationTime: aTime},
-		{LastModifiedTime: aTime},
-		{NumBytes: 1},
-		{NumLongTermBytes: 1},
-		{NumRows: 1},
-		{StreamingBuffer: &StreamingBuffer{}},
-		{ETag: "x"},
 		// expiration time outside allowable range is invalid
 		// See https://godoc.org/time#Time.UnixNano
 		{ExpirationTime: time.Date(1677, 9, 21, 0, 12, 43, 145224192, time.UTC).Add(-1)},

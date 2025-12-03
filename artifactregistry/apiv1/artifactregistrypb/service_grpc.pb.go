@@ -86,6 +86,7 @@ const (
 	ArtifactRegistry_GetAttachment_FullMethodName         = "/google.devtools.artifactregistry.v1.ArtifactRegistry/GetAttachment"
 	ArtifactRegistry_CreateAttachment_FullMethodName      = "/google.devtools.artifactregistry.v1.ArtifactRegistry/CreateAttachment"
 	ArtifactRegistry_DeleteAttachment_FullMethodName      = "/google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteAttachment"
+	ArtifactRegistry_ExportArtifact_FullMethodName        = "/google.devtools.artifactregistry.v1.ArtifactRegistry/ExportArtifact"
 )
 
 // ArtifactRegistryClient is the client API for ArtifactRegistry service.
@@ -207,6 +208,8 @@ type ArtifactRegistryClient interface {
 	// finish once the attachments has been deleted. It will not have any
 	// Operation metadata and will return a `google.protobuf.Empty` response.
 	DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Exports an artifact.
+	ExportArtifact(ctx context.Context, in *ExportArtifactRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type artifactRegistryClient struct {
@@ -658,6 +661,15 @@ func (c *artifactRegistryClient) DeleteAttachment(ctx context.Context, in *Delet
 	return out, nil
 }
 
+func (c *artifactRegistryClient) ExportArtifact(ctx context.Context, in *ExportArtifactRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ArtifactRegistry_ExportArtifact_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ArtifactRegistryServer is the server API for ArtifactRegistry service.
 // All implementations should embed UnimplementedArtifactRegistryServer
 // for forward compatibility
@@ -777,6 +789,8 @@ type ArtifactRegistryServer interface {
 	// finish once the attachments has been deleted. It will not have any
 	// Operation metadata and will return a `google.protobuf.Empty` response.
 	DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*longrunningpb.Operation, error)
+	// Exports an artifact.
+	ExportArtifact(context.Context, *ExportArtifactRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedArtifactRegistryServer should be embedded to have forward compatible implementations.
@@ -929,6 +943,9 @@ func (UnimplementedArtifactRegistryServer) CreateAttachment(context.Context, *Cr
 }
 func (UnimplementedArtifactRegistryServer) DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAttachment not implemented")
+}
+func (UnimplementedArtifactRegistryServer) ExportArtifact(context.Context, *ExportArtifactRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportArtifact not implemented")
 }
 
 // UnsafeArtifactRegistryServer may be embedded to opt out of forward compatibility for this service.
@@ -1824,6 +1841,24 @@ func _ArtifactRegistry_DeleteAttachment_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ArtifactRegistry_ExportArtifact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportArtifactRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ArtifactRegistryServer).ExportArtifact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ArtifactRegistry_ExportArtifact_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ArtifactRegistryServer).ExportArtifact(ctx, req.(*ExportArtifactRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ArtifactRegistry_ServiceDesc is the grpc.ServiceDesc for ArtifactRegistry service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2026,6 +2061,10 @@ var ArtifactRegistry_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteAttachment",
 			Handler:    _ArtifactRegistry_DeleteAttachment_Handler,
+		},
+		{
+			MethodName: "ExportArtifact",
+			Handler:    _ArtifactRegistry_ExportArtifact_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
