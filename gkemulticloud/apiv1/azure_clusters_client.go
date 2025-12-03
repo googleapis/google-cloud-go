@@ -290,6 +290,8 @@ type internalAzureClustersClient interface {
 //
 // The AzureClusters API provides a single centrally managed service
 // to create and manage Anthos clusters that run on Azure infrastructure.
+//
+// Deprecated: AzureClusters may be removed in a future version.
 type AzureClustersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAzureClustersClient
@@ -336,6 +338,8 @@ func (c *AzureClustersClient) Connection() *grpc.ClientConn {
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: CreateAzureClient may be removed in a future version.
 func (c *AzureClustersClient) CreateAzureClient(ctx context.Context, req *gkemulticloudpb.CreateAzureClientRequest, opts ...gax.CallOption) (*CreateAzureClientOperation, error) {
 	return c.internalClient.CreateAzureClient(ctx, req, opts...)
 }
@@ -348,12 +352,16 @@ func (c *AzureClustersClient) CreateAzureClientOperation(name string) *CreateAzu
 
 // GetAzureClient describes a specific
 // AzureClient resource.
+//
+// Deprecated: GetAzureClient may be removed in a future version.
 func (c *AzureClustersClient) GetAzureClient(ctx context.Context, req *gkemulticloudpb.GetAzureClientRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureClient, error) {
 	return c.internalClient.GetAzureClient(ctx, req, opts...)
 }
 
 // ListAzureClients lists all AzureClient
 // resources on a given Google Cloud project and region.
+//
+// Deprecated: ListAzureClients may be removed in a future version.
 func (c *AzureClustersClient) ListAzureClients(ctx context.Context, req *gkemulticloudpb.ListAzureClientsRequest, opts ...gax.CallOption) *AzureClientIterator {
 	return c.internalClient.ListAzureClients(ctx, req, opts...)
 }
@@ -367,6 +375,8 @@ func (c *AzureClustersClient) ListAzureClients(ctx context.Context, req *gkemult
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: DeleteAzureClient may be removed in a future version.
 func (c *AzureClustersClient) DeleteAzureClient(ctx context.Context, req *gkemulticloudpb.DeleteAzureClientRequest, opts ...gax.CallOption) (*DeleteAzureClientOperation, error) {
 	return c.internalClient.DeleteAzureClient(ctx, req, opts...)
 }
@@ -383,6 +393,8 @@ func (c *AzureClustersClient) DeleteAzureClientOperation(name string) *DeleteAzu
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: CreateAzureCluster may be removed in a future version.
 func (c *AzureClustersClient) CreateAzureCluster(ctx context.Context, req *gkemulticloudpb.CreateAzureClusterRequest, opts ...gax.CallOption) (*CreateAzureClusterOperation, error) {
 	return c.internalClient.CreateAzureCluster(ctx, req, opts...)
 }
@@ -394,6 +406,8 @@ func (c *AzureClustersClient) CreateAzureClusterOperation(name string) *CreateAz
 }
 
 // UpdateAzureCluster updates an AzureCluster.
+//
+// Deprecated: UpdateAzureCluster may be removed in a future version.
 func (c *AzureClustersClient) UpdateAzureCluster(ctx context.Context, req *gkemulticloudpb.UpdateAzureClusterRequest, opts ...gax.CallOption) (*UpdateAzureClusterOperation, error) {
 	return c.internalClient.UpdateAzureCluster(ctx, req, opts...)
 }
@@ -406,12 +420,16 @@ func (c *AzureClustersClient) UpdateAzureClusterOperation(name string) *UpdateAz
 
 // GetAzureCluster describes a specific
 // AzureCluster resource.
+//
+// Deprecated: GetAzureCluster may be removed in a future version.
 func (c *AzureClustersClient) GetAzureCluster(ctx context.Context, req *gkemulticloudpb.GetAzureClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureCluster, error) {
 	return c.internalClient.GetAzureCluster(ctx, req, opts...)
 }
 
 // ListAzureClusters lists all AzureCluster
 // resources on a given Google Cloud project and region.
+//
+// Deprecated: ListAzureClusters may be removed in a future version.
 func (c *AzureClustersClient) ListAzureClusters(ctx context.Context, req *gkemulticloudpb.ListAzureClustersRequest, opts ...gax.CallOption) *AzureClusterIterator {
 	return c.internalClient.ListAzureClusters(ctx, req, opts...)
 }
@@ -425,6 +443,8 @@ func (c *AzureClustersClient) ListAzureClusters(ctx context.Context, req *gkemul
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: DeleteAzureCluster may be removed in a future version.
 func (c *AzureClustersClient) DeleteAzureCluster(ctx context.Context, req *gkemulticloudpb.DeleteAzureClusterRequest, opts ...gax.CallOption) (*DeleteAzureClusterOperation, error) {
 	return c.internalClient.DeleteAzureCluster(ctx, req, opts...)
 }
@@ -436,12 +456,16 @@ func (c *AzureClustersClient) DeleteAzureClusterOperation(name string) *DeleteAz
 }
 
 // GenerateAzureClusterAgentToken generates an access token for a cluster agent.
+//
+// Deprecated: GenerateAzureClusterAgentToken may be removed in a future version.
 func (c *AzureClustersClient) GenerateAzureClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse, error) {
 	return c.internalClient.GenerateAzureClusterAgentToken(ctx, req, opts...)
 }
 
 // GenerateAzureAccessToken generates a short-lived access token to authenticate to a given
 // AzureCluster resource.
+//
+// Deprecated: GenerateAzureAccessToken may be removed in a future version.
 func (c *AzureClustersClient) GenerateAzureAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureAccessTokenResponse, error) {
 	return c.internalClient.GenerateAzureAccessToken(ctx, req, opts...)
 }
@@ -453,6 +477,8 @@ func (c *AzureClustersClient) GenerateAzureAccessToken(ctx context.Context, req 
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: CreateAzureNodePool may be removed in a future version.
 func (c *AzureClustersClient) CreateAzureNodePool(ctx context.Context, req *gkemulticloudpb.CreateAzureNodePoolRequest, opts ...gax.CallOption) (*CreateAzureNodePoolOperation, error) {
 	return c.internalClient.CreateAzureNodePool(ctx, req, opts...)
 }
@@ -464,6 +490,8 @@ func (c *AzureClustersClient) CreateAzureNodePoolOperation(name string) *CreateA
 }
 
 // UpdateAzureNodePool updates an AzureNodePool.
+//
+// Deprecated: UpdateAzureNodePool may be removed in a future version.
 func (c *AzureClustersClient) UpdateAzureNodePool(ctx context.Context, req *gkemulticloudpb.UpdateAzureNodePoolRequest, opts ...gax.CallOption) (*UpdateAzureNodePoolOperation, error) {
 	return c.internalClient.UpdateAzureNodePool(ctx, req, opts...)
 }
@@ -476,6 +504,8 @@ func (c *AzureClustersClient) UpdateAzureNodePoolOperation(name string) *UpdateA
 
 // GetAzureNodePool describes a specific
 // AzureNodePool resource.
+//
+// Deprecated: GetAzureNodePool may be removed in a future version.
 func (c *AzureClustersClient) GetAzureNodePool(ctx context.Context, req *gkemulticloudpb.GetAzureNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureNodePool, error) {
 	return c.internalClient.GetAzureNodePool(ctx, req, opts...)
 }
@@ -483,6 +513,8 @@ func (c *AzureClustersClient) GetAzureNodePool(ctx context.Context, req *gkemult
 // ListAzureNodePools lists all AzureNodePool
 // resources on a given
 // AzureCluster.
+//
+// Deprecated: ListAzureNodePools may be removed in a future version.
 func (c *AzureClustersClient) ListAzureNodePools(ctx context.Context, req *gkemulticloudpb.ListAzureNodePoolsRequest, opts ...gax.CallOption) *AzureNodePoolIterator {
 	return c.internalClient.ListAzureNodePools(ctx, req, opts...)
 }
@@ -493,6 +525,8 @@ func (c *AzureClustersClient) ListAzureNodePools(ctx context.Context, req *gkemu
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: DeleteAzureNodePool may be removed in a future version.
 func (c *AzureClustersClient) DeleteAzureNodePool(ctx context.Context, req *gkemulticloudpb.DeleteAzureNodePoolRequest, opts ...gax.CallOption) (*DeleteAzureNodePoolOperation, error) {
 	return c.internalClient.DeleteAzureNodePool(ctx, req, opts...)
 }
@@ -508,18 +542,24 @@ func (c *AzureClustersClient) DeleteAzureNodePoolOperation(name string) *DeleteA
 // OpenID Connect Discovery 1.0
 // specification (at https://openid.net/specs/openid-connect-discovery-1_0.html)
 // for details.
+//
+// Deprecated: GetAzureOpenIdConfig may be removed in a future version.
 func (c *AzureClustersClient) GetAzureOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAzureOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureOpenIdConfig, error) {
 	return c.internalClient.GetAzureOpenIdConfig(ctx, req, opts...)
 }
 
 // GetAzureJsonWebKeys gets the public component of the cluster signing keys in
 // JSON Web Key format.
+//
+// Deprecated: GetAzureJsonWebKeys may be removed in a future version.
 func (c *AzureClustersClient) GetAzureJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAzureJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureJsonWebKeys, error) {
 	return c.internalClient.GetAzureJsonWebKeys(ctx, req, opts...)
 }
 
 // GetAzureServerConfig returns information, such as supported Azure regions and Kubernetes
 // versions, on a given Google Cloud location.
+//
+// Deprecated: GetAzureServerConfig may be removed in a future version.
 func (c *AzureClustersClient) GetAzureServerConfig(ctx context.Context, req *gkemulticloudpb.GetAzureServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error) {
 	return c.internalClient.GetAzureServerConfig(ctx, req, opts...)
 }
@@ -575,6 +615,8 @@ type azureClustersGRPCClient struct {
 //
 // The AzureClusters API provides a single centrally managed service
 // to create and manage Anthos clusters that run on Azure infrastructure.
+//
+// Deprecated: AzureClusters may be removed in a future version.
 func NewAzureClustersClient(ctx context.Context, opts ...option.ClientOption) (*AzureClustersClient, error) {
 	clientOpts := defaultAzureClustersGRPCClientOptions()
 	if newAzureClustersClientHook != nil {

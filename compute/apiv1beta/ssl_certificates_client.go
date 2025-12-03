@@ -148,7 +148,11 @@ func (c *SslCertificatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SslCertificate resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *SslCertificatesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificatesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -163,12 +167,14 @@ func (c *SslCertificatesClient) Get(ctx context.Context, req *computepb.GetSslCe
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a SslCertificate resource in the specified project using the data included in the request.
+// Insert creates a SslCertificate resource in the specified project using the data
+// included in the request.
 func (c *SslCertificatesClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of SslCertificate resources available to the specified project.
+// List retrieves the list of SslCertificate resources available to the specified
+// project.
 func (c *SslCertificatesClient) List(ctx context.Context, req *computepb.ListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -271,7 +277,11 @@ func (c *sslCertificatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SslCertificate resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificatesScopedListPairIterator {
 	it := &SslCertificatesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListSslCertificatesRequest)
@@ -474,7 +484,8 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 	return resp, nil
 }
 
-// Insert creates a SslCertificate resource in the specified project using the data included in the request.
+// Insert creates a SslCertificate resource in the specified project using the data
+// included in the request.
 func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
@@ -540,7 +551,8 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 	return op, nil
 }
 
-// List retrieves the list of SslCertificate resources available to the specified project.
+// List retrieves the list of SslCertificate resources available to the specified
+// project.
 func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.ListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	it := &SslCertificateIterator{}
 	req = proto.Clone(req).(*computepb.ListSslCertificatesRequest)

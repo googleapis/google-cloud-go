@@ -1066,52 +1066,6 @@
       ]
     },
     {
-      "regionTag": "bigquery_v2_generated_RoutineService_PatchRoutine_sync",
-      "title": "bigquery PatchRoutine Sample",
-      "description": "PatchRoutine patches information in an existing routine. The patch method does a partial\nupdate to an existing Routine resource.",
-      "file": "RoutineClient/PatchRoutine/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "PatchRoutine",
-        "fullName": "google.cloud.bigquery.v2.RoutineClient.PatchRoutine",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "bigquerypb.PatchRoutineRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*bigquerypb.Routine",
-        "client": {
-          "shortName": "RoutineClient",
-          "fullName": "google.cloud.bigquery.v2.RoutineClient"
-        },
-        "method": {
-          "shortName": "PatchRoutine",
-          "fullName": "google.cloud.bigquery.v2.RoutineService.PatchRoutine",
-          "service": {
-            "shortName": "RoutineService",
-            "fullName": "google.cloud.bigquery.v2.RoutineService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "bigquery_v2_generated_RoutineService_UpdateRoutine_sync",
       "title": "bigquery UpdateRoutine Sample",
       "description": "UpdateRoutine updates information in an existing routine. The update method replaces the\nentire Routine resource.",

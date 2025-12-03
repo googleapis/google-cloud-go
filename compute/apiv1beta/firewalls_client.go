@@ -153,17 +153,22 @@ func (c *FirewallsClient) Get(ctx context.Context, req *computepb.GetFirewallReq
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a firewall rule in the specified project using the data included in the request.
+// Insert creates a firewall rule in the specified project using the data
+// included in the request.
 func (c *FirewallsClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of firewall rules available to the specified project.
+// List retrieves the list of firewall rules available to the specified
+// project.
 func (c *FirewallsClient) List(ctx context.Context, req *computepb.ListFirewallsRequest, opts ...gax.CallOption) *FirewallIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified firewall rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *FirewallsClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -173,7 +178,10 @@ func (c *FirewallsClient) TestIamPermissions(ctx context.Context, req *computepb
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
+// Update updates the specified firewall rule with the data included in the
+// request.
+// Note that all fields will be updated if using PUT, even fields that are not
+// specified. To update individual fields, please use PATCH instead.
 func (c *FirewallsClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -375,7 +383,8 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 	return resp, nil
 }
 
-// Insert creates a firewall rule in the specified project using the data included in the request.
+// Insert creates a firewall rule in the specified project using the data
+// included in the request.
 func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
@@ -441,7 +450,8 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 	return op, nil
 }
 
-// List retrieves the list of firewall rules available to the specified project.
+// List retrieves the list of firewall rules available to the specified
+// project.
 func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirewallsRequest, opts ...gax.CallOption) *FirewallIterator {
 	it := &FirewallIterator{}
 	req = proto.Clone(req).(*computepb.ListFirewallsRequest)
@@ -527,7 +537,10 @@ func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirew
 	return it
 }
 
-// Patch updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified firewall rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
@@ -645,7 +658,10 @@ func (c *firewallsRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Update updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
+// Update updates the specified firewall rule with the data included in the
+// request.
+// Note that all fields will be updated if using PUT, even fields that are not
+// specified. To update individual fields, please use PATCH instead.
 func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()

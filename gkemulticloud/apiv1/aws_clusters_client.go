@@ -256,6 +256,8 @@ type internalAwsClustersClient interface {
 //
 // The AwsClusters API provides a single centrally managed service
 // to create and manage Anthos clusters that run on AWS infrastructure.
+//
+// Deprecated: AwsClusters may be removed in a future version.
 type AwsClustersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAwsClustersClient
@@ -298,6 +300,8 @@ func (c *AwsClustersClient) Connection() *grpc.ClientConn {
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: CreateAwsCluster may be removed in a future version.
 func (c *AwsClustersClient) CreateAwsCluster(ctx context.Context, req *gkemulticloudpb.CreateAwsClusterRequest, opts ...gax.CallOption) (*CreateAwsClusterOperation, error) {
 	return c.internalClient.CreateAwsCluster(ctx, req, opts...)
 }
@@ -309,6 +313,8 @@ func (c *AwsClustersClient) CreateAwsClusterOperation(name string) *CreateAwsClu
 }
 
 // UpdateAwsCluster updates an AwsCluster.
+//
+// Deprecated: UpdateAwsCluster may be removed in a future version.
 func (c *AwsClustersClient) UpdateAwsCluster(ctx context.Context, req *gkemulticloudpb.UpdateAwsClusterRequest, opts ...gax.CallOption) (*UpdateAwsClusterOperation, error) {
 	return c.internalClient.UpdateAwsCluster(ctx, req, opts...)
 }
@@ -321,12 +327,16 @@ func (c *AwsClustersClient) UpdateAwsClusterOperation(name string) *UpdateAwsClu
 
 // GetAwsCluster describes a specific AwsCluster
 // resource.
+//
+// Deprecated: GetAwsCluster may be removed in a future version.
 func (c *AwsClustersClient) GetAwsCluster(ctx context.Context, req *gkemulticloudpb.GetAwsClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
 	return c.internalClient.GetAwsCluster(ctx, req, opts...)
 }
 
 // ListAwsClusters lists all AwsCluster resources
 // on a given Google Cloud project and region.
+//
+// Deprecated: ListAwsClusters may be removed in a future version.
 func (c *AwsClustersClient) ListAwsClusters(ctx context.Context, req *gkemulticloudpb.ListAwsClustersRequest, opts ...gax.CallOption) *AwsClusterIterator {
 	return c.internalClient.ListAwsClusters(ctx, req, opts...)
 }
@@ -340,6 +350,8 @@ func (c *AwsClustersClient) ListAwsClusters(ctx context.Context, req *gkemulticl
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: DeleteAwsCluster may be removed in a future version.
 func (c *AwsClustersClient) DeleteAwsCluster(ctx context.Context, req *gkemulticloudpb.DeleteAwsClusterRequest, opts ...gax.CallOption) (*DeleteAwsClusterOperation, error) {
 	return c.internalClient.DeleteAwsCluster(ctx, req, opts...)
 }
@@ -351,12 +363,16 @@ func (c *AwsClustersClient) DeleteAwsClusterOperation(name string) *DeleteAwsClu
 }
 
 // GenerateAwsClusterAgentToken generates an access token for a cluster agent.
+//
+// Deprecated: GenerateAwsClusterAgentToken may be removed in a future version.
 func (c *AwsClustersClient) GenerateAwsClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse, error) {
 	return c.internalClient.GenerateAwsClusterAgentToken(ctx, req, opts...)
 }
 
 // GenerateAwsAccessToken generates a short-lived access token to authenticate to a given
 // AwsCluster resource.
+//
+// Deprecated: GenerateAwsAccessToken may be removed in a future version.
 func (c *AwsClustersClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
 	return c.internalClient.GenerateAwsAccessToken(ctx, req, opts...)
 }
@@ -367,6 +383,8 @@ func (c *AwsClustersClient) GenerateAwsAccessToken(ctx context.Context, req *gke
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: CreateAwsNodePool may be removed in a future version.
 func (c *AwsClustersClient) CreateAwsNodePool(ctx context.Context, req *gkemulticloudpb.CreateAwsNodePoolRequest, opts ...gax.CallOption) (*CreateAwsNodePoolOperation, error) {
 	return c.internalClient.CreateAwsNodePool(ctx, req, opts...)
 }
@@ -378,6 +396,8 @@ func (c *AwsClustersClient) CreateAwsNodePoolOperation(name string) *CreateAwsNo
 }
 
 // UpdateAwsNodePool updates an AwsNodePool.
+//
+// Deprecated: UpdateAwsNodePool may be removed in a future version.
 func (c *AwsClustersClient) UpdateAwsNodePool(ctx context.Context, req *gkemulticloudpb.UpdateAwsNodePoolRequest, opts ...gax.CallOption) (*UpdateAwsNodePoolOperation, error) {
 	return c.internalClient.UpdateAwsNodePool(ctx, req, opts...)
 }
@@ -394,6 +414,8 @@ func (c *AwsClustersClient) UpdateAwsNodePoolOperation(name string) *UpdateAwsNo
 // If an update request is in progress, you cannot rollback the update.
 // You must first cancel or let it finish unsuccessfully before you can
 // rollback.
+//
+// Deprecated: RollbackAwsNodePoolUpdate may be removed in a future version.
 func (c *AwsClustersClient) RollbackAwsNodePoolUpdate(ctx context.Context, req *gkemulticloudpb.RollbackAwsNodePoolUpdateRequest, opts ...gax.CallOption) (*RollbackAwsNodePoolUpdateOperation, error) {
 	return c.internalClient.RollbackAwsNodePoolUpdate(ctx, req, opts...)
 }
@@ -406,6 +428,8 @@ func (c *AwsClustersClient) RollbackAwsNodePoolUpdateOperation(name string) *Rol
 
 // GetAwsNodePool describes a specific
 // AwsNodePool resource.
+//
+// Deprecated: GetAwsNodePool may be removed in a future version.
 func (c *AwsClustersClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
 	return c.internalClient.GetAwsNodePool(ctx, req, opts...)
 }
@@ -413,6 +437,8 @@ func (c *AwsClustersClient) GetAwsNodePool(ctx context.Context, req *gkemulticlo
 // ListAwsNodePools lists all AwsNodePool
 // resources on a given
 // AwsCluster.
+//
+// Deprecated: ListAwsNodePools may be removed in a future version.
 func (c *AwsClustersClient) ListAwsNodePools(ctx context.Context, req *gkemulticloudpb.ListAwsNodePoolsRequest, opts ...gax.CallOption) *AwsNodePoolIterator {
 	return c.internalClient.ListAwsNodePools(ctx, req, opts...)
 }
@@ -423,6 +449,8 @@ func (c *AwsClustersClient) ListAwsNodePools(ctx context.Context, req *gkemultic
 // If successful, the response contains a newly created
 // Operation resource that can be
 // described to track the status of the operation.
+//
+// Deprecated: DeleteAwsNodePool may be removed in a future version.
 func (c *AwsClustersClient) DeleteAwsNodePool(ctx context.Context, req *gkemulticloudpb.DeleteAwsNodePoolRequest, opts ...gax.CallOption) (*DeleteAwsNodePoolOperation, error) {
 	return c.internalClient.DeleteAwsNodePool(ctx, req, opts...)
 }
@@ -438,18 +466,24 @@ func (c *AwsClustersClient) DeleteAwsNodePoolOperation(name string) *DeleteAwsNo
 // OpenID Connect Discovery 1.0
 // specification (at https://openid.net/specs/openid-connect-discovery-1_0.html)
 // for details.
+//
+// Deprecated: GetAwsOpenIdConfig may be removed in a future version.
 func (c *AwsClustersClient) GetAwsOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAwsOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsOpenIdConfig, error) {
 	return c.internalClient.GetAwsOpenIdConfig(ctx, req, opts...)
 }
 
 // GetAwsJsonWebKeys gets the public component of the cluster signing keys in
 // JSON Web Key format.
+//
+// Deprecated: GetAwsJsonWebKeys may be removed in a future version.
 func (c *AwsClustersClient) GetAwsJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAwsJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsJsonWebKeys, error) {
 	return c.internalClient.GetAwsJsonWebKeys(ctx, req, opts...)
 }
 
 // GetAwsServerConfig returns information, such as supported AWS regions and Kubernetes
 // versions, on a given Google Cloud location.
+//
+// Deprecated: GetAwsServerConfig may be removed in a future version.
 func (c *AwsClustersClient) GetAwsServerConfig(ctx context.Context, req *gkemulticloudpb.GetAwsServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error) {
 	return c.internalClient.GetAwsServerConfig(ctx, req, opts...)
 }
@@ -505,6 +539,8 @@ type awsClustersGRPCClient struct {
 //
 // The AwsClusters API provides a single centrally managed service
 // to create and manage Anthos clusters that run on AWS infrastructure.
+//
+// Deprecated: AwsClusters may be removed in a future version.
 func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*AwsClustersClient, error) {
 	clientOpts := defaultAwsClustersGRPCClientOptions()
 	if newAwsClustersClientHook != nil {

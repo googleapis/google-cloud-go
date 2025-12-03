@@ -2522,8 +2522,8 @@ func (c *CloudChannelClient) QueryEligibleBillingAccounts(ctx context.Context, r
 	return c.internalClient.QueryEligibleBillingAccounts(ctx, req, opts...)
 }
 
-// RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
-// topic for this Channel Services account. After you create a
+// RegisterSubscriber registers a service account with subscriber privileges on the Pub/Sub
+// topic for this Channel Services account or integrator. After you create a
 // subscriber, you get the events through
 // SubscriberEvent
 //
@@ -2547,10 +2547,10 @@ func (c *CloudChannelClient) RegisterSubscriber(ctx context.Context, req *channe
 	return c.internalClient.RegisterSubscriber(ctx, req, opts...)
 }
 
-// UnregisterSubscriber unregisters a service account with subscriber privileges on the Cloud
-// Pub/Sub topic created for this Channel Services account. If there are no
-// service accounts left with subscriber privileges, this deletes the topic.
-// You can call ListSubscribers to check for these accounts.
+// UnregisterSubscriber unregisters a service account with subscriber privileges on the Pub/Sub
+// topic created for this Channel Services account or integrator. If there are
+// no service accounts left with subscriber privileges, this deletes the
+// topic. You can call ListSubscribers to check for these accounts.
 //
 // Possible error codes:
 //
@@ -2576,8 +2576,8 @@ func (c *CloudChannelClient) UnregisterSubscriber(ctx context.Context, req *chan
 	return c.internalClient.UnregisterSubscriber(ctx, req, opts...)
 }
 
-// ListSubscribers lists service accounts with subscriber privileges on the Cloud Pub/Sub
-// topic created for this Channel Services account.
+// ListSubscribers lists service accounts with subscriber privileges on the Pub/Sub topic
+// created for this Channel Services account or integrator.
 //
 // Possible error codes:
 //
@@ -4088,7 +4088,7 @@ func (c *cloudChannelGRPCClient) QueryEligibleBillingAccounts(ctx context.Contex
 }
 
 func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "account", url.QueryEscape(req.GetAccount()), "integrator", url.QueryEscape(req.GetIntegrator()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -4106,7 +4106,7 @@ func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *ch
 }
 
 func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *channelpb.UnregisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "account", url.QueryEscape(req.GetAccount()), "integrator", url.QueryEscape(req.GetIntegrator()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -4124,7 +4124,7 @@ func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *
 }
 
 func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "account", url.QueryEscape(req.GetAccount()), "integrator", url.QueryEscape(req.GetIntegrator()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -8157,8 +8157,8 @@ func (c *cloudChannelRESTClient) QueryEligibleBillingAccounts(ctx context.Contex
 	return resp, nil
 }
 
-// RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
-// topic for this Channel Services account. After you create a
+// RegisterSubscriber registers a service account with subscriber privileges on the Pub/Sub
+// topic for this Channel Services account or integrator. After you create a
 // subscriber, you get the events through
 // SubscriberEvent
 //
@@ -8197,7 +8197,7 @@ func (c *cloudChannelRESTClient) RegisterSubscriber(ctx context.Context, req *ch
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "account", url.QueryEscape(req.GetAccount()), "integrator", url.QueryEscape(req.GetIntegrator()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -8233,10 +8233,10 @@ func (c *cloudChannelRESTClient) RegisterSubscriber(ctx context.Context, req *ch
 	return resp, nil
 }
 
-// UnregisterSubscriber unregisters a service account with subscriber privileges on the Cloud
-// Pub/Sub topic created for this Channel Services account. If there are no
-// service accounts left with subscriber privileges, this deletes the topic.
-// You can call ListSubscribers to check for these accounts.
+// UnregisterSubscriber unregisters a service account with subscriber privileges on the Pub/Sub
+// topic created for this Channel Services account or integrator. If there are
+// no service accounts left with subscriber privileges, this deletes the
+// topic. You can call ListSubscribers to check for these accounts.
 //
 // Possible error codes:
 //
@@ -8277,7 +8277,7 @@ func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "account", url.QueryEscape(req.GetAccount()), "integrator", url.QueryEscape(req.GetIntegrator()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -8313,8 +8313,8 @@ func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *
 	return resp, nil
 }
 
-// ListSubscribers lists service accounts with subscriber privileges on the Cloud Pub/Sub
-// topic created for this Channel Services account.
+// ListSubscribers lists service accounts with subscriber privileges on the Pub/Sub topic
+// created for this Channel Services account or integrator.
 //
 // Possible error codes:
 //
@@ -8356,6 +8356,9 @@ func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *chann
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req != nil && req.Integrator != nil {
+			params.Add("integrator", fmt.Sprintf("%v", req.GetIntegrator()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
