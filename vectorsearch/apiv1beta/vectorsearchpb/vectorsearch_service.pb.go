@@ -65,9 +65,12 @@ type Collection struct {
 	// Deprecated: Marked as deprecated in google/cloud/vectorsearch/v1beta/vectorsearch_service.proto.
 	Schema *structpb.Struct `protobuf:"bytes,5,opt,name=schema,proto3" json:"schema,omitempty"`
 	// Optional. Schema for vector fields. Only vector fields in this schema will
-	// be searchable.
+	// be searchable. Field names must contain only alphanumeric characters,
+	// underscores, and hyphens.
 	VectorSchema map[string]*VectorField `protobuf:"bytes,7,rep,name=vector_schema,json=vectorSchema,proto3" json:"vector_schema,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Optional. JSON Schema for data.
+	// Field names must contain only alphanumeric characters,
+	// underscores, and hyphens.
 	DataSchema *structpb.Struct `protobuf:"bytes,10,opt,name=data_schema,json=dataSchema,proto3" json:"data_schema,omitempty"`
 }
 
@@ -547,9 +550,11 @@ type CreateCollectionRequest struct {
 
 	// Required. Value for parent.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Id of the requesting object
-	// If auto-generating Id server-side, remove this field and
-	// collection_id from the method_signature of Create RPC
+	// Required. ID of the Collection to create.
+	// The id must be 1-63 characters long, and comply with
+	// <a href="https://www.ietf.org/rfc/rfc1035.txt" target="_blank">RFC1035</a>.
+	// Specifically, it must be 1-63 characters long and match the regular
+	// expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`.
 	CollectionId string `protobuf:"bytes,2,opt,name=collection_id,json=collectionId,proto3" json:"collection_id,omitempty"`
 	// Required. The resource being created
 	Collection *Collection `protobuf:"bytes,3,opt,name=collection,proto3" json:"collection,omitempty"`
@@ -928,9 +933,11 @@ type CreateIndexRequest struct {
 	// Index. Format:
 	// `projects/{project}/locations/{location}/collections/{collection}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Id of the requesting object
-	// If auto-generating Id server-side, remove this field and
-	// index_id from the method_signature of Create RPC
+	// Required. ID of the Index to create.
+	// The id must be 1-63 characters long, and comply with
+	// <a href="https://www.ietf.org/rfc/rfc1035.txt" target="_blank">RFC1035</a>.
+	// Specifically, it must be 1-63 characters long and match the regular
+	// expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`.
 	IndexId string `protobuf:"bytes,2,opt,name=index_id,json=indexId,proto3" json:"index_id,omitempty"`
 	// Required. The resource being created
 	Index *Index `protobuf:"bytes,3,opt,name=index,proto3" json:"index,omitempty"`
