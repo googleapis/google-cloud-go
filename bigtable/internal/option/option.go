@@ -226,3 +226,29 @@ func Debugf(logger *log.Logger, format string, v ...interface{}) {
 		logf(logger, debugFormat, v...)
 	}
 }
+
+// DynamicChannelPoolConfig holds the parameters for dynamic channel pool scaling.
+type DynamicChannelPoolConfig struct {
+	Enabled              bool          // Whether dynamic scaling is enabled.
+	MinConns             int           // Minimum conns allowed
+	MaxConns             int           // Maximum conns allowed.
+	AvgLoadHighThreshold float64       // Average weighted load per connection to trigger scale-up.
+	AvgLoadLowThreshold  float64       // Average weighted load per connection to trigger scale-down.
+	MinScalingInterval   time.Duration // Minimum time between scaling operations (both up and down).
+	CheckInterval        time.Duration // How often to check if scaling is needed.
+	MaxRemoveConns       int           // Maximum number of connections to remove at once.
+}
+
+// DefaultDynamicChannelPoolConfig is default settings for dynamic channel pool
+func DefaultDynamicChannelPoolConfig(initialConns int) DynamicChannelPoolConfig {
+	return DynamicChannelPoolConfig{
+		Enabled:              true, // Enabled by default
+		MinConns:             10,
+		MaxConns:             200,
+		AvgLoadHighThreshold: 50,
+		AvgLoadLowThreshold:  5,
+		MinScalingInterval:   1 * time.Minute,
+		CheckInterval:        30 * time.Second,
+		MaxRemoveConns:       2, // Only Cap for removals
+	}
+}
