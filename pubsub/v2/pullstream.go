@@ -43,7 +43,8 @@ type pullStream struct {
 // for testing
 type streamingPullFunc func(context.Context, ...gax.CallOption) (pb.Subscriber_StreamingPullClient, error)
 
-func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName, clientID string, maxOutstandingMessages, maxOutstandingBytes int, maxDurationPerLeaseExtension time.Duration) *pullStream {
+// TODO(465876554): refactor pull stream to take options rather than growing list of arguments.
+func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName, clientID string, maxOutstandingMessages, maxOutstandingBytes int, maxDurationPerLeaseExtension time.Duration, protocol int64) *pullStream {
 	ctx = withSubscriptionKey(ctx, subName)
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(subName))}
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -68,6 +69,7 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 					StreamAckDeadlineSeconds: streamAckDeadline,
 					MaxOutstandingMessages:   int64(maxOutstandingMessages),
 					MaxOutstandingBytes:      int64(maxOutstandingBytes),
+					ProtocolVersion:          protocol,
 				})
 			}
 			if err != nil {

@@ -63,24 +63,37 @@ var (
 	exactlyOnceDeliveryRetryDeadline = 600 * time.Second
 )
 
+const (
+	// The minimum ProtocolVersion (defined at subscriber) to enable keep alives.
+	kaMinVersion              = 1
+	clientPingInterval        = time.Duration(30 * time.Second)
+	serverMonitorInterval     = time.Duration(10 * time.Second)
+	serverPingTimeoutDuration = time.Duration(15 * time.Second)
+)
+
 type messageIterator struct {
 	ctx    context.Context
 	cancel func() // the function that will cancel ctx; called in stop
 	po     *pullOptions
 	ps     *pullStream
 	// this is called an admin client, but also contains the data plane operations we wrap.
-	subc          *vkit.SubscriptionAdminClient
-	projectID     string
-	subID         string
-	subName       string
-	kaTick        <-chan time.Time // keep-alive (deadline extensions)
-	ackTicker     *time.Ticker     // message acks
-	nackTicker    *time.Ticker     // message nacks
-	pingTicker    *time.Ticker     //  sends to the stream to keep it open
-	receiptTicker *time.Ticker     // sends receipt modacks
-	failed        chan struct{}    // closed on stream error
-	drained       chan struct{}    // closed when stopped && no more pending messages
-	wg            sync.WaitGroup
+	subc                *vkit.SubscriptionAdminClient
+	projectID           string
+	subID               string
+	subName             string
+	kaTick              <-chan time.Time // keep-alive (deadline extensions)
+	ackTicker           *time.Ticker     // message acks
+	nackTicker          *time.Ticker     // message nacks
+	pingTicker          *time.Ticker     // ping stream to keep it open
+	serverMonitorTicker *time.Ticker     // check server is still active, send Close otherwise
+	receiptTicker       *time.Ticker     // sends receipt modacks
+	failed              chan struct{}    // closed on stream error
+	drained             chan struct{}    // closed when stopped && no more pending messages
+	wg                  sync.WaitGroup
+
+	// related to stream keep alives when ProtocolVersion >= 1
+	lastServerResponse time.Time
+	lastClientPing     time.Time
 
 	// This mutex guards the structs related to lease extension.
 	mu          sync.Mutex
@@ -92,6 +105,7 @@ type messageIterator struct {
 	// message arrives, we'll record now+MaxExtension in this table; whenever we have a chance
 	// to update ack deadlines (via modack), we'll consult this table and only include IDs
 	// that are not beyond their deadline.
+	// this is unrelated to the enableKeepalive value below, which handles stream keep alives.
 	keepAliveDeadlines map[string]time.Time
 	pendingAcks        map[string]*AckResult
 	pendingNacks       map[string]*AckResult
@@ -118,6 +132,9 @@ type messageIterator struct {
 	// Active ackIDs in this map should also exist 1:1 with ids in keepAliveDeadlines.
 	// Elements are removed when messages are acked, nacked, or expired in iterator.handleKeepAlives()
 	activeSpans sync.Map
+
+	// enableKeepalive enables detecting broken streams.
+	enableKeepalive bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -128,7 +145,7 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	maxMessages := po.maxOutstandingMessages
 	maxBytes := po.maxOutstandingBytes
 
-	ps := newPullStream(context.Background(), subc.StreamingPull, subName, po.clientID, maxMessages, maxBytes, po.maxExtensionPeriod)
+	ps := newPullStream(context.Background(), subc.StreamingPull, subName, po.clientID, maxMessages, maxBytes, po.maxExtensionPeriod, po.protocolVersion)
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
 	keepAlivePeriod := minDurationPerLeaseExtension / 2
@@ -136,7 +153,6 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	// Ack promptly so users don't lose work if client crashes.
 	ackTicker := time.NewTicker(100 * time.Millisecond)
 	nackTicker := time.NewTicker(100 * time.Millisecond)
-	pingTicker := time.NewTicker(30 * time.Second)
 	receiptTicker := time.NewTicker(100 * time.Millisecond)
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
@@ -144,27 +160,31 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	projectID, subID := parseResourceName(subName)
 
 	it := &messageIterator{
-		ctx:                cctx,
-		cancel:             cancel,
-		ps:                 ps,
-		po:                 po,
-		subc:               subc,
-		projectID:          projectID,
-		subID:              subID,
-		subName:            subName,
-		kaTick:             time.After(keepAlivePeriod),
-		ackTicker:          ackTicker,
-		nackTicker:         nackTicker,
-		pingTicker:         pingTicker,
-		receiptTicker:      receiptTicker,
-		failed:             make(chan struct{}),
-		drained:            make(chan struct{}),
-		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
-		keepAliveDeadlines: map[string]time.Time{},
-		pendingAcks:        map[string]*AckResult{},
-		pendingNacks:       map[string]*AckResult{},
-		pendingModAcks:     map[string]*AckResult{},
-		pendingReceipts:    map[string]*AckResult{},
+		ctx:                 cctx,
+		cancel:              cancel,
+		ps:                  ps,
+		po:                  po,
+		subc:                subc,
+		projectID:           projectID,
+		subID:               subID,
+		subName:             subName,
+		kaTick:              time.After(keepAlivePeriod),
+		ackTicker:           ackTicker,
+		nackTicker:          nackTicker,
+		pingTicker:          time.NewTicker(clientPingInterval),
+		serverMonitorTicker: time.NewTicker(serverMonitorInterval),
+		receiptTicker:       receiptTicker,
+		failed:              make(chan struct{}),
+		drained:             make(chan struct{}),
+		ackTimeDist:         distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
+		keepAliveDeadlines:  map[string]time.Time{},
+		pendingAcks:         map[string]*AckResult{},
+		pendingNacks:        map[string]*AckResult{},
+		pendingModAcks:      map[string]*AckResult{},
+		pendingReceipts:     map[string]*AckResult{},
+		enableKeepalive:     po.protocolVersion >= kaMinVersion,
+		lastServerResponse:  time.Now(),
+		lastClientPing:      time.Now(),
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -387,10 +407,16 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	return nil, nil
 }
 
+// recvMessages pulls messages from the iterator's underlying pull stream.
+// It must not be called concurrently.
 func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	res, err := it.ps.Recv()
 	if err != nil {
 		return nil, err
+	}
+
+	if it.enableKeepalive {
+		it.lastServerResponse = time.Now()
 	}
 
 	// If the new exactly once settings are different than the current settings, update it.
@@ -438,6 +464,7 @@ func (it *messageIterator) sender() {
 		sendNacks := false
 		sendModAcks := false
 		sendPing := false
+		checkServer := false
 		sendReceipt := false
 
 		dl := it.ackDeadline()
@@ -477,10 +504,13 @@ func (it *messageIterator) sender() {
 			it.mu.Lock()
 			sendAcks = (len(it.pendingAcks) > 0)
 
+		case <-it.serverMonitorTicker.C:
+			checkServer = true
+
 		case <-it.pingTicker.C:
 			it.mu.Lock()
-			// Ping only if we are processing messages via streaming.
 			sendPing = true
+
 		case <-it.receiptTicker.C:
 			it.mu.Lock()
 			sendReceipt = (len(it.pendingReceipts) > 0)
@@ -517,6 +547,9 @@ func (it *messageIterator) sender() {
 		}
 		if sendPing {
 			it.pingStream()
+		}
+		if checkServer {
+			it.checkServer()
 		}
 		if sendReceipt {
 			it.sendModAck(context.Background(), receipts, dl, true, true)
@@ -858,6 +891,8 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 // network. This matters if it takes a long time to process messages relative to the
 // default ack deadline, and if the messages are small enough so that many can fit
 // into the buffer.
+// This was introduced before protocol versions and thus will not be gated
+// on requiring ProtocolVersion >= 1.
 func (it *messageIterator) pingStream() {
 	spr := &pb.StreamingPullRequest{}
 	it.eoMu.RLock()
@@ -867,6 +902,22 @@ func (it *messageIterator) pingStream() {
 	}
 	it.eoMu.RUnlock()
 	it.ps.Send(spr)
+}
+
+func (it *messageIterator) checkServer() {
+	lastResponse := it.lastServerResponse
+	lastPing := it.lastClientPing
+
+	if lastPing.Before(lastResponse) {
+		return
+	}
+	if time.Since(lastPing) < serverPingTimeoutDuration {
+		return
+	}
+
+	if it.ps != nil {
+		it.ps.CloseSend()
+	}
 }
 
 // calcFieldSizeString returns the number of bytes string fields

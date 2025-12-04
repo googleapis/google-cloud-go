@@ -153,6 +153,10 @@ type ReceiveSettings struct {
 	// Default: if unset / nil, the client library will wait
 	// indefinitely for all in messages inflight to be acked/nacked.
 	ShutdownOptions *ShutdownOptions
+
+	// ProtocolVersion is used to negotiate specific behavior for StreamingPull
+	// with the server. Default is 0.
+	ProtocolVersion int64
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
@@ -257,6 +261,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		maxOutstandingMessages: maxCount,
 		maxOutstandingBytes:    maxBytes,
 		clientID:               s.clientID,
+		protocolVersion:        s.ReceiveSettings.ProtocolVersion,
 	}
 	fc := newSubscriberFlowController(FlowControlSettings{
 		MaxOutstandingMessages: maxCount,
@@ -530,4 +535,5 @@ type pullOptions struct {
 	maxOutstandingMessages int
 	maxOutstandingBytes    int
 	clientID               string
+	protocolVersion        int64
 }
