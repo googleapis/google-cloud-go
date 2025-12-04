@@ -473,7 +473,7 @@
     {
       "regionTag": "merchantapi_v1_generated_AccountsService_DeleteAccount_sync",
       "title": "merchantapi DeleteAccount Sample",
-      "description": "DeleteAccount deletes the specified account regardless of its type: standalone, advanced\naccount or sub-account. Deleting an advanced account leads to the deletion\nof all of its sub-accounts. Executing this method requires admin access.\nThe deletion succeeds only if the account does not provide services\nto any other account and has no processed offers. You can use the `force`\nparameter to override this.",
+      "description": "DeleteAccount deletes the specified account regardless of its type: standalone, advanced\naccount or sub-account. Deleting an advanced account leads to the deletion\nof all of its sub-accounts. This also deletes the account's [developer\nregistration\nentity](/merchant/api/reference/rest/accounts_v1/accounts.developerRegistration)\nand any associated GCP project to the account. Executing this method\nrequires admin access. The deletion succeeds only if the account does not\nprovide services to any other account and has no processed offers. You can\nuse the `force` parameter to override this.",
       "file": "Client/DeleteAccount/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1238,6 +1238,52 @@
           "service": {
             "shortName": "CheckoutSettingsService",
             "fullName": "google.shopping.merchant.accounts.v1.CheckoutSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1_generated_DeveloperRegistrationService_GetAccountForGcpRegistration_sync",
+      "title": "merchantapi GetAccountForGcpRegistration Sample",
+      "description": "GetAccountForGcpRegistration retrieves the merchant account that the calling GCP is registered with.",
+      "file": "DeveloperRegistrationClient/GetAccountForGcpRegistration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccountForGcpRegistration",
+        "fullName": "google.shopping.merchant.accounts.v1.DeveloperRegistrationClient.GetAccountForGcpRegistration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "emptypb.Empty",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.GetAccountForGcpRegistrationResponse",
+        "client": {
+          "shortName": "DeveloperRegistrationClient",
+          "fullName": "google.shopping.merchant.accounts.v1.DeveloperRegistrationClient"
+        },
+        "method": {
+          "shortName": "GetAccountForGcpRegistration",
+          "fullName": "google.shopping.merchant.accounts.v1.DeveloperRegistrationService.GetAccountForGcpRegistration",
+          "service": {
+            "shortName": "DeveloperRegistrationService",
+            "fullName": "google.shopping.merchant.accounts.v1.DeveloperRegistrationService"
           }
         }
       },
@@ -3346,6 +3392,52 @@
         "method": {
           "shortName": "UpdateUser",
           "fullName": "google.shopping.merchant.accounts.v1.UserService.UpdateUser",
+          "service": {
+            "shortName": "UserService",
+            "fullName": "google.shopping.merchant.accounts.v1.UserService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1_generated_UserService_VerifySelf_sync",
+      "title": "merchantapi VerifySelf Sample",
+      "description": "VerifySelf updates the user that is represented by the caller from pending to\nverified.",
+      "file": "UserClient/VerifySelf/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifySelf",
+        "fullName": "google.shopping.merchant.accounts.v1.UserClient.VerifySelf",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.VerifySelfRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.User",
+        "client": {
+          "shortName": "UserClient",
+          "fullName": "google.shopping.merchant.accounts.v1.UserClient"
+        },
+        "method": {
+          "shortName": "VerifySelf",
+          "fullName": "google.shopping.merchant.accounts.v1.UserService.VerifySelf",
           "service": {
             "shortName": "UserService",
             "fullName": "google.shopping.merchant.accounts.v1.UserService"

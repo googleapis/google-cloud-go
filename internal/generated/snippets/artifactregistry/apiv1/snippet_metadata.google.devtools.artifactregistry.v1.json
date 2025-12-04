@@ -562,6 +562,52 @@
       ]
     },
     {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ExportArtifact_sync",
+      "title": "artifactregistry ExportArtifact Sample",
+      "description": "ExportArtifact exports an artifact.",
+      "file": "Client/ExportArtifact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportArtifact",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ExportArtifact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ExportArtifactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportArtifactOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportArtifact",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ExportArtifact",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetAttachment_sync",
       "title": "artifactregistry GetAttachment Sample",
       "description": "GetAttachment gets an attachment.",

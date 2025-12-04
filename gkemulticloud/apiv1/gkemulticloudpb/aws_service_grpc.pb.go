@@ -56,7 +56,10 @@ const (
 // AwsClustersClient is the client API for AwsClusters service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Deprecated: Do not use.
 type AwsClustersClient interface {
+	// Deprecated: Do not use.
 	// Creates a new [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource on a given Google Cloud Platform project and region.
 	//
@@ -64,14 +67,18 @@ type AwsClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAwsCluster(ctx context.Context, in *CreateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
 	UpdateAwsCluster(ctx context.Context, in *UpdateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource.
 	GetAwsCluster(ctx context.Context, in *GetAwsClusterRequest, opts ...grpc.CallOption) (*AwsCluster, error)
+	// Deprecated: Do not use.
 	// Lists all [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resources
 	// on a given Google Cloud project and region.
 	ListAwsClusters(ctx context.Context, in *ListAwsClustersRequest, opts ...grpc.CallOption) (*ListAwsClustersResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource.
 	//
@@ -82,11 +89,14 @@ type AwsClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAwsCluster(ctx context.Context, in *DeleteAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Generates an access token for a cluster agent.
 	GenerateAwsClusterAgentToken(ctx context.Context, in *GenerateAwsClusterAgentTokenRequest, opts ...grpc.CallOption) (*GenerateAwsClusterAgentTokenResponse, error)
+	// Deprecated: Do not use.
 	// Generates a short-lived access token to authenticate to a given
 	// [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resource.
 	GenerateAwsAccessToken(ctx context.Context, in *GenerateAwsAccessTokenRequest, opts ...grpc.CallOption) (*GenerateAwsAccessTokenResponse, error)
+	// Deprecated: Do not use.
 	// Creates a new [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool],
 	// attached to a given [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
 	//
@@ -94,8 +104,10 @@ type AwsClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAwsNodePool(ctx context.Context, in *CreateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool].
 	UpdateAwsNodePool(ctx context.Context, in *UpdateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Rolls back a previously aborted or failed
 	// [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] update request.
 	// Makes no changes if the last update request successfully finished.
@@ -103,13 +115,16 @@ type AwsClustersClient interface {
 	// You must first cancel or let it finish unsuccessfully before you can
 	// rollback.
 	RollbackAwsNodePoolUpdate(ctx context.Context, in *RollbackAwsNodePoolUpdateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] resource.
 	GetAwsNodePool(ctx context.Context, in *GetAwsNodePoolRequest, opts ...grpc.CallOption) (*AwsNodePool, error)
+	// Deprecated: Do not use.
 	// Lists all [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool]
 	// resources on a given
 	// [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
 	ListAwsNodePools(ctx context.Context, in *ListAwsNodePoolsRequest, opts ...grpc.CallOption) (*ListAwsNodePoolsResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool]
 	// resource.
 	//
@@ -117,15 +132,18 @@ type AwsClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAwsNodePool(ctx context.Context, in *DeleteAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Gets the OIDC discovery document for the cluster.
 	// See the
 	// [OpenID Connect Discovery 1.0
 	// specification](https://openid.net/specs/openid-connect-discovery-1_0.html)
 	// for details.
 	GetAwsOpenIdConfig(ctx context.Context, in *GetAwsOpenIdConfigRequest, opts ...grpc.CallOption) (*AwsOpenIdConfig, error)
+	// Deprecated: Do not use.
 	// Gets the public component of the cluster signing keys in
 	// JSON Web Key format.
 	GetAwsJsonWebKeys(ctx context.Context, in *GetAwsJsonWebKeysRequest, opts ...grpc.CallOption) (*AwsJsonWebKeys, error)
+	// Deprecated: Do not use.
 	// Returns information, such as supported AWS regions and Kubernetes
 	// versions, on a given Google Cloud location.
 	GetAwsServerConfig(ctx context.Context, in *GetAwsServerConfigRequest, opts ...grpc.CallOption) (*AwsServerConfig, error)
@@ -135,10 +153,12 @@ type awsClustersClient struct {
 	cc grpc.ClientConnInterface
 }
 
+// Deprecated: Do not use.
 func NewAwsClustersClient(cc grpc.ClientConnInterface) AwsClustersClient {
 	return &awsClustersClient{cc}
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) CreateAwsCluster(ctx context.Context, in *CreateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AwsClusters_CreateAwsCluster_FullMethodName, in, out, opts...)
@@ -148,6 +168,7 @@ func (c *awsClustersClient) CreateAwsCluster(ctx context.Context, in *CreateAwsC
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) UpdateAwsCluster(ctx context.Context, in *UpdateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AwsClusters_UpdateAwsCluster_FullMethodName, in, out, opts...)
@@ -157,6 +178,7 @@ func (c *awsClustersClient) UpdateAwsCluster(ctx context.Context, in *UpdateAwsC
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) GetAwsCluster(ctx context.Context, in *GetAwsClusterRequest, opts ...grpc.CallOption) (*AwsCluster, error) {
 	out := new(AwsCluster)
 	err := c.cc.Invoke(ctx, AwsClusters_GetAwsCluster_FullMethodName, in, out, opts...)
@@ -166,6 +188,7 @@ func (c *awsClustersClient) GetAwsCluster(ctx context.Context, in *GetAwsCluster
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) ListAwsClusters(ctx context.Context, in *ListAwsClustersRequest, opts ...grpc.CallOption) (*ListAwsClustersResponse, error) {
 	out := new(ListAwsClustersResponse)
 	err := c.cc.Invoke(ctx, AwsClusters_ListAwsClusters_FullMethodName, in, out, opts...)
@@ -175,6 +198,7 @@ func (c *awsClustersClient) ListAwsClusters(ctx context.Context, in *ListAwsClus
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) DeleteAwsCluster(ctx context.Context, in *DeleteAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AwsClusters_DeleteAwsCluster_FullMethodName, in, out, opts...)
@@ -184,6 +208,7 @@ func (c *awsClustersClient) DeleteAwsCluster(ctx context.Context, in *DeleteAwsC
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) GenerateAwsClusterAgentToken(ctx context.Context, in *GenerateAwsClusterAgentTokenRequest, opts ...grpc.CallOption) (*GenerateAwsClusterAgentTokenResponse, error) {
 	out := new(GenerateAwsClusterAgentTokenResponse)
 	err := c.cc.Invoke(ctx, AwsClusters_GenerateAwsClusterAgentToken_FullMethodName, in, out, opts...)
@@ -193,6 +218,7 @@ func (c *awsClustersClient) GenerateAwsClusterAgentToken(ctx context.Context, in
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) GenerateAwsAccessToken(ctx context.Context, in *GenerateAwsAccessTokenRequest, opts ...grpc.CallOption) (*GenerateAwsAccessTokenResponse, error) {
 	out := new(GenerateAwsAccessTokenResponse)
 	err := c.cc.Invoke(ctx, AwsClusters_GenerateAwsAccessToken_FullMethodName, in, out, opts...)
@@ -202,6 +228,7 @@ func (c *awsClustersClient) GenerateAwsAccessToken(ctx context.Context, in *Gene
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) CreateAwsNodePool(ctx context.Context, in *CreateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AwsClusters_CreateAwsNodePool_FullMethodName, in, out, opts...)
@@ -211,6 +238,7 @@ func (c *awsClustersClient) CreateAwsNodePool(ctx context.Context, in *CreateAws
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) UpdateAwsNodePool(ctx context.Context, in *UpdateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AwsClusters_UpdateAwsNodePool_FullMethodName, in, out, opts...)
@@ -220,6 +248,7 @@ func (c *awsClustersClient) UpdateAwsNodePool(ctx context.Context, in *UpdateAws
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) RollbackAwsNodePoolUpdate(ctx context.Context, in *RollbackAwsNodePoolUpdateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AwsClusters_RollbackAwsNodePoolUpdate_FullMethodName, in, out, opts...)
@@ -229,6 +258,7 @@ func (c *awsClustersClient) RollbackAwsNodePoolUpdate(ctx context.Context, in *R
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) GetAwsNodePool(ctx context.Context, in *GetAwsNodePoolRequest, opts ...grpc.CallOption) (*AwsNodePool, error) {
 	out := new(AwsNodePool)
 	err := c.cc.Invoke(ctx, AwsClusters_GetAwsNodePool_FullMethodName, in, out, opts...)
@@ -238,6 +268,7 @@ func (c *awsClustersClient) GetAwsNodePool(ctx context.Context, in *GetAwsNodePo
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) ListAwsNodePools(ctx context.Context, in *ListAwsNodePoolsRequest, opts ...grpc.CallOption) (*ListAwsNodePoolsResponse, error) {
 	out := new(ListAwsNodePoolsResponse)
 	err := c.cc.Invoke(ctx, AwsClusters_ListAwsNodePools_FullMethodName, in, out, opts...)
@@ -247,6 +278,7 @@ func (c *awsClustersClient) ListAwsNodePools(ctx context.Context, in *ListAwsNod
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) DeleteAwsNodePool(ctx context.Context, in *DeleteAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AwsClusters_DeleteAwsNodePool_FullMethodName, in, out, opts...)
@@ -256,6 +288,7 @@ func (c *awsClustersClient) DeleteAwsNodePool(ctx context.Context, in *DeleteAws
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) GetAwsOpenIdConfig(ctx context.Context, in *GetAwsOpenIdConfigRequest, opts ...grpc.CallOption) (*AwsOpenIdConfig, error) {
 	out := new(AwsOpenIdConfig)
 	err := c.cc.Invoke(ctx, AwsClusters_GetAwsOpenIdConfig_FullMethodName, in, out, opts...)
@@ -265,6 +298,7 @@ func (c *awsClustersClient) GetAwsOpenIdConfig(ctx context.Context, in *GetAwsOp
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) GetAwsJsonWebKeys(ctx context.Context, in *GetAwsJsonWebKeysRequest, opts ...grpc.CallOption) (*AwsJsonWebKeys, error) {
 	out := new(AwsJsonWebKeys)
 	err := c.cc.Invoke(ctx, AwsClusters_GetAwsJsonWebKeys_FullMethodName, in, out, opts...)
@@ -274,6 +308,7 @@ func (c *awsClustersClient) GetAwsJsonWebKeys(ctx context.Context, in *GetAwsJso
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *awsClustersClient) GetAwsServerConfig(ctx context.Context, in *GetAwsServerConfigRequest, opts ...grpc.CallOption) (*AwsServerConfig, error) {
 	out := new(AwsServerConfig)
 	err := c.cc.Invoke(ctx, AwsClusters_GetAwsServerConfig_FullMethodName, in, out, opts...)
@@ -286,7 +321,10 @@ func (c *awsClustersClient) GetAwsServerConfig(ctx context.Context, in *GetAwsSe
 // AwsClustersServer is the server API for AwsClusters service.
 // All implementations should embed UnimplementedAwsClustersServer
 // for forward compatibility
+//
+// Deprecated: Do not use.
 type AwsClustersServer interface {
+	// Deprecated: Do not use.
 	// Creates a new [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource on a given Google Cloud Platform project and region.
 	//
@@ -294,14 +332,18 @@ type AwsClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAwsCluster(context.Context, *CreateAwsClusterRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
 	UpdateAwsCluster(context.Context, *UpdateAwsClusterRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource.
 	GetAwsCluster(context.Context, *GetAwsClusterRequest) (*AwsCluster, error)
+	// Deprecated: Do not use.
 	// Lists all [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resources
 	// on a given Google Cloud project and region.
 	ListAwsClusters(context.Context, *ListAwsClustersRequest) (*ListAwsClustersResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource.
 	//
@@ -312,11 +354,14 @@ type AwsClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAwsCluster(context.Context, *DeleteAwsClusterRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Generates an access token for a cluster agent.
 	GenerateAwsClusterAgentToken(context.Context, *GenerateAwsClusterAgentTokenRequest) (*GenerateAwsClusterAgentTokenResponse, error)
+	// Deprecated: Do not use.
 	// Generates a short-lived access token to authenticate to a given
 	// [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resource.
 	GenerateAwsAccessToken(context.Context, *GenerateAwsAccessTokenRequest) (*GenerateAwsAccessTokenResponse, error)
+	// Deprecated: Do not use.
 	// Creates a new [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool],
 	// attached to a given [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
 	//
@@ -324,8 +369,10 @@ type AwsClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAwsNodePool(context.Context, *CreateAwsNodePoolRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool].
 	UpdateAwsNodePool(context.Context, *UpdateAwsNodePoolRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Rolls back a previously aborted or failed
 	// [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] update request.
 	// Makes no changes if the last update request successfully finished.
@@ -333,13 +380,16 @@ type AwsClustersServer interface {
 	// You must first cancel or let it finish unsuccessfully before you can
 	// rollback.
 	RollbackAwsNodePoolUpdate(context.Context, *RollbackAwsNodePoolUpdateRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] resource.
 	GetAwsNodePool(context.Context, *GetAwsNodePoolRequest) (*AwsNodePool, error)
+	// Deprecated: Do not use.
 	// Lists all [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool]
 	// resources on a given
 	// [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
 	ListAwsNodePools(context.Context, *ListAwsNodePoolsRequest) (*ListAwsNodePoolsResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool]
 	// resource.
 	//
@@ -347,15 +397,18 @@ type AwsClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAwsNodePool(context.Context, *DeleteAwsNodePoolRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Gets the OIDC discovery document for the cluster.
 	// See the
 	// [OpenID Connect Discovery 1.0
 	// specification](https://openid.net/specs/openid-connect-discovery-1_0.html)
 	// for details.
 	GetAwsOpenIdConfig(context.Context, *GetAwsOpenIdConfigRequest) (*AwsOpenIdConfig, error)
+	// Deprecated: Do not use.
 	// Gets the public component of the cluster signing keys in
 	// JSON Web Key format.
 	GetAwsJsonWebKeys(context.Context, *GetAwsJsonWebKeysRequest) (*AwsJsonWebKeys, error)
+	// Deprecated: Do not use.
 	// Returns information, such as supported AWS regions and Kubernetes
 	// versions, on a given Google Cloud location.
 	GetAwsServerConfig(context.Context, *GetAwsServerConfigRequest) (*AwsServerConfig, error)
@@ -421,6 +474,7 @@ type UnsafeAwsClustersServer interface {
 	mustEmbedUnimplementedAwsClustersServer()
 }
 
+// Deprecated: Do not use.
 func RegisterAwsClustersServer(s grpc.ServiceRegistrar, srv AwsClustersServer) {
 	s.RegisterService(&AwsClusters_ServiceDesc, srv)
 }
