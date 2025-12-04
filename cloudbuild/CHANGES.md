@@ -1,5 +1,11 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.24.0) (2025-12-04)
+
+### Features
+
+* Update GCB with latest proto changes ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.23.0...cloudbuild/v1.23.1) (2025-10-07)
 
 

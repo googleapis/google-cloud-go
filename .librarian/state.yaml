@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.109.0
+    version: 1.110.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/aiplatform/v1
@@ -545,7 +545,7 @@ libraries:
       - internal/generated/snippets/area120/
     tag_format: '{id}/v{version}'
   - id: artifactregistry
-    version: 1.17.2
+    version: 1.18.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/devtools/artifactregistry/v1
@@ -725,7 +725,7 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.5.0
+    version: 1.6.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/backupdr/v1
@@ -775,7 +775,7 @@ libraries:
       - internal/generated/snippets/baremetalsolution/
     tag_format: '{id}/v{version}'
   - id: batch
-    version: 1.13.0
+    version: 1.14.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/batch/v1
@@ -1304,7 +1304,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: channel
-    version: 1.20.0
+    version: 1.21.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/channel/v1
@@ -1379,7 +1379,7 @@ libraries:
       - internal/generated/snippets/chronicle/
     tag_format: '{id}/v{version}'
   - id: cloudbuild
-    version: 1.23.1
+    version: 1.24.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/devtools/cloudbuild/v1
@@ -1614,7 +1614,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.49.1
+    version: 1.50.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/compute/v1
@@ -2223,7 +2223,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.71.0
+    version: 1.72.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -2518,7 +2518,7 @@ libraries:
       - internal/generated/snippets/essentialcontacts/
     tag_format: '{id}/v{version}'
   - id: eventarc
-    version: 1.17.0
+    version: 1.18.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/eventarc/v1
@@ -2691,7 +2691,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.2.1
+    version: 0.3.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -2803,7 +2803,7 @@ libraries:
       - internal/generated/snippets/gkehub/
     tag_format: '{id}/v{version}'
   - id: gkemulticloud
-    version: 1.5.4
+    version: 1.6.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/gkemulticloud/v1
@@ -2895,7 +2895,7 @@ libraries:
       - internal/generated/snippets/gsuiteaddons/
     tag_format: '{id}/v{version}'
   - id: hypercomputecluster
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 53af3b727f84acc34e31c23f3b6e7b8aa4b7e837
     apis:
       - path: google/cloud/hypercomputecluster/v1beta
@@ -3782,7 +3782,7 @@ libraries:
       - internal/generated/snippets/monitoring/
     tag_format: '{id}/v{version}'
   - id: netapp
-    version: 1.10.1
+    version: 1.11.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/netapp/v1
@@ -3869,7 +3869,7 @@ libraries:
       - internal/generated/snippets/networkmanagement/
     tag_format: '{id}/v{version}'
   - id: networksecurity
-    version: 0.10.7
+    version: 0.11.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/networksecurity/v1beta1
@@ -4194,7 +4194,7 @@ libraries:
       - internal/generated/snippets/oslogin/
     tag_format: '{id}/v{version}'
   - id: parallelstore
-    version: 0.11.4
+    version: 0.12.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/parallelstore/v1
@@ -5247,7 +5247,7 @@ libraries:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.3.0
+    version: 1.4.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/shopping/css/v1
@@ -6067,7 +6067,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/vectorsearch/v1beta
@@ -6259,7 +6259,7 @@ libraries:
       - internal/generated/snippets/visionai/
     tag_format: '{id}/v{version}'
   - id: vmmigration
-    version: 1.9.1
+    version: 1.10.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/vmmigration/v1

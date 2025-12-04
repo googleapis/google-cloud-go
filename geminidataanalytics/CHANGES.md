@@ -1,5 +1,19 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.3.0) (2025-12-04)
+
+### Features
+
+* Adding DatasourceOptions to provide configuration options for datasources ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding a DeleteConversation RPC to allow for the deletion of conversations ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding a GlossaryTerm message to allow users to provide definitions for domain-specific terms ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding a new SchemaRelationship message to define relationships between table schema ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding a new TextType PROGRESS to provide informational messages about an agent&#39;s progress for supporting more granular Agent RAG tools ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding an ExampleQueries message to surface derived and authored example queries ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding client_managed_resource_context to allow clients to manage their own conversation and agent resources ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding struct_schema to Datasource to support flexible schemas, particularly for Looker datasources ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding support for LookerQuery within the DataQuery message for retrieving data from Looker explores ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/geminidataanalytics/v0.2.0...geminidataanalytics/v0.2.1) (2025-09-18)
 
 

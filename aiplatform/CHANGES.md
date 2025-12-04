@@ -1,6 +1,35 @@
 # Changes
 
 
+## [1.110.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.110.0) (2025-12-04)
+
+### Features
+
+* A new field `min_gpu_driver_version` is added to message `.google.cloud.aiplatform.v1beta1.MachineSpec` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Add support for developer connect based deployment ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Expose FullFineTunedResources for full fine tuned deployments ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Expose zone when creating a FeatureOnlineStore ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Introduce RagManagedVertexVectorSearch as a new vector db option ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add RagCorpus.satisfies_pzs and RagCorpus.satisfies_pzi ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add `ReplicatedVoiceConfig` to `VoiceConfig` to enable Gemini TTS voice replication ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add `gpu_partition_size` in `machine_spec` v1 api ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* A comment for field `enterprise` in message `.google.cloud.aiplatform.v1beta1.RagManagedDbConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `gcs_metadata_schema_source` in message `.google.cloud.aiplatform.v1beta1.RagFileMetadataConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `gcs_metadata_source` in message `.google.cloud.aiplatform.v1beta1.RagFileMetadataConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `google_drive_metadata_schema_source` in message `.google.cloud.aiplatform.v1beta1.RagFileMetadataConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `google_drive_metadata_source` in message `.google.cloud.aiplatform.v1beta1.RagFileMetadataConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `package_spec` in message `.google.cloud.aiplatform.v1.ReasoningEngineSpec` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `package_spec` in message `.google.cloud.aiplatform.v1beta1.ReasoningEngineSpec` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `rag_files_count` in message `.google.cloud.aiplatform.v1beta1.RagCorpus` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `scaled` in message `.google.cloud.aiplatform.v1beta1.RagManagedDbConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `user_metadata` in message `.google.cloud.aiplatform.v1beta1.RagFile` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for message `RagManagedDbConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for message `ReasoningEngineSpec` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* update `ReplicatedVoiceConfig.mime_type` comment ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.109.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.109.0) (2025-11-06)
 
 ### Features
