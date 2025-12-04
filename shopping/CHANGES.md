@@ -1,6 +1,54 @@
 # Changes
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.4.0) (2025-12-04)
+
+### Features
+
+* A new field `account_management` is added to message `.google.shopping.merchant.accounts.v1.CreateAndConfigureAccountRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `campaigns_management` is added to message `.google.shopping.merchant.accounts.v1.CreateAndConfigureAccountRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `comparison_shopping` is added to message `.google.shopping.merchant.accounts.v1.AccountService` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `comparison_shopping` is added to message `.google.shopping.merchant.accounts.v1.CreateAndConfigureAccountRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `external_account_id` is added to message `.google.shopping.merchant.accounts.v1.CreateAndConfigureAccountRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `products_management` is added to message `.google.shopping.merchant.accounts.v1.CreateAndConfigureAccountRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `radius_area` is added to message `.google.shopping.merchant.accounts.v1.Region` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `set_alias` is added to message `.google.shopping.merchant.accounts.v1.CreateAndConfigureAccountRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new field `verification_mail_settings` is added to message `.google.shopping.merchant.accounts.v1.CreateAndConfigureAccountRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new message `ComparisonShopping` is added ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new message `GetAccountForGcpRegistrationResponse` is added ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new message `SetAliasForRelationship` is added ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new message `VerificationMailSettings` is added ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new message `VerifySelfRequest` is added ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new method `GetAccountForGcpRegistration` is added to service `DeveloperRegistrationService` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A new method `VerifySelf` is added to service `UserService` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Add the AccountLimit resource and its service to the quota bundle ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added C#, PHP, and Ruby namespace options to LocalInventory and RegionalInventory proto files for improved client library generation ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added C#, PHP, and Ruby namespace options to ProductInputs, Products, and ProductsCommon proto files for improved client library generation ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added `VERIFY_BUSINESS_VIDEO_IN_MERCHANT_CENTER` as a new enum value to `ExternalAction.Type`. This supports redirecting to Merchant Center for business video verification ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added `handling_cutoff_time` and `handling_cutoff_timezone` fields to the `Shipping` message within `Attributes` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added several fields to enhance shipping configurations: - `handling_cutoff_time` and `handling_cutoff_timezone` within the `Shipping` message - `ShippingBusinessDaysConfig` message to define business days for shipping - `shipping_handling_business_days` and `shipping_transit_business_days` in `ProductAttributes` - `HandlingCutoffTime` message to configure country-specific handling cutoffs - `handling_cutoff_times` array in `ProductAttributes` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added the `product_id_base64_url_encoded` field to `InsertProductInputRequest`, `DeleteProductInputRequest`, and `GetProductRequest`. This allows for product IDs containing special characters to be correctly handled when unpadded base64url-encoded ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added the `product_id_base64_url_encoded` field to `ListLocalInventoriesRequest`, `InsertLocalInventoryRequest`, `DeleteLocalInventoryRequest`, `ListRegionalInventoriesRequest`, `InsertRegionalInventoryRequest`, and `DeleteRegionalInventoryRequest`. This allows for product IDs containing special characters to be correctly handled when base64url-encoded ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added the `product_id_base64_url_encoded` field to `ListLocalInventoriesRequest`, `InsertLocalInventoryRequest`, `DeleteLocalInventoryRequest`, `ListRegionalInventoriesRequest`, `InsertRegionalInventoryRequest`, and `DeleteRegionalInventoryRequest`. This allows for product IDs containing special characters to be correctly handled when unpadded base64url-encoded ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Added the `product_id_base64_url_encoded` field to `RenderProductIssuesRequest`. This allows for product IDs containing special characters to be correctly handled when unpadded base64url-encoded ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Bug Fixes
+
+* upgrade gRPC service registration func An update to Go gRPC Protobuf generation will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go service files. This change should affect very few client library users. See release notes advisories in https://github.com/googleapis/google-cloud-go/pull/11025. ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* A comment for enum `AccessRight` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for enum `State` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for enum value `API_DEVELOPER` in enum `AccessRight` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `developer_email` in message `.google.shopping.merchant.accounts.v1.RegisterGcpRequest` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for message `Program` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for message `User` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for method `DeleteAccount` in service `AccountsService` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Updated comments for several fields, including product name formats, data source creation, destination field descriptions (now also referred to as Marketing Methods), and the default page size for `ListProductsRequest` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Updated the API summary and overview in the service configuration ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Updated various comments, including links to data source creation guides ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.3.0) (2025-11-06)
 
 ### Bug Fixes
