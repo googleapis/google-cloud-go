@@ -24,6 +24,7 @@ import (
 	"math/rand"
 	"net/url"
 	"slices"
+	"sort"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -95,6 +96,7 @@ var _ gtransport.ConnPool = &BigtableChannelPool{}
 type BigtableConn struct {
 	*grpc.ClientConn
 	isALTSConn atomic.Bool
+	createdAt  atomic.Int64
 }
 
 // Prime sends a PingAndWarm request to warm up the connection.
@@ -131,9 +133,17 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 
 // NewBigtableConn creates a wrapped grpc Client Conn
 func NewBigtableConn(conn *grpc.ClientConn) *BigtableConn {
-	return &BigtableConn{
+	bc := &BigtableConn{
 		ClientConn: conn,
 	}
+	bc.createdAt.Store(time.Now().UnixMilli())
+	return bc
+
+}
+
+// createdAt returns the creation time of the connection in int64. milliseconds since epoch
+func (bc *BigtableConn) creationTime() int64 {
+	return bc.createdAt.Load()
 }
 
 // connEntry represents a single connection in the pool.
@@ -153,6 +163,15 @@ func (e *connEntry) isALTSUsed() bool {
 		return false
 	}
 	return e.conn.isALTSConn.Load()
+}
+
+// createdAt returns the creation time of the connection in the entry.
+// It returns the zero if conn is nil.
+func (e *connEntry) createdAt() int64 {
+	if e.conn == nil {
+		return 0
+	}
+	return e.conn.creationTime()
 }
 
 // isDraining atomically checks if the connection is in the draining state.
@@ -582,6 +601,163 @@ func (s *refCountedStream) decrementLoad() {
 	s.once.Do(func() {
 		s.entry.streamingLoad.Add(-1)
 	})
+}
+
+// addConnections returns true if the pool size changed.
+// TODO: addConnections has a long section where we dial and prime the connections.
+// Currently, we are taking dialMu() throughout the section and dialMu() is also required for
+// replaceConnection().
+//
+//	Note that DynamicScaleMonitor allows only one evaluateAndScale as it takes a mutex
+//	during evaluateAndScale so don't expect any size changes in conns
+func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
+	// dialMu access
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
+	numCurrent := p.Num()
+	currentConns := p.getConns()
+	maxDelta := maxConns - numCurrent
+	cappedIncrease := min(increaseDelta, maxDelta)
+
+	if cappedIncrease <= 0 {
+		return false
+	}
+
+	// LONG SECTION<START>
+	// This section can take time as it involves creating conn and Prime()
+	// TODO(): Avoid taking dialMu here.
+	results := make(chan *connEntry, cappedIncrease)
+	var wg sync.WaitGroup
+
+	for i := 0; i < cappedIncrease; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			select {
+			case <-p.poolCtx.Done():
+				btopt.Debugf(p.logger, "bigtable_connpool: Context done, skipping connection creation: %v\n", p.poolCtx.Err())
+				return
+			default:
+			}
+
+			conn, err := p.dial()
+			if err != nil {
+				btopt.Debugf(p.logger, "bigtable_connpool: Failed to dial new connection for scale up: %v\n", err)
+				return
+			}
+
+			err = conn.Prime(p.poolCtx, p.instanceName, p.appProfile, p.featureFlagsMD)
+			if err != nil {
+				btopt.Debugf(p.logger, "bigtable_connpool: Failed to prime new connection: %v. Connection will not be added.\n", err)
+				conn.Close()
+				return
+			}
+
+			results <- &connEntry{conn: conn}
+		}()
+	}
+	// Goroutine to close the results channel once all workers are done.
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	newEntries := make([]*connEntry, 0, cappedIncrease)
+	for entry := range results {
+		newEntries = append(newEntries, entry)
+	}
+
+	if len(newEntries) == 0 {
+		btopt.Debugf(p.logger, "bigtable_connpool: No new connections were successfully created and primed.\n")
+		return false
+	}
+
+	// LONG SECTION<END>
+
+	// add now
+	combinedConns := make([]*connEntry, numCurrent+len(newEntries))
+	copy(combinedConns, currentConns)
+	copy(combinedConns[numCurrent:], newEntries)
+	p.conns.Store(&combinedConns)
+
+	btopt.Debugf(p.logger, "bigtable_connpool: Added %d connections, new size: %d\n", numCurrent+len(newEntries), len(combinedConns))
+	return true
+}
+
+type entryWithAge struct {
+	entry     *connEntry
+	createdAt int64
+}
+
+// removeConnections returns true if the pool size changed. It removes the oldest connections available in the conns.
+func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemoveConns int) bool {
+	// the critical section is very short
+	// as we just need to sort the conns and get rid of n old connections.
+	p.dialMu.Lock()
+
+	if decreaseDelta <= 0 {
+		p.dialMu.Unlock()
+		return false
+	}
+	snapshotConns := p.getConns()
+	numSnapshot := len(snapshotConns)
+
+	if numSnapshot <= minConns {
+		p.dialMu.Unlock()
+		btopt.Debugf(p.logger, "bigtable_connpool: Removal skippped, current size %d <= minConns %d\n", numSnapshot, minConns)
+		return false
+	}
+
+	// the max we can decrease is min(maxRemoveConns, min(decreaseDelta, numSnapshot - minConns))
+	cappedDecrease := min(maxRemoveConns, min(decreaseDelta, numSnapshot-minConns))
+
+	if cappedDecrease <= 0 {
+		p.dialMu.Unlock()
+		return false
+	}
+
+	entries := make([]entryWithAge, numSnapshot)
+	for i, entry := range snapshotConns {
+		// Only consider connections not *already* draining for removal via this logic.
+		if !entry.isDraining() {
+			entries[i] = entryWithAge{entry: entry, createdAt: entry.conn.creationTime()}
+		}
+	}
+
+	// Sort by creation time, oldest first
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].entry.createdAt() < entries[j].entry.createdAt()
+	})
+
+	// Select the oldest non-draining connections to mark for draining.
+	connsToDrain := make([]*connEntry, 0, cappedDecrease)
+	for i := 0; i < cappedDecrease; i++ {
+		connsToDrain = append(connsToDrain, entries[i].entry)
+		entries[i].entry.markAsDraining()
+	}
+
+	// Build the slice of connections to keep
+	// maintains all connections from the snapshot EXCEPT the ones we just
+	// explicitly marked for removal/draining in this method.
+	connsToKeep := make([]*connEntry, 0, numSnapshot-cappedDecrease)
+	for _, entry := range snapshotConns {
+		if !entry.isDraining() {
+			connsToKeep = append(connsToKeep, entry)
+		}
+	}
+
+	p.conns.Store(&connsToKeep) // new slice
+	// Release the lock
+	p.dialMu.Unlock()
+
+	btopt.Debugf(p.logger, "bigtable_connpool: Marked %d oldest connections for draining, new pool size: %d\n", len(connsToDrain), len(connsToKeep))
+	// Initiate graceful shutdown for the connections in connsToDrain.
+	for _, entry := range connsToDrain {
+		go p.waitForDrainAndClose(entry)
+	}
+	return len(connsToDrain) > 0
+
 }
 
 type multiError []error
