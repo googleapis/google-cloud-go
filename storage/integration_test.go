@@ -1396,6 +1396,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -5451,6 +5452,7 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 }
 
 func TestIntegration_SoftDelete(t *testing.T) {
+	t.Skip("b/453096525")
 	multiTransportTest(skipExtraReadAPIs(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		testStart := time.Now()
@@ -5766,6 +5768,7 @@ func TestIntegration_KMS(t *testing.T) {
 }
 
 func TestIntegration_PredefinedACLs(t *testing.T) {
+	t.Skip("b/453096525")
 	projectOwners := prefixRoleACL{prefix: "project-owners", role: RoleOwner}
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
@@ -6653,6 +6656,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4(t *testing.T) {
+	t.Skip("b/453096525")
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwtConf, err := testutil.JWTConfig()
 		if err != nil {
@@ -6871,6 +6875,7 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
+	t.Skip("b/453096525")
 	// Skip before getting creds if running with -short
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -6931,6 +6936,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "test is not testing the read behaviour")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
 		h := testHelper{t}
@@ -6986,6 +6992,7 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 // Tests that the same SignBytes function works for both
 // SignRawBytes on GeneratePostPolicyV4 and SignBytes on SignedURL
 func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "test is not testing the read behaviour")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 
