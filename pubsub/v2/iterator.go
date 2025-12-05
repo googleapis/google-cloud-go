@@ -65,7 +65,7 @@ var (
 
 const (
 	// The minimum ProtocolVersion (defined at subscriber) to enable keep alives.
-	kaMinVersion              = 1
+	protocolVersion           = 1
 	clientPingInterval        = time.Duration(30 * time.Second)
 	serverMonitorInterval     = time.Duration(10 * time.Second)
 	serverPingTimeoutDuration = time.Duration(15 * time.Second)
@@ -132,9 +132,6 @@ type messageIterator struct {
 	// Active ackIDs in this map should also exist 1:1 with ids in keepAliveDeadlines.
 	// Elements are removed when messages are acked, nacked, or expired in iterator.handleKeepAlives()
 	activeSpans sync.Map
-
-	// enableKeepalive enables detecting broken streams.
-	enableKeepalive bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -145,7 +142,7 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	maxMessages := po.maxOutstandingMessages
 	maxBytes := po.maxOutstandingBytes
 
-	ps := newPullStream(context.Background(), subc.StreamingPull, subName, po.clientID, maxMessages, maxBytes, po.maxExtensionPeriod, po.protocolVersion)
+	ps := newPullStream(context.Background(), subc.StreamingPull, subName, po.clientID, maxMessages, maxBytes, po.maxExtensionPeriod)
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
 	keepAlivePeriod := minDurationPerLeaseExtension / 2
@@ -182,7 +179,6 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		pendingNacks:        map[string]*AckResult{},
 		pendingModAcks:      map[string]*AckResult{},
 		pendingReceipts:     map[string]*AckResult{},
-		enableKeepalive:     po.protocolVersion >= kaMinVersion,
 		lastServerResponse:  time.Now(),
 		lastClientPing:      time.Now(),
 	}
@@ -415,9 +411,7 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 		return nil, err
 	}
 
-	if it.enableKeepalive {
-		it.lastServerResponse = time.Now()
-	}
+	it.lastServerResponse = time.Now()
 
 	// If the new exactly once settings are different than the current settings, update it.
 	it.eoMu.RLock()
