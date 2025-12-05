@@ -4647,6 +4647,7 @@ func TestIntegration_AdminUpdateBackupHotToStandardTime(t *testing.T) {
 }
 
 func TestIntegration_AdminAuthorizedView(t *testing.T) {
+	t.Skip("flaky https://github.com/googleapis/google-cloud-go/issues/13398")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -5099,6 +5100,7 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 }
 
 func TestIntegration_DataMaterializedView(t *testing.T) {
+	t.Skip("flaky https://github.com/googleapis/google-cloud-go/issues/12686")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
