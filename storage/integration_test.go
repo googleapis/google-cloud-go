@@ -3249,7 +3249,6 @@ func TestIntegration_WriterContentType(t *testing.T) {
 func TestIntegration_WriterChunksize(t *testing.T) {
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
 		objSize := 1<<10<<10 + 1 // 1 Mib + 1 byte
 		contents := bytes.Repeat([]byte("a"), objSize)
 
@@ -3297,6 +3296,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
+				obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
 				t.Cleanup(func() { obj.Delete(ctx) })
 
 				w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
