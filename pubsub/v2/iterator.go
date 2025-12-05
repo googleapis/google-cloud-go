@@ -64,7 +64,8 @@ var (
 )
 
 const (
-	// The minimum ProtocolVersion (defined at subscriber) to enable keep alives.
+	// specifies the protocol to communicate with the Pub/Sub servers for streaming pull.
+	// this value cannot be set by users, and should be monotonically increasing.
 	protocolVersion           = 1
 	clientPingInterval        = time.Duration(30 * time.Second)
 	serverMonitorInterval     = time.Duration(10 * time.Second)
