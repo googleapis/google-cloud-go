@@ -5344,6 +5344,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 }
 
 func TestIntegration_AdminMaterializedView(t *testing.T) {
+	t.Skip("broken https://github.com/googleapis/google-cloud-go/issues/12415")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
