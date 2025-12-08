@@ -67,7 +67,8 @@ type Writer struct {
 	//
 	// Note: DisableAutoChecksum must be set before the first call to
 	// Writer.Write(). Automatic checksumming is not enabled for writes
-	// using the HTTP client or for unfinalized writes to appendable objects in gRPC.
+	// using the HTTP client or for full object checksums for unfinalized writes to
+	// appendable objects in gRPC.
 	DisableAutoChecksum bool
 
 	// ChunkSize controls the maximum number of bytes of the object that the

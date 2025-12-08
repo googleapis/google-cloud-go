@@ -1852,7 +1852,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 			name                string
 			content             []byte
 			chunkSize           int
-			sendCrc32c          bool
+			sendCRC32C          bool
 			disableAutoChecksum bool
 			incorrectChecksum   bool
 			wantErr             bool
@@ -1861,7 +1861,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				name:       "oneshot with user-sent CRC32C",
 				content:    []byte("small content for oneshot upload"),
 				chunkSize:  0,
-				sendCrc32c: true,
+				sendCRC32C: true,
 			},
 			{
 				name:      "oneshot with default CRC32",
@@ -1878,7 +1878,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				name:       "resumable with user-sent CRC32C",
 				content:    bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize:  256 * 1024,
-				sendCrc32c: true,
+				sendCRC32C: true,
 			},
 			{
 				name:      "resumable with default CRC32",
@@ -1895,7 +1895,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				name:              "resumable with incorrect checksum",
 				content:           bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize:         256 * 1024,
-				sendCrc32c:        true,
+				sendCRC32C:        true,
 				incorrectChecksum: true,
 				wantErr:           true,
 			},
@@ -1911,7 +1911,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 
 				w := obj.NewWriter(ctx)
 				w.ChunkSize = tc.chunkSize
-				w.SendCRC32C = tc.sendCrc32c
+				w.SendCRC32C = tc.sendCRC32C
 				w.CRC32C = correctCRC32C
 				if tc.incorrectChecksum {
 					w.CRC32C = correctCRC32C + 1
