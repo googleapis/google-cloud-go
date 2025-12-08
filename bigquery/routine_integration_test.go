@@ -168,7 +168,7 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 	routine := dataset.Routine(routineID)
 	uri := "https://aaabbbccc-uc.a.run.app"
 
-	connectionLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us")
+	connectionLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, defaultTestLocation)
 	connectionName := fmt.Sprintf("udf_conn%s", routineID)
 	cleanupConnection, connectionID, err := createConnection(ctx, t, connectionLocation, connectionName)
 	if err != nil {
