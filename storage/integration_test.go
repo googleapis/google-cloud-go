@@ -1923,7 +1923,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				}
 				err := w.Close()
 				if tc.incorrectChecksum {
-					if !incorrectChecksumError(err) {
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
 						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
 					}
 					return
@@ -3478,7 +3478,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 					if _, err := w.Write(content); err != nil {
 						t.Fatalf("writer.Write: %v", err)
 					}
-					if err := w.Close(); !incorrectChecksumError(err) {
+					if err := w.Close(); !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
 						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
 					}
 					return
@@ -7953,18 +7953,4 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 
 func crc32c(b []byte) uint32 {
 	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
-}
-
-func incorrectChecksumError(err error) bool {
-	if err == nil {
-		return false
-	}
-	var e *googleapi.Error
-	if errors.As(err, &e) {
-		return strings.Contains(e.Body, "doesn't match calculated CRC32C")
-	}
-	if _, ok := status.FromError(err); ok {
-		return strings.Contains(err.Error(), "crc32c mismatch")
-	}
-	return false
 }
