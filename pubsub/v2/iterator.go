@@ -577,9 +577,8 @@ func (it *messageIterator) sendAckWithFunc(ctx context.Context, m map[string]*Ac
 
 	if exactlyOnceDelivery && it.nackImmediatelyShutdownInProgress.Load() {
 		for _, ar := range m {
-			ipubsub.SetAckResult(ar, AcknowledgeStatusOther, errors.New("shutdown initiated, nacked"))
+			ipubsub.SetAckResult(ar, AcknowledgeStatusOther, errors.New("shutdown initiated, already nacked"))
 		}
-
 	}
 
 	for _, batch := range batches {
@@ -613,7 +612,6 @@ func (it *messageIterator) sendAckWithFunc(ctx context.Context, m map[string]*Ac
 // enabled, we'll retry these messages for a short duration in a goroutine.
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	ctx := context.Background()
-
 	it.sendAckWithFunc(ctx, m, func(ctx context.Context, subName string, ackIDs []string) error {
 		// For each ackID (message), setup links to the main subscribe span.
 		// If this is a nack, also remove it from active spans.
@@ -1037,7 +1035,6 @@ func (it *messageIterator) nackInventory(ctx context.Context) {
 	defer it.mu.Unlock()
 
 	it.nackImmediatelyShutdownInProgress.Store(true)
-
 	toNack := make(map[string]*ipubsub.AckResult)
 	for ackID := range it.keepAliveDeadlines {
 		// Use a dummy AckResult since we don't propagate nacks back to the user.
