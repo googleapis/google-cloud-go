@@ -123,10 +123,7 @@ func (s *pullStream) get(spc *pb.Subscriber_StreamingPullClient) (*pb.Subscriber
 	return s.spc, s.err
 }
 
-var lastOpen time.Time = time.Now()
-
 func (s *pullStream) openWithRetry() (pb.Subscriber_StreamingPullClient, context.CancelFunc, error) {
-	lastOpen = time.Now()
 	r := defaultRetryer{}
 	for {
 		recordStat(s.ctx, StreamOpenCount, 1)
