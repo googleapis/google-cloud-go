@@ -274,7 +274,7 @@ go_gapic_library(
 
 	_, err := Parse(tmpDir)
 	if err == nil {
-		t.Error("Parse() succeeded; want error")
+		t.Fatal("Parse() succeeded; want error")
 	}
 }
 

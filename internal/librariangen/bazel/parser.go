@@ -160,7 +160,7 @@ func Parse(dir string) (*Config, error) {
 			return nil, fmt.Errorf("librariangen: misconfiguration in BUILD.bazel file, only one of go_grpc_library and go_proto_library rules should be present: %s", fp)
 		}
 		if strings.Contains(goProtoLibraryBlock, "@io_bazel_rules_go//proto:go_grpc") {
-			return nil, fmt.Errorf("librariangen: BUILD.bazel requires legacy gRPC plugin: %s", fp)
+			return nil, fmt.Errorf("librariangen: BUILD.bazel uses legacy gRPC plugin (@io_bazel_rules_go//proto:go_grpc) which is no longer supported: %s", fp)
 		}
 	}
 	if err := c.Validate(); err != nil {
