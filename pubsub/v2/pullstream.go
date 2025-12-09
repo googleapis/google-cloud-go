@@ -20,12 +20,15 @@ import (
 	"io"
 	"net/url"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 )
+
+const protocolVersion int64 = 1
 
 // A pullStream supports the methods of a StreamingPullClient, but re-opens
 // the stream on a retryable error.
@@ -38,6 +41,8 @@ type pullStream struct {
 	mu  sync.Mutex
 	spc *pb.Subscriber_StreamingPullClient
 	err error // permanent error
+
+	openCount atomic.Int64
 }
 
 // for testing
@@ -118,10 +123,14 @@ func (s *pullStream) get(spc *pb.Subscriber_StreamingPullClient) (*pb.Subscriber
 	return s.spc, s.err
 }
 
+var lastOpen time.Time = time.Now()
+
 func (s *pullStream) openWithRetry() (pb.Subscriber_StreamingPullClient, context.CancelFunc, error) {
+	lastOpen = time.Now()
 	r := defaultRetryer{}
 	for {
 		recordStat(s.ctx, StreamOpenCount, 1)
+		s.openCount.Add(1)
 		spc, close, err := s.open()
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
@@ -210,4 +219,11 @@ func (s *pullStream) CloseSend() error {
 	s.err = io.EOF // should not be retried
 	s.mu.Unlock()
 	return err
+}
+
+// Close closes the stream to be reopened
+func (s *pullStream) Close() {
+	s.call(func(spc pb.Subscriber_StreamingPullClient) error {
+		return spc.CloseSend()
+	})
 }

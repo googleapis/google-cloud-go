@@ -61,12 +61,9 @@ var (
 
 	// The total amount of time to retry acks/modacks with exactly once delivery enabled subscriptions.
 	exactlyOnceDeliveryRetryDeadline = 600 * time.Second
-)
 
-const (
 	// specifies the protocol to communicate with the Pub/Sub servers for streaming pull.
 	// this value cannot be set by users, and should be monotonically increasing.
-	protocolVersion           = 1
 	clientPingInterval        = time.Duration(30 * time.Second)
 	serverMonitorInterval     = time.Duration(10 * time.Second)
 	serverPingTimeoutDuration = time.Duration(15 * time.Second)
@@ -188,7 +185,7 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	return it
 }
 
-// Subscription.receive will call stop on its messageIterator when finished with it.
+// Subscriber.receive will call stop on its messageIterator when finished with it.
 // Stop will block until Done has been called on all Messages that have been
 // returned by Next, or until the context with which the messageIterator was created
 // is cancelled or exceeds its deadline.
@@ -259,10 +256,9 @@ func (it *messageIterator) fail(err error) error {
 	return it.err
 }
 
-// receive makes a call to the stream's Recv method, or the Pull RPC, and returns
+// receive makes a call to the stream's Recv method and returns
 // its messages.
-// maxToPull is the maximum number of messages for the Pull RPC.
-func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
+func (it *messageIterator) receive() ([]*Message, error) {
 	it.mu.Lock()
 	ierr := it.err
 	it.mu.Unlock()
@@ -500,6 +496,7 @@ func (it *messageIterator) sender() {
 			sendAcks = (len(it.pendingAcks) > 0)
 
 		case <-it.serverMonitorTicker.C:
+			it.mu.Lock()
 			checkServer = true
 
 		case <-it.pingTicker.C:
@@ -896,22 +893,31 @@ func (it *messageIterator) pingStream() {
 		it.sendNewAckDeadline = false
 	}
 	it.eoMu.RUnlock()
-	it.ps.Send(spr)
+	if err := it.ps.Send(spr); err != nil {
+		it.lastClientPing = time.Now()
+	}
 }
 
 func (it *messageIterator) checkServer() {
 	lastResponse := it.lastServerResponse
 	lastPing := it.lastClientPing
 
+	// if the latest ping happened recently (before server ping),
+	// we pass this check.
 	if lastPing.Before(lastResponse) {
 		return
 	}
+
+	// if the lastPing happened within the timeout, we pass this check.
 	if time.Since(lastPing) < serverPingTimeoutDuration {
 		return
 	}
 
+	// Either we haven't send a client ping succesfully recently,
+	// or we haven't received a ping from the server.
+	// In either case, close the stream so it can be reopened.
 	if it.ps != nil {
-		it.ps.CloseSend()
+		it.ps.Close()
 	}
 }
 
