@@ -90,6 +90,7 @@ type messageIterator struct {
 	wg                  sync.WaitGroup
 
 	// related to stream keep alives when ProtocolVersion >= 1
+	pingMu             sync.RWMutex
 	lastServerResponse time.Time
 	lastClientPing     time.Time
 
@@ -408,7 +409,9 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 		return nil, err
 	}
 
+	it.pingMu.Lock()
 	it.lastServerResponse = time.Now()
+	it.pingMu.Unlock()
 
 	// If the new exactly once settings are different than the current settings, update it.
 	it.eoMu.RLock()
@@ -894,13 +897,17 @@ func (it *messageIterator) pingStream() {
 	}
 	it.eoMu.RUnlock()
 	if err := it.ps.Send(spr); err != nil {
+		it.pingMu.Lock()
 		it.lastClientPing = time.Now()
+		it.pingMu.Unlock()
 	}
 }
 
 func (it *messageIterator) checkServer() {
+	it.pingMu.RLock()
 	lastResponse := it.lastServerResponse
 	lastPing := it.lastClientPing
+	it.pingMu.RUnlock()
 
 	// if the latest ping happened recently (before server ping),
 	// we pass this check.
