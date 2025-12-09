@@ -896,7 +896,7 @@ func (it *messageIterator) pingStream() {
 		it.sendNewAckDeadline = false
 	}
 	it.eoMu.RUnlock()
-	if err := it.ps.Send(spr); err != nil {
+	if err := it.ps.Send(spr); err == nil {
 		it.pingMu.Lock()
 		it.lastClientPing = time.Now()
 		it.pingMu.Unlock()
