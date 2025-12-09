@@ -21,6 +21,7 @@ import (
 	"log"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
@@ -118,6 +119,8 @@ type messageIterator struct {
 	// Active ackIDs in this map should also exist 1:1 with ids in keepAliveDeadlines.
 	// Elements are removed when messages are acked, nacked, or expired in iterator.handleKeepAlives()
 	activeSpans sync.Map
+
+	nackImmediatelyShutdownInProgress atomic.Bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -572,6 +575,13 @@ func (it *messageIterator) sendAckWithFunc(ctx context.Context, m map[string]*Ac
 	batches := makeBatches(ackIDs, ackIDBatchSize)
 	wg := sync.WaitGroup{}
 
+	if exactlyOnceDelivery && it.nackImmediatelyShutdownInProgress.Load() {
+		for _, ar := range m {
+			ipubsub.SetAckResult(ar, AcknowledgeStatusOther, errors.New("shutdown initiated, nacked"))
+		}
+
+	}
+
 	for _, batch := range batches {
 		wg.Add(1)
 		go func(toSend []string) {
@@ -603,6 +613,7 @@ func (it *messageIterator) sendAckWithFunc(ctx context.Context, m map[string]*Ac
 // enabled, we'll retry these messages for a short duration in a goroutine.
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	ctx := context.Background()
+
 	it.sendAckWithFunc(ctx, m, func(ctx context.Context, subName string, ackIDs []string) error {
 		// For each ackID (message), setup links to the main subscribe span.
 		// If this is a nack, also remove it from active spans.
@@ -658,7 +669,6 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	}, it.retryAcks, func(ctx context.Context, toSend []string) {
 		recordStat(it.ctx, AckCount, int64(len(toSend)))
 		addAcks(toSend)
-
 	})
 }
 
@@ -1025,6 +1035,8 @@ func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult,
 func (it *messageIterator) nackInventory(ctx context.Context) {
 	it.mu.Lock()
 	defer it.mu.Unlock()
+
+	it.nackImmediatelyShutdownInProgress.Store(true)
 
 	toNack := make(map[string]*ipubsub.AckResult)
 	for ackID := range it.keepAliveDeadlines {
