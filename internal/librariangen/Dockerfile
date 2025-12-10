@@ -61,7 +61,6 @@ FROM marketplace.gcr.io/google/debian12:latest
 # Set environment variables for tool versions for easy updates.
 ENV GO_VERSION=1.24.0
 ENV PROTOC_VERSION=25.7
-ENV GO_PROTOC_PLUGIN_V1_VERSION=1.5.4
 ENV GO_PROTOC_PLUGIN_V2_VERSION=1.35.2
 ENV GO_GRPC_PLUGIN_VERSION=1.3.0
 ENV GAPIC_GENERATOR_VERSION=0.55.1
@@ -96,18 +95,6 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC
     unzip protoc.zip -d /usr/local && \
     rm protoc.zip && \
     protoc --version
-
-# Build the "old" Go protoc plugin manually; using go install just redirects to the new one.
-# Note that the "old" plugin uses the internal code in the "new" plugin, so we need to use
-# "go mod edit" to end up with a consistent version.
-# The plugin is built as protoc-gen-go_v1, so that we can use "go_v1" as the name in protoc options.
-# This is ghastly, and should all be removed as soon as possible by migrating all packages to go_grpc.
-RUN (export GOTOOLCHAIN='auto' && \
-    git clone --depth 1 --branch=v${GO_PROTOC_PLUGIN_V1_VERSION} https://github.com/golang/protobuf protoc-gen-go-v1 && \
-    cd protoc-gen-go-v1 && \
-    go mod edit -require google.golang.org/protobuf@v${GO_PROTOC_PLUGIN_V2_VERSION} && \
-    go mod tidy && \
-    go build -o $HOME/go/bin/protoc-gen-go_v1 ./protoc-gen-go)
 
 # Install required Go tools for protoc and the post-processor.
 RUN (export GOTOOLCHAIN='auto' && \

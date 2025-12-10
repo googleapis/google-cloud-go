@@ -138,7 +138,8 @@ func (c *RegionNotificationEndpointsClient) Get(ctx context.Context, req *comput
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
+// Insert create a NotificationEndpoint in the specified project in the given region
+// using the parameters that are included in the request.
 func (c *RegionNotificationEndpointsClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -346,7 +347,8 @@ func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Insert create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
+// Insert create a NotificationEndpoint in the specified project in the given region
+// using the parameters that are included in the request.
 func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNotificationEndpointResource()

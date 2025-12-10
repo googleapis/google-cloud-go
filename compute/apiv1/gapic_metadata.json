@@ -285,6 +285,40 @@
         }
       }
     },
+    "CrossSiteNetworks": {
+      "clients": {
+        "rest": {
+          "libraryClient": "CrossSiteNetworksClient",
+          "rpcs": {
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Patch": {
+              "methods": [
+                "Patch"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DiskTypes": {
       "clients": {
         "rest": {
@@ -581,6 +615,11 @@
                 "Patch"
               ]
             },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "Update": {
               "methods": [
                 "Update"
@@ -633,6 +672,50 @@
             "SetTarget": {
               "methods": [
                 "SetTarget"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FutureReservations": {
+      "clients": {
+        "rest": {
+          "libraryClient": "FutureReservationsClient",
+          "rpcs": {
+            "AggregatedList": {
+              "methods": [
+                "AggregatedList"
+              ]
+            },
+            "Cancel": {
+              "methods": [
+                "Cancel"
+              ]
+            },
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Update": {
+              "methods": [
+                "Update"
               ]
             }
           }
@@ -3903,6 +3986,11 @@
                 "Get"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "List": {
               "methods": [
                 "List"
@@ -3911,6 +3999,16 @@
             "PerformMaintenance": {
               "methods": [
                 "PerformMaintenance"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -3927,6 +4025,11 @@
                 "Get"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "List": {
               "methods": [
                 "List"
@@ -3940,6 +4043,16 @@
             "ReportFaulty": {
               "methods": [
                 "ReportFaulty"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -5141,6 +5254,40 @@
             "SetLabels": {
               "methods": [
                 "SetLabels"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "WireGroups": {
+      "clients": {
+        "rest": {
+          "libraryClient": "WireGroupsClient",
+          "rpcs": {
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Patch": {
+              "methods": [
+                "Patch"
               ]
             }
           }

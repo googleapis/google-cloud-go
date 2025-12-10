@@ -7694,6 +7694,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_GlobalVmExtensionPolicies_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete purge scoped resources (zonal policies) from a global VM extension\npolicy, and then delete the global VM extension policy. Purge of the scoped\nresources is a pre-condition of the global VM extension policy deletion.\nThe deletion of the global VM extension policy happens after the purge\nrollout is done, so it's not a part of the LRO. It's an automatic process\nthat triggers in the backend.",
+      "file": "GlobalVmExtensionPoliciesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteGlobalVmExtensionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "GlobalVmExtensionPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies.Delete",
+          "service": {
+            "shortName": "GlobalVmExtensionPolicies",
+            "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_GlobalVmExtensionPolicies_Get_sync",
       "title": "compute Get Sample",
       "description": "Get gets details of a global VM extension policy.",
@@ -7735,6 +7781,144 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_GlobalVmExtensionPolicies_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new project level GlobalVmExtensionPolicy.",
+      "file": "GlobalVmExtensionPoliciesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertGlobalVmExtensionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "GlobalVmExtensionPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies.Insert",
+          "service": {
+            "shortName": "GlobalVmExtensionPolicies",
+            "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_GlobalVmExtensionPolicies_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists global VM extension policies.",
+      "file": "GlobalVmExtensionPoliciesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListGlobalVmExtensionPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GlobalVmExtensionPolicyIterator",
+        "client": {
+          "shortName": "GlobalVmExtensionPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies.List",
+          "service": {
+            "shortName": "GlobalVmExtensionPolicies",
+            "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_GlobalVmExtensionPolicies_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update updates a global VM extension policy.",
+      "file": "GlobalVmExtensionPoliciesClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateGlobalVmExtensionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "GlobalVmExtensionPoliciesClient",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPoliciesClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies.Update",
+          "service": {
+            "shortName": "GlobalVmExtensionPolicies",
+            "fullName": "google.cloud.compute.v1beta.GlobalVmExtensionPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -20852,7 +21036,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_AddAssociation_sync",
       "title": "compute AddAssociation Sample",
-      "description": "AddAssociation inserts an association for the specified security policy.\n\nThis has billing implications.  Projects in the hierarchy with effective\nhierarchical security policies will be automatically enrolled into Cloud\nArmor Enterprise if not already enrolled.\n\nUse of this API to modify firewall policies is deprecated. Use\nfirewallPolicies.addAssociation instead if possible.",
+      "description": "AddAssociation inserts an association for the specified security policy.\n\nThis has billing implications.  Projects in the hierarchy with effective\nhierarchical security policies will be automatically enrolled into Cloud\nArmor Enterprise if not already enrolled.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.addAssociation\ninstead.",
       "file": "OrganizationSecurityPoliciesClient/AddAssociation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -20898,7 +21082,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_AddRule_sync",
       "title": "compute AddRule Sample",
-      "description": "AddRule inserts a rule into a security policy.",
+      "description": "AddRule inserts a rule into a security policy.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.addRule instead.",
       "file": "OrganizationSecurityPoliciesClient/AddRule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -20944,7 +21128,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_CopyRules_sync",
       "title": "compute CopyRules Sample",
-      "description": "CopyRules copies rules to the specified security policy.\n\nUse of this API to modify firewall policies is deprecated. Use\nfirewallPolicies.copyRules instead.",
+      "description": "CopyRules copies rules to the specified security policy.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.cloneRules\ninstead.",
       "file": "OrganizationSecurityPoliciesClient/CopyRules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -20990,7 +21174,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_Delete_sync",
       "title": "compute Delete Sample",
-      "description": "Delete deletes the specified policy.\n\nUse of this API to remove firewall policies is deprecated. Use\nfirewallPolicies.delete instead.",
+      "description": "Delete deletes the specified policy.\n\nUse this API to remove Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to remove firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.delete instead.",
       "file": "OrganizationSecurityPoliciesClient/Delete/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21036,7 +21220,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get list all of the ordered rules present in a single specified policy.\n\nUse of this API to read firewall policies is deprecated. Use\nfirewallPolicies.get instead.",
+      "description": "Get list all of the ordered rules present in a single specified policy.\n\nUse this API to read Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to read firewall policies. This usage is now\ndisabled for most organizations. Use firewallPolicies.get instead.",
       "file": "OrganizationSecurityPoliciesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21082,7 +21266,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_GetAssociation_sync",
       "title": "compute GetAssociation Sample",
-      "description": "GetAssociation gets an association with the specified name.\n\nUse of this API to read firewall policies is deprecated. Use\nfirewallPolicies.getAssociation instead if possible.",
+      "description": "GetAssociation gets an association with the specified name.\n\nUse this API to read Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to read firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.getAssociation\ninstead.",
       "file": "OrganizationSecurityPoliciesClient/GetAssociation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21128,7 +21312,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_GetRule_sync",
       "title": "compute GetRule Sample",
-      "description": "GetRule gets a rule at the specified priority.\n\nUse of this API to read firewall policies is deprecated. Use\nfirewallPolicies.getRule instead.",
+      "description": "GetRule gets a rule at the specified priority.\n\nUse this API to read Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to read firewall policies. This usage is now\ndisabled for most organizations. Use firewallPolicies.getRule instead.",
       "file": "OrganizationSecurityPoliciesClient/GetRule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21174,7 +21358,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_Insert_sync",
       "title": "compute Insert Sample",
-      "description": "Insert creates a new policy in the specified organization using the data included\nin the request.\n\nUse of this API to insert firewall policies is deprecated. Use\nfirewallPolicies.insert instead.",
+      "description": "Insert creates a new policy in the specified organization using the data included\nin the request.\n\nUse this API to add Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to add firewall policies. This usage is now\ndisabled for most organizations. Use firewallPolicies.insert instead.",
       "file": "OrganizationSecurityPoliciesClient/Insert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21220,7 +21404,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_List_sync",
       "title": "compute List Sample",
-      "description": "List list all the policies that have been configured for the specified\norganization.\n\nUse of this API to read firewall policies is deprecated. Use\nfirewallPolicies.list instead.",
+      "description": "List list all the policies that have been configured for the specified\norganization.\n\nUse this API to read Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to read firewall policies. This usage is now\ndisabled for most organizations. Use firewallPolicies.list instead.",
       "file": "OrganizationSecurityPoliciesClient/List/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21266,7 +21450,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_ListAssociations_sync",
       "title": "compute ListAssociations Sample",
-      "description": "ListAssociations lists associations of a specified target, i.e., organization or folder.\n\nUse of this API to read firewall policies is deprecated. Use\nfirewallPolicies.listAssociations instead if possible.",
+      "description": "ListAssociations lists associations of a specified target, i.e., organization or folder.\n\nUse this API to read Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to read firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.listAssociations\ninstead.",
       "file": "OrganizationSecurityPoliciesClient/ListAssociations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21358,7 +21542,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_Move_sync",
       "title": "compute Move Sample",
-      "description": "Move moves the specified security policy.\n\nUse of this API to modify firewall policies is deprecated. Use\nfirewallPolicies.move instead.",
+      "description": "Move moves the specified security policy.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.move instead.",
       "file": "OrganizationSecurityPoliciesClient/Move/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21404,7 +21588,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_Patch_sync",
       "title": "compute Patch Sample",
-      "description": "Patch patches the specified policy with the data included in the request.\n\nUse of this API to modify firewall policies is deprecated. Use\nfirewallPolicies.patch instead.",
+      "description": "Patch patches the specified policy with the data included in the request.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.patch instead.",
       "file": "OrganizationSecurityPoliciesClient/Patch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21450,7 +21634,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_PatchRule_sync",
       "title": "compute PatchRule Sample",
-      "description": "PatchRule patches a rule at the specified priority.\n\nUse of this API to modify firewall policies is deprecated. Use\nfirewallPolicies.patchRule instead.",
+      "description": "PatchRule patches a rule at the specified priority.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.patchRule\ninstead.",
       "file": "OrganizationSecurityPoliciesClient/PatchRule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21496,7 +21680,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_RemoveAssociation_sync",
       "title": "compute RemoveAssociation Sample",
-      "description": "RemoveAssociation removes an association for the specified security policy.\n\nUse of this API to modify firewall policies is deprecated. Use\nfirewallPolicies.removeAssociation instead if possible.",
+      "description": "RemoveAssociation removes an association for the specified security policy.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.removeAssociation\ninstead.",
       "file": "OrganizationSecurityPoliciesClient/RemoveAssociation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21542,7 +21726,7 @@
     {
       "regionTag": "compute_v1beta_generated_OrganizationSecurityPolicies_RemoveRule_sync",
       "title": "compute RemoveRule Sample",
-      "description": "RemoveRule deletes a rule at the specified priority.",
+      "description": "RemoveRule deletes a rule at the specified priority.\n\nUse this API to modify Cloud Armor policies. Previously, alpha and beta\nversions of this API were used to modify firewall policies. This usage is\nnow disabled for most organizations. Use firewallPolicies.removeRule\ninstead.",
       "file": "OrganizationSecurityPoliciesClient/RemoveRule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -36623,6 +36807,374 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RolloutPlans_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes a RolloutPlan.",
+      "file": "RolloutPlansClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1beta.RolloutPlansClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRolloutPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RolloutPlansClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlansClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlans.Delete",
+          "service": {
+            "shortName": "RolloutPlans",
+            "fullName": "google.cloud.compute.v1beta.RolloutPlans"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RolloutPlans_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get gets details of a single project-scoped RolloutPlan.",
+      "file": "RolloutPlansClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1beta.RolloutPlansClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRolloutPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.RolloutPlan",
+        "client": {
+          "shortName": "RolloutPlansClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlansClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlans.Get",
+          "service": {
+            "shortName": "RolloutPlans",
+            "fullName": "google.cloud.compute.v1beta.RolloutPlans"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RolloutPlans_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new RolloutPlan in a given project and location.",
+      "file": "RolloutPlansClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1beta.RolloutPlansClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRolloutPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RolloutPlansClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlansClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlans.Insert",
+          "service": {
+            "shortName": "RolloutPlans",
+            "fullName": "google.cloud.compute.v1beta.RolloutPlans"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RolloutPlans_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists RolloutPlans in a given project and location.",
+      "file": "RolloutPlansClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.RolloutPlansClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRolloutPlansRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RolloutPlanIterator",
+        "client": {
+          "shortName": "RolloutPlansClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlansClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.RolloutPlans.List",
+          "service": {
+            "shortName": "RolloutPlans",
+            "fullName": "google.cloud.compute.v1beta.RolloutPlans"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_Rollouts_Cancel_sync",
+      "title": "compute Cancel Sample",
+      "description": "Cancel cancels a Rollout.",
+      "file": "RolloutsClient/Cancel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Cancel",
+        "fullName": "google.cloud.compute.v1beta.RolloutsClient.Cancel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CancelRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RolloutsClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutsClient"
+        },
+        "method": {
+          "shortName": "Cancel",
+          "fullName": "google.cloud.compute.v1beta.Rollouts.Cancel",
+          "service": {
+            "shortName": "Rollouts",
+            "fullName": "google.cloud.compute.v1beta.Rollouts"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_Rollouts_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes a Rollout.",
+      "file": "RolloutsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1beta.RolloutsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RolloutsClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1beta.Rollouts.Delete",
+          "service": {
+            "shortName": "Rollouts",
+            "fullName": "google.cloud.compute.v1beta.Rollouts"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_Rollouts_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get gets details of a single project-scoped Rollout.",
+      "file": "RolloutsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1beta.RolloutsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Rollout",
+        "client": {
+          "shortName": "RolloutsClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1beta.Rollouts.Get",
+          "service": {
+            "shortName": "Rollouts",
+            "fullName": "google.cloud.compute.v1beta.Rollouts"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_Rollouts_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists Rollouts in a given project and location.",
+      "file": "RolloutsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.RolloutsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRolloutsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RolloutIterator",
+        "client": {
+          "shortName": "RolloutsClient",
+          "fullName": "google.cloud.compute.v1beta.RolloutsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.Rollouts.List",
+          "service": {
+            "shortName": "Rollouts",
+            "fullName": "google.cloud.compute.v1beta.Rollouts"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
