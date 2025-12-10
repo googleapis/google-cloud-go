@@ -1,0 +1,199 @@
+// Copyright 2025 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package storage
+
+import (
+	"context"
+	"fmt"
+	"math/rand"
+	"path"
+	"runtime"
+	"sync"
+	"time"
+)
+
+// ParallelUploadConfig holds configuration for Parallel Composite Uploads.
+// Setting this config on a Writer enables PCU.
+type ParallelUploadConfig struct {
+	// MinSize is the minimum size of an object in bytes to use PCU.
+	// If an object's size is less than this value, a simple upload is performed.
+	// If this is not set, a default of 150 MiB will be used.
+	// To enable PCU for all uploads regardless of size, set this to 0.
+	MinSize *int64
+
+	// PartSize is the size of each part to be uploaded in parallel.
+	// Defaults to 16MiB. Must be a multiple of 256KiB.
+	PartSize int64
+
+	// NumWorkers is the number of goroutines to use for uploading parts in parallel.
+	// Defaults to 4.
+	NumWorkers int
+
+	// BufferPoolSize is the number of PartSize buffers to pool.
+	// Defaults to NumWorkers + 1.
+	BufferPoolSize int
+
+	// TmpObjectPrefix is the prefix for temporary object names.
+	// Defaults to "gcs-go-sdk-pcu-tmp/".
+	TmpObjectPrefix string
+
+	// RetryPolicy defines the retry behavior for uploading parts.
+	// Defaults to PartRetryPolicy with MaxRetries=3, BaseDelay=100ms, MaxDelay=5s.
+	RetryPolicy *PartRetryPolicy
+
+	// CleanupStrategy dictates how temporary parts are cleaned up.
+	// Defaults to CleanupAlways.
+	CleanupStrategy PartCleanupStrategy
+
+	// NamingStrategy provides a strategy for naming temporary part objects.
+	// Defaults to a strategy that includes a random element to avoid hotspotting.
+	NamingStrategy PartNamingStrategy
+
+	// MetadataDecorator allows adding custom metadata to temporary part objects.
+	MetadataDecorator PartMetadataDecorator
+}
+
+type PartRetryPolicy struct {
+	// MaxRetries is the maximum number of retries for uploading a part.
+	// Defaults to 3.
+	MaxRetries int
+
+	// BaseDelay is the initial delay before retrying a failed part upload.
+	// Defaults to 100 milliseconds.
+	BaseDelay time.Duration
+
+	// MaxDelay is the maximum delay between retries.
+	// Defaults to 5 seconds.
+	MaxDelay time.Duration
+}
+
+// PartCleanupStrategy defines when temporary objects are deleted.
+type PartCleanupStrategy int
+
+const (
+	// CleanupAlways clean up temporary parts on both success and failure.
+	CleanupAlways PartCleanupStrategy = iota
+	// CleanupOnSuccess clean up temporary parts only on successful final composition.
+	CleanupOnSuccess
+	// CleanupNever means the application is responsible for cleaning up temporary parts.
+	CleanupNever
+)
+
+func (s PartCleanupStrategy) String() string {
+	return [...]string{"always", "on_success", "never"}[s]
+}
+
+// PartNamingStrategy interface for generating temporary object names.
+type PartNamingStrategy interface {
+	NewPartName(bucket, prefix, finalName string, partNumber int) string
+}
+
+// DefaultNamingStrategy provides a default implementation for naming temporary parts.
+type DefaultNamingStrategy struct{}
+
+var randSrc = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+// NewPartName creates a unique name for a temporary part to avoid hotspotting.
+func (d *DefaultNamingStrategy) NewPartName(bucket, prefix, finalName string, partNumber int) string {
+	rnd := randSrc.Uint64()
+	return path.Join(prefix, fmt.Sprintf("%s-part-%d-%x", finalName, partNumber, rnd))
+}
+
+// PartMetadataDecorator interface for modifying temporary object metadata.
+type PartMetadataDecorator interface {
+	Decorate(attrs *ObjectAttrs)
+}
+
+const (
+	defaultPartSize        = 16 * 1024 * 1024 // 16 MiB
+	baseWorkers            = 4
+	maxWorkers             = 16
+	defaultTmpObjectPrefix = "gcs-go-sdk-pcu-tmp/"
+	maxComposeComponents   = 32
+)
+
+func (c *ParallelUploadConfig) defaults() {
+	if c.MinSize == nil {
+		c.MinSize = new(int64)
+		*c.MinSize = int64(128 * 1024 * 1024) // 128 MiB
+	}
+	if c.PartSize == 0 {
+		c.PartSize = defaultPartSize
+	}
+	// Use a heuristic for the number of workers: start with 4, add 1 for
+	// every 2 CPUs, but don't exceed a cap of 16. This provides a
+	// balance between parallelism and resource contention.
+	if c.NumWorkers == 0 {
+		c.NumWorkers = min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
+	}
+	if c.BufferPoolSize == 0 {
+		c.BufferPoolSize = c.NumWorkers + 1
+	}
+	if c.TmpObjectPrefix == "" {
+		c.TmpObjectPrefix = defaultTmpObjectPrefix
+	}
+	if c.RetryPolicy == nil {
+		c.RetryPolicy = &PartRetryPolicy{
+			MaxRetries: 3,
+			BaseDelay:  100 * time.Millisecond,
+			MaxDelay:   5 * time.Second,
+		}
+	}
+	if c.CleanupStrategy == 0 {
+		c.CleanupStrategy = CleanupAlways
+	}
+	if c.NamingStrategy == nil {
+		c.NamingStrategy = &DefaultNamingStrategy{}
+	}
+}
+
+type pcuState struct {
+	ctx    context.Context
+	cancel context.CancelFunc
+	w      *Writer
+	config *ParallelUploadConfig
+
+	mu sync.Mutex
+	// Handles to the uploaded temporary parts, keyed by partNumber.
+	partMap map[int]*ObjectHandle
+	// Handles to intermediate composite objects, keyed by their object name.
+	intermediateMap map[string]*ObjectHandle
+	failedDeletes   []*ObjectHandle
+	errOnce         sync.Once
+	firstErr        error
+	partNum         int
+	currentBuffer   []byte
+	bytesBuffered   int64
+
+	bufferCh    chan []byte
+	uploadCh    chan uploadTask
+	resultCh    chan uploadResult
+	workerWG    sync.WaitGroup
+	collectorWG sync.WaitGroup
+	started     bool
+}
+
+type uploadTask struct {
+	partNumber int
+	buffer     []byte
+	size       int64
+}
+
+type uploadResult struct {
+	partNumber int
+	obj        *ObjectAttrs
+	handle     *ObjectHandle
+	err        error
+}
