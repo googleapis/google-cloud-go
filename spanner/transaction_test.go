@@ -206,11 +206,11 @@ func TestApply_RetryOnAbort(t *testing.T) {
 		Insert("Accounts", []string{"AccountId"}, []interface{}{int64(1)}),
 	}
 
-	if _, e := client.Apply(ctx, ms); e != nil {
+	if _, e := client.Apply(ctx, ms, TransactionTag("my_tag")); e != nil {
 		t.Fatalf("ReadWriteTransaction retry on abort, got %v, want nil.", e)
 	}
 
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+	if reqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}, // First commit fails.
@@ -218,7 +218,15 @@ func TestApply_RetryOnAbort(t *testing.T) {
 		&sppb.CommitRequest{}, // Second commit succeeds.
 	}); err != nil {
 		t.Fatal(err)
+	} else {
+		if g, w := reqs[1].(*sppb.BeginTransactionRequest).RequestOptions.TransactionTag, "my_tag"; g != w {
+			t.Fatalf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		if g, w := reqs[3].(*sppb.BeginTransactionRequest).RequestOptions.TransactionTag, "my_tag"; g != w {
+			t.Fatalf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
+		}
 	}
+
 }
 
 // Tests that SessionNotFound errors are retried.
