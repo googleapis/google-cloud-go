@@ -1113,7 +1113,7 @@ func TestInstanceAdmin_CreateInstance_WithTags(t *testing.T) {
 		ClusterId:    "mycluster",
 		Zone:         "us-central1-a",
 		StorageType:  SSD,
-		Tags:         map[string]string{"tagValues/123": "tagKeys/456"},
+		Tags:         map[string]string{"tagKeys/123": "tagValues/456"},
 	})
 	if err != nil {
 		t.Fatalf("CreateInstance failed: %v", err)
