@@ -80,7 +80,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 		cfg := &ParallelUploadConfig{}
 		cfg.defaults()
 
-		if *cfg.MinSize != 128*1024*1024 {
+		if *cfg.MinSize != 64*1024*1024 {
 			t.Errorf("MinSize default is incorrect. got %d, want %d", *cfg.MinSize, 128*1024*1024)
 		}
 		if cfg.PartSize != defaultPartSize {
