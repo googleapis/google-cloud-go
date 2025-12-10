@@ -39,7 +39,7 @@ type ParallelUploadConfig struct {
 
 	// NumWorkers is the number of goroutines to use for uploading parts in parallel.
 	// Defaults to 4.
-	NumWorkers int
+// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
 
 	// BufferPoolSize is the number of PartSize buffers to pool.
 	// Defaults to NumWorkers + 1.
