@@ -1311,8 +1311,8 @@ type StructuredQuery_FindNearest struct {
 	// Since DOT_PRODUCT distances increase when the vectors are more similar,
 	// the comparison is inverted.
 	//
-	// * For EUCLIDEAN, COSINE: WHERE distance <= distance_threshold
-	// * For DOT_PRODUCT:       WHERE distance >= distance_threshold
+	// * For EUCLIDEAN, COSINE: `WHERE distance <= distance_threshold`
+	// * For DOT_PRODUCT:       `WHERE distance >= distance_threshold`
 	DistanceThreshold *wrapperspb.DoubleValue `protobuf:"bytes,6,opt,name=distance_threshold,json=distanceThreshold,proto3" json:"distance_threshold,omitempty"`
 }
 

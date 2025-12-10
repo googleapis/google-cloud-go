@@ -17,6 +17,7 @@
 package compute
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -42,7 +43,11 @@ var newGlobalVmExtensionPoliciesClientHook clientHook
 // GlobalVmExtensionPoliciesCallOptions contains the retry settings for each method of GlobalVmExtensionPoliciesClient.
 type GlobalVmExtensionPoliciesCallOptions struct {
 	AggregatedList []gax.CallOption
+	Delete         []gax.CallOption
 	Get            []gax.CallOption
+	Insert         []gax.CallOption
+	List           []gax.CallOption
+	Update         []gax.CallOption
 }
 
 func defaultGlobalVmExtensionPoliciesRESTCallOptions() *GlobalVmExtensionPoliciesCallOptions {
@@ -59,6 +64,9 @@ func defaultGlobalVmExtensionPoliciesRESTCallOptions() *GlobalVmExtensionPolicie
 					http.StatusServiceUnavailable)
 			}),
 		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -71,6 +79,24 @@ func defaultGlobalVmExtensionPoliciesRESTCallOptions() *GlobalVmExtensionPolicie
 					http.StatusServiceUnavailable)
 			}),
 		},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -80,7 +106,11 @@ type internalGlobalVmExtensionPoliciesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListGlobalVmExtensionPoliciesRequest, ...gax.CallOption) *VmExtensionPoliciesScopedListPairIterator
+	Delete(context.Context, *computepb.DeleteGlobalVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetGlobalVmExtensionPolicyRequest, ...gax.CallOption) (*computepb.GlobalVmExtensionPolicy, error)
+	Insert(context.Context, *computepb.InsertGlobalVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
+	List(context.Context, *computepb.ListGlobalVmExtensionPoliciesRequest, ...gax.CallOption) *GlobalVmExtensionPolicyIterator
+	Update(context.Context, *computepb.UpdateGlobalVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // GlobalVmExtensionPoliciesClient is a client for interacting with Google Compute Engine API.
@@ -127,9 +157,34 @@ func (c *GlobalVmExtensionPoliciesClient) AggregatedList(ctx context.Context, re
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
+// Delete purge scoped resources (zonal policies) from a global VM extension
+// policy, and then delete the global VM extension policy. Purge of the scoped
+// resources is a pre-condition of the global VM extension policy deletion.
+// The deletion of the global VM extension policy happens after the purge
+// rollout is done, so it’s not a part of the LRO. It’s an automatic process
+// that triggers in the backend.
+func (c *GlobalVmExtensionPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Delete(ctx, req, opts...)
+}
+
 // Get gets details of a global VM extension policy.
 func (c *GlobalVmExtensionPoliciesClient) Get(ctx context.Context, req *computepb.GetGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*computepb.GlobalVmExtensionPolicy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// Insert creates a new project level GlobalVmExtensionPolicy.
+func (c *GlobalVmExtensionPoliciesClient) Insert(ctx context.Context, req *computepb.InsertGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Insert(ctx, req, opts...)
+}
+
+// List lists global VM extension policies.
+func (c *GlobalVmExtensionPoliciesClient) List(ctx context.Context, req *computepb.ListGlobalVmExtensionPoliciesRequest, opts ...gax.CallOption) *GlobalVmExtensionPolicyIterator {
+	return c.internalClient.List(ctx, req, opts...)
+}
+
+// Update updates a global VM extension policy.
+func (c *GlobalVmExtensionPoliciesClient) Update(ctx context.Context, req *computepb.UpdateGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Update(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -139,6 +194,9 @@ type globalVmExtensionPoliciesRESTClient struct {
 
 	// The http client.
 	httpClient *http.Client
+
+	// operationClient is used to call the operation-specific management service.
+	operationClient *GlobalOperationsClient
 
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
@@ -167,6 +225,16 @@ func NewGlobalVmExtensionPoliciesRESTClient(ctx context.Context, opts ...option.
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &GlobalVmExtensionPoliciesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -199,6 +267,9 @@ func (c *globalVmExtensionPoliciesRESTClient) setGoogleClientInfo(keyval ...stri
 func (c *globalVmExtensionPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -312,6 +383,77 @@ func (c *globalVmExtensionPoliciesRESTClient) AggregatedList(ctx context.Context
 	return it
 }
 
+// Delete purge scoped resources (zonal policies) from a global VM extension
+// policy, and then delete the global VM extension policy. Purge of the scoped
+// resources is a pre-condition of the global VM extension policy deletion.
+// The deletion of the global VM extension policy happens after the purge
+// rollout is done, so it’s not a part of the LRO. It’s an automatic process
+// that triggers in the backend.
+func (c *globalVmExtensionPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalVmExtensionPolicyRolloutOperationRolloutInputResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/vmExtensionPolicies/%v/delete", req.GetProject(), req.GetGlobalVmExtensionPolicy())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "global_vm_extension_policy", url.QueryEscape(req.GetGlobalVmExtensionPolicy()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Delete")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
 // Get gets details of a global VM extension policy.
 func (c *globalVmExtensionPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*computepb.GlobalVmExtensionPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -355,4 +497,222 @@ func (c *globalVmExtensionPoliciesRESTClient) Get(ctx context.Context, req *comp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// Insert creates a new project level GlobalVmExtensionPolicy.
+func (c *globalVmExtensionPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalVmExtensionPolicyResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/vmExtensionPolicies", req.GetProject())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Insert")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// List lists global VM extension policies.
+func (c *globalVmExtensionPoliciesRESTClient) List(ctx context.Context, req *computepb.ListGlobalVmExtensionPoliciesRequest, opts ...gax.CallOption) *GlobalVmExtensionPolicyIterator {
+	it := &GlobalVmExtensionPolicyIterator{}
+	req = proto.Clone(req).(*computepb.ListGlobalVmExtensionPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.GlobalVmExtensionPolicy, string, error) {
+		resp := &computepb.GlobalVmExtensionPolicyList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/vmExtensionPolicies", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "List")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// Update updates a global VM extension policy.
+func (c *globalVmExtensionPoliciesRESTClient) Update(ctx context.Context, req *computepb.UpdateGlobalVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalVmExtensionPolicyResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/vmExtensionPolicies/%v", req.GetProject(), req.GetGlobalVmExtensionPolicy())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "global_vm_extension_policy", url.QueryEscape(req.GetGlobalVmExtensionPolicy()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Update")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }

@@ -99,6 +99,12 @@ func (it *CommitmentsScopedListPairIterator) All() iter.Seq2[CommitmentsScopedLi
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *CrossSiteNetworkIterator) All() iter.Seq2[*computepb.CrossSiteNetwork, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *DiskIterator) All() iter.Seq2[*computepb.Disk, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -160,6 +166,18 @@ func (it *ForwardingRuleIterator) All() iter.Seq2[*computepb.ForwardingRule, err
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ForwardingRulesScopedListPairIterator) All() iter.Seq2[ForwardingRulesScopedListPair, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FutureReservationIterator) All() iter.Seq2[*computepb.FutureReservation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FutureReservationsScopedListPairIterator) All() iter.Seq2[FutureReservationsScopedListPair, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -790,6 +808,12 @@ func (it *VpnTunnelIterator) All() iter.Seq2[*computepb.VpnTunnel, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *VpnTunnelsScopedListPairIterator) All() iter.Seq2[VpnTunnelsScopedListPair, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WireGroupIterator) All() iter.Seq2[*computepb.WireGroup, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

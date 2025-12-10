@@ -132,7 +132,10 @@ func (c *MachineTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of machine types.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *MachineTypesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListMachineTypesRequest, opts ...gax.CallOption) *MachineTypesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -142,7 +145,8 @@ func (c *MachineTypesClient) Get(ctx context.Context, req *computepb.GetMachineT
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of machine types available to the specified project.
+// List retrieves a list of machine types available to the specified
+// project.
 func (c *MachineTypesClient) List(ctx context.Context, req *computepb.ListMachineTypesRequest, opts ...gax.CallOption) *MachineTypeIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -224,7 +228,10 @@ func (c *machineTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of machine types.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListMachineTypesRequest, opts ...gax.CallOption) *MachineTypesScopedListPairIterator {
 	it := &MachineTypesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListMachineTypesRequest)
@@ -368,7 +375,8 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 	return resp, nil
 }
 
-// List retrieves a list of machine types available to the specified project.
+// List retrieves a list of machine types available to the specified
+// project.
 func (c *machineTypesRESTClient) List(ctx context.Context, req *computepb.ListMachineTypesRequest, opts ...gax.CallOption) *MachineTypeIterator {
 	it := &MachineTypeIterator{}
 	req = proto.Clone(req).(*computepb.ListMachineTypesRequest)
