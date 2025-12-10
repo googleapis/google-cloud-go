@@ -29,7 +29,7 @@ import (
 type ParallelUploadConfig struct {
 	// MinSize is the minimum size of an object in bytes to use PCU.
 	// If an object's size is less than this value, a simple upload is performed.
-	// If this is not set, a default of 150 MiB will be used.
+	// If this is not set, a default of 64 MiB will be used.
 	// To enable PCU for all uploads regardless of size, set this to 0.
 	MinSize *int64
 
@@ -127,7 +127,7 @@ const (
 func (c *ParallelUploadConfig) defaults() {
 	if c.MinSize == nil {
 		c.MinSize = new(int64)
-		*c.MinSize = int64(128 * 1024 * 1024) // 128 MiB
+		*c.MinSize = int64(64 * 1024 * 1024) // 64 MiB
 	}
 	if c.PartSize == 0 {
 		c.PartSize = defaultPartSize
