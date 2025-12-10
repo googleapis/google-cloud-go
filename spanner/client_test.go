@@ -6319,6 +6319,26 @@ func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
 	}
+	// Verify that the BeginTransaction requests also contain the transaction tag.
+	// This is required when using multiplexed sessions.
+	for _, index := range []int{1, 3, 5} {
+		beginReq, ok := requests[index].(*sppb.BeginTransactionRequest)
+		if !ok {
+			t.Fatalf("%d is not a BeginTransactionRequest", index)
+		}
+		if beginReq.RequestOptions == nil {
+			t.Fatalf("%d has no RequestOptions", index)
+		}
+		var want string
+		if index < 5 {
+			want = "test-tag1"
+		} else {
+			want = "test-tag2"
+		}
+		if g, w := beginReq.RequestOptions.TransactionTag, want; g != w {
+			t.Fatalf("%d: transaction tag mismatch\n Got: %v\nWant: %v", index, g, w)
+		}
+	}
 }
 
 func TestClient_ReadWriteTransactionWithTag_SessionNotFound(t *testing.T) {
