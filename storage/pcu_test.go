@@ -30,24 +30,17 @@ func TestPartCleanupStrategy_String(t *testing.T) {
 		{CleanupAlways, "always"},
 		{CleanupOnSuccess, "on_success"},
 		{CleanupNever, "never"},
+		{PartCleanupStrategy(99), "PartCleanupStrategy(99)"}, // Test out-of-bounds
+		{PartCleanupStrategy(-1), "PartCleanupStrategy(-1)"}, // Test another out-of-bounds
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.want, func(t *testing.T) {
+		t.Run(fmt.Sprintf("Strategy_%d", tt.strategy), func(t *testing.T) {
 			if got := tt.strategy.String(); got != tt.want {
 				t.Errorf("PartCleanupStrategy.String() = %q, want %q", got, tt.want)
 			}
 		})
 	}
-	t.Run("out of bounds", func(t *testing.T) {
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("Expected a panic for out-of-bounds strategy, but got none")
-			}
-		}()
-		// This should panic because the index 99 is out of bounds.
-		_ = PartCleanupStrategy(99).String()
-	})
 }
 
 func TestDefaultNamingStrategy_NewPartName(t *testing.T) {

@@ -38,8 +38,8 @@ type ParallelUploadConfig struct {
 	PartSize int64
 
 	// NumWorkers is the number of goroutines to use for uploading parts in parallel.
-	// Defaults to 4.
-// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
+	// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
+	NumWorkers int
 
 	// BufferPoolSize is the number of PartSize buffers to pool.
 	// Defaults to NumWorkers + 1.
@@ -112,11 +112,9 @@ type PartNamingStrategy interface {
 // DefaultNamingStrategy provides a default implementation for naming temporary parts.
 type DefaultNamingStrategy struct{}
 
-var randSrc = rand.New(rand.NewSource(time.Now().UnixNano()))
-
 // NewPartName creates a unique name for a temporary part to avoid hotspotting.
 func (d *DefaultNamingStrategy) NewPartName(bucket, prefix, finalName string, partNumber int) string {
-	rnd := randSrc.Uint64()
+	rnd := rand.Uint64()
 	return path.Join(prefix, fmt.Sprintf("%s-part-%d-%x", finalName, partNumber, rnd))
 }
 
