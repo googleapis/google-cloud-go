@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.110.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -175,7 +175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.19.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -1615,7 +1615,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.50.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -2606,7 +2606,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: firestore
     version: 1.20.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/firestore/admin/v1
         service_config: firestore_v1.yaml
@@ -4437,7 +4437,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.3.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/pubsub/v1
         service_config: pubsub_v1.yaml
@@ -4776,7 +4776,7 @@ libraries:
     tag_format: v{version}
   - id: run
     version: 1.12.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/cloud/run/v2
         service_config: run_v2.yaml
@@ -5728,7 +5728,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storage
     version: 1.58.0
-    last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/storage/control/v2
         service_config: storage_v2.yaml

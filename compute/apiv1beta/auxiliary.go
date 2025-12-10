@@ -1456,6 +1456,53 @@ func (it *FutureReservationsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// GlobalVmExtensionPolicyIterator manages a stream of *computepb.GlobalVmExtensionPolicy.
+type GlobalVmExtensionPolicyIterator struct {
+	items    []*computepb.GlobalVmExtensionPolicy
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.GlobalVmExtensionPolicy, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *GlobalVmExtensionPolicyIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *GlobalVmExtensionPolicyIterator) Next() (*computepb.GlobalVmExtensionPolicy, error) {
+	var item *computepb.GlobalVmExtensionPolicy
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *GlobalVmExtensionPolicyIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *GlobalVmExtensionPolicyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // HealthAggregationPoliciesScopedListPair is a holder type for string/*computepb.HealthAggregationPoliciesScopedList map entries
 type HealthAggregationPoliciesScopedListPair struct {
 	Key   string
@@ -4873,6 +4920,100 @@ func (it *ResourcePolicyIterator) bufLen() int {
 }
 
 func (it *ResourcePolicyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// RolloutIterator manages a stream of *computepb.Rollout.
+type RolloutIterator struct {
+	items    []*computepb.Rollout
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Rollout, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RolloutIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RolloutIterator) Next() (*computepb.Rollout, error) {
+	var item *computepb.Rollout
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RolloutIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RolloutIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// RolloutPlanIterator manages a stream of *computepb.RolloutPlan.
+type RolloutPlanIterator struct {
+	items    []*computepb.RolloutPlan
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.RolloutPlan, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RolloutPlanIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RolloutPlanIterator) Next() (*computepb.RolloutPlan, error) {
+	var item *computepb.RolloutPlan
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RolloutPlanIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RolloutPlanIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
