@@ -92,7 +92,16 @@ const (
 )
 
 func (s PartCleanupStrategy) String() string {
-	return [...]string{"always", "on_success", "never"}[s]
+	switch s {
+	case CleanupAlways:
+		return "always"
+	case CleanupOnSuccess:
+		return "on_success"
+	case CleanupNever:
+		return "never"
+	default:
+		return fmt.Sprintf("PartCleanupStrategy(%d)", s)
+	}
 }
 
 // PartNamingStrategy interface for generating temporary object names.
