@@ -26,6 +26,9 @@ import (
 
 // ParallelUploadConfig holds configuration for Parallel Composite Uploads.
 // Setting this config on a Writer enables PCU.
+//
+// **Note:** This feature is currently experimental and its API surface may change
+// in future releases. It is not yet recommended for production use.
 type ParallelUploadConfig struct {
 	// MinSize is the minimum size of an object in bytes to use PCU.
 	// If an object's size is less than this value, a simple upload is performed.
@@ -65,6 +68,7 @@ type ParallelUploadConfig struct {
 	MetadataDecorator PartMetadataDecorator
 }
 
+// PartRetryPolicy defines the retry behavior for uploading parts.
 type PartRetryPolicy struct {
 	// MaxRetries is the maximum number of retries for uploading a part.
 	// Defaults to 3.
