@@ -30,8 +30,8 @@ func TestPartCleanupStrategy_String(t *testing.T) {
 		{CleanupAlways, "always"},
 		{CleanupOnSuccess, "on_success"},
 		{CleanupNever, "never"},
-		{PartCleanupStrategy(99), "PartCleanupStrategy(99)"}, // Test out-of-bounds
-		{PartCleanupStrategy(-1), "PartCleanupStrategy(-1)"}, // Test another out-of-bounds
+		{PartCleanupStrategy(99), "PartCleanupStrategy(99)"},
+		{PartCleanupStrategy(-1), "PartCleanupStrategy(-1)"},
 	}
 
 	for _, tt := range tests {
@@ -56,16 +56,22 @@ func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
 		t.Errorf("NewPartName() should start with the prefix %q, but got %q", prefix, partName)
 	}
 
-	var parsedPartNum int
+	expectedFormat := prefix + "%x-" + finalName + "-part-%d"
 	var randSuffix uint64
-	expectedFormat := prefix + finalName + "-part-%d-%x"
-	_, err := fmt.Sscanf(partName, expectedFormat, &parsedPartNum, &randSuffix)
+	var parsedPartNum int
+
+	_, err := fmt.Sscanf(partName, expectedFormat, &randSuffix, &parsedPartNum)
 	if err != nil {
-		t.Errorf("NewPartName() returned a name with an unexpected format. Got %q, want format %q. Error: %v", partName, expectedFormat, err)
+		t.Errorf("NewPartName() returned a name with an unexpected format. Got %q, want format ~%q. Error: %v", partName, prefix+"<hex>-"+finalName+"-part-<int>", err)
+		return // Return to avoid further checks if parsing failed
 	}
 
 	if parsedPartNum != partNumber {
 		t.Errorf("NewPartName() did not include the correct part number. Got %d, want %d", parsedPartNum, partNumber)
+	}
+
+	if randSuffix == 0 {
+		t.Errorf("NewPartName() did not include a non-zero random hex part. Got %x", randSuffix)
 	}
 }
 

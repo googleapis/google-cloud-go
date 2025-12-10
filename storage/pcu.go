@@ -115,7 +115,7 @@ type DefaultNamingStrategy struct{}
 // NewPartName creates a unique name for a temporary part to avoid hotspotting.
 func (d *DefaultNamingStrategy) NewPartName(bucket, prefix, finalName string, partNumber int) string {
 	rnd := rand.Uint64()
-	return path.Join(prefix, fmt.Sprintf("%s-part-%d-%x", finalName, partNumber, rnd))
+	return path.Join(prefix, fmt.Sprintf("%x-%s-part-%d", rnd, finalName, partNumber))
 }
 
 // PartMetadataDecorator interface for modifying temporary object metadata.
