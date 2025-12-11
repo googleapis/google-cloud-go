@@ -1,6 +1,21 @@
 # Changes
 
 
+## [1.111.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.111.0) (2025-12-11)
+
+### Features
+
+* add streaming function call argument API changes ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
+### Bug Fixes
+
+* fix issue when using UrlContext tool ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
+### Documentation
+
+* A comment for field `args` in message `.google.cloud.aiplatform.v1.FunctionCall` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `name` in message `.google.cloud.aiplatform.v1.FunctionCall` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
 ## [1.110.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.110.0) (2025-12-04)
 
 ### Features

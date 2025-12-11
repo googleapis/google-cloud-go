@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.110.0
+    version: 1.111.0
     last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/cloud/aiplatform/v1
@@ -1614,7 +1614,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.50.0
+    version: 1.51.0
     last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/cloud/compute/v1
@@ -3327,7 +3327,7 @@ libraries:
       - internal/generated/snippets/lustre/
     tag_format: '{id}/v{version}'
   - id: maintenance
-    version: 0.1.2
+    version: 0.2.0
     last_generated_commit: 534adc56f58b36a6a3e4b5b1cb7f9ee25a8e8a25
     apis:
       - path: google/cloud/maintenance/api/v1beta
@@ -4775,7 +4775,7 @@ libraries:
       - internal/version
     tag_format: v{version}
   - id: run
-    version: 1.12.1
+    version: 1.13.0
     last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/cloud/run/v2
