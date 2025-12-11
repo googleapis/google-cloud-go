@@ -1,5 +1,12 @@
 # Changes
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/maintenance%2Fv0.2.0) (2025-12-11)
+
+### Features
+
+* add Gemini TTS Multispeaker API fields (#12925) ([1364374](https://github.com/googleapis/google-cloud-go/commit/136437493967c63802f44281e88dd5f973ff3f50))
+* add new clients (#13448) ([8eba8b8](https://github.com/googleapis/google-cloud-go/commit/8eba8b822874bebf56986c814fa88af14760de82))
+
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/maintenance/v0.1.1...maintenance/v0.1.2) (2025-09-18)
 
 
