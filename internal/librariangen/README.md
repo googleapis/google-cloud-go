@@ -138,16 +138,10 @@ Instructions
 6.  Run:
 
     ```
-    go work use ./[*library*]
-    ```
-
-7.  Run:
-
-    ```
     cd [*service*] && go build ./...
     ```
 
-8.  Run:
+7.  Run:
 
     ```
     git add -A && git status
@@ -155,13 +149,13 @@ Instructions
 
     Review the list of added files.
 
-9.  Run:
+8.  Run:
 
     ```
     git commit -m "feat([*service*]): add new clients" -m "PiperOrigin-RevId: [*revid?791799161*]"
     ```
 
-10. Open a PR with your change, make sure tests are passing, and merge.
+9. Open a PR with your change, make sure tests are passing, and merge.
 
 Here is another simpler example issue and PR: b/444451847,
 [#13238](https://github.com/googleapis/google-cloud-go/pull/13238)

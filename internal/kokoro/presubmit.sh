@@ -55,10 +55,10 @@ runPresubmitTests() {
   fi
 
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    GOWORK=off go test -race -v -timeout 15m -short ./... 2>&1 |
+    go test -race -v -timeout 15m -short ./... 2>&1 |
       tee sponge_log.log
   else
-    GOWORK=off go test -race -v -timeout 45m ./... 2>&1 |
+    go test -race -v -timeout 45m ./... 2>&1 |
       tee sponge_log.log
   fi
 
@@ -73,7 +73,7 @@ runPresubmitTests() {
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
   if [[ $PWD != *"/internal/"* ]]; then
-    GOWORK=off go build ./...
+    go build ./...
   fi
   exit_code=$(($exit_code + $?))
 }
