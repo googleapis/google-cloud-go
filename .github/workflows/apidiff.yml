@@ -23,14 +23,12 @@ jobs:
     - uses: actions/setup-go@v5
       with:
         go-version: '1.25.x'
-    - name: "download modules"
-      run: go mod download
     - name: Get changed directories
       id: changed_dirs
       # Ignore changes to the internal and root directories.
       # Ignore added files with --diff-filter=a.
       run: |
-        dirs=$(go run ./internal/actions/cmd/changefinder -q --diff-filter=a)
+        dirs=$(cd internal/actions; go run ./cmd/changefinder -q --diff-filter=a --dir=${{GITHUB_WORKSPACE}})
         if [ -z "$dirs" ]
         then
           echo "skip=1" >> $GITHUB_OUTPUT
