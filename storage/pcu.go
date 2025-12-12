@@ -22,10 +22,12 @@ import (
 	"runtime"
 	"sync"
 	"time"
+
+	gax "github.com/googleapis/gax-go/v2"
 )
 
 // ParallelUploadConfig holds configuration for Parallel Composite Uploads.
-// Setting this config on a Writer enables PCU.
+// Setting this config and EnableParallelUpload flag on Writer enables PCU.
 //
 // **Note:** This feature is currently experimental and its API surface may change
 // in future releases. It is not yet recommended for production use.
@@ -52,9 +54,9 @@ type ParallelUploadConfig struct {
 	// Defaults to "gcs-go-sdk-pcu-tmp/".
 	TmpObjectPrefix string
 
-	// RetryPolicy defines the retry behavior for uploading parts.
-	// Defaults to PartRetryPolicy with MaxRetries=3, BaseDelay=100ms, MaxDelay=5s.
-	RetryPolicy *PartRetryPolicy
+	// RetryOptions defines the retry behavior for uploading parts.
+	// Defaults to a sensible policy for part uploads (e.g., max 3 retries).
+	RetryOptions []RetryOption
 
 	// CleanupStrategy dictates how temporary parts are cleaned up.
 	// Defaults to CleanupAlways.
@@ -66,21 +68,6 @@ type ParallelUploadConfig struct {
 
 	// MetadataDecorator allows adding custom metadata to temporary part objects.
 	MetadataDecorator PartMetadataDecorator
-}
-
-// PartRetryPolicy defines the retry behavior for uploading parts.
-type PartRetryPolicy struct {
-	// MaxRetries is the maximum number of retries for uploading a part.
-	// Defaults to 3.
-	MaxRetries int
-
-	// BaseDelay is the initial delay before retrying a failed part upload.
-	// Defaults to 100 milliseconds.
-	BaseDelay time.Duration
-
-	// MaxDelay is the maximum delay between retries.
-	// Defaults to 5 seconds.
-	MaxDelay time.Duration
 }
 
 // PartCleanupStrategy defines when temporary objects are deleted.
@@ -129,16 +116,20 @@ type PartMetadataDecorator interface {
 
 const (
 	defaultPartSize        = 16 * 1024 * 1024 // 16 MiB
+	defaultMinSize         = 64 * 1024 * 1024 // 64 MiB
 	baseWorkers            = 4
 	maxWorkers             = 16
 	defaultTmpObjectPrefix = "gcs-go-sdk-pcu-tmp/"
 	maxComposeComponents   = 32
+	defaultMaxRetries      = 3
+	defaultBaseDelay       = 100 * time.Millisecond
+	defaultMaxDelay        = 5 * time.Second
 )
 
 func (c *ParallelUploadConfig) defaults() {
 	if c.MinSize == nil {
 		c.MinSize = new(int64)
-		*c.MinSize = int64(64 * 1024 * 1024) // 64 MiB
+		*c.MinSize = defaultMinSize
 	}
 	if c.PartSize == 0 {
 		c.PartSize = defaultPartSize
@@ -155,11 +146,13 @@ func (c *ParallelUploadConfig) defaults() {
 	if c.TmpObjectPrefix == "" {
 		c.TmpObjectPrefix = defaultTmpObjectPrefix
 	}
-	if c.RetryPolicy == nil {
-		c.RetryPolicy = &PartRetryPolicy{
-			MaxRetries: 3,
-			BaseDelay:  100 * time.Millisecond,
-			MaxDelay:   5 * time.Second,
+	if c.RetryOptions == nil {
+		c.RetryOptions = []RetryOption{
+			WithMaxAttempts(defaultMaxRetries),
+			WithBackoff(gax.Backoff{
+				Initial: defaultBaseDelay,
+				Max:     defaultMaxDelay,
+			}),
 		}
 	}
 	if c.CleanupStrategy == 0 {

@@ -20,6 +20,10 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	gax "github.com/googleapis/gax-go/v2"
 )
 
 func TestPartCleanupStrategy_String(t *testing.T) {
@@ -76,91 +80,85 @@ func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
 }
 
 func TestParallelUploadConfig_defaults(t *testing.T) {
-	t.Run("all defaults", func(t *testing.T) {
-		cfg := &ParallelUploadConfig{}
-		cfg.defaults()
 
-		if *cfg.MinSize != 64*1024*1024 {
-			t.Errorf("MinSize default is incorrect. got %d, want %d", *cfg.MinSize, 128*1024*1024)
-		}
-		if cfg.PartSize != defaultPartSize {
-			t.Errorf("PartSize default is incorrect. got %d, want %d", cfg.PartSize, defaultPartSize)
-		}
-		expectedWorkers := min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
-		if cfg.NumWorkers != expectedWorkers {
-			t.Errorf("NumWorkers default is incorrect. got %d, want %d", cfg.NumWorkers, expectedWorkers)
-		}
-		if cfg.BufferPoolSize != expectedWorkers+1 {
-			t.Errorf("BufferPoolSize default is incorrect. got %d, want %d", cfg.BufferPoolSize, expectedWorkers+1)
-		}
-		if cfg.TmpObjectPrefix != defaultTmpObjectPrefix {
-			t.Errorf("TmpObjectPrefix default is incorrect. got %q, want %q", cfg.TmpObjectPrefix, defaultTmpObjectPrefix)
-		}
-		if cfg.RetryPolicy.MaxRetries != 3 {
-			t.Errorf("RetryPolicy.MaxRetries default is incorrect. got %d, want %d", cfg.RetryPolicy.MaxRetries, 3)
-		}
-		if cfg.RetryPolicy.BaseDelay != 100*time.Millisecond {
-			t.Errorf("RetryPolicy.BaseDelay default is incorrect. got %v, want %v", cfg.RetryPolicy.BaseDelay, 100*time.Millisecond)
-		}
-		if cfg.RetryPolicy.MaxDelay != 5*time.Second {
-			t.Errorf("RetryPolicy.MaxDelay default is incorrect. got %v, want %v", cfg.RetryPolicy.MaxDelay, 5*time.Second)
-		}
-		if cfg.CleanupStrategy != CleanupAlways {
-			t.Errorf("CleanupStrategy default is incorrect. got %v, want %v", cfg.CleanupStrategy, CleanupAlways)
-		}
-		if _, ok := cfg.NamingStrategy.(*DefaultNamingStrategy); !ok {
-			t.Errorf("NamingStrategy default is incorrect. got %T, want %T", cfg.NamingStrategy, &DefaultNamingStrategy{})
-		}
-	})
+	// For the "all defaults" test case.
+	expectedWorkers := min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
+	defaultMinSizeVal := int64(defaultMinSize)
+	userMinSizeVal := int64(0)
 
-	t.Run("no overrides", func(t *testing.T) {
-		minSize := int64(0)
-		cfg := &ParallelUploadConfig{
-			MinSize:         &minSize,
-			PartSize:        1024,
-			NumWorkers:      10,
-			BufferPoolSize:  12,
-			TmpObjectPrefix: "my-prefix/",
-			RetryPolicy: &PartRetryPolicy{
-				MaxRetries: 5,
-				BaseDelay:  200 * time.Millisecond,
-				MaxDelay:   10 * time.Second,
+	tests := []struct {
+		name string
+		in   *ParallelUploadConfig
+		want *ParallelUploadConfig
+	}{
+		{
+			name: "all defaults",
+			in:   &ParallelUploadConfig{},
+			want: &ParallelUploadConfig{
+				MinSize:         &defaultMinSizeVal,
+				PartSize:        defaultPartSize,
+				NumWorkers:      expectedWorkers,
+				BufferPoolSize:  expectedWorkers + 1,
+				TmpObjectPrefix: defaultTmpObjectPrefix,
+				RetryOptions: []RetryOption{
+					WithMaxAttempts(defaultMaxRetries),
+					WithBackoff(gax.Backoff{
+						Initial: defaultBaseDelay,
+						Max:     defaultMaxDelay,
+					}),
+				},
+				CleanupStrategy: CleanupAlways,
+				NamingStrategy:  &DefaultNamingStrategy{},
 			},
-			CleanupStrategy: CleanupOnSuccess,
-			NamingStrategy:  &testNamingStrategy{},
-		}
+		},
+		{
+			name: "user-provided values are respected",
+			in: &ParallelUploadConfig{
+				MinSize:         &userMinSizeVal,
+				PartSize:        int64(1024),
+				NumWorkers:      10,
+				BufferPoolSize:  12,
+				TmpObjectPrefix: "my-prefix/",
+				RetryOptions: []RetryOption{
+					WithMaxAttempts(5),
+					WithBackoff(gax.Backoff{
+						Initial: 200 * time.Millisecond,
+						Max:     10 * time.Second,
+					}),
+				},
+				CleanupStrategy: CleanupOnSuccess,
+				NamingStrategy:  &testNamingStrategy{},
+			},
+			want: &ParallelUploadConfig{
+				MinSize:         &userMinSizeVal,
+				PartSize:        int64(1024),
+				NumWorkers:      10,
+				BufferPoolSize:  12,
+				TmpObjectPrefix: "my-prefix/",
+				RetryOptions: []RetryOption{
+					WithMaxAttempts(5),
+					WithBackoff(gax.Backoff{
+						Initial: 200 * time.Millisecond,
+						Max:     10 * time.Second,
+					}),
+				},
+				CleanupStrategy: CleanupOnSuccess,
+				NamingStrategy:  &testNamingStrategy{},
+			},
+		},
+	}
 
-		// Create a copy to compare against after calling defaults()
-		originalCfg := *cfg
-		originalRetryPolicy := *cfg.RetryPolicy
-
-		cfg.defaults()
-
-		if *cfg.MinSize != *originalCfg.MinSize {
-			t.Errorf("MinSize should not be overridden. got %d, want %d", *cfg.MinSize, *originalCfg.MinSize)
-		}
-		if cfg.PartSize != originalCfg.PartSize {
-			t.Errorf("PartSize should not be overridden. got %d, want %d", cfg.PartSize, originalCfg.PartSize)
-		}
-		if cfg.NumWorkers != originalCfg.NumWorkers {
-			t.Errorf("NumWorkers should not be overridden. got %d, want %d", cfg.NumWorkers, originalCfg.NumWorkers)
-		}
-		if cfg.BufferPoolSize != originalCfg.BufferPoolSize {
-			t.Errorf("BufferPoolSize should not be overridden. got %d, want %d", cfg.BufferPoolSize, originalCfg.BufferPoolSize)
-		}
-		if cfg.TmpObjectPrefix != originalCfg.TmpObjectPrefix {
-			t.Errorf("TmpObjectPrefix should not be overridden. got %q, want %q", cfg.TmpObjectPrefix, originalCfg.TmpObjectPrefix)
-		}
-		if cfg.RetryPolicy.MaxRetries != originalRetryPolicy.MaxRetries {
-			t.Errorf("RetryPolicy should not be overridden. got %v, want %v", cfg.RetryPolicy, originalRetryPolicy)
-		}
-		if cfg.CleanupStrategy != originalCfg.CleanupStrategy {
-			t.Errorf("CleanupStrategy should not be overridden. got %v, want %v", cfg.CleanupStrategy, originalCfg.CleanupStrategy)
-		}
-		if _, ok := cfg.NamingStrategy.(*testNamingStrategy); !ok {
-			t.Errorf("NamingStrategy should not be overridden. got %T, want %T", cfg.NamingStrategy, &testNamingStrategy{})
-		}
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := tt.in
+			cfg.defaults()
+			if diff := cmp.Diff(tt.want, cfg,
+				cmp.AllowUnexported(DefaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
+				cmpopts.IgnoreUnexported(gax.Backoff{}, ObjectAttrs{})); diff != "" {
+				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
 }
 
 // testNamingStrategy is a mock implementation of PartNamingStrategy for testing.
