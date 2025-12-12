@@ -23,6 +23,8 @@ jobs:
     - uses: actions/setup-go@v5
       with:
         go-version: '1.25.x'
+    - name: "download modules"
+      run: go mod download
     - name: Get changed directories
       id: changed_dirs
       # Ignore changes to the internal and root directories.
