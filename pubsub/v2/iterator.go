@@ -62,6 +62,12 @@ var (
 
 	// The total amount of time to retry acks/modacks with exactly once delivery enabled subscriptions.
 	exactlyOnceDeliveryRetryDeadline = 600 * time.Second
+
+	// specifies the protocol to communicate with the Pub/Sub servers for streaming pull.
+	// this value cannot be set by users, and should be monotonically increasing.
+	clientPingInterval        = time.Duration(30 * time.Second)
+	serverMonitorInterval     = time.Duration(10 * time.Second)
+	serverPingTimeoutDuration = time.Duration(15 * time.Second)
 )
 
 type messageIterator struct {
@@ -70,18 +76,24 @@ type messageIterator struct {
 	po     *pullOptions
 	ps     *pullStream
 	// this is called an admin client, but also contains the data plane operations we wrap.
-	subc          *vkit.SubscriptionAdminClient
-	projectID     string
-	subID         string
-	subName       string
-	kaTick        <-chan time.Time // keep-alive (deadline extensions)
-	ackTicker     *time.Ticker     // message acks
-	nackTicker    *time.Ticker     // message nacks
-	pingTicker    *time.Ticker     //  sends to the stream to keep it open
-	receiptTicker *time.Ticker     // sends receipt modacks
-	failed        chan struct{}    // closed on stream error
-	drained       chan struct{}    // closed when stopped && no more pending messages
-	wg            sync.WaitGroup
+	subc                *vkit.SubscriptionAdminClient
+	projectID           string
+	subID               string
+	subName             string
+	kaTick              <-chan time.Time // keep-alive (deadline extensions)
+	ackTicker           *time.Ticker     // message acks
+	nackTicker          *time.Ticker     // message nacks
+	pingTicker          *time.Ticker     // ping stream to keep it open
+	serverMonitorTicker *time.Ticker     // check server is still active, send Close otherwise
+	receiptTicker       *time.Ticker     // sends receipt modacks
+	failed              chan struct{}    // closed on stream error
+	drained             chan struct{}    // closed when stopped && no more pending messages
+	wg                  sync.WaitGroup
+
+	// related to stream keep alives when ProtocolVersion >= 1
+	pingMu             sync.RWMutex
+	lastServerResponse time.Time
+	lastClientPing     time.Time
 
 	// This mutex guards the structs related to lease extension.
 	mu          sync.Mutex
@@ -93,6 +105,7 @@ type messageIterator struct {
 	// message arrives, we'll record now+MaxExtension in this table; whenever we have a chance
 	// to update ack deadlines (via modack), we'll consult this table and only include IDs
 	// that are not beyond their deadline.
+	// this is unrelated to the enableKeepalive value below, which handles stream keep alives.
 	keepAliveDeadlines map[string]time.Time
 	pendingAcks        map[string]*AckResult
 	pendingNacks       map[string]*AckResult
@@ -139,7 +152,6 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	// Ack promptly so users don't lose work if client crashes.
 	ackTicker := time.NewTicker(100 * time.Millisecond)
 	nackTicker := time.NewTicker(100 * time.Millisecond)
-	pingTicker := time.NewTicker(30 * time.Second)
 	receiptTicker := time.NewTicker(100 * time.Millisecond)
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
@@ -147,34 +159,37 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	projectID, subID := parseResourceName(subName)
 
 	it := &messageIterator{
-		ctx:                cctx,
-		cancel:             cancel,
-		ps:                 ps,
-		po:                 po,
-		subc:               subc,
-		projectID:          projectID,
-		subID:              subID,
-		subName:            subName,
-		kaTick:             time.After(keepAlivePeriod),
-		ackTicker:          ackTicker,
-		nackTicker:         nackTicker,
-		pingTicker:         pingTicker,
-		receiptTicker:      receiptTicker,
-		failed:             make(chan struct{}),
-		drained:            make(chan struct{}),
-		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
-		keepAliveDeadlines: map[string]time.Time{},
-		pendingAcks:        map[string]*AckResult{},
-		pendingNacks:       map[string]*AckResult{},
-		pendingModAcks:     map[string]*AckResult{},
-		pendingReceipts:    map[string]*AckResult{},
+		ctx:                 cctx,
+		cancel:              cancel,
+		ps:                  ps,
+		po:                  po,
+		subc:                subc,
+		projectID:           projectID,
+		subID:               subID,
+		subName:             subName,
+		kaTick:              time.After(keepAlivePeriod),
+		ackTicker:           ackTicker,
+		nackTicker:          nackTicker,
+		pingTicker:          time.NewTicker(clientPingInterval),
+		serverMonitorTicker: time.NewTicker(serverMonitorInterval),
+		receiptTicker:       receiptTicker,
+		failed:              make(chan struct{}),
+		drained:             make(chan struct{}),
+		ackTimeDist:         distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
+		keepAliveDeadlines:  map[string]time.Time{},
+		pendingAcks:         map[string]*AckResult{},
+		pendingNacks:        map[string]*AckResult{},
+		pendingModAcks:      map[string]*AckResult{},
+		pendingReceipts:     map[string]*AckResult{},
+		lastServerResponse:  time.Now(),
+		lastClientPing:      time.Now(),
 	}
 	it.wg.Add(1)
 	go it.sender()
 	return it
 }
 
-// Subscription.receive will call stop on its messageIterator when finished with it.
+// Subscriber.receive will call stop on its messageIterator when finished with it.
 // Stop will block until Done has been called on all Messages that have been
 // returned by Next, or until the context with which the messageIterator was created
 // is cancelled or exceeds its deadline.
@@ -245,10 +260,9 @@ func (it *messageIterator) fail(err error) error {
 	return it.err
 }
 
-// receive makes a call to the stream's Recv method, or the Pull RPC, and returns
+// receive makes a call to the stream's Recv method and returns
 // its messages.
-// maxToPull is the maximum number of messages for the Pull RPC.
-func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
+func (it *messageIterator) receive() ([]*Message, error) {
 	it.mu.Lock()
 	ierr := it.err
 	it.mu.Unlock()
@@ -390,11 +404,17 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	return nil, nil
 }
 
+// recvMessages pulls messages from the iterator's underlying pull stream.
+// It must not be called concurrently.
 func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	res, err := it.ps.Recv()
 	if err != nil {
 		return nil, err
 	}
+
+	it.pingMu.Lock()
+	it.lastServerResponse = time.Now()
+	it.pingMu.Unlock()
 
 	// If the new exactly once settings are different than the current settings, update it.
 	it.eoMu.RLock()
@@ -441,6 +461,7 @@ func (it *messageIterator) sender() {
 		sendNacks := false
 		sendModAcks := false
 		sendPing := false
+		checkServer := false
 		sendReceipt := false
 
 		dl := it.ackDeadline()
@@ -480,10 +501,14 @@ func (it *messageIterator) sender() {
 			it.mu.Lock()
 			sendAcks = (len(it.pendingAcks) > 0)
 
+		case <-it.serverMonitorTicker.C:
+			it.mu.Lock()
+			checkServer = true
+
 		case <-it.pingTicker.C:
 			it.mu.Lock()
-			// Ping only if we are processing messages via streaming.
 			sendPing = true
+
 		case <-it.receiptTicker.C:
 			it.mu.Lock()
 			sendReceipt = (len(it.pendingReceipts) > 0)
@@ -520,6 +545,9 @@ func (it *messageIterator) sender() {
 		}
 		if sendPing {
 			it.pingStream()
+		}
+		if checkServer {
+			it.checkServer()
 		}
 		if sendReceipt {
 			it.sendModAck(context.Background(), receipts, dl, true, true)
@@ -867,6 +895,8 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 // network. This matters if it takes a long time to process messages relative to the
 // default ack deadline, and if the messages are small enough so that many can fit
 // into the buffer.
+// This was introduced before protocol versions and thus will not be gated
+// on requiring ProtocolVersion >= 1.
 func (it *messageIterator) pingStream() {
 	spr := &pb.StreamingPullRequest{}
 	it.eoMu.RLock()
@@ -875,7 +905,36 @@ func (it *messageIterator) pingStream() {
 		it.sendNewAckDeadline = false
 	}
 	it.eoMu.RUnlock()
-	it.ps.Send(spr)
+	if err := it.ps.Send(spr); err == nil {
+		it.pingMu.Lock()
+		it.lastClientPing = time.Now()
+		it.pingMu.Unlock()
+	}
+}
+
+func (it *messageIterator) checkServer() {
+	it.pingMu.RLock()
+	lastResponse := it.lastServerResponse
+	lastPing := it.lastClientPing
+	it.pingMu.RUnlock()
+
+	// if the latest ping happened recently (before server ping),
+	// we pass this check.
+	if lastPing.Before(lastResponse) {
+		return
+	}
+
+	// if the lastPing happened within the timeout, we pass this check.
+	if time.Since(lastPing) < serverPingTimeoutDuration {
+		return
+	}
+
+	// Either we haven't send a client ping succesfully recently,
+	// or we haven't received a ping from the server.
+	// In either case, close the stream so it can be reopened.
+	if it.ps != nil {
+		it.ps.Close()
+	}
 }
 
 // calcFieldSizeString returns the number of bytes string fields

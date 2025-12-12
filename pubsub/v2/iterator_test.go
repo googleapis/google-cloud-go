@@ -512,7 +512,7 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 		maxExtensionPeriod:     10 * time.Second,
 	})
 
-	if _, err := iter.receive(10); err != nil {
+	if _, err := iter.receive(); err != nil {
 		t.Fatalf("Got error in recvMessages: %v", err)
 	}
 
@@ -587,7 +587,7 @@ func TestPingStreamAckDeadline(t *testing.T) {
 	}
 	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
 	// Receive one message via the stream to trigger the update to enableExactlyOnceDelivery
-	iter.receive(1)
+	iter.receive()
 	iter.eoMu.RLock()
 	if !iter.enableExactlyOnceDelivery {
 		t.Error("iter.enableExactlyOnceDelivery should be true")
@@ -797,4 +797,38 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			compareCompletedRetryLengths(t, completed, retry, 0, 1)
 		}
 	})
+}
+
+func TestStreamingPullKeepAlive_ServerShutdown(t *testing.T) {
+	// any ping check should result in stream closure
+	serverPingTimeoutDuration = 0 * time.Second
+	// check for server pings more frequently to trigger test faster
+	serverMonitorInterval = 1 * time.Second
+
+	c, srv := newFake(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	_, err := c.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:  fullyQualifiedSubName,
+		Topic: fullyQualifiedTopicName,
+	})
+	if err != nil {
+		t.Errorf("failed to create subscription: %v", err)
+	}
+
+	iter := newMessageIterator(c.SubscriptionAdminClient, fullyQualifiedSubName, &pullOptions{})
+	defer iter.stop()
+
+	go func() {
+		iter.receive()
+	}()
+
+	time.Sleep(3 * time.Second)
+
+	streamsOpened := iter.ps.openCount.Load()
+	if !(streamsOpened >= 2) {
+		t.Fatalf("expected at least 2 streams opened, got %v", streamsOpened)
+	}
 }
