@@ -28,7 +28,8 @@ jobs:
       # Ignore changes to the internal and root directories.
       # Ignore added files with --diff-filter=a.
       run: |
-        dirs=$(cd internal/actions; go run ./cmd/changefinder -q --diff-filter=a --dir=${{GITHUB_WORKSPACE}})
+        echo ${{ github.workspace }}
+        dirs=$(cd internal/actions; go run ./cmd/changefinder -q --diff-filter=a --dir=${{ github.workspace }})
         if [ -z "$dirs" ]
         then
           echo "skip=1" >> $GITHUB_OUTPUT
