@@ -1105,7 +1105,7 @@ func TestIntegration_InsertAndRead(t *testing.T) {
 	if job1.LastStatus() == nil {
 		t.Error("no LastStatus")
 	}
-	job2, err := client.JobFromID(ctx, job1.ID())
+	job2, err := client.JobFromIDLocation(ctx, job1.ID(), job1.Location())
 	if err != nil {
 		t.Fatal(err)
 	}
