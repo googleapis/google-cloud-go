@@ -27,6 +27,7 @@ func TestGetObjectChecksums(t *testing.T) {
 		fullObjectChecksum  func() uint32
 		finishWrite         bool
 		sendCRC32C          bool
+		takeoverWriter      bool
 		disableAutoChecksum bool
 		attrs               *ObjectAttrs
 		want                *storagepb.ObjectChecksums
@@ -73,16 +74,24 @@ func TestGetObjectChecksums(t *testing.T) {
 				Crc32C: proto.Uint32(456),
 			},
 		},
+		// TODO(b/461982277): remove this testcase once checksums for takeover writer is implemented
+		{
+			name:           "takeover writer should return nil",
+			finishWrite:    true,
+			takeoverWriter: true,
+			want:           nil,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := getObjectChecksums(&getObjectChecksumsParams{
+				disableAutoChecksum: tt.disableAutoChecksum,
+				sendCRC32C:          tt.sendCRC32C,
+				objectAttrs:         tt.attrs,
 				fullObjectChecksum:  tt.fullObjectChecksum,
 				finishWrite:         tt.finishWrite,
-				sendCRC32C:          tt.sendCRC32C,
-				disableAutoChecksum: tt.disableAutoChecksum,
-				attrs:               tt.attrs,
+				takeoverWriter:      tt.takeoverWriter,
 			})
 			if !proto.Equal(got, tt.want) {
 				t.Errorf("getObjectChecksums() = %v, want %v", got, tt.want)
