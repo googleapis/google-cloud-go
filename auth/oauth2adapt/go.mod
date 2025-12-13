@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	cloud.google.com/go/auth v0.17.0
 	github.com/google/go-cmp v0.7.0
-	golang.org/x/oauth2 v0.33.0
+	golang.org/x/oauth2 v0.34.0
 )
 
 require (
