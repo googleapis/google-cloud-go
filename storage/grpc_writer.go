@@ -182,7 +182,8 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		appendGen:             params.appendGen,
 		finalizeOnClose:       params.finalizeOnClose,
 
-		buf:              make([]byte, 0, chunkSize),
+		buf:              nil, // Allocated lazily on first buffered write.
+		chunkSize:        chunkSize,
 		writeQuantum:     writeQuantum,
 		lastSegmentStart: lastSegmentStart,
 		sendableUnits:    sendableUnits,
@@ -256,7 +257,8 @@ type gRPCWriter struct {
 	appendGen             int64
 	finalizeOnClose       bool
 
-	buf []byte
+	buf       []byte
+	chunkSize int
 	// A writeQuantum is the largest quantity of data which can be sent to the
 	// service in a single message.
 	writeQuantum     int
@@ -557,8 +559,10 @@ type gRPCWriterCommand interface {
 }
 
 type gRPCWriterCommandWrite struct {
-	p    []byte
-	done chan struct{}
+	p             []byte
+	done          chan struct{}
+	initialOffset int64
+	hasStarted    bool
 }
 
 func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
@@ -568,6 +572,20 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		return nil
 	}
 
+	// Try Zero-Copy send.
+	if len(w.buf) == 0 && (len(c.p) >= w.chunkSize || w.forceOneShot) {
+		done, err := c.attemptZeroCopyWrite(w, cs)
+		if err != nil {
+			return err
+		}
+		if done {
+			return nil
+		}
+	}
+
+	if w.buf == nil {
+		w.buf = make([]byte, 0, w.chunkSize)
+	}
 	wblen := len(w.buf)
 	allKnownBytes := wblen + len(c.p)
 	fullBufs := allKnownBytes / cap(w.buf)
@@ -689,6 +707,63 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 	close(c.done)
 	return nil
+}
+
+func (c *gRPCWriterCommandWrite) attemptZeroCopyWrite(w *gRPCWriter, cs gRPCWriterCommandHandleChans) (bool, error) {
+	// Initialize state on the first attempt of this command.
+	if !c.hasStarted {
+		c.initialOffset = w.bufBaseOffset
+		c.hasStarted = true
+	}
+
+	// Calculate the offset delta. If w.bufBaseOffset > c.initialOffset,
+	// the server persisted data from a previous attempt; we must skip those bytes.
+	skip := int(w.bufBaseOffset - c.initialOffset)
+	if skip < 0 {
+		skip = 0
+	}
+	// If we've already sent everything in c.p, we're done.
+	if skip >= len(c.p) {
+		close(c.done)
+		return true, nil
+	}
+
+	pending := c.p[skip:]
+	n := len(pending)
+	toSend := n
+
+	// Unless forced, align the send size to the buffer capacity (chunk size)
+	// to ensure we only do zero-copy on full chunks.
+	if !w.forceOneShot {
+		toSend = (n / w.chunkSize) * w.chunkSize
+	}
+
+	if toSend == 0 {
+		// Remaining data is smaller than a chunk; fall through to buffering.
+		return false, nil
+	}
+
+	// Perform zero-copy send on the aligned slice.
+	newOffset, ok := w.sendBufferToTarget(cs, pending[:toSend], w.bufBaseOffset, toSend, func(cmp gRPCBidiWriteCompletion) {
+		w.handleCompletion(cmp)
+	})
+	if !ok {
+		return false, w.streamSender.err()
+	}
+
+	w.bufBaseOffset = newOffset
+
+	if toSend == n {
+		close(c.done)
+		return true, nil
+	}
+
+	// Partial send complete. Advance the command's view of the data so the
+	// caller can buffer the remaining tail without re-sending what we just sent.
+	c.p = c.p[skip+toSend:]
+	c.initialOffset = w.bufBaseOffset
+
+	return false, nil
 }
 
 type gRPCWriterCommandFlush struct {
