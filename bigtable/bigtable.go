@@ -562,7 +562,7 @@ func (c *Client) prepareStatementWithMetadata(ctx context.Context, query string,
 
 	preparedStatement, err = c.prepareStatement(ctx, mt, query, paramTypes, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return preparedStatement, statusErr
 }
 
@@ -741,7 +741,7 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 
 	err = bs.execute(ctx, f, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -1033,7 +1033,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 	err = t.readRows(ctx, arg, f, mt, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -1713,7 +1713,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 
 	err = t.apply(ctx, mt, row, m, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -2008,7 +2008,7 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 	}, t.c.retryOption)
 
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -2153,7 +2153,7 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 
 	updatedRow, err := t.applyReadModifyWrite(ctx, mt, row, m)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return updatedRow, statusErr
 }
 
@@ -2234,7 +2234,7 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 
 	rowKeys, err := t.sampleRowKeys(ctx, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return rowKeys, statusErr
 }
 
