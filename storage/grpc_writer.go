@@ -718,7 +718,7 @@ func (c *gRPCWriterCommandWrite) attemptZeroCopyWrite(w *gRPCWriter, cs gRPCWrit
 
 	// Calculate the offset delta. If w.bufBaseOffset > c.initialOffset,
 	// the server persisted data from a previous attempt; we must skip those bytes.
-skip64 := w.bufBaseOffset - c.initialOffset
+	skip64 := w.bufBaseOffset - c.initialOffset
 	if skip64 < 0 {
 		skip64 = 0
 	}
