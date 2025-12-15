@@ -617,7 +617,7 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 		if err := view.Create(ctx, tm); err != nil {
 			t.Errorf("view creation for %q failed with legacy %t", view.FullyQualifiedName(), isLegacy)
 		}
-		view.Delete(ctx)
+		_ = view.Delete(ctx)
 	}
 }
 
