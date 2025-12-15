@@ -718,15 +718,16 @@ func (c *gRPCWriterCommandWrite) attemptZeroCopyWrite(w *gRPCWriter, cs gRPCWrit
 
 	// Calculate the offset delta. If w.bufBaseOffset > c.initialOffset,
 	// the server persisted data from a previous attempt; we must skip those bytes.
-	skip := int(w.bufBaseOffset - c.initialOffset)
-	if skip < 0 {
-		skip = 0
+skip64 := w.bufBaseOffset - c.initialOffset
+	if skip64 < 0 {
+		skip64 = 0
 	}
 	// If we've already sent everything in c.p, we're done.
-	if skip >= len(c.p) {
+	if skip64 >= int64(len(c.p)) {
 		close(c.done)
 		return true, nil
 	}
+	skip := int(skip64)
 
 	pending := c.p[skip:]
 	n := len(pending)
