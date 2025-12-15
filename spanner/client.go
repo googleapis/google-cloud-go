@@ -1527,12 +1527,20 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 	return metrics
 }
 
-// enableLogClientOptions returns true if the environment variable for this doesn't exist or is set to false
+// enableLogClientOptions returns true if the environment variable for enabling has been set to true, or if the
+// environment variable for disabling has been set to false. It returns false by default if no env var has been set.
+// The function uses two environment variables because this function was initially added with a default return value of
+// true, which caused the config to always be logged. This again caused unnecessary log spamming.
 func enableLogClientOptions() bool {
+	if enableLogString, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_ENABLE_LOG_CLIENT_OPTIONS"); found {
+		if enableLog, err := strconv.ParseBool(enableLogString); err == nil {
+			return enableLog
+		}
+	}
 	if disableLogString, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_DISABLE_LOG_CLIENT_OPTIONS"); found {
 		if disableLog, err := strconv.ParseBool(disableLogString); err == nil {
 			return !disableLog
 		}
 	}
-	return true
+	return false
 }
