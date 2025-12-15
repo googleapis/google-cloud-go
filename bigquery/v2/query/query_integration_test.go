@@ -96,11 +96,12 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 				wg.Done()
 			}(t)
 
-			// sleep on main thread, then cancel
-			time.Sleep(1 * time.Second)
+			// sleep on main thread, then cancel.
+			// Time is later than the poll duration.
+			time.Sleep(500 * time.Millisecond)
 			wcancel()
 
-			// wait for the cancellation and evaluate expectations.
+			// wait for the cancellation to return and evaluate expectations.
 			wg.Wait()
 			if waitErr != context.Canceled {
 				t.Errorf("Wait() should return context.Canceled, returned: %v", waitErr)
@@ -109,22 +110,25 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 				t.Fatalf("Complete() should be false")
 			}
 
-			// Re-attach and wait again.
-			nq, err := helper.AttachJob(ctx, q.JobReference())
-			if err != nil {
-				t.Fatalf("AttachJob() error: %v", err)
-			}
+			// It's still possible that we could have canceled before a JobReference is captured, so only attempt
+			// the reattach if the reference is present.
+			if q.JobReference() != nil {
 
-			err = nq.Wait(ctx)
-			if err != nil {
-				t.Fatalf("Wait() error: %v", err)
-			}
+				// Re-attach and wait again.
+				nq, err := helper.AttachJob(ctx, q.JobReference())
+				if err != nil {
+					t.Fatalf("AttachJob() error: %v", err)
+				}
 
-			if !nq.Complete() {
-				t.Fatalf("Complete() should be true after Wait()")
-			}
+				err = nq.Wait(ctx)
+				if err != nil {
+					t.Fatalf("Wait() error: %v", err)
+				}
 
-			// TODO: read data and assert row count
+				if !nq.Complete() {
+					t.Fatalf("Complete() should be true after Wait()")
+				}
+			}
 		})
 	}
 }
