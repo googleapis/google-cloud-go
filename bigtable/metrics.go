@@ -25,12 +25,16 @@ import (
 	"sync/atomic"
 	"time"
 
+	"regexp"
+	"strings"
+
 	"cloud.google.com/go/bigtable/internal"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
 )
@@ -176,6 +180,8 @@ var (
 	}
 
 	sharedLatencyStatsHandler = &latencyStatsHandler{}
+
+	camel = regexp.MustCompile("([a-z0-9])([A-Z])")
 )
 
 type metricInfo struct {
@@ -727,12 +733,16 @@ func (mt *builtinMetricsTracer) recordOperationCompletion() {
 	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
 }
 
-func (mt *builtinMetricsTracer) setCurrOpStatus(status string) {
+func (mt *builtinMetricsTracer) setCurrOpStatus(code codes.Code) {
 	if !mt.builtInEnabled {
 		return
 	}
 
-	mt.currOp.setStatus(status)
+	mt.currOp.setStatus(canonicalString(code))
+}
+
+func canonicalString(c codes.Code) string {
+	return strings.ToUpper(camel.ReplaceAllString(c.String(), "${1}_${2}"))
 }
 
 func (mt *builtinMetricsTracer) incrementAppBlockingLatency(latency float64) {
