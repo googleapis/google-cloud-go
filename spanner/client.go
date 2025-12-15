@@ -590,6 +590,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.enableMultiplexedSessionForPartitionedOps = true
 		config.SessionPoolConfig.MinOpened = experimentalHostMinSessions
 	}
+	// Do not initialize the session pool with any regular sessions if multiplexed sessions have been enabled for all
+	// operations, and the application has not configured a custom number of min sessions.
+	if config.enableMultiplexSession && config.enableMultiplexedSessionForRW && config.enableMultiplexedSessionForPartitionedOps && config.MinOpened == DefaultSessionPoolConfig.MinOpened {
+		config.SessionPoolConfig.MinOpened = 0
+	}
 
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
