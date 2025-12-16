@@ -114,3 +114,26 @@ defer client.Close()
 // session <session-info> checked out of pool at <session-checkout-time> is long running and will be removed due to possible session leak for goroutine 
 // <Stack Trace of transaction>
 ```
+
+## Metrics
+
+Cloud Spanner client supports [client-side metrics](https://cloud.google.com/spanner/docs/view-manage-client-side-metrics) that you can use along with server-side metrics to optimize performance and troubleshoot performance issues if they occur.
+
+Client-side metrics are measured from the time a request leaves your application to the time your application receives the response.
+In contrast, server-side metrics are measured from the time Spanner receives a request until the last byte of data is sent to the client.
+
+These metrics are enabled by default. You can opt out of using client-side metrics with the following code:
+
+```go
+client, err := spanner.NewClientWithConfig(
+	ctx, database, spanner.ClientConfig{DisableNativeMetrics: true},
+)
+if err != nil {
+log.Fatal(err)
+}
+defer client.Close()
+```
+
+You can also disable these metrics by setting `SPANNER_DISABLE_BUILTIN_METRICS` to `true`.
+
+> Note: Client-side metrics needs `monitoring.timeSeries.create` IAM permission to export metrics data. Ask your administrator to grant your service account the [Monitoring Metric Writer](https://cloud.google.com/iam/docs/roles-permissions/monitoring#monitoring.metricWriter) (roles/monitoring.metricWriter) IAM role on the project.
