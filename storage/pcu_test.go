@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"runtime"
 	"strings"
@@ -158,6 +159,262 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestPCUState_SetError(t *testing.T) {
+	pCtx, cancel := context.WithCancel(context.Background())
+	state := &pcuState{
+		ctx:    pCtx,
+		cancel: cancel,
+	}
+
+	err1 := fmt.Errorf("first error")
+	state.setError(err1)
+
+	if state.firstErr != err1 {
+		t.Errorf("setError() first call: got %v, want %v", state.firstErr, err1)
+	}
+
+	select {
+	case <-state.ctx.Done():
+		// Correctly cancelled
+		if state.ctx.Err() != context.Canceled {
+			t.Errorf("setError() first call: context error = %v, want %v", state.ctx.Err(), context.Canceled)
+		}
+	default:
+		t.Errorf("setError() first call: context not cancelled")
+	}
+
+	err2 := fmt.Errorf("second error")
+	state.setError(err2)
+
+	if state.firstErr != err1 {
+		t.Errorf("setError() second call: got %v, want %v (should not change)", state.firstErr, err1)
+	}
+}
+
+func TestPCUState_ResultCollector(t *testing.T) {
+	pCtx, cancel := context.WithCancel(context.Background())
+	state := &pcuState{
+		ctx:      pCtx,
+		cancel:   cancel,
+		resultCh: make(chan uploadResult, 2),
+		partMap:  make(map[int]*ObjectHandle),
+	}
+
+	state.collectorWG.Add(1)
+	go state.resultCollector()
+
+	// Successful result
+	objHandle1 := &ObjectHandle{object: "part1"}
+	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil}
+
+	// Error result
+	errResult := fmt.Errorf("upload failed")
+	state.resultCh <- uploadResult{partNumber: 2, handle: nil, err: errResult}
+
+	close(state.resultCh)
+	state.collectorWG.Wait()
+
+	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object {
+		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (%v, true)", handle, ok, objHandle1)
+	}
+	if _, ok := state.partMap[2]; ok {
+		t.Errorf("resultCollector: partMap[2] should not be present on error")
+	}
+
+	if state.firstErr == nil || state.firstErr.Error() != errResult.Error() {
+		t.Errorf("resultCollector: firstErr got %v, want %v", state.firstErr, errResult)
+	}
+
+	// Check if context is cancelled
+	select {
+	case <-state.ctx.Done():
+		if state.ctx.Err() != context.Canceled {
+			t.Errorf("resultCollector: context error got %v, want %v", state.ctx.Err(), context.Canceled)
+		}
+	default:
+		t.Errorf("resultCollector: context should be cancelled on error")
+	}
+}
+
+func TestPCUWorker_SuccessfulTask(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	buffer := make([]byte, 10)
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask, 1),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			return &ObjectHandle{object: "mockPart"}, &ObjectAttrs{Name: "mockPart"}, nil
+		},
+	}
+	state.bufferCh <- buffer // Pre-fill buffer
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
+	state.uploadCh <- task
+
+	select {
+	case result := <-state.resultCh:
+		if result.err != nil {
+			t.Errorf("worker unexpected error: %v", result.err)
+		}
+		if result.partNumber != 1 || result.handle == nil || result.handle.object != "mockPart" {
+			t.Errorf("worker result mismatch: got %v", result)
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for result")
+	}
+
+	select {
+	case retBuffer := <-state.bufferCh:
+		if len(retBuffer) != len(buffer) {
+			t.Errorf("worker did not return the original buffer")
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for buffer return")
+	}
+
+	close(state.uploadCh)
+	state.workerWG.Wait()
+}
+
+func TestPCUWorker_FailedTask(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	buffer := make([]byte, 10)
+	uploadErr := fmt.Errorf("upload failed")
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask, 1),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			return nil, nil, uploadErr
+		},
+	}
+	state.bufferCh <- buffer
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
+	state.uploadCh <- task
+
+	select {
+	case result := <-state.resultCh:
+		if result.err == nil || result.err.Error() != uploadErr.Error() {
+			t.Errorf("worker error mismatch: got %v, want %v", result.err, uploadErr)
+		}
+		if result.partNumber != 1 {
+			t.Errorf("worker partNumber mismatch: got %v", result.partNumber)
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for result")
+	}
+
+	select {
+	case <-state.bufferCh:
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for buffer return on error")
+	}
+
+	close(state.uploadCh)
+	state.workerWG.Wait()
+}
+
+func TestPCUWorker_ContextCancellation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	buffer := make([]byte, 10)
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask, 1),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			time.Sleep(200 * time.Millisecond) // Give time for cancel to propagate
+			return nil, nil, fmt.Errorf("should not be reached")
+		},
+	}
+	state.bufferCh <- buffer
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
+	state.uploadCh <- task
+
+	cancel() // Cancel context
+
+	select {
+	case result := <-state.resultCh:
+		if result.err != context.Canceled {
+			t.Errorf("worker error on cancel: got %v, want %v", result.err, context.Canceled)
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for result after cancel")
+	}
+
+	select {
+	case <-state.bufferCh:
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for buffer return after cancel")
+	}
+	state.workerWG.Wait()
+}
+
+func TestPCUWorker_ChannelClose(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			return nil, nil, nil
+		},
+	}
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	close(state.uploadCh)
+	state.workerWG.Wait() // Should not block indefinitely
+
+	select {
+	case res := <-state.resultCh:
+		t.Errorf("Unexpected result on closed channel: %v", res)
+	default:
+	}
+}
+
+func TestDefaultNamingStrategy_NewPartName_Uniqueness(t *testing.T) {
+	strategy := &DefaultNamingStrategy{}
+	bucket := "my-bucket"
+	prefix := "gcs-go-sdk-pcu-tmp/"
+	finalName := "my-object"
+	partNumber := 42
+
+	name1 := strategy.NewPartName(bucket, prefix, finalName, partNumber)
+	name2 := strategy.NewPartName(bucket, prefix, finalName, partNumber)
+
+	if name1 == name2 {
+		t.Errorf("NewPartName() returned the same name twice: %q", name1)
 	}
 }
 

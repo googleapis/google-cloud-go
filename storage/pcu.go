@@ -20,6 +20,7 @@ import (
 	"math/rand"
 	"path"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -115,15 +116,18 @@ type PartMetadataDecorator interface {
 }
 
 const (
-	defaultPartSize        = 16 * 1024 * 1024 // 16 MiB
-	defaultMinSize         = 64 * 1024 * 1024 // 64 MiB
-	baseWorkers            = 4
-	maxWorkers             = 16
-	defaultTmpObjectPrefix = "gcs-go-sdk-pcu-tmp/"
-	maxComposeComponents   = 32
-	defaultMaxRetries      = 3
-	defaultBaseDelay       = 100 * time.Millisecond
-	defaultMaxDelay        = 5 * time.Second
+	defaultPartSize            = 16 * 1024 * 1024 // 16 MiB
+	defaultMinSize             = 64 * 1024 * 1024 // 64 MiB
+	baseWorkers                = 4
+	maxWorkers                 = 16
+	defaultTmpObjectPrefix     = "gcs-go-sdk-pcu-tmp/"
+	maxComposeComponents       = 32
+	defaultMaxRetries          = 3
+	defaultBaseDelay           = 100 * time.Millisecond
+	defaultMaxDelay            = 5 * time.Second
+	chunkSizeMultiple          = 256 * 1024 // 256 KiB
+	xGoogMetaGcsPCUPartNumber  = "x-goog-meta-gcs-pcu-part-number"
+	xGoogMetaGcsPCUFinalObject = "x-goog-meta-gcs-pcu-final-object"
 )
 
 func (c *ParallelUploadConfig) defaults() {
@@ -187,6 +191,9 @@ type pcuState struct {
 	workerWG    sync.WaitGroup
 	collectorWG sync.WaitGroup
 	started     bool
+
+	// Function to upload a part; can be overridden for testing.
+	uploadPartFn func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error)
 }
 
 type uploadTask struct {
@@ -200,4 +207,130 @@ type uploadResult struct {
 	obj        *ObjectAttrs
 	handle     *ObjectHandle
 	err        error
+}
+
+func (w *Writer) initPCU(ctx context.Context) error {
+	// TODO: Check if PCU is enabled on the Writer
+
+	// TODO: Get the config from the Writer
+	cfg := &ParallelUploadConfig{}
+	cfg.defaults()
+
+	if cfg.PartSize%(chunkSizeMultiple) != 0 {
+		return fmt.Errorf("PartSize must be a multiple of 256KiB")
+	}
+
+	pCtx, cancel := context.WithCancel(ctx)
+
+	state := &pcuState{
+		ctx:             pCtx,
+		cancel:          cancel,
+		w:               w,
+		config:          cfg,
+		bufferCh:        make(chan []byte, cfg.BufferPoolSize),
+		uploadCh:        make(chan uploadTask),
+		resultCh:        make(chan uploadResult),
+		partMap:         make(map[int]*ObjectHandle),
+		intermediateMap: make(map[string]*ObjectHandle),
+		uploadPartFn:    (*pcuState).uploadPart,
+	}
+	// TODO: Assign the state to the Writer
+
+	for i := 0; i < cfg.BufferPoolSize; i++ {
+		state.bufferCh <- make([]byte, cfg.PartSize)
+	}
+
+	state.workerWG.Add(cfg.NumWorkers)
+	for i := 0; i < cfg.NumWorkers; i++ {
+		go state.worker()
+	}
+
+	state.collectorWG.Add(1)
+	go state.resultCollector()
+
+	// Handle to get the first buffer
+	select {
+	case <-state.ctx.Done():
+		return state.ctx.Err()
+	case state.currentBuffer = <-state.bufferCh:
+		state.bytesBuffered = 0
+	}
+	state.started = true
+	return nil
+}
+
+func (s *pcuState) worker() {
+	defer s.workerWG.Done()
+	for task := range s.uploadCh {
+		select {
+		case <-s.ctx.Done():
+			s.resultCh <- uploadResult{partNumber: task.partNumber, err: s.ctx.Err()}
+			s.bufferCh <- task.buffer
+			return
+		default:
+			handle, attrs, err := s.uploadPartFn(s, task)
+			s.resultCh <- uploadResult{partNumber: task.partNumber, obj: attrs, handle: handle, err: err}
+			s.bufferCh <- task.buffer
+		}
+	}
+}
+
+// TODO: add retry logic
+func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+	partName := s.config.NamingStrategy.NewPartName(s.w.o.bucket, s.config.TmpObjectPrefix, s.w.o.object, task.partNumber)
+	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
+
+	pw := partHandle.NewWriter(s.ctx)
+	pw.ObjectAttrs = s.w.ObjectAttrs
+	pw.ObjectAttrs.Name = partName
+	pw.ObjectAttrs.Size = task.size
+	pw.SendCRC32C = s.w.SendCRC32C
+	pw.ChunkSize = 0 // Force single-shot upload for parts
+	// Clear fields not applicable to parts or that are set by compose
+	pw.ObjectAttrs.CRC32C = 0
+	pw.ObjectAttrs.MD5 = nil
+
+	// Apply decorators.
+	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUPartNumber] = strconv.Itoa(task.partNumber)
+	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUFinalObject] = s.w.o.object
+	if s.config.MetadataDecorator != nil {
+		s.config.MetadataDecorator.Decorate(&pw.ObjectAttrs)
+	}
+
+	n, err := pw.Write(task.buffer[:task.size])
+	if err != nil {
+		pw.CloseWithError(err)
+		return nil, nil, fmt.Errorf("failed to write part %d: %w", task.partNumber, err)
+	}
+	if int64(n) != task.size {
+		err := fmt.Errorf("short write on part %d: wrote %d, expected %d", task.partNumber, n, task.size)
+		pw.CloseWithError(err)
+		return nil, nil, err
+	}
+
+	if err := pw.Close(); err != nil {
+		return nil, nil, fmt.Errorf("failed to close part %d: %w", task.partNumber, err)
+	}
+
+	return partHandle, pw.Attrs(), nil
+}
+
+func (s *pcuState) resultCollector() {
+	defer s.collectorWG.Done()
+	for result := range s.resultCh {
+		s.mu.Lock()
+		if result.err != nil {
+			s.setError(result.err)
+		} else if result.handle != nil {
+			s.partMap[result.partNumber] = result.handle
+		}
+		s.mu.Unlock()
+	}
+}
+
+func (s *pcuState) setError(err error) {
+	s.errOnce.Do(func() {
+		s.firstErr = err
+		s.cancel() // Cancel context on first error
+	})
 }
