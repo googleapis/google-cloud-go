@@ -261,16 +261,42 @@ func (w *Writer) initPCU(ctx context.Context) error {
 
 func (s *pcuState) worker() {
 	defer s.workerWG.Done()
-	for task := range s.uploadCh {
+	for {
 		select {
 		case <-s.ctx.Done():
-			s.resultCh <- uploadResult{partNumber: task.partNumber, err: s.ctx.Err()}
-			s.bufferCh <- task.buffer
 			return
-		default:
-			handle, attrs, err := s.uploadPartFn(s, task)
-			s.resultCh <- uploadResult{partNumber: task.partNumber, obj: attrs, handle: handle, err: err}
-			s.bufferCh <- task.buffer
+		case task, ok := <-s.uploadCh:
+			if !ok {
+				return
+			}
+			func(t uploadTask) {
+				// Ensure the buffer is returned to the pool.
+				defer func() { s.bufferCh <- t.buffer }()
+				defer func() {
+					if r := recover(); r != nil {
+						s.resultCh <- uploadResult{partNumber: t.partNumber, err: fmt.Errorf("panic during part upload: %v", r)}
+					}
+				}()
+
+				// This handles the case where cancellation happens before we begin upload.
+				select {
+				case <-s.ctx.Done():
+					s.resultCh <- uploadResult{partNumber: t.partNumber, err: s.ctx.Err()}
+					return
+				default:
+				}
+
+				handle, attrs, err := s.uploadPartFn(s, t)
+
+				// After the upload, check if the context has been canceled.
+				// If it has, the context error is more important than the upload error.
+				if s.ctx.Err() != nil {
+					err = s.ctx.Err()
+				}
+
+				// Always send a result to the collector.
+				s.resultCh <- uploadResult{partNumber: t.partNumber, obj: attrs, handle: handle, err: err}
+			}(task)
 		}
 	}
 }
