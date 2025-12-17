@@ -101,6 +101,12 @@ func (it *EnvironmentIterator) All() iter.Seq2[*dialogflowpb.Environment, error]
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *GeneratorEvaluationIterator) All() iter.Seq2[*dialogflowpb.GeneratorEvaluation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *GeneratorIterator) All() iter.Seq2[*dialogflowpb.Generator, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -144,6 +150,18 @@ func (it *ParticipantIterator) All() iter.Seq2[*dialogflowpb.Participant, error]
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *SessionEntityTypeIterator) All() iter.Seq2[*dialogflowpb.SessionEntityType, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SipTrunkIterator) All() iter.Seq2[*dialogflowpb.SipTrunk, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolIterator) All() iter.Seq2[*dialogflowpb.Tool, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

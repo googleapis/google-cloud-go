@@ -53,6 +53,7 @@ type DataChatCallOptions struct {
 	GetConversation    []gax.CallOption
 	ListConversations  []gax.CallOption
 	ListMessages       []gax.CallOption
+	QueryData          []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	CancelOperation    []gax.CallOption
@@ -138,6 +139,18 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListMessages: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		QueryData: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -292,6 +305,17 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		QueryData: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -372,6 +396,7 @@ type internalDataChatClient interface {
 	GetConversation(context.Context, *geminidataanalyticspb.GetConversationRequest, ...gax.CallOption) (*geminidataanalyticspb.Conversation, error)
 	ListConversations(context.Context, *geminidataanalyticspb.ListConversationsRequest, ...gax.CallOption) *ConversationIterator
 	ListMessages(context.Context, *geminidataanalyticspb.ListMessagesRequest, ...gax.CallOption) *StorageMessageIterator
+	QueryData(context.Context, *geminidataanalyticspb.QueryDataRequest, ...gax.CallOption) (*geminidataanalyticspb.QueryDataResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -447,6 +472,11 @@ func (c *DataChatClient) ListConversations(ctx context.Context, req *geminidataa
 // ListMessages lists all messages for a given conversation.
 func (c *DataChatClient) ListMessages(ctx context.Context, req *geminidataanalyticspb.ListMessagesRequest, opts ...gax.CallOption) *StorageMessageIterator {
 	return c.internalClient.ListMessages(ctx, req, opts...)
+}
+
+// QueryData queries data from a natural language user query.
+func (c *DataChatClient) QueryData(ctx context.Context, req *geminidataanalyticspb.QueryDataRequest, opts ...gax.CallOption) (*geminidataanalyticspb.QueryDataResponse, error) {
+	return c.internalClient.QueryData(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -802,6 +832,24 @@ func (c *dataChatGRPCClient) ListMessages(ctx context.Context, req *geminidataan
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *dataChatGRPCClient) QueryData(ctx context.Context, req *geminidataanalyticspb.QueryDataRequest, opts ...gax.CallOption) (*geminidataanalyticspb.QueryDataResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).QueryData[0:len((*c.CallOptions).QueryData):len((*c.CallOptions).QueryData)], opts...)
+	var resp *geminidataanalyticspb.QueryDataResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataChatClient.QueryData, req, settings.GRPC, c.logger, "QueryData")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataChatGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1372,6 +1420,62 @@ func (c *dataChatRESTClient) ListMessages(ctx context.Context, req *geminidataan
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// QueryData queries data from a natural language user query.
+func (c *dataChatRESTClient) QueryData(ctx context.Context, req *geminidataanalyticspb.QueryDataRequest, opts ...gax.CallOption) (*geminidataanalyticspb.QueryDataResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:queryData", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).QueryData[0:len((*c.CallOptions).QueryData):len((*c.CallOptions).QueryData)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &geminidataanalyticspb.QueryDataResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "QueryData")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.

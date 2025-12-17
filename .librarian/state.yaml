@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.111.0
-    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -546,7 +546,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: artifactregistry
     version: 1.18.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/devtools/artifactregistry/v1
         service_config: artifactregistry_v1.yaml
@@ -1330,7 +1330,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chat
     version: 0.16.0
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/chat/v1
         service_config: chat_v1.yaml
@@ -1380,7 +1380,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudbuild
     version: 1.24.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/devtools/cloudbuild/v1
         service_config: cloudbuild_v1.yaml
@@ -1615,7 +1615,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.51.0
-    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -2224,7 +2224,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dialogflow
     version: 1.72.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -2334,7 +2334,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dlp
     version: 1.27.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/privacy/dlp/v2
         service_config: dlp_v2.yaml
@@ -2692,7 +2692,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
     version: 0.3.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
         service_config: geminidataanalytics_v1beta.yaml
@@ -3596,7 +3596,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: memorystore
     version: 0.3.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/memorystore/v1
         service_config: memorystore_v1.yaml
@@ -4512,7 +4512,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: recaptchaenterprise
     version: 2.20.5
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/recaptchaenterprise/v1
         service_config: recaptchaenterprise_v1.yaml
@@ -5767,7 +5767,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
     version: 0.1.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/storagebatchoperations/v1
         service_config: storagebatchoperations_v1.yaml
