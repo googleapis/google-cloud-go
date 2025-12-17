@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/bigtable/bttest"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/apache/beam/sdks/v2/go/pkg/beam/log"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
@@ -147,13 +148,19 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 		c.UseProd = true
 	}
 
+	start := time.Now()
+
 	if integrationConfig.UseProd {
 		if c.Table == "" {
 			c.Table = fmt.Sprintf("it-table-%d", time.Now().Unix())
 		}
-		return NewProdEnv(*c)
+		penv, err := NewProdEnv(*c)
+		log.Infof("NewProdEnv: %s", time.Since(start))
+		return penv, err
 	}
-	return NewEmulatedEnv(*c)
+	emenv, err := NewEmulatedEnv(*c)
+	log.Infof("NewEmulatedEnv: %s", time.Since(start))
+	return emenv, err
 }
 
 // EmulatedEnv encapsulates the state of an emulator
