@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"maps"
 	"math/rand"
 	"path"
 	"runtime"
@@ -307,7 +308,6 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
 
 	pw := partHandle.NewWriter(s.ctx)
-	pw.ObjectAttrs = s.w.ObjectAttrs
 	pw.ObjectAttrs.Name = partName
 	pw.ObjectAttrs.Size = task.size
 	pw.SendCRC32C = s.w.SendCRC32C
@@ -315,13 +315,7 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	// Clear fields not applicable to parts or that are set by compose
 	pw.ObjectAttrs.CRC32C = 0
 	pw.ObjectAttrs.MD5 = nil
-
-	// Apply decorators.
-	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUPartNumber] = strconv.Itoa(task.partNumber)
-	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUFinalObject] = s.w.o.object
-	if s.config.MetadataDecorator != nil {
-		s.config.MetadataDecorator.Decorate(&pw.ObjectAttrs)
-	}
+	setPartMetadata(pw, s, task)
 
 	n, err := pw.Write(task.buffer[:task.size])
 	if err != nil {
@@ -339,6 +333,22 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	}
 
 	return partHandle, pw.Attrs(), nil
+}
+
+func setPartMetadata(pw *Writer, s *pcuState, task uploadTask) {
+	partNumberStr := strconv.Itoa(task.partNumber)
+	var md map[string]string
+	if s.w.ObjectAttrs.Metadata != nil {
+		md = maps.Clone(s.w.ObjectAttrs.Metadata)
+	} else {
+		md = make(map[string]string)
+	}
+	pw.ObjectAttrs.Metadata = md
+	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUPartNumber] = partNumberStr
+	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUFinalObject] = pw.o.object
+	if s.config.MetadataDecorator != nil {
+		s.config.MetadataDecorator.Decorate(&pw.ObjectAttrs)
+	}
 }
 
 func (s *pcuState) resultCollector() {

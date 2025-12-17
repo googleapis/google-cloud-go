@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -335,6 +336,7 @@ func TestPCUWorker_FailedTask(t *testing.T) {
 
 func TestPCUWorker_ContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
+	uploadStarted := make(chan struct{}) // To signal when upload starts
 
 	buffer := make([]byte, 10)
 	state := &pcuState{
@@ -344,11 +346,11 @@ func TestPCUWorker_ContextCancellation(t *testing.T) {
 		uploadCh: make(chan uploadTask, 1),
 		resultCh: make(chan uploadResult, 1),
 		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
-			time.Sleep(200 * time.Millisecond) // Give time for cancel to propagate
-			return nil, nil, fmt.Errorf("should not be reached")
+			close(uploadStarted)
+			<-s.ctx.Done()
+			return nil, nil, s.ctx.Err()
 		},
 	}
-	state.bufferCh <- buffer
 
 	state.workerWG.Add(1)
 	go state.worker()
@@ -356,7 +358,9 @@ func TestPCUWorker_ContextCancellation(t *testing.T) {
 	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
 	state.uploadCh <- task
 
-	cancel() // Cancel context
+	<-uploadStarted // Wait until upload starts.
+
+	cancel()
 
 	select {
 	case result := <-state.resultCh:
@@ -367,12 +371,15 @@ func TestPCUWorker_ContextCancellation(t *testing.T) {
 		t.Errorf("worker timeout waiting for result after cancel")
 	}
 
+	// Wait for the worker to finish.
+	state.workerWG.Wait()
+
+	// Verify the buffer was correctly returned to the channel.
 	select {
 	case <-state.bufferCh:
 	case <-time.After(1 * time.Second):
 		t.Errorf("worker timeout waiting for buffer return after cancel")
 	}
-	state.workerWG.Wait()
 }
 
 func TestPCUWorker_ChannelClose(t *testing.T) {
@@ -418,9 +425,119 @@ func TestDefaultNamingStrategy_NewPartName_Uniqueness(t *testing.T) {
 	}
 }
 
+func TestSetPartMetadata(t *testing.T) {
+	testCases := []struct {
+		name             string
+		initialMetadata  map[string]string
+		decorator        PartMetadataDecorator
+		task             uploadTask
+		finalObjectName  string
+		expectedMetadata map[string]string
+	}{
+		{
+			name:            "Nil initial metadata, no decorator",
+			initialMetadata: nil,
+			decorator:       nil,
+			task:            uploadTask{partNumber: 1},
+			finalObjectName: "final-object",
+			expectedMetadata: map[string]string{
+				xGoogMetaGcsPCUPartNumber:  "1",
+				xGoogMetaGcsPCUFinalObject: "final-object",
+			},
+		},
+		{
+			name: "Existing metadata, no decorator",
+			initialMetadata: map[string]string{
+				"initial-key": "initial-value",
+			},
+			decorator:       nil,
+			task:            uploadTask{partNumber: 2},
+			finalObjectName: "final-object",
+			expectedMetadata: map[string]string{
+				"initial-key":              "initial-value",
+				xGoogMetaGcsPCUPartNumber:  "2",
+				xGoogMetaGcsPCUFinalObject: "final-object",
+			},
+		},
+		{
+			name:            "Nil initial metadata, with decorator",
+			initialMetadata: nil,
+			decorator: &testMetadataDecorator{
+				metadataToSet: map[string]string{"decorated-key": "decorated-value"},
+			},
+			task:            uploadTask{partNumber: 3},
+			finalObjectName: "final-object",
+			expectedMetadata: map[string]string{
+				"decorated-key":            "decorated-value",
+				xGoogMetaGcsPCUPartNumber:  "3",
+				xGoogMetaGcsPCUFinalObject: "final-object",
+			},
+		},
+		{
+			name: "Existing metadata, with decorator that overwrites",
+			initialMetadata: map[string]string{
+				"initial-key":             "initial-value",
+				xGoogMetaGcsPCUPartNumber: "should-be-overwritten",
+			},
+			decorator: &testMetadataDecorator{
+				metadataToSet: map[string]string{
+					"decorated-key":            "decorated-value",
+					xGoogMetaGcsPCUFinalObject: "overwritten-by-decorator",
+				},
+			},
+			task:            uploadTask{partNumber: 4},
+			finalObjectName: "final-object-base",
+			expectedMetadata: map[string]string{
+				"initial-key":              "initial-value",
+				"decorated-key":            "decorated-value",
+				xGoogMetaGcsPCUPartNumber:  "4",                        // Overwrites initial
+				xGoogMetaGcsPCUFinalObject: "overwritten-by-decorator", // Overwritten by decorator
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Setup
+			sourceWriter := &Writer{
+				ObjectAttrs: ObjectAttrs{
+					Metadata: tc.initialMetadata,
+				},
+			}
+			partWriter := &Writer{
+				o: &ObjectHandle{object: tc.finalObjectName},
+			}
+			state := &pcuState{
+				w: sourceWriter,
+				config: &ParallelUploadConfig{
+					MetadataDecorator: tc.decorator,
+				},
+			}
+
+			// Execute
+			setPartMetadata(partWriter, state, tc.task)
+
+			// Verify
+			if !reflect.DeepEqual(partWriter.ObjectAttrs.Metadata, tc.expectedMetadata) {
+				t.Errorf("Metadata mismatch:\ngot:  %v\nwant: %v", partWriter.ObjectAttrs.Metadata, tc.expectedMetadata)
+			}
+		})
+	}
+}
+
 // testNamingStrategy is a mock implementation of PartNamingStrategy for testing.
 type testNamingStrategy struct{}
 
 func (t *testNamingStrategy) NewPartName(bucket, prefix, finalName string, partNumber int) string {
 	return "test-part"
+}
+
+type testMetadataDecorator struct {
+	metadataToSet map[string]string
+}
+
+func (m *testMetadataDecorator) Decorate(attrs *ObjectAttrs) {
+	for k, v := range m.metadataToSet {
+		attrs.Metadata[k] = v
+	}
 }
