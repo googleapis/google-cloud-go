@@ -255,7 +255,6 @@ func TestPCUWorker_SuccessfulTask(t *testing.T) {
 			return &ObjectHandle{object: "mockPart"}, &ObjectAttrs{Name: "mockPart"}, nil
 		},
 	}
-	state.bufferCh <- buffer // Pre-fill buffer
 
 	state.workerWG.Add(1)
 	go state.worker()
@@ -304,7 +303,6 @@ func TestPCUWorker_FailedTask(t *testing.T) {
 			return nil, nil, uploadErr
 		},
 	}
-	state.bufferCh <- buffer
 
 	state.workerWG.Add(1)
 	go state.worker()
