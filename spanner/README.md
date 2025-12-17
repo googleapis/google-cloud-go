@@ -136,4 +136,4 @@ defer client.Close()
 
 You can also disable these metrics by setting `SPANNER_DISABLE_BUILTIN_METRICS` to `true`.
 
-> Note: Client-side metrics needs `monitoring.timeSeries.create` IAM permission to export metrics data. Ask your administrator to grant your service account the [Monitoring Metric Writer](https://cloud.google.com/iam/docs/roles-permissions/monitoring#monitoring.metricWriter) (roles/monitoring.metricWriter) IAM role on the project.
+> Note: Client-side metrics need the `monitoring.timeSeries.create` IAM permission to export metrics data. To grant this permission, ask your administrator to assign the [Monitoring Metric Writer](https://cloud.google.com/iam/docs/roles-permissions/monitoring#monitoring.metricWriter) (roles/monitoring.metricWriter) IAM role to your service account on the project.
