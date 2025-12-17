@@ -78,6 +78,20 @@
         }
       }
     },
+    "Advice": {
+      "clients": {
+        "rest": {
+          "libraryClient": "AdviceClient",
+          "rpcs": {
+            "CalendarMode": {
+              "methods": [
+                "CalendarMode"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Autoscalers": {
       "clients": {
         "rest": {

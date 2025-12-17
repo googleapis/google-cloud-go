@@ -2528,6 +2528,11 @@
                 "AddPeering"
               ]
             },
+            "CancelRequestRemovePeering": {
+              "methods": [
+                "CancelRequestRemovePeering"
+              ]
+            },
             "Delete": {
               "methods": [
                 "Delete"
@@ -3683,6 +3688,11 @@
             "AbandonInstances": {
               "methods": [
                 "AbandonInstances"
+              ]
+            },
+            "AdoptInstances": {
+              "methods": [
+                "AdoptInstances"
               ]
             },
             "ApplyUpdatesToInstances": {

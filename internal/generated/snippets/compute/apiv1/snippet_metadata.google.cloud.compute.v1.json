@@ -518,6 +518,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Advice_CalendarMode_sync",
+      "title": "compute CalendarMode Sample",
+      "description": "CalendarMode advise how, where and when to create the requested amount of instances\nwith specified accelerators, within the specified time and location limits.\nThe method recommends creating future reservations for the requested\nresources.",
+      "file": "AdviceClient/CalendarMode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CalendarMode",
+        "fullName": "google.cloud.compute.v1.AdviceClient.CalendarMode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CalendarModeAdviceRpcRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.CalendarModeAdviceResponse",
+        "client": {
+          "shortName": "AdviceClient",
+          "fullName": "google.cloud.compute.v1.AdviceClient"
+        },
+        "method": {
+          "shortName": "CalendarMode",
+          "fullName": "google.cloud.compute.v1.Advice.CalendarMode",
+          "service": {
+            "shortName": "Advice",
+            "fullName": "google.cloud.compute.v1.Advice"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Autoscalers_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves an aggregated list of autoscalers.\n\nTo prevent failure, it is recommended that you set the\n`returnPartialSuccess` parameter to `true`.",

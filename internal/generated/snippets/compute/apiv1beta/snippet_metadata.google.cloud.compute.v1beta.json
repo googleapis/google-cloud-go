@@ -19286,6 +19286,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_Networks_CancelRequestRemovePeering_sync",
+      "title": "compute CancelRequestRemovePeering Sample",
+      "description": "CancelRequestRemovePeering cancel requests to remove a peering from the specified network. Applicable\nonly for PeeringConnection with update_strategy=CONSENSUS.  Cancels a\nrequest to remove a peering from the specified network.",
+      "file": "NetworksClient/CancelRequestRemovePeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelRequestRemovePeering",
+        "fullName": "google.cloud.compute.v1beta.NetworksClient.CancelRequestRemovePeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CancelRequestRemovePeeringNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworksClient",
+          "fullName": "google.cloud.compute.v1beta.NetworksClient"
+        },
+        "method": {
+          "shortName": "CancelRequestRemovePeering",
+          "fullName": "google.cloud.compute.v1beta.Networks.CancelRequestRemovePeering",
+          "service": {
+            "shortName": "Networks",
+            "fullName": "google.cloud.compute.v1beta.Networks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_Networks_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified network.",
@@ -28010,6 +28056,52 @@
         "method": {
           "shortName": "AbandonInstances",
           "fullName": "google.cloud.compute.v1beta.RegionInstanceGroupManagers.AbandonInstances",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1beta.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionInstanceGroupManagers_AdoptInstances_sync",
+      "title": "compute AdoptInstances Sample",
+      "description": "AdoptInstances flags the specified instances to be adopted to the managed instance\ngroup. Adopting an instance does not change the instance status, but it\nadds the instance to any target pools that are applied by the managed\ninstance group. This method increases the targetSize of the managed\ninstance group by the number of instances that you adopt. This operation\nis marked as DONE when the action is scheduled even if the instances have\nnot been adopted to the group yet. You must separately verify the status\nof the adopting action with the listManagedInstances method.",
+      "file": "RegionInstanceGroupManagersClient/AdoptInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AdoptInstances",
+        "fullName": "google.cloud.compute.v1beta.RegionInstanceGroupManagersClient.AdoptInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AdoptInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1beta.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "AdoptInstances",
+          "fullName": "google.cloud.compute.v1beta.RegionInstanceGroupManagers.AdoptInstances",
           "service": {
             "shortName": "RegionInstanceGroupManagers",
             "fullName": "google.cloud.compute.v1beta.RegionInstanceGroupManagers"
