@@ -14,18 +14,19 @@
 
 package query
 
-import "google.golang.org/protobuf/types/known/structpb"
+import (
+	"cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+)
 
-// Row represents a single row in the query results.
-type Row struct {
-	pb *structpb.Struct
+// internal schema struct with some optimization to parse row data.
+// We should steers users on using bigquerypb.Schema externally
+type schema struct {
+	pb *bigquerypb.TableSchema
 }
 
-func parseRows(srcRows []*structpb.Struct) []*Row {
-	// TODO(#12877): parse rows
-	rows := make([]*Row, len(srcRows))
-	for i, row := range srcRows {
-		rows[i] = &Row{pb: row}
+func newSchema(pb *bigquerypb.TableSchema) *schema {
+	if pb == nil {
+		return nil
 	}
-	return rows
+	return &schema{pb: pb}
 }
