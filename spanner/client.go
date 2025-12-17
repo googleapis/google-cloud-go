@@ -51,6 +51,8 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
+
+	_ "google.golang.org/grpc/xds/googledirectpath" 
 )
 
 const (
@@ -415,12 +417,35 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	return newClientWithConfig(ctx, database, config, nil, opts...)
 }
 
+// fallbackWrapper adapts GCPFallback to implement gtransport.ConnPool
+type fallbackWrapper struct {
+    *grpcgcp.GCPFallback
+}
+
+// Conn returns nil because GCPFallback hides the underlying ClientConn.
+// The Spanner client handles this by using the interface methods (Invoke/NewStream).
+func (fw *fallbackWrapper) Conn() *grpc.ClientConn {
+    return nil
+}
+
+// Num returns 1 as we are treating this as a single logical connection.
+func (fw *fallbackWrapper) Num() int {
+    return 1
+}
+
+// Close closes the fallback wrapper.
+func (fw *fallbackWrapper) Close() error {
+    fw.GCPFallback.Close()
+    return nil
+}
+
+
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
 	// Validate database path.
 	if err := validDatabaseName(database); err != nil {
 		return nil, err
 	}
-
+	fmt.Println("--- USING LOCAL SPANNER CLIENT ---");
 	ctx, _ = startSpan(ctx, "NewClient")
 	defer func() { endSpan(ctx, err) }()
 
@@ -489,11 +514,60 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	var pool gtransport.ConnPool
+	var primaryConn gtransport.ConnPool
+	var fallbackConn gtransport.ConnPool
 
 	if gme != nil {
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
+	} else if true {
+		fmt.Println("Fallback enabled")
+		reqIDInjector := new(requestIDHeaderInjector)
+		opts = append(opts,
+			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+		)
+		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
+		primaryConn, err = gtransport.DialPool(ctx, allOpts...)
+		if err != nil {
+			return nil, err
+		}
+
+		if hasNumChannelsConfig && primaryConn.Num() != config.NumChannels {
+			primaryConn.Close()
+			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
+		}
+
+
+		// Create the fallback connection.
+		fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
+		fallbackConn, err = gtransport.DialPool(ctx, fallbackConnOpts...)
+		if err != nil {
+			fallbackConn.Close()
+			return nil, err
+		}
+
+		// 3. Configure GCPFallback
+		fbOpts := grpcgcp.NewGCPFallbackOptions()
+		fbOpts.EnableFallback = true
+		fbOpts.ErrorRateThreshold = 0.1 // Fallback if 100% of calls fail (adjust as needed)
+		fbOpts.MinFailedCalls = 1
+		// Optional: Pass the meter provider for metrics
+		fbOpts.MeterProvider = config.OpenTelemetryMeterProvider
+
+		// 4. Create the GCPFallback instance
+		gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
+		if err != nil {
+			primaryConn.Close()
+			fallbackConn.Close()
+			return nil, err
+		}
+
+		// 5. Wrap it for the Spanner client
+		pool = &fallbackWrapper{gcpFallback}
+
 	} else {
+		fmt.Println("No fallback")
 		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
 		// gRPC options.
 

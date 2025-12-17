@@ -62,3 +62,5 @@ require (
 	golang.org/x/text v0.30.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 )
+
+replace github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp => ./local-deps/grpc-gcp-go/grpcgcp
