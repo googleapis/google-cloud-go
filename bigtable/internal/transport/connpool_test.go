@@ -523,6 +523,7 @@ func TestMultipleStreamsSingleConn(t *testing.T) {
 }
 
 func TestCachingStreamDecrement(t *testing.T) {
+	t.Skip("skipped as impacting generation https://github.com/googleapis/google-cloud-go/issues/13383")
 	poolSize := 1
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)

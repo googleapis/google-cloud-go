@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudbuild/apiv1/v2",
-    "version": "1.23.1",
+    "version": "1.25.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_ApproveBuild_sync",
       "title": "cloudbuild ApproveBuild Sample",
-      "description": "ApproveBuild approves or rejects a pending build.\n\nIf approved, the returned LRO will be analogous to the LRO returned from\na CreateBuild call.\n\nIf rejected, the returned LRO will be immediately done.",
+      "description": "ApproveBuild approves or rejects a pending build.\n\nIf approved, the returned long-running operation (LRO) will be analogous to\nthe LRO returned from a CreateBuild call.\n\nIf rejected, the returned LRO will be immediately done.",
       "file": "Client/ApproveBuild/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_CreateBuildTrigger_sync",
       "title": "cloudbuild CreateBuildTrigger Sample",
-      "description": "CreateBuildTrigger creates a new `BuildTrigger`.\n\nThis API is experimental.",
+      "description": "CreateBuildTrigger creates a new `BuildTrigger`.",
       "file": "Client/CreateBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_DeleteBuildTrigger_sync",
       "title": "cloudbuild DeleteBuildTrigger Sample",
-      "description": "DeleteBuildTrigger deletes a `BuildTrigger` by its project ID and trigger ID.\n\nThis API is experimental.",
+      "description": "DeleteBuildTrigger deletes a `BuildTrigger` by its project ID and trigger ID.",
       "file": "Client/DeleteBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -381,7 +381,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_GetBuildTrigger_sync",
       "title": "cloudbuild GetBuildTrigger Sample",
-      "description": "GetBuildTrigger returns information about a `BuildTrigger`.\n\nThis API is experimental.",
+      "description": "GetBuildTrigger returns information about a `BuildTrigger`.",
       "file": "Client/GetBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -409,6 +409,52 @@
         "method": {
           "shortName": "GetBuildTrigger",
           "fullName": "google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_GetDefaultServiceAccount_sync",
+      "title": "cloudbuild GetDefaultServiceAccount Sample",
+      "description": "GetDefaultServiceAccount returns the `DefaultServiceAccount` used by the project.",
+      "file": "Client/GetDefaultServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDefaultServiceAccount",
+        "fullName": "google.devtools.cloudbuild.v1.Client.GetDefaultServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.GetDefaultServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudbuildpb.DefaultServiceAccount",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDefaultServiceAccount",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.GetDefaultServiceAccount",
           "service": {
             "shortName": "CloudBuild",
             "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
@@ -473,7 +519,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_ListBuildTriggers_sync",
       "title": "cloudbuild ListBuildTriggers Sample",
-      "description": "ListBuildTriggers lists existing `BuildTrigger`s.\n\nThis API is experimental.",
+      "description": "ListBuildTriggers lists existing `BuildTrigger`s.",
       "file": "Client/ListBuildTriggers/main.go",
       "language": "GO",
       "clientMethod": {
@@ -749,7 +795,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_UpdateBuildTrigger_sync",
       "title": "cloudbuild UpdateBuildTrigger Sample",
-      "description": "UpdateBuildTrigger updates a `BuildTrigger` by its project ID and trigger ID.\n\nThis API is experimental.",
+      "description": "UpdateBuildTrigger updates a `BuildTrigger` by its project ID and trigger ID.",
       "file": "Client/UpdateBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/eventarc%2Fv1.18.0) (2025-12-04)
+
+### Features
+
+* add Eventarc Trigger RetryPolicy ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add wide-scope Eventarc GoogleApiSource flags ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/eventarc%2Fv1.17.0) (2025-10-10)
 
 ### Documentation

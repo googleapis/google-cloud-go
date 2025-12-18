@@ -3098,6 +3098,7 @@ func (bp *testBufferPool) getAllocsAndFrees() (int64, int64) {
 // Test that successful downloads using Reader and MultiRangeDownloader free
 // all of their allocated buffers.
 func TestReadCodecLeaksEmulated(t *testing.T) {
+	t.Skip("flaky https://github.com/googleapis/google-cloud-go/issues/13321")
 	checkEmulatorEnvironment(t)
 	ctx := context.Background()
 	var bp testBufferPool

@@ -1162,7 +1162,7 @@ func (c *Client) GetImageImportJob(ctx context.Context, req *vmmigrationpb.GetIm
 	return c.internalClient.GetImageImportJob(ctx, req, opts...)
 }
 
-// CancelImageImportJob initiates the cancellation of a running clone job.
+// CancelImageImportJob initiates the cancellation of a running ImageImportJob.
 func (c *Client) CancelImageImportJob(ctx context.Context, req *vmmigrationpb.CancelImageImportJobRequest, opts ...gax.CallOption) (*CancelImageImportJobOperation, error) {
 	return c.internalClient.CancelImageImportJob(ctx, req, opts...)
 }
@@ -6640,7 +6640,7 @@ func (c *restClient) GetImageImportJob(ctx context.Context, req *vmmigrationpb.G
 	return resp, nil
 }
 
-// CancelImageImportJob initiates the cancellation of a running clone job.
+// CancelImageImportJob initiates the cancellation of a running ImageImportJob.
 func (c *restClient) CancelImageImportJob(ctx context.Context, req *vmmigrationpb.CancelImageImportJobRequest, opts ...gax.CallOption) (*CancelImageImportJobOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

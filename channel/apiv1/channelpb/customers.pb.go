@@ -38,7 +38,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The enum represents whether a customer belongs to public sector
+// The enum represents if a customer belongs to public sector
 type Customer_CustomerAttestationState int32
 
 const (
@@ -141,7 +141,7 @@ type Customer struct {
 	// Optional. External CRM ID for the customer.
 	// Populated only if a CRM ID exists for this customer.
 	CorrelationId string `protobuf:"bytes,14,opt,name=correlation_id,json=correlationId,proto3" json:"correlation_id,omitempty"`
-	// Optional. Indicate whether a customer is attesting about the correctness of
+	// Optional. Indicate if a customer is attesting about the correctness of
 	// provided information. Only required if creating a GCP Entitlement.
 	CustomerAttestationState Customer_CustomerAttestationState `protobuf:"varint,16,opt,name=customer_attestation_state,json=customerAttestationState,proto3,enum=google.cloud.channel.v1.Customer_CustomerAttestationState" json:"customer_attestation_state,omitempty"`
 }

@@ -3,6 +3,13 @@
 
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.6.0) (2025-12-04)
+
+### Features
+
+* Adding `unreachable` field to `ListDataSourceReferences` API ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding new fields for CMEK and Retention Inheritance features ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.5.0) (2025-11-06)
 
 ### Features
