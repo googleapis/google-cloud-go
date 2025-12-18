@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.111.0
+    version: 1.112.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/aiplatform/v1
@@ -1329,7 +1329,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.16.0
+    version: 0.17.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/chat/v1
@@ -1379,7 +1379,7 @@ libraries:
       - internal/generated/snippets/chronicle/
     tag_format: '{id}/v{version}'
   - id: cloudbuild
-    version: 1.24.0
+    version: 1.25.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/devtools/cloudbuild/v1
@@ -1614,7 +1614,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.51.0
+    version: 1.52.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/compute/v1
@@ -2223,7 +2223,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.72.0
+    version: 1.73.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -2333,7 +2333,7 @@ libraries:
       - internal/generated/snippets/discoveryengine/
     tag_format: '{id}/v{version}'
   - id: dlp
-    version: 1.27.0
+    version: 1.28.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/privacy/dlp/v2
@@ -2691,7 +2691,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.3.0
+    version: 0.4.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -3595,7 +3595,7 @@ libraries:
       - internal/generated/snippets/memcache/
     tag_format: '{id}/v{version}'
   - id: memorystore
-    version: 0.3.1
+    version: 0.4.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/memorystore/v1
@@ -4511,7 +4511,7 @@ libraries:
       - internal/generated/snippets/rapidmigrationassessment/
     tag_format: '{id}/v{version}'
   - id: recaptchaenterprise
-    version: 2.20.5
+    version: 2.21.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/recaptchaenterprise/v1
@@ -5766,7 +5766,7 @@ libraries:
       - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
-    version: 0.1.1
+    version: 0.2.0
     last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/storagebatchoperations/v1
