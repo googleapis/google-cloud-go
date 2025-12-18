@@ -11,7 +11,7 @@ require (
 	cloud.google.com/go/iam v1.5.3
 	cloud.google.com/go/longrunning v0.7.0
 	cloud.google.com/go/monitoring v1.24.3
-	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.3
+	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.6.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.15.0
@@ -62,5 +62,3 @@ require (
 	golang.org/x/text v0.30.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 )
-
-replace github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp => ./local-deps/grpc-gcp-go/grpcgcp
