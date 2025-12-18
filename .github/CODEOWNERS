@@ -27,7 +27,3 @@
 # a single owner.  This allows multiple teams to interact with librarian operations that cause
 # changes to librarian state.
 /.librarian/state.yaml
-
-# Owned by all
-go.work
-go.work.sum
