@@ -28,6 +28,9 @@ import (
 	"google.golang.org/grpc"
 )
 
+// protocolVersion determines what streaming pull protocol to use
+// when talking to pubsub servers. This is a monotonically increasing
+// value that is not exposed to end-users.
 const protocolVersion int64 = 1
 
 // A pullStream supports the methods of a StreamingPullClient, but re-opens
