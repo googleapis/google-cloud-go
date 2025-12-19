@@ -75,20 +75,20 @@ type messageIterator struct {
 	po     *pullOptions
 	ps     *pullStream
 	// this is called an admin client, but also contains the data plane operations we wrap.
-	subc                *vkit.SubscriptionAdminClient
-	projectID           string
-	subID               string
-	subName             string
-	kaTick              <-chan time.Time // keep-alive (deadline extensions)
-	ackTicker           *time.Ticker     // message acks
-	nackTicker          *time.Ticker     // message nacks
-	pingTicker          *time.Ticker     // ping stream to keep it open
-	serverMonitorTicker *time.Ticker     // check server is still active, send Close otherwise
-	receiptTicker       *time.Ticker     // sends receipt modacks
-	failed              chan struct{}    // closed on stream error
-	drained             chan struct{}    // closed when stopped && no more pending messages
-	wg                  sync.WaitGroup
+	subc          *vkit.SubscriptionAdminClient
+	projectID     string
+	subID         string
+	subName       string
+	kaTick        <-chan time.Time // keep-alive (deadline extensions)
+	ackTicker     *time.Ticker     // message acks
+	nackTicker    *time.Ticker     // message nacks
+	receiptTicker *time.Ticker     // sends receipt modacks
+	failed        chan struct{}    // closed on stream error
+	drained       chan struct{}    // closed when stopped && no more pending messages
+	wg            sync.WaitGroup
 
+	pingTicker          *time.Ticker // ping stream to keep it open
+	serverMonitorTicker *time.Ticker // handler for checking stream is active from server
 	// related to stream keep alives when ProtocolVersion >= 1
 	pingMu             sync.RWMutex
 	lastServerResponse time.Time
@@ -179,11 +179,56 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		pendingModAcks:      map[string]*AckResult{},
 		pendingReceipts:     map[string]*AckResult{},
 		lastServerResponse:  time.Now(),
-		lastClientPing:      time.Now(),
+		lastClientPing:      time.UnixMicro(0),
 	}
 	it.wg.Add(1)
+	go it.streamKeepAliverHandler()
 	go it.sender()
 	return it
+}
+
+// streamKeepAliveHandler sends to and handles responses from the stream
+// to maintain stream aliveness. We send pings to the server on a timer
+// and monitor for server pings on a timer. When both time out, then
+// we will close the stream and attempt to reopen.
+func (it *messageIterator) streamKeepAliverHandler() {
+	for {
+		select {
+		case <-it.drained:
+			return
+		case <-it.ps.ctx.Done():
+			return
+		default:
+		}
+
+		select {
+		case <-it.pingTicker.C:
+			it.pingStream()
+		case <-it.serverMonitorTicker.C:
+			it.pingMu.RLock()
+			lastResponse := it.lastServerResponse
+			lastPing := it.lastClientPing
+			it.pingMu.RUnlock()
+
+			// if the latest ping happened recently (before server ping),
+			// we pass this check.
+			if lastPing.Before(lastResponse) {
+				break
+			}
+
+			// if the lastPing happened within the timeout, we pass this check.
+			if time.Since(lastPing) < serverPingTimeoutDuration {
+				break
+			}
+
+			// Either we haven't send a client ping succesfully recently,
+			// or we haven't received a ping from the server.
+			// In either case, close the stream so it can be reopened.
+			if it.ps != nil {
+				it.ps.Close()
+			}
+		}
+	}
 }
 
 // Subscriber.receive will call stop on its messageIterator when finished with it.
@@ -457,8 +502,6 @@ func (it *messageIterator) sender() {
 		sendAcks := false
 		sendNacks := false
 		sendModAcks := false
-		sendPing := false
-		checkServer := false
 		sendReceipt := false
 
 		dl := it.ackDeadline()
@@ -498,14 +541,6 @@ func (it *messageIterator) sender() {
 			it.mu.Lock()
 			sendAcks = (len(it.pendingAcks) > 0)
 
-		case <-it.serverMonitorTicker.C:
-			it.mu.Lock()
-			checkServer = true
-
-		case <-it.pingTicker.C:
-			it.mu.Lock()
-			sendPing = true
-
 		case <-it.receiptTicker.C:
 			it.mu.Lock()
 			sendReceipt = (len(it.pendingReceipts) > 0)
@@ -539,12 +574,6 @@ func (it *messageIterator) sender() {
 		}
 		if sendModAcks {
 			it.sendModAck(context.Background(), modAcks, dl, true, false)
-		}
-		if sendPing {
-			it.pingStream()
-		}
-		if checkServer {
-			it.checkServer()
 		}
 		if sendReceipt {
 			it.sendModAck(context.Background(), receipts, dl, true, true)
@@ -900,31 +929,6 @@ func (it *messageIterator) pingStream() {
 		it.pingMu.Lock()
 		it.lastClientPing = time.Now()
 		it.pingMu.Unlock()
-	}
-}
-
-func (it *messageIterator) checkServer() {
-	it.pingMu.RLock()
-	lastResponse := it.lastServerResponse
-	lastPing := it.lastClientPing
-	it.pingMu.RUnlock()
-
-	// if the latest ping happened recently (before server ping),
-	// we pass this check.
-	if lastPing.Before(lastResponse) {
-		return
-	}
-
-	// if the lastPing happened within the timeout, we pass this check.
-	if time.Since(lastPing) < serverPingTimeoutDuration {
-		return
-	}
-
-	// Either we haven't send a client ping succesfully recently,
-	// or we haven't received a ping from the server.
-	// In either case, close the stream so it can be reopened.
-	if it.ps != nil {
-		it.ps.Close()
 	}
 }
 

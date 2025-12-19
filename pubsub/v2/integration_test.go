@@ -784,6 +784,7 @@ func TestIntegration_PublishCompression(t *testing.T) {
 		t.Errorf("publish result got err: %v", err)
 	}
 }
+
 func newTopicName() string {
 	return fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicIDs.New())
 }
