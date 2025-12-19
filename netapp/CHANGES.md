@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.11.0) (2025-12-04)
+
+### Features
+
+* Add Squash Mode to Export Policy This change introduces squash mode options to the export policy rules. Squash mode determines how user and group IDs are mapped for NFS volume access. The following squash modes are added: *   **NO_ROOT_SQUASH** Root user retains full access. *   **ROOT_SQUASH** Root user is mapped to the anonymous user ID. *   **ALL_SQUASH** All users are mapped to the anonymous user ID. A new field anon_uid is also added to specify the anonymous user ID when ALL_SQUASH is used. The squash_mode field takes precedence over the existing has_root_access field, which will be deprecated in the future. ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.10.0...netapp/v1.10.1) (2025-09-18)
 
 

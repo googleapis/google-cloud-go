@@ -590,6 +590,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.enableMultiplexedSessionForPartitionedOps = true
 		config.SessionPoolConfig.MinOpened = experimentalHostMinSessions
 	}
+	// Do not initialize the session pool with any regular sessions if multiplexed sessions have been enabled for all
+	// operations, and the application has not configured a custom number of min sessions.
+	if config.enableMultiplexSession && config.enableMultiplexedSessionForRW && config.enableMultiplexedSessionForPartitionedOps && config.MinOpened == DefaultSessionPoolConfig.MinOpened {
+		config.SessionPoolConfig.MinOpened = 0
+	}
 
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
@@ -1527,12 +1532,20 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 	return metrics
 }
 
-// enableLogClientOptions returns true if the environment variable for this doesn't exist or is set to false
+// enableLogClientOptions returns true if the environment variable for enabling has been set to true, or if the
+// environment variable for disabling has been set to false. It returns false by default if no env var has been set.
+// The function uses two environment variables because this function was initially added with a default return value of
+// true, which caused the config to always be logged. This again caused unnecessary log spamming.
 func enableLogClientOptions() bool {
+	if enableLogString, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_ENABLE_LOG_CLIENT_OPTIONS"); found {
+		if enableLog, err := strconv.ParseBool(enableLogString); err == nil {
+			return enableLog
+		}
+	}
 	if disableLogString, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_DISABLE_LOG_CLIENT_OPTIONS"); found {
 		if disableLog, err := strconv.ParseBool(disableLogString); err == nil {
 			return !disableLog
 		}
 	}
-	return true
+	return false
 }

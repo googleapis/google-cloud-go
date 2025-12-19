@@ -2124,7 +2124,7 @@ type Cluster struct {
 	// reconcile them. This can happen due to user-triggered updates or
 	// system actions like failover or maintenance.
 	Reconciling bool `protobuf:"varint,13,opt,name=reconciling,proto3" json:"reconciling,omitempty"`
-	// Input only. Initial user to setup during cluster creation. Required.
+	// Input only. Initial user to setup during cluster creation.
 	// If used in `RestoreCluster` this is ignored.
 	InitialUser *UserPassword `protobuf:"bytes,14,opt,name=initial_user,json=initialUser,proto3" json:"initial_user,omitempty"`
 	// The automated backup policy for this cluster.

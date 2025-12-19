@@ -192,7 +192,8 @@ func (c *ProjectsClient) DisableXpnHost(ctx context.Context, req *computepb.Disa
 	return c.internalClient.DisableXpnHost(ctx, req, opts...)
 }
 
-// DisableXpnResource disable a service resource (also known as service project) associated with this host project.
+// DisableXpnResource disable a service resource (also known as service project) associated with
+// this host project.
 func (c *ProjectsClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DisableXpnResource(ctx, req, opts...)
 }
@@ -202,22 +203,34 @@ func (c *ProjectsClient) EnableXpnHost(ctx context.Context, req *computepb.Enabl
 	return c.internalClient.EnableXpnHost(ctx, req, opts...)
 }
 
-// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
+// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that
+// subnets in the host project can be used by instances in the service
+// project.
 func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.EnableXpnResource(ctx, req, opts...)
 }
 
-// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
+// Get returns the specified Project resource.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information (the quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
 func (c *ProjectsClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetXpnHost gets the shared VPC host project that this project links to. May be empty if no link exists.
+// GetXpnHost gets the shared VPC host project that this project links to. May be empty
+// if no link exists.
 func (c *ProjectsClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	return c.internalClient.GetXpnHost(ctx, req, opts...)
 }
 
-// GetXpnResources gets service resources (a.k.a service project) associated with this host project.
+// GetXpnResources gets service resources (a.k.a service project) associated with this host
+// project.
 func (c *ProjectsClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	return c.internalClient.GetXpnResources(ctx, req, opts...)
 }
@@ -227,32 +240,59 @@ func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXp
 	return c.internalClient.ListXpnHosts(ctx, req, opts...)
 }
 
-// MoveDisk starting September 29, 2025, you can’t use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in Change the location of a disk (at https://%7B$universe.dns_names.final_documentation_domain%7D/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
+// MoveDisk moves a persistent disk from one zone to another.
+// Note: The moveDisk API will be deprecated on September 29, 2026.
+//
+// Starting September 29, 2025, you can’t use the moveDisk API on new
+// projects. To move a disk to a different region or zone, follow the steps in
+// Change the location of a
+// disk (at https://cloud.google.com/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd).
+//
+// Projects that already use the moveDisk API can continue usage until
+// September 29, 2026.
+//
+// Starting November 1, 2025, API responses will include a warning message in
+// the response body about the upcoming deprecation. You can skip the message
+// to continue using the service without interruption.
 func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See moving instance across zones (at /compute/docs/instances/moving-instance-across-zones) instead.
+// MoveInstance moves an instance and its attached persistent disks from one zone to
+// another.
+// Note: Moving VMs or disks by using this method might
+// cause unexpected behavior. For more information, see the known
+// issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+// [Deprecated] This method is deprecated. See moving instance across
+// zones (at /compute/docs/instances/moving-instance-across-zones) instead.
 func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
 
-// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the
+// billing account of the project must be subscribed to Cloud Armor
+// Enterprise. See Subscribing
+// to Cloud Armor Enterprise for more information.
 func (c *ProjectsClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCloudArmorTier(ctx, req, opts...)
 }
 
-// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
+// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using
+// the data included in the request.
 func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCommonInstanceMetadata(ctx, req, opts...)
 }
 
-// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
+// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is
+// used when an address/forwardingRule/instance is created without specifying
+// the network tier field.
 func (c *ProjectsClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetDefaultNetworkTier(ctx, req, opts...)
 }
 
-// SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
+// SetUsageExportBucket enables the usage export feature and sets theusage export bucket
+// where reports are stored. If you provide an empty request body using this
+// method, the usage export feature will be disabled.
 func (c *ProjectsClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetUsageExportBucket(ctx, req, opts...)
 }
@@ -409,7 +449,8 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// DisableXpnResource disable a service resource (also known as service project) associated with this host project.
+// DisableXpnResource disable a service resource (also known as service project) associated with
+// this host project.
 func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsDisableXpnResourceRequestResource()
@@ -534,7 +575,9 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	return op, nil
 }
 
-// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
+// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that
+// subnets in the host project can be used by instances in the service
+// project.
 func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsEnableXpnResourceRequestResource()
@@ -600,7 +643,15 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	return op, nil
 }
 
-// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
+// Get returns the specified Project resource.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information (the quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
 func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -645,7 +696,8 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 	return resp, nil
 }
 
-// GetXpnHost gets the shared VPC host project that this project links to. May be empty if no link exists.
+// GetXpnHost gets the shared VPC host project that this project links to. May be empty
+// if no link exists.
 func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -690,7 +742,8 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 	return resp, nil
 }
 
-// GetXpnResources gets service resources (a.k.a service project) associated with this host project.
+// GetXpnResources gets service resources (a.k.a service project) associated with this host
+// project.
 func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	it := &XpnResourceIdIterator{}
 	req = proto.Clone(req).(*computepb.GetXpnResourcesProjectsRequest)
@@ -868,7 +921,20 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// MoveDisk starting September 29, 2025, you can’t use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in Change the location of a disk (at https://%7B$universe.dns_names.final_documentation_domain%7D/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
+// MoveDisk moves a persistent disk from one zone to another.
+// Note: The moveDisk API will be deprecated on September 29, 2026.
+//
+// Starting September 29, 2025, you can’t use the moveDisk API on new
+// projects. To move a disk to a different region or zone, follow the steps in
+// Change the location of a
+// disk (at https://cloud.google.com/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd).
+//
+// Projects that already use the moveDisk API can continue usage until
+// September 29, 2026.
+//
+// Starting November 1, 2025, API responses will include a warning message in
+// the response body about the upcoming deprecation. You can skip the message
+// to continue using the service without interruption.
 func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskMoveRequestResource()
@@ -934,7 +1000,13 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	return op, nil
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See moving instance across zones (at /compute/docs/instances/moving-instance-across-zones) instead.
+// MoveInstance moves an instance and its attached persistent disks from one zone to
+// another.
+// Note: Moving VMs or disks by using this method might
+// cause unexpected behavior. For more information, see the known
+// issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+// [Deprecated] This method is deprecated. See moving instance across
+// zones (at /compute/docs/instances/moving-instance-across-zones) instead.
 func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
@@ -1000,7 +1072,10 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	return op, nil
 }
 
-// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the
+// billing account of the project must be subscribed to Cloud Armor
+// Enterprise. See Subscribing
+// to Cloud Armor Enterprise for more information.
 func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsSetCloudArmorTierRequestResource()
@@ -1066,7 +1141,8 @@ func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *compute
 	return op, nil
 }
 
-// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
+// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using
+// the data included in the request.
 func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
@@ -1132,7 +1208,9 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	return op, nil
 }
 
-// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
+// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is
+// used when an address/forwardingRule/instance is created without specifying
+// the network tier field.
 func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsSetDefaultNetworkTierRequestResource()
@@ -1198,7 +1276,9 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	return op, nil
 }
 
-// SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
+// SetUsageExportBucket enables the usage export feature and sets theusage export bucket
+// where reports are stored. If you provide an empty request body using this
+// method, the usage export feature will be disabled.
 func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUsageExportLocationResource()

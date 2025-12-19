@@ -223,6 +223,11 @@
               "methods": [
                 "ListOperations"
               ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
+              ]
             }
           }
         },
@@ -287,6 +292,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
               ]
             }
           }

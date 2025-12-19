@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/geminidataanalytics/apiv1beta",
-    "version": "0.2.1",
+    "version": "0.4.0",
     "language": "GO",
     "apis": [
       {
@@ -1152,6 +1152,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_QueryData_sync",
+      "title": "geminidataanalytics QueryData Sample",
+      "description": "QueryData queries data from a natural language user query.",
+      "file": "DataChatClient/QueryData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryData",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.QueryData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.QueryDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*geminidataanalyticspb.QueryDataResponse",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "QueryData",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService.QueryData",
+          "service": {
+            "shortName": "DataChatService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

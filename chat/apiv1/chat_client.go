@@ -1036,23 +1036,38 @@ func (c *Client) CreateMessage(ctx context.Context, req *chatpb.CreateMessageReq
 }
 
 // ListMessages lists messages in a space that the caller is a member of, including
-// messages from blocked members and spaces. If you list messages from a
+// messages from blocked members and spaces. System messages, like those
+// announcing new space members, aren’t included. If you list messages from a
 // space with no messages, the response is an empty object. When using a
 // REST/HTTP interface, the response contains an empty JSON object, {}.
 // For an example, see
 // List
 // messages (at https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// with one of the following authorization
-// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-//	https://www.googleapis.com/auth/chat.messages.readonly
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator
+//	approval (at https://support.google.com/a?p=chat-app-auth) in
+//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	with the authorization scope:
 //
-//	https://www.googleapis.com/auth/chat.messages
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly. When
+//	  using this authentication scope, this method only returns public
+//	  messages in a space. It doesn’t include private messages.
 //
-//	https://www.googleapis.com/auth/chat.import (import mode spaces only)
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
+//
+//	  https://www.googleapis.com/auth/chat.messages.readonly
+//
+//	  https://www.googleapis.com/auth/chat.messages
+//
+//	  https://www.googleapis.com/auth/chat.import (import mode spaces
+//	  only)
 func (c *Client) ListMessages(ctx context.Context, req *chatpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
 	return c.internalClient.ListMessages(ctx, req, opts...)
 }
@@ -1147,9 +1162,20 @@ func (c *Client) GetMembership(ctx context.Context, req *chatpb.GetMembershipReq
 //
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-//	with the authorization scope:
+//	with one of the following authorization scopes:
 //
-//	  https://www.googleapis.com/auth/chat.bot
+//	  https://www.googleapis.com/auth/chat.bot: When using this
+//	  authorization scope, this method returns details about a message the
+//	  Chat app has access to, like direct messages and slash
+//	  commands (at https://developers.google.com/workspace/chat/slash-commands)
+//	  that invoke the Chat app.
+//
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly
+//	  with administrator
+//	  approval (at https://support.google.com/a?p=chat-app-auth) (available in
+//	  Developer Preview (at https://developers.google.com/workspace/preview)).
+//	  When using this authentication scope,
+//	  this method returns details about a public message in a space.
 //
 //	User
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -1292,7 +1318,9 @@ func (c *Client) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, 
 }
 
 // SearchSpaces returns a list of spaces in a Google Workspace organization based on an
-// administrator’s search.
+// administrator’s search. In the request, set use_admin_access to true.
+// For an example, see Search for and manage
+// spaces (at https://developers.google.com/workspace/chat/search-manage-admin).
 //
 // Requires user
 // authentication with administrator
@@ -1303,8 +1331,6 @@ func (c *Client) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, 
 //	https://www.googleapis.com/auth/chat.admin.spaces.readonly
 //
 //	https://www.googleapis.com/auth/chat.admin.spaces
-//
-// In the request, set use_admin_access to true.
 func (c *Client) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	return c.internalClient.SearchSpaces(ctx, req, opts...)
 }
@@ -1939,29 +1965,47 @@ func (c *Client) GetThreadReadState(ctx context.Context, req *chatpb.GetThreadRe
 // Note: The permissionSettings field is not returned in the Space
 // object of the Space event data for this request.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// with an authorization
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize)
+// with an
+// authorization
 // scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
 // appropriate for reading the requested data:
 //
-//	https://www.googleapis.com/auth/chat.spaces.readonly
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator
+//	approval (at https://support.google.com/a?p=chat-app-auth) in
+//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.spaces
+//	  https://www.googleapis.com/auth/chat.app.spaces
 //
-//	https://www.googleapis.com/auth/chat.messages.readonly
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
-//	https://www.googleapis.com/auth/chat.messages
+//	  https://www.googleapis.com/auth/chat.app.memberships
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions
+//	  https://www.googleapis.com/auth/chat.spaces.readonly
 //
-//	https://www.googleapis.com/auth/chat.memberships.readonly
+//	  https://www.googleapis.com/auth/chat.spaces
 //
-//	https://www.googleapis.com/auth/chat.memberships
+//	  https://www.googleapis.com/auth/chat.messages.readonly
 //
-// To get an event, the authenticated user must be a member of the space.
+//	  https://www.googleapis.com/auth/chat.messages
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions
+//
+//	  https://www.googleapis.com/auth/chat.memberships.readonly
+//
+//	  https://www.googleapis.com/auth/chat.memberships
+//
+// To get an event, the authenticated caller must be a member of the space.
 //
 // For an example, see Get details about an
 // event from a Google Chat
@@ -1978,29 +2022,47 @@ func (c *Client) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEventReq
 // removed during the requested period, the event payload contains an empty
 // Membership resource.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// with an authorization
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize)
+// with an
+// authorization
 // scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
 // appropriate for reading the requested data:
 //
-//	https://www.googleapis.com/auth/chat.spaces.readonly
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator
+//	approval (at https://support.google.com/a?p=chat-app-auth) in
+//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.spaces
+//	  https://www.googleapis.com/auth/chat.app.spaces
 //
-//	https://www.googleapis.com/auth/chat.messages.readonly
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
-//	https://www.googleapis.com/auth/chat.messages
+//	  https://www.googleapis.com/auth/chat.app.memberships
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions
+//	  https://www.googleapis.com/auth/chat.spaces.readonly
 //
-//	https://www.googleapis.com/auth/chat.memberships.readonly
+//	  https://www.googleapis.com/auth/chat.spaces
 //
-//	https://www.googleapis.com/auth/chat.memberships
+//	  https://www.googleapis.com/auth/chat.messages.readonly
 //
-// To list events, the authenticated user must be a member of the space.
+//	  https://www.googleapis.com/auth/chat.messages
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions
+//
+//	  https://www.googleapis.com/auth/chat.memberships.readonly
+//
+//	  https://www.googleapis.com/auth/chat.memberships
+//
+// To list events, the authenticated caller must be a member of the space.
 //
 // For an example, see List events from a Google Chat
 // space (at https://developers.google.com/workspace/chat/list-space-events).
@@ -3092,23 +3154,38 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 }
 
 // ListMessages lists messages in a space that the caller is a member of, including
-// messages from blocked members and spaces. If you list messages from a
+// messages from blocked members and spaces. System messages, like those
+// announcing new space members, aren’t included. If you list messages from a
 // space with no messages, the response is an empty object. When using a
 // REST/HTTP interface, the response contains an empty JSON object, {}.
 // For an example, see
 // List
 // messages (at https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// with one of the following authorization
-// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-//	https://www.googleapis.com/auth/chat.messages.readonly
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator
+//	approval (at https://support.google.com/a?p=chat-app-auth) in
+//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	with the authorization scope:
 //
-//	https://www.googleapis.com/auth/chat.messages
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly. When
+//	  using this authentication scope, this method only returns public
+//	  messages in a space. It doesn’t include private messages.
 //
-//	https://www.googleapis.com/auth/chat.import (import mode spaces only)
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
+//
+//	  https://www.googleapis.com/auth/chat.messages.readonly
+//
+//	  https://www.googleapis.com/auth/chat.messages
+//
+//	  https://www.googleapis.com/auth/chat.import (import mode spaces
+//	  only)
 func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
 	it := &MessageIterator{}
 	req = proto.Clone(req).(*chatpb.ListMessagesRequest)
@@ -3418,9 +3495,20 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 //
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-//	with the authorization scope:
+//	with one of the following authorization scopes:
 //
-//	  https://www.googleapis.com/auth/chat.bot
+//	  https://www.googleapis.com/auth/chat.bot: When using this
+//	  authorization scope, this method returns details about a message the
+//	  Chat app has access to, like direct messages and slash
+//	  commands (at https://developers.google.com/workspace/chat/slash-commands)
+//	  that invoke the Chat app.
+//
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly
+//	  with administrator
+//	  approval (at https://support.google.com/a?p=chat-app-auth) (available in
+//	  Developer Preview (at https://developers.google.com/workspace/preview)).
+//	  When using this authentication scope,
+//	  this method returns details about a public message in a space.
 //
 //	User
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -3875,7 +3963,9 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 }
 
 // SearchSpaces returns a list of spaces in a Google Workspace organization based on an
-// administrator’s search.
+// administrator’s search. In the request, set use_admin_access to true.
+// For an example, see Search for and manage
+// spaces (at https://developers.google.com/workspace/chat/search-manage-admin).
 //
 // Requires user
 // authentication with administrator
@@ -3886,8 +3976,6 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 //	https://www.googleapis.com/auth/chat.admin.spaces.readonly
 //
 //	https://www.googleapis.com/auth/chat.admin.spaces
-//
-// In the request, set use_admin_access to true.
 func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	it := &SpaceIterator{}
 	req = proto.Clone(req).(*chatpb.SearchSpacesRequest)
@@ -5611,29 +5699,47 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 // Note: The permissionSettings field is not returned in the Space
 // object of the Space event data for this request.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// with an authorization
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize)
+// with an
+// authorization
 // scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
 // appropriate for reading the requested data:
 //
-//	https://www.googleapis.com/auth/chat.spaces.readonly
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator
+//	approval (at https://support.google.com/a?p=chat-app-auth) in
+//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.spaces
+//	  https://www.googleapis.com/auth/chat.app.spaces
 //
-//	https://www.googleapis.com/auth/chat.messages.readonly
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
-//	https://www.googleapis.com/auth/chat.messages
+//	  https://www.googleapis.com/auth/chat.app.memberships
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions
+//	  https://www.googleapis.com/auth/chat.spaces.readonly
 //
-//	https://www.googleapis.com/auth/chat.memberships.readonly
+//	  https://www.googleapis.com/auth/chat.spaces
 //
-//	https://www.googleapis.com/auth/chat.memberships
+//	  https://www.googleapis.com/auth/chat.messages.readonly
 //
-// To get an event, the authenticated user must be a member of the space.
+//	  https://www.googleapis.com/auth/chat.messages
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions
+//
+//	  https://www.googleapis.com/auth/chat.memberships.readonly
+//
+//	  https://www.googleapis.com/auth/chat.memberships
+//
+// To get an event, the authenticated caller must be a member of the space.
 //
 // For an example, see Get details about an
 // event from a Google Chat
@@ -5695,29 +5801,47 @@ func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 // removed during the requested period, the event payload contains an empty
 // Membership resource.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// with an authorization
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize)
+// with an
+// authorization
 // scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes)
 // appropriate for reading the requested data:
 //
-//	https://www.googleapis.com/auth/chat.spaces.readonly
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator
+//	approval (at https://support.google.com/a?p=chat-app-auth) in
+//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.spaces
+//	  https://www.googleapis.com/auth/chat.app.spaces
 //
-//	https://www.googleapis.com/auth/chat.messages.readonly
+//	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
-//	https://www.googleapis.com/auth/chat.messages
+//	  https://www.googleapis.com/auth/chat.app.memberships
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
 //
-//	https://www.googleapis.com/auth/chat.messages.reactions
+//	  https://www.googleapis.com/auth/chat.spaces.readonly
 //
-//	https://www.googleapis.com/auth/chat.memberships.readonly
+//	  https://www.googleapis.com/auth/chat.spaces
 //
-//	https://www.googleapis.com/auth/chat.memberships
+//	  https://www.googleapis.com/auth/chat.messages.readonly
 //
-// To list events, the authenticated user must be a member of the space.
+//	  https://www.googleapis.com/auth/chat.messages
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions.readonly
+//
+//	  https://www.googleapis.com/auth/chat.messages.reactions
+//
+//	  https://www.googleapis.com/auth/chat.memberships.readonly
+//
+//	  https://www.googleapis.com/auth/chat.memberships
+//
+// To list events, the authenticated caller must be a member of the space.
 //
 // For an example, see List events from a Google Chat
 // space (at https://developers.google.com/workspace/chat/list-space-events).
