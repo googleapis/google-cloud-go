@@ -187,50 +187,6 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	return it
 }
 
-// streamKeepAliveHandler sends to and handles responses from the stream
-// to maintain stream aliveness. We send pings to the server on a timer
-// and monitor for server pings on a timer. When both time out, then
-// we will close the stream and attempt to reopen.
-func (it *messageIterator) streamKeepAliverHandler() {
-	for {
-		select {
-		case <-it.drained:
-			return
-		case <-it.ps.ctx.Done():
-			return
-		default:
-		}
-
-		select {
-		case <-it.pingTicker.C:
-			it.pingStream()
-		case <-it.serverMonitorTicker.C:
-			it.pingMu.RLock()
-			lastResponse := it.lastServerResponse
-			lastPing := it.lastClientPing
-			it.pingMu.RUnlock()
-
-			// if the latest ping happened recently (before server ping),
-			// we pass this check.
-			if lastPing.Before(lastResponse) {
-				break
-			}
-
-			// if the lastPing happened within the timeout, we pass this check.
-			if time.Since(lastPing) < serverPingTimeoutDuration {
-				break
-			}
-
-			// Either we haven't send a client ping succesfully recently,
-			// or we haven't received a ping from the server.
-			// In either case, close the stream so it can be reopened.
-			if it.ps != nil {
-				it.ps.Close()
-			}
-		}
-	}
-}
-
 // Subscriber.receive will call stop on its messageIterator when finished with it.
 // Stop will block until Done has been called on all Messages that have been
 // returned by Next, or until the context with which the messageIterator was created
@@ -906,6 +862,52 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 		time.Sleep(bo.Pause())
 		m = toRetry
 		retryCount++
+	}
+}
+
+// streamKeepAliveHandler sends to and handles responses from the stream
+// to maintain stream aliveness. We send pings to the server on a timer
+// and monitor for server pings on a timer. When both time out, then
+// we will close the stream and attempt to reopen.
+// This is unrelated to iterator.keepAliveDeadlines which handles
+// message leases keep alives.
+func (it *messageIterator) streamKeepAliverHandler() {
+	for {
+		select {
+		case <-it.drained:
+			return
+		case <-it.ps.ctx.Done():
+			return
+		default:
+		}
+
+		select {
+		case <-it.pingTicker.C:
+			it.pingStream()
+		case <-it.serverMonitorTicker.C:
+			it.pingMu.RLock()
+			lastResponse := it.lastServerResponse
+			lastPing := it.lastClientPing
+			it.pingMu.RUnlock()
+
+			// if the latest ping happened recently (before server ping),
+			// we pass this check.
+			if lastPing.Before(lastResponse) {
+				break
+			}
+
+			// if the lastPing happened within the timeout, we pass this check.
+			if time.Since(lastPing) < serverPingTimeoutDuration {
+				break
+			}
+
+			// Either we haven't send a client ping succesfully recently,
+			// or we haven't received a ping from the server.
+			// In either case, close the stream so it can be reopened.
+			if it.ps != nil {
+				it.ps.Close()
+			}
+		}
 	}
 }
 
