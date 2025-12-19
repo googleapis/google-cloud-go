@@ -31,7 +31,7 @@ import (
 // protocolVersion determines what streaming pull protocol to use
 // when talking to pubsub servers. This is a monotonically increasing
 // value that is not exposed to end-users.
-const protocolVersion int64 = 1
+var protocolVersion int64 = 1
 
 // A pullStream supports the methods of a StreamingPullClient, but re-opens
 // the stream on a retryable error.
@@ -223,6 +223,8 @@ func (s *pullStream) CloseSend() error {
 
 // Close closes the stream to be reopened
 func (s *pullStream) Close() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.call(func(spc pb.Subscriber_StreamingPullClient) error {
 		return spc.CloseSend()
 	})

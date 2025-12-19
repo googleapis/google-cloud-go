@@ -892,31 +892,35 @@ func (it *messageIterator) streamKeepAliverHandler() {
 
 		select {
 		case <-it.pingTicker.C:
-			it.pingStream()
+			go it.pingStream()
 		case <-it.serverMonitorTicker.C:
-			it.pingMu.RLock()
-			lastResponse := it.lastServerResponse
-			lastPing := it.lastClientPing
-			it.pingMu.RUnlock()
-
-			// if the latest ping happened recently (before server ping),
-			// we pass this check.
-			if lastPing.Before(lastResponse) {
-				break
-			}
-
-			// if the lastPing happened within the timeout, we pass this check.
-			if time.Since(lastPing) < serverPingTimeoutDuration {
-				break
-			}
-
-			// Either we haven't send a client ping succesfully recently,
-			// or we haven't received a ping from the server.
-			// In either case, close the stream so it can be reopened.
-			if it.ps != nil {
-				it.ps.Close()
-			}
+			go it.checkServer()
 		}
+	}
+}
+
+func (it *messageIterator) checkServer() {
+	it.pingMu.RLock()
+	lastResponse := it.lastServerResponse
+	lastPing := it.lastClientPing
+	it.pingMu.RUnlock()
+
+	// if the latest ping happened recently (before server ping),
+	// we pass this check.
+	if lastPing.Before(lastResponse) {
+		return
+	}
+
+	// if the lastPing happened within the timeout, we pass this check.
+	if time.Since(lastPing) < serverPingTimeoutDuration {
+		return
+	}
+
+	// Either we haven't send a client ping succesfully recently,
+	// or we haven't received a ping from the server.
+	// In either case, close the stream so it can be reopened.
+	if it.ps != nil {
+		it.ps.Close()
 	}
 }
 
