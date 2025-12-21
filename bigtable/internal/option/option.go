@@ -240,7 +240,7 @@ type DynamicChannelPoolConfig struct {
 }
 
 // DefaultDynamicChannelPoolConfig is default settings for dynamic channel pool
-func DefaultDynamicChannelPoolConfig(initialConns int) DynamicChannelPoolConfig {
+func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
 		Enabled:              true, // Enabled by default
 		MinConns:             10,

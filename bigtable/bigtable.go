@@ -212,11 +212,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 			// Validate dynamic config early if enabled
 			if config.EnableDynamicChannelPool {
-				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(defaultBigtableConnPoolSize)); err != nil {
+				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
 					return nil, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
 				}
 
-				dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(defaultBigtableConnPoolSize), btPool)
+				dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), btPool)
 				dsm.Start(ctx) // Start the monitor's background goroutine
 			}
 		}
