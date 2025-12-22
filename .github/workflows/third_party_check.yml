@@ -24,7 +24,7 @@ jobs:
     - name: Find modified go.mod files
       id: modfiles
       run: |
-        dirs=$(go run ./internal/actions/cmd/changefinder -q -internal --base=HEAD~1 --diff-filter=d --path-filter='*go.mod')
+        dirs=$(cd internal/actions; go run ./cmd/changefinder -q -internal --base=HEAD~1 --diff-filter=d --path-filter='*go.mod' --dir=${{ github.workspace }})
         if [ -z "$dirs" ]
         then
           echo "skip=1" >> "$GITHUB_OUTPUT"
@@ -46,4 +46,6 @@ jobs:
       matrix: ${{ fromJson(needs.changed_gomods.outputs.mods) }}
     steps:
     - uses: actions/checkout@v4
-    - run: go run ./internal/actions/cmd/thirdpartycheck -q -mod ${{ matrix.mods }}/go.mod
+    - run: |
+        cd internal/actions
+        go run ./internal/actions/cmd/thirdpartycheck -q --dir=${{ github.workspace }} -mod ${{ matrix.mods }}/go.mod
