@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"maps"
 	"math/rand"
@@ -181,6 +182,7 @@ type pcuState struct {
 	failedDeletes   []*ObjectHandle
 	errOnce         sync.Once
 	firstErr        error
+	errors          []error
 	partNum         int
 	currentBuffer   []byte
 	bytesBuffered   int64
@@ -350,17 +352,24 @@ func setPartMetadata(pw *Writer, s *pcuState, task uploadTask) {
 func (s *pcuState) resultCollector() {
 	defer s.collectorWG.Done()
 	for result := range s.resultCh {
-		s.mu.Lock()
 		if result.err != nil {
 			s.setError(result.err)
 		} else if result.handle != nil {
+			s.mu.Lock()
 			s.partMap[result.partNumber] = result.handle
+			s.mu.Unlock()
 		}
-		s.mu.Unlock()
 	}
 }
 
 func (s *pcuState) setError(err error) {
+	if err == nil || errors.Is(err, context.Canceled) {
+		return
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.errors = append(s.errors, err)
+
 	s.errOnce.Do(func() {
 		s.firstErr = err
 		s.cancel() // Cancel context on first error.

@@ -173,25 +173,39 @@ func TestPCUState_SetError(t *testing.T) {
 	err1 := fmt.Errorf("first error")
 	state.setError(err1)
 
+	// Verify firstErr is set and the error is added to the slice.
 	if state.firstErr != err1 {
-		t.Errorf("setError() first call: got %v, want %v", state.firstErr, err1)
+		t.Errorf("firstErr: got %v, want %v", state.firstErr, err1)
+	}
+	if len(state.errors) != 1 || state.errors[0] != err1 {
+		t.Errorf("errors slice: got %v, want [%v]", state.errors, err1)
 	}
 
+	// Verify cancellation happens on the first error.
 	select {
 	case <-state.ctx.Done():
-		// Correctly cancelled.
 		if state.ctx.Err() != context.Canceled {
-			t.Errorf("setError() first call: context error = %v, want %v", state.ctx.Err(), context.Canceled)
+			t.Errorf("context error: got %v, want %v", state.ctx.Err(), context.Canceled)
 		}
 	default:
-		t.Errorf("setError() first call: context not cancelled")
+		t.Errorf("context not cancelled after first error")
 	}
 
+	// Verify context.Canceled is filtered out of the errors slice to avoid noise.
+	state.setError(context.Canceled)
+	if len(state.errors) != 1 {
+		t.Errorf("errors slice after context.Canceled: got len %d, want 1", len(state.errors))
+	}
+
+	// Verify subsequent errors are collected but don't change firstErr.
 	err2 := fmt.Errorf("second error")
 	state.setError(err2)
 
 	if state.firstErr != err1 {
-		t.Errorf("setError() second call: got %v, want %v (should not change)", state.firstErr, err1)
+		t.Errorf("firstErr after second error: got %v, want %v (should not change)", state.firstErr, err1)
+	}
+	if len(state.errors) != 2 || state.errors[1] != err2 {
+		t.Errorf("errors slice after second error: got %v, want [%v, %v]", state.errors, err1, err2)
 	}
 }
 
