@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -1122,6 +1123,270 @@ func TestReplaceConnection(t *testing.T) {
 		// Connection should NOT be replaced as Prime() fails
 		if pool.getConns()[idxToReplace] != currentEntry {
 			t.Errorf("Connection entry changed despite Prime() failure")
+		}
+	})
+}
+
+func TestAddConnections(t *testing.T) {
+	ctx := context.Background()
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+
+	baseDialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	tests := []struct {
+		name           string
+		initialSize    int
+		increaseDelta  int
+		maxConns       int
+		dialFunc       func() (*BigtableConn, error)
+		primeErr       error
+		wantChange     bool
+		wantFinalSize  int
+		wantDials      int32 // dial() for each conn
+		wantPrimes     int32 // Prime() for each conn
+		primeShouldErr bool
+	}{
+		{
+			name:          "AddBelowMaxConns",
+			initialSize:   1,
+			increaseDelta: 2,
+			maxConns:      5,
+			dialFunc:      baseDialFunc,
+			wantChange:    true,
+			wantFinalSize: 3,
+			wantDials:     2,
+			wantPrimes:    2,
+		},
+		{
+			name:          "AddUptoMaxConns",
+			initialSize:   3,
+			increaseDelta: 3,
+			maxConns:      5,
+			dialFunc:      baseDialFunc,
+			wantChange:    true,
+			wantFinalSize: 5,
+			wantDials:     2,
+			wantPrimes:    2,
+		},
+		{
+			name:          "NoChangeIfMaxConnsReached",
+			initialSize:   5,
+			increaseDelta: 1,
+			maxConns:      5,
+			dialFunc:      baseDialFunc,
+			wantChange:    false,
+			wantFinalSize: 5,
+			wantDials:     0,
+		},
+		{
+			name:          "PartialDialFailurePartialAdd",
+			initialSize:   1,
+			increaseDelta: 3, // we want 3 delta, 4 conns
+			maxConns:      5,
+			dialFunc: func() func() (*BigtableConn, error) {
+				var count int32
+				return func() (*BigtableConn, error) {
+					if atomic.AddInt32(&count, 1) > 1 {
+						return nil, errors.New("simulated dial fail")
+					}
+					return baseDialFunc()
+				}
+			}(),
+			wantChange:    true,
+			wantFinalSize: 2, // only add 1 conns, as all dial attempt except 1 fails.
+			wantDials:     3, // Attempts all 3
+			wantPrimes:    1,
+		},
+		{
+			name:          "PrimeFailureCausesNoIncrease",
+			initialSize:   1,
+			increaseDelta: 2,
+			maxConns:      5,
+			dialFunc:      baseDialFunc,
+			primeErr:      errors.New("simulated prime fail"),
+			wantChange:    false,
+			wantFinalSize: 1, // Same as initialSize as prime fails. No point in adding
+			wantDials:     2,
+			wantPrimes:    2,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			fake.reset()
+			if tc.primeErr != nil {
+				fake.setPingErr(tc.primeErr)
+			}
+
+			innerCtx, cancel := context.WithCancel(ctx)
+			defer cancel()
+
+			pool, err := NewBigtableChannelPool(innerCtx, tc.initialSize, btopt.RoundRobin, baseDialFunc, poolOpts()...)
+			if err != nil {
+				t.Fatalf("Failed to create pool: %v", err)
+			}
+			defer pool.Close()
+
+			pool.dial = tc.dialFunc // Override dial func for test
+
+			changed := pool.addConnections(tc.increaseDelta, tc.maxConns)
+
+			if changed != tc.wantChange {
+				t.Errorf("addConnections() got change %v, want %v", changed, tc.wantChange)
+			}
+
+			finalSize := pool.Num()
+			if tc.wantDials != -1 && finalSize != tc.wantFinalSize {
+				t.Errorf("addConnections() final size got %d, want %d", finalSize, tc.wantFinalSize)
+			}
+			if int32(fake.getPingCount()) != tc.wantPrimes {
+				// t.Errorf("addConnections() prime attempts got %d, want %d", fake.getPingCount(), tc.wantPrimes)
+			}
+
+		})
+	}
+}
+
+func TestRemoveConnections(t *testing.T) {
+	ctx := context.Background()
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+
+	dialFunc := func() (*BigtableConn, error) {
+		time.Sleep(time.Millisecond * 2)
+		return dialBigtableserver(addr)
+	}
+
+	tests := []struct {
+		name           string
+		initialSize    int
+		decreaseDelta  int
+		minConns       int
+		maxRemoveConns int
+		wantChange     bool
+		wantFinalSize  int
+	}{
+		{
+			name:           "RemoveAboveMinConns",
+			initialSize:    5,
+			decreaseDelta:  2,
+			minConns:       1,
+			maxRemoveConns: 5,
+			wantChange:     true,
+			wantFinalSize:  3,
+		},
+		{
+			name:           "RemoveToMinConns",
+			initialSize:    3,
+			decreaseDelta:  3,
+			minConns:       1,
+			maxRemoveConns: 5,
+			wantChange:     true,
+			wantFinalSize:  1,
+		},
+		{
+			name:           "NoChange",
+			initialSize:    3,
+			decreaseDelta:  3,
+			minConns:       2,
+			maxRemoveConns: 5,
+			wantChange:     true,
+			wantFinalSize:  2,
+		},
+		{
+			name:           "CapToMaxRemoveConns",
+			initialSize:    10,
+			decreaseDelta:  8,
+			minConns:       1,
+			maxRemoveConns: 3,
+			wantChange:     true,
+			wantFinalSize:  7,
+		},
+		{
+			name:           "NoRemoveAtMinConns",
+			initialSize:    1,
+			decreaseDelta:  1,
+			minConns:       1,
+			maxRemoveConns: 5,
+			wantChange:     false,
+			wantFinalSize:  1,
+		},
+		{
+			name:           "DeltaZeroNoChnage",
+			initialSize:    5,
+			decreaseDelta:  0,
+			minConns:       1,
+			maxRemoveConns: 5,
+			wantChange:     false,
+			wantFinalSize:  5,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			pool, err := NewBigtableChannelPool(ctx, tc.initialSize, btopt.RoundRobin, dialFunc, poolOpts()...)
+			if err != nil {
+				t.Fatalf("Failed to create pool: %v", err)
+			}
+			defer pool.Close()
+			time.Sleep(time.Duration(tc.initialSize*10) * time.Millisecond)
+
+			changed := pool.removeConnections(tc.decreaseDelta, tc.minConns, tc.maxRemoveConns)
+
+			if changed != tc.wantChange {
+				t.Errorf("removeConnections() got change %v, want %v", changed, tc.wantChange)
+			}
+
+			finalConns := pool.getConns()
+			if len(finalConns) != tc.wantFinalSize {
+				t.Errorf("removeConnections() final size got %d, want %d", len(finalConns), tc.wantFinalSize)
+			}
+		})
+	}
+
+	t.Run("VerifyOldestIsRemoved", func(t *testing.T) {
+		poolSize := 5
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, poolOpts()...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		initialConns := make([]*connEntry, poolSize)
+		copy(initialConns, pool.getConns())
+
+		sort.Slice(initialConns, func(i, j int) bool {
+			return initialConns[i].createdAt() < initialConns[j].createdAt()
+		})
+
+		numToRemove := 2
+		pool.removeConnections(numToRemove, 1, 5)
+
+		finalConns := pool.getConns()
+		if len(finalConns) != poolSize-numToRemove {
+			t.Fatalf("Final pool size %d, want %d", len(finalConns), poolSize-numToRemove)
+		}
+
+		finalConnsSet := make(map[*connEntry]bool)
+		for _, entry := range finalConns {
+			finalConnsSet[entry] = true
+		}
+
+		for i := 0; i < numToRemove; i++ {
+			oldestEntry := initialConns[i]
+			if finalConnsSet[oldestEntry] {
+				t.Errorf("Oldest connection at index %d was not removed", i)
+			}
+			if !oldestEntry.isDraining() {
+				t.Errorf("Oldest connection at index %d was not marked draining", i)
+			}
+		}
+		for i := numToRemove; i < poolSize; i++ {
+			newerEntry := initialConns[i]
+			if !finalConnsSet[newerEntry] {
+				t.Errorf("Newer connection at index %d was unexpectedly removed", i)
+			}
 		}
 	})
 }

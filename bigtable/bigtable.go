@@ -81,7 +81,7 @@ type Client struct {
 	executeQueryRetryOption gax.CallOption
 	enableDirectAccess      bool
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
-
+	dynamicScaleMonitor     *btransport.DynamicScaleMonitor
 }
 
 // ClientConfig has configurations for the client.
@@ -96,6 +96,9 @@ type ClientConfig struct {
 	//
 	// TODO: support user provided meter provider
 	MetricsProvider MetricsProvider
+
+	// If true, enable dynamic channel pool
+	EnableDynamicChannelPool bool
 }
 
 // MetricsProvider is a wrapper for built in metrics meter provider
@@ -181,10 +184,12 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	var connPool gtransport.ConnPool
 	var connPoolErr error
+	var dsm *btransport.DynamicScaleMonitor
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	if enableBigtableConnPool {
 		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
-		connPool, connPoolErr = btransport.NewBigtableChannelPool(ctx,
+
+		btPool, err := btransport.NewBigtableChannelPool(ctx,
 			defaultBigtableConnPoolSize,
 			btopt.BigtableLoadBalancingStrategy(),
 			func() (*btransport.BigtableConn, error) {
@@ -199,6 +204,22 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			btransport.WithAppProfile(config.AppProfile),
 			btransport.WithFeatureFlagsMetadata(ffMD),
 		)
+
+		if err != nil {
+			connPoolErr = err
+		} else {
+			connPool = btPool
+
+			// Validate dynamic config early if enabled
+			if config.EnableDynamicChannelPool {
+				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
+					return nil, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
+				}
+
+				dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), btPool)
+				dsm.Start(ctx) // Start the monitor's background goroutine
+			}
+		}
 
 	} else {
 		// use to regular ConnPool
@@ -221,11 +242,15 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		executeQueryRetryOption: executeQueryRetryOption,
 		enableDirectAccess:      enableDirectAccess,
 		featureFlagsMD:          ffMD,
+		dynamicScaleMonitor:     dsm,
 	}, nil
 }
 
 // Close closes the Client.
 func (c *Client) Close() error {
+	if c.dynamicScaleMonitor != nil {
+		c.dynamicScaleMonitor.Stop()
+	}
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.shutdown()
 	}
