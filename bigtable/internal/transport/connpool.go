@@ -50,6 +50,20 @@ const requestParamsHeader = "x-goog-request-params"
 // BigtableChannelPoolOption options for configurable
 type BigtableChannelPoolOption func(*BigtableChannelPool)
 
+// connPoolStatsSupplier callback  that returns a snapshot of connection pool statistics.
+type connPoolStatsSupplier func() []connPoolStats
+
+// connPoolStats holds a snapshot of statistics for a single connection.
+type connPoolStats struct {
+	OutstandingUnaryLoad     int32
+	OutstandingStreamingLoad int32
+	ErrorCount               int64
+	IsALTSUsed               bool
+	LBPolicy                 string
+}
+
+var _ Monitor = (*MetricsReporter)(nil)
+
 // WithAppProfile provides the appProfile
 func WithAppProfile(appProfile string) BigtableChannelPoolOption {
 	return func(p *BigtableChannelPool) {
@@ -129,6 +143,28 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 		}
 	}
 	return nil
+}
+
+// connPoolStatsSupplier returns a snapshot of the current connection pool statistics.
+func (p *BigtableChannelPool) connPoolStatsSupplier() []connPoolStats {
+	conns := p.getConns()
+	if len(conns) == 0 {
+		return nil
+	}
+
+	stats := make([]connPoolStats, len(conns))
+	lbPolicy := p.strategy.String()
+
+	for i, entry := range conns {
+		stats[i] = connPoolStats{
+			OutstandingUnaryLoad:     entry.unaryLoad.Load(),
+			OutstandingStreamingLoad: entry.streamingLoad.Load(),
+			ErrorCount:               entry.errorCount.Swap(0),
+			IsALTSUsed:               entry.isALTSUsed(),
+			LBPolicy:                 lbPolicy,
+		}
+	}
+	return stats
 }
 
 // NewBigtableConn creates a wrapped grpc Client Conn
@@ -239,6 +275,15 @@ type BigtableChannelPool struct {
 	instanceName   string
 	featureFlagsMD metadata.MD
 	meterProvider  metric.MeterProvider
+	// configs
+	metricsConfig btopt.MetricsReporterConfig
+
+	// background monitors
+	monitors []Monitor
+}
+
+func WithMetricsReporterConfig(config btopt.MetricsReporterConfig) BigtableChannelPoolOption {
+	return func(p *BigtableChannelPool) { p.metricsConfig = config }
 }
 
 // getConns safely loads the current slice of connections.
@@ -327,7 +372,25 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	}
 
 	pool.conns.Store(&initialConns)
+
+	btopt.Debugf(pool.logger, "bigtable_connpool: using load balancing strategy: %s\n", strategy)
+
+	metricsReporter, err := NewMetricsReporter(pool.metricsConfig, pool.connPoolStatsSupplier, pool.logger, pool.meterProvider)
+	if err == nil {
+		// ignore
+		pool.monitors = append(pool.monitors, metricsReporter)
+	} else {
+		btopt.Debugf(pool.logger, "bigtable_connpool: failed to create metrics reporter: %v\n", err)
+	}
+	pool.startMonitors()
 	return pool, nil
+}
+
+func (p *BigtableChannelPool) startMonitors() {
+	for _, m := range p.monitors {
+		btopt.Debugf(p.logger, "bigtable_connpool: Starting monitor %T\n", m)
+		m.Start(p.poolCtx)
+	}
 }
 
 // Num returns the number of connections in the pool.
@@ -338,6 +401,10 @@ func (p *BigtableChannelPool) Num() int {
 // Close closes all connections in the pool.
 func (p *BigtableChannelPool) Close() error {
 	p.poolCancel() // Cancel the context for background tasks
+	// Stop all monitors.
+	for _, m := range p.monitors {
+		m.Stop()
+	}
 	conns := p.getConns()
 	var errs multiError
 

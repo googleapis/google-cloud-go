@@ -252,3 +252,18 @@ func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 		MaxRemoveConns:       2, // Only Cap for removals
 	}
 }
+
+// MetricsReporterConfig for periodic reporting
+// MetricsReporterConfig holds the parameters for metrics reporting.
+type MetricsReporterConfig struct {
+	Enabled           bool
+	ReportingInterval time.Duration
+}
+
+// DefaultMetricsReporterConfig with defaults used.
+func DefaultMetricsReporterConfig() MetricsReporterConfig {
+	return MetricsReporterConfig{
+		Enabled:           true,
+		ReportingInterval: 1 * time.Minute,
+	}
+}
