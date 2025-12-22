@@ -282,6 +282,7 @@ type BigtableChannelPool struct {
 	monitors []Monitor
 }
 
+// WithMetricsReporterConfig attaches the relevant config for exporting the metrics
 func WithMetricsReporterConfig(config btopt.MetricsReporterConfig) BigtableChannelPoolOption {
 	return func(p *BigtableChannelPool) { p.metricsConfig = config }
 }
