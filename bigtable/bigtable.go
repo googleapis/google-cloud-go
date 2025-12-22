@@ -203,6 +203,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			btransport.WithInstanceName(fullInstanceName),
 			btransport.WithAppProfile(config.AppProfile),
 			btransport.WithFeatureFlagsMetadata(ffMD),
+			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+			btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
 		)
 
 		if err != nil {

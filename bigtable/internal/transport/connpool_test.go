@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
@@ -1389,6 +1390,87 @@ func TestRemoveConnections(t *testing.T) {
 			}
 		}
 	})
+}
+
+func TestConnPoolStatisticsVisitor(t *testing.T) {
+	ctx := context.Background()
+	poolSize := 3
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, poolOpts()...)
+	if err != nil {
+		t.Fatalf("Failed to create pool: %v", err)
+	}
+	defer pool.Close()
+
+	// Wait for connections to be established
+	time.Sleep(100 * time.Millisecond)
+
+	conns := pool.getConns()
+	if len(conns) != poolSize {
+		t.Fatalf("Pool size mismatch: got %d, want %d", len(conns), poolSize)
+	}
+
+	testData := []struct {
+		unary     int32
+		streaming int32
+		errors    int64
+		isALTS    bool
+	}{
+		{unary: 5, streaming: 2, errors: 10, isALTS: false},
+		{unary: 0, streaming: 1, errors: 0, isALTS: true},
+		{unary: 3, streaming: 0, errors: 5, isALTS: false},
+	}
+
+	if len(testData) != poolSize {
+		t.Fatalf("Test data size: pool size mismatch: got %d, want %d", len(testData), poolSize)
+	}
+
+	for i, data := range testData {
+		if i < len(conns) {
+			conns[i].unaryLoad.Store(data.unary)
+			conns[i].streamingLoad.Store(data.streaming)
+			conns[i].errorCount.Store(data.errors)
+			conns[i].conn.isALTSConn.Store(data.isALTS)
+		}
+	}
+
+	// Get the snapshot
+	stats := pool.connPoolStatsSupplier()
+
+	if len(stats) != poolSize {
+		t.Errorf("Snapshot size mismatch: got %d, want %d", len(stats), poolSize)
+	}
+
+	expectedStats := make([]connPoolStats, poolSize)
+	for i, data := range testData {
+		expectedStats[i] = connPoolStats{
+			OutstandingUnaryLoad:     data.unary,
+			OutstandingStreamingLoad: data.streaming,
+			ErrorCount:               data.errors,
+			IsALTSUsed:               data.isALTS,
+			LBPolicy:                 btopt.RoundRobin.String(),
+		}
+	}
+
+	sort.Slice(stats, func(i, j int) bool { return stats[i].OutstandingUnaryLoad < stats[j].OutstandingUnaryLoad })
+	sort.Slice(expectedStats, func(i, j int) bool {
+		return expectedStats[i].OutstandingUnaryLoad < expectedStats[j].OutstandingUnaryLoad
+	})
+
+	if !reflect.DeepEqual(stats, expectedStats) {
+		t.Errorf("Snapshot data mismatch:\ngot:  %v\nwant: %v", stats, expectedStats)
+	}
+
+	// Verify error counts are reset
+	connsAfter := pool.getConns()
+	for i, entry := range connsAfter {
+		if entry.errorCount.Load() != 0 {
+			t.Errorf("entry[%d].errorCount was not reset: got %d, want 0", i, entry.errorCount.Load())
+		}
+	}
 }
 
 // --- Benchmarks ---
