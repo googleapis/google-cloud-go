@@ -117,18 +117,18 @@ type PartMetadataDecorator interface {
 }
 
 const (
-	defaultPartSize            = 16 * 1024 * 1024 // 16 MiB
-	defaultMinSize             = 64 * 1024 * 1024 // 64 MiB
-	baseWorkers                = 4
-	maxWorkers                 = 16
-	defaultTmpObjectPrefix     = "gcs-go-sdk-pcu-tmp/"
-	maxComposeComponents       = 32
-	defaultMaxRetries          = 3
-	defaultBaseDelay           = 100 * time.Millisecond
-	defaultMaxDelay            = 5 * time.Second
-	chunkSizeMultiple          = 256 * 1024 // 256 KiB
-	xGoogMetaGcsPCUPartNumber  = "x-goog-meta-gcs-pcu-part-number"
-	xGoogMetaGcsPCUFinalObject = "x-goog-meta-gcs-pcu-final-object"
+	defaultPartSize           = 16 * 1024 * 1024 // 16 MiB
+	defaultMinSize            = 64 * 1024 * 1024 // 64 MiB
+	baseWorkers               = 4
+	maxWorkers                = 16
+	defaultTmpObjectPrefix    = "gcs-go-sdk-pcu-tmp/"
+	maxComposeComponents      = 32
+	defaultMaxRetries         = 3
+	defaultBaseDelay          = 100 * time.Millisecond
+	defaultMaxDelay           = 5 * time.Second
+	chunkSizeMultiple         = 256 * 1024 // 256 KiB
+	pcuPartNumberMetadataKey  = "x-goog-meta-gcs-pcu-part-number"
+	pcuFinalObjectMetadataKey = "x-goog-meta-gcs-pcu-final-object"
 )
 
 func (c *ParallelUploadConfig) defaults() {
@@ -211,14 +211,18 @@ type uploadResult struct {
 }
 
 func (w *Writer) initPCU(ctx context.Context) error {
-	// TODO: Check if PCU is enabled on the Writer
+	// TODO: Check if PCU is enabled on the Writer.
 
-	// TODO: Get the config from the Writer
+	// TODO: Get the config from the Writer.
 	cfg := &ParallelUploadConfig{}
 	cfg.defaults()
 
-	if cfg.PartSize%(chunkSizeMultiple) != 0 {
-		return fmt.Errorf("PartSize must be a multiple of 256KiB")
+	// Fall back to the nearest multiple of 256KiB.
+	if cfg.PartSize%chunkSizeMultiple != 0 {
+		cfg.PartSize = (cfg.PartSize / chunkSizeMultiple) * chunkSizeMultiple
+		if cfg.PartSize < chunkSizeMultiple {
+			cfg.PartSize = chunkSizeMultiple
+		}
 	}
 
 	pCtx, cancel := context.WithCancel(ctx)
@@ -249,7 +253,7 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	state.collectorWG.Add(1)
 	go state.resultCollector()
 
-	// Handle to get the first buffer
+	// Handle to get the first buffer.
 	select {
 	case <-state.ctx.Done():
 		return state.ctx.Err()
@@ -302,7 +306,7 @@ func (s *pcuState) worker() {
 	}
 }
 
-// TODO: add retry logic
+// TODO: add retry logic.
 func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
 	partName := s.config.NamingStrategy.NewPartName(s.w.o.bucket, s.config.TmpObjectPrefix, s.w.o.object, task.partNumber)
 	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
@@ -311,8 +315,8 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	pw.ObjectAttrs.Name = partName
 	pw.ObjectAttrs.Size = task.size
 	pw.SendCRC32C = s.w.SendCRC32C
-	pw.ChunkSize = 0 // Force single-shot upload for parts
-	// Clear fields not applicable to parts or that are set by compose
+	pw.ChunkSize = 0 // Force single-shot upload for parts.
+	// Clear fields not applicable to parts or that are set by compose.
 	pw.ObjectAttrs.CRC32C = 0
 	pw.ObjectAttrs.MD5 = nil
 	setPartMetadata(pw, s, task)
@@ -344,8 +348,8 @@ func setPartMetadata(pw *Writer, s *pcuState, task uploadTask) {
 		md = make(map[string]string)
 	}
 	pw.ObjectAttrs.Metadata = md
-	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUPartNumber] = partNumberStr
-	pw.ObjectAttrs.Metadata[xGoogMetaGcsPCUFinalObject] = pw.o.object
+	pw.ObjectAttrs.Metadata[pcuPartNumberMetadataKey] = partNumberStr
+	pw.ObjectAttrs.Metadata[pcuFinalObjectMetadataKey] = pw.o.object
 	if s.config.MetadataDecorator != nil {
 		s.config.MetadataDecorator.Decorate(&pw.ObjectAttrs)
 	}
@@ -367,6 +371,6 @@ func (s *pcuState) resultCollector() {
 func (s *pcuState) setError(err error) {
 	s.errOnce.Do(func() {
 		s.firstErr = err
-		s.cancel() // Cancel context on first error
+		s.cancel() // Cancel context on first error.
 	})
 }

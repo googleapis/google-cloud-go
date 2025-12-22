@@ -69,7 +69,7 @@ func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
 	_, err := fmt.Sscanf(partName, expectedFormat, &randSuffix, &parsedPartNum)
 	if err != nil {
 		t.Errorf("NewPartName() returned a name with an unexpected format. Got %q, want format ~%q. Error: %v", partName, prefix+"<hex>-"+finalName+"-part-<int>", err)
-		return // Return to avoid further checks if parsing failed
+		return // Return to avoid further checks if parsing failed.
 	}
 
 	if parsedPartNum != partNumber {
@@ -179,7 +179,7 @@ func TestPCUState_SetError(t *testing.T) {
 
 	select {
 	case <-state.ctx.Done():
-		// Correctly cancelled
+		// Correctly cancelled.
 		if state.ctx.Err() != context.Canceled {
 			t.Errorf("setError() first call: context error = %v, want %v", state.ctx.Err(), context.Canceled)
 		}
@@ -207,11 +207,11 @@ func TestPCUState_ResultCollector(t *testing.T) {
 	state.collectorWG.Add(1)
 	go state.resultCollector()
 
-	// Successful result
+	// Successful result.
 	objHandle1 := &ObjectHandle{object: "part1"}
 	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil}
 
-	// Error result
+	// Error result.
 	errResult := fmt.Errorf("upload failed")
 	state.resultCh <- uploadResult{partNumber: 2, handle: nil, err: errResult}
 
@@ -229,7 +229,7 @@ func TestPCUState_ResultCollector(t *testing.T) {
 		t.Errorf("resultCollector: firstErr got %v, want %v", state.firstErr, errResult)
 	}
 
-	// Check if context is cancelled
+	// Check if context is cancelled.
 	select {
 	case <-state.ctx.Done():
 		if state.ctx.Err() != context.Canceled {
@@ -262,6 +262,7 @@ func TestPCUWorker_SuccessfulTask(t *testing.T) {
 	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
 	state.uploadCh <- task
 
+	// Wait for the worker to process the task and send the result.
 	select {
 	case result := <-state.resultCh:
 		if result.err != nil {
@@ -274,6 +275,7 @@ func TestPCUWorker_SuccessfulTask(t *testing.T) {
 		t.Errorf("worker timeout waiting for result")
 	}
 
+	// Wait for the worker to return the buffer to the pool.
 	select {
 	case retBuffer := <-state.bufferCh:
 		if len(retBuffer) != len(buffer) {
@@ -310,6 +312,7 @@ func TestPCUWorker_FailedTask(t *testing.T) {
 	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
 	state.uploadCh <- task
 
+	// Check for upload error.
 	select {
 	case result := <-state.resultCh:
 		if result.err == nil || result.err.Error() != uploadErr.Error() {
@@ -322,6 +325,7 @@ func TestPCUWorker_FailedTask(t *testing.T) {
 		t.Errorf("worker timeout waiting for result")
 	}
 
+	// Check if buffer is returned.
 	select {
 	case <-state.bufferCh:
 	case <-time.After(1 * time.Second):
@@ -334,7 +338,7 @@ func TestPCUWorker_FailedTask(t *testing.T) {
 
 func TestPCUWorker_ContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	uploadStarted := make(chan struct{}) // To signal when upload starts
+	uploadStarted := make(chan struct{}) // To signal when upload starts.
 
 	buffer := make([]byte, 10)
 	state := &pcuState{
@@ -360,6 +364,7 @@ func TestPCUWorker_ContextCancellation(t *testing.T) {
 
 	cancel()
 
+	// Check if context has been cancelled.
 	select {
 	case result := <-state.resultCh:
 		if result.err != context.Canceled {
@@ -380,7 +385,7 @@ func TestPCUWorker_ContextCancellation(t *testing.T) {
 	}
 }
 
-func TestPCUWorker_ChannelClose(t *testing.T) {
+func TestPCUWorker_UploadChannelClose(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -398,8 +403,9 @@ func TestPCUWorker_ChannelClose(t *testing.T) {
 	state.workerWG.Add(1)
 	go state.worker()
 
+	// Close the upload channel to signal workers to stop.
 	close(state.uploadCh)
-	state.workerWG.Wait() // Should not block indefinitely
+	state.workerWG.Wait() // Should not block indefinitely.
 
 	select {
 	case res := <-state.resultCh:
@@ -439,8 +445,8 @@ func TestSetPartMetadata(t *testing.T) {
 			task:            uploadTask{partNumber: 1},
 			finalObjectName: "final-object",
 			expectedMetadata: map[string]string{
-				xGoogMetaGcsPCUPartNumber:  "1",
-				xGoogMetaGcsPCUFinalObject: "final-object",
+				pcuPartNumberMetadataKey:  "1",
+				pcuFinalObjectMetadataKey: "final-object",
 			},
 		},
 		{
@@ -452,9 +458,9 @@ func TestSetPartMetadata(t *testing.T) {
 			task:            uploadTask{partNumber: 2},
 			finalObjectName: "final-object",
 			expectedMetadata: map[string]string{
-				"initial-key":              "initial-value",
-				xGoogMetaGcsPCUPartNumber:  "2",
-				xGoogMetaGcsPCUFinalObject: "final-object",
+				"initial-key":             "initial-value",
+				pcuPartNumberMetadataKey:  "2",
+				pcuFinalObjectMetadataKey: "final-object",
 			},
 		},
 		{
@@ -466,37 +472,37 @@ func TestSetPartMetadata(t *testing.T) {
 			task:            uploadTask{partNumber: 3},
 			finalObjectName: "final-object",
 			expectedMetadata: map[string]string{
-				"decorated-key":            "decorated-value",
-				xGoogMetaGcsPCUPartNumber:  "3",
-				xGoogMetaGcsPCUFinalObject: "final-object",
+				"decorated-key":           "decorated-value",
+				pcuPartNumberMetadataKey:  "3",
+				pcuFinalObjectMetadataKey: "final-object",
 			},
 		},
 		{
 			name: "Existing metadata, with decorator that overwrites",
 			initialMetadata: map[string]string{
-				"initial-key":             "initial-value",
-				xGoogMetaGcsPCUPartNumber: "should-be-overwritten",
+				"initial-key":            "initial-value",
+				pcuPartNumberMetadataKey: "should-be-overwritten",
 			},
 			decorator: &testMetadataDecorator{
 				metadataToSet: map[string]string{
-					"decorated-key":            "decorated-value",
-					xGoogMetaGcsPCUFinalObject: "overwritten-by-decorator",
+					"decorated-key":           "decorated-value",
+					pcuFinalObjectMetadataKey: "overwritten-by-decorator",
 				},
 			},
 			task:            uploadTask{partNumber: 4},
 			finalObjectName: "final-object-base",
 			expectedMetadata: map[string]string{
-				"initial-key":              "initial-value",
-				"decorated-key":            "decorated-value",
-				xGoogMetaGcsPCUPartNumber:  "4",                        // Overwrites initial
-				xGoogMetaGcsPCUFinalObject: "overwritten-by-decorator", // Overwritten by decorator
+				"initial-key":             "initial-value",
+				"decorated-key":           "decorated-value",
+				pcuPartNumberMetadataKey:  "4",                        // Overwrites initial.
+				pcuFinalObjectMetadataKey: "overwritten-by-decorator", // Overwritten by decorator.
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Setup
+			// Setup.
 			sourceWriter := &Writer{
 				ObjectAttrs: ObjectAttrs{
 					Metadata: tc.initialMetadata,
@@ -512,10 +518,10 @@ func TestSetPartMetadata(t *testing.T) {
 				},
 			}
 
-			// Execute
+			// Execute.
 			setPartMetadata(partWriter, state, tc.task)
 
-			// Verify
+			// Verify.
 			if !reflect.DeepEqual(partWriter.ObjectAttrs.Metadata, tc.expectedMetadata) {
 				t.Errorf("Metadata mismatch:\ngot:  %v\nwant: %v", partWriter.ObjectAttrs.Metadata, tc.expectedMetadata)
 			}
