@@ -46,4 +46,6 @@ jobs:
       matrix: ${{ fromJson(needs.changed_gomods.outputs.mods) }}
     steps:
     - uses: actions/checkout@v4
-    - run: go run ./internal/actions/cmd/thirdpartycheck -q -mod ${{ matrix.mods }}/go.mod
+    - run: |
+        cd internal/actions
+        go run ./internal/actions/cmd/thirdpartycheck -q -mod ${{ matrix.mods }}/go.mod
