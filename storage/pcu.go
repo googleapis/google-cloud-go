@@ -42,7 +42,7 @@ type ParallelUploadConfig struct {
 
 	// PartSize is the size of each part to be uploaded in parallel.
 	// Defaults to 16MiB. Must be a multiple of 256KiB.
-	PartSize int64
+	PartSize int
 
 	// NumWorkers is the number of goroutines to use for uploading parts in parallel.
 	// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
@@ -126,7 +126,6 @@ const (
 	defaultMaxRetries         = 3
 	defaultBaseDelay          = 100 * time.Millisecond
 	defaultMaxDelay           = 5 * time.Second
-	chunkSizeMultiple         = 256 * 1024 // 256 KiB
 	pcuPartNumberMetadataKey  = "x-goog-meta-gcs-pcu-part-number"
 	pcuFinalObjectMetadataKey = "x-goog-meta-gcs-pcu-final-object"
 )
@@ -217,13 +216,8 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	cfg := &ParallelUploadConfig{}
 	cfg.defaults()
 
-	// Fall back to the nearest multiple of 256KiB.
-	if cfg.PartSize%chunkSizeMultiple != 0 {
-		cfg.PartSize = (cfg.PartSize / chunkSizeMultiple) * chunkSizeMultiple
-		if cfg.PartSize < chunkSizeMultiple {
-			cfg.PartSize = chunkSizeMultiple
-		}
-	}
+	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
+	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
 
 	pCtx, cancel := context.WithCancel(ctx)
 
@@ -264,6 +258,8 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	return nil
 }
 
+// worker processes upload tasks from upload channel, reporting results
+// and returning buffers to the pool.
 func (s *pcuState) worker() {
 	defer s.workerWG.Done()
 	for {
@@ -318,18 +314,14 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	pw.ChunkSize = 0 // Force single-shot upload for parts.
 	// Clear fields not applicable to parts or that are set by compose.
 	pw.ObjectAttrs.CRC32C = 0
+	pw.SendCRC32C = false
 	pw.ObjectAttrs.MD5 = nil
 	setPartMetadata(pw, s, task)
 
-	n, err := pw.Write(task.buffer[:task.size])
+	_, err := pw.Write(task.buffer[:task.size])
 	if err != nil {
 		pw.CloseWithError(err)
 		return nil, nil, fmt.Errorf("failed to write part %d: %w", task.partNumber, err)
-	}
-	if int64(n) != task.size {
-		err := fmt.Errorf("short write on part %d: wrote %d, expected %d", task.partNumber, n, task.size)
-		pw.CloseWithError(err)
-		return nil, nil, err
 	}
 
 	if err := pw.Close(); err != nil {

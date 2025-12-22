@@ -117,7 +117,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			name: "user-provided values are respected",
 			in: &ParallelUploadConfig{
 				MinSize:         &userMinSizeVal,
-				PartSize:        int64(1024),
+				PartSize:        1024,
 				NumWorkers:      10,
 				BufferPoolSize:  12,
 				TmpObjectPrefix: "my-prefix/",
@@ -133,7 +133,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			},
 			want: &ParallelUploadConfig{
 				MinSize:         &userMinSizeVal,
-				PartSize:        int64(1024),
+				PartSize:        1024,
 				NumWorkers:      10,
 				BufferPoolSize:  12,
 				TmpObjectPrefix: "my-prefix/",
@@ -271,6 +271,8 @@ func TestPCUWorker_SuccessfulTask(t *testing.T) {
 		if result.partNumber != 1 || result.handle == nil || result.handle.object != "mockPart" {
 			t.Errorf("worker result mismatch: got %v", result)
 		}
+	// This safety timeout of 1 second prevents the test from hanging indefinitely
+	// if the worker goroutine fails to respond.
 	case <-time.After(1 * time.Second):
 		t.Errorf("worker timeout waiting for result")
 	}
@@ -527,6 +529,49 @@ func TestSetPartMetadata(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPCUWorker_Panic(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	buffer := make([]byte, 10)
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask, 1),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			panic("simulated panic")
+		},
+	}
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
+	state.uploadCh <- task
+
+	select {
+	case result := <-state.resultCh:
+		if result.err == nil || !strings.Contains(result.err.Error(), "panic during part upload") {
+			t.Errorf("worker did not report panic: got %v", result.err)
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for result after panic")
+	}
+
+	// Verify the buffer was returned to the pool despite the panic.
+	select {
+	case <-state.bufferCh:
+		// Success.
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker did not return buffer after panic")
+	}
+
+	close(state.uploadCh)
+	state.workerWG.Wait()
 }
 
 // testNamingStrategy is a mock implementation of PartNamingStrategy for testing.
