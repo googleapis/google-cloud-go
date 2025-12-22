@@ -17,7 +17,6 @@ package internal
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 	"time"
 
@@ -32,7 +31,6 @@ import (
 func findMetric(rm metricdata.ResourceMetrics, name string) (metricdata.Metrics, bool) {
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			fmt.Print(m.Name)
 			if m.Name == name {
 				return m, true
 			}
