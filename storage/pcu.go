@@ -291,12 +291,6 @@ func (s *pcuState) worker() {
 
 				handle, attrs, err := s.uploadPartFn(s, t)
 
-				// After the upload, check if the context has been canceled.
-				// If it has, the context error is more important than the upload error.
-				if s.ctx.Err() != nil {
-					err = s.ctx.Err()
-				}
-
 				// Always send a result to the collector.
 				s.resultCh <- uploadResult{partNumber: t.partNumber, obj: attrs, handle: handle, err: err}
 			}(task)
