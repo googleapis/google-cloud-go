@@ -155,7 +155,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			cfg := tt.in
 			cfg.defaults()
 			if diff := cmp.Diff(tt.want, cfg,
-				cmp.AllowUnexported(defaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
+				cmp.AllowUnexported(parallelUploadConfig{}, defaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
 				cmpopts.IgnoreUnexported(gax.Backoff{}, ObjectAttrs{})); diff != "" {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
 			}
