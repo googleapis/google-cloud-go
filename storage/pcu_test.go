@@ -30,14 +30,14 @@ import (
 
 func TestPartCleanupStrategy_String(t *testing.T) {
 	tests := []struct {
-		strategy PartCleanupStrategy
+		strategy partCleanupStrategy
 		want     string
 	}{
-		{CleanupAlways, "always"},
-		{CleanupOnSuccess, "on_success"},
-		{CleanupNever, "never"},
-		{PartCleanupStrategy(99), "PartCleanupStrategy(99)"},
-		{PartCleanupStrategy(-1), "PartCleanupStrategy(-1)"},
+		{cleanupAlways, "always"},
+		{cleanupOnSuccess, "on_success"},
+		{cleanupNever, "never"},
+		{partCleanupStrategy(99), "PartCleanupStrategy(99)"},
+		{partCleanupStrategy(-1), "PartCleanupStrategy(-1)"},
 	}
 
 	for _, tt := range tests {
@@ -50,13 +50,13 @@ func TestPartCleanupStrategy_String(t *testing.T) {
 }
 
 func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
-	strategy := &DefaultNamingStrategy{}
+	strategy := &defaultNamingStrategy{}
 	bucket := "my-bucket"
 	prefix := "gcs-go-sdk-pcu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 
-	partName := strategy.NewPartName(bucket, prefix, finalName, partNumber)
+	partName := strategy.newPartName(bucket, prefix, finalName, partNumber)
 
 	if !strings.HasPrefix(partName, prefix) {
 		t.Errorf("NewPartName() should start with the prefix %q, but got %q", prefix, partName)
@@ -90,62 +90,62 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 
 	tests := []struct {
 		name string
-		in   *ParallelUploadConfig
-		want *ParallelUploadConfig
+		in   *parallelUploadConfig
+		want *parallelUploadConfig
 	}{
 		{
 			name: "all defaults",
-			in:   &ParallelUploadConfig{},
-			want: &ParallelUploadConfig{
-				MinSize:         &defaultMinSizeVal,
-				PartSize:        defaultPartSize,
-				NumWorkers:      expectedWorkers,
-				BufferPoolSize:  expectedWorkers + 1,
-				TmpObjectPrefix: defaultTmpObjectPrefix,
-				RetryOptions: []RetryOption{
+			in:   &parallelUploadConfig{},
+			want: &parallelUploadConfig{
+				minSize:         &defaultMinSizeVal,
+				partSize:        defaultPartSize,
+				numWorkers:      expectedWorkers,
+				bufferPoolSize:  expectedWorkers + 1,
+				tmpObjectPrefix: defaultTmpObjectPrefix,
+				retryOptions: []RetryOption{
 					WithMaxAttempts(defaultMaxRetries),
 					WithBackoff(gax.Backoff{
 						Initial: defaultBaseDelay,
 						Max:     defaultMaxDelay,
 					}),
 				},
-				CleanupStrategy: CleanupAlways,
-				NamingStrategy:  &DefaultNamingStrategy{},
+				cleanupStrategy: cleanupAlways,
+				namingStrategy:  &defaultNamingStrategy{},
 			},
 		},
 		{
 			name: "user-provided values are respected",
-			in: &ParallelUploadConfig{
-				MinSize:         &userMinSizeVal,
-				PartSize:        1024,
-				NumWorkers:      10,
-				BufferPoolSize:  12,
-				TmpObjectPrefix: "my-prefix/",
-				RetryOptions: []RetryOption{
+			in: &parallelUploadConfig{
+				minSize:         &userMinSizeVal,
+				partSize:        1024,
+				numWorkers:      10,
+				bufferPoolSize:  12,
+				tmpObjectPrefix: "my-prefix/",
+				retryOptions: []RetryOption{
 					WithMaxAttempts(5),
 					WithBackoff(gax.Backoff{
 						Initial: 200 * time.Millisecond,
 						Max:     10 * time.Second,
 					}),
 				},
-				CleanupStrategy: CleanupOnSuccess,
-				NamingStrategy:  &testNamingStrategy{},
+				cleanupStrategy: cleanupOnSuccess,
+				namingStrategy:  &testNamingStrategy{},
 			},
-			want: &ParallelUploadConfig{
-				MinSize:         &userMinSizeVal,
-				PartSize:        1024,
-				NumWorkers:      10,
-				BufferPoolSize:  12,
-				TmpObjectPrefix: "my-prefix/",
-				RetryOptions: []RetryOption{
+			want: &parallelUploadConfig{
+				minSize:         &userMinSizeVal,
+				partSize:        1024,
+				numWorkers:      10,
+				bufferPoolSize:  12,
+				tmpObjectPrefix: "my-prefix/",
+				retryOptions: []RetryOption{
 					WithMaxAttempts(5),
 					WithBackoff(gax.Backoff{
 						Initial: 200 * time.Millisecond,
 						Max:     10 * time.Second,
 					}),
 				},
-				CleanupStrategy: CleanupOnSuccess,
-				NamingStrategy:  &testNamingStrategy{},
+				cleanupStrategy: cleanupOnSuccess,
+				namingStrategy:  &testNamingStrategy{},
 			},
 		},
 	}
@@ -155,7 +155,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			cfg := tt.in
 			cfg.defaults()
 			if diff := cmp.Diff(tt.want, cfg,
-				cmp.AllowUnexported(DefaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
+				cmp.AllowUnexported(defaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
 				cmpopts.IgnoreUnexported(gax.Backoff{}, ObjectAttrs{})); diff != "" {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
 			}
@@ -431,14 +431,14 @@ func TestPCUWorker_UploadChannelClose(t *testing.T) {
 }
 
 func TestDefaultNamingStrategy_NewPartName_Uniqueness(t *testing.T) {
-	strategy := &DefaultNamingStrategy{}
+	strategy := &defaultNamingStrategy{}
 	bucket := "my-bucket"
 	prefix := "gcs-go-sdk-pcu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 
-	name1 := strategy.NewPartName(bucket, prefix, finalName, partNumber)
-	name2 := strategy.NewPartName(bucket, prefix, finalName, partNumber)
+	name1 := strategy.newPartName(bucket, prefix, finalName, partNumber)
+	name2 := strategy.newPartName(bucket, prefix, finalName, partNumber)
 
 	if name1 == name2 {
 		t.Errorf("NewPartName() returned the same name twice: %q", name1)
@@ -449,7 +449,7 @@ func TestSetPartMetadata(t *testing.T) {
 	testCases := []struct {
 		name             string
 		initialMetadata  map[string]string
-		decorator        PartMetadataDecorator
+		decorator        partMetadataDecorator
 		task             uploadTask
 		finalObjectName  string
 		expectedMetadata map[string]string
@@ -529,8 +529,8 @@ func TestSetPartMetadata(t *testing.T) {
 			}
 			state := &pcuState{
 				w: sourceWriter,
-				config: &ParallelUploadConfig{
-					MetadataDecorator: tc.decorator,
+				config: &parallelUploadConfig{
+					metadataDecorator: tc.decorator,
 				},
 			}
 
@@ -545,53 +545,10 @@ func TestSetPartMetadata(t *testing.T) {
 	}
 }
 
-func TestPCUWorker_Panic(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	buffer := make([]byte, 10)
-	state := &pcuState{
-		ctx:      ctx,
-		cancel:   cancel,
-		bufferCh: make(chan []byte, 1),
-		uploadCh: make(chan uploadTask, 1),
-		resultCh: make(chan uploadResult, 1),
-		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
-			panic("simulated panic")
-		},
-	}
-
-	state.workerWG.Add(1)
-	go state.worker()
-
-	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
-	state.uploadCh <- task
-
-	select {
-	case result := <-state.resultCh:
-		if result.err == nil || !strings.Contains(result.err.Error(), "panic during upload") {
-			t.Errorf("worker did not report panic: got %v", result.err)
-		}
-	case <-time.After(1 * time.Second):
-		t.Errorf("worker timeout waiting for result after panic")
-	}
-
-	// Verify the buffer was returned to the pool despite the panic.
-	select {
-	case <-state.bufferCh:
-		// Success.
-	case <-time.After(1 * time.Second):
-		t.Errorf("worker did not return buffer after panic")
-	}
-
-	close(state.uploadCh)
-	state.workerWG.Wait()
-}
-
 // testNamingStrategy is a mock implementation of PartNamingStrategy for testing.
 type testNamingStrategy struct{}
 
-func (t *testNamingStrategy) NewPartName(bucket, prefix, finalName string, partNumber int) string {
+func (t *testNamingStrategy) newPartName(bucket, prefix, finalName string, partNumber int) string {
 	return "test-part"
 }
 

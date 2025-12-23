@@ -29,91 +29,91 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 )
 
-// ParallelUploadConfig holds configuration for Parallel Composite Uploads.
+// parallelUploadConfig holds configuration for Parallel Composite Uploads.
 // Setting this config and EnableParallelUpload flag on Writer enables PCU.
 //
 // **Note:** This feature is currently experimental and its API surface may change
 // in future releases. It is not yet recommended for production use.
-type ParallelUploadConfig struct {
-	// MinSize is the minimum size of an object in bytes to use PCU.
+type parallelUploadConfig struct {
+	// minSize is the minimum size of an object in bytes to use PCU.
 	// If an object's size is less than this value, a simple upload is performed.
 	// If this is not set, a default of 64 MiB will be used.
 	// To enable PCU for all uploads regardless of size, set this to 0.
-	MinSize *int64
+	minSize *int64
 
-	// PartSize is the size of each part to be uploaded in parallel.
+	// partSize is the size of each part to be uploaded in parallel.
 	// Defaults to 16MiB. Must be a multiple of 256KiB.
-	PartSize int
+	partSize int
 
-	// NumWorkers is the number of goroutines to use for uploading parts in parallel.
+	// numWorkers is the number of goroutines to use for uploading parts in parallel.
 	// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
-	NumWorkers int
+	numWorkers int
 
-	// BufferPoolSize is the number of PartSize buffers to pool.
+	// bufferPoolSize is the number of PartSize buffers to pool.
 	// Defaults to NumWorkers + 1.
-	BufferPoolSize int
+	bufferPoolSize int
 
-	// TmpObjectPrefix is the prefix for temporary object names.
+	// tmpObjectPrefix is the prefix for temporary object names.
 	// Defaults to "gcs-go-sdk-pcu-tmp/".
-	TmpObjectPrefix string
+	tmpObjectPrefix string
 
-	// RetryOptions defines the retry behavior for uploading parts.
+	// retryOptions defines the retry behavior for uploading parts.
 	// Defaults to a sensible policy for part uploads (e.g., max 3 retries).
-	RetryOptions []RetryOption
+	retryOptions []RetryOption
 
-	// CleanupStrategy dictates how temporary parts are cleaned up.
+	// cleanupStrategy dictates how temporary parts are cleaned up.
 	// Defaults to CleanupAlways.
-	CleanupStrategy PartCleanupStrategy
+	cleanupStrategy partCleanupStrategy
 
-	// NamingStrategy provides a strategy for naming temporary part objects.
+	// namingStrategy provides a strategy for naming temporary part objects.
 	// Defaults to a strategy that includes a random element to avoid hotspotting.
-	NamingStrategy PartNamingStrategy
+	namingStrategy partNamingStrategy
 
-	// MetadataDecorator allows adding custom metadata to temporary part objects.
-	MetadataDecorator PartMetadataDecorator
+	// metadataDecorator allows adding custom metadata to temporary part objects.
+	metadataDecorator partMetadataDecorator
 }
 
-// PartCleanupStrategy defines when temporary objects are deleted.
-type PartCleanupStrategy int
+// partCleanupStrategy defines when temporary objects are deleted.
+type partCleanupStrategy int
 
 const (
-	// CleanupAlways clean up temporary parts on both success and failure.
-	CleanupAlways PartCleanupStrategy = iota
-	// CleanupOnSuccess clean up temporary parts only on successful final composition.
-	CleanupOnSuccess
-	// CleanupNever means the application is responsible for cleaning up temporary parts.
-	CleanupNever
+	// cleanupAlways clean up temporary parts on both success and failure.
+	cleanupAlways partCleanupStrategy = iota
+	// cleanupOnSuccess clean up temporary parts only on successful final composition.
+	cleanupOnSuccess
+	// cleanupNever means the application is responsible for cleaning up temporary parts.
+	cleanupNever
 )
 
-func (s PartCleanupStrategy) String() string {
+func (s partCleanupStrategy) String() string {
 	switch s {
-	case CleanupAlways:
+	case cleanupAlways:
 		return "always"
-	case CleanupOnSuccess:
+	case cleanupOnSuccess:
 		return "on_success"
-	case CleanupNever:
+	case cleanupNever:
 		return "never"
 	default:
 		return fmt.Sprintf("PartCleanupStrategy(%d)", s)
 	}
 }
 
-// PartNamingStrategy interface for generating temporary object names.
-type PartNamingStrategy interface {
-	NewPartName(bucket, prefix, finalName string, partNumber int) string
+// partNamingStrategy interface for generating temporary object names.
+type partNamingStrategy interface {
+	newPartName(bucket, prefix, finalName string, partNumber int) string
 }
 
-// DefaultNamingStrategy provides a default implementation for naming temporary parts.
-type DefaultNamingStrategy struct{}
+// defaultNamingStrategy provides a default implementation for naming temporary parts.
+type defaultNamingStrategy struct{}
 
-// NewPartName creates a unique name for a temporary part to avoid hotspotting.
-func (d *DefaultNamingStrategy) NewPartName(bucket, prefix, finalName string, partNumber int) string {
+// newPartName creates a unique name for a temporary part to avoid hotspotting.
+func (d *defaultNamingStrategy) newPartName(bucket, prefix, finalName string, partNumber int) string {
 	rnd := rand.Uint64()
 	return path.Join(prefix, fmt.Sprintf("%x-%s-part-%d", rnd, finalName, partNumber))
 }
 
-// PartMetadataDecorator interface for modifying temporary object metadata.
-type PartMetadataDecorator interface {
+// partMetadataDecorator interface for modifying temporary object metadata.
+type partMetadataDecorator interface {
 	Decorate(attrs *ObjectAttrs)
 }
 
@@ -131,28 +131,28 @@ const (
 	pcuFinalObjectMetadataKey = "x-goog-meta-gcs-pcu-final-object"
 )
 
-func (c *ParallelUploadConfig) defaults() {
-	if c.MinSize == nil {
-		c.MinSize = new(int64)
-		*c.MinSize = defaultMinSize
+func (c *parallelUploadConfig) defaults() {
+	if c.minSize == nil {
+		c.minSize = new(int64)
+		*c.minSize = defaultMinSize
 	}
-	if c.PartSize == 0 {
-		c.PartSize = defaultPartSize
+	if c.partSize == 0 {
+		c.partSize = defaultPartSize
 	}
 	// Use a heuristic for the number of workers: start with 4, add 1 for
 	// every 2 CPUs, but don't exceed a cap of 16. This provides a
 	// balance between parallelism and resource contention.
-	if c.NumWorkers == 0 {
-		c.NumWorkers = min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
+	if c.numWorkers == 0 {
+		c.numWorkers = min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
 	}
-	if c.BufferPoolSize == 0 {
-		c.BufferPoolSize = c.NumWorkers + 1
+	if c.bufferPoolSize == 0 {
+		c.bufferPoolSize = c.numWorkers + 1
 	}
-	if c.TmpObjectPrefix == "" {
-		c.TmpObjectPrefix = defaultTmpObjectPrefix
+	if c.tmpObjectPrefix == "" {
+		c.tmpObjectPrefix = defaultTmpObjectPrefix
 	}
-	if c.RetryOptions == nil {
-		c.RetryOptions = []RetryOption{
+	if c.retryOptions == nil {
+		c.retryOptions = []RetryOption{
 			WithMaxAttempts(defaultMaxRetries),
 			WithBackoff(gax.Backoff{
 				Initial: defaultBaseDelay,
@@ -160,11 +160,11 @@ func (c *ParallelUploadConfig) defaults() {
 			}),
 		}
 	}
-	if c.CleanupStrategy == 0 {
-		c.CleanupStrategy = CleanupAlways
+	if c.cleanupStrategy == 0 {
+		c.cleanupStrategy = cleanupAlways
 	}
-	if c.NamingStrategy == nil {
-		c.NamingStrategy = &DefaultNamingStrategy{}
+	if c.namingStrategy == nil {
+		c.namingStrategy = &defaultNamingStrategy{}
 	}
 }
 
@@ -172,7 +172,7 @@ type pcuState struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	w      *Writer
-	config *ParallelUploadConfig
+	config *parallelUploadConfig
 
 	mu sync.Mutex
 	// Handles to the uploaded temporary parts, keyed by partNumber.
@@ -215,11 +215,11 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	// TODO: Check if PCU is enabled on the Writer.
 
 	// TODO: Get the config from the Writer.
-	cfg := &ParallelUploadConfig{}
+	cfg := &parallelUploadConfig{}
 	cfg.defaults()
 
 	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
-	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
+	cfg.partSize = gRPCChunkSize(cfg.partSize)
 
 	pCtx, cancel := context.WithCancel(ctx)
 
@@ -228,7 +228,7 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		cancel:          cancel,
 		w:               w,
 		config:          cfg,
-		bufferCh:        make(chan []byte, cfg.BufferPoolSize),
+		bufferCh:        make(chan []byte, cfg.bufferPoolSize),
 		uploadCh:        make(chan uploadTask),
 		resultCh:        make(chan uploadResult),
 		partMap:         make(map[int]*ObjectHandle),
@@ -237,12 +237,12 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	}
 	// TODO: Assign the state to the Writer
 
-	for i := 0; i < cfg.BufferPoolSize; i++ {
-		state.bufferCh <- make([]byte, cfg.PartSize)
+	for i := 0; i < cfg.bufferPoolSize; i++ {
+		state.bufferCh <- make([]byte, cfg.partSize)
 	}
 
-	state.workerWG.Add(cfg.NumWorkers)
-	for i := 0; i < cfg.NumWorkers; i++ {
+	state.workerWG.Add(cfg.numWorkers)
+	for i := 0; i < cfg.numWorkers; i++ {
 		go state.worker()
 	}
 
@@ -275,12 +275,6 @@ func (s *pcuState) worker() {
 			func(t uploadTask) {
 				// Ensure the buffer is returned to the pool.
 				defer func() { s.bufferCh <- t.buffer }()
-				defer func() {
-					if r := recover(); r != nil {
-						s.resultCh <- uploadResult{partNumber: t.partNumber, err: fmt.Errorf("panic during upload of part %d: %v", t.partNumber, r)}
-					}
-				}()
-
 				// This handles the case where cancellation happens before we begin upload.
 				select {
 				case <-s.ctx.Done():
@@ -300,7 +294,7 @@ func (s *pcuState) worker() {
 
 // TODO: add retry logic.
 func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
-	partName := s.config.NamingStrategy.NewPartName(s.w.o.bucket, s.config.TmpObjectPrefix, s.w.o.object, task.partNumber)
+	partName := s.config.namingStrategy.newPartName(s.w.o.bucket, s.config.tmpObjectPrefix, s.w.o.object, task.partNumber)
 	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
 
 	pw := partHandle.NewWriter(s.ctx)
@@ -338,8 +332,8 @@ func setPartMetadata(pw *Writer, s *pcuState, task uploadTask) {
 	pw.ObjectAttrs.Metadata = md
 	pw.ObjectAttrs.Metadata[pcuPartNumberMetadataKey] = partNumberStr
 	pw.ObjectAttrs.Metadata[pcuFinalObjectMetadataKey] = pw.o.object
-	if s.config.MetadataDecorator != nil {
-		s.config.MetadataDecorator.Decorate(&pw.ObjectAttrs)
+	if s.config.metadataDecorator != nil {
+		s.config.metadataDecorator.Decorate(&pw.ObjectAttrs)
 	}
 }
 
