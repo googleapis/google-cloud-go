@@ -529,6 +529,7 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
+	t.Skip("flaky - https://github.com/googleapis/google-cloud-go/issues/12655")
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
