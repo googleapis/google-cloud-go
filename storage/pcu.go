@@ -277,7 +277,7 @@ func (s *pcuState) worker() {
 				defer func() { s.bufferCh <- t.buffer }()
 				defer func() {
 					if r := recover(); r != nil {
-						s.resultCh <- uploadResult{partNumber: t.partNumber, err: fmt.Errorf("panic during part upload: %v", r)}
+						s.resultCh <- uploadResult{partNumber: t.partNumber, err: fmt.Errorf("panic during upload of part %d: %v", t.partNumber, r)}
 					}
 				}()
 

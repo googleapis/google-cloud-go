@@ -569,7 +569,7 @@ func TestPCUWorker_Panic(t *testing.T) {
 
 	select {
 	case result := <-state.resultCh:
-		if result.err == nil || !strings.Contains(result.err.Error(), "panic during part upload") {
+		if result.err == nil || !strings.Contains(result.err.Error(), "panic during upload") {
 			t.Errorf("worker did not report panic: got %v", result.err)
 		}
 	case <-time.After(1 * time.Second):
