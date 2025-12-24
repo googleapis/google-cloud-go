@@ -564,7 +564,7 @@
     {
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ExportArtifact_sync",
       "title": "artifactregistry ExportArtifact Sample",
-      "description": "ExportArtifact exports an artifact.",
+      "description": "ExportArtifact exports an artifact to a Cloud Storage bucket.",
       "file": "Client/ExportArtifact/main.go",
       "language": "GO",
       "clientMethod": {

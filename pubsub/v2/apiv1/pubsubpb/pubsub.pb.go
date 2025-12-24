@@ -1426,6 +1426,9 @@ type Topic struct {
 	//
 	//	"123/environment": "production",
 	//	"123/costCenter": "marketing"
+	//
+	// See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+	// using tags with Pub/Sub resources.
 	Tags map[string]string `protobuf:"bytes,14,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -2508,6 +2511,9 @@ type Subscription struct {
 	//
 	//	"123/environment": "production",
 	//	"123/costCenter": "marketing"
+	//
+	// See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+	// using tags with Pub/Sub resources.
 	Tags map[string]string `protobuf:"bytes,26,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -4319,6 +4325,9 @@ type CreateSnapshotRequest struct {
 	//
 	//	"123/environment": "production",
 	//	"123/costCenter": "marketing"
+	//
+	// See https://docs.cloud.google.com/pubsub/docs/tags for more information on
+	// using tags with Pub/Sub resources.
 	Tags map[string]string `protobuf:"bytes,4,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 

@@ -77,7 +77,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: ai
     version: 0.14.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/ai/generativelanguage/v1
         service_config: generativelanguage_v1.yaml
@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.112.0
-    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -175,7 +175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.19.0
-    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -546,7 +546,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: artifactregistry
     version: 1.18.0
-    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/devtools/artifactregistry/v1
         service_config: artifactregistry_v1.yaml
@@ -2692,7 +2692,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
     version: 0.4.0
-    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
         service_config: geminidataanalytics_v1beta.yaml
@@ -3328,7 +3328,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maintenance
     version: 0.2.0
-    last_generated_commit: 534adc56f58b36a6a3e4b5b1cb7f9ee25a8e8a25
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/cloud/maintenance/api/v1beta
         service_config: maintenance_v1beta.yaml
@@ -4437,7 +4437,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.3.0
-    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/pubsub/v1
         service_config: pubsub_v1.yaml
@@ -5599,7 +5599,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.87.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml

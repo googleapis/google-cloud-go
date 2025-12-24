@@ -157,31 +157,27 @@ func (x *MachineSpec) GetReservationAffinity() *ReservationAffinity {
 	return nil
 }
 
-// A description of resources that are dedicated to a DeployedModel, and
-// that need a higher degree of manual configuration.
+// A description of resources that are dedicated to a DeployedModel or
+// DeployedIndex, and that need a higher degree of manual configuration.
 type DedicatedResources struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Immutable. The specification of a single machine used by the
-	// prediction.
+	// Required. Immutable. The specification of a single machine being used.
 	MachineSpec *MachineSpec `protobuf:"bytes,1,opt,name=machine_spec,json=machineSpec,proto3" json:"machine_spec,omitempty"`
-	// Required. Immutable. The minimum number of machine replicas this
-	// DeployedModel will be always deployed on. This value must be greater than
-	// or equal to 1.
+	// Required. Immutable. The minimum number of machine replicas that will be
+	// always deployed on. This value must be greater than or equal to 1.
 	//
-	// If traffic against the DeployedModel increases, it may dynamically be
-	// deployed onto more replicas, and as traffic decreases, some of these extra
-	// replicas may be freed.
+	// If traffic increases, it may dynamically be deployed onto more replicas,
+	// and as traffic decreases, some of these extra replicas may be freed.
 	MinReplicaCount int32 `protobuf:"varint,2,opt,name=min_replica_count,json=minReplicaCount,proto3" json:"min_replica_count,omitempty"`
-	// Immutable. The maximum number of replicas this DeployedModel may be
-	// deployed on when the traffic against it increases. If the requested value
-	// is too large, the deployment will error, but if deployment succeeds then
-	// the ability to scale the model to that many replicas is guaranteed (barring
-	// service outages). If traffic against the DeployedModel increases beyond
-	// what its replicas at maximum may handle, a portion of the traffic will be
-	// dropped. If this value is not provided, will use
+	// Immutable. The maximum number of replicas that may be deployed on when the
+	// traffic against it increases. If the requested value is too large, the
+	// deployment will error, but if deployment succeeds then the ability to scale
+	// to that many replicas is guaranteed (barring service outages). If traffic
+	// increases beyond what its replicas at maximum may handle, a portion of the
+	// traffic will be dropped. If this value is not provided, will use
 	// [min_replica_count][google.cloud.aiplatform.v1.DedicatedResources.min_replica_count]
 	// as the default value.
 	//
@@ -191,8 +187,8 @@ type DedicatedResources struct {
 	// number of GPUs per replica in the selected machine type).
 	MaxReplicaCount int32 `protobuf:"varint,3,opt,name=max_replica_count,json=maxReplicaCount,proto3" json:"max_replica_count,omitempty"`
 	// Optional. Number of required available replicas for the deployment to
-	// succeed. This field is only needed when partial model deployment/mutation
-	// is desired. If set, the model deploy/mutate operation will succeed once
+	// succeed. This field is only needed when partial deployment/mutation is
+	// desired. If set, the deploy/mutate operation will succeed once
 	// available_replica_count reaches required_replica_count, and the rest of
 	// the replicas will be retried. If not set, the default
 	// required_replica_count will be min_replica_count.
@@ -306,22 +302,21 @@ type AutomaticResources struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Immutable. The minimum number of replicas this DeployedModel will be always
-	// deployed on. If traffic against it increases, it may dynamically be
-	// deployed onto more replicas up to
+	// Immutable. The minimum number of replicas that will be always deployed on.
+	// If traffic against it increases, it may dynamically be deployed onto more
+	// replicas up to
 	// [max_replica_count][google.cloud.aiplatform.v1.AutomaticResources.max_replica_count],
 	// and as traffic decreases, some of these extra replicas may be freed. If the
 	// requested value is too large, the deployment will error.
 	MinReplicaCount int32 `protobuf:"varint,1,opt,name=min_replica_count,json=minReplicaCount,proto3" json:"min_replica_count,omitempty"`
-	// Immutable. The maximum number of replicas this DeployedModel may be
-	// deployed on when the traffic against it increases. If the requested value
-	// is too large, the deployment will error, but if deployment succeeds then
-	// the ability to scale the model to that many replicas is guaranteed (barring
-	// service outages). If traffic against the DeployedModel increases beyond
-	// what its replicas at maximum may handle, a portion of the traffic will be
-	// dropped. If this value is not provided, a no upper bound for scaling under
-	// heavy traffic will be assume, though Vertex AI may be unable to scale
-	// beyond certain replica number.
+	// Immutable. The maximum number of replicas that may be deployed on when the
+	// traffic against it increases. If the requested value is too large, the
+	// deployment will error, but if deployment succeeds then the ability to scale
+	// to that many replicas is guaranteed (barring service outages). If traffic
+	// increases beyond what its replicas at maximum may handle, a portion of the
+	// traffic will be dropped. If this value is not provided, a no upper bound
+	// for scaling under heavy traffic will be assume, though Vertex AI may be
+	// unable to scale beyond certain replica number.
 	MaxReplicaCount int32 `protobuf:"varint,2,opt,name=max_replica_count,json=maxReplicaCount,proto3" json:"max_replica_count,omitempty"`
 }
 
@@ -493,9 +488,10 @@ type DiskSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Type of the boot disk (default is "pd-ssd").
-	// Valid values: "pd-ssd" (Persistent Disk Solid State Drive) or
-	// "pd-standard" (Persistent Disk Hard Disk Drive).
+	// Type of the boot disk. For non-A3U machines, the default value is
+	// "pd-ssd", for A3U machines, the default value is "hyperdisk-balanced".
+	// Valid values: "pd-ssd" (Persistent Disk Solid State Drive),
+	// "pd-standard" (Persistent Disk Hard Disk Drive) or "hyperdisk-balanced".
 	BootDiskType string `protobuf:"bytes,1,opt,name=boot_disk_type,json=bootDiskType,proto3" json:"boot_disk_type,omitempty"`
 	// Size in GB of the boot disk (default is 100GB).
 	BootDiskSizeGb int32 `protobuf:"varint,2,opt,name=boot_disk_size_gb,json=bootDiskSizeGb,proto3" json:"boot_disk_size_gb,omitempty"`
@@ -674,6 +670,81 @@ func (x *NfsMount) GetMountPoint() string {
 	return ""
 }
 
+// Represents a mount configuration for Lustre file system.
+type LustreMount struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. IP address of the Lustre instance.
+	InstanceIp string `protobuf:"bytes,1,opt,name=instance_ip,json=instanceIp,proto3" json:"instance_ip,omitempty"`
+	// Required. The unique identifier of the Lustre volume.
+	VolumeHandle string `protobuf:"bytes,2,opt,name=volume_handle,json=volumeHandle,proto3" json:"volume_handle,omitempty"`
+	// Required. The name of the Lustre filesystem.
+	Filesystem string `protobuf:"bytes,3,opt,name=filesystem,proto3" json:"filesystem,omitempty"`
+	// Required. Destination mount path. The Lustre file system will be mounted
+	// for the user under /mnt/lustre/<mount_point>
+	MountPoint string `protobuf:"bytes,4,opt,name=mount_point,json=mountPoint,proto3" json:"mount_point,omitempty"`
+}
+
+func (x *LustreMount) Reset() {
+	*x = LustreMount{}
+	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LustreMount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LustreMount) ProtoMessage() {}
+
+func (x *LustreMount) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LustreMount.ProtoReflect.Descriptor instead.
+func (*LustreMount) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_machine_resources_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *LustreMount) GetInstanceIp() string {
+	if x != nil {
+		return x.InstanceIp
+	}
+	return ""
+}
+
+func (x *LustreMount) GetVolumeHandle() string {
+	if x != nil {
+		return x.VolumeHandle
+	}
+	return ""
+}
+
+func (x *LustreMount) GetFilesystem() string {
+	if x != nil {
+		return x.Filesystem
+	}
+	return ""
+}
+
+func (x *LustreMount) GetMountPoint() string {
+	if x != nil {
+		return x.MountPoint
+	}
+	return ""
+}
+
 // The metric specification that defines the target resource utilization
 // (CPU utilization, accelerator's duty cycle, and so on) for calculating the
 // desired replica count.
@@ -688,6 +759,7 @@ type AutoscalingMetricSpec struct {
 	// * For Online Prediction:
 	// * `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle`
 	// * `aiplatform.googleapis.com/prediction/online/cpu/utilization`
+	// * `aiplatform.googleapis.com/prediction/online/request_count`
 	MetricName string `protobuf:"bytes,1,opt,name=metric_name,json=metricName,proto3" json:"metric_name,omitempty"`
 	// The target resource utilization in percentage (1% - 100%) for the given
 	// metric; once the real usage deviates from the target by a certain
@@ -698,7 +770,7 @@ type AutoscalingMetricSpec struct {
 
 func (x *AutoscalingMetricSpec) Reset() {
 	*x = AutoscalingMetricSpec{}
-	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -710,7 +782,7 @@ func (x *AutoscalingMetricSpec) String() string {
 func (*AutoscalingMetricSpec) ProtoMessage() {}
 
 func (x *AutoscalingMetricSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -723,7 +795,7 @@ func (x *AutoscalingMetricSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutoscalingMetricSpec.ProtoReflect.Descriptor instead.
 func (*AutoscalingMetricSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_machine_resources_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_aiplatform_v1_machine_resources_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *AutoscalingMetricSpec) GetMetricName() string {
@@ -760,7 +832,7 @@ type ShieldedVmConfig struct {
 
 func (x *ShieldedVmConfig) Reset() {
 	*x = ShieldedVmConfig{}
-	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -772,7 +844,7 @@ func (x *ShieldedVmConfig) String() string {
 func (*ShieldedVmConfig) ProtoMessage() {}
 
 func (x *ShieldedVmConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -785,7 +857,7 @@ func (x *ShieldedVmConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShieldedVmConfig.ProtoReflect.Descriptor instead.
 func (*ShieldedVmConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_machine_resources_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_aiplatform_v1_machine_resources_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ShieldedVmConfig) GetEnableSecureBoot() bool {
@@ -904,31 +976,41 @@ var file_google_cloud_aiplatform_v1_machine_resources_proto_rawDesc = []byte{
 	0x61, 0x74, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x04,
 	0x70, 0x61, 0x74, 0x68, 0x12, 0x24, 0x0a, 0x0b, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x70, 0x6f,
 	0x69, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a,
-	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x55, 0x0a, 0x15, 0x41, 0x75,
-	0x74, 0x6f, 0x73, 0x63, 0x61, 0x6c, 0x69, 0x6e, 0x67, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x53,
-	0x70, 0x65, 0x63, 0x12, 0x24, 0x0a, 0x0b, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x5f, 0x6e, 0x61,
-	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x6d,
-	0x65, 0x74, 0x72, 0x69, 0x63, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65,
-	0x74, 0x22, 0x40, 0x0a, 0x10, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x65, 0x64, 0x56, 0x6d, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x2c, 0x0a, 0x12, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x5f,
-	0x73, 0x65, 0x63, 0x75, 0x72, 0x65, 0x5f, 0x62, 0x6f, 0x6f, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x10, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x53, 0x65, 0x63, 0x75, 0x72, 0x65, 0x42,
-	0x6f, 0x6f, 0x74, 0x42, 0xd3, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
-	0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x15, 0x4d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x52,
-	0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f,
-	0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
-	0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa,
-	0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41,
-	0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1a, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c,
-	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61,
-	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0xa8, 0x01, 0x0a, 0x0b, 0x4c,
+	0x75, 0x73, 0x74, 0x72, 0x65, 0x4d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x24, 0x0a, 0x0b, 0x69, 0x6e,
+	0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f, 0x69, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x49, 0x70,
+	0x12, 0x28, 0x0a, 0x0d, 0x76, 0x6f, 0x6c, 0x75, 0x6d, 0x65, 0x5f, 0x68, 0x61, 0x6e, 0x64, 0x6c,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0c, 0x76, 0x6f,
+	0x6c, 0x75, 0x6d, 0x65, 0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x12, 0x23, 0x0a, 0x0a, 0x66, 0x69,
+	0x6c, 0x65, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
+	0xe0, 0x41, 0x02, 0x52, 0x0a, 0x66, 0x69, 0x6c, 0x65, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x12,
+	0x24, 0x0a, 0x0b, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x55, 0x0a, 0x15, 0x41, 0x75, 0x74, 0x6f, 0x73, 0x63, 0x61,
+	0x6c, 0x69, 0x6e, 0x67, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x53, 0x70, 0x65, 0x63, 0x12, 0x24,
+	0x0a, 0x0b, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63,
+	0x4e, 0x61, 0x6d, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x22, 0x40, 0x0a, 0x10,
+	0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x65, 0x64, 0x56, 0x6d, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x12, 0x2c, 0x0a, 0x12, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x73, 0x65, 0x63, 0x75, 0x72,
+	0x65, 0x5f, 0x62, 0x6f, 0x6f, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10, 0x65, 0x6e,
+	0x61, 0x62, 0x6c, 0x65, 0x53, 0x65, 0x63, 0x75, 0x72, 0x65, 0x42, 0x6f, 0x6f, 0x74, 0x42, 0xd3,
+	0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76,
+	0x31, 0x42, 0x15, 0x4d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f,
+	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31,
+	0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69,
+	0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43,
+	0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -943,7 +1025,7 @@ func file_google_cloud_aiplatform_v1_machine_resources_proto_rawDescGZIP() []byt
 	return file_google_cloud_aiplatform_v1_machine_resources_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_google_cloud_aiplatform_v1_machine_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_aiplatform_v1_machine_resources_proto_goTypes = []any{
 	(*MachineSpec)(nil),             // 0: google.cloud.aiplatform.v1.MachineSpec
 	(*DedicatedResources)(nil),      // 1: google.cloud.aiplatform.v1.DedicatedResources
@@ -953,16 +1035,17 @@ var file_google_cloud_aiplatform_v1_machine_resources_proto_goTypes = []any{
 	(*DiskSpec)(nil),                // 5: google.cloud.aiplatform.v1.DiskSpec
 	(*PersistentDiskSpec)(nil),      // 6: google.cloud.aiplatform.v1.PersistentDiskSpec
 	(*NfsMount)(nil),                // 7: google.cloud.aiplatform.v1.NfsMount
-	(*AutoscalingMetricSpec)(nil),   // 8: google.cloud.aiplatform.v1.AutoscalingMetricSpec
-	(*ShieldedVmConfig)(nil),        // 9: google.cloud.aiplatform.v1.ShieldedVmConfig
-	(AcceleratorType)(0),            // 10: google.cloud.aiplatform.v1.AcceleratorType
-	(*ReservationAffinity)(nil),     // 11: google.cloud.aiplatform.v1.ReservationAffinity
+	(*LustreMount)(nil),             // 8: google.cloud.aiplatform.v1.LustreMount
+	(*AutoscalingMetricSpec)(nil),   // 9: google.cloud.aiplatform.v1.AutoscalingMetricSpec
+	(*ShieldedVmConfig)(nil),        // 10: google.cloud.aiplatform.v1.ShieldedVmConfig
+	(AcceleratorType)(0),            // 11: google.cloud.aiplatform.v1.AcceleratorType
+	(*ReservationAffinity)(nil),     // 12: google.cloud.aiplatform.v1.ReservationAffinity
 }
 var file_google_cloud_aiplatform_v1_machine_resources_proto_depIdxs = []int32{
-	10, // 0: google.cloud.aiplatform.v1.MachineSpec.accelerator_type:type_name -> google.cloud.aiplatform.v1.AcceleratorType
-	11, // 1: google.cloud.aiplatform.v1.MachineSpec.reservation_affinity:type_name -> google.cloud.aiplatform.v1.ReservationAffinity
+	11, // 0: google.cloud.aiplatform.v1.MachineSpec.accelerator_type:type_name -> google.cloud.aiplatform.v1.AcceleratorType
+	12, // 1: google.cloud.aiplatform.v1.MachineSpec.reservation_affinity:type_name -> google.cloud.aiplatform.v1.ReservationAffinity
 	0,  // 2: google.cloud.aiplatform.v1.DedicatedResources.machine_spec:type_name -> google.cloud.aiplatform.v1.MachineSpec
-	8,  // 3: google.cloud.aiplatform.v1.DedicatedResources.autoscaling_metric_specs:type_name -> google.cloud.aiplatform.v1.AutoscalingMetricSpec
+	9,  // 3: google.cloud.aiplatform.v1.DedicatedResources.autoscaling_metric_specs:type_name -> google.cloud.aiplatform.v1.AutoscalingMetricSpec
 	0,  // 4: google.cloud.aiplatform.v1.BatchDedicatedResources.machine_spec:type_name -> google.cloud.aiplatform.v1.MachineSpec
 	5,  // [5:5] is the sub-list for method output_type
 	5,  // [5:5] is the sub-list for method input_type
@@ -984,7 +1067,7 @@ func file_google_cloud_aiplatform_v1_machine_resources_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1_machine_resources_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
