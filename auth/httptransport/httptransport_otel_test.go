@@ -15,6 +15,7 @@
 package httptransport
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,15 +24,20 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	oteltrace "go.opentelemetry.io/otel/trace"
-
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func TestNewClient_OpenTelemetry(t *testing.T) {
+	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
+
 	exporter := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+	defer tp.Shutdown(context.Background())
+
+	// Restore the global tracer provider after the test to avoid side effects.
+	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
 	otel.SetTracerProvider(tp)
 
 	tests := []struct {

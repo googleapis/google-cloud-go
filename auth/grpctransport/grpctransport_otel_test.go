@@ -17,19 +17,19 @@ package grpctransport
 import (
 	"context"
 	"net"
+	"net/http"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
-
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	echo "cloud.google.com/go/auth/grpctransport/testdata"
 
@@ -37,8 +37,15 @@ import (
 )
 
 func TestDial_OpenTelemetry(t *testing.T) {
+	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
+	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
+
 	exporter := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+	defer tp.Shutdown(context.Background())
+
+	// Restore the global tracer provider after the test to avoid side effects.
+	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
 	otel.SetTracerProvider(tp)
 
 	successfulEchoer := &fakeEchoService{
