@@ -41,11 +41,12 @@ func TestNewClient_OpenTelemetry(t *testing.T) {
 	otel.SetTracerProvider(tp)
 
 	tests := []struct {
-		name       string
-		opts       *Options
-		statusCode int
-		wantSpans  int
-		wantSpan   sdktrace.ReadOnlySpan
+		name         string
+		opts         *Options
+		statusCode   int
+		wantSpans    int
+		wantSpan     sdktrace.ReadOnlySpan
+		wantAttrKeys []attribute.Key
 	}{
 		{
 			name:       "telemetry enabled success",
@@ -68,10 +69,9 @@ func TestNewClient_OpenTelemetry(t *testing.T) {
 					// "server.address", "server.port", and "url.full" are displayed as
 					// standard attribute keys in the "Attributes" tab.
 					attribute.Key("server.address").String("127.0.0.1"),
-					attribute.Key("server.port").Int(0),  // Dynamic
-					attribute.Key("url.full").String(""), // Dynamic
 				},
 			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{"server.port", "url.full"},
 		},
 		{
 			name:       "telemetry enabled error",
@@ -91,11 +91,10 @@ func TestNewClient_OpenTelemetry(t *testing.T) {
 					attribute.Key("http.response.status_code").Int(500),
 					attribute.Key("network.protocol.version").String("1.1"),
 					attribute.Key("server.address").String("127.0.0.1"),
-					attribute.Key("server.port").Int(0),       // Dynamic
-					attribute.Key("url.full").String(""),      // Dynamic
 					attribute.Key("error.type").String("500"), // otelhttp adds this on error
 				},
 			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{"server.port", "url.full"},
 		},
 		{
 			name: "telemetry disabled",
@@ -187,14 +186,15 @@ func TestNewClient_OpenTelemetry(t *testing.T) {
 					if gotVal, ok := gotAttrs[wantAttr.Key]; !ok {
 						t.Errorf("missing attribute: %s", wantAttr.Key)
 					} else {
-						// Ignore value comparison for dynamic fields
-						if wantAttr.Key == "server.port" || wantAttr.Key == "url.full" {
-							continue
-						}
 						// Use simple value comparison for non-dynamic fields
 						if diff := cmp.Diff(wantAttr.Value, gotVal, cmp.AllowUnexported(attribute.Value{})); diff != "" {
 							t.Errorf("attribute %s mismatch (-want +got):\n%s", wantAttr.Key, diff)
 						}
+					}
+				}
+				for _, wantKey := range tt.wantAttrKeys {
+					if _, ok := gotAttrs[wantKey]; !ok {
+						t.Errorf("missing attribute key: %s", wantKey)
 					}
 				}
 			}

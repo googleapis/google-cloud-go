@@ -60,12 +60,13 @@ func TestDial_OpenTelemetry(t *testing.T) {
 	}
 
 	tests := []struct {
-		name      string
-		echoer    echo.EchoerServer
-		opts      *Options
-		wantErr   bool
-		wantSpans int
-		wantSpan  sdktrace.ReadOnlySpan
+		name         string
+		echoer       echo.EchoerServer
+		opts         *Options
+		wantErr      bool
+		wantSpans    int
+		wantSpan     sdktrace.ReadOnlySpan
+		wantAttrKeys []attribute.Key
 	}{
 		{
 			name:      "telemetry enabled success",
@@ -96,9 +97,9 @@ func TestDial_OpenTelemetry(t *testing.T) {
 					attribute.Key("rpc.system").String("grpc"),
 					// "server.address" and "server.port" are displayed as standard attribute keys.
 					attribute.Key("server.address").String("127.0.0.1"),
-					attribute.Key("server.port").Int(0), // Value ignored in comparison
 				},
 			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{"server.port"},
 		},
 		{
 			name:      "telemetry enabled error",
@@ -127,9 +128,9 @@ func TestDial_OpenTelemetry(t *testing.T) {
 					attribute.Key("rpc.service").String("echo.Echoer"),
 					attribute.Key("rpc.system").String("grpc"),
 					attribute.Key("server.address").String("127.0.0.1"),
-					attribute.Key("server.port").Int(0), // Value ignored in comparison
 				},
 			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{"server.port"},
 		},
 		{
 			name:   "telemetry disabled",
@@ -225,14 +226,15 @@ func TestDial_OpenTelemetry(t *testing.T) {
 					if gotVal, ok := gotAttrs[wantAttr.Key]; !ok {
 						t.Errorf("missing attribute: %s", wantAttr.Key)
 					} else {
-						// Ignore value comparison for dynamic fields
-						if wantAttr.Key == "server.port" {
-							continue
-						}
 						// Use simple value comparison for non-dynamic fields
 						if diff := cmp.Diff(wantAttr.Value, gotVal, cmp.AllowUnexported(attribute.Value{})); diff != "" {
 							t.Errorf("attribute %s mismatch (-want +got):\n%s", wantAttr.Key, diff)
 						}
+					}
+				}
+				for _, wantKey := range tt.wantAttrKeys {
+					if _, ok := gotAttrs[wantKey]; !ok {
+						t.Errorf("missing attribute key: %s", wantKey)
 					}
 				}
 			}
