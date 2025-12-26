@@ -36,6 +36,18 @@ import (
 	grpccodes "google.golang.org/grpc/codes"
 )
 
+const (
+	keyRPCMethod     = attribute.Key("rpc.method")
+	keyRPCService    = attribute.Key("rpc.service")
+	keyRPCSystem     = attribute.Key("rpc.system")
+	keyRPCStatusCode = attribute.Key("rpc.grpc.status_code")
+	keyServerAddr    = attribute.Key("server.address")
+	keyServerPort    = attribute.Key("server.port")
+
+	valRPCSystemGRPC = "grpc"
+	valLocalhost     = "127.0.0.1"
+)
+
 func TestDial_OpenTelemetry(t *testing.T) {
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
@@ -88,18 +100,18 @@ func TestDial_OpenTelemetry(t *testing.T) {
 
 					// In Cloud Trace, this status code maps to the visual "Status" field
 					// (e.g., a green checkmark for 0/OK, or an error icon for other codes).
-					attribute.Key("rpc.grpc.status_code").Int64(0),
+					keyRPCStatusCode.Int64(0),
 					// In Cloud Trace, "rpc.service" and "rpc.method" are combined to form
 					// the Span Name (e.g., "echo.Echoer/Echo").
-					attribute.Key("rpc.method").String("Echo"),
-					attribute.Key("rpc.service").String("echo.Echoer"),
+					keyRPCMethod.String("Echo"),
+					keyRPCService.String("echo.Echoer"),
 					// "rpc.system" is displayed as a standard attribute key in the "Attributes" tab.
-					attribute.Key("rpc.system").String("grpc"),
+					keyRPCSystem.String(valRPCSystemGRPC),
 					// "server.address" and "server.port" are displayed as standard attribute keys.
-					attribute.Key("server.address").String("127.0.0.1"),
+					keyServerAddr.String(valLocalhost),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{"server.port"},
+			wantAttrKeys: []attribute.Key{keyServerPort},
 		},
 		{
 			name:      "telemetry enabled error",
@@ -123,14 +135,14 @@ func TestDial_OpenTelemetry(t *testing.T) {
 
 					// In Cloud Trace, non-zero status codes (like 13 for INTERNAL) are displayed
 					// as errors in the "Status" field.
-					attribute.Key("rpc.grpc.status_code").Int64(13),
-					attribute.Key("rpc.method").String("Echo"),
-					attribute.Key("rpc.service").String("echo.Echoer"),
-					attribute.Key("rpc.system").String("grpc"),
-					attribute.Key("server.address").String("127.0.0.1"),
+					keyRPCStatusCode.Int64(13),
+					keyRPCMethod.String("Echo"),
+					keyRPCService.String("echo.Echoer"),
+					keyRPCSystem.String(valRPCSystemGRPC),
+					keyServerAddr.String(valLocalhost),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{"server.port"},
+			wantAttrKeys: []attribute.Key{keyServerPort},
 		},
 		{
 			name:   "telemetry disabled",

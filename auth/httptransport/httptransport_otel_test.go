@@ -29,6 +29,20 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
+const (
+	keyHTTPRequestMetod   = attribute.Key("http.request.method")
+	keyHTTPResponseStatus = attribute.Key("http.response.status_code")
+	keyNetProtoVersion    = attribute.Key("network.protocol.version")
+	keyServerAddr         = attribute.Key("server.address")
+	keyServerPort         = attribute.Key("server.port")
+	keyURLFull            = attribute.Key("url.full")
+	keyErrorType          = attribute.Key("error.type")
+
+	valHTTPGet   = "GET"
+	valHTTP11    = "1.1"
+	valLocalhost = "127.0.0.1"
+)
+
 func TestNewClient_OpenTelemetry(t *testing.T) {
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 
@@ -61,17 +75,17 @@ func TestNewClient_OpenTelemetry(t *testing.T) {
 				},
 				Attributes: []attribute.KeyValue{
 					// In Cloud Trace, this often forms part of the Span Name.
-					attribute.Key("http.request.method").String("GET"),
+					keyHTTPRequestMetod.String(valHTTPGet),
 					// In Cloud Trace, this status code maps to the visual "Status" field
 					// (e.g., a green checkmark for 200, or an error icon for 5xx).
-					attribute.Key("http.response.status_code").Int(200),
-					attribute.Key("network.protocol.version").String("1.1"),
+					keyHTTPResponseStatus.Int(200),
+					keyNetProtoVersion.String(valHTTP11),
 					// "server.address", "server.port", and "url.full" are displayed as
 					// standard attribute keys in the "Attributes" tab.
-					attribute.Key("server.address").String("127.0.0.1"),
+					keyServerAddr.String(valLocalhost),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{"server.port", "url.full"},
+			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull},
 		},
 		{
 			name:       "telemetry enabled error",
@@ -86,15 +100,15 @@ func TestNewClient_OpenTelemetry(t *testing.T) {
 					Description: "",
 				},
 				Attributes: []attribute.KeyValue{
-					attribute.Key("http.request.method").String("GET"),
+					keyHTTPRequestMetod.String(valHTTPGet),
 					// In Cloud Trace, 5xx status codes are displayed as errors in the "Status" field.
-					attribute.Key("http.response.status_code").Int(500),
-					attribute.Key("network.protocol.version").String("1.1"),
-					attribute.Key("server.address").String("127.0.0.1"),
-					attribute.Key("error.type").String("500"), // otelhttp adds this on error
+					keyHTTPResponseStatus.Int(500),
+					keyNetProtoVersion.String(valHTTP11),
+					keyServerAddr.String(valLocalhost),
+					keyErrorType.String("500"), // otelhttp adds this on error
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{"server.port", "url.full"},
+			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull},
 		},
 		{
 			name: "telemetry disabled",
