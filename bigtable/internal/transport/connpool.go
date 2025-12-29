@@ -172,10 +172,12 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 	// ip protocol will be -1 if it addr is nil/default, 0 is ipv4 and 1 if ipv6.
 	if p.Addr != nil {
 		if tcpAddr, ok := p.Addr.(*net.TCPAddr); ok {
-			if tcpAddr.IP.To4() != nil {
-				bc.remoteAddrType.Store(int32(ipv4))
-			} else {
-				bc.remoteAddrType.Store(int32(ipv6))
+			if tcpAddr.IP != nil {
+				if tcpAddr.IP.To4() != nil {
+					bc.remoteAddrType.Store(int32(ipv4))
+				} else {
+					bc.remoteAddrType.Store(int32(ipv6))
+				}
 			}
 		}
 	}
