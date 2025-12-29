@@ -516,7 +516,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if gme != nil {
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
-	} else if isFallbackEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK")); isFallbackEnabled {
+	} else if isFallbackEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK")); isFallbackEnabled && isDirectPathEnabled {
 		var primaryConn gtransport.ConnPool
 		var fallbackConn gtransport.ConnPool
 		reqIDInjector := new(requestIDHeaderInjector)
