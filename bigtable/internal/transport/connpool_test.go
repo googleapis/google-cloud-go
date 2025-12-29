@@ -65,24 +65,24 @@ func entryIndex(s []*connEntry, e *connEntry) int {
 
 func TestBigtableConnIpProtocol(t *testing.T) {
 	bc := NewBigtableConn(nil)
-	if got := bc.ipProtocol(); got != unknown {
+	if got := bc.ipProtocol(); got != "unknown" {
 		t.Errorf("NewBigtableConn default ipProtocol() got %q, want %q", got, unknown)
 	}
 
 	tests := []struct {
 		name     string
-		addrType int32
+		addrType ipProtocol
 		want     string
 	}{
-		{name: "IPv4", addrType: 0, want: ipv4},
-		{name: "IPv6", addrType: 1, want: ipv6},
-		{name: "Unknown", addrType: -1, want: unknown},
+		{name: "IPv4", addrType: ipv4, want: "ipv4"},
+		{name: "IPv6", addrType: ipv6, want: "ipv6"},
+		{name: "Unknown", addrType: unknown, want: "unknown"},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			conn := &BigtableConn{}
-			conn.remoteAddrType.Store(tc.addrType)
+			conn.remoteAddrType.Store(int32(tc.addrType))
 			if got := conn.ipProtocol(); got != tc.want {
 				t.Errorf("ipProtocol() with remoteAddrType %d got %q, want %q", tc.addrType, got, tc.want)
 			}

@@ -48,9 +48,29 @@ var maxDrainingTimeout = 30 * time.Minute
 
 const requestParamsHeader = "x-goog-request-params"
 
-const ipv4 = "ipv4"
-const ipv6 = "ipv6"
-const unknown = "unknown"
+// ipProtocol represents the type of IP protocol used.
+type ipProtocol int32
+
+const (
+	// unknown represents an unknown or undetermined IP protocol.
+	unknown ipProtocol = iota - 1
+	// ipv6 represents the IPv4 protocol.
+	ipv4
+	// ipv6 represents the IPv6 protocol.
+	ipv6
+)
+
+// AddressType returns the string representation of the IPProtocol.
+func (ip ipProtocol) addressType() string {
+	switch ip {
+	case ipv4:
+		return "ipv4"
+	case ipv6:
+		return "ipv6"
+	default:
+		return "unknown"
+	}
+}
 
 // BigtableChannelPoolOption options for configurable
 type BigtableChannelPoolOption func(*BigtableChannelPool)
@@ -122,14 +142,7 @@ type BigtableConn struct {
 
 // ipProtocol returns the IP protocol as a string: "ipv4", "ipv6", or "unknown".
 func (bc *BigtableConn) ipProtocol() string {
-	switch bc.remoteAddrType.Load() {
-	case 0:
-		return ipv4
-	case 1:
-		return ipv6
-	default:
-		return unknown
-	}
+	return ipProtocol(bc.remoteAddrType.Load()).addressType()
 }
 
 // Prime sends a PingAndWarm request to warm up the connection.
@@ -160,9 +173,9 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 	if p.Addr != nil {
 		if tcpAddr, ok := p.Addr.(*net.TCPAddr); ok {
 			if tcpAddr.IP.To4() != nil {
-				bc.remoteAddrType.Store(0)
+				bc.remoteAddrType.Store(int32(ipv4))
 			} else {
-				bc.remoteAddrType.Store(1)
+				bc.remoteAddrType.Store(int32(ipv6))
 			}
 		}
 	}
@@ -203,7 +216,7 @@ func NewBigtableConn(conn *grpc.ClientConn) *BigtableConn {
 		ClientConn: conn,
 	}
 	bc.createdAt.Store(time.Now().UnixMilli())
-	bc.remoteAddrType.Store(-1) // Default value
+	bc.remoteAddrType.Store(int32(unknown))
 	return bc
 }
 
