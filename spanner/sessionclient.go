@@ -419,7 +419,6 @@ func (sc *sessionClient) nextClient() (spannerClient, error) {
 		clientOpt = gtransport.WithConnPool(sc.connPool)
     } else if _, ok := sc.connPool.(*fallbackWrapper); ok {
         clientOpt = gtransport.WithConnPool(sc.connPool)
-
     } else {
 		// Pick a grpc.ClientConn from a regular pool.
 		conn := sc.connPool.Conn()

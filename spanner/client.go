@@ -51,8 +51,6 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
-
-	// _ "google.golang.org/grpc/xds/googledirectpath"
 )
 
 const (
@@ -446,7 +444,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if err := validDatabaseName(database); err != nil {
 		return nil, err
 	}
-	fmt.Println("--- USING LOCAL SPANNER CLIENT ---");
 	ctx, _ = startSpan(ctx, "NewClient")
 	defer func() { endSpan(ctx, err) }()
 
