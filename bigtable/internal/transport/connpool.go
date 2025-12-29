@@ -22,6 +22,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"net"
 	"net/url"
 	"slices"
 	"sort"
@@ -46,6 +47,10 @@ import (
 var maxDrainingTimeout = 30 * time.Minute
 
 const requestParamsHeader = "x-goog-request-params"
+
+const ipv4 = "ipv4"
+const ipv6 = "ipv6"
+const unknown = "unknown"
 
 // BigtableChannelPoolOption options for configurable
 type BigtableChannelPoolOption func(*BigtableChannelPool)
@@ -111,6 +116,20 @@ type BigtableConn struct {
 	*grpc.ClientConn
 	isALTSConn atomic.Bool
 	createdAt  atomic.Int64
+	// remoteAddrType stores the  type: -1 (unknown/nil), 0 (ipv4), 1 (ipv6)
+	remoteAddrType atomic.Int32
+}
+
+// ipProtocol returns the IP protocol as a string: "ipv4", "ipv6", or "unknown".
+func (bc *BigtableConn) ipProtocol() string {
+	switch bc.remoteAddrType.Load() {
+	case 0:
+		return ipv4
+	case 1:
+		return ipv6
+	default:
+		return unknown
+	}
 }
 
 // Prime sends a PingAndWarm request to warm up the connection.
@@ -135,6 +154,17 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 	_, err := client.PingAndWarm(primeCtx, req, grpc.Peer(&p))
 	if err != nil {
 		return err
+	}
+
+	// ip protocol will be -1 if it addr is nil/default, 0 is ipv4 and 1 if ipv6.
+	if p.Addr != nil {
+		if tcpAddr, ok := p.Addr.(*net.TCPAddr); ok {
+			if tcpAddr.IP.To4() != nil {
+				bc.remoteAddrType.Store(0)
+			} else {
+				bc.remoteAddrType.Store(1)
+			}
+		}
 	}
 
 	if p.AuthInfo != nil {
@@ -173,8 +203,8 @@ func NewBigtableConn(conn *grpc.ClientConn) *BigtableConn {
 		ClientConn: conn,
 	}
 	bc.createdAt.Store(time.Now().UnixMilli())
+	bc.remoteAddrType.Store(-1) // Default value
 	return bc
-
 }
 
 // createdAt returns the creation time of the connection in int64. milliseconds since epoch
