@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -52,6 +53,124 @@ func retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error),
 			return ctxErr
 		}
 	}
+}
+
+// RetryN calls the supplied function f repeatedly according to the provided
+// backoff parameters, with an optional limit on the number of retryable failures.
+// It returns when one of the following occurs:
+//   - When f's first return value is true, RetryN immediately returns with f's second return value.
+//   - When the provided context is done, RetryN returns with an error that
+//     includes both ctx.Error() and the last error returned by f.
+//   - When maxRetries > 0 and the number of consecutive retryable failures reaches maxRetries,
+//     RetryN returns a RetryExhaustedError containing all collected errors.
+//
+// If maxRetries <= 0, RetryN behaves identically to Retry (infinite retries until
+// context cancellation or f returns stop=true).
+func RetryN(ctx context.Context, bo gax.Backoff, maxRetries int, f func() (stop bool, err error)) error {
+	return retryN(ctx, bo, maxRetries, f, gax.Sleep)
+}
+
+func retryN(ctx context.Context, bo gax.Backoff, maxRetries int, f func() (stop bool, err error),
+	sleep func(context.Context, time.Duration) error) error {
+	// If maxRetries <= 0, fall back to original infinite retry behavior
+	if maxRetries <= 0 {
+		return retry(ctx, bo, f, sleep)
+	}
+
+	var collectedErrors []error
+	retryCount := 0
+
+	for {
+		stop, err := f()
+		if stop {
+			return err
+		}
+
+		// Collect the error if it's a "real" error (not context errors)
+		if err != nil && err != context.Canceled && err != context.DeadlineExceeded {
+			collectedErrors = append(collectedErrors, err)
+			retryCount++
+		}
+
+		// Check if we've exhausted the maximum number of retries
+		if retryCount >= maxRetries {
+			return &RetryExhaustedError{
+				MaxRetries: maxRetries,
+				Errors:     collectedErrors,
+			}
+		}
+
+		p := bo.Pause()
+		if ctxErr := sleep(ctx, p); ctxErr != nil {
+			// Context was cancelled/deadline exceeded during sleep
+			if len(collectedErrors) > 0 {
+				return wrappedCallErr{ctxErr: ctxErr, wrappedErr: collectedErrors[len(collectedErrors)-1]}
+			}
+			return ctxErr
+		}
+	}
+}
+
+// RetryExhaustedError is returned when the maximum number of retries has been
+// reached. It contains all the errors that occurred during the retry attempts,
+// which is useful for debugging the root cause of persistent failures.
+type RetryExhaustedError struct {
+	// MaxRetries is the configured maximum number of retries that was reached.
+	MaxRetries int
+	// Errors contains all consecutive errors that occurred during retry attempts.
+	// The slice is ordered chronologically (first error at index 0, last at len-1).
+	Errors []error
+}
+
+// Error implements the error interface.
+func (e *RetryExhaustedError) Error() string {
+	if len(e.Errors) == 0 {
+		return fmt.Sprintf("retry exhausted after %d attempts with no errors recorded", e.MaxRetries)
+	}
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("retry exhausted after %d attempts; errors:\n", e.MaxRetries))
+	for i, err := range e.Errors {
+		sb.WriteString(fmt.Sprintf("  [%d]: %v\n", i+1, err))
+	}
+	return sb.String()
+}
+
+// Unwrap returns the last error in the chain, allowing errors.Is and errors.As
+// to work with the most recent error.
+func (e *RetryExhaustedError) Unwrap() error {
+	if len(e.Errors) == 0 {
+		return nil
+	}
+	return e.Errors[len(e.Errors)-1]
+}
+
+// LastError returns the most recent error that occurred, or nil if no errors
+// were collected.
+func (e *RetryExhaustedError) LastError() error {
+	if len(e.Errors) == 0 {
+		return nil
+	}
+	return e.Errors[len(e.Errors)-1]
+}
+
+// FirstError returns the first error that occurred, or nil if no errors
+// were collected.
+func (e *RetryExhaustedError) FirstError() error {
+	if len(e.Errors) == 0 {
+		return nil
+	}
+	return e.Errors[0]
+}
+
+// AllErrors returns a copy of all errors that occurred during retry attempts.
+func (e *RetryExhaustedError) AllErrors() []error {
+	if e.Errors == nil {
+		return nil
+	}
+	result := make([]error, len(e.Errors))
+	copy(result, e.Errors)
+	return result
 }
 
 // Use this error type to return an error which allows introspection of both
