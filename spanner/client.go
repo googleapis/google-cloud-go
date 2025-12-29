@@ -438,12 +438,12 @@ func (fw *fallbackWrapper) Close() error {
     return nil
 }
 
-
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
 	// Validate database path.
 	if err := validDatabaseName(database); err != nil {
 		return nil, err
 	}
+
 	ctx, _ = startSpan(ctx, "NewClient")
 	defer func() { endSpan(ctx, err) }()
 
