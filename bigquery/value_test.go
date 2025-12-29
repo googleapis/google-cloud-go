@@ -79,11 +79,11 @@ func TestConvertTime(t *testing.T) {
 	ts := testTimestamp.Round(time.Millisecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprint(ts.UnixMicro())},
+			{V: fmt.Sprint(ts.Format(picoFormatString))},
 			{V: testDate.String()},
 			{V: testTime.String()},
 			{V: testDateTime.String()},
-			{V: fmt.Sprintf("[UNBOUNDED, %d)", ts.UnixMicro())},
+			{V: fmt.Sprintf("[UNBOUNDED, %s)", ts.Format(picoFormatString))},
 		},
 	}
 	got, err := convertRow(row, schema)
@@ -116,7 +116,7 @@ func TestConvertRange(t *testing.T) {
 	ts := testTimestamp.Round(time.Millisecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprintf("[%d, UNBOUNDED)", ts.UnixMicro())},
+			{V: fmt.Sprintf("[%s, UNBOUNDED)", ts.Format(picoFormatString))},
 			{V: fmt.Sprintf("[UNBOUNDED, %s)", testDateTime.String())},
 			{V: fmt.Sprintf("[%s, %s)", testDate.String(), testDate.String())},
 			{V: nil}, // NULL RANGE
@@ -143,7 +143,7 @@ func TestConvertRange(t *testing.T) {
 func TestConvertSmallTimes(t *testing.T) {
 	for _, year := range []int{1600, 1066, 1} {
 		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-		s := fmt.Sprint(time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).UnixMicro())
+		s := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).Format(picoFormatString)
 		got, err := convertBasicType(s, TimestampFieldType)
 		if err != nil {
 			t.Fatal(err)
