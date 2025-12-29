@@ -52,7 +52,7 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
 
-	_ "google.golang.org/grpc/xds/googledirectpath" 
+	// _ "google.golang.org/grpc/xds/googledirectpath"
 )
 
 const (
@@ -433,7 +433,6 @@ func (fw *fallbackWrapper) Num() int {
     return 1
 }
 
-// Close closes the fallback wrapper.
 func (fw *fallbackWrapper) Close() error {
     fw.GCPFallback.Close()
 	fw.primaryConn.Close()
@@ -516,14 +515,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	var pool gtransport.ConnPool
-	var primaryConn gtransport.ConnPool
-	var fallbackConn gtransport.ConnPool
 
 	if gme != nil {
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
-	} else if isFallbackEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_FALLBACK")); isFallbackEnabled {
-		fmt.Println("Fallback enabled")
+	} else if isFallbackEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK")); isFallbackEnabled {
+		var primaryConn gtransport.ConnPool
+		var fallbackConn gtransport.ConnPool
 		reqIDInjector := new(requestIDHeaderInjector)
 		opts = append(opts,
 			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
@@ -549,8 +547,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 		fbOpts := grpcgcp.NewGCPFallbackOptions()
 		fbOpts.EnableFallback = true
-		fbOpts.ErrorRateThreshold = 0.1
-		fbOpts.MinFailedCalls = 3
+		fbOpts.ErrorRateThreshold = 1
+		fbOpts.MinFailedCalls = 1
 		fbOpts.MeterProvider = config.OpenTelemetryMeterProvider
 
 		gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
@@ -562,7 +560,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 		pool = &fallbackWrapper{gcpFallback, primaryConn, fallbackConn}
 	} else {
-		fmt.Println("No fallback")
 		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
 		// gRPC options.
 
