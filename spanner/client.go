@@ -416,26 +416,29 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 }
 
 type fallbackWrapper struct {
-    *grpcgcp.GCPFallback
-	primaryConn gtransport.ConnPool
+	*grpcgcp.GCPFallback
+	primaryConn  gtransport.ConnPool
 	fallbackConn gtransport.ConnPool
 }
 
 // Conn returns nil because GCPFallback hides the underlying ClientConn.
 // The Spanner client handles this by using the interface methods (Invoke/NewStream).
 func (fw *fallbackWrapper) Conn() *grpc.ClientConn {
-    return nil
+	return nil
 }
 
 func (fw *fallbackWrapper) Num() int {
-    return 1
+	return fw.primaryConn.Num()
 }
 
 func (fw *fallbackWrapper) Close() error {
-    fw.GCPFallback.Close()
-	fw.primaryConn.Close()
-	fw.fallbackConn.Close()
-    return nil
+	fw.GCPFallback.Close()
+	err1 := fw.primaryConn.Close()
+	err2 := fw.fallbackConn.Close()
+	if err1 != nil {
+		return err1
+	}
+	return err2
 }
 
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
@@ -533,13 +536,14 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
 		fallbackConn, err = gtransport.DialPool(ctx, fallbackConnOpts...)
 		if err != nil {
-			fallbackConn.Close()
+			primaryConn.Close()
 			return nil, err
 		}
 
 		if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
 			primaryConn.Close()
-			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
+			fallbackConn.Close()
+			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
 		}
 
 		fbOpts := grpcgcp.NewGCPFallbackOptions()
