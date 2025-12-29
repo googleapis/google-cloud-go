@@ -1525,8 +1525,6 @@ func TestRecordClientStartUp(t *testing.T) {
 		t.Fatalf("Expected 1 data point, got %d", len(hist.DataPoints))
 	}
 	dp := hist.DataPoints[0]
-
-	// Check attributes
 	expectedAttrs := attribute.NewSet(
 		attribute.String("transport_type", transportType),
 		attribute.String("status", "OK"),
@@ -1534,13 +1532,11 @@ func TestRecordClientStartUp(t *testing.T) {
 	if !dp.Attributes.Equals(&expectedAttrs) {
 		t.Errorf("Attributes got %v, want %v", dp.Attributes, expectedAttrs)
 	}
-
-	// Check value range
+	// Check count on bucket
 	if dp.Count != 1 {
 		t.Errorf("Data point count got %d, want 1", dp.Count)
 	}
-	// The exact duration depends on execution speed, so check if it's positive.
-	// The test setup has a 500ms difference.
+	// sanity check to see if it is postive.
 	if dp.Sum <= 0 {
 		t.Errorf("Expected positive sum, got %f", dp.Sum)
 	}
