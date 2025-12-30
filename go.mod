@@ -2,8 +2,6 @@ module cloud.google.com/go
 
 go 1.24.0
 
-toolchain go1.25.5
-
 require (
 	cloud.google.com/go/storage v1.59.0
 	github.com/google/go-cmp v0.7.0
