@@ -81,11 +81,13 @@ func (s *applierJobCreationMode) ApplyCustomClientOpt(c *customClientConfig) {
 // WithMaxRetries is a ClientOption that configures the maximum number of retry
 // attempts for retryable errors during BigQuery operations.
 //
-// When maxRetries is 0 (default behavior), retries continue indefinitely with
+// When maxRetries is 0 or less (the default), retries continue indefinitely with
 // exponential backoff until the context is cancelled or the operation succeeds.
 //
 // When maxRetries is a positive value N, after N consecutive retryable failures,
-// the operation returns an error that contains all N errors for debugging purposes.
+// the operation returns a `RetryExhaustedError` that contains all N errors for
+// debugging purposes.
+//
 // This is useful for:
 //   - Preventing indefinite retries in automated pipelines
 //   - Debugging persistent failures by examining all error messages

@@ -137,17 +137,9 @@ func (e *RetryExhaustedError) Error() string {
 }
 
 // Unwrap returns the last error in the chain, allowing errors.Is and errors.As
-// to work with the most recent error.
+// to work with the most recent error. This is the standard Go idiom for
+// exposing wrapped errors (since Go 1.13).
 func (e *RetryExhaustedError) Unwrap() error {
-	if len(e.Errors) == 0 {
-		return nil
-	}
-	return e.Errors[len(e.Errors)-1]
-}
-
-// LastError returns the most recent error that occurred, or nil if no errors
-// were collected.
-func (e *RetryExhaustedError) LastError() error {
 	if len(e.Errors) == 0 {
 		return nil
 	}

@@ -2,8 +2,6 @@ module cloud.google.com/go/bigquery
 
 go 1.24.0
 
-replace cloud.google.com/go => ../
-
 require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/datacatalog v1.26.1

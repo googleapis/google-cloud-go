@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -288,11 +289,6 @@ func TestRetryN_ErrorHelpers(t *testing.T) {
 		t.Errorf("FirstError: got %v, want %v", got, testErrors[0])
 	}
 
-	// Test LastError
-	if got := exhaustedErr.LastError(); got != testErrors[2] {
-		t.Errorf("LastError: got %v, want %v", got, testErrors[2])
-	}
-
 	// Test AllErrors
 	allErrors := exhaustedErr.AllErrors()
 	if len(allErrors) != 3 {
@@ -319,10 +315,6 @@ func TestRetryN_EmptyErrors(t *testing.T) {
 
 	if got := exhaustedErr.FirstError(); got != nil {
 		t.Errorf("FirstError: got %v, want nil", got)
-	}
-
-	if got := exhaustedErr.LastError(); got != nil {
-		t.Errorf("LastError: got %v, want nil", got)
 	}
 
 	if got := exhaustedErr.Unwrap(); got != nil {
@@ -404,29 +396,16 @@ func TestRetryExhaustedError_ErrorMessage(t *testing.T) {
 	errMsg := exhaustedErr.Error()
 
 	// Check that the error message contains expected components
-	if !contains(errMsg, "retry exhausted after 3 attempts") {
+	if !strings.Contains(errMsg, "retry exhausted after 3 attempts") {
 		t.Errorf("error message should contain retry count info, got: %s", errMsg)
 	}
-	if !contains(errMsg, "error 1") {
+	if !strings.Contains(errMsg, "error 1") {
 		t.Errorf("error message should contain first error, got: %s", errMsg)
 	}
-	if !contains(errMsg, "error 2") {
+	if !strings.Contains(errMsg, "error 2") {
 		t.Errorf("error message should contain second error, got: %s", errMsg)
 	}
-	if !contains(errMsg, "error 3") {
+	if !strings.Contains(errMsg, "error 3") {
 		t.Errorf("error message should contain third error, got: %s", errMsg)
 	}
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsHelper(s, substr))
-}
-
-func containsHelper(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
 }
