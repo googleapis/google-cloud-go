@@ -57,9 +57,8 @@ type internalMultiRangeDownloader interface {
 	add(output io.Writer, offset, length int64, callback func(int64, int64, error))
 	close(err error) error
 	wait()
-	getHandle(ctx context.Context) []byte
+	getHandle() []byte
 	getPermanentError() error
-	getAttrs(ctx context.Context) (ReaderObjectAttrs, error)
 	getSpanCtx() context.Context
 }
 
@@ -152,7 +151,6 @@ func (c *mrdWaitCmd) apply(ctx context.Context, m *multiRangeDownloaderManager) 
 }
 
 type mrdGetHandleCmd struct {
-	ctx   context.Context
 	respC chan []byte
 }
 
@@ -163,12 +161,8 @@ func (c *mrdGetHandleCmd) apply(ctx context.Context, m *multiRangeDownloaderMana
 		case c.respC <- m.lastReadHandle:
 		case <-m.ctx.Done():
 			close(c.respC)
-		case <-c.ctx.Done():
-			close(c.respC)
 		}
 	case <-m.ctx.Done():
-		close(c.respC)
-	case <-c.ctx.Done():
 		close(c.respC)
 	}
 }
@@ -311,17 +305,15 @@ func (m *multiRangeDownloaderManager) wait() {
 	}
 }
 
-func (m *multiRangeDownloaderManager) getHandle(ctx context.Context) []byte {
+func (m *multiRangeDownloaderManager) getHandle() []byte {
 	select {
 	case <-m.attrsReady:
 	case <-m.ctx.Done():
 		return nil
-	case <-ctx.Done():
-		return nil
 	}
 
 	respC := make(chan []byte, 1)
-	cmd := &mrdGetHandleCmd{ctx: ctx, respC: respC}
+	cmd := &mrdGetHandleCmd{respC: respC}
 	select {
 	case m.cmdC <- cmd:
 		select {
@@ -332,32 +324,14 @@ func (m *multiRangeDownloaderManager) getHandle(ctx context.Context) []byte {
 			return h
 		case <-m.ctx.Done():
 			return nil
-		case <-ctx.Done():
-			return nil
 		}
 	case <-m.ctx.Done():
-		return nil
-	case <-ctx.Done():
 		return nil
 	}
 }
 
 func (m *multiRangeDownloaderManager) getPermanentError() error {
 	return m.permanentErr
-}
-
-func (m *multiRangeDownloaderManager) getAttrs(ctx context.Context) (ReaderObjectAttrs, error) {
-	select {
-	case <-m.attrsReady:
-		if m.permanentErr != nil {
-			return ReaderObjectAttrs{}, m.permanentErr
-		}
-		return m.attrs, nil
-	case <-m.ctx.Done():
-		return ReaderObjectAttrs{}, m.ctx.Err()
-	case <-ctx.Done():
-		return ReaderObjectAttrs{}, ctx.Err()
-	}
 }
 
 func (m *multiRangeDownloaderManager) getSpanCtx() context.Context {

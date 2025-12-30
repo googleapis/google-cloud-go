@@ -449,7 +449,7 @@ func (mrd *MultiRangeDownloader) Wait() {
 // GetHandle returns the read handle. This can be used to further speed up the
 // follow up read if the same object is read through a different stream.
 func (mrd *MultiRangeDownloader) GetHandle() []byte {
-	return mrd.impl.getHandle(context.TODO()) // TODO: Consider plumbing context from caller
+	return mrd.impl.getHandle() // TODO: Consider plumbing context from caller
 }
 
 // Error returns an error if the MultiRangeDownloader is in a permanent failure
