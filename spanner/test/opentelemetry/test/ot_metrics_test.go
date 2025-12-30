@@ -205,11 +205,17 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 	})
 
 	spanner.EnableOpenTelemetryMetrics()
-	server, client, teardown := setupMockedTestServerWithConfig(t, spanner.ClientConfig{SessionPoolConfig: spanner.DefaultSessionPoolConfig, OpenTelemetryMeterProvider: te.mp})
+	config := spanner.ClientConfig{
+		SessionPoolConfig:          spanner.DefaultSessionPoolConfig,
+		OpenTelemetryMeterProvider: te.mp,
+	}
+	// Set a non-default MinOpened value to trigger the creation of a session pool.
+	config.MinOpened = config.MinOpened + 1
+	server, client, teardown := setupMockedTestServerWithConfig(t, config)
 	client.DatabaseName()
 	defer teardown()
 	// Wait for the session pool initialization to finish.
-	expectedReads := spanner.DefaultSessionPoolConfig.MinOpened
+	expectedReads := config.MinOpened
 	waitFor(t, func() error {
 		if isMultiplexEnabled {
 			if uint64(server.TestSpanner.TotalSessionsCreated()) == expectedReads+1 {
@@ -220,7 +226,7 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 				return nil
 			}
 		}
-		return errors.New("Not yet initialized")
+		return errors.New("not yet initialized")
 	})
 
 	client.Single().ReadRow(context.Background(), "Users", spanner.Key{"alice"}, []string{"email"})
@@ -239,7 +245,7 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 				},
 				{
 					Attributes: attribute.NewSet(attributesNumSessions...),
-					Value:      100,
+					Value:      int64(config.MinOpened),
 				},
 			},
 		},

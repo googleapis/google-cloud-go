@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.112.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.112.0) (2025-12-18)
+
+### Features
+
+* Add Lustre support to the Vertex Training Custom Job API ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* A comment for field `restart_job_on_worker_restart` in message `.google.cloud.aiplatform.v1beta1.Scheduling` is changed ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A comment for field `timeout` in message `.google.cloud.aiplatform.v1beta1.Scheduling` is changed ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+## [1.111.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.111.0) (2025-12-11)
+
+### Features
+
+* add streaming function call argument API changes ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
+### Bug Fixes
+
+* fix issue when using UrlContext tool ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
+### Documentation
+
+* A comment for field `args` in message `.google.cloud.aiplatform.v1.FunctionCall` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `name` in message `.google.cloud.aiplatform.v1.FunctionCall` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
 ## [1.110.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.110.0) (2025-12-04)
 
 ### Features

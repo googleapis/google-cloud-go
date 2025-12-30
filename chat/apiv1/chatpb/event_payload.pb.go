@@ -436,7 +436,7 @@ type MessageDeletedEventData struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The deleted message. Only the `name`, `createTime`, `deleteTime`, and
+	// The deleted message. Only the `name`, `createTime`, and
 	// `deletionMetadata` fields are populated.
 	Message *Message `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
 }

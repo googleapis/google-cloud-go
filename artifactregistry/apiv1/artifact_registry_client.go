@@ -882,7 +882,7 @@ func (c *Client) DeleteAttachmentOperation(name string) *DeleteAttachmentOperati
 	return c.internalClient.DeleteAttachmentOperation(name)
 }
 
-// ExportArtifact exports an artifact.
+// ExportArtifact exports an artifact to a Cloud Storage bucket.
 func (c *Client) ExportArtifact(ctx context.Context, req *artifactregistrypb.ExportArtifactRequest, opts ...gax.CallOption) (*ExportArtifactOperation, error) {
 	return c.internalClient.ExportArtifact(ctx, req, opts...)
 }
@@ -5432,7 +5432,7 @@ func (c *restClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 	}, nil
 }
 
-// ExportArtifact exports an artifact.
+// ExportArtifact exports an artifact to a Cloud Storage bucket.
 func (c *restClient) ExportArtifact(ctx context.Context, req *artifactregistrypb.ExportArtifactRequest, opts ...gax.CallOption) (*ExportArtifactOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

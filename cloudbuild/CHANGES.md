@@ -1,5 +1,7 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.25.0) (2025-12-18)
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.24.0) (2025-12-04)
 
 ### Features

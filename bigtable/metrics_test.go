@@ -731,7 +731,7 @@ func TestToOtelMetricAttrs(t *testing.T) {
 		method:      "ReadRows",
 		isStreaming: true,
 		currOp: opTracer{
-			status: codes.OK.String(),
+			status: canonicalString(codes.OK),
 			currAttempt: attemptTracer{
 				startTime: time.Now(),
 				clusterID: "my-cluster",
@@ -755,7 +755,7 @@ func TestToOtelMetricAttrs(t *testing.T) {
 				attribute.String(monitoredResLabelKeyTable, "my-table"),
 				attribute.String(metricLabelKeyMethod, "ReadRows"),
 				attribute.Bool(metricLabelKeyStreamingOperation, true),
-				attribute.String(metricLabelKeyStatus, codes.OK.String()),
+				attribute.String(metricLabelKeyStatus, canonicalString(codes.OK)),
 				attribute.String(monitoredResLabelKeyCluster, clusterID1),
 				attribute.String(monitoredResLabelKeyZone, zoneID1),
 			},
@@ -935,6 +935,11 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 			if !ok || clientUIDLabel != clientUID {
 				// Metric does not match target client UID. Skipping
 				continue
+			}
+
+			wantStatus := canonicalString(codes.OK)
+			if strings.Contains(metricType, metricNameFirstRespLatencies) && ts.GetMetric().GetLabels()[metricLabelKeyStatus] != wantStatus {
+				t.Errorf("Incorrect status:  got: %v, want: %v", ts.GetMetric().GetLabels()[metricLabelKeyStatus], wantStatus)
 			}
 			// If we reach here, the metric belongs to our test client instance
 			foundMetricsForClientUID = append(foundMetricsForClientUID, metricType)
@@ -1142,7 +1147,6 @@ func TestApplicationLatencies(t *testing.T) {
 				if _, exists := metricLabels[metricLabelKeyStreamingOperation]; exists {
 					t.Errorf("Label %s should not be present for %s", metricLabelKeyStreamingOperation, expectedMetricType)
 				}
-
 				resLabels := ts.GetResource().GetLabels()
 				if tblName, ok := resLabels[monitoredResLabelKeyTable]; (ok && tblName != tableID && tblName != "") || !ok {
 					t.Errorf("Label %s: got %q, want %q for resource %s", monitoredResLabelKeyTable, tblName, tableID, ts.GetResource())
@@ -1153,5 +1157,24 @@ func TestApplicationLatencies(t *testing.T) {
 
 	if !foundAppLatencyMetric {
 		t.Errorf("Failed to find metric %s for client UID %s", expectedMetricType, clientUID)
+	}
+}
+
+func TestCanonicalString(t *testing.T) {
+	tests := []struct {
+		code codes.Code
+		want string
+	}{
+		{codes.OK, "OK"},
+		{codes.Canceled, "CANCELED"},
+		{codes.DeadlineExceeded, "DEADLINE_EXCEEDED"},
+		{codes.Code(100), "CODE(100)"},
+	}
+
+	for _, test := range tests {
+		got := canonicalString(test.code)
+		if got != test.want {
+			t.Errorf("canonicalString(%v) = %q, want %q", test.code, got, test.want)
+		}
 	}
 }

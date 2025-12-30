@@ -438,7 +438,8 @@ type Space struct {
 	// Private apps can also use the `customers/my_customer` alias to create
 	// the space in the same Google Workspace organization as the app.
 	//
-	// For DMs, this field isn't populated.
+	// This field isn't populated for direct messages (DMs) or when the space is
+	// created by non-Google Workspace users.
 	Customer *string `protobuf:"bytes,24,opt,name=customer,proto3,oneof" json:"customer,omitempty"`
 	// Output only. The URI for a user to access the space.
 	SpaceUri string `protobuf:"bytes,25,opt,name=space_uri,json=spaceUri,proto3" json:"space_uri,omitempty"`
@@ -1057,8 +1058,10 @@ type UpdateSpaceRequest struct {
 	//
 	// You can update the following fields for a space:
 	//
-	// `space_details`: Updates the space's description. Supports up to 150
-	// characters.
+	// `space_details`: Updates the space's description and guidelines. You must
+	// pass both description and guidelines in the update request as
+	// [`SpaceDetails`][google.chat.v1.Space.SpaceDetails]. If you only want to
+	// update one of the fields, pass the existing value for the other field.
 	//
 	// `display_name`: Only supports updating the display name for spaces where
 	// `spaceType` field is `SPACE`.
@@ -1104,8 +1107,7 @@ type UpdateSpaceRequest struct {
 	// of a space.
 	// When updating permission settings, you can only specify
 	// `permissionSettings` field masks; you cannot update other field masks
-	// at the same time. `permissionSettings` is not supported with
-	// `useAdminAccess`.
+	// at the same time.
 	// The supported field masks include:
 	//
 	// - `permission_settings.manageMembersAndGroups`

@@ -230,53 +230,66 @@ func (c *OrganizationSecurityPoliciesClient) Connection() *grpc.ClientConn {
 // hierarchical security policies will be automatically enrolled into Cloud
 // Armor Enterprise if not already enrolled.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.addAssociation instead if possible.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addAssociation
+// instead.
 func (c *OrganizationSecurityPoliciesClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddAssociation(ctx, req, opts...)
 }
 
 // AddRule inserts a rule into a security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addRule instead.
 func (c *OrganizationSecurityPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddRule(ctx, req, opts...)
 }
 
 // CopyRules copies rules to the specified security policy.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.copyRules instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.cloneRules
+// instead.
 func (c *OrganizationSecurityPoliciesClient) CopyRules(ctx context.Context, req *computepb.CopyRulesOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CopyRules(ctx, req, opts...)
 }
 
 // Delete deletes the specified policy.
 //
-// Use of this API to remove firewall policies is deprecated. Use
-// firewallPolicies.delete instead.
+// Use this API to remove Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to remove firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.delete instead.
 func (c *OrganizationSecurityPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // Get list all of the ordered rules present in a single specified policy.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.get instead.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.get instead.
 func (c *OrganizationSecurityPoliciesClient) Get(ctx context.Context, req *computepb.GetOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
 // GetAssociation gets an association with the specified name.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.getAssociation instead if possible.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.getAssociation
+// instead.
 func (c *OrganizationSecurityPoliciesClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyAssociation, error) {
 	return c.internalClient.GetAssociation(ctx, req, opts...)
 }
 
 // GetRule gets a rule at the specified priority.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.getRule instead.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.getRule instead.
 func (c *OrganizationSecurityPoliciesClient) GetRule(ctx context.Context, req *computepb.GetRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyRule, error) {
 	return c.internalClient.GetRule(ctx, req, opts...)
 }
@@ -284,8 +297,9 @@ func (c *OrganizationSecurityPoliciesClient) GetRule(ctx context.Context, req *c
 // Insert creates a new policy in the specified organization using the data included
 // in the request.
 //
-// Use of this API to insert firewall policies is deprecated. Use
-// firewallPolicies.insert instead.
+// Use this API to add Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to add firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.insert instead.
 func (c *OrganizationSecurityPoliciesClient) Insert(ctx context.Context, req *computepb.InsertOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -293,16 +307,19 @@ func (c *OrganizationSecurityPoliciesClient) Insert(ctx context.Context, req *co
 // List list all the policies that have been configured for the specified
 // organization.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.list instead.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.list instead.
 func (c *OrganizationSecurityPoliciesClient) List(ctx context.Context, req *computepb.ListOrganizationSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
 // ListAssociations lists associations of a specified target, i.e., organization or folder.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.listAssociations instead if possible.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.listAssociations
+// instead.
 func (c *OrganizationSecurityPoliciesClient) ListAssociations(ctx context.Context, req *computepb.ListAssociationsOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.OrganizationSecurityPoliciesListAssociationsResponse, error) {
 	return c.internalClient.ListAssociations(ctx, req, opts...)
 }
@@ -315,37 +332,48 @@ func (c *OrganizationSecurityPoliciesClient) ListPreconfiguredExpressionSets(ctx
 
 // Move moves the specified security policy.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.move instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.move instead.
 func (c *OrganizationSecurityPoliciesClient) Move(ctx context.Context, req *computepb.MoveOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Move(ctx, req, opts...)
 }
 
 // Patch patches the specified policy with the data included in the request.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.patch instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patch instead.
 func (c *OrganizationSecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // PatchRule patches a rule at the specified priority.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.patchRule instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patchRule
+// instead.
 func (c *OrganizationSecurityPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
 }
 
 // RemoveAssociation removes an association for the specified security policy.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.removeAssociation instead if possible.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeAssociation
+// instead.
 func (c *OrganizationSecurityPoliciesClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveAssociation(ctx, req, opts...)
 }
 
 // RemoveRule deletes a rule at the specified priority.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeRule
+// instead.
 func (c *OrganizationSecurityPoliciesClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
@@ -449,8 +477,10 @@ func (c *organizationSecurityPoliciesRESTClient) Connection() *grpc.ClientConn {
 // hierarchical security policies will be automatically enrolled into Cloud
 // Armor Enterprise if not already enrolled.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.addAssociation instead if possible.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addAssociation
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyAssociationResource()
@@ -519,6 +549,10 @@ func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Cont
 }
 
 // AddRule inserts a rule into a security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addRule instead.
 func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
@@ -585,8 +619,10 @@ func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, re
 
 // CopyRules copies rules to the specified security policy.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.copyRules instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.cloneRules
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) CopyRules(ctx context.Context, req *computepb.CopyRulesOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -649,8 +685,9 @@ func (c *organizationSecurityPoliciesRESTClient) CopyRules(ctx context.Context, 
 
 // Delete deletes the specified policy.
 //
-// Use of this API to remove firewall policies is deprecated. Use
-// firewallPolicies.delete instead.
+// Use this API to remove Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to remove firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.delete instead.
 func (c *organizationSecurityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -710,8 +747,9 @@ func (c *organizationSecurityPoliciesRESTClient) Delete(ctx context.Context, req
 
 // Get list all of the ordered rules present in a single specified policy.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.get instead.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.get instead.
 func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -758,8 +796,10 @@ func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *c
 
 // GetAssociation gets an association with the specified name.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.getAssociation instead if possible.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.getAssociation
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyAssociation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -813,8 +853,9 @@ func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Cont
 
 // GetRule gets a rule at the specified priority.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.getRule instead.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.getRule instead.
 func (c *organizationSecurityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -869,8 +910,9 @@ func (c *organizationSecurityPoliciesRESTClient) GetRule(ctx context.Context, re
 // Insert creates a new policy in the specified organization using the data included
 // in the request.
 //
-// Use of this API to insert firewall policies is deprecated. Use
-// firewallPolicies.insert instead.
+// Use this API to add Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to add firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.insert instead.
 func (c *organizationSecurityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -938,8 +980,9 @@ func (c *organizationSecurityPoliciesRESTClient) Insert(ctx context.Context, req
 // List list all the policies that have been configured for the specified
 // organization.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.list instead.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.list instead.
 func (c *organizationSecurityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListOrganizationSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	it := &SecurityPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListOrganizationSecurityPoliciesRequest)
@@ -1030,8 +1073,10 @@ func (c *organizationSecurityPoliciesRESTClient) List(ctx context.Context, req *
 
 // ListAssociations lists associations of a specified target, i.e., organization or folder.
 //
-// Use of this API to read firewall policies is deprecated. Use
-// firewallPolicies.listAssociations instead if possible.
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.listAssociations
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) ListAssociations(ctx context.Context, req *computepb.ListAssociationsOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.OrganizationSecurityPoliciesListAssociationsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1147,8 +1192,9 @@ func (c *organizationSecurityPoliciesRESTClient) ListPreconfiguredExpressionSets
 
 // Move moves the specified security policy.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.move instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.move instead.
 func (c *organizationSecurityPoliciesRESTClient) Move(ctx context.Context, req *computepb.MoveOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1211,8 +1257,9 @@ func (c *organizationSecurityPoliciesRESTClient) Move(ctx context.Context, req *
 
 // Patch patches the specified policy with the data included in the request.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.patch instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patch instead.
 func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -1282,8 +1329,10 @@ func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req 
 
 // PatchRule patches a rule at the specified priority.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.patchRule instead.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patchRule
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
@@ -1356,8 +1405,10 @@ func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, 
 
 // RemoveAssociation removes an association for the specified security policy.
 //
-// Use of this API to modify firewall policies is deprecated. Use
-// firewallPolicies.removeAssociation instead if possible.
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeAssociation
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1419,6 +1470,11 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.C
 }
 
 // RemoveRule deletes a rule at the specified priority.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeRule
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
