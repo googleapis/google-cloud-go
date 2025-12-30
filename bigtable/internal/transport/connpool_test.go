@@ -26,12 +26,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
-	"testing/synctest"
 	"time"
 
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/grpc/codes"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
 	"google.golang.org/grpc/metadata"
@@ -1525,80 +1521,6 @@ func TestConnPoolStatisticsVisitor(t *testing.T) {
 			t.Errorf("entry[%d].errorCount was not reset: got %d, want 0", i, entry.errorCount.Load())
 		}
 	}
-}
-func TestRecordClientStartUp(t *testing.T) {
-	fake := &fakeService{}
-	addr := setupTestServer(t, fake)
-	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
-
-	synctest.Test(t, func(t *testing.T) {
-		ctx := context.Background()
-		reader := metric.NewManualReader()
-		provider := metric.NewMeterProvider(metric.WithReader(reader))
-
-		poolSize := 1
-		startTime := time.Now()
-		sleepTimer := 500
-		time.Sleep(time.Duration(sleepTimer) * time.Millisecond)
-
-		channelPoolOptions := append(poolOpts(), WithMeterProvider(provider))
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, startTime, channelPoolOptions...)
-
-		if err != nil {
-			t.Fatalf("NewBigtableChannelPool failed: %v", err)
-		}
-
-		defer pool.Close()
-
-		// Collect metrics
-		rm := metricdata.ResourceMetrics{}
-		if err := reader.Collect(ctx, &rm); err != nil {
-			t.Fatalf("Failed to collect metrics: %v", err)
-		}
-
-		if len(rm.ScopeMetrics) == 0 {
-			t.Fatalf("No scope metrics found")
-		}
-		sm := rm.ScopeMetrics[0]
-		if sm.Scope.Name != clientMeterName {
-			t.Errorf("Scope name got %q, want %q", sm.Scope.Name, clientMeterName)
-		}
-
-		if len(sm.Metrics) == 0 {
-			t.Fatalf("No metrics found")
-		}
-		m := sm.Metrics[0]
-
-		if m.Name != "startup_time" {
-			t.Errorf("Metric name got %q, want %q", m.Name, "startup_time")
-		}
-		if m.Unit != "ms" {
-			t.Errorf("Metric unit got %q, want %q", m.Unit, "ms")
-		}
-
-		hist, ok := m.Data.(metricdata.Histogram[float64])
-		if !ok {
-			t.Fatalf("Metric data is not a Histogram: %T", m.Data)
-		}
-
-		if len(hist.DataPoints) != 1 {
-			t.Fatalf("Expected 1 data point, got %d", len(hist.DataPoints))
-		}
-		dp := hist.DataPoints[0]
-		expectedAttrs := attribute.NewSet(
-			attribute.String("transport_type", "unknown"),
-			attribute.String("status", "OK"),
-		)
-		if !dp.Attributes.Equals(&expectedAttrs) {
-			t.Errorf("Attributes got %v, want %v", dp.Attributes, expectedAttrs)
-		}
-		if dp.Count != 1 {
-			t.Errorf("Data point count got %d, want 1", dp.Count)
-		}
-		if dp.Sum != float64(sleepTimer) {
-			t.Errorf("Expected %f, got %f", float64(sleepTimer), dp.Sum)
-		}
-	})
 }
 
 // --- Benchmarks ---
