@@ -16,6 +16,7 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -42,7 +43,7 @@ func retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error),
 			return err
 		}
 		// Remember the last "real" error from f.
-		if err != nil && err != context.Canceled && err != context.DeadlineExceeded {
+		if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
 			lastErr = err
 		}
 		p := bo.Pause()
@@ -87,7 +88,7 @@ func retryN(ctx context.Context, bo gax.Backoff, maxRetries int, f func() (stop 
 		}
 
 		// Collect the error if it's a "real" error (not context errors)
-		if err != nil && err != context.Canceled && err != context.DeadlineExceeded {
+		if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
 			collectedErrors = append(collectedErrors, err)
 			retryCount++
 		}
