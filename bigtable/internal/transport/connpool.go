@@ -395,24 +395,26 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 }
 
 func (p *BigtableChannelPool) recordClientStartUp(elapsedTimer time.Time, transportType string) {
-	if p.meterProvider != nil {
-		meter := p.meterProvider.Meter(clientMeterName)
-		// Define buckets for startup latency (in milliseconds)
-		bucketBounds := []float64{0, 10, 50, 100, 300, 500, 1000, 2000, 5000, 10000, 20000}
-		clientStartupTime, err := meter.Float64Histogram(
-			"startup_time",
-			metric.WithDescription("Total time for completion of logic of NewClientWithConfig"),
-			metric.WithUnit("ms"),
-			metric.WithExplicitBucketBoundaries(bucketBounds...),
-		)
+	if p.meterProvider == nil {
+		return
+	}
 
-		if err == nil {
-			elapsed := float64(time.Since(elapsedTimer).Milliseconds())
-			clientStartupTime.Record(p.poolCtx, elapsed, metric.WithAttributes(
-				attribute.String("transport_type", transportType),
-				attribute.String("status", "OK"),
-			))
-		}
+	meter := p.meterProvider.Meter(clientMeterName)
+	// Define buckets for startup latency (in milliseconds)
+	bucketBounds := []float64{0, 10, 50, 100, 300, 500, 1000, 2000, 5000, 10000, 20000}
+	clientStartupTime, err := meter.Float64Histogram(
+		"startup_time",
+		metric.WithDescription("Total time for completion of logic of NewClientWithConfig"),
+		metric.WithUnit("ms"),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+
+	if err == nil {
+		elapsed := float64(time.Since(elapsedTimer).Milliseconds())
+		clientStartupTime.Record(p.poolCtx, elapsed, metric.WithAttributes(
+			attribute.String("transport_type", transportType),
+			attribute.String("status", "OK"),
+		))
 	}
 }
 

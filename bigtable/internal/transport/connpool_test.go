@@ -1481,16 +1481,22 @@ func TestRecordClientStartUp(t *testing.T) {
 	reader := metric.NewManualReader()
 	provider := metric.NewMeterProvider(metric.WithReader(reader))
 
-	pool := &BigtableChannelPool{
-		poolCtx:       ctx,
-		meterProvider: provider,
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	poolSize := 1
+	startTime := time.Now().Add(-500 * time.Millisecond)
+	channelPoolOptions := append(poolOpts(), WithMeterProvider(provider))
+	pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, startTime, channelPoolOptions...)
+
+	if err != nil {
+		t.Fatalf("NewBigtableChannelPool failed: %v", err)
 	}
 
-	startTime := time.Now().Add(-500 * time.Millisecond)
-	transportType := "directpath"
+	defer pool.Close()
 
-	pool.recordClientStartUp(startTime, transportType)
-
+	// Collect metrics
 	rm := metricdata.ResourceMetrics{}
 	if err := reader.Collect(ctx, &rm); err != nil {
 		t.Fatalf("Failed to collect metrics: %v", err)
@@ -1526,7 +1532,7 @@ func TestRecordClientStartUp(t *testing.T) {
 	}
 	dp := hist.DataPoints[0]
 	expectedAttrs := attribute.NewSet(
-		attribute.String("transport_type", transportType),
+		attribute.String("transport_type", "unknown"),
 		attribute.String("status", "OK"),
 	)
 	if !dp.Attributes.Equals(&expectedAttrs) {
@@ -1536,9 +1542,9 @@ func TestRecordClientStartUp(t *testing.T) {
 	if dp.Count != 1 {
 		t.Errorf("Data point count got %d, want 1", dp.Count)
 	}
-	// sanity check to see if it is postive.
-	if dp.Sum <= 0 {
-		t.Errorf("Expected positive sum, got %f", dp.Sum)
+	// sanity check to see if it is greater than 500.
+	if dp.Sum < 500 {
+		t.Errorf("Expected positive sum > 500, got %f", dp.Sum)
 	}
 }
 
