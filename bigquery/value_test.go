@@ -113,7 +113,7 @@ func TestConvertRange(t *testing.T) {
 		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
 
-	ts := testTimestamp.Round(time.Millisecond)
+	ts := testTimestamp.Round(time.Nanosecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
 			{V: fmt.Sprintf("[%s, UNBOUNDED)", ts.Format(picoFormatString))},
