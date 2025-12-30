@@ -300,7 +300,7 @@ func (p *BigtableChannelPool) getConns() []*connEntry {
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
 // NewBigtableChannelPool primes the new connection in a non-blocking goroutine to warm it up.
 // We keep it consistent with the current channelpool behavior which is lazily initialized.
-func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), startupTimer time.Time, opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
+func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), clientCreationTimestamp time.Time, opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
@@ -389,12 +389,12 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	// record the client startup time
 	// TODO: currently Prime() is non-blocking, we will make Prime() blocking and infer the transport type here.
 	transportType := "unknown"
-	pool.recordClientStartUp(startupTimer, transportType)
+	pool.recordClientStartUp(clientCreationTimestamp, transportType)
 
 	return pool, nil
 }
 
-func (p *BigtableChannelPool) recordClientStartUp(elapsedTimer time.Time, transportType string) {
+func (p *BigtableChannelPool) recordClientStartUp(clientCreationTimestamp time.Time, transportType string) {
 	if p.meterProvider == nil {
 		return
 	}
@@ -410,8 +410,8 @@ func (p *BigtableChannelPool) recordClientStartUp(elapsedTimer time.Time, transp
 	)
 
 	if err == nil {
-		elapsed := float64(time.Since(elapsedTimer).Milliseconds())
-		clientStartupTime.Record(p.poolCtx, elapsed, metric.WithAttributes(
+		elapsedTime := float64(time.Since(clientCreationTimestamp).Milliseconds())
+		clientStartupTime.Record(p.poolCtx, elapsedTime, metric.WithAttributes(
 			attribute.String("transport_type", transportType),
 			attribute.String("status", "OK"),
 		))

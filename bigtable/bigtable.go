@@ -119,7 +119,7 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
-	elaspedTimer := time.Now()
+	clientCreationTimestamp := time.Now()
 	metricsProvider := config.MetricsProvider
 	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
 		// Do not emit metrics when emulator is being used
@@ -200,7 +200,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 				}
 				return btransport.NewBigtableConn(grpcConn), nil
 			},
-			elaspedTimer,
+			clientCreationTimestamp,
 			// options
 			btransport.WithInstanceName(fullInstanceName),
 			btransport.WithAppProfile(config.AppProfile),
