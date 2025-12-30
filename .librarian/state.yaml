@@ -408,6 +408,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/apikeys/
     tag_format: '{id}/v{version}'
+  - id: apiregistry
+    version: 0.0.0
+    last_generated_commit: b607ece2e97f19a8f105a6cd40368da68e7bc613
+    apis:
+      - path: google/cloud/apiregistry/v1beta
+        service_config: cloudapiregistry_v1beta.yaml
+    source_roots:
+      - apiregistry
+      - internal/generated/snippets/apiregistry
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/apiregistry/
+      - ^apiregistry/apiv1beta/[^/]*_client\.go$
+      - ^apiregistry/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^apiregistry/apiv1beta/[^/]*_client_example_test\.go$
+      - ^apiregistry/apiv1beta/auxiliary\.go$
+      - ^apiregistry/apiv1beta/auxiliary_go123\.go$
+      - ^apiregistry/apiv1beta/doc\.go$
+      - ^apiregistry/apiv1beta/gapic_metadata\.json$
+      - ^apiregistry/apiv1beta/helpers\.go$
+      - ^apiregistry/apiv1beta/\.repo-metadata\.json$
+      - ^apiregistry/apiv1beta/apiregistrypb/.*$
+    tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.9.7
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07

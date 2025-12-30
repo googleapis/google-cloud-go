@@ -578,3 +578,5 @@ replace cloud.google.com/go/saasplatform => ../../../saasplatform
 replace cloud.google.com/go/vectorsearch => ../../../vectorsearch
 
 replace cloud.google.com/go/hypercomputecluster => ../../../hypercomputecluster
+
+replace cloud.google.com/go/apiregistry => ../../../apiregistry
