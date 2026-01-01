@@ -21,6 +21,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -147,13 +148,19 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 		c.UseProd = true
 	}
 
+	start := time.Now()
+
 	if integrationConfig.UseProd {
 		if c.Table == "" {
 			c.Table = fmt.Sprintf("it-table-%d", time.Now().Unix())
 		}
-		return NewProdEnv(*c)
+		penv, err := NewProdEnv(*c)
+		log.Printf("NewProdEnv: %s", time.Since(start))
+		return penv, err
 	}
-	return NewEmulatedEnv(*c)
+	emenv, err := NewEmulatedEnv(*c)
+	log.Printf("NewEmulatedEnv: %s", time.Since(start))
+	return emenv, err
 }
 
 // EmulatedEnv encapsulates the state of an emulator
