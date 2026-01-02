@@ -523,10 +523,9 @@ func TestSetPartMetadata(t *testing.T) {
 				ObjectAttrs: ObjectAttrs{
 					Metadata: tc.initialMetadata,
 				},
+				o: &ObjectHandle{bucket: "my-bucket", object: tc.finalObjectName},
 			}
-			partWriter := &Writer{
-				o: &ObjectHandle{object: tc.finalObjectName},
-			}
+			partWriter := &Writer{}
 			state := &pcuState{
 				w: sourceWriter,
 				config: &parallelUploadConfig{

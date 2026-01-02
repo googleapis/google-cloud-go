@@ -304,7 +304,6 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	pw.ChunkSize = 0 // Force single-shot upload for parts.
 	// Clear fields not applicable to parts or that are set by compose.
 	pw.ObjectAttrs.CRC32C = 0
-	pw.SendCRC32C = false
 	pw.ObjectAttrs.MD5 = nil
 	setPartMetadata(pw, s, task)
 
@@ -331,7 +330,7 @@ func setPartMetadata(pw *Writer, s *pcuState, task uploadTask) {
 	}
 	pw.ObjectAttrs.Metadata = md
 	pw.ObjectAttrs.Metadata[pcuPartNumberMetadataKey] = partNumberStr
-	pw.ObjectAttrs.Metadata[pcuFinalObjectMetadataKey] = pw.o.object
+	pw.ObjectAttrs.Metadata[pcuFinalObjectMetadataKey] = s.w.o.object
 	if s.config.metadataDecorator != nil {
 		s.config.metadataDecorator.Decorate(&pw.ObjectAttrs)
 	}
