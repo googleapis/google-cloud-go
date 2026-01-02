@@ -2042,16 +2042,17 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 			callbackErr = err
 		}
 		reader.Add(buf, 10, 3000, callback)
+		reader.Wait()
 		if callbackErr == nil {
 			t.Fatalf("Expected error: stream to be closed")
 		}
-		if got, want := callbackErr, "stream is closed"; !strings.Contains(got.Error(), want) {
+		if got, want := callbackErr, "downloader closed"; !strings.Contains(got.Error(), want) {
 			t.Errorf("err: got %q, want err to contain %q", got.Error(), want)
 		}
 	})
 }
 
-func TestMRDAddSanityCheck(t *testing.T) {
+func TestMRDAddSanityCheckEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		setBidiReads(t, client)
 		content := make([]byte, 5000)
@@ -2101,14 +2102,15 @@ func TestMRDAddSanityCheck(t *testing.T) {
 		reader.Add(buf, 10000, 3000, callback1)
 		// Request fails as limit is negative.
 		reader.Add(buf, 10, -1, callback2)
-		if got, want := err1, fmt.Errorf("offset larger than size of object"); got.Error() != want.Error() {
-			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		reader.Wait()
+		if status.Code(err1) != codes.OutOfRange {
+			t.Errorf("err1: got %v, want OutOfRange", err1)
 		}
-		if got, want := err2, fmt.Errorf("limit can't be negative"); got.Error() != want.Error() {
-			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		if got, want := err2.Error(), "limit cannot be negative"; !strings.Contains(got, want) {
+			t.Errorf("err2: got %v, want to contain %v", got, want)
 		}
-		if err = reader.Close(); err != nil {
-			t.Errorf("Error while closing reader %v", err)
+		if err = reader.Close(); status.Code(err) != codes.OutOfRange {
+			t.Errorf("Unexpected err while closing reader %v", err)
 		}
 	})
 }
