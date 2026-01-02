@@ -127,7 +127,7 @@ func TestDynamicChannelScaling(t *testing.T) {
 				tc.configOpt(&config)
 			}
 
-			pool, err := NewBigtableChannelPool(ctx, tc.initialSize, btopt.RoundRobin, dialFunc, poolOpts()...)
+			pool, err := NewBigtableChannelPool(ctx, tc.initialSize, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
 			if err != nil {
 				t.Fatalf("Failed to create pool: %v", err)
 			}
@@ -153,7 +153,7 @@ func TestDynamicChannelScaling(t *testing.T) {
 		config.MinScalingInterval = 5 * time.Minute
 		initialSize := 3
 
-		pool, err := NewBigtableChannelPool(ctx, initialSize, btopt.RoundRobin, dialFunc, poolOpts()...)
+		pool, err := NewBigtableChannelPool(ctx, initialSize, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
@@ -188,7 +188,7 @@ func TestDynamicChannelScaling(t *testing.T) {
 	t.Run("EmptyPoolNoAction", func(t *testing.T) {
 		config := baseConfig
 
-		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, poolOpts()...)
+		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}

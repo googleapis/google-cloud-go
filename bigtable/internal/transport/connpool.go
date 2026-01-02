@@ -31,6 +31,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/credentials/alts"
@@ -344,7 +345,7 @@ func (p *BigtableChannelPool) getConns() []*connEntry {
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
 // NewBigtableChannelPool primes the new connection in a non-blocking goroutine to warm it up.
 // We keep it consistent with the current channelpool behavior which is lazily initialized.
-func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
+func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), clientCreationTimestamp time.Time, opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
@@ -429,7 +430,37 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		btopt.Debugf(pool.logger, "bigtable_connpool: failed to create metrics reporter: %v\n", err)
 	}
 	pool.startMonitors()
+
+	// record the client startup time
+	// TODO: currently Prime() is non-blocking, we will make Prime() blocking and infer the transport type here.
+	transportType := "unknown"
+	pool.recordClientStartUp(clientCreationTimestamp, transportType)
+
 	return pool, nil
+}
+
+func (p *BigtableChannelPool) recordClientStartUp(clientCreationTimestamp time.Time, transportType string) {
+	if p.meterProvider == nil {
+		return
+	}
+
+	meter := p.meterProvider.Meter(clientMeterName)
+	// Define buckets for startup latency (in milliseconds)
+	bucketBounds := []float64{0, 10, 50, 100, 300, 500, 1000, 2000, 5000, 10000, 20000}
+	clientStartupTime, err := meter.Float64Histogram(
+		"startup_time",
+		metric.WithDescription("Total time for completion of logic of NewClientWithConfig"),
+		metric.WithUnit("ms"),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+
+	if err == nil {
+		elapsedTime := float64(time.Since(clientCreationTimestamp).Milliseconds())
+		clientStartupTime.Record(p.poolCtx, elapsedTime, metric.WithAttributes(
+			attribute.String("transport_type", transportType),
+			attribute.String("status", "OK"),
+		))
+	}
 }
 
 func (p *BigtableChannelPool) startMonitors() {
