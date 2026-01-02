@@ -32,15 +32,7 @@ libraries:
     release_blocked: true
   - id: "datastore"
     release_blocked: true
-  - id: "errorreporting"
-    release_blocked: true
   - id: "firestore"
-    release_blocked: true
-  - id: "logging"
-    release_blocked: true
-  - id: "longrunning"
-    release_blocked: true
-  - id: "profiler"
     release_blocked: true
   - id: "pubsub"
     release_blocked: true
