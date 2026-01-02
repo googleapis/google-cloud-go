@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	defaultTimestampWireFormat string = "INT64"
+	defaultTimestampWireFormat string = "ISO8601_STRING"
 )
 
 // Construct a RowIterator.

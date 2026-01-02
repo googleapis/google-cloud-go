@@ -28,6 +28,8 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+const picoFormatString = "2006-01-02T15:04:05.999999999999Z"
+
 // Utility functions to deal with byproducts of wrapper types in discovery.
 func int64ptr(v int64) *int64 { return &v }
 
@@ -993,11 +995,7 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	case BooleanFieldType:
 		return strconv.ParseBool(val)
 	case TimestampFieldType:
-		i, err := strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		return time.UnixMicro(i).UTC(), nil
+		return time.Parse(picoFormatString, val)
 	case DateFieldType:
 		return parseCivilDate(val)
 	case TimeFieldType:
