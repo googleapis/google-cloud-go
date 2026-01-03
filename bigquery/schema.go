@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"sync"
 
 	bq "google.golang.org/api/bigquery/v2"
@@ -447,6 +448,37 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // fields. In this example, the Go name of the field is retained:
 //
 //	bigquery:",nullable"
+//
+// The "default" option specifies a default value expression for the field.
+// It is not supported for arrays, structs, geography, range and interval
+// fields.
+//
+// 	type ExampleDefaultValues struct {
+// 	    Bytes         []byte         `bigquery:",nullable,default=b'hey now'"`
+// 	    Rat           *big.Rat       `bigquery:",nullable,default=3.1415"`
+// 	    RequiredBytes []byte         `bigquery:",default=b'hey now'"`
+// 	    RequiredRat   *big.Rat       `bigquery:",default=3.1415"`
+// 	    NullInt64     NullInt64      `bigquery:",default=77"`
+// 	    NullFloat64   NullFloat64    `bigquery:",default=77.24"`
+// 	    NullBool      NullBool       `bigquery:",default=false"`
+// 	    NullString    NullString     `bigquery:",default='hey now'"`
+// 	    NullJSON      NullJSON       `bigquery:",default='{}'"`
+// 	    NullTimestamp NullTimestamp  `bigquery:",default=CURRENT_TIMESTAMP()"`
+// 	    NullDate      NullDate       `bigquery:",default=CURRENT_DATE()"`
+// 	    NullTime      NullTime       `bigquery:",default=CURRENT_TIME()"`
+// 	    NullDateTime  NullDateTime   `bigquery:",default=CURRENT_DATETIME()"`
+// 	    GoTime        time.Time      `bigquery:",default=CURRENT_DATETIME()"`
+// 	    Time          civil.Time     `bigquery:",default=CURRENT_TIME()"`
+// 	    Date          civil.Date     `bigquery:",default=CURRENT_DATE()"`
+// 	    DateTime      civil.DateTime `bigquery:",default=CURRENT_DATETIME()"`
+// 	    String        string         `bigquery:",default='hey now'"`
+// 	    Bool          bool           `bigquery:",default=true"`
+// 	    Float32       float32        `bigquery:",default=3.14"`
+// 	    Float64       float64        `bigquery:",default=3.1415"`
+// 	    Int32         int32          `bigquery:",default=77"`
+// 	    Int64         int64          `bigquery:",default=7777"`
+// 	}
+
 func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
@@ -513,8 +545,39 @@ func inferStruct(t reflect.Type) (Schema, error) {
 	}
 }
 
+func isDefaultable(rt reflect.Type) bool {
+	nft := nullableFieldType(rt)
+
+	switch {
+	// handle types for which we *DON'T* support default values
+	case nft == GeographyFieldType:
+		// decision: don't support default values for GeographyFieldType to avoid
+		// problems parsing a tag with a comma, as in ST_GEOGPOINT(longitude, latitude)
+		return false
+	case rt == typeOfIntervalValue, rt == typeOfRangeValue:
+		// BigQuery itself doesn't support defaults for these types
+		// returning false here to be explicit that we won't handle it
+		return false
+	case rt != typeOfByteSlice && (rt.Kind() == reflect.Array || rt.Kind() == reflect.Slice):
+		// decision: Not supporting arrays/slices to avoid
+		// problems parsing a tag with a comma
+		// except byte slices, which don't require commas
+		return false
+
+	// handle types for which we *DO* support default values
+	case nft != "", isSupportedIntType(rt), isSupportedUintType(rt):
+		return true
+	case rt == typeOfByteSlice, rt == typeOfGoTime, rt == typeOfDate, rt == typeOfTime, rt == typeOfDateTime, rt == typeOfRat:
+		return true
+	case rt.Kind() == reflect.String, rt.Kind() == reflect.Bool, rt.Kind() == reflect.Float32, rt.Kind() == reflect.Float64:
+		return true
+	default:
+		return false
+	}
+}
+
 // inferFieldSchema infers the FieldSchema for a Go type
-func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*FieldSchema, error) {
+func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool, defaultValueExpression string) (*FieldSchema, error) {
 	// Only []byte and struct pointers can be tagged nullable.
 	if nullable && !(rt == typeOfByteSlice || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
 		return nil, badNullableError{fieldName, rt}
@@ -523,23 +586,26 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*
 	if json && !(rt.Kind() == reflect.Struct || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
 		return nil, badJSONError{fieldName, rt}
 	}
+	if defaultValueExpression != "" && !isDefaultable(rt) {
+		return nil, unsupportedDefaultError{name: fieldName, typ: rt}
+	}
 	switch rt {
 	case typeOfByteSlice:
-		return &FieldSchema{Required: !nullable, Type: BytesFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: BytesFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfGoTime:
-		return &FieldSchema{Required: true, Type: TimestampFieldType}, nil
+		return &FieldSchema{Required: true, Type: TimestampFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfDate:
-		return &FieldSchema{Required: true, Type: DateFieldType}, nil
+		return &FieldSchema{Required: true, Type: DateFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfTime:
-		return &FieldSchema{Required: true, Type: TimeFieldType}, nil
+		return &FieldSchema{Required: true, Type: TimeFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfDateTime:
-		return &FieldSchema{Required: true, Type: DateTimeFieldType}, nil
+		return &FieldSchema{Required: true, Type: DateTimeFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfRat:
 		// We automatically infer big.Rat values as NUMERIC as we cannot
 		// determine precision/scale from the type.  Users who want the
 		// larger precision of BIGNUMERIC need to manipulate the inferred
 		// schema.
-		return &FieldSchema{Required: !nullable, Type: NumericFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: NumericFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case typeOfIntervalValue:
 		return &FieldSchema{Required: !nullable, Type: IntervalFieldType}, nil
 	case typeOfRangeValue:
@@ -547,12 +613,14 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*
 		// information, and don't set the RangeElementType when inferred.
 		return &FieldSchema{Required: !nullable, Type: RangeFieldType}, nil
 	}
+
 	if ft := nullableFieldType(rt); ft != "" {
-		return &FieldSchema{Required: false, Type: ft}, nil
+		return &FieldSchema{Required: false, Type: ft, DefaultValueExpression: defaultValueExpression}, nil
 	}
 	if isSupportedIntType(rt) || isSupportedUintType(rt) {
-		return &FieldSchema{Required: true, Type: IntegerFieldType}, nil
+		return &FieldSchema{Required: true, Type: IntegerFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	}
+
 	switch rt.Kind() {
 	case reflect.Slice, reflect.Array:
 		et := rt.Elem()
@@ -564,7 +632,7 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*
 			// Repeated nullable types are not supported by BigQuery.
 			return nil, unsupportedFieldTypeError{fieldName, rt}
 		}
-		f, err := inferFieldSchema(fieldName, et, false, false)
+		f, err := inferFieldSchema(fieldName, et, false, false, "")
 		if err != nil {
 			return nil, err
 		}
@@ -587,11 +655,11 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*
 		}
 		return &FieldSchema{Required: !nullable, Type: RecordFieldType, Schema: nested}, nil
 	case reflect.String:
-		return &FieldSchema{Required: !nullable, Type: StringFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: StringFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case reflect.Bool:
-		return &FieldSchema{Required: !nullable, Type: BooleanFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: BooleanFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case reflect.Float32, reflect.Float64:
-		return &FieldSchema{Required: !nullable, Type: FloatFieldType}, nil
+		return &FieldSchema{Required: !nullable, Type: FloatFieldType, DefaultValueExpression: defaultValueExpression}, nil
 	case reflect.Map:
 		if rt.Key().Kind() != reflect.String {
 			return nil, unsupportedFieldTypeError{fieldName, rt}
@@ -611,15 +679,21 @@ func inferFields(rt reflect.Type) (Schema, error) {
 	}
 	for _, field := range fields {
 		var nullable, json bool
+		var defaultValueExpression string
 		for _, opt := range field.ParsedTag.([]string) {
-			if opt == nullableTagOption {
+			switch {
+			case opt == nullableTagOption:
 				nullable = true
-			}
-			if opt == jsonTagOption {
+			case opt == jsonTagOption:
 				json = true
+			case strings.HasPrefix(opt, defaultTagOption+"="):
+				if defaultValueExpression != "" {
+					return nil, fmt.Errorf("bigquery: field %q has multiple default tags", field.Name)
+				}
+				defaultValueExpression = strings.TrimPrefix(opt, defaultTagOption+"=")
 			}
 		}
-		f, err := inferFieldSchema(field.Name, field.Type, nullable, json)
+		f, err := inferFieldSchema(field.Name, field.Type, nullable, json, defaultValueExpression)
 		if err != nil {
 			return nil, err
 		}
@@ -767,6 +841,15 @@ type badJSONError struct {
 
 func (e badJSONError) Error() string {
 	return fmt.Sprintf(`bigquery: field %q of type %s: use "json" only for struct and struct pointers`, e.name, e.typ)
+}
+
+type unsupportedDefaultError struct {
+	name string
+	typ  reflect.Type
+}
+
+func (e unsupportedDefaultError) Error() string {
+	return fmt.Sprintf(`bigquery: field %q of type %s does not support default value expressions`, e.name, e.typ)
 }
 
 type unsupportedFieldTypeError struct {
