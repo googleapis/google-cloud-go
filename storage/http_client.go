@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"bufio"
 	"context"
 	"encoding/base64"
 	"errors"
@@ -28,6 +29,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -983,11 +985,145 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 	return parseReadResponse(res, params, reopen)
 }
 
+type writerState int
+
+const (
+	stateSingleChunk writerState = iota
+	stateMultiChunk
+	stateSingleShot
+	// Occurs when write errors out or when writer is closed with an error.
+	stateIndeterminate
+)
+
+// httpInternalWriter handles writing data for an HTTP upload and manages CRC32C
+// checksum validation based on the upload type.
+//
+// It supports three upload strategies:
+//
+// 1. Single-shot upload (chunkSize == 0): The entire object is streamed in a
+// single request. The writer calculates the CRC32C checksum of the data as it's
+// written and validates it against the checksum returned by the server after the
+// upload is complete.
+//
+// 2. Single-chunk resumable upload: When chunkSize > 0, the writer buffers the
+// initial data. If the total data written is less than the chunk size, it is
+// uploaded in a single chunk. The writer computes the checksum and includes it
+// in this request for server-side validation.
+//
+// 3. Multi-chunk resumable upload: If the data exceeds the chunk size, the
+// upload transitions to a multi-chunk resumable upload. In this mode, automatic
+// checksum calculation by this writer is stopped, and the underlying transport
+// handles the checksum. No end-to-end checksum validation is performed by this writer.
 type httpInternalWriter struct {
 	*io.PipeWriter
+	bufferedWriter *bufio.Writer
+	ctx            context.Context
+
+	checksumDisabled   bool
+	fullObjectChecksum uint32
+
+	// In single-chunk mode, the computed checksum is sent on this channel to
+	// the uploader goroutine just before the writer is closed.
+	singleChunkChecksumChan chan uint32
+	// In single-shot mode, the server-provided checksum is received on this
+	// channel for validation after the upload is complete.
+	singleShotChecksumChan chan uint32
+	// unblocks the uploader goroutine when the upload transitions to multi-chunk mode.
+	multiChunkChan chan bool
+
+	state writerState
+
+	// closeOnce ensures that the channels are closed at most once.
+	closeOnce sync.Once
+	// communicateOnce ensures that we only signal the uploader goroutine once,
+	// either with a checksum or to transition to multi-chunk mode.
+	communicateOnce sync.Once
 }
 
-func (hiw httpInternalWriter) Flush() (int64, error) {
+func (hiw *httpInternalWriter) closeChannels() {
+	hiw.closeOnce.Do(func() {
+		close(hiw.multiChunkChan)
+		close(hiw.singleChunkChecksumChan)
+	})
+}
+
+func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
+	defer func() {
+		if err != nil {
+			hiw.state = stateIndeterminate
+			hiw.closeChannels()
+		}
+	}()
+
+	if hiw.checksumDisabled {
+		return hiw.PipeWriter.Write(data)
+	}
+	switch hiw.state {
+	case stateSingleShot:
+		hiw.fullObjectChecksum = crc32.Update(hiw.fullObjectChecksum, crc32cTable, data)
+		return hiw.PipeWriter.Write(data)
+	case stateSingleChunk:
+		if hiw.bufferedWriter.Available() <= len(data) && hiw.ctx.Err() == nil {
+			// Transition to multi-chunk mode.
+			hiw.communicateOnce.Do(func() {
+				hiw.multiChunkChan <- true
+				hiw.state = stateMultiChunk
+			})
+		} else {
+			hiw.fullObjectChecksum = crc32.Update(hiw.fullObjectChecksum, crc32cTable, data)
+		}
+		return hiw.bufferedWriter.Write(data)
+	default:
+		return hiw.bufferedWriter.Write(data)
+	}
+}
+
+func (hiw *httpInternalWriter) Close() error {
+	defer hiw.closeChannels()
+	if hiw.checksumDisabled {
+		return hiw.PipeWriter.Close()
+	}
+	switch hiw.state {
+	case stateSingleShot:
+		if err := hiw.PipeWriter.Close(); err != nil {
+			return err
+		}
+		var err error
+		if hiw.ctx.Err() == nil {
+			hiw.communicateOnce.Do(func() {
+				serverChecksum, ok := <-hiw.singleShotChecksumChan
+				// Do not check for channel closure as error is already set on the writer
+				// if singleShotChecksumChan is closed without checksum
+				if ok && hiw.fullObjectChecksum != serverChecksum {
+					err = fmt.Errorf("storage: computed object checksum (%q) doesn't match with server's object checksum (%q)", encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
+				}
+			})
+		}
+		return err
+	case stateSingleChunk:
+		if hiw.ctx.Err() == nil {
+			hiw.communicateOnce.Do(func() {
+				hiw.singleChunkChecksumChan <- hiw.fullObjectChecksum
+			})
+		}
+		hiw.bufferedWriter.Flush()
+		return hiw.PipeWriter.Close()
+	default:
+		hiw.bufferedWriter.Flush()
+		return hiw.PipeWriter.Close()
+	}
+}
+
+func (hiw *httpInternalWriter) CloseWithError(err error) error {
+	defer hiw.closeChannels()
+	// Transitions to indeterminate state to avoid further channel communication
+	// in Write and Close methods.
+	hiw.state = stateIndeterminate
+	hiw.bufferedWriter.Reset(io.Discard)
+	return hiw.PipeWriter.CloseWithError(err)
+}
+
+func (hiw *httpInternalWriter) Flush() (int64, error) {
 	return 0, errors.New("Writer.Flush is only supported for gRPC-based clients")
 }
 
@@ -1016,11 +1152,38 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 
 	pr, pw := io.Pipe()
+	var (
+		singleChunkChecksumChan = make(chan uint32)
+		singleShotChecksumChan  = make(chan uint32)
+		multiChunkChan          = make(chan bool)
+		bufferedWriter          = bufio.NewWriterSize(pw, params.chunkSize)
+		checksumDisabled        = params.disableAutoChecksum || params.sendCRC32C
+		writerState             writerState
+	)
+	if params.chunkSize == 0 {
+		writerState = stateSingleShot
+	} else {
+		writerState = stateSingleChunk
+	}
 
 	go func() {
-		defer close(params.donec)
-
+		defer func() {
+			close(params.donec)
+			close(singleShotChecksumChan)
+		}()
 		rawObj := attrs.toRawObject(params.bucket)
+		if writerState != stateSingleShot && !checksumDisabled {
+			// Exit when either context is cancelled or when write is multi-chunk
+			// or when checksum for single-chunk uploads is received.
+			select {
+			case <-params.ctx.Done():
+			case checksum, ok := <-singleChunkChecksumChan:
+				if ok {
+					rawObj.Crc32c = encodeUint32(checksum)
+				}
+			case <-multiChunkChan:
+			}
+		}
 		if params.sendCRC32C {
 			rawObj.Crc32c = encodeUint32(attrs.CRC32C)
 		}
@@ -1081,10 +1244,25 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			pr.CloseWithError(err)
 			return
 		}
-		setObj(newObject(resp))
+		newObj := newObject(resp)
+		if params.ctx.Err() == nil &&
+			writerState == stateSingleShot &&
+			!checksumDisabled {
+			singleShotChecksumChan <- newObj.CRC32C
+		}
+		setObj(newObj)
 	}()
 
-	return httpInternalWriter{pw}, nil
+	return &httpInternalWriter{
+		PipeWriter:              pw,
+		bufferedWriter:          bufferedWriter,
+		ctx:                     params.ctx,
+		singleChunkChecksumChan: singleChunkChecksumChan,
+		singleShotChecksumChan:  singleShotChecksumChan,
+		multiChunkChan:          multiChunkChan,
+		state:                   writerState,
+		checksumDisabled:        checksumDisabled,
+	}, nil
 }
 
 // IAM methods.
