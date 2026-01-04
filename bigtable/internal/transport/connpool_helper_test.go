@@ -41,21 +41,21 @@ type fakeService struct {
 	delay                   time.Duration // To simulate work
 	serverErr               error         // Error to return from server
 	lastPingAndWarmMetadata metadata.MD   // Stores metadata from the last PingAndWarm call
-	pingErr                 error         // Error to return from PingAndWarm
+	pingErrs                []error       // Errors to return from PingAndWarm
 	pingErrMu               sync.Mutex    // Protects pingErr
 	streamRecvErr           error         // Error to return from stream.Recv()
 	streamSendErr           error         // Error to return from stream.Send()
 }
 
-func (s *fakeService) setPingErr(err error) {
-	s.pingErrMu.Lock()
-	defer s.pingErrMu.Unlock()
-	s.pingErr = err
+func (s *fakeService) setPingErr(errs ...error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.pingErrs = errs
 }
 
 func (s *fakeService) setDelay(duration time.Duration) {
-	s.pingErrMu.Lock()
-	defer s.pingErrMu.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.delay = duration
 }
 
@@ -63,12 +63,6 @@ func (s *fakeService) getDelay() time.Duration {
 	s.pingErrMu.Lock()
 	defer s.pingErrMu.Unlock()
 	return s.delay
-}
-
-func (s *fakeService) getPingErr() error {
-	s.pingErrMu.Lock()
-	defer s.pingErrMu.Unlock()
-	return s.pingErr
 }
 
 func (s *fakeService) UnaryCall(ctx context.Context, req *testpb.SimpleRequest) (*testpb.SimpleResponse, error) {
@@ -82,6 +76,12 @@ func (s *fakeService) UnaryCall(ctx context.Context, req *testpb.SimpleRequest) 
 		return nil, s.serverErr
 	}
 	return &testpb.SimpleResponse{Payload: req.GetPayload()}, nil
+}
+
+func (f *fakeService) getPingCallCount() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.pingCount
 }
 
 func (s *fakeService) StreamingCall(stream testpb.BenchmarkService_StreamingCallServer) error {
@@ -124,7 +124,7 @@ func (f *fakeService) reset() {
 	f.callCount = 0
 	f.pingCount = 0
 	f.serverErr = nil
-	f.pingErr = nil
+	f.pingErrs = nil
 	f.delay = 0
 	f.lastPingAndWarmMetadata = nil
 	if f.streamSema != nil {
@@ -138,16 +138,25 @@ func (f *fakeService) reset() {
 
 func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error) {
 	s.mu.Lock()
+	callNum := s.pingCount
 	s.pingCount++
-	defer s.mu.Unlock()
 
-	// Capture metadata
-	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		s.lastPingAndWarmMetadata = md.Copy()
+	var err error
+	if len(s.pingErrs) > 0 {
+		if callNum < len(s.pingErrs) {
+			err = s.pingErrs[callNum]
+		} else {
+			// If callCount exceeds provided errors, use the last one for subsequent calls
+			err = s.pingErrs[len(s.pingErrs)-1]
+		}
 	}
 
-	delay := s.getDelay()
-
+	delay := s.delay
+	// Capture metadata on the first call, assuming headers are constant
+	if callNum == 0 {
+		s.lastPingAndWarmMetadata, _ = metadata.FromIncomingContext(ctx)
+	}
+	s.mu.Unlock()
 	if delay > 0 {
 		select {
 		case <-time.After(delay):
@@ -155,13 +164,10 @@ func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequ
 			return nil, ctx.Err()
 		}
 	}
+	if err != nil {
+		return nil, err
+	}
 
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	if err := s.getPingErr(); err != nil {
-		return nil, err
-	}
 	return &btpb.PingAndWarmResponse{}, nil
 }
 
