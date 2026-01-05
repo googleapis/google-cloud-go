@@ -830,11 +830,11 @@ func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemo
 		return false
 	}
 
-	entries := make([]entryWithAge, numSnapshot)
-	for i, entry := range snapshotConns {
+	entries := make([]entryWithAge, 0, numSnapshot)
+	for _, entry := range snapshotConns {
 		// Only consider connections not *already* draining for removal via this logic.
 		if !entry.isDraining() {
-			entries[i] = entryWithAge{entry: entry, createdAt: entry.conn.creationTime()}
+			entries = append(entries, entryWithAge{entry: entry, createdAt: entry.conn.creationTime()})
 		}
 	}
 

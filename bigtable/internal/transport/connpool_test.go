@@ -1417,6 +1417,29 @@ func TestRemoveConnections(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("MixedDrainingState", func(t *testing.T) {
+		poolSize := 5
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, poolOpts()...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		conns := pool.getConns()
+		conns[2].markAsDraining()
+
+		changed := pool.removeConnections(1, 1, 5)
+
+		if !changed {
+			t.Errorf("Expected pool change, got false")
+		}
+		finalConns := pool.getConns()
+
+		if len(finalConns) != 3 {
+			t.Errorf("Expected final size 3, got %d", len(finalConns))
+		}
+	})
 }
 
 func TestConnPoolStatisticsVisitor(t *testing.T) {
