@@ -1016,8 +1016,10 @@ const (
 // handles the checksum. No end-to-end checksum validation is performed by this writer.
 type httpInternalWriter struct {
 	*io.PipeWriter
+	mu             sync.Mutex
 	bufferedWriter *bufio.Writer
 	ctx            context.Context
+	cancel         context.CancelFunc
 
 	checksumDisabled   bool
 	fullObjectChecksum uint32
@@ -1048,21 +1050,17 @@ func (hiw *httpInternalWriter) closeChannels() {
 }
 
 func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
-	defer func() {
-		if err != nil {
-			hiw.state = stateIndeterminate
-			hiw.closeChannels()
-		}
-	}()
-
 	if hiw.checksumDisabled {
 		return hiw.PipeWriter.Write(data)
 	}
+
 	switch hiw.state {
 	case stateSingleShot:
 		hiw.fullObjectChecksum = crc32.Update(hiw.fullObjectChecksum, crc32cTable, data)
 		return hiw.PipeWriter.Write(data)
 	case stateSingleChunk:
+		hiw.mu.Lock()
+		defer hiw.mu.Unlock()
 		if hiw.bufferedWriter.Available() <= len(data) && hiw.ctx.Err() == nil {
 			// Transition to multi-chunk mode.
 			hiw.communicateOnce.Do(func() {
@@ -1074,6 +1072,8 @@ func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
 		}
 		return hiw.bufferedWriter.Write(data)
 	default:
+		hiw.mu.Lock()
+		defer hiw.mu.Unlock()
 		return hiw.bufferedWriter.Write(data)
 	}
 }
@@ -1101,25 +1101,33 @@ func (hiw *httpInternalWriter) Close() error {
 		}
 		return err
 	case stateSingleChunk:
+		hiw.mu.Lock()
+		defer hiw.mu.Unlock()
 		if hiw.ctx.Err() == nil {
 			hiw.communicateOnce.Do(func() {
 				hiw.singleChunkChecksumChan <- hiw.fullObjectChecksum
 			})
 		}
-		hiw.bufferedWriter.Flush()
-		return hiw.PipeWriter.Close()
+		err := hiw.bufferedWriter.Flush()
+		return errors.Join(err, hiw.PipeWriter.Close())
 	default:
-		hiw.bufferedWriter.Flush()
-		return hiw.PipeWriter.Close()
+		hiw.mu.Lock()
+		defer hiw.mu.Unlock()
+		err := hiw.bufferedWriter.Flush()
+		return errors.Join(err, hiw.PipeWriter.Close())
 	}
 }
 
 func (hiw *httpInternalWriter) CloseWithError(err error) error {
-	defer hiw.closeChannels()
-	// Transitions to indeterminate state to avoid further channel communication
-	// in Write and Close methods.
-	hiw.state = stateIndeterminate
-	hiw.bufferedWriter.Reset(io.Discard)
+	if hiw.checksumDisabled {
+		return hiw.PipeWriter.CloseWithError(err)
+	}
+
+	hiw.mu.Lock()
+	defer hiw.mu.Unlock()
+	hiw.cancel()
+	hiw.closeChannels()
+	hiw.bufferedWriter.Flush()
 	return hiw.PipeWriter.CloseWithError(err)
 }
 
@@ -1159,6 +1167,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		bufferedWriter          = bufio.NewWriterSize(pw, params.chunkSize)
 		checksumDisabled        = params.disableAutoChecksum || params.sendCRC32C
 		writerState             writerState
+		ctx, cancel             = context.WithCancel(params.ctx)
 	)
 	if params.chunkSize == 0 {
 		writerState = stateSingleShot
@@ -1176,7 +1185,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// Exit when either context is cancelled or when write is multi-chunk
 			// or when checksum for single-chunk uploads is received.
 			select {
-			case <-params.ctx.Done():
+			case <-ctx.Done():
 			case checksum, ok := <-singleChunkChecksumChan:
 				if ok {
 					rawObj.Crc32c = encodeUint32(checksum)
@@ -1252,11 +1261,11 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		}
 		setObj(newObj)
 	}()
-
 	return &httpInternalWriter{
 		PipeWriter:              pw,
 		bufferedWriter:          bufferedWriter,
-		ctx:                     params.ctx,
+		ctx:                     ctx,
+		cancel:                  cancel,
 		singleChunkChecksumChan: singleChunkChecksumChan,
 		singleShotChecksumChan:  singleShotChecksumChan,
 		multiChunkChan:          multiChunkChan,
