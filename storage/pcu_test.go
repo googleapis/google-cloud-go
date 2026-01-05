@@ -15,7 +15,9 @@
 package storage
 
 import (
+	"context"
 	"fmt"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -28,14 +30,14 @@ import (
 
 func TestPartCleanupStrategy_String(t *testing.T) {
 	tests := []struct {
-		strategy PartCleanupStrategy
+		strategy partCleanupStrategy
 		want     string
 	}{
-		{CleanupAlways, "always"},
-		{CleanupOnSuccess, "on_success"},
-		{CleanupNever, "never"},
-		{PartCleanupStrategy(99), "PartCleanupStrategy(99)"},
-		{PartCleanupStrategy(-1), "PartCleanupStrategy(-1)"},
+		{cleanupAlways, "always"},
+		{cleanupOnSuccess, "on_success"},
+		{cleanupNever, "never"},
+		{partCleanupStrategy(99), "PartCleanupStrategy(99)"},
+		{partCleanupStrategy(-1), "PartCleanupStrategy(-1)"},
 	}
 
 	for _, tt := range tests {
@@ -48,13 +50,13 @@ func TestPartCleanupStrategy_String(t *testing.T) {
 }
 
 func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
-	strategy := &DefaultNamingStrategy{}
+	strategy := &defaultNamingStrategy{}
 	bucket := "my-bucket"
 	prefix := "gcs-go-sdk-pcu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 
-	partName := strategy.NewPartName(bucket, prefix, finalName, partNumber)
+	partName := strategy.newPartName(bucket, prefix, finalName, partNumber)
 
 	if !strings.HasPrefix(partName, prefix) {
 		t.Errorf("NewPartName() should start with the prefix %q, but got %q", prefix, partName)
@@ -67,7 +69,7 @@ func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
 	_, err := fmt.Sscanf(partName, expectedFormat, &randSuffix, &parsedPartNum)
 	if err != nil {
 		t.Errorf("NewPartName() returned a name with an unexpected format. Got %q, want format ~%q. Error: %v", partName, prefix+"<hex>-"+finalName+"-part-<int>", err)
-		return // Return to avoid further checks if parsing failed
+		return // Return to avoid further checks if parsing failed.
 	}
 
 	if parsedPartNum != partNumber {
@@ -88,62 +90,62 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 
 	tests := []struct {
 		name string
-		in   *ParallelUploadConfig
-		want *ParallelUploadConfig
+		in   *parallelUploadConfig
+		want *parallelUploadConfig
 	}{
 		{
 			name: "all defaults",
-			in:   &ParallelUploadConfig{},
-			want: &ParallelUploadConfig{
-				MinSize:         &defaultMinSizeVal,
-				PartSize:        defaultPartSize,
-				NumWorkers:      expectedWorkers,
-				BufferPoolSize:  expectedWorkers + 1,
-				TmpObjectPrefix: defaultTmpObjectPrefix,
-				RetryOptions: []RetryOption{
+			in:   &parallelUploadConfig{},
+			want: &parallelUploadConfig{
+				minSize:         &defaultMinSizeVal,
+				partSize:        defaultPartSize,
+				numWorkers:      expectedWorkers,
+				bufferPoolSize:  expectedWorkers + 1,
+				tmpObjectPrefix: defaultTmpObjectPrefix,
+				retryOptions: []RetryOption{
 					WithMaxAttempts(defaultMaxRetries),
 					WithBackoff(gax.Backoff{
 						Initial: defaultBaseDelay,
 						Max:     defaultMaxDelay,
 					}),
 				},
-				CleanupStrategy: CleanupAlways,
-				NamingStrategy:  &DefaultNamingStrategy{},
+				cleanupStrategy: cleanupAlways,
+				namingStrategy:  &defaultNamingStrategy{},
 			},
 		},
 		{
 			name: "user-provided values are respected",
-			in: &ParallelUploadConfig{
-				MinSize:         &userMinSizeVal,
-				PartSize:        int64(1024),
-				NumWorkers:      10,
-				BufferPoolSize:  12,
-				TmpObjectPrefix: "my-prefix/",
-				RetryOptions: []RetryOption{
+			in: &parallelUploadConfig{
+				minSize:         &userMinSizeVal,
+				partSize:        1024,
+				numWorkers:      10,
+				bufferPoolSize:  12,
+				tmpObjectPrefix: "my-prefix/",
+				retryOptions: []RetryOption{
 					WithMaxAttempts(5),
 					WithBackoff(gax.Backoff{
 						Initial: 200 * time.Millisecond,
 						Max:     10 * time.Second,
 					}),
 				},
-				CleanupStrategy: CleanupOnSuccess,
-				NamingStrategy:  &testNamingStrategy{},
+				cleanupStrategy: cleanupOnSuccess,
+				namingStrategy:  &testNamingStrategy{},
 			},
-			want: &ParallelUploadConfig{
-				MinSize:         &userMinSizeVal,
-				PartSize:        int64(1024),
-				NumWorkers:      10,
-				BufferPoolSize:  12,
-				TmpObjectPrefix: "my-prefix/",
-				RetryOptions: []RetryOption{
+			want: &parallelUploadConfig{
+				minSize:         &userMinSizeVal,
+				partSize:        1024,
+				numWorkers:      10,
+				bufferPoolSize:  12,
+				tmpObjectPrefix: "my-prefix/",
+				retryOptions: []RetryOption{
 					WithMaxAttempts(5),
 					WithBackoff(gax.Backoff{
 						Initial: 200 * time.Millisecond,
 						Max:     10 * time.Second,
 					}),
 				},
-				CleanupStrategy: CleanupOnSuccess,
-				NamingStrategy:  &testNamingStrategy{},
+				cleanupStrategy: cleanupOnSuccess,
+				namingStrategy:  &testNamingStrategy{},
 			},
 		},
 	}
@@ -153,9 +155,390 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			cfg := tt.in
 			cfg.defaults()
 			if diff := cmp.Diff(tt.want, cfg,
-				cmp.AllowUnexported(DefaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
+				cmp.AllowUnexported(parallelUploadConfig{}, defaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
 				cmpopts.IgnoreUnexported(gax.Backoff{}, ObjectAttrs{})); diff != "" {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestPCUState_SetError(t *testing.T) {
+	pCtx, cancel := context.WithCancel(context.Background())
+	state := &pcuState{
+		ctx:    pCtx,
+		cancel: cancel,
+	}
+
+	err1 := fmt.Errorf("first error")
+	state.setError(err1)
+
+	// Verify firstErr is set and the error is added to the slice.
+	if state.firstErr != err1 {
+		t.Errorf("firstErr: got %v, want %v", state.firstErr, err1)
+	}
+	if len(state.errors) != 1 || state.errors[0] != err1 {
+		t.Errorf("errors slice: got %v, want [%v]", state.errors, err1)
+	}
+
+	// Verify cancellation happens on the first error.
+	select {
+	case <-state.ctx.Done():
+		if state.ctx.Err() != context.Canceled {
+			t.Errorf("context error: got %v, want %v", state.ctx.Err(), context.Canceled)
+		}
+	default:
+		t.Errorf("context not cancelled after first error")
+	}
+
+	// Verify context.Canceled is filtered out of the errors slice to avoid noise.
+	state.setError(context.Canceled)
+	if len(state.errors) != 1 {
+		t.Errorf("errors slice after context.Canceled: got len %d, want 1", len(state.errors))
+	}
+
+	// Verify subsequent errors are collected but don't change firstErr.
+	err2 := fmt.Errorf("second error")
+	state.setError(err2)
+
+	if state.firstErr != err1 {
+		t.Errorf("firstErr after second error: got %v, want %v (should not change)", state.firstErr, err1)
+	}
+	if len(state.errors) != 2 || state.errors[1] != err2 {
+		t.Errorf("errors slice after second error: got %v, want [%v, %v]", state.errors, err1, err2)
+	}
+}
+
+func TestPCUState_ResultCollector(t *testing.T) {
+	pCtx, cancel := context.WithCancel(context.Background())
+	state := &pcuState{
+		ctx:      pCtx,
+		cancel:   cancel,
+		resultCh: make(chan uploadResult, 2),
+		partMap:  make(map[int]*ObjectHandle),
+	}
+
+	state.collectorWG.Add(1)
+	go state.resultCollector()
+
+	// Successful result.
+	objHandle1 := &ObjectHandle{object: "part1"}
+	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil}
+
+	// Error result.
+	errResult := fmt.Errorf("upload failed")
+	state.resultCh <- uploadResult{partNumber: 2, handle: nil, err: errResult}
+
+	close(state.resultCh)
+	state.collectorWG.Wait()
+
+	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object {
+		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (%v, true)", handle, ok, objHandle1)
+	}
+	if _, ok := state.partMap[2]; ok {
+		t.Errorf("resultCollector: partMap[2] should not be present on error")
+	}
+
+	if state.firstErr == nil || state.firstErr.Error() != errResult.Error() {
+		t.Errorf("resultCollector: firstErr got %v, want %v", state.firstErr, errResult)
+	}
+
+	// Check if context is cancelled.
+	select {
+	case <-state.ctx.Done():
+		if state.ctx.Err() != context.Canceled {
+			t.Errorf("resultCollector: context error got %v, want %v", state.ctx.Err(), context.Canceled)
+		}
+	default:
+		t.Errorf("resultCollector: context should be cancelled on error")
+	}
+}
+
+func TestPCUWorker_SuccessfulTask(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	buffer := make([]byte, 10)
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask, 1),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			return &ObjectHandle{object: "mockPart"}, &ObjectAttrs{Name: "mockPart"}, nil
+		},
+	}
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
+	state.uploadCh <- task
+
+	// Wait for the worker to process the task and send the result.
+	select {
+	case result := <-state.resultCh:
+		if result.err != nil {
+			t.Errorf("worker unexpected error: %v", result.err)
+		}
+		if result.partNumber != 1 || result.handle == nil || result.handle.object != "mockPart" {
+			t.Errorf("worker result mismatch: got %v", result)
+		}
+	// This safety timeout of 1 second prevents the test from hanging indefinitely
+	// if the worker goroutine fails to respond.
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for result")
+	}
+
+	// Wait for the worker to return the buffer to the pool.
+	select {
+	case retBuffer := <-state.bufferCh:
+		if len(retBuffer) != len(buffer) {
+			t.Errorf("worker did not return the original buffer")
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for buffer return")
+	}
+
+	close(state.uploadCh)
+	state.workerWG.Wait()
+}
+
+func TestPCUWorker_FailedTask(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	buffer := make([]byte, 10)
+	uploadErr := fmt.Errorf("upload failed")
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask, 1),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			return nil, nil, uploadErr
+		},
+	}
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
+	state.uploadCh <- task
+
+	// Check for upload error.
+	select {
+	case result := <-state.resultCh:
+		if result.err == nil || result.err.Error() != uploadErr.Error() {
+			t.Errorf("worker error mismatch: got %v, want %v", result.err, uploadErr)
+		}
+		if result.partNumber != 1 {
+			t.Errorf("worker partNumber mismatch: got %v", result.partNumber)
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for result")
+	}
+
+	// Check if buffer is returned.
+	select {
+	case <-state.bufferCh:
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for buffer return on error")
+	}
+
+	close(state.uploadCh)
+	state.workerWG.Wait()
+}
+
+func TestPCUWorker_ContextCancellation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	uploadStarted := make(chan struct{}) // To signal when upload starts.
+
+	buffer := make([]byte, 10)
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask, 1),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			close(uploadStarted)
+			<-s.ctx.Done()
+			return nil, nil, s.ctx.Err()
+		},
+	}
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	task := uploadTask{partNumber: 1, buffer: buffer, size: 10}
+	state.uploadCh <- task
+
+	<-uploadStarted // Wait until upload starts.
+
+	cancel()
+
+	// Check if context has been cancelled.
+	select {
+	case result := <-state.resultCh:
+		if result.err != context.Canceled {
+			t.Errorf("worker error on cancel: got %v, want %v", result.err, context.Canceled)
+		}
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for result after cancel")
+	}
+
+	// Wait for the worker to finish.
+	state.workerWG.Wait()
+
+	// Verify the buffer was correctly returned to the channel.
+	select {
+	case <-state.bufferCh:
+	case <-time.After(1 * time.Second):
+		t.Errorf("worker timeout waiting for buffer return after cancel")
+	}
+}
+
+func TestPCUWorker_UploadChannelClose(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		bufferCh: make(chan []byte, 1),
+		uploadCh: make(chan uploadTask),
+		resultCh: make(chan uploadResult, 1),
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			return nil, nil, nil
+		},
+	}
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	// Close the upload channel to signal workers to stop.
+	close(state.uploadCh)
+	state.workerWG.Wait() // Should not block indefinitely.
+
+	select {
+	case res := <-state.resultCh:
+		t.Errorf("Unexpected result on closed channel: %v", res)
+	default:
+	}
+}
+
+func TestDefaultNamingStrategy_NewPartName_Uniqueness(t *testing.T) {
+	strategy := &defaultNamingStrategy{}
+	bucket := "my-bucket"
+	prefix := "gcs-go-sdk-pcu-tmp/"
+	finalName := "my-object"
+	partNumber := 42
+
+	name1 := strategy.newPartName(bucket, prefix, finalName, partNumber)
+	name2 := strategy.newPartName(bucket, prefix, finalName, partNumber)
+
+	if name1 == name2 {
+		t.Errorf("NewPartName() returned the same name twice: %q", name1)
+	}
+}
+
+func TestSetPartMetadata(t *testing.T) {
+	testCases := []struct {
+		name             string
+		initialMetadata  map[string]string
+		decorator        partMetadataDecorator
+		task             uploadTask
+		finalObjectName  string
+		expectedMetadata map[string]string
+	}{
+		{
+			name:            "Nil initial metadata, no decorator",
+			initialMetadata: nil,
+			decorator:       nil,
+			task:            uploadTask{partNumber: 1},
+			finalObjectName: "final-object",
+			expectedMetadata: map[string]string{
+				pcuPartNumberMetadataKey:  "1",
+				pcuFinalObjectMetadataKey: "final-object",
+			},
+		},
+		{
+			name: "Existing metadata, no decorator",
+			initialMetadata: map[string]string{
+				"initial-key": "initial-value",
+			},
+			decorator:       nil,
+			task:            uploadTask{partNumber: 2},
+			finalObjectName: "final-object",
+			expectedMetadata: map[string]string{
+				"initial-key":             "initial-value",
+				pcuPartNumberMetadataKey:  "2",
+				pcuFinalObjectMetadataKey: "final-object",
+			},
+		},
+		{
+			name:            "Nil initial metadata, with decorator",
+			initialMetadata: nil,
+			decorator: &testMetadataDecorator{
+				metadataToSet: map[string]string{"decorated-key": "decorated-value"},
+			},
+			task:            uploadTask{partNumber: 3},
+			finalObjectName: "final-object",
+			expectedMetadata: map[string]string{
+				"decorated-key":           "decorated-value",
+				pcuPartNumberMetadataKey:  "3",
+				pcuFinalObjectMetadataKey: "final-object",
+			},
+		},
+		{
+			name: "Existing metadata, with decorator that overwrites",
+			initialMetadata: map[string]string{
+				"initial-key":            "initial-value",
+				pcuPartNumberMetadataKey: "should-be-overwritten",
+			},
+			decorator: &testMetadataDecorator{
+				metadataToSet: map[string]string{
+					"decorated-key":           "decorated-value",
+					pcuFinalObjectMetadataKey: "overwritten-by-decorator",
+				},
+			},
+			task:            uploadTask{partNumber: 4},
+			finalObjectName: "final-object-base",
+			expectedMetadata: map[string]string{
+				"initial-key":             "initial-value",
+				"decorated-key":           "decorated-value",
+				pcuPartNumberMetadataKey:  "4",                        // Overwrites initial.
+				pcuFinalObjectMetadataKey: "overwritten-by-decorator", // Overwritten by decorator.
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Setup.
+			sourceWriter := &Writer{
+				ObjectAttrs: ObjectAttrs{
+					Metadata: tc.initialMetadata,
+				},
+				o: &ObjectHandle{bucket: "my-bucket", object: tc.finalObjectName},
+			}
+			partWriter := &Writer{}
+			state := &pcuState{
+				w: sourceWriter,
+				config: &parallelUploadConfig{
+					metadataDecorator: tc.decorator,
+				},
+			}
+
+			// Execute.
+			setPartMetadata(partWriter, state, tc.task)
+
+			// Verify.
+			if !reflect.DeepEqual(partWriter.ObjectAttrs.Metadata, tc.expectedMetadata) {
+				t.Errorf("Metadata mismatch:\ngot:  %v\nwant: %v", partWriter.ObjectAttrs.Metadata, tc.expectedMetadata)
 			}
 		})
 	}
@@ -164,6 +547,16 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 // testNamingStrategy is a mock implementation of PartNamingStrategy for testing.
 type testNamingStrategy struct{}
 
-func (t *testNamingStrategy) NewPartName(bucket, prefix, finalName string, partNumber int) string {
+func (t *testNamingStrategy) newPartName(bucket, prefix, finalName string, partNumber int) string {
 	return "test-part"
+}
+
+type testMetadataDecorator struct {
+	metadataToSet map[string]string
+}
+
+func (m *testMetadataDecorator) Decorate(attrs *ObjectAttrs) {
+	for k, v := range m.metadataToSet {
+		attrs.Metadata[k] = v
+	}
 }
