@@ -1054,6 +1054,10 @@ func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
 		return hiw.PipeWriter.Write(data)
 	}
 
+	if hiw.ctx.Err() != nil {
+		return 0, hiw.ctx.Err()
+	}
+
 	switch hiw.state {
 	case stateSingleShot:
 		hiw.fullObjectChecksum = crc32.Update(hiw.fullObjectChecksum, crc32cTable, data)
