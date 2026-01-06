@@ -25,8 +25,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"regexp"
-	"strings"
 	"time"
 
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -927,7 +925,7 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) GetDocument(ctx context.Context, req *firestorepb.GetDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -945,7 +943,7 @@ func (c *gRPCClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 }
 
 func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -991,7 +989,7 @@ func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 }
 
 func (c *gRPCClient) UpdateDocument(ctx context.Context, req *firestorepb.UpdateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDocument().GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1009,7 +1007,7 @@ func (c *gRPCClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 }
 
 func (c *gRPCClient) DeleteDocument(ctx context.Context, req *firestorepb.DeleteDocumentRequest, opts ...gax.CallOption) error {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1023,7 +1021,7 @@ func (c *gRPCClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 }
 
 func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.BatchGetDocumentsRequest, opts ...gax.CallOption) (firestorepb.Firestore_BatchGetDocumentsClient, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1043,7 +1041,7 @@ func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 }
 
 func (c *gRPCClient) BeginTransaction(ctx context.Context, req *firestorepb.BeginTransactionRequest, opts ...gax.CallOption) (*firestorepb.BeginTransactionResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1061,7 +1059,7 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 }
 
 func (c *gRPCClient) Commit(ctx context.Context, req *firestorepb.CommitRequest, opts ...gax.CallOption) (*firestorepb.CommitResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1079,7 +1077,7 @@ func (c *gRPCClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 }
 
 func (c *gRPCClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequest, opts ...gax.CallOption) error {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1093,7 +1091,7 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 }
 
 func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1113,19 +1111,7 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 }
 
 func (c *gRPCClient) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
-		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
-	}
-	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
-		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1145,7 +1131,7 @@ func (c *gRPCClient) ExecutePipeline(ctx context.Context, req *firestorepb.Execu
 }
 
 func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1165,7 +1151,7 @@ func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 }
 
 func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQueryRequest, opts ...gax.CallOption) *CursorIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1245,7 +1231,7 @@ func (c *gRPCClient) Listen(ctx context.Context, opts ...gax.CallOption) (firest
 }
 
 func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.ListCollectionIdsRequest, opts ...gax.CallOption) *StringIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1291,7 +1277,7 @@ func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 }
 
 func (c *gRPCClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWriteRequest, opts ...gax.CallOption) (*firestorepb.BatchWriteResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1309,7 +1295,7 @@ func (c *gRPCClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 }
 
 func (c *gRPCClient) CreateDocument(ctx context.Context, req *firestorepb.CreateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1327,7 +1313,7 @@ func (c *gRPCClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 }
 
 func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1341,7 +1327,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 }
 
 func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1355,7 +1341,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 }
 
 func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1373,7 +1359,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 }
 
 func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1447,7 +1433,7 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1537,7 +1523,10 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
+
+		hds = append(c.xGoogHeaders, hds...)
+		hds = append(hds, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
@@ -1623,7 +1612,7 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDocument().GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1683,7 +1672,7 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1727,7 +1716,7 @@ func (c *restClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1829,7 +1818,7 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1885,7 +1874,7 @@ func (c *restClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1941,7 +1930,7 @@ func (c *restClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -1982,7 +1971,7 @@ func (c *restClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2084,19 +2073,7 @@ func (c *restClient) ExecutePipeline(ctx context.Context, req *firestorepb.Execu
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
-		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
-	}
-	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
-		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2205,7 +2182,7 @@ func (c *restClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2322,7 +2299,10 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
+
+		hds = append(c.xGoogHeaders, hds...)
+		hds = append(hds, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
@@ -2416,7 +2396,10 @@ func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
+
+		hds = append(c.xGoogHeaders, hds...)
+		hds = append(hds, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
@@ -2490,7 +2473,7 @@ func (c *restClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetDatabase())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2555,7 +2538,7 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetParent())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2611,7 +2594,7 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2646,7 +2629,7 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2681,7 +2664,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+	hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2756,7 +2739,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		hds := []string{"x-goog-request-params", buildRoutingHeader(req.GetName())}
+
+		hds = append(c.xGoogHeaders, hds...)
+		hds = append(hds, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
