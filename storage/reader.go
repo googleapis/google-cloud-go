@@ -395,14 +395,6 @@ type MultiRangeDownloader struct {
 	spanCtx context.Context
 }
 
-// type multiRangeDownloader interface {
-// 	add(output io.Writer, offset, limit int64, callback func(int64, int64, error))
-// 	wait()
-// 	close() error
-// 	getHandle() []byte
-// 	error() error
-// }
-
 // Add adds a new range to MultiRangeDownloader.
 //
 // The offset for the first byte to return in the read, relative to the start

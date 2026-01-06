@@ -29,30 +29,11 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 )
 
-// readIDGenerator generates unique read IDs for multi-range reads.
-// Call readIDGenerator.Next to get the next ID. Safe to be called concurrently.
-type readIDGenerator struct {
-	initOnce sync.Once
-	nextID   chan int64 // do not use this field directly
-}
-
-func (g *readIDGenerator) init() {
-	g.nextID = make(chan int64, 1)
-	g.nextID <- 1
-}
-
-// Next returns the Next read ID. It initializes the readIDGenerator if needed.
-func (g *readIDGenerator) Next() int64 {
-	g.initOnce.Do(g.init)
-
-	id := <-g.nextID
-	n := id + 1
-	g.nextID <- n
-
-	return id
-}
-
 // --- internalMultiRangeDownloader Interface ---
+// This provides an internal wrapper for the gRPC methods to avoid polluting
+// reader.go with gRPC implementation details. The only implementation
+// currently is for the gRPC transport with bidi APIs enabled. Creating
+// a MultiRangeDownloader with any other client type will fail.
 type internalMultiRangeDownloader interface {
 	add(output io.Writer, offset, length int64, callback func(int64, int64, error))
 	close(err error) error
@@ -88,7 +69,20 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	mCtx, cancel := context.WithCancel(ctx)
 
 	// Create the manager
-	manager := newMultiRangeDownloaderManager(mCtx, c, s, params, readSpec, cancel, ctx)
+	manager := &multiRangeDownloaderManager{
+		ctx:           mCtx,
+		cancel:        cancel,
+		client:        c,
+		settings:      s,
+		params:        params,
+		cmds:          make(chan mrdCommand, 1),
+		sessionResps:  make(chan mrdSessionResult, 100),
+		pendingRanges: make(map[int64]*rangeRequest),
+		readIDCounter: 1,
+		readSpec:      readSpec,
+		attrsReady:    make(chan struct{}),
+		spanCtx:       ctx,
+	}
 
 	mrd := &MultiRangeDownloader{
 		impl:    manager,
@@ -196,9 +190,9 @@ type multiRangeDownloaderManager struct {
 	client       *grpcStorageClient
 	settings     *settings
 	params       *newMultiRangeDownloaderParams
-	wg           sync.WaitGroup
-	cmdC         chan mrdCommand
-	sessionRespC chan mrdSessionResult
+	wg           sync.WaitGroup // syncs completion of event loop.
+	cmds         chan mrdCommand
+	sessionResps chan mrdSessionResult
 	publicMRD    *MultiRangeDownloader
 
 	// State
@@ -230,23 +224,6 @@ type rangeRequest struct {
 	completed    bool
 }
 
-func newMultiRangeDownloaderManager(ctx context.Context, client *grpcStorageClient, settings *settings, params *newMultiRangeDownloaderParams, readSpec *storagepb.BidiReadObjectSpec, cancel context.CancelFunc, spanCtx context.Context) *multiRangeDownloaderManager {
-	return &multiRangeDownloaderManager{
-		ctx:           ctx,
-		cancel:        cancel,
-		client:        client,
-		settings:      settings,
-		params:        params,
-		cmdC:          make(chan mrdCommand, 1),
-		sessionRespC:  make(chan mrdSessionResult, 100),
-		pendingRanges: make(map[int64]*rangeRequest),
-		readIDCounter: 1,
-		readSpec:      readSpec,
-		attrsReady:    make(chan struct{}),
-		spanCtx:       spanCtx,
-	}
-}
-
 // Methods implementing internalMultiRangeDownloader
 func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64, callback func(int64, int64, error)) {
 	if err := m.getPermanentError(); err != nil {
@@ -264,7 +241,7 @@ func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64
 
 	cmd := &mrdAddCmd{output: output, offset: offset, length: length, callback: callback}
 	select {
-	case m.cmdC <- cmd:
+	case m.cmds <- cmd:
 	case <-m.ctx.Done():
 		m.runCallback(offset, length, m.ctx.Err(), callback)
 	}
@@ -273,7 +250,7 @@ func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64
 func (m *multiRangeDownloaderManager) close(err error) error {
 	cmd := &mrdCloseCmd{err: err}
 	select {
-	case m.cmdC <- cmd:
+	case m.cmds <- cmd:
 		<-m.ctx.Done()
 		m.wg.Wait()
 		if m.permanentErr != nil && !errors.Is(m.permanentErr, errClosed) {
@@ -290,7 +267,7 @@ func (m *multiRangeDownloaderManager) wait() {
 	doneC := make(chan struct{})
 	cmd := &mrdWaitCmd{doneC: doneC}
 	select {
-	case m.cmdC <- cmd:
+	case m.cmds <- cmd:
 		select {
 		case <-doneC:
 			m.callbackWg.Wait()
@@ -315,7 +292,7 @@ func (m *multiRangeDownloaderManager) getHandle() []byte {
 	respC := make(chan []byte, 1)
 	cmd := &mrdGetHandleCmd{respC: respC}
 	select {
-	case m.cmdC <- cmd:
+	case m.cmds <- cmd:
 		select {
 		case h, ok := <-respC:
 			if !ok {
@@ -378,12 +355,12 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		select {
 		case <-m.ctx.Done():
 			return
-		case cmd := <-m.cmdC:
+		case cmd := <-m.cmds:
 			cmd.apply(m.ctx, m)
 			if _, ok := cmd.(*mrdCloseCmd); ok {
 				return
 			}
-		case result := <-m.sessionRespC:
+		case result := <-m.sessionResps:
 			m.processSessionResult(result)
 		}
 
@@ -408,7 +385,7 @@ func (m *multiRangeDownloaderManager) establishInitialSession() error {
 			m.currentSession = nil
 		}
 
-		session, err := newBidiReadStreamSession(m.ctx, m.sessionRespC, m.client, m.settings, m.params, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec))
+		session, err := newBidiReadStreamSession(m.ctx, m.sessionResps, m.client, m.settings, m.params, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec))
 		if err != nil {
 			redirectErr, isRedirect := isRedirectError(err)
 			if isRedirect {
@@ -422,10 +399,8 @@ func (m *multiRangeDownloaderManager) establishInitialSession() error {
 
 		// Wait for the first message to populate attributes
 		select {
-		case firstResult := <-m.sessionRespC:
+		case firstResult := <-m.sessionResps:
 			if firstResult.err != nil {
-				m.currentSession.Shutdown()
-				m.currentSession = nil
 				// Pass the error back to run() to potentially retry
 				return firstResult.err
 			}
@@ -602,7 +577,7 @@ func (m *multiRangeDownloaderManager) ensureSession(ctx context.Context) error {
 			return m.permanentErr
 		}
 
-		session, err := newBidiReadStreamSession(m.ctx, m.sessionRespC, m.client, m.settings, m.params, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec))
+		session, err := newBidiReadStreamSession(m.ctx, m.sessionResps, m.client, m.settings, m.params, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec))
 		if err != nil {
 			redirectErr, isRedirect := isRedirectError(err)
 			if isRedirect {
