@@ -475,13 +475,8 @@ func initIntegrationTests() (cleanup func()) {
 	var err error
 
 	if exphConfig.experimentalHost != "" {
-		expHConnOpts := []option.ClientOption{
-			option.WithEndpoint(exphConfig.experimentalHost),
-			option.WithoutAuthentication(),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		}
-		opts = append(opts, expHConnOpts...)
-		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...,)
+		opts = append(opts, experimentalHostOptions()...)
+		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	} else {
 		// Create InstanceAdmin and DatabaseAdmin clients.
 		instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
@@ -2127,11 +2122,7 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 	// Pass spanner host as options for running builds against different environments
 	var opts []option.ClientOption
 	if exphConfig.experimentalHost != "" {
-		opts = []option.ClientOption{
-			option.WithEndpoint(exphConfig.experimentalHost),
-			option.WithoutAuthentication(),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		}
+		opts = experimentalHostOptions()
 	}else {
 		opts = []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
 	}
@@ -4538,7 +4529,9 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: true}); err != nil {
+	// DataBoost is not available for experimental host endpoints
+	dataBoostAvailable := exphConfig.experimentalHost == ""
+	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -4624,7 +4617,9 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: true}); err != nil {
+	// DataBoost is not available for experimental host endpoints
+	dataBoostAvailable := exphConfig.experimentalHost == ""
+	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -6637,12 +6632,7 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	if exphConfig.experimentalHost != "" {
-		connOpts := []option.ClientOption{
-				option.WithEndpoint(exphConfig.experimentalHost),
-				option.WithoutAuthentication(),
-				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		}
-		opts = append(opts, connOpts...)
+		opts = append(opts, experimentalHostOptions()...)
 		config.IsExperimentalHost = true
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
@@ -6664,12 +6654,7 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 	}
 	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
 	if exphConfig.experimentalHost != "" {
-		expHConnOpts := []option.ClientOption{
-			option.WithEndpoint(exphConfig.experimentalHost),
-			option.WithoutAuthentication(),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		}
-		opts = append(opts, expHConnOpts...)
+		opts = append(opts, experimentalHostOptions()...)
 		config.IsExperimentalHost = true
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
@@ -6690,12 +6675,7 @@ func createClientForProtoColumns(ctx context.Context, dbPath string, spc Session
 	}
 	config := ClientConfig{SessionPoolConfig: spc}
 	if exphConfig.experimentalHost != "" {
-		expHConnOpts := []option.ClientOption{
-			option.WithEndpoint(exphConfig.experimentalHost),
-			option.WithoutAuthentication(),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		}
-		opts = append(opts, expHConnOpts...)
+		opts = append(opts, experimentalHostOptions()...)
 		config.IsExperimentalHost = true
 	}
 	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
@@ -6851,6 +6831,14 @@ func skipEmulatorTest(t *testing.T) {
 func skipExperimentalHostTest(t *testing.T) {
 	if exphConfig.experimentalHost != "" {
 		t.Skip("Skipping experimental host tests.")
+	}
+}
+
+func experimentalHostOptions() []option.ClientOption {
+	return []option.ClientOption{
+		option.WithEndpoint(exphConfig.experimentalHost),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
 }
 
