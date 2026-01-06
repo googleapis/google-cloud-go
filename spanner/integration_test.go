@@ -107,6 +107,7 @@ var (
 	instanceAdmin *instance.InstanceAdminClient
 
 	dpConfig directPathTestConfig
+	exphConfig experimentalHostTestConfig
 	peerInfo *peer.Peer
 
 	singerDBPGStatements = []string{
@@ -386,11 +387,16 @@ func init() {
 	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
 	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
 	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
+	flag.StringVar(&exphConfig.experimentalHost, "it.experimental-host", "", "Experimental host integration test flag")
 }
 
 type directPathTestConfig struct {
 	attemptDirectPath  bool
 	directPathIPv4Only bool
+}
+
+type experimentalHostTestConfig struct {
+	experimentalHost string
 }
 
 func parseInstanceName(inst string) (project, instance string, err error) {
@@ -411,7 +417,7 @@ func getInstanceConfig() string {
 }
 
 func getMultiplexEnableFlag() bool {
-	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
+	return exphConfig.experimentalHost != "" || os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
 }
 
 const (
@@ -449,6 +455,11 @@ func initIntegrationTests() (cleanup func()) {
 		return noop
 	}
 
+	if exphConfig.experimentalHost != "" {
+		testProjectID = "default"
+		testInstanceID = "default"
+	}
+
 	if testProjectID == "" {
 		log.Println("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
 		return noop
@@ -462,14 +473,30 @@ func initIntegrationTests() (cleanup func()) {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	var err error
-	// Create InstanceAdmin and DatabaseAdmin clients.
-	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
-	if err != nil {
-		log.Fatalf("cannot create instance databaseAdmin client: %v", err)
+
+	if exphConfig.experimentalHost != "" {
+		expHConnOpts := []option.ClientOption{
+			option.WithEndpoint(exphConfig.experimentalHost),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+		opts = append(opts, expHConnOpts...)
+		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...,)
+	} else {
+		// Create InstanceAdmin and DatabaseAdmin clients.
+		instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
+		if err != nil {
+			log.Fatalf("cannot create instance databaseAdmin client: %v", err)
+		}
+		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	}
-	databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
+	}
+	if exphConfig.experimentalHost != "" {
+		return func() {
+			databaseAdmin.Close()
+		}
 	}
 	var configName string
 	if instanceConfig != "" {
@@ -1130,6 +1157,8 @@ func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 
 func TestIntegration_BatchWrite(t *testing.T) {
 	skipEmulatorTest(t)
+	// BatchWrite creates regular sessions, which cannot be used with experimental host.
+	skipExperimentalHostTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2096,7 +2125,16 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 	}
 
 	// Pass spanner host as options for running builds against different environments
-	opts := []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
+	var opts []option.ClientOption
+	if exphConfig.experimentalHost != "" {
+		opts = []option.ClientOption{
+			option.WithEndpoint(exphConfig.experimentalHost),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}else {
+		opts = []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
+	}
 	dbAdmin, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create dbAdmin client: %v", err)
@@ -3824,8 +3862,9 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 
 func TestIntegration_QueryWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -3958,8 +3997,9 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 
 func TestIntegration_ReadWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -4091,8 +4131,9 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 
 func TestIntegration_DMLWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -4255,8 +4296,9 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 
 func TestIntegration_MutationWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimental host
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -6594,6 +6636,15 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
+	if exphConfig.experimentalHost != "" {
+		connOpts := []option.ClientOption{
+				option.WithEndpoint(exphConfig.experimentalHost),
+				option.WithoutAuthentication(),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+		opts = append(opts, connOpts...)
+		config.IsExperimentalHost = true
+	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
@@ -6612,6 +6663,15 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
+	if exphConfig.experimentalHost != "" {
+		expHConnOpts := []option.ClientOption{
+			option.WithEndpoint(exphConfig.experimentalHost),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+		opts = append(opts, expHConnOpts...)
+		config.IsExperimentalHost = true
+	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
@@ -6628,7 +6688,17 @@ func createClientForProtoColumns(ctx context.Context, dbPath string, spc Session
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
+	config := ClientConfig{SessionPoolConfig: spc}
+	if exphConfig.experimentalHost != "" {
+		expHConnOpts := []option.ClientOption{
+			option.WithEndpoint(exphConfig.experimentalHost),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+		opts = append(opts, expHConnOpts...)
+		config.IsExperimentalHost = true
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -6775,6 +6845,12 @@ func isEmulatorEnvSet() bool {
 func skipEmulatorTest(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
+	}
+}
+
+func skipExperimentalHostTest(t *testing.T) {
+	if exphConfig.experimentalHost != "" {
+		t.Skip("Skipping experimental host tests.")
 	}
 }
 
