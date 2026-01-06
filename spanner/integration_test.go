@@ -106,9 +106,9 @@ var (
 	databaseAdmin *database.DatabaseAdminClient
 	instanceAdmin *instance.InstanceAdminClient
 
-	dpConfig directPathTestConfig
+	dpConfig   directPathTestConfig
 	exphConfig experimentalHostTestConfig
-	peerInfo *peer.Peer
+	peerInfo   *peer.Peer
 
 	singerDBPGStatements = []string{
 		`CREATE TABLE Singers (
@@ -388,6 +388,7 @@ func init() {
 	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
 	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 	flag.StringVar(&exphConfig.experimentalHost, "it.experimental-host", "", "Experimental host integration test flag")
+	flag.BoolVar(&exphConfig.isPGDialect, "it.experimental-host-pg-dialect", false, "Use PG dialect with experimental host")
 }
 
 type directPathTestConfig struct {
@@ -397,6 +398,7 @@ type directPathTestConfig struct {
 
 type experimentalHostTestConfig struct {
 	experimentalHost string
+	isPGDialect      bool
 }
 
 func parseInstanceName(inst string) (project, instance string, err error) {
@@ -433,6 +435,16 @@ func TestMain(m *testing.M) {
 		if isEmulatorEnvSet() && dialect == adminpb.DatabaseDialect_POSTGRESQL {
 			// PG tests are not supported in emulator
 			continue
+		}
+		if exphConfig.experimentalHost != "" {
+			// Since IT against experimental host is ran against single server instance, we need to run tests
+			// separately for each dialect to avoid context deadlines due to resource limitations.
+			if exphConfig.isPGDialect && dialect != adminpb.DatabaseDialect_POSTGRESQL {
+				continue
+			}
+			if !exphConfig.isPGDialect && dialect != adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL {
+				continue
+			}
 		}
 		testDialect = dialect
 		res := m.Run()
@@ -2098,6 +2110,7 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 func TestIntegration_CreateDBRetry(t *testing.T) {
 	t.Parallel()
 	skipUnsupportedPGTest(t)
+	skipExperimentalHostTest(t)
 
 	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
@@ -2120,12 +2133,7 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 	}
 
 	// Pass spanner host as options for running builds against different environments
-	var opts []option.ClientOption
-	if exphConfig.experimentalHost != "" {
-		opts = experimentalHostOptions()
-	}else {
-		opts = []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
-	}
+	opts := []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
 	dbAdmin, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create dbAdmin client: %v", err)
@@ -2150,6 +2158,8 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	t.Parallel()
+	// tracking the failure via b/441255724 for experimentalHost
+	skipExperimentalHostTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -3714,6 +3724,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 	// TODO(sakthivelmani): Enable the tests once b/422916293 is fixed
 	skipDirectPathTest(t)
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -4442,8 +4453,9 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 
 func TestIntegration_ListDatabaseRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimental host
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -5736,6 +5748,7 @@ func compareErrors(got, want error) bool {
 
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -6022,6 +6035,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 
 func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
