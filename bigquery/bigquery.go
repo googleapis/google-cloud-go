@@ -35,6 +35,7 @@ import (
 	"google.golang.org/api/option"
 )
 
+
 const (
 	// Scope is the Oauth2 scope for the service.
 	// For relevant BigQuery scopes, see:

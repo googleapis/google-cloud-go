@@ -54,11 +54,13 @@ runPresubmitTests() {
     return
   fi
 
+  go_test_args=("-race")
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    gotestsum --packages="./..." -junitfile sponge_log.xml -f standard-verbose -- --short --timeout 45m -race
+    go_test_args+=("--short" "--timeout" "15m")
   else
-    gotestsum --packages="./..." -junitfile sponge_log.xml -f standard-verbose -- --timeout 45m -race
+    go_test_args+=("--timeout" "45m")
   fi
+  gotestsum --packages="./..." -junitfile sponge_log.xml -f standard-verbose -- "${go_test_args[@]}" | tee sponge_log.log
 
   # Run integration tests against an emulator.
   if [ -f "emulator_test.sh" ]; then
