@@ -22,7 +22,9 @@ import (
 	"sync"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
@@ -180,7 +182,7 @@ func (c *mrdErrorCmd) apply(ctx context.Context, m *multiRangeDownloaderManager)
 
 // --- mrdSessionResult ---
 type mrdSessionResult struct {
-	resp     *storagepb.BidiReadObjectResponse
+	decoder  *readResponseDecoder
 	err      error
 	redirect *storagepb.BidiReadObjectRedirectedError
 }
@@ -516,7 +518,7 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 		return
 	}
 
-	resp := result.resp
+	resp := result.decoder.msg
 	if handle := resp.GetReadHandle().GetHandle(); len(handle) > 0 {
 		m.lastReadHandle = handle
 		if m.params.handle != nil {
@@ -547,10 +549,8 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 		if !exists || req.completed {
 			continue
 		}
-
-		content := dataRange.GetChecksummedData().GetContent()
-		req.bytesWritten += int64(len(content))
-		_, err := req.output.Write(content)
+		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, nil)
+		req.bytesWritten += written
 		if err != nil {
 			m.failRange(req, err)
 			continue
@@ -562,6 +562,8 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 			m.runCallback(req.origOffset, req.bytesWritten, nil, req.callback)
 		}
 	}
+	// Once all data in the initial response has been read out, free buffers.
+	result.decoder.databufs.Free()
 }
 
 // ensureSession is now only for reconnecting *after* the initial session is up.
@@ -746,6 +748,10 @@ func newBidiReadStreamSession(ctx context.Context, respC chan<- mrdSessionResult
 		ReadObjectSpec: s.readSpec,
 	}
 	reqCtx := gax.InsertMetadataIntoOutgoingContext(s.ctx, contextMetadataFromBidiReadObject(initialReq)...)
+	// Force the use of the custom codec to enable zero-copy reads.
+	s.settings.gax = append(s.settings.gax, gax.WithGRPCOptions(
+		grpc.ForceCodecV2(bytesCodecV2{}),
+	))
 
 	var err error
 	s.stream, err = client.raw.BidiReadObject(reqCtx, s.settings.gax...)
@@ -813,8 +819,20 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			return
 		}
 
-		resp, err := s.stream.Recv()
+		// Receive message without a copy.
+		databufs := mem.BufferSlice{}
+		err := s.stream.RecvMsg(&databufs)
+		var decoder *readResponseDecoder
+		if err == nil {
+			// Use the custom decoder to parse the raw buffer without copying object data.
+			decoder = &readResponseDecoder{
+				databufs: databufs,
+			}
+			err = decoder.readFullObjectResponse()
+		}
+
 		if err != nil {
+			databufs.Free()
 			redirectErr, isRedirect := isRedirectError(err)
 			result := mrdSessionResult{err: err}
 			if isRedirect {
@@ -830,8 +848,9 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			}
 			return
 		}
+
 		select {
-		case s.respC <- mrdSessionResult{resp: resp}:
+		case s.respC <- mrdSessionResult{decoder: decoder}:
 		case <-s.ctx.Done():
 			return
 		}
