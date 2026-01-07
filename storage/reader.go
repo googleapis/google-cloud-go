@@ -391,10 +391,6 @@ type MultiRangeDownloader struct {
 	// Attrs is populated when NewMultiRangeDownloader returns.
 	Attrs ReaderObjectAttrs
 	impl  internalMultiRangeDownloader
-
-	// spanCtx is the context from ObjectHandle.NewMultiRangeDownloader
-	// used for ending the span in Close().
-	spanCtx context.Context
 }
 
 // Add adds a new range to MultiRangeDownloader.

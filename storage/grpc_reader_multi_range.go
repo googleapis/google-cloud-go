@@ -31,6 +31,11 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 )
 
+const (
+	mrdCommandChannelSize  = 1
+	mrdResponseChannelSize = 100
+)
+
 // --- internalMultiRangeDownloader Interface ---
 // This provides an internal wrapper for the gRPC methods to avoid polluting
 // reader.go with gRPC implementation details. The only implementation
@@ -80,8 +85,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		client:        c,
 		settings:      s,
 		params:        params,
-		cmds:          make(chan mrdCommand, 1),
-		sessionResps:  make(chan mrdSessionResult, 100),
+		cmds:          make(chan mrdCommand, mrdCommandChannelSize),
+		sessionResps:  make(chan mrdSessionResult, mrdResponseChannelSize),
 		pendingRanges: make(map[int64]*rangeRequest),
 		readIDCounter: 1,
 		readSpec:      readSpec,
@@ -90,8 +95,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 
 	mrd := &MultiRangeDownloader{
-		impl:    manager,
-		spanCtx: ctx,
+		impl: manager,
 	}
 
 	manager.wg.Add(1)
@@ -180,6 +184,9 @@ func (c *mrdErrorCmd) apply(ctx context.Context, m *multiRangeDownloaderManager)
 }
 
 // --- mrdSessionResult ---
+// This is used to pass the zero-copy decoded response from the recv stream
+// back up to the multiRangeDownloadManager for processing, or to pass
+// an error if the session failed.
 type mrdSessionResult struct {
 	decoder  *readResponseDecoder
 	err      error
