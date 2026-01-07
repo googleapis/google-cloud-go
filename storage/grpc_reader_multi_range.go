@@ -639,29 +639,26 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 		m.currentSession = nil
 	}
 	err := result.err
+	var ensureErr error
 
 	if result.redirect != nil {
 		m.readSpec.RoutingToken = result.redirect.RoutingToken
 		m.readSpec.ReadHandle = result.redirect.ReadHandle
-		if ensureErr := m.ensureSession(m.ctx); ensureErr != nil {
-			if !m.isRetryable(ensureErr) {
-				m.permanentErr = ensureErr
-				m.failAllPending(m.permanentErr)
-			}
-		}
+		ensureErr = m.ensureSession(m.ctx)
 	} else if m.isRetryable(err) {
-		if ensureErr := m.ensureSession(m.ctx); ensureErr != nil {
-			if !m.isRetryable(ensureErr) {
-				m.permanentErr = ensureErr
-				m.failAllPending(m.permanentErr)
-			}
-		}
+		ensureErr = m.ensureSession(m.ctx)
 	} else {
 		if !errors.Is(err, context.Canceled) && !errors.Is(err, errClosed) {
 			m.setPermanentError(err)
 		} else if m.permanentErr == nil {
 			m.setPermanentError(errClosed)
 		}
+		m.failAllPending(m.permanentErr)
+	}
+
+	// Handle error from ensureSession.
+	if ensureErr != nil && !m.isRetryable(ensureErr) {
+		m.setPermanentError(ensureErr)
 		m.failAllPending(m.permanentErr)
 	}
 }
