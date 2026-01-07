@@ -705,3 +705,95 @@ func BenchmarkNoTracingEnabled(b *testing.B) {
 		}
 	}
 }
+
+// TestPublish_ConcurrentWithSharedAttributes tests that publishing messages concurrently
+// with shared attributes doesn't cause a concurrent map write panic.
+// This is a regression test for issue #11314.
+//
+// Before the fix, when multiple goroutines published messages with the same attributes map
+// and tracing was enabled, the injectPropagation function would modify the shared map
+// directly, causing a "concurrent map iteration and map write" panic.
+//
+// The fix creates a defensive copy of the attributes map before injecting trace context,
+// ensuring each message gets its own independent copy.
+func TestPublish_ConcurrentWithSharedAttributes(t *testing.T) {
+	ctx := context.Background()
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	client, srv := newFakeWithTracing(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topicID := "concurrent-test-topic"
+	topicName := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicID)
+	topic := mustCreateTopic(t, client, topicName)
+
+	// Create a shared attributes map that will be used by all messages
+	sharedAttrs := map[string]string{
+		"key1": "value1",
+		"key2": "value2",
+		"key3": "value3",
+	}
+
+	// Start a parent span to ensure trace context propagation is active
+	ctx, span := otel.Tracer("test").Start(ctx, "test-parent-span")
+	defer span.End()
+
+	const numGoroutines = 50
+	const messagesPerGoroutine = 20
+
+	var publishCount atomic.Int32
+	errChan := make(chan error, numGoroutines)
+
+	// Launch multiple goroutines that concurrently publish messages
+	// using the same shared attributes map
+	for i := 0; i < numGoroutines; i++ {
+		go func(routineID int) {
+			for j := 0; j < messagesPerGoroutine; j++ {
+				msg := &Message{
+					Data:       []byte(fmt.Sprintf("message-%d-%d", routineID, j)),
+					Attributes: sharedAttrs, // Using the shared map
+				}
+
+				result := topic.Publish(ctx, msg)
+				if _, err := result.Get(ctx); err != nil {
+					errChan <- fmt.Errorf("goroutine %d: failed to publish message %d: %v", routineID, j, err)
+					return
+				}
+
+				publishCount.Add(1)
+			}
+			errChan <- nil
+		}(i)
+	}
+
+	// Wait for all goroutines to complete and check for errors
+	for i := 0; i < numGoroutines; i++ {
+		if err := <-errChan; err != nil {
+			t.Fatalf("concurrent publish failed: %v", err)
+		}
+	}
+
+	expectedCount := numGoroutines * messagesPerGoroutine
+	if count := publishCount.Load(); count != int32(expectedCount) {
+		t.Errorf("expected %d messages published, got %d", expectedCount, count)
+	}
+
+	// Verify that the original shared attributes map was not modified
+	if len(sharedAttrs) != 3 {
+		t.Errorf("shared attributes map was modified: expected 3 entries, got %d", len(sharedAttrs))
+	}
+	if sharedAttrs["key1"] != "value1" || sharedAttrs["key2"] != "value2" || sharedAttrs["key3"] != "value3" {
+		t.Errorf("shared attributes map values were modified: %v", sharedAttrs)
+	}
+
+	// Verify that trace context was injected (should have googclient_ prefixed attributes)
+	spans := getSpans(e)
+	if len(spans) == 0 {
+		t.Fatal("expected spans to be created, got none")
+	}
+}

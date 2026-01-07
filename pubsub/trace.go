@@ -320,18 +320,8 @@ func (c messageCarrier) Keys() []string {
 func injectPropagation(ctx context.Context, msg *Message) {
 	// only inject propagation if a valid span context was detected.
 	if trace.SpanFromContext(ctx).SpanContext().IsValid() {
-		// Create a defensive copy of the attributes map to prevent concurrent map writes
-		// when multiple goroutines publish messages with shared attributes.
-		// See https://github.com/googleapis/google-cloud-go/issues/11314
 		if msg.Attributes == nil {
 			msg.Attributes = make(map[string]string)
-		} else {
-			// Make a copy of the original attributes
-			attrs := make(map[string]string, len(msg.Attributes))
-			for k, v := range msg.Attributes {
-				attrs[k] = v
-			}
-			msg.Attributes = attrs
 		}
 		propagation.TraceContext{}.Inject(ctx, newMessageCarrier(msg))
 	}
