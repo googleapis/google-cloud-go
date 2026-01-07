@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.112.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -175,7 +175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.19.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -1638,7 +1638,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.52.0
-    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
+    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -5702,7 +5702,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: speech
     version: 1.28.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/speech/v1
         service_config: speech_v1.yaml
