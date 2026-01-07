@@ -295,6 +295,7 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
+
 			buf := new(bytes.Buffer)
 			var err1 error
 			callback := func(x, y int64, err error) {

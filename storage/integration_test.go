@@ -425,8 +425,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 				want = content[k.offset : k.offset+k.limit]
 			}
 			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, k.buf.Bytes(), want)
+				t.Errorf("Error in read range offset %v, limit %v, got: %v bytes; want: %v bytes",
+					k.offset, k.limit, len(k.buf.Bytes()), len(want))
 			}
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
