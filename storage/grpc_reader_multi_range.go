@@ -51,7 +51,7 @@ type internalMultiRangeDownloader interface {
 }
 
 // --- grpcStorageClient method ---
-
+// Top level entry point into the MultiRangeDownloader via the storageClient interface.
 func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error) {
 	if !c.config.grpcBidiReads {
 		return nil, errors.New("storage: MultiRangeDownloader requires the experimental.WithGRPCBidiReads option")
@@ -122,6 +122,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 // --- mrdCommand Interface and Implementations ---
+// Used to pass commands from the user-facing code to the MRD manager.
 // mrdCommand handlers are applied sequentially in the event loop. Therefore, it's okay
 // for them to read/modify the manager state without concern for thread safety.
 type mrdCommand interface {
@@ -196,7 +197,8 @@ type mrdSessionResult struct {
 var errClosed = errors.New("downloader closed")
 
 // --- multiRangeDownloaderManager ---
-
+// Manages main event loop for MRD commands and processing responses.
+// Spawns bidiStreamSession to deal with actual stream management, retries, etc.
 type multiRangeDownloaderManager struct {
 	ctx          context.Context
 	cancel       context.CancelFunc
@@ -715,6 +717,9 @@ func (m *multiRangeDownloaderManager) setPermanentError(err error) {
 }
 
 // --- bidiReadStreamSession ---
+// Controls lifespan of an individual bi-directional gRPC stream to the
+// object in GCS. Spins up goroutines for the read and write sides of the
+// stream.
 type bidiReadStreamSession struct {
 	ctx    context.Context
 	cancel context.CancelFunc
