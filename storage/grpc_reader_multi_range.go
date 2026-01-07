@@ -93,7 +93,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		impl:    manager,
 		spanCtx: ctx,
 	}
-	manager.publicMRD = mrd
 
 	manager.wg.Add(1)
 	go func() {
@@ -200,7 +199,6 @@ type multiRangeDownloaderManager struct {
 	wg           sync.WaitGroup // syncs completion of event loop.
 	cmds         chan mrdCommand
 	sessionResps chan mrdSessionResult
-	publicMRD    *MultiRangeDownloader
 
 	// State
 	currentSession *bidiReadStreamSession
@@ -643,13 +641,11 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 			}
 		}
 	} else if m.isRetryable(err) {
-		if len(m.pendingRanges) > 0 {
-			if ensureErr := m.ensureSession(m.ctx); ensureErr != nil {
-				if !m.isRetryable(ensureErr) {
-					m.permanentErr = ensureErr
-					m.attrsOnce.Do(func() { close(m.attrsReady) })
-					m.failAllPending(m.permanentErr)
-				}
+		if ensureErr := m.ensureSession(m.ctx); ensureErr != nil {
+			if !m.isRetryable(ensureErr) {
+				m.permanentErr = ensureErr
+				m.attrsOnce.Do(func() { close(m.attrsReady) })
+				m.failAllPending(m.permanentErr)
 			}
 		}
 	} else {
