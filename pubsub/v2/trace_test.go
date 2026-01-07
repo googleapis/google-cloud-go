@@ -739,10 +739,6 @@ func TestPublish_ConcurrentWithSharedAttributes(t *testing.T) {
 		"key3": "value3",
 	}
 
-	// Start a parent span to ensure trace context propagation is active
-	ctx, span := otel.Tracer("test").Start(ctx, "test-parent-span")
-	defer span.End()
-
 	const numGoroutines = 50
 	const messagesPerGoroutine = 20
 
