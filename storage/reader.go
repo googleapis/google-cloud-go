@@ -165,8 +165,10 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 // NewMultiRangeDownloader creates a multi-range reader for an object.
 // Must be called on a gRPC client created using [NewGRPCClient].
 func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context) (mrd *MultiRangeDownloader, err error) {
+	// This span covers the life of the MRD. It is closed via the context
+	// in MultiRangeDownloader.Close.
 	var spanCtx context.Context
-	spanCtx, _ = startSpan(ctx, "Object.NewMultiRangeDownloader")
+	spanCtx, _ = startSpan(ctx, "Object.MultiRangeDownloader")
 	defer func() {
 		if err != nil {
 			endSpan(spanCtx, err)

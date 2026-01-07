@@ -46,6 +46,9 @@ type internalMultiRangeDownloader interface {
 // --- grpcStorageClient method ---
 
 func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error) {
+	if !c.config.grpcBidiReads {
+		return nil, errors.New("storage: MultiRangeDownloader requires the experimental.WithGRPCBidiReads option")
+	}
 	s := callSettings(c.settings, opts...)
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -114,6 +117,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 // --- mrdCommand Interface and Implementations ---
+// mrdCommand handlers are applied sequentially in the event loop. Therefore, it's okay
+// for them to read/modify the manager state without concern for thread safety.
 type mrdCommand interface {
 	apply(ctx context.Context, m *multiRangeDownloaderManager)
 }
@@ -417,9 +422,7 @@ func (m *multiRangeDownloaderManager) establishInitialSession() error {
 
 	if err != nil {
 		if !m.isRetryable(err) || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			if m.permanentErr == nil {
-				m.permanentErr = err
-			}
+			m.setPermanentError(err)
 			m.attrsOnce.Do(func() { close(m.attrsReady) })
 		}
 	}
@@ -487,12 +490,14 @@ func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest)
 }
 
 func (m *multiRangeDownloaderManager) handleCloseCmd(ctx context.Context, cmd *mrdCloseCmd) {
-	if m.permanentErr == nil {
-		m.permanentErr = cmd.err
-		if m.permanentErr == nil {
-			m.permanentErr = errClosed
-		}
+	var err error
+	if cmd.err != nil {
+		err = cmd.err
+	} else {
+		err = errClosed
+
 	}
+	m.setPermanentError(err)
 	m.attrsOnce.Do(func() { close(m.attrsReady) })
 	m.cancel()
 }
@@ -619,7 +624,10 @@ func (m *multiRangeDownloaderManager) ensureSession(ctx context.Context) error {
 var errBidiReadRedirect = errors.New("bidi read object redirected")
 
 func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
-	m.currentSession = nil
+	if m.currentSession != nil {
+		m.currentSession.Shutdown()
+		m.currentSession = nil
+	}
 	err := result.err
 
 	if result.redirect != nil {
@@ -644,11 +652,9 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 		}
 	} else {
 		if !errors.Is(err, context.Canceled) && !errors.Is(err, errClosed) {
-			if m.permanentErr == nil {
-				m.permanentErr = err
-			}
+			m.setPermanentError(err)
 		} else if m.permanentErr == nil {
-			m.permanentErr = errClosed
+			m.setPermanentError(errClosed)
 		}
 		m.failAllPending(m.permanentErr)
 		m.attrsOnce.Do(func() { close(m.attrsReady) })
@@ -694,6 +700,13 @@ func (m *multiRangeDownloaderManager) failAllPending(err error) {
 		}
 	}
 	m.pendingRanges = make(map[int64]*rangeRequest)
+}
+
+// Set permanent error to the provided error, if it hasn't been set already.
+func (m *multiRangeDownloaderManager) setPermanentError(err error) {
+	if m.permanentErr == nil {
+		m.permanentErr = err
+	}
 }
 
 // --- bidiReadStreamSession ---
