@@ -410,11 +410,9 @@ option.
 The client automatically computes and sends CRC32C checksums for uploads using [Writer],
 providing an additional layer of data integrity validation with a slight CPU overhead.
 
-Note: When using the HTTP writer with a chunk size of 0, buffering is avoided. If a
-mismatch occurs with the automatically calculated checksum in this mode, a checksum
-mismatch will be reported, but the corrupt data may persist on the server and must be
-manually deleted or restored to a previous version. This risk does not apply when validation
-is performed against a user-provided checksum.
+Note: With a chunk size of 0 (no buffering) in JSON uploads, an auto-calculated checksum mismatch
+returns an error but may leave corrupt data on the server, requiring manual cleanup. This risk does not
+apply to single-shot uploads configured with a user-provided checksum.
 
 Automatic checksumming can be disabled using [Writer.DisableAutoChecksum].
 

@@ -991,14 +991,11 @@ const (
 	stateSingleChunk writerState = iota
 	stateMultiChunk
 	stateSingleShot
-	// Occurs when write errors out or when writer is closed with an error.
-	stateIndeterminate
+	stateIndeterminate // Occurs when write errors out.
 )
 
 // httpInternalWriter handles writing data for an HTTP upload and manages CRC32C
-// checksum validation based on the upload type.
-//
-// It supports three upload strategies:
+// checksum validation based on the upload type unless user checksum is provided.
 //
 // 1. Single-shot upload (chunkSize == 0): The entire object is streamed in a
 // single request. The writer calculates the CRC32C checksum of the data as it's
@@ -1008,7 +1005,7 @@ const (
 // 2. Single-chunk resumable upload: When chunkSize > 0, the writer buffers the
 // initial data. If the total data written is less than the chunk size, it is
 // uploaded in a single chunk. The writer computes the checksum and includes it
-// in this request for server-side validation.
+// in the same request for server-side validation.
 //
 // 3. Multi-chunk resumable upload: If the data exceeds the chunk size, the
 // upload transitions to a multi-chunk resumable upload. In this mode, automatic
@@ -1063,6 +1060,7 @@ func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
 		hiw.fullObjectChecksum = crc32.Update(hiw.fullObjectChecksum, crc32cTable, data)
 		return hiw.PipeWriter.Write(data)
 	case stateSingleChunk:
+		// Wait for lock to access buffered writer.
 		hiw.mu.Lock()
 		defer hiw.mu.Unlock()
 		if hiw.bufferedWriter.Available() <= len(data) && hiw.ctx.Err() == nil {
@@ -1076,6 +1074,7 @@ func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
 		}
 		return hiw.bufferedWriter.Write(data)
 	default:
+		// Wait for lock to access buffered writer.
 		hiw.mu.Lock()
 		defer hiw.mu.Unlock()
 		return hiw.bufferedWriter.Write(data)
@@ -1126,7 +1125,7 @@ func (hiw *httpInternalWriter) CloseWithError(err error) error {
 	if hiw.checksumDisabled {
 		return hiw.PipeWriter.CloseWithError(err)
 	}
-
+	// Wait for lock to access buffered writer.
 	hiw.mu.Lock()
 	defer hiw.mu.Unlock()
 	hiw.cancel()
