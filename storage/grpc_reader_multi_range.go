@@ -389,48 +389,78 @@ func (m *multiRangeDownloaderManager) establishInitialSession() error {
 		retry = defaultRetry
 	}
 
+	var firstResult mrdSessionResult
+
+	openStreamAndReceiveFirst := func(ctx context.Context, spec *storagepb.BidiReadObjectSpec) (*bidiReadStreamSession, mrdSessionResult) {
+		session, err := newBidiReadStreamSession(m.ctx, m.sessionResps, m.client, m.settings, m.params, spec)
+		if err != nil {
+			return nil, mrdSessionResult{err: err}
+		}
+
+		select {
+		case result := <-m.sessionResps:
+			return session, result
+		case <-ctx.Done():
+			session.Shutdown()
+			return nil, mrdSessionResult{err: ctx.Err()}
+		}
+	}
+
 	err := run(m.ctx, func(ctx context.Context) error {
 		if m.currentSession != nil {
 			m.currentSession.Shutdown()
 			m.currentSession = nil
 		}
 
-		session, err := newBidiReadStreamSession(m.ctx, m.sessionResps, m.client, m.settings, m.params, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec))
-		if err != nil {
-			redirectErr, isRedirect := isRedirectError(err)
-			if isRedirect {
-				m.readSpec.RoutingToken = redirectErr.RoutingToken
-				m.readSpec.ReadHandle = redirectErr.ReadHandle
-				return fmt.Errorf("%w: %v", errBidiReadRedirect, err)
-			}
-			return err
-		}
-		m.currentSession = session
+		currentSpec := proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec)
+		session, result := openStreamAndReceiveFirst(ctx, currentSpec)
 
-		// Wait for the first message to populate attributes
-		select {
-		case firstResult := <-m.sessionResps:
-			if firstResult.err != nil {
-				// Pass the error back to run() to potentially retry
-				return firstResult.err
+		if result.err != nil {
+			if result.redirect != nil {
+				m.readSpec.RoutingToken = result.redirect.RoutingToken
+				m.readSpec.ReadHandle = result.redirect.ReadHandle
+				if session != nil {
+					session.Shutdown()
+				}
+
+				// We might get a redirect error here for an out-of-region request.
+				// Add the routing token and read handle to the request and do one
+				// retry.
+				currentSpec = proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec)
+				session, result = openStreamAndReceiveFirst(ctx, currentSpec)
+
+				if result.err != nil {
+					if session != nil {
+						session.Shutdown()
+					}
+					return result.err
+				}
+			} else {
+				// Not a redirect error, return to run()
+				if session != nil {
+					session.Shutdown()
+				}
+				return result.err
 			}
-			// Process the first response to set attributes
-			m.processSessionResult(firstResult)
-			if m.permanentErr != nil {
-				return m.permanentErr
-			}
-			return nil // Success
-		case <-m.ctx.Done():
-			return m.ctx.Err()
 		}
+
+		// Success
+		m.currentSession = session
+		firstResult = result
+		return nil
 	}, retry, true)
 
 	if err != nil {
-		if !m.isRetryable(err) || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			m.setPermanentError(err)
-		}
+		m.setPermanentError(err)
+		return m.permanentErr
 	}
-	return err
+
+	// Process the successful first result
+	m.processSessionResult(firstResult)
+	if m.permanentErr != nil {
+		return m.permanentErr
+	}
+	return nil
 }
 
 func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrdAddCmd) {
