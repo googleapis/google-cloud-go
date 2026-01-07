@@ -90,7 +90,7 @@ fi
 
 # Run tests
 gotestsum --packages="./ ./dataflux" \
-    --junitfile sponge_log.xml \
+    --junitfile sponge_log_emulator.xml \
     --format standard-verbose \
     -- \
     -timeout 17m \

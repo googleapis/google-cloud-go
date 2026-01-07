@@ -48,12 +48,12 @@ go_test_args=("-count=1" "--timeout" "10m" "-run" "'^TestIntegration_'")
 
 echo "Testing without GCPMultiEndpoint..." | tee -a sponge_log.log
 gotestsum --packages="./..." \
-    --junitfile sponge_log.xml \
+    --junitfile sponge_log_noGCPMultiEndpoint.xml \
     --format standard-verbose \
     -- "${go_test_args[@]}" 2>&1 | tee -a sponge_log.log
 
 echo "Testing with GCPMultiEndpoint..." | tee -a sponge_log.log
 GCLOUD_TESTS_GOLANG_USE_GRPC_GCP=true gotestsum --packages="./..." \
-    --junitfile sponge_log.xml \
+    --junitfile sponge_log_withGCPMultiEndpoint.xml \
     --format standard-verbose \
     -- "${go_test_args[@]}" 2>&1 | tee -a sponge_log.log

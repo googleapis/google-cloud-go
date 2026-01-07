@@ -130,6 +130,11 @@ runDirectoryTests() {
 runEmulatorTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
+    # Emulator tests may produce their own sponge log xml files alongside the
+    # normal directory tests.  This invocation is used to aggregate them into
+    # a single sponge_log.xml file, as gotestsum doesn't support appending to 
+    # the --junitfile.
+    gotestsum --junitfile=sponge_log.xml --raw-command | cat sponge_log*.xml
     # Add the exit codes together so we exit non-zero if any module fails.
     exit_code=$(($exit_code + $?))
   fi
