@@ -240,6 +240,13 @@ type rangeRequest struct {
 
 // Methods implementing internalMultiRangeDownloader
 func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64, callback func(int64, int64, error)) {
+	if err := m.ctx.Err(); err != nil {
+		if m.permanentErr != nil {
+			err = m.permanentErr
+		}
+		m.runCallback(offset, length, err, callback)
+		return
+	}
 	if length < 0 {
 		m.runCallback(offset, length, fmt.Errorf("storage: MultiRangeDownloader.Add limit cannot be negative"), callback)
 		return
