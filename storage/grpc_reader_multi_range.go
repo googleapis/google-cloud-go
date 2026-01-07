@@ -452,7 +452,10 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 
 	// Attributes should be ready if we are processing Add commands
 	if req.offset < 0 {
-		m.convertToPositiveOffset(req)
+		err := m.convertToPositiveOffset(req)
+		if err != nil {
+			return
+		}
 	}
 
 	if m.currentSession == nil {
@@ -473,18 +476,20 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 	m.currentSession.SendRequest(protoReq)
 }
 
-func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest) {
+func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest) error {
 	if req.offset >= 0 {
-		return
+		return nil
 	}
 	objSize := m.attrs.Size
 	if objSize <= 0 {
-		m.failRange(req, errors.New("storage: cannot resolve negative offset without object size"))
-		return
+		err := errors.New("storage: cannot resolve negative offset without object size")
+		m.failRange(req, err)
+		return err
 	}
 	if req.length != 0 {
-		m.failRange(req, fmt.Errorf("storage: negative offset with non-zero length is not supported (offset: %d, length: %d)", req.origOffset, req.origLength))
-		return
+		err := fmt.Errorf("storage: negative offset with non-zero length is not supported (offset: %d, length: %d)", req.origOffset, req.origLength)
+		m.failRange(req, err)
+		return err
 	}
 	start := objSize + req.offset
 	if start < 0 {
@@ -492,6 +497,7 @@ func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest)
 	}
 	req.offset = start
 	req.length = objSize - start
+	return nil
 }
 
 func (m *multiRangeDownloaderManager) handleCloseCmd(ctx context.Context, cmd *mrdCloseCmd) {
@@ -537,7 +543,7 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 
 			for _, req := range m.pendingRanges {
 				if req.offset < 0 {
-					m.convertToPositiveOffset(req)
+					_ = m.convertToPositiveOffset(req)
 				}
 			}
 		} else {
