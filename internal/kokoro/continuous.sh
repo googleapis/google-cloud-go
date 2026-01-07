@@ -117,12 +117,11 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
-  go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
-    tee sponge_log.log
-  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-  # xUnit XML file.
-  cat sponge_log.log |
-    go-junit-report -set-exit-code >sponge_log.xml
+  go_test_args=("-race" "--timeout" "45m")
+  gotestsum --packages="${1:-./...}" \
+    --junitfile sponge_log.xml \
+    --format standard-verbose \
+    -- "${go_test_args[@]}" 2>&1 | tee sponge_log.log
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
 }
@@ -131,10 +130,6 @@ runDirectoryTests() {
 runEmulatorTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
-    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-    # xUnit XML file.
-    cat sponge_log.log |
-      go-junit-report -set-exit-code >sponge_log.xml
     # Add the exit codes together so we exit non-zero if any module fails.
     exit_code=$(($exit_code + $?))
   fi
