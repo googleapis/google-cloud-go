@@ -432,7 +432,6 @@ func (m *multiRangeDownloaderManager) establishInitialSession() error {
 	if err != nil {
 		if !m.isRetryable(err) || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 			m.setPermanentError(err)
-			m.attrsOnce.Do(func() { close(m.attrsReady) })
 		}
 	}
 	return err
@@ -507,7 +506,6 @@ func (m *multiRangeDownloaderManager) handleCloseCmd(ctx context.Context, cmd *m
 
 	}
 	m.setPermanentError(err)
-	m.attrsOnce.Do(func() { close(m.attrsReady) })
 	m.cancel()
 }
 
@@ -645,7 +643,6 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 		if ensureErr := m.ensureSession(m.ctx); ensureErr != nil {
 			if !m.isRetryable(ensureErr) {
 				m.permanentErr = ensureErr
-				m.attrsOnce.Do(func() { close(m.attrsReady) })
 				m.failAllPending(m.permanentErr)
 			}
 		}
@@ -653,7 +650,6 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 		if ensureErr := m.ensureSession(m.ctx); ensureErr != nil {
 			if !m.isRetryable(ensureErr) {
 				m.permanentErr = ensureErr
-				m.attrsOnce.Do(func() { close(m.attrsReady) })
 				m.failAllPending(m.permanentErr)
 			}
 		}
@@ -664,7 +660,6 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 			m.setPermanentError(errClosed)
 		}
 		m.failAllPending(m.permanentErr)
-		m.attrsOnce.Do(func() { close(m.attrsReady) })
 	}
 }
 
