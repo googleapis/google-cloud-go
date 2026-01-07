@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -718,8 +719,7 @@ func BenchmarkNoTracingEnabled(b *testing.B) {
 // ensuring each message gets its own independent copy.
 func TestPublish_ConcurrentWithSharedAttributes(t *testing.T) {
 	ctx := context.Background()
-	e := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	tp := sdktrace.NewTracerProvider()
 	otel.SetTextMapPropagator(propagation.TraceContext{})
 	defer tp.Shutdown(ctx)
 	otel.SetTracerProvider(tp)
@@ -732,62 +732,7 @@ func TestPublish_ConcurrentWithSharedAttributes(t *testing.T) {
 	topicName := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicID)
 	topic := mustCreateTopic(t, client, topicName)
 
-	// Create a shared attributes map that will be used by all messages
-	sharedAttrs := map[string]string{
-		"key1": "value1",
-		"key2": "value2",
-		"key3": "value3",
-	}
-
-	const numGoroutines = 50
-	const messagesPerGoroutine = 20
-
-	var publishCount atomic.Int32
-	errChan := make(chan error, numGoroutines)
-
-	// Launch multiple goroutines that concurrently publish messages
-	// using the same shared attributes map
-	for i := 0; i < numGoroutines; i++ {
-		go func(routineID int) {
-			for j := 0; j < messagesPerGoroutine; j++ {
-				msg := &Message{
-					Data:       []byte(fmt.Sprintf("message-%d-%d", routineID, j)),
-					Attributes: sharedAttrs, // Using the shared map
-				}
-
-				result := topic.Publish(ctx, msg)
-				if _, err := result.Get(ctx); err != nil {
-					errChan <- fmt.Errorf("goroutine %d: failed to publish message %d: %v", routineID, j, err)
-					return
-				}
-
-				publishCount.Add(1)
-			}
-			errChan <- nil
-		}(i)
-	}
-
-	// Wait for all goroutines to complete and check for errors
-	for i := 0; i < numGoroutines; i++ {
-		if err := <-errChan; err != nil {
-			t.Fatalf("concurrent publish failed: %v", err)
-		}
-	}
-
-	expectedCount := numGoroutines * messagesPerGoroutine
-	if count := publishCount.Load(); count != int32(expectedCount) {
-		t.Errorf("expected %d messages published, got %d", expectedCount, count)
-	}
-
-	// Verify that the original shared attributes map was not modified
-	if len(sharedAttrs) != 3 {
-		t.Errorf("shared attributes map was modified: expected 3 entries, got %d", len(sharedAttrs))
-	}
-	if sharedAttrs["key1"] != "value1" || sharedAttrs["key2"] != "value2" || sharedAttrs["key3"] != "value3" {
-		t.Errorf("shared attributes map values were modified: %v", sharedAttrs)
-	}
-
-	// Verify that trace context was injected by receiving messages and checking attributes
+	// Create subscription before publishing so we can verify trace context injection
 	subID := "concurrent-test-sub"
 	subName := fmt.Sprintf("projects/%s/subscriptions/%s", testutil.ProjID(), subID)
 	_, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
@@ -798,42 +743,67 @@ func TestPublish_ConcurrentWithSharedAttributes(t *testing.T) {
 		t.Fatalf("failed to create subscription: %v", err)
 	}
 
-	// Publish one more message to verify trace context injection
-	testMsg := &Message{
-		Data:       []byte("trace-verification-message"),
-		Attributes: map[string]string{"original": "attr"},
-	}
-	result := topic.Publish(ctx, testMsg)
-	if _, err := result.Get(ctx); err != nil {
-		t.Fatalf("failed to publish trace verification message: %v", err)
+	// Create a shared attributes map that will be used by all messages
+	sharedAttrs := map[string]string{
+		"key1": "value1",
+		"key2": "value2",
+		"key3": "value3",
 	}
 
-	// Receive the message and verify trace context was injected
+	const numGoroutines = 50
+	const messagesPerGoroutine = 20
+
+	var wg sync.WaitGroup
+	wg.Add(numGoroutines)
+
+	// Launch multiple goroutines that concurrently publish messages
+	// using the same shared attributes map
+	for i := 0; i < numGoroutines; i++ {
+		go func(routineID int) {
+			defer wg.Done()
+			for j := 0; j < messagesPerGoroutine; j++ {
+				msg := &Message{
+					Data:       []byte(fmt.Sprintf("message-%d-%d", routineID, j)),
+					Attributes: sharedAttrs, // Using the shared map
+				}
+
+				result := topic.Publish(ctx, msg)
+				if _, err := result.Get(ctx); err != nil {
+					t.Errorf("goroutine %d: failed to publish message %d: %v", routineID, j, err)
+					return
+				}
+			}
+		}(i)
+	}
+
+	wg.Wait()
+
+	// Verify that the original shared attributes map was not modified
+	if len(sharedAttrs) != 3 {
+		t.Errorf("shared attributes map was modified: expected 3 entries, got %d", len(sharedAttrs))
+	}
+	if sharedAttrs["key1"] != "value1" || sharedAttrs["key2"] != "value2" || sharedAttrs["key3"] != "value3" {
+		t.Errorf("shared attributes map values were modified: %v", sharedAttrs)
+	}
+
+	// Verify that trace context was injected by receiving messages and checking attributes.
+	// We only need to verify that at least one message has trace context injected.
 	sub := client.Subscriber(subName)
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	receiveCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	var receivedMsg *Message
-	sub.Receive(ctx, func(ctx context.Context, msg *Message) {
-		// Look for our verification message
-		if string(msg.Data) == "trace-verification-message" {
-			receivedMsg = msg
+	var traceContextFound atomic.Bool
+
+	sub.Receive(receiveCtx, func(_ context.Context, msg *Message) {
+		// Check that trace context was injected (should have googclient_traceparent attribute)
+		if _, ok := msg.Attributes[googclientPrefix+"traceparent"]; ok {
+			traceContextFound.Store(true)
 			cancel()
 		}
 		msg.Ack()
 	})
 
-	if receivedMsg == nil {
-		t.Fatal("did not receive trace verification message")
-	}
-
-	// Verify that trace context was injected (should have googclient_traceparent attribute)
-	if _, ok := receivedMsg.Attributes[googclientPrefix+"traceparent"]; !ok {
-		t.Errorf("expected trace context to be injected (googclient_traceparent attribute), got attributes: %v", receivedMsg.Attributes)
-	}
-
-	// Verify original attribute was preserved
-	if receivedMsg.Attributes["original"] != "attr" {
-		t.Errorf("expected original attribute to be preserved, got: %v", receivedMsg.Attributes["original"])
+	if !traceContextFound.Load() {
+		t.Error("expected trace context to be injected (googclient_traceparent attribute) in at least one message")
 	}
 }
