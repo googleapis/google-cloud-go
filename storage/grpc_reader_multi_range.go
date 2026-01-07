@@ -240,14 +240,6 @@ type rangeRequest struct {
 
 // Methods implementing internalMultiRangeDownloader
 func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64, callback func(int64, int64, error)) {
-	if err := m.getPermanentError(); err != nil {
-		m.runCallback(offset, length, err, callback)
-		return
-	}
-	if m.ctx.Err() != nil {
-		m.runCallback(offset, length, m.ctx.Err(), callback)
-		return
-	}
 	if length < 0 {
 		m.runCallback(offset, length, fmt.Errorf("storage: MultiRangeDownloader.Add limit cannot be negative"), callback)
 		return
@@ -257,7 +249,11 @@ func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64
 	select {
 	case m.cmds <- cmd:
 	case <-m.ctx.Done():
-		m.runCallback(offset, length, m.ctx.Err(), callback)
+		err := m.ctx.Err()
+		if m.permanentErr != nil {
+			err = m.permanentErr
+		}
+		m.runCallback(offset, length, err, callback)
 	}
 }
 
@@ -458,13 +454,14 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 	if req.offset < 0 {
 		m.convertToPositiveOffset(req)
 	}
-	m.pendingRanges[req.readID] = req
 
 	if m.currentSession == nil {
 		// This should not happen if establishInitialSession was successful
 		m.failRange(req, errors.New("storage: session not available"))
 		return
 	}
+
+	m.pendingRanges[req.readID] = req
 
 	protoReq := &storagepb.BidiReadObjectRequest{
 		ReadRanges: []*storagepb.ReadRange{{
