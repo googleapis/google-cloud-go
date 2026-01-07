@@ -44,7 +44,7 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-go_test_args=("-count=1" "--timeout" "10m" "-run" "'^TestIntegration_'")
+go_test_args=("-count=1" "--timeout" "10m" "-run" "^TestIntegration_")
 
 echo "Testing without GCPMultiEndpoint..." | tee -a sponge_log.log
 gotestsum --packages="./..." \
