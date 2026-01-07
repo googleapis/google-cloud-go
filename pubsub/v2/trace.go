@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"maps"
 	"sync"
 
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
@@ -323,16 +324,11 @@ func injectPropagation(ctx context.Context, msg *Message) {
 		// Create a defensive copy of the attributes map to prevent concurrent map writes
 		// when multiple goroutines publish messages with shared attributes.
 		// See https://github.com/googleapis/google-cloud-go/issues/11314
-		if msg.Attributes == nil {
-			msg.Attributes = make(map[string]string)
-		} else {
-			// Make a copy of the original attributes
-			attrs := make(map[string]string, len(msg.Attributes))
-			for k, v := range msg.Attributes {
-				attrs[k] = v
-			}
-			msg.Attributes = attrs
+		attrs := maps.Clone(msg.Attributes)
+		if attrs == nil {
+			attrs = make(map[string]string)
 		}
+		msg.Attributes = attrs
 		propagation.TraceContext{}.Inject(ctx, newMessageCarrier(msg))
 	}
 }
