@@ -666,8 +666,8 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
 			}
 		}
-		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
 		}
 	})
 }
