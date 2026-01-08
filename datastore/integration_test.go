@@ -1349,13 +1349,14 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}()
 
 	testCases := []struct {
-		desc              string
-		aggQuery          *AggregationQuery
-		transactionOpts   []TransactionOption
-		clientReadOptions []ReadOption
-		wantFailure       bool
-		wantErrMsg        string
-		wantAggResult     AggregationResult
+		desc               string
+		aggQuery           *AggregationQuery
+		transactionOpts    []TransactionOption
+		clientReadOptions  []ReadOption
+		useCurrentReadTime bool
+		wantFailure        bool
+		wantErrMsg         string
+		wantAggResult      AggregationResult
 	}{
 
 		{
@@ -1390,7 +1391,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
 				NewAggregationQuery().
 				WithCount("count"),
-			clientReadOptions: []ReadOption{ReadTime(time.Now().Truncate(time.Millisecond))},
+			useCurrentReadTime: true,
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
 			},
@@ -1467,15 +1468,21 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		testClient := client
-		if testCase.clientReadOptions != nil {
-			clientWithReadTime := newTestClient(ctx, t)
-			clientWithReadTime.WithReadOptions(testCase.clientReadOptions...)
-			defer clientWithReadTime.Close()
-
-			testClient = clientWithReadTime
-		}
 		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			testClient := client
+			clientReadOptions := testCase.clientReadOptions
+			if testCase.useCurrentReadTime {
+				clientReadOptions = append(clientReadOptions, ReadTime(time.Now().Truncate(time.Millisecond)))
+			}
+
+			if len(clientReadOptions) > 0 {
+				clientWithReadTime := newTestClient(ctx, t)
+				clientWithReadTime.WithReadOptions(clientReadOptions...)
+				defer clientWithReadTime.Close()
+
+				testClient = clientWithReadTime
+			}
+
 			gotAggResult, gotErr := testClient.RunAggregationQuery(ctx, testCase.aggQuery)
 			gotFailure := gotErr != nil
 
