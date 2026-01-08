@@ -555,11 +555,24 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 		goRoutineCount := 50
 		perGoRoutineAddCount := 10
 
+		const (
+			minRangeSize      = 1024 // Minimum size of a range request.
+			maxExtraRangeSize = 2048 // Maximum additional size added to minRangeSize.
+			offsetStep        = 2048 // Distance between the start of consecutive range requests.
+
+			// safeEndPadding ensures that the calculated offset + limit does not exceed
+			// the total length of the content. Since the maximum limit is
+			// minRangeSize + maxExtraRangeSize (3072), a padding of 4096 is safe.
+			safeEndPadding = 4096
+		)
+
 		type rangeRes struct {
-			buf    bytes.Buffer
-			offset int64
-			limit  int64
-			err    error
+			buf       bytes.Buffer
+			offset    int64
+			limit     int64
+			gotOffset int64
+			gotLimit  int64
+			err       error
 		}
 		results := make([]*rangeRes, goRoutineCount*perGoRoutineAddCount)
 
@@ -571,23 +584,25 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 				for j := 0; j < perGoRoutineAddCount; j++ {
 					taskID := gID*perGoRoutineAddCount + j
 					// Randomize offset/limit slightly to ensure varied request patterns.
-					offset := int64((taskID * 2048) % (len(content) - 4096))
-					limit := int64(1024 + rand.Intn(2048))
+					offset := int64((taskID * offsetStep) % (len(content) - safeEndPadding))
+					limit := int64(minRangeSize + rand.Intn(maxExtraRangeSize))
 
 					r := &rangeRes{offset: offset, limit: limit}
 					results[taskID] = r
 
 					reader.Add(&r.buf, offset, limit, func(o, l int64, err error) {
 						r.err = err
+						r.gotOffset = o
+						r.gotLimit = l
 						wg.Done()
 					})
 				}
 			}(i)
 		}
 
-		// Wait for all range-specific callbacks to complete.
+		// Wait for all goroutines to finish adding their ranges.
 		wg.Wait()
-		// Ensure the MRD has reached a stable state before closing.
+		// Wait for all reads to complete.
 		reader.Wait()
 
 		if err = reader.Close(); err != nil {
@@ -598,6 +613,10 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 			if res.err != nil {
 				t.Errorf("Range %d (offset %d) failed: %v", id, res.offset, res.err)
 				continue
+			}
+			if res.gotOffset != res.offset || res.gotLimit != res.limit {
+				t.Errorf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+					id, res.gotOffset, res.gotLimit, res.offset, res.limit)
 			}
 			want := content[res.offset : res.offset+res.limit]
 			if !bytes.Equal(res.buf.Bytes(), want) {

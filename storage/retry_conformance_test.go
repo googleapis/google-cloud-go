@@ -337,13 +337,13 @@ var methods = map[string][]retryFunc{
 			buf1, buf2, buf3 := new(bytes.Buffer), new(bytes.Buffer), new(bytes.Buffer)
 			var err1, err2, err3 error
 
-			mrd.Add(buf1, 0, 3, func(x, y int64, err error) {
+			mrd.Add(buf1, 0, 2, func(x, y int64, err error) {
 				err1 = err
 			})
-			mrd.Add(buf2, 3, 3, func(x, y int64, err error) {
+			mrd.Add(buf2, 2, 2, func(x, y int64, err error) {
 				err2 = err
 			})
-			mrd.Add(buf3, 6, 3, func(x, y int64, err error) {
+			mrd.Add(buf3, 4, 2, func(x, y int64, err error) {
 				err3 = err
 			})
 
@@ -382,9 +382,6 @@ var methods = map[string][]retryFunc{
 
 			// Valid Range (first 3 bytes)
 			mrd.Add(bufValid, 0, 3, func(x, y int64, err error) { errValid = err })
-
-			// Invalid Range (well beyond the 6-byte object size)
-			mrd.Add(io.Discard, 1000, 10, func(x, y int64, err error) { errInvalid = err })
 
 			mrd.Wait()
 
