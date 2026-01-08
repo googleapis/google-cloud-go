@@ -50,7 +50,7 @@ func TestMetricsExporting(t *testing.T) {
 
 	poolSize := 2
 	strategy := btopt.RoundRobin
-	pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, WithMeterProvider(provider), WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()))
+	pool, err := NewBigtableChannelPool(ctx, poolSize, strategy, dialFunc, time.Now(), WithMeterProvider(provider), WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()))
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}

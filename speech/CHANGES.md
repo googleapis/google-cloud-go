@@ -1,5 +1,17 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.29.0) (2026-01-08)
+
+### Features
+
+* add custom prompt config in the request and return prompt in the response ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* update min_speaker_count and max_speaker_count to be optional ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+
+### Documentation
+
+* Clarify that min_speaker_count and max_speaker_count in SpeakerDiarizationConfig are not currently used ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* Update guidance on how to enable speaker diarization; to enable, set the diarization_config field to an empty SpeakerDiarizationConfig message ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+
 ## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.28.0...speech/v1.28.1) (2025-10-07)
 
 

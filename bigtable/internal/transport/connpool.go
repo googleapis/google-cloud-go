@@ -22,6 +22,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"net"
 	"net/url"
 	"slices"
 	"sort"
@@ -30,6 +31,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/credentials/alts"
@@ -46,6 +48,30 @@ import (
 var maxDrainingTimeout = 30 * time.Minute
 
 const requestParamsHeader = "x-goog-request-params"
+
+// ipProtocol represents the type of IP protocol used.
+type ipProtocol int32
+
+const (
+	// unknown represents an unknown or undetermined IP protocol.
+	unknown ipProtocol = iota - 1
+	// ipv6 represents the IPv4 protocol.
+	ipv4
+	// ipv6 represents the IPv6 protocol.
+	ipv6
+)
+
+// AddressType returns the string representation of the IPProtocol.
+func (ip ipProtocol) addressType() string {
+	switch ip {
+	case ipv4:
+		return "ipv4"
+	case ipv6:
+		return "ipv6"
+	default:
+		return "unknown"
+	}
+}
 
 // BigtableChannelPoolOption options for configurable
 type BigtableChannelPoolOption func(*BigtableChannelPool)
@@ -111,6 +137,13 @@ type BigtableConn struct {
 	*grpc.ClientConn
 	isALTSConn atomic.Bool
 	createdAt  atomic.Int64
+	// remoteAddrType stores the  type: -1 (unknown/nil), 0 (ipv4), 1 (ipv6)
+	remoteAddrType atomic.Int32
+}
+
+// ipProtocol returns the IP protocol as a string: "ipv4", "ipv6", or "unknown".
+func (bc *BigtableConn) ipProtocol() string {
+	return ipProtocol(bc.remoteAddrType.Load()).addressType()
 }
 
 // Prime sends a PingAndWarm request to warm up the connection.
@@ -135,6 +168,19 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 	_, err := client.PingAndWarm(primeCtx, req, grpc.Peer(&p))
 	if err != nil {
 		return err
+	}
+
+	// ip protocol will be -1 if it addr is nil/default, 0 is ipv4 and 1 if ipv6.
+	if p.Addr != nil {
+		if tcpAddr, ok := p.Addr.(*net.TCPAddr); ok {
+			if tcpAddr.IP != nil {
+				if tcpAddr.IP.To4() != nil {
+					bc.remoteAddrType.Store(int32(ipv4))
+				} else {
+					bc.remoteAddrType.Store(int32(ipv6))
+				}
+			}
+		}
 	}
 
 	if p.AuthInfo != nil {
@@ -173,8 +219,8 @@ func NewBigtableConn(conn *grpc.ClientConn) *BigtableConn {
 		ClientConn: conn,
 	}
 	bc.createdAt.Store(time.Now().UnixMilli())
+	bc.remoteAddrType.Store(int32(unknown))
 	return bc
-
 }
 
 // createdAt returns the creation time of the connection in int64. milliseconds since epoch
@@ -299,7 +345,7 @@ func (p *BigtableChannelPool) getConns() []*connEntry {
 // NewBigtableChannelPool creates a pool of connPoolSize and takes the dial func()
 // NewBigtableChannelPool primes the new connection in a non-blocking goroutine to warm it up.
 // We keep it consistent with the current channelpool behavior which is lazily initialized.
-func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
+func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btopt.LoadBalancingStrategy, dial func() (*BigtableConn, error), clientCreationTimestamp time.Time, opts ...BigtableChannelPoolOption) (*BigtableChannelPool, error) {
 	if connPoolSize <= 0 {
 		return nil, fmt.Errorf("bigtable_connpool: connPoolSize must be positive")
 	}
@@ -384,7 +430,37 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		btopt.Debugf(pool.logger, "bigtable_connpool: failed to create metrics reporter: %v\n", err)
 	}
 	pool.startMonitors()
+
+	// record the client startup time
+	// TODO: currently Prime() is non-blocking, we will make Prime() blocking and infer the transport type here.
+	transportType := "unknown"
+	pool.recordClientStartUp(clientCreationTimestamp, transportType)
+
 	return pool, nil
+}
+
+func (p *BigtableChannelPool) recordClientStartUp(clientCreationTimestamp time.Time, transportType string) {
+	if p.meterProvider == nil {
+		return
+	}
+
+	meter := p.meterProvider.Meter(clientMeterName)
+	// Define buckets for startup latency (in milliseconds)
+	bucketBounds := []float64{0, 10, 50, 100, 300, 500, 1000, 2000, 5000, 10000, 20000}
+	clientStartupTime, err := meter.Float64Histogram(
+		"startup_time",
+		metric.WithDescription("Total time for completion of logic of NewClientWithConfig"),
+		metric.WithUnit("ms"),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+
+	if err == nil {
+		elapsedTime := float64(time.Since(clientCreationTimestamp).Milliseconds())
+		clientStartupTime.Record(p.poolCtx, elapsedTime, metric.WithAttributes(
+			attribute.String("transport_type", transportType),
+			attribute.String("status", "OK"),
+		))
+	}
 }
 
 func (p *BigtableChannelPool) startMonitors() {
@@ -785,11 +861,11 @@ func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemo
 		return false
 	}
 
-	entries := make([]entryWithAge, numSnapshot)
-	for i, entry := range snapshotConns {
+	entries := make([]entryWithAge, 0, numSnapshot)
+	for _, entry := range snapshotConns {
 		// Only consider connections not *already* draining for removal via this logic.
 		if !entry.isDraining() {
-			entries[i] = entryWithAge{entry: entry, createdAt: entry.conn.creationTime()}
+			entries = append(entries, entryWithAge{entry: entry, createdAt: entry.conn.creationTime()})
 		}
 	}
 

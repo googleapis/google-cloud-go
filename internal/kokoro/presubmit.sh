@@ -45,8 +45,8 @@ try3 go mod download
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
-# Run tests in the current directory and tee output to log file,
-# to be pushed to GCS as artifact.
+# Run tests in the current directory, and retain log files which will
+# be pushed as build artifacts.
 runPresubmitTests() {
   if [[ $PWD == *"/internal/"* ]] ||
     [[ $PWD == *"/third_party/"* ]]; then
@@ -54,22 +54,21 @@ runPresubmitTests() {
     return
   fi
 
+  go_test_args=("-race")
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    go test -race -v -timeout 15m -short ./... 2>&1 |
-      tee sponge_log.log
+    go_test_args+=("--short" "--timeout" "15m")
   else
-    go test -race -v -timeout 45m ./... 2>&1 |
-      tee sponge_log.log
+    go_test_args+=("--timeout" "45m")
   fi
+  gotestsum --packages="./..." \
+    --junitfile sponge_log.xml \
+    --format standard-verbose \
+    -- "${go_test_args[@]}" 2>&1 | tee sponge_log.log
 
   # Run integration tests against an emulator.
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
   fi
-  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-  # xUnit XML file.
-  cat sponge_log.log |
-    go-junit-report -set-exit-code >sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
   if [[ $PWD != *"/internal/"* ]]; then
