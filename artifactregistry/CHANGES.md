@@ -1,5 +1,15 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.19.0) (2026-01-08)
+
+### Features
+
+* add Fingerprint to Artifact Registry Version resource ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+### Documentation
+
+* update the description of ExportArtifact ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.18.0) (2025-12-04)
 
 ### Features
