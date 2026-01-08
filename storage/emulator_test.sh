@@ -91,5 +91,12 @@ then
 fi
 
 # Run tests
-
-go test -v -timeout 17m ./ ./dataflux -run="^Test(RetryConformance|.*Emulated)$" -short -race 2>&1 | tee -a sponge_log.log
+gotestsum --packages="./ ./dataflux" \
+    --junitfile sponge_log_emulator.xml \
+    --format standard-verbose \
+    -- \
+    -timeout 17m \
+    -run="^Test(RetryConformance|.*Emulated)$" \
+    -short \
+    -race \
+     2>&1 | tee -a sponge_log.log
