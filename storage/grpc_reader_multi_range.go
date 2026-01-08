@@ -60,6 +60,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
+	if s.retry == nil {
+		s.retry = defaultRetry
+	}
 
 	b := bucketResourceName(globalProjectAlias, params.bucket)
 	readSpec := &storagepb.BidiReadObjectSpec{
@@ -392,9 +395,6 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 
 func (m *multiRangeDownloaderManager) establishInitialSession() error {
 	retry := m.settings.retry
-	if retry == nil {
-		retry = defaultRetry
-	}
 
 	var firstResult mrdSessionResult
 
