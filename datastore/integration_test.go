@@ -284,8 +284,8 @@ func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 
 	// Save entities with an extra field
 	keys := []*Key{
-		NameKey("X", "x1", nil),
-		NameKey("X", "x2", nil),
+		NameKey("X", "x1"+suffix, nil),
+		NameKey("X", "x2"+suffix, nil),
 	}
 	entitiesOld := []OldX{
 		{I: 10, J: 20},
