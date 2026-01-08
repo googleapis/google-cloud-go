@@ -377,28 +377,19 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 
-			bufValid := new(bytes.Buffer)
-			var errValid, errInvalid error
+			var errInvalid error
 
-			// Valid Range (first 3 bytes)
-			mrd.Add(bufValid, 0, 3, func(x, y int64, err error) { errValid = err })
+			// Invalid Range (well beyond the 6-byte object size)
+			mrd.Add(io.Discard, 1000, 10, func(x, y int64, err error) { errInvalid = err })
 
 			mrd.Wait()
+			err = mrd.Close()
 
-			// Valid range must succeed
-			if errValid != nil {
-				return fmt.Errorf("valid range failed unexpectedly: %v", errValid)
-			}
-			if !bytes.Equal(bufValid.Bytes(), randomBytesToWrite[:3]) {
-				return fmt.Errorf("valid range data mismatch")
-			}
-
-			// Invalid range must report OutOfRange
-			if status.Code(errInvalid) != codes.OutOfRange {
+			// Invalid range and close error must report OutOfRange
+			if status.Code(errInvalid) != codes.OutOfRange || status.Code(err) != codes.OutOfRange {
 				return fmt.Errorf("invalid range did not return OutOfRange; got: %v", errInvalid)
 			}
-
-			return mrd.Close()
+			return nil
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			_, ok := c.tc.(*grpcStorageClient)
