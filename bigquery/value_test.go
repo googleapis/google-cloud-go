@@ -76,7 +76,7 @@ func TestConvertTime(t *testing.T) {
 		{Type: DateTimeFieldType},
 		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
-	ts := testTimestamp.Round(time.Millisecond)
+	ts := testTimestamp
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
 			{V: fmt.Sprint(ts.Format(picoFormatString))},
@@ -144,7 +144,7 @@ func TestConvertSmallTimes(t *testing.T) {
 	for _, year := range []int{1600, 1066, 1} {
 		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
 		s := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).Format(picoFormatString)
-		got, err := convertBasicType(s, TimestampFieldType)
+		got, err := convertBasicType(s, &FieldSchema{Type: TimestampFieldType})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -436,7 +436,7 @@ func TestConvertRowErrors(t *testing.T) {
 	}
 
 	// bad field type
-	if _, err := convertBasicType("", FieldType("BAD")); err == nil {
+	if _, err := convertBasicType("", &FieldSchema{Type: FieldType("BAD")}); err == nil {
 		t.Error("got nil, want error")
 	}
 }
