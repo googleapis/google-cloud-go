@@ -383,11 +383,15 @@ var methods = map[string][]retryFunc{
 			mrd.Add(io.Discard, 1000, 10, func(x, y int64, err error) { errInvalid = err })
 
 			mrd.Wait()
-			err = mrd.Close()
 
-			// Invalid range and close error must report OutOfRange
-			if status.Code(errInvalid) != codes.OutOfRange || status.Code(err) != codes.OutOfRange {
+			// Invalid range error must report OutOfRange.
+			if status.Code(errInvalid) != codes.OutOfRange {
 				return fmt.Errorf("invalid range did not return OutOfRange; got: %v", errInvalid)
+			}
+			// Close error must also report OutOfRange.
+			err = mrd.Close()
+			if status.Code(err) != codes.OutOfRange {
+				return fmt.Errorf("Close did not return OutOfRange; got: %v", err)
 			}
 			return nil
 		},
