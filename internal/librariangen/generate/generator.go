@@ -203,8 +203,10 @@ func fixPermissions(dir string) error {
 }
 
 // flattenOutput moves the contents of /output/cloud.google.com/go/ to the top
-// level of /output.  Failure here may be indicative that input artifacts did *NOT*
-// generate artifacts in the expected location (e.g. wrong go_package path, etc).
+// level of /output.
+//
+// Failure here may be indicative that input artifacts did NOT generate artifacts
+// in the expected location (e.g. wrong go_package path, etc).
 func flattenOutput(outputDir string) error {
 	slog.Debug("librariangen: flattening output directory", "dir", outputDir)
 	goDir := filepath.Join(outputDir, "cloud.google.com", "go")
