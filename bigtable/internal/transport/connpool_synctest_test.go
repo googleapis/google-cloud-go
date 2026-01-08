@@ -26,6 +26,9 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 func TestRecordClientStartUp(t *testing.T) {
@@ -101,4 +104,77 @@ func TestRecordClientStartUp(t *testing.T) {
 			t.Errorf("Expected %f, got %f", float64(sleepTimer), dp.Sum)
 		}
 	})
+}
+
+func TestConnectionFactoryWithSyncTest(t *testing.T) {
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	goodDialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	someErr := status.Error(codes.Unavailable, "error1")
+
+	tests := []struct {
+		name           string
+		dialFunc       func() (*BigtableConn, error)
+		primeErrors    []error
+		ctxTimeout     time.Duration
+		wantErr        bool
+		wantPrimeCalls int
+	}{
+		{
+			name:        "Timeout During Backoff",
+			dialFunc:    goodDialFunc,
+			primeErrors: []error{someErr}, // Fails 1st attempt
+			// 100ms, first backoff
+			ctxTimeout:     50 * time.Millisecond,
+			wantErr:        true,
+			wantPrimeCalls: 1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			synctest.Run(func() {
+				fake.reset()
+				fake.setPingErr(tt.primeErrors...)
+				factory := &connectionFactory{
+					dial:           tt.dialFunc,
+					instanceName:   testInstanceName,
+					appProfile:     testAppProfile,
+					featureFlagsMD: metadata.MD{},
+				}
+
+				ctx := context.Background()
+				if tt.ctxTimeout != 0 {
+					var cancel context.CancelFunc
+					ctx, cancel = context.WithTimeout(context.Background(), tt.ctxTimeout)
+					defer cancel()
+				}
+
+				entry, err := factory.newEntry(ctx)
+
+				if (err != nil) != tt.wantErr {
+					t.Fatalf("newEntry() error = %v, wantErr %v", err, tt.wantErr)
+				}
+
+				if !tt.wantErr && entry == nil {
+					t.Errorf("newEntry() returned nil entry on success")
+				}
+				if !tt.wantErr && entry != nil {
+					defer entry.conn.Close()
+				}
+
+				if tt.wantErr {
+					if entry != nil {
+						t.Errorf("newEntry() returned non-nil entry on error: %v", entry)
+					}
+				}
+
+				gotPrimeCalls := fake.getPingCallCount()
+				if gotPrimeCalls != tt.wantPrimeCalls {
+					t.Errorf("PingAndWarm was called %d times, want %d", gotPrimeCalls, tt.wantPrimeCalls)
+				}
+			})
+		})
+	}
 }

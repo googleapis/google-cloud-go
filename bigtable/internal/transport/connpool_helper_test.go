@@ -42,7 +42,6 @@ type fakeService struct {
 	serverErr               error         // Error to return from server
 	lastPingAndWarmMetadata metadata.MD   // Stores metadata from the last PingAndWarm call
 	pingErrs                []error       // Errors to return from PingAndWarm
-	pingErrMu               sync.Mutex    // Protects pingErr
 	streamRecvErr           error         // Error to return from stream.Recv()
 	streamSendErr           error         // Error to return from stream.Send()
 }
@@ -60,8 +59,8 @@ func (s *fakeService) setDelay(duration time.Duration) {
 }
 
 func (s *fakeService) getDelay() time.Duration {
-	s.pingErrMu.Lock()
-	defer s.pingErrMu.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.delay
 }
 

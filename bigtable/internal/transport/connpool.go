@@ -536,7 +536,7 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 	}
 	newEntry, err := p.factory.newEntry(p.poolCtx)
 	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replacement connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
+		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replace connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
 		return
 	}
 
@@ -927,6 +927,7 @@ func (cf *connectionFactory) primeWithRetry(ctx context.Context, conn *BigtableC
 	for attempt := 0; attempt < maxAttempts; attempt++ {
 
 		// ctx.Done() returns a error
+		fmt.Println(ctx.Err())
 		if err := ctx.Err(); err != nil {
 			return fmt.Errorf("bigtable_connpool:  error before prime attempt %d: %w", attempt, err)
 		}
