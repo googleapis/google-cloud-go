@@ -1,5 +1,16 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.5.0) (2026-01-08)
+
+### Features
+
+* add LookerGoldenQuery to Context ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.4.0) (2025-12-18)
 
 ### Features

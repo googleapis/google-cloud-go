@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.113.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.113.0) (2026-01-08)
+
+### Features
+
+* Add Lustre support to the Vertex Training Custom Job API ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+* add streaming function call argument API changes ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+
+### Documentation
+
+* A comment for field `args` in message `.google.cloud.aiplatform.v1beta1.FunctionCall` is changed ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* A comment for field `name` in message `.google.cloud.aiplatform.v1beta1.FunctionCall` is changed ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* Update comments for machine resources and autoscaling ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
 ## [1.112.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.112.0) (2025-12-18)
 
 ### Features

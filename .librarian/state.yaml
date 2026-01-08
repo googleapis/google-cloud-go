@@ -76,7 +76,7 @@ libraries:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
   - id: ai
-    version: 0.14.0
+    version: 0.15.0
     last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/ai/generativelanguage/v1
@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.112.0
+    version: 1.113.0
     last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/aiplatform/v1
@@ -174,7 +174,7 @@ libraries:
       - internal/generated/snippets/aiplatform/
     tag_format: '{id}/v{version}'
   - id: alloydb
-    version: 1.19.0
+    version: 1.20.0
     last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/alloydb/v1
@@ -409,7 +409,7 @@ libraries:
       - internal/generated/snippets/apikeys/
     tag_format: '{id}/v{version}'
   - id: apiregistry
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: b607ece2e97f19a8f105a6cd40368da68e7bc613
     apis:
       - path: google/cloud/apiregistry/v1beta
@@ -568,7 +568,7 @@ libraries:
       - internal/generated/snippets/area120/
     tag_format: '{id}/v{version}'
   - id: artifactregistry
-    version: 1.18.0
+    version: 1.19.0
     last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/devtools/artifactregistry/v1
@@ -1637,7 +1637,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.52.0
+    version: 1.53.0
     last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/compute/v1
@@ -2491,7 +2491,7 @@ libraries:
       - internal/generated/snippets/edgenetwork/
     tag_format: '{id}/v{version}'
   - id: errorreporting
-    version: 0.3.2
+    version: 0.4.0
     last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
     apis:
       - path: google/devtools/clouderrorreporting/v1beta1
@@ -2714,7 +2714,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.4.0
+    version: 0.5.0
     last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -3300,7 +3300,7 @@ libraries:
       - internal/generated/snippets/logging/
     tag_format: '{id}/v{version}'
   - id: longrunning
-    version: 0.7.0
+    version: 0.8.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/longrunning
@@ -3350,7 +3350,7 @@ libraries:
       - internal/generated/snippets/lustre/
     tag_format: '{id}/v{version}'
   - id: maintenance
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/cloud/maintenance/api/v1beta
@@ -5701,7 +5701,7 @@ libraries:
       - spanner/testdata
     tag_format: '{id}/v{version}'
   - id: speech
-    version: 1.28.1
+    version: 1.29.0
     last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/speech/v1
