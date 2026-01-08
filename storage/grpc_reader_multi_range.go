@@ -682,7 +682,7 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 		m.readSpec.RoutingToken = result.redirect.RoutingToken
 		m.readSpec.ReadHandle = result.redirect.ReadHandle
 		ensureErr = m.ensureSession(m.ctx)
-	} else if m.isRetryable(err) {
+	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err) {
 		ensureErr = m.ensureSession(m.ctx)
 	} else {
 		if !errors.Is(err, context.Canceled) && !errors.Is(err, errClosed) {
@@ -694,31 +694,9 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 	}
 
 	// Handle error from ensureSession.
-	if ensureErr != nil && !m.isRetryable(ensureErr) {
+	if ensureErr != nil {
 		m.setPermanentError(ensureErr)
 		m.failAllPending(m.permanentErr)
-	}
-}
-
-func (m *multiRangeDownloaderManager) isRetryable(err error) bool {
-	if err == nil || errors.Is(err, context.Canceled) || errors.Is(err, errClosed) || err == io.EOF {
-		return false
-	}
-	if errors.Is(err, errBidiReadRedirect) {
-		return true
-	}
-	s, ok := status.FromError(err)
-	if !ok {
-		return false
-	}
-	switch s.Code() {
-	case codes.Unavailable, codes.ResourceExhausted, codes.Internal, codes.DeadlineExceeded:
-		return true
-	case codes.Aborted:
-		_, isRedirect := isRedirectError(err)
-		return isRedirect
-	default:
-		return false
 	}
 }
 
