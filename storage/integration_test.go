@@ -90,8 +90,8 @@ const (
 	testUniverseLocation   = "TEST_UNIVERSE_LOCATION"
 	testUniverseCreds      = "TEST_UNIVERSE_DOMAIN_CREDENTIAL"
 	// Location and Zone for zonal buckets tests
-	testZonalLocation = "us-west4"
-	testZonalZone     = "us-west4-a"
+	testZonalLocation = "us-central1"
+	testZonalZone     = "us-central1-a"
 )
 
 var (
@@ -666,8 +666,8 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
 			}
 		}
-		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
 		}
 	})
 }
