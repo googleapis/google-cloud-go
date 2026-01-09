@@ -400,8 +400,11 @@ type MultiRangeDownloader struct {
 //
 // A negative offset value will be interpreted as the number of bytes from the
 // end of the object to be returned. Requesting a negative offset with magnitude
-// larger than the size of the object will return the entire object. An offset
-// larger than the size of the object will result in an OutOfRange error.
+// larger than the size of the object will return the entire object.
+//
+// An offset larger than the size of the object returns an OutOfRange error via
+// the callback and enters a permanent error state. All subsequent calls to Close
+// will return this same error.
 //
 // A limit of zero indicates that there is no limit, and a negative limit will
 // cause an error.
@@ -423,6 +426,8 @@ func (mrd *MultiRangeDownloader) Add(output io.Writer, offset, length int64, cal
 // This will immediately close the stream and can result in a
 // "stream closed early" error if a response for a range is still not processed.
 // Call [MultiRangeDownloader.Wait] to avoid this error.
+//
+// If the downloader is in a permanent error state, this will return an error.
 func (mrd *MultiRangeDownloader) Close() error {
 	err := mrd.impl.close(nil)
 	endSpan(mrd.impl.getSpanCtx(), err)
