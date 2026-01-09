@@ -12,7 +12,7 @@
 
 ### Bug Fixes
 
-* fix a nil pointer deference in remove connections when… (#13535) ([9d2ba82](https://github.com/googleapis/google-cloud-go/commit/9d2ba82ecd770d3e3a18c79e2792ab7ac502240e))
+* fix a nil pointer dereference in remove connections when… (#13535) ([9d2ba82](https://github.com/googleapis/google-cloud-go/commit/9d2ba82ecd770d3e3a18c79e2792ab7ac502240e))
 
 ## [1.41.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.41.0) (2025-12-15)
 
