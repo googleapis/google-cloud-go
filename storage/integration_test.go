@@ -41,6 +41,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -65,7 +66,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -529,11 +529,11 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
-	t.Skip("flaky - https://github.com/googleapis/google-cloud-go/issues/12655")
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		content := make([]byte, 5<<20)
+		// Use a 10MB object to allow for many non-overlapping range requests.
+		content := make([]byte, 10<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloader"
+		objName := "MultiRangeDownloaderConcurrentReads"
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -550,63 +550,78 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
 
-		// Create a top-level errgroup for each goroutine
-		eG, ctx := errgroup.WithContext(ctx)
-		goRoutineCount := 10
+		// Use 50 goroutines with 10 adds each (500 total).
+		// This exceeds the internal session reqC buffer of 100, stressing the manager's event loop.
+		goRoutineCount := 50
 		perGoRoutineAddCount := 10
-		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
 
-		// Create multiple go routines to read concurrently.
+		const (
+			minRangeSize      = 1024 // Minimum size of a range request.
+			maxExtraRangeSize = 2048 // Maximum additional size added to minRangeSize.
+			offsetStep        = 2048 // Distance between the start of consecutive range requests.
+
+			// safeEndPadding ensures that the calculated offset + limit does not exceed
+			// the total length of the content. Since the maximum limit is
+			// minRangeSize + maxExtraRangeSize (3072), a padding of 4096 is safe.
+			safeEndPadding = 4096
+		)
+
+		type rangeRes struct {
+			buf       bytes.Buffer
+			offset    int64
+			limit     int64
+			gotOffset int64
+			gotLimit  int64
+			err       error
+		}
+		results := make([]*rangeRes, goRoutineCount*perGoRoutineAddCount)
+
+		var wg sync.WaitGroup
+		wg.Add(len(results))
+
 		for i := 0; i < goRoutineCount; i++ {
-			groupID := i
-			eG.Go(func() error {
-
-				// Subgroup for tasks within this goroutine
-				subGroup, _ := errgroup.WithContext(ctx)
-
+			go func(gID int) {
 				for j := 0; j < perGoRoutineAddCount; j++ {
-					taskID := perGoRoutineAddCount*groupID + j
-					subGroup.Go(func() error {
-						// Use a channel to receive the callback results
-						done := make(chan error, 1)
+					taskID := gID*perGoRoutineAddCount + j
+					// Randomize offset/limit slightly to ensure varied request patterns.
+					offset := int64((taskID * offsetStep) % (len(content) - safeEndPadding))
+					limit := int64(minRangeSize + rand.Intn(maxExtraRangeSize))
 
-						reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
-							res[taskID].offset = x
-							res[taskID].limit = y
-							res[taskID].err = err
-							// Send each callback result to subGroup.
-							done <- err
-						})
-						return <-done
+					r := &rangeRes{offset: offset, limit: limit}
+					results[taskID] = r
+
+					reader.Add(&r.buf, offset, limit, func(o, l int64, err error) {
+						r.err = err
+						r.gotOffset = o
+						r.gotLimit = l
+						wg.Done()
 					})
 				}
-				// Wait for all tasks in current sub-group to complete to send result to main error group.
-				return subGroup.Wait()
-			})
+			}(i)
 		}
 
-		// Wait for all top-level goroutines to complete
-		if err := eG.Wait(); err != nil {
-			t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
-		}
-
+		// Wait for all goroutines to finish adding their ranges.
+		wg.Wait()
+		// Wait for all reads to complete.
 		reader.Wait()
+
 		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+			t.Fatalf("Error while closing reader: %v", err)
 		}
-		for id, k := range res {
-			if k.err != nil {
-				t.Fatalf("reading range %v: %v", id, k.err)
+
+		for id, res := range results {
+			if res.err != nil {
+				t.Errorf("Range %d (offset %d) failed: %v", id, res.offset, res.err)
+				continue
 			}
-			if got, want := k.offset, 0; got != int64(want) {
-				t.Errorf("range id %v: got callback offset %v, want %v", id, got, want)
+			if res.gotOffset != res.offset || res.gotLimit != res.limit {
+				t.Errorf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+					id, res.gotOffset, res.gotLimit, res.offset, res.limit)
 			}
-			if got, want := k.limit, len(content); got != int64(want) {
-				t.Errorf("range id %v: got callback limit %v, want %v", id, got, want)
-			}
-			if !bytes.Equal(k.buf.Bytes(), content) {
-				t.Errorf("content mismatch in read range %v: got %v bytes, want %v bytes",
-					id, len(k.buf.Bytes()), len(content))
+			want := content[res.offset : res.offset+res.limit]
+			if !bytes.Equal(res.buf.Bytes(), want) {
+				t.Errorf("Data mismatch in range %d: got %d bytes, want %d bytes",
+					id, res.buf.Len(), len(want))
 			}
 		}
 	})
