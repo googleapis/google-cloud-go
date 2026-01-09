@@ -430,9 +430,7 @@ func TestIntegration_TableIAM(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	if gax.IsFeatureEnabled(skipPublicIAMTestFeature) {
-		t.Skipf("skipping test due to feature enablement: %s", skipPublicIAMTestFeature)
-	}
+	skipOnFeatureEnabled(t, skipFeaturePublicIAMTest)
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)

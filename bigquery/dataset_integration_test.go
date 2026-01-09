@@ -24,11 +24,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/googleapis/gax-go/v2"
-)
-
-const (
-	skipPublicIAMTestFeature string = "SKIP_PUBLIC_IAM_TESTS"
 )
 
 func TestIntegration_DatasetCreate(t *testing.T) {
@@ -308,9 +303,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	if gax.IsFeatureEnabled(skipPublicIAMTestFeature) {
-		t.Skipf("skipping test due to feature enablement: %s", skipPublicIAMTestFeature)
-	}
+	skipOnFeatureEnabled(t, skipFeaturePublicIAMTest)
 	ctx := context.Background()
 	md, err := dataset.Metadata(ctx)
 	if err != nil {
@@ -379,9 +372,7 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	if gax.IsFeatureEnabled(skipPublicIAMTestFeature) {
-		t.Skipf("skipping test due to feature enablement: %s", skipPublicIAMTestFeature)
-	}
+	skipOnFeatureEnabled(t, skipFeaturePublicIAMTest)
 	ctx := context.Background()
 	// Use our test dataset for a base access policy.
 	md, err := dataset.Metadata(ctx)
@@ -509,9 +500,7 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	if gax.IsFeatureEnabled(skipPublicIAMTestFeature) {
-		t.Skipf("skipping test due to feature enablement: %s", skipPublicIAMTestFeature)
-	}
+	skipOnFeatureEnabled(t, skipFeaturePublicIAMTest)
 	ctx := context.Background()
 	_, err := dataset.Metadata(ctx)
 	if err != nil {
