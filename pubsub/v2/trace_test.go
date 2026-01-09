@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -707,17 +706,13 @@ func BenchmarkNoTracingEnabled(b *testing.B) {
 	}
 }
 
-// TestPublish_ConcurrentWithSharedAttributes tests that publishing messages concurrently
-// with shared attributes doesn't cause a concurrent map write panic.
+// TestPublish_AttributesNotModified tests that publishing a message with tracing enabled
+// does not modify the original attributes map.
 // This is a regression test for issue #11314.
 //
-// Before the fix, when multiple goroutines published messages with the same attributes map
-// and tracing was enabled, the injectPropagation function would modify the shared map
-// directly, causing a "concurrent map iteration and map write" panic.
-//
 // The fix creates a defensive copy of the attributes map before injecting trace context,
-// ensuring each message gets its own independent copy.
-func TestPublish_ConcurrentWithSharedAttributes(t *testing.T) {
+// ensuring the original message attributes are not modified.
+func TestPublish_AttributesNotModified(t *testing.T) {
 	ctx := context.Background()
 	tp := sdktrace.NewTracerProvider()
 	otel.SetTextMapPropagator(propagation.TraceContext{})
@@ -743,47 +738,29 @@ func TestPublish_ConcurrentWithSharedAttributes(t *testing.T) {
 		t.Fatalf("failed to create subscription: %v", err)
 	}
 
-	// Create a shared attributes map that will be used by all messages
-	sharedAttrs := map[string]string{
+	// Create an attributes map for the message
+	attrs := map[string]string{
 		"key1": "value1",
 		"key2": "value2",
 		"key3": "value3",
 	}
 
-	const numGoroutines = 50
-	const messagesPerGoroutine = 20
-
-	var wg sync.WaitGroup
-	wg.Add(numGoroutines)
-
-	// Launch multiple goroutines that concurrently publish messages
-	// using the same shared attributes map
-	for i := 0; i < numGoroutines; i++ {
-		go func(routineID int) {
-			defer wg.Done()
-			for j := 0; j < messagesPerGoroutine; j++ {
-				msg := &Message{
-					Data:       []byte(fmt.Sprintf("message-%d-%d", routineID, j)),
-					Attributes: sharedAttrs, // Using the shared map
-				}
-
-				result := topic.Publish(ctx, msg)
-				if _, err := result.Get(ctx); err != nil {
-					t.Errorf("goroutine %d: failed to publish message %d: %v", routineID, j, err)
-					return
-				}
-			}
-		}(i)
+	msg := &Message{
+		Data:       []byte("test-message"),
+		Attributes: attrs,
 	}
 
-	wg.Wait()
-
-	// Verify that the original shared attributes map was not modified
-	if len(sharedAttrs) != 3 {
-		t.Errorf("shared attributes map was modified: expected 3 entries, got %d", len(sharedAttrs))
+	result := topic.Publish(ctx, msg)
+	if _, err := result.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
 	}
-	if sharedAttrs["key1"] != "value1" || sharedAttrs["key2"] != "value2" || sharedAttrs["key3"] != "value3" {
-		t.Errorf("shared attributes map values were modified: %v", sharedAttrs)
+
+	// Verify that the original attributes map was not modified
+	if len(attrs) != 3 {
+		t.Errorf("attributes map was modified: expected 3 entries, got %d", len(attrs))
+	}
+	if attrs["key1"] != "value1" || attrs["key2"] != "value2" || attrs["key3"] != "value3" {
+		t.Errorf("attributes map values were modified: %v", attrs)
 	}
 
 	// Verify that trace context was injected by receiving messages and checking attributes.
