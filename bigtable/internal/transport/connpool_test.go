@@ -209,6 +209,7 @@ func TestConnectionFactory(t *testing.T) {
 			wantErr:        true,
 			wantPrimeCalls: 0,
 		},
+		// TODO: test context timeout after one or more failed prime attempts.
 	}
 
 	for _, tt := range tests {
