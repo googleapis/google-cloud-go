@@ -4,7 +4,7 @@
 
 ### Features
 
-* add client startup time metrics.  (#13521) ([8f90da3](https://github.com/googleapis/google-cloud-go/commit/8f90da38abc674f23ad0d0289ece3b376caa8746))
+* add client startup time metrics (#13521) ([8f90da3](https://github.com/googleapis/google-cloud-go/commit/8f90da38abc674f23ad0d0289ece3b376caa8746))
 * add dynamic channel support (#2) (#13504) ([65a3c4e](https://github.com/googleapis/google-cloud-go/commit/65a3c4ec26fc3765f4665259226f93ee32abd054))
 * add ip protocol for bigtable connection (#13520) ([6f86983](https://github.com/googleapis/google-cloud-go/commit/6f86983e4b307d45397e36d1498635524ac7615e))
 * add metrics exporter for outstandingrpcs and perconnectionerror count  (#13510) ([7f1b36a](https://github.com/googleapis/google-cloud-go/commit/7f1b36acdf2fddb6bd7b41753a7244021686acf0))
