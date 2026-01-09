@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.59.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.0) (2026-01-09)
+
+### Features
+
+* add default checksums for appendable writer (excludes appendable takeover writer) (#13379) ([647baf3](https://github.com/googleapis/google-cloud-go/commit/647baf3249b01e7d5eb5902197bb828706c4c08f))
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.58.0) (2025-12-03)
 
 ### Features
