@@ -536,7 +536,7 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 	}
 	newEntry, err := p.factory.newEntry(p.poolCtx)
 	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replacement connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
+		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replace connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
 		return
 	}
 

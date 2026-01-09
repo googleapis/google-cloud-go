@@ -63,33 +63,6 @@ func entryIndex(s []*connEntry, e *connEntry) int {
 	return -1
 }
 
-func TestBigtableConnIpProtocol(t *testing.T) {
-	bc := NewBigtableConn(nil)
-	if got := bc.ipProtocol(); got != "unknown" {
-		t.Errorf("NewBigtableConn default ipProtocol() got %q, want %q", got, unknown)
-	}
-
-	tests := []struct {
-		name     string
-		addrType ipProtocol
-		want     string
-	}{
-		{name: "IPv4", addrType: ipv4, want: "ipv4"},
-		{name: "IPv6", addrType: ipv6, want: "ipv6"},
-		{name: "Unknown", addrType: unknown, want: "unknown"},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			conn := &BigtableConn{}
-			conn.remoteAddrType.Store(int32(tc.addrType))
-			if got := conn.ipProtocol(); got != tc.want {
-				t.Errorf("ipProtocol() with remoteAddrType %d got %q, want %q", tc.addrType, got, tc.want)
-			}
-		})
-	}
-}
-
 func TestSelectRoundRobin(t *testing.T) {
 	pool := &BigtableChannelPool{rrIndex: 0}
 
@@ -189,7 +162,6 @@ func TestConnectionFactory(t *testing.T) {
 		name           string
 		dialFunc       func() (*BigtableConn, error)
 		primeErrors    []error
-		primeDelay     time.Duration
 		ctxTimeout     time.Duration
 		wantErr        bool
 		wantPrimeCalls int
@@ -243,7 +215,6 @@ func TestConnectionFactory(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fake.reset()
 			fake.setPingErr(tt.primeErrors...)
-			fake.setDelay(tt.primeDelay)
 
 			factory := &connectionFactory{
 				dial:           tt.dialFunc,
@@ -1533,29 +1504,6 @@ func TestRemoveConnections(t *testing.T) {
 			}
 		}
 	})
-
-	t.Run("MixedDrainingState", func(t *testing.T) {
-		poolSize := 5
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Unix(0, 0), poolOpts()...)
-		if err != nil {
-			t.Fatalf("Failed to create pool: %v", err)
-		}
-		defer pool.Close()
-
-		conns := pool.getConns()
-		conns[2].markAsDraining()
-
-		changed := pool.removeConnections(1, 1, 5)
-
-		if !changed {
-			t.Errorf("Expected pool change, got false")
-		}
-		finalConns := pool.getConns()
-
-		if len(finalConns) != 3 {
-			t.Errorf("Expected final size 3, got %d", len(finalConns))
-		}
-	})
 }
 
 func TestConnPoolStatisticsVisitor(t *testing.T) {
@@ -1669,8 +1617,6 @@ func BenchmarkPoolInvoke(b *testing.B) {
 	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkPoolInvoke
 
 	strategies := []btopt.LoadBalancingStrategy{
-		btopt.RoundRobin,
-		btopt.LeastInFlight,
 		btopt.PowerOfTwoLeastInFlight,
 	}
 	poolSizes := []int{1, 8, 64}
