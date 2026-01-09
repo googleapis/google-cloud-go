@@ -125,7 +125,7 @@ func TestGetModuleConfig(t *testing.T) {
 			name:       "present in config",
 			moduleName: "spanner",
 			want: &ModuleConfig{
-				Name:              "spanner",
+				Name:              "spannerx",
 				ModulePathVersion: "v2",
 			},
 		},
