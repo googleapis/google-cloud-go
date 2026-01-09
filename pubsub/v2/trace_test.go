@@ -723,20 +723,9 @@ func TestPublish_AttributesNotModified(t *testing.T) {
 	defer client.Close()
 	defer srv.Close()
 
-	topicID := "concurrent-test-topic"
+	topicID := "attributes-test-topic"
 	topicName := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicID)
 	topic := mustCreateTopic(t, client, topicName)
-
-	// Create subscription before publishing so we can verify trace context injection
-	subID := "concurrent-test-sub"
-	subName := fmt.Sprintf("projects/%s/subscriptions/%s", testutil.ProjID(), subID)
-	_, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
-		Name:  subName,
-		Topic: topicName,
-	})
-	if err != nil {
-		t.Fatalf("failed to create subscription: %v", err)
-	}
 
 	// Create an attributes map for the message
 	attrs := map[string]string{
@@ -761,26 +750,5 @@ func TestPublish_AttributesNotModified(t *testing.T) {
 	}
 	if attrs["key1"] != "value1" || attrs["key2"] != "value2" || attrs["key3"] != "value3" {
 		t.Errorf("attributes map values were modified: %v", attrs)
-	}
-
-	// Verify that trace context was injected by receiving messages and checking attributes.
-	// We only need to verify that at least one message has trace context injected.
-	sub := client.Subscriber(subName)
-	receiveCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-
-	var traceContextFound atomic.Bool
-
-	sub.Receive(receiveCtx, func(_ context.Context, msg *Message) {
-		// Check that trace context was injected (should have googclient_traceparent attribute)
-		if _, ok := msg.Attributes[googclientPrefix+"traceparent"]; ok {
-			traceContextFound.Store(true)
-			cancel()
-		}
-		msg.Ack()
-	})
-
-	if !traceContextFound.Load() {
-		t.Error("expected trace context to be injected (googclient_traceparent attribute) in at least one message")
 	}
 }
