@@ -402,9 +402,9 @@ type MultiRangeDownloader struct {
 // end of the object to be returned. Requesting a negative offset with magnitude
 // larger than the size of the object will return the entire object.
 //
-// An offset larger than the size of the object will result in an OutOfRange error,
-// which will be returned in the callback. The downloader enters a permanent error state,
-// and subsequent calls to Close return the same error.
+// An offset larger than the size of the object returns an OutOfRange error via
+// the callback and enters a permanent error state. All subsequent calls to Close
+// will return this same error.
 //
 // A limit of zero indicates that there is no limit, and a negative limit will
 // cause an error.
