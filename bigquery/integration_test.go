@@ -279,6 +279,17 @@ func initTestState(client *Client, t time.Time) func() {
 	}
 }
 
+// features we use for skipping tests.
+const skipFeaturePublicIAMTest string = "SKIP_BIGQUERY_PUBLIC_IAM_TESTS"
+
+// a utility method for skipping tests based on feature enablement.
+func skipOnFeatureEnabled(t *testing.T, featureID string) {
+	t.Helper()
+	if gax.IsFeatureEnabled(featureID) {
+		t.Skipf("skipping test due to feature enablement: %s", featureID)
+	}
+}
+
 // delete a resource if it is older than a day
 // that will prevent collisions with parallel CI test runs.
 func isResourceStale(t time.Time) bool {
