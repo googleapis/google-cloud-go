@@ -639,6 +639,12 @@ func TestFilterParser(t *testing.T) {
 }
 
 func TestFilterField(t *testing.T) {
+	// Test for issue #13499: ensure nil filter value does not panic
+	q := NewQuery("Thing").FilterField("RelatedThing", "=", nil)
+	if _, err := q.toProto(); err != nil {
+		t.Fatalf("toProto failed for nil filter: %v", err)
+	}
+
 	successTestCases := append(filterTestCases, filterFieldTestCases...)
 	for _, tc := range successTestCases {
 		q := NewQuery("foo").FilterField(tc.fieldName, tc.operator, 42)

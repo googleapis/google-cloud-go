@@ -112,7 +112,7 @@ func (pf PropertyFilter) toProto() (*pb.Filter, error) {
 	if pf.FieldName == "" {
 		return nil, errors.New("datastore: empty query filter field name")
 	}
-	v, err := interfaceToProto(reflect.ValueOf(pf.Value).Interface(), false)
+	v, err := interfaceToProto(pf.Value, false)
 	if err != nil {
 		return nil, fmt.Errorf("datastore: bad query filter value type: %w", err)
 	}
