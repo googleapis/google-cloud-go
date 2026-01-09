@@ -283,10 +283,10 @@ func initTestState(client *Client, t time.Time) func() {
 const skipFeaturePublicIAMTest string = "SKIP_BIGQUERY_PUBLIC_IAM_TESTS"
 
 // a utility method for skipping tests based on feature enablement.
-func skipOnFeatureEnabled(t *testing.T, featureId string) {
+func skipOnFeatureEnabled(t *testing.T, featureID string) {
 	t.Helper()
-	if gax.IsFeatureEnabled(featureId) {
-		t.Skipf("skipping test due to feature enablement: %s", featureId)
+	if gax.IsFeatureEnabled(featureID) {
+		t.Skipf("skipping test due to feature enablement: %s", featureID)
 	}
 }
 
