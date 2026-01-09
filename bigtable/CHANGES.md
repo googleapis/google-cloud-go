@@ -8,7 +8,7 @@
 * add dynamic channel support (#2) (#13504) ([65a3c4e](https://github.com/googleapis/google-cloud-go/commit/65a3c4ec26fc3765f4665259226f93ee32abd054))
 * add ip protocol for bigtable connection (#13520) ([6f86983](https://github.com/googleapis/google-cloud-go/commit/6f86983e4b307d45397e36d1498635524ac7615e))
 * add metrics exporter for outstanding RPCs and per-connection error count (#13510) ([7f1b36a](https://github.com/googleapis/google-cloud-go/commit/7f1b36acdf2fddb6bd7b41753a7244021686acf0))
-* introduce prime() method and load counting based on unary,streaming and ability to remove connection (#13419) ([c6773ce](https://github.com/googleapis/google-cloud-go/commit/c6773ceb279f2146eb13a6795d79a0415f71ea41))
+* introduce prime() method and load counting based on unary, streaming and ability to remove connection (#13419) ([c6773ce](https://github.com/googleapis/google-cloud-go/commit/c6773ceb279f2146eb13a6795d79a0415f71ea41))
 
 ### Bug Fixes
 
