@@ -76,14 +76,14 @@ func TestConvertTime(t *testing.T) {
 		{Type: DateTimeFieldType},
 		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
-	ts := testTimestamp.Round(time.Millisecond)
+	ts := testTimestamp
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprint(ts.UnixMicro())},
+			{V: fmt.Sprint(ts.Format(picoFormatString))},
 			{V: testDate.String()},
 			{V: testTime.String()},
 			{V: testDateTime.String()},
-			{V: fmt.Sprintf("[UNBOUNDED, %d)", ts.UnixMicro())},
+			{V: fmt.Sprintf("[UNBOUNDED, %s)", ts.Format(picoFormatString))},
 		},
 	}
 	got, err := convertRow(row, schema)
@@ -113,10 +113,10 @@ func TestConvertRange(t *testing.T) {
 		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
 
-	ts := testTimestamp.Round(time.Millisecond)
+	ts := testTimestamp.Round(time.Nanosecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprintf("[%d, UNBOUNDED)", ts.UnixMicro())},
+			{V: fmt.Sprintf("[%s, UNBOUNDED)", ts.Format(picoFormatString))},
 			{V: fmt.Sprintf("[UNBOUNDED, %s)", testDateTime.String())},
 			{V: fmt.Sprintf("[%s, %s)", testDate.String(), testDate.String())},
 			{V: nil}, // NULL RANGE
@@ -143,8 +143,8 @@ func TestConvertRange(t *testing.T) {
 func TestConvertSmallTimes(t *testing.T) {
 	for _, year := range []int{1600, 1066, 1} {
 		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-		s := fmt.Sprint(time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).UnixMicro())
-		got, err := convertBasicType(s, TimestampFieldType)
+		s := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).Format(picoFormatString)
+		got, err := convertBasicType(s, &FieldSchema{Type: TimestampFieldType})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -436,7 +436,7 @@ func TestConvertRowErrors(t *testing.T) {
 	}
 
 	// bad field type
-	if _, err := convertBasicType("", FieldType("BAD")); err == nil {
+	if _, err := convertBasicType("", &FieldSchema{Type: FieldType("BAD")}); err == nil {
 		t.Error("got nil, want error")
 	}
 }
