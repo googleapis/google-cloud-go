@@ -415,6 +415,32 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	return newClientWithConfig(ctx, database, config, nil, opts...)
 }
 
+type fallbackWrapper struct {
+	*grpcgcp.GCPFallback
+	primaryConn  gtransport.ConnPool
+	fallbackConn gtransport.ConnPool
+}
+
+// Conn returns nil because GCPFallback hides the underlying ClientConn.
+// The Spanner client handles this by using the interface methods (Invoke/NewStream).
+func (fw *fallbackWrapper) Conn() *grpc.ClientConn {
+	return nil
+}
+
+func (fw *fallbackWrapper) Num() int {
+	return fw.primaryConn.Num()
+}
+
+func (fw *fallbackWrapper) Close() error {
+	fw.GCPFallback.Close()
+	err1 := fw.primaryConn.Close()
+	err2 := fw.fallbackConn.Close()
+	if err1 != nil {
+		return err1
+	}
+	return err2
+}
+
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
 	// Validate database path.
 	if err := validDatabaseName(database); err != nil {
@@ -493,6 +519,47 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if gme != nil {
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
+	} else if isFallbackEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK")); isFallbackEnabled && isDirectPathEnabled {
+		var primaryConn gtransport.ConnPool
+		var fallbackConn gtransport.ConnPool
+		reqIDInjector := new(requestIDHeaderInjector)
+		opts = append(opts,
+			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+		)
+		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
+		primaryConn, err = gtransport.DialPool(ctx, allOpts...)
+		if err != nil {
+			return nil, err
+		}
+
+		fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
+		fallbackConn, err = gtransport.DialPool(ctx, fallbackConnOpts...)
+		if err != nil {
+			primaryConn.Close()
+			return nil, err
+		}
+
+		if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
+			primaryConn.Close()
+			fallbackConn.Close()
+			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
+		}
+
+		fbOpts := grpcgcp.NewGCPFallbackOptions()
+		fbOpts.EnableFallback = true
+		fbOpts.ErrorRateThreshold = 1
+		fbOpts.MinFailedCalls = 1
+		fbOpts.MeterProvider = config.OpenTelemetryMeterProvider
+
+		gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
+		if err != nil {
+			primaryConn.Close()
+			fallbackConn.Close()
+			return nil, err
+		}
+
+		pool = &fallbackWrapper{gcpFallback, primaryConn, fallbackConn}
 	} else {
 		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
 		// gRPC options.
