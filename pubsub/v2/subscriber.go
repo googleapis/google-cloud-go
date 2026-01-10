@@ -308,7 +308,6 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 			defer wg.Wait()
 			defer cancel2()
 			for {
-				var maxToPull int32 // maximum number of messages to pull
 				// If the context is done, don't pull more messages.
 				select {
 				case <-ctx.Done():
@@ -329,7 +328,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 					default:
 					}
 
-					msgs, err := iter.receive(maxToPull)
+					msgs, err := iter.receive()
 					if errors.Is(err, io.EOF) {
 						errChan <- nil
 						return
