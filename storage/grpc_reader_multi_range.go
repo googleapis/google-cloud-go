@@ -566,9 +566,6 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 	resp := result.decoder.msg
 	if handle := resp.GetReadHandle().GetHandle(); len(handle) > 0 {
 		m.lastReadHandle = handle
-		if m.params.handle != nil {
-			*m.params.handle = handle
-		}
 	}
 
 	m.attrsOnce.Do(func() {
