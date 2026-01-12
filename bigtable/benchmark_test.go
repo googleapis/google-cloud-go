@@ -156,7 +156,7 @@ func setup(b *testing.B, metricsEnabled bool) (client *Client, tableName, rowKey
 func writeBatch(b *testing.B, client *Client, tableName, rowKeyPrefix string, start, end int) {
 	muts := make([]*Mutation, end-start)
 	rowKeys := make([]string, end-start)
-	for i := 0; i < len(muts); i++ {
+	for i := range len(muts) {
 		muts[i] = NewMutation()
 		muts[i].Set(columnFamilyName, columnName, Now(), []byte("p"))
 		rowKeys[i] = fmt.Sprintf("%s-%010d", rowKeyPrefix, start+i)
@@ -180,7 +180,7 @@ func readRowsConcurrently(b *testing.B, client *Client, tableName, rowKeyPrefix 
 
 	rowsPerRoutine := totalRows / numGoRoutines
 
-	for i := 0; i < numGoRoutines; i++ {
+	for i := range numGoRoutines {
 		startKey := fmt.Sprintf("%s-%010d", rowKeyPrefix, i*rowsPerRoutine)
 		endKey := fmt.Sprintf("%s-%010d", rowKeyPrefix, (i+1)*rowsPerRoutine)
 
