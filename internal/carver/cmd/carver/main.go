@@ -382,7 +382,7 @@ func gitCommit(dir string, tags []string, dryRun bool) error {
 		var sb strings.Builder
 		sb.WriteString("chore: carve out sub-modules\n\nThis commit will be tagged:\n")
 		for _, tag := range tags {
-			sb.WriteString(fmt.Sprintf("\t- %s\n", tag))
+			fmt.Fprintf(&sb, "\t- %s\n", tag)
 		}
 		cmd = exec.Command("git", "commit", "-m", sb.String())
 		cmd.Dir = dir
@@ -491,8 +491,8 @@ func parseMetadata(r io.Reader) (map[string]string, error) {
 	m2 := map[string]string{}
 	for k, v := range m {
 		k2 := k
-		if i := strings.Index(k2, "/apiv"); i > 0 {
-			k2 = k2[:i]
+		if b, _, exists := strings.Cut(k2, "/apiv"); exists {
+			k2 = b
 		}
 		m2[k2] = v.Description
 	}
