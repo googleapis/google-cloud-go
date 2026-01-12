@@ -79,11 +79,14 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 			}
 		}
 
-		fmt.Fprintf(&sb, "%s\n", body)
+		sb.WriteString(body)
+		sb.WriteByte('\n')
 		if len(c.AffectedProtos) > 0 {
 			sb.WriteString("  Affected protos:\n")
 			for _, proto := range c.AffectedProtos {
-				fmt.Fprintf(&sb, "  - %s\n", proto)
+				sb.WriteString("  - ")
+				sb.WriteString(proto)
+				sb.WriteByte('\n')
 			}
 		}
 		sb.WriteString("\n")
