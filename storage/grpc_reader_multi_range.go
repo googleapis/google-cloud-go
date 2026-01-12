@@ -572,11 +572,11 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 	}
 
 	m.attrsOnce.Do(func() {
+		defer close(m.attrsReady)
 		if meta := resp.GetMetadata(); meta != nil {
 			obj := newObjectFromProto(meta)
 			attrs := readerAttrsFromObject(obj)
 			m.attrs = attrs
-			close(m.attrsReady)
 
 			for _, req := range m.pendingRanges {
 				if req.offset < 0 {
