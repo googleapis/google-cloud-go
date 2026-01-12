@@ -382,7 +382,9 @@ func gitCommit(dir string, tags []string, dryRun bool) error {
 		var sb strings.Builder
 		sb.WriteString("chore: carve out sub-modules\n\nThis commit will be tagged:\n")
 		for _, tag := range tags {
-			fmt.Fprintf(&sb, "\t- %s\n", tag)
+			sb.WriteString("\t- ")
+			sb.WriteString(tag)
+			sb.WriteByte('\n')
 		}
 		cmd = exec.Command("git", "commit", "-m", sb.String())
 		cmd.Dir = dir
