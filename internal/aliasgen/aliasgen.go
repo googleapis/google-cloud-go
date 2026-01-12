@@ -409,7 +409,7 @@ func (ti *typeInfo) FullType(pkg string) string {
 	if ti.pkg != pkg {
 		p = ti.pkg + "."
 	}
-	sb.WriteString(fmt.Sprintf("%s%s", p, ti.typeName))
+	fmt.Fprintf(&sb, "%s%s", p, ti.typeName)
 	return sb.String()
 }
 
@@ -423,17 +423,17 @@ func formatComment(doc, pkg string) string {
 		if (len(str) + lineLen + 1) < softLineBreak {
 			lineLen = lineLen + len(str) + 1
 		} else if lineLen == 0 {
-			sb.WriteString(fmt.Sprintf("// %s\n", str))
+			fmt.Fprintf(&sb, "// %s\n", str)
 			ssi = i + 1
 		} else {
-			sb.WriteString(fmt.Sprintf("// %s\n", strings.Join(ss[ssi:i], " ")))
+			fmt.Fprintf(&sb, "// %s\n", strings.Join(ss[ssi:i], " "))
 			ssi = i
 			lineLen = len(str)
 		}
 	}
 	if ssi != len(ss) {
-		sb.WriteString(fmt.Sprintf("// %s\n", strings.Join(ss[ssi:], " ")))
+		fmt.Fprintf(&sb, "// %s\n", strings.Join(ss[ssi:], " "))
 	}
-	sb.WriteString(fmt.Sprintf("//\n// Deprecated: Please use types in: %s\n", pkg))
+	fmt.Fprintf(&sb, "//\n// Deprecated: Please use types in: %s\n", pkg)
 	return sb.String()
 }
