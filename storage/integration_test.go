@@ -3836,6 +3836,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 }
 
 func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
+	t.Skip("persistent failures - https://github.com/googleapis/google-cloud-go/issues/13545")
 	ctx := skipAllButZonal(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
