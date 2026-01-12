@@ -62,7 +62,7 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 		if truncate && len(title) > maxTruncatedTitleLen {
 			title = fmt.Sprintf("%v...", title[:maxTruncatedTitleLen])
 		}
-		sb.WriteString(fmt.Sprintf("%s\n", title))
+		fmt.Fprintf(&sb, "%s\n", title)
 
 		// Format the commit body to conventional commit footer standards.
 		splitBody := strings.Split(c.Body, "\n")
@@ -78,11 +78,11 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 			}
 		}
 
-		sb.WriteString(fmt.Sprintf("%s\n", body))
+		fmt.Fprintf(&sb, "%s\n", body)
 		if len(c.AffectedProtos) > 0 {
 			sb.WriteString("  Affected protos:\n")
 			for _, proto := range c.AffectedProtos {
-				sb.WriteString(fmt.Sprintf("  - %s\n", proto))
+				fmt.Fprintf(&sb, "  - %s\n", proto)
 			}
 		}
 		sb.WriteString("\n")
