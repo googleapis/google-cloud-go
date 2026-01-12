@@ -40,7 +40,7 @@ func BenchmarkEncodeIntArray(b *testing.B) {
 			for _, size := range []int{1, 10, 100, 1000} {
 				a := make([]int, size)
 				b.Run(strconv.Itoa(size), func(b *testing.B) {
-					for i := 0; i < b.N; i++ {
+					for b.Loop() {
 						s.f(a)
 					}
 				})
@@ -96,7 +96,7 @@ func BenchmarkDecodeGeneric(b *testing.B) {
 	t := stringType()
 	var g GenericColumnValue
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		decodeValue(v, t, &g)
 	}
 }
@@ -106,7 +106,7 @@ func BenchmarkDecodeString(b *testing.B) {
 	t := stringType()
 	var s string
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		decodeValue(v, t, &s)
 	}
 }
@@ -117,7 +117,7 @@ func BenchmarkDecodeCustomString(b *testing.B) {
 	type CustomString string
 	var s CustomString
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		decodeValue(v, t, &s)
 	}
 }
@@ -143,7 +143,7 @@ func BenchmarkDecodeArray(b *testing.B) {
 				{"StringReflect", decodeArrayStringReflect},
 			} {
 				b.Run(s.name, func(b *testing.B) {
-					for i := 0; i < b.N; i++ {
+					for b.Loop() {
 						s.decode(lv)
 					}
 				})
@@ -258,7 +258,7 @@ func BenchmarkScan(b *testing.B) {
 					}{int64(i), fmt.Sprintf("name-%d", i), true, "city", "state"})
 				}
 				src := mockBenchmarkIterator(b, rows)
-				for i := 0; i < b.N; i++ {
+				for b.Loop() {
 					it := *src
 					var res []struct {
 						ID     int64

@@ -206,7 +206,7 @@ func BenchmarkReadRowsWithMetrics(b *testing.B) {
 	defer cleanup()
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		readRowsConcurrently(b, client, tableName, rowKeyPrefix)
 	}
 	b.StopTimer()
@@ -218,7 +218,7 @@ func BenchmarkReadRowsWithoutMetrics(b *testing.B) {
 	defer cleanup()
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		readRowsConcurrently(b, client, tableName, rowKeyPrefix)
 	}
 	b.StopTimer()

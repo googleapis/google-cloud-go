@@ -279,7 +279,7 @@ var benchmarkResultHolder *mrpb.MonitoredResource
 func BenchmarkDetectResource(b *testing.B) {
 	var result *mrpb.MonitoredResource
 
-	for n := 0; n < b.N; n++ {
+	for b.Loop() {
 		result = detectResource()
 	}
 

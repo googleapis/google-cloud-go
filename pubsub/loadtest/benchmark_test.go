@@ -57,7 +57,7 @@ func BenchmarkPublishThroughput(b *testing.B) {
 	lts.init(client, "t", messageSize, batchSize, batchDuration, useOrdered)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		runOnce(lts)
 	}
 }
