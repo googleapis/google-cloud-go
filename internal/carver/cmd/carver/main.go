@@ -491,7 +491,7 @@ func parseMetadata(r io.Reader) (map[string]string, error) {
 	m2 := map[string]string{}
 	for k, v := range m {
 		k2 := k
-		if b, _, exists := strings.Cut(k2, "/apiv"); exists {
+if b, _, exists := strings.Cut(k2, "/apiv"); exists && b != "" {
 			k2 = b
 		}
 		m2[k2] = v.Description
