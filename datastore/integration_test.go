@@ -481,7 +481,7 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
 		time.Sleep(readTimeConsistencyBuffer)
-		tm := ReadTime(time.Now())
+		tm := ReadTime(time.Now().Truncate(time.Microsecond))
 
 		runCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 		runClient := newTestClient(runCtx, t)
