@@ -180,7 +180,7 @@ func readRowsConcurrently(b *testing.B, client *Client, tableName, rowKeyPrefix 
 
 	rowsPerRoutine := totalRows / numGoRoutines
 
-	for i := 0; i < numGoRoutines; i++ {
+	for i := range numGoRoutines {
 		startKey := fmt.Sprintf("%s-%010d", rowKeyPrefix, i*rowsPerRoutine)
 		endKey := fmt.Sprintf("%s-%010d", rowKeyPrefix, (i+1)*rowsPerRoutine)
 
