@@ -487,14 +487,6 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 	}
 	m.readIDCounter++
 
-	// Attributes should be ready if we are processing Add commands
-	if req.offset < 0 {
-		err := m.convertToPositiveOffset(req)
-		if err != nil {
-			return
-		}
-	}
-
 	if m.currentSession == nil {
 		// This should not happen if establishInitialSession was successful
 		m.failRange(req, errors.New("storage: session not available"))
@@ -511,30 +503,6 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 		}},
 	}
 	m.currentSession.SendRequest(protoReq)
-}
-
-func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest) error {
-	if req.offset >= 0 {
-		return nil
-	}
-	objSize := m.attrs.Size
-	if objSize <= 0 {
-		err := errors.New("storage: cannot resolve negative offset without object size")
-		m.failRange(req, err)
-		return err
-	}
-	if req.length != 0 {
-		err := fmt.Errorf("storage: negative offset with non-zero length is not supported (offset: %d, length: %d)", req.origOffset, req.origLength)
-		m.failRange(req, err)
-		return err
-	}
-	start := objSize + req.offset
-	if start < 0 {
-		start = 0
-	}
-	req.offset = start
-	req.length = objSize - start
-	return nil
 }
 
 func (m *multiRangeDownloaderManager) handleCloseCmd(ctx context.Context, cmd *mrdCloseCmd) {
@@ -574,14 +542,6 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 			obj := newObjectFromProto(meta)
 			attrs := readerAttrsFromObject(obj)
 			m.attrs = attrs
-
-			for _, req := range m.pendingRanges {
-				if req.offset < 0 {
-					_ = m.convertToPositiveOffset(req)
-				}
-			}
-		} else {
-			m.handleStreamEnd(mrdSessionResult{err: errors.New("storage: first response from BidiReadObject stream missing metadata")})
 		}
 	})
 
