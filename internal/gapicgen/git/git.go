@@ -62,7 +62,8 @@ func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate 
 		if truncate && len(title) > maxTruncatedTitleLen {
 			title = fmt.Sprintf("%v...", title[:maxTruncatedTitleLen])
 		}
-		fmt.Fprintf(&sb, "%s\n", title)
+		sb.WriteString(title)
+		sb.WriteByte('\n')
 
 		// Format the commit body to conventional commit footer standards.
 		splitBody := strings.Split(c.Body, "\n")
