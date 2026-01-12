@@ -409,7 +409,8 @@ func (ti *typeInfo) FullType(pkg string) string {
 	if ti.pkg != pkg {
 		p = ti.pkg + "."
 	}
-	fmt.Fprintf(&sb, "%s%s", p, ti.typeName)
+	sb.WriteString(p)
+	sb.WriteString(ti.typeName)
 	return sb.String()
 }
 
