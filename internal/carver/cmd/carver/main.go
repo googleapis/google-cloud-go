@@ -490,13 +490,12 @@ func parseMetadata(r io.Reader) (map[string]string, error) {
 	if err := json.Unmarshal(b, &m); err != nil {
 		return nil, err
 	}
-	m2 := map[string]string{}
+	m2 := make(map[string]string, len(m))
 	for k, v := range m {
-		k2 := k
-if b, _, exists := strings.Cut(k2, "/apiv"); exists && b != "" {
-			k2 = b
+		if i := strings.Index(k, "/apiv"); i > 0 {
+			k = k[:i]
 		}
-		m2[k2] = v.Description
+		m2[k] = v.Description
 	}
 	return m2, nil
 }
