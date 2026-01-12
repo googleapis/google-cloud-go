@@ -396,7 +396,7 @@ func TestSubscriptionDeadLetter(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to publish message")
 	}
-	rand.Seed(time.Now().UTC().UnixNano())
+
 	maxAttempts := rand.Intn(5) + retries
 	for i := 0; i < maxAttempts; i++ {
 		pull, err := server.GServer.Pull(ctx, &pb.PullRequest{
