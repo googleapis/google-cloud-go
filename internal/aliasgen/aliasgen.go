@@ -424,7 +424,9 @@ func formatComment(doc, pkg string) string {
 		if (len(str) + lineLen + 1) < softLineBreak {
 			lineLen = lineLen + len(str) + 1
 		} else if lineLen == 0 {
-			fmt.Fprintf(&sb, "// %s\n", str)
+			sb.WriteString("// ")
+			sb.WriteString(str)
+			sb.WriteByte('\n')
 			ssi = i + 1
 		} else {
 			fmt.Fprintf(&sb, "// %s\n", strings.Join(ss[ssi:i], " "))
