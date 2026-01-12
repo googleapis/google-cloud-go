@@ -44,7 +44,7 @@ func ErrorHasCode(got error, wantCode codes.Code) bool {
 
 // ErrorHasMsg returns true if an error message contains the desired substring.
 func ErrorHasMsg(got error, wantStr string) bool {
-	return strings.Index(got.Error(), wantStr) >= 0
+	return strings.Contains(got.Error(), wantStr)
 }
 
 // FakeSource is a fake source that returns a configurable constant.
