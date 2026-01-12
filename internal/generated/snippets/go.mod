@@ -73,7 +73,7 @@ require (
 	cloud.google.com/go/language v1.14.6
 	cloud.google.com/go/lifesciences v0.10.7
 	cloud.google.com/go/logging v1.13.1
-	cloud.google.com/go/longrunning v0.7.0
+	cloud.google.com/go/longrunning v0.8.0
 	cloud.google.com/go/managedidentities v1.7.7
 	cloud.google.com/go/maps v1.26.0
 	cloud.google.com/go/mediatranslation v0.9.7
@@ -180,7 +180,7 @@ require (
 	cloud.google.com/go/securityposture v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/servicehealth v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/shopping v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/storage v1.57.2
+	cloud.google.com/go/storage v1.59.0
 	cloud.google.com/go/storagebatchoperations v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/streetview v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
@@ -210,8 +210,8 @@ require (
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
