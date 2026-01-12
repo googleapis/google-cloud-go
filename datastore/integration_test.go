@@ -56,6 +56,9 @@ const (
 	replayFilename = "datastore.replay"
 	envDatabases   = "GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES"
 	keyPrefix      = "TestIntegration_"
+	// readTimeConsistencyBuffer is a buffer duration to ensure the ReadTime timestamp
+	// is not in the future relative to the backend's clock.
+	readTimeConsistencyBuffer = 100 * time.Millisecond
 )
 
 type replayInfo struct {
@@ -477,7 +480,7 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 
 	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(readTimeConsistencyBuffer)
 		tm := ReadTime(time.Now())
 
 		runCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
@@ -491,9 +494,14 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
 		// exposed in anyway in the response.
 		err = runClient.Get(runCtx, k, &got)
-		runClient.Run(runCtx, NewQuery("RT"))
 		if err != nil {
 			r.Errorf("client.Get: %v", err)
+		}
+
+		it := runClient.Run(runCtx, NewQuery("RT"))
+		_, err = it.Next(nil)
+		if err != nil && err != iterator.Done {
+			r.Errorf("client.Run: %v", err)
 		}
 	})
 
