@@ -115,7 +115,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			manager.wg.Wait()
 			return nil, manager.permanentErr
 		}
-		mrd.Attrs = manager.attrs
+		mrd.Attrs = *manager.attrs
 		return mrd, nil
 	case <-ctx.Done():
 		cancel()
@@ -220,7 +220,7 @@ type multiRangeDownloaderManager struct {
 	waiters        []chan struct{}
 	readSpec       *storagepb.BidiReadObjectSpec
 	lastReadHandle []byte
-	attrs          ReaderObjectAttrs
+	attrs          *ReaderObjectAttrs
 	attrsReady     chan struct{}
 	attrsOnce      sync.Once
 	spanCtx        context.Context
@@ -487,6 +487,14 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 	}
 	m.readIDCounter++
 
+	// Attributes should be ready if we are processing Add commands
+	if m.attrs != nil && req.offset < 0 {
+		err := m.convertToPositiveOffset(req)
+		if err != nil {
+			return
+		}
+	}
+
 	if m.currentSession == nil {
 		// This should not happen if establishInitialSession was successful
 		m.failRange(req, errors.New("storage: session not available"))
@@ -503,6 +511,21 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 		}},
 	}
 	m.currentSession.SendRequest(protoReq)
+}
+
+func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest) error {
+	if req.offset >= 0 {
+		return nil
+	}
+	objSize := m.attrs.Size
+	if objSize <= 0 {
+		err := errors.New("storage: cannot resolve negative offset with object size as 0")
+		m.failRange(req, err)
+		return err
+	}
+	start := max(objSize+req.offset, 0)
+	req.offset = start
+	return nil
 }
 
 func (m *multiRangeDownloaderManager) handleCloseCmd(ctx context.Context, cmd *mrdCloseCmd) {
@@ -541,7 +564,12 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 		if meta := resp.GetMetadata(); meta != nil {
 			obj := newObjectFromProto(meta)
 			attrs := readerAttrsFromObject(obj)
-			m.attrs = attrs
+			m.attrs = &attrs
+			for _, req := range m.pendingRanges {
+				if req.offset < 0 {
+					_ = m.convertToPositiveOffset(req)
+				}
+			}
 		}
 	})
 
