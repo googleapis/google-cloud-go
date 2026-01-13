@@ -1695,8 +1695,8 @@ func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHa
 
 func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
 	readWriteOptions := &sppb.TransactionOptions_ReadWrite{
-		ReadLockMode:                              opts.txOptions.ReadLockMode,
-		MultiplexedSessionPreviousTransactionId:   opts.previousTx,
+		ReadLockMode:                            opts.txOptions.ReadLockMode,
+		MultiplexedSessionPreviousTransactionId: opts.previousTx,
 	}
 	request := &sppb.BeginTransactionRequest{
 		Session: opts.sessionID,
