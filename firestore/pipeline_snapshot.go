@@ -24,10 +24,14 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+// PipelineSnapshot contains zero or more [PipelineResult] objects
+// representing the documents returned by a pipeline query. It provides methods
+// to iterate over the documents and access metadata about the query results.
 type PipelineSnapshot struct {
 	iter *PipelineResultIterator
 }
 
+// Results returns an iterator over the query results.
 func (ps *PipelineSnapshot) Results() *PipelineResultIterator {
 	return ps.iter
 }
