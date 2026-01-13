@@ -89,7 +89,7 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 			deleteDocuments([]*DocumentRef{doc1, doc2})
 		})
 
-		iter := client.Pipeline().Collection(coll.ID).WithReadOptions(ReadTime(timeBeforeCreate)).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).WithReadOptions(ReadTime(timeBeforeCreate)).Execute(ctx).Results()
 		res, err := iter.GetAll()
 		if err != nil {
 			t.Fatal(err)
@@ -112,7 +112,7 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 		})
 		p := client.Pipeline().Collection(coll.ID)
 		err := client.RunTransaction(ctx, func(ctx context.Context, txn *Transaction) error {
-			iter := txn.Execute(p)
+			iter := txn.Execute(p).Results()
 			res, err := iter.GetAll()
 			if err != nil {
 				return err
@@ -168,7 +168,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		deleteDocuments(docRefs)
 	})
 	t.Run("AddFields", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).AddFields(Multiply(FieldOf("rating"), 2).As("doubled_rating")).Limit(1).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).AddFields(Multiply(FieldOf("rating"), 2).As("doubled_rating")).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -183,7 +183,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Aggregate", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Aggregate(Count("rating").As("total_books")).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).Aggregate(Count("rating").As("total_books")).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -200,7 +200,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	})
 	t.Run("AggregateWithSpec", func(t *testing.T) {
 		spec := NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre")
-		iter := client.Pipeline().Collection(coll.ID).AggregateWithSpec(spec).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).AggregateWithSpec(spec).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -211,7 +211,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Distinct", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Distinct("genre").Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).Distinct("genre").Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -222,7 +222,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Documents", func(t *testing.T) {
-		iter := client.Pipeline().Documents(docRefs[0], docRefs[1]).Execute(ctx)
+		iter := client.Pipeline().Documents(docRefs[0], docRefs[1]).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -245,7 +245,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		t.Cleanup(func() {
 			deleteDocuments([]*DocumentRef{cgDoc1, cgDoc2, doc1, doc2})
 		})
-		iter := client.Pipeline().CollectionGroup(cgCollID).Execute(ctx)
+		iter := client.Pipeline().CollectionGroup(cgCollID).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -264,7 +264,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		t.Cleanup(func() {
 			deleteDocuments([]*DocumentRef{dbDoc1, dbDoc2})
 		})
-		iter := client.Pipeline().Database().Limit(2).Execute(ctx)
+		iter := client.Pipeline().Database().Limit(2).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -302,7 +302,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 		iter := client.Pipeline().Collection(coll.ID).
 			FindNearest("vector", queryVector, PipelineDistanceMeasureEuclidean, options).
-			Execute(ctx)
+			Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -331,7 +331,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Limit", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Limit(3).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).Limit(3).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -342,7 +342,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Offset", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Sort(Ascending(FieldOf("published"))).Offset(2).Limit(1).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).Sort(Ascending(FieldOf("published"))).Offset(2).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -358,7 +358,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	})
 	t.Run("RawStage", func(t *testing.T) {
 		// Using RawStage to perform a Limit operation
-		iter := client.Pipeline().Collection(coll.ID).RawStage(NewRawStage("limit").WithArguments(3)).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).RawStage(NewRawStage("limit").WithArguments(3)).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -369,7 +369,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 
 		// Using RawStage to perform a Select operation with options
-		iter = client.Pipeline().Collection(coll.ID).RawStage(NewRawStage("select").WithArguments(map[string]interface{}{"title": FieldOf("title")})).Limit(1).Execute(ctx)
+		iter = client.Pipeline().Collection(coll.ID).RawStage(NewRawStage("select").WithArguments(map[string]interface{}{"title": FieldOf("title")})).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -390,7 +390,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		iter := client.Pipeline().Collection(coll.ID).
 			Limit(1).
 			RemoveFields("genre", "rating").
-			Execute(ctx)
+			Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -424,7 +424,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		iter := client.Pipeline().Collection(coll.ID).
 			Where(Equal(FieldOf("id"), "docWithMap")).
 			Replace("data").
-			Execute(ctx)
+			Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -441,7 +441,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	})
 	t.Run("Sample", func(t *testing.T) {
 		t.Run("SampleByDocuments", func(t *testing.T) {
-			iter := client.Pipeline().Collection(coll.ID).Sample(SampleByDocuments(5)).Execute(ctx)
+			iter := client.Pipeline().Collection(coll.ID).Sample(SampleByDocuments(5)).Execute(ctx).Results()
 			defer iter.Stop()
 			var got []map[string]interface{}
 			for {
@@ -463,7 +463,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			}
 		})
 		t.Run("SampleByPercentage", func(t *testing.T) {
-			iter := client.Pipeline().Collection(coll.ID).Sample(&SampleSpec{Size: 0.6, Mode: SampleModePercent}).Execute(ctx)
+			iter := client.Pipeline().Collection(coll.ID).Sample(&SampleSpec{Size: 0.6, Mode: SampleModePercent}).Execute(ctx).Results()
 			defer iter.Stop()
 			var got []map[string]interface{}
 			for {
@@ -489,7 +489,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		})
 	})
 	t.Run("Select", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Select("title", "author.name").Limit(1).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).Select("title", "author.name").Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -513,7 +513,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Sort", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Sort(Descending(FieldOf("rating"))).Limit(1).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).Sort(Descending(FieldOf("rating"))).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -562,7 +562,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		})
 		employeePipeline := client.Pipeline().Collection(employeeColl.ID)
 		customerPipeline := client.Pipeline().Collection(customerColl.ID)
-		iter := employeePipeline.Union(customerPipeline).Execute(context.Background())
+		iter := employeePipeline.Union(customerPipeline).Execute(context.Background()).Results()
 		defer iter.Stop()
 		var got []map[string]interface{}
 		for {
@@ -600,7 +600,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			Where(Equal(FieldOf("title"), "The Hitchhiker's Guide to the Galaxy")).
 			UnnestWithAlias("tags", "tag", nil).
 			Select("title", "tag").
-			Execute(ctx)
+			Execute(ctx).Results()
 		defer iter.Stop()
 		var got []map[string]interface{}
 		for {
@@ -637,7 +637,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			Where(Equal(FieldOf("title"), "The Hitchhiker's Guide to the Galaxy")).
 			UnnestWithAlias("tags", "tag", &UnnestOptions{IndexField: "tagIndex"}).
 			Select("title", "tag", "tagIndex").
-			Execute(ctx)
+			Execute(ctx).Results()
 		defer iter.Stop()
 		var got []map[string]interface{}
 		for {
@@ -667,7 +667,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Where", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("author.country"), "UK")).Execute(ctx)
+		iter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("author.country"), "UK")).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -782,7 +782,7 @@ func typeFuncs(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -830,7 +830,7 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 	t.Run("Where", func(t *testing.T) {
 		q := coll.Where("published", ">", 1900)
 		p := q.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		res, err := iter.GetAll()
 		if err != nil {
@@ -844,7 +844,7 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 	t.Run("OrderBy", func(t *testing.T) {
 		q := coll.OrderBy("published", Asc)
 		p := q.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		res, err := iter.GetAll()
 		if err != nil {
@@ -865,7 +865,7 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 	t.Run("Limit", func(t *testing.T) {
 		q := coll.Limit(2)
 		p := q.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		res, err := iter.GetAll()
 		if err != nil {
@@ -879,7 +879,7 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 	t.Run("Offset", func(t *testing.T) {
 		q := coll.OrderBy("published", Asc).Offset(1)
 		p := q.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		res, err := iter.GetAll()
 		if err != nil {
@@ -893,7 +893,7 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 	t.Run("Select", func(t *testing.T) {
 		q := coll.Select("title")
 		p := q.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -938,7 +938,7 @@ func TestIntegration_AggregationQuery_Pipeline(t *testing.T) {
 	t.Run("Count", func(t *testing.T) {
 		ag := coll.NewAggregationQuery().WithCount("count")
 		p := ag.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -957,7 +957,7 @@ func TestIntegration_AggregationQuery_Pipeline(t *testing.T) {
 	t.Run("Sum", func(t *testing.T) {
 		ag := coll.NewAggregationQuery().WithSum("published", "total_published")
 		p := ag.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -976,7 +976,7 @@ func TestIntegration_AggregationQuery_Pipeline(t *testing.T) {
 	t.Run("Average", func(t *testing.T) {
 		ag := coll.NewAggregationQuery().WithAvg("rating", "avg_rating")
 		p := ag.Pipeline()
-		iter := p.Execute(ctx)
+		iter := p.Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -1035,7 +1035,7 @@ func objectFuncs(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -1162,7 +1162,7 @@ func arrayFuncs(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			testutil.Retry(t, 3, time.Second, func(r *testutil.R) {
 				ctx := context.Background()
-				iter := test.pipeline.Execute(ctx)
+				iter := test.pipeline.Execute(ctx).Results()
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
@@ -1303,7 +1303,7 @@ func stringFuncs(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
 
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -1412,7 +1412,7 @@ func vectorFuncs(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -1587,7 +1587,7 @@ func timestampFuncs(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -1744,7 +1744,7 @@ func arithmeticFuncs(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -1840,7 +1840,7 @@ func aggregateFuncs(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -1922,7 +1922,7 @@ func comparisonFuncs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -1981,7 +1981,7 @@ func keyFuncs(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -2072,7 +2072,7 @@ func generalFuncs(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -2252,7 +2252,7 @@ func logicalFuncs(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
-			iter := test.pipeline.Execute(ctx)
+			iter := test.pipeline.Execute(ctx).Results()
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
@@ -2362,7 +2362,7 @@ func TestIntegration_CreateFromQuery(t *testing.T) {
 
 	q := coll.Where("rating", ">", 4.2)
 	p := client.Pipeline().CreateFromQuery(q)
-	iter := p.Execute(ctx)
+	iter := p.Execute(ctx).Results()
 	defer iter.Stop()
 	results, err := iter.GetAll()
 	if err != nil {
@@ -2393,7 +2393,7 @@ func TestIntegration_CreateFromAggregationQuery(t *testing.T) {
 
 	ag := coll.NewAggregationQuery().WithCount("count")
 	p := client.Pipeline().CreateFromAggregationQuery(ag)
-	iter := p.Execute(ctx)
+	iter := p.Execute(ctx).Results()
 	defer iter.Stop()
 	doc, err := iter.Next()
 	if err != nil {
