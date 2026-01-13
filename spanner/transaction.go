@@ -80,7 +80,7 @@ type txReadOnly struct {
 	// sp is the session pool for allocating a session to execute the read-only
 	// transaction. It is set only once during initialization of the
 	// txReadOnly.
-	sp *sessionPool
+	sp *sessionManager
 	// sh is the sessionHandle allocated from sp.
 	sh *sessionHandle
 
@@ -1632,9 +1632,7 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 			ReadLockMode: t.txOpts.ReadLockMode,
 		},
 	}
-	if t.sp.isMultiplexedSessionForRWEnabled() {
-		mode.ReadWrite.MultiplexedSessionPreviousTransactionId = t.previousTx
-	}
+	mode.ReadWrite.MultiplexedSessionPreviousTransactionId = t.previousTx
 	return &sppb.TransactionSelector{
 		Selector: &sppb.TransactionSelector_Begin{
 			Begin: &sppb.TransactionOptions{
@@ -1697,11 +1695,8 @@ func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHa
 
 func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
 	readWriteOptions := &sppb.TransactionOptions_ReadWrite{
-		ReadLockMode: opts.txOptions.ReadLockMode,
-	}
-
-	if opts.multiplexEnabled {
-		readWriteOptions.MultiplexedSessionPreviousTransactionId = opts.previousTx
+		ReadLockMode:                              opts.txOptions.ReadLockMode,
+		MultiplexedSessionPreviousTransactionId:   opts.previousTx,
 	}
 	request := &sppb.BeginTransactionRequest{
 		Session: opts.sessionID,
@@ -1714,8 +1709,7 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 		},
 		MutationKey: opts.mutation,
 	}
-	// When using multiplexed sessions, the BeginTransaction request must include the transaction tag (if any).
-	if opts.multiplexEnabled && opts.txOptions.TransactionTag != "" {
+	if opts.txOptions.TransactionTag != "" {
 		request.RequestOptions = &sppb.RequestOptions{TransactionTag: opts.txOptions.TransactionTag}
 	}
 
@@ -1790,12 +1784,11 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		t.txOpts = t.txOpts.merge(t.getTransactionOptionsCallback())
 	}
 	tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
-		multiplexEnabled: t.sp.isMultiplexedSessionForRWEnabled(),
-		sessionID:        sh.getID(),
-		client:           sh.getClient(),
-		txOptions:        t.txOpts,
-		mutation:         mutation,
-		previousTx:       previousTx,
+		sessionID:  sh.getID(),
+		client:     sh.getClient(),
+		txOptions:  t.txOpts,
+		mutation:   mutation,
+		previousTx: previousTx,
 	})
 	if err != nil {
 		err = ToSpannerError(err)
@@ -1853,9 +1846,6 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 			return resp, t.updateTxState(errInlineBeginTransactionFailed(nil))
 		}
 		t.mu.Unlock()
-		if !t.sp.isMultiplexedSessionForRWEnabled() {
-			selectedMutationProto = nil
-		}
 		// mutations or empty transaction body only
 		if err := t.begin(ctx, selectedMutationProto); err != nil {
 			return resp, err
@@ -2070,13 +2060,8 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 		t   *ReadWriteStmtBasedTransaction
 	)
 	if sh == nil {
-		if c.idleSessions.isMultiplexedSessionForRWEnabled() {
-			sh, err = c.idleSessions.takeMultiplexed(ctx)
-		} else {
-			sh, err = c.idleSessions.take(ctx)
-		}
+		sh, err = c.idleSessions.takeMultiplexed(ctx)
 		if err != nil {
-			// If session retrieval fails, just fail the transaction.
 			return nil, err
 		}
 	}
@@ -2088,9 +2073,6 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 		client: c,
 	}
 	if previousTransactionID != nil {
-		// The previousTx field is updated with the most recent transaction ID. This is needed for multiplexed sessions
-		// to increase the priority of the new transaction during retry attempt.
-		// This assignment is ignored for regular sessions.
 		t.previousTx = previousTransactionID
 	}
 	t.txReadOnly.sp = c.idleSessions
@@ -2209,7 +2191,7 @@ func (t *ReadWriteStmtBasedTransaction) ResetForRetry(ctx context.Context) (*Rea
 type writeOnlyTransaction struct {
 	// sp is the session pool which writeOnlyTransaction uses to get Cloud
 	// Spanner sessions for blind writes.
-	sp *sessionPool
+	sp *sessionManager
 	// transactionTag is the tag that will be included with the CommitRequest
 	// of the write-only transaction.
 	transactionTag string
@@ -2263,7 +2245,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				// No usable session for doing the commit, take one from pool.
 				sh, err = t.sp.takeMultiplexed(ctx)
 				if err != nil {
-					// sessionPool.Take already retries for session
+					// sessionManager.Take already retries for session
 					// creations/retrivals.
 					return ToSpannerError(err)
 				}
@@ -2317,10 +2299,9 @@ func isAbortedErr(err error) bool {
 
 // transactionBeginOptions holds the parameters for beginning a transaction.
 type transactionBeginOptions struct {
-	multiplexEnabled bool
-	sessionID        string
-	client           spannerClient
-	txOptions        TransactionOptions
-	previousTx       transactionID
-	mutation         *sppb.Mutation
+	sessionID  string
+	client     spannerClient
+	txOptions  TransactionOptions
+	previousTx transactionID
+	mutation   *sppb.Mutation
 }

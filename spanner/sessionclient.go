@@ -72,7 +72,7 @@ func (cg *clientIDGenerator) nextID(database string) string {
 // the sessions that are created as they become available. A sessionConsumer
 // implementation must be safe for concurrent use.
 //
-// The interface is implemented by sessionPool and is used for testing the
+// The interface is implemented by sessionManager and is used for testing the
 // sessionClient.
 type sessionConsumer interface {
 	// sessionReady is called when a session has been created and is ready for

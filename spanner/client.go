@@ -118,7 +118,7 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
 	sc                   *sessionClient
-	idleSessions         *sessionPool
+	idleSessions         *sessionManager
 	logger               *log.Logger
 	qo                   QueryOptions
 	ro                   ReadOptions
@@ -371,22 +371,18 @@ type ClientConfig struct {
 }
 
 type openTelemetryConfig struct {
-	enabled                        bool
-	meterProvider                  metric.MeterProvider
-	commonTraceStartOptions        []otrace.SpanStartOption
-	attributeMap                   []attribute.KeyValue
-	attributeMapWithMultiplexed    []attribute.KeyValue
-	attributeMapWithoutMultiplexed []attribute.KeyValue
-	otMetricRegistration           metric.Registration
-	openSessionCount               metric.Int64ObservableGauge
-	maxAllowedSessionsCount        metric.Int64ObservableGauge
-	sessionsCount                  metric.Int64ObservableGauge
-	maxInUseSessionsCount          metric.Int64ObservableGauge
-	getSessionTimeoutsCount        metric.Int64Counter
-	acquiredSessionsCount          metric.Int64Counter
-	releasedSessionsCount          metric.Int64Counter
-	gfeLatency                     metric.Int64Histogram
-	gfeHeaderMissingCount          metric.Int64Counter
+	enabled                     bool
+	meterProvider               metric.MeterProvider
+	commonTraceStartOptions     []otrace.SpanStartOption
+	attributeMap                []attribute.KeyValue
+	attributeMapWithMultiplexed []attribute.KeyValue
+	otMetricRegistration        metric.Registration
+	openSessionCount            metric.Int64ObservableGauge
+	getSessionTimeoutsCount     metric.Int64Counter
+	acquiredSessionsCount       metric.Int64Counter
+	releasedSessionsCount       metric.Int64Counter
+	gfeLatency                  metric.Int64Histogram
+	gfeHeaderMissingCount       metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -568,8 +564,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.metricsTracerFactory = metricsTracerFactory
 	sc.mu.Unlock()
 
-	// Create a session pool.
-	sp, err := newSessionPool(sc, config.SessionPoolConfig)
+	// Create a session manager.
+	sp, err := newSessionManager(sc, config.SessionPoolConfig)
 	if err != nil {
 		sc.close()
 		return nil, err
@@ -1014,17 +1010,10 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			err error
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			if c.idleSessions.isMultiplexedSessionForRWEnabled() {
-				sh, err = c.idleSessions.takeMultiplexed(ctx)
-			} else {
-				// Session handle hasn't been allocated or has been destroyed.
-				sh, err = c.idleSessions.take(ctx)
-			}
+			sh, err = c.idleSessions.takeMultiplexed(ctx)
 			if err != nil {
-				// If session retrieval fails, just fail the transaction.
 				return err
 			}
-
 			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
 			t.setSessionEligibilityForLongRunning(sh)
 		}
@@ -1348,7 +1337,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}
 
 	var sh *sessionHandle
-	sh, err = c.idleSessions.take(ctx)
+	sh, err = c.idleSessions.takeMultiplexed(ctx)
 	if err != nil {
 		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
 	}

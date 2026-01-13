@@ -86,8 +86,6 @@ func createOpenTelemetryConfig(ctx context.Context, mp metric.MeterProvider, log
 	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeMap...)
 	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeKeyIsMultiplexed.String("true"))
 
-	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeMap...)
-	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeKeyIsMultiplexed.String("false"))
 	setOpenTelemetryMetricProvider(config, mp, logger)
 	return config, nil
 }
@@ -116,36 +114,6 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 		logf(logger, "Error during registering instrument for metric spanner/open_session_count, error: %v", err)
 	}
 	config.openSessionCount = openSessionCountInstrument
-
-	maxAllowedSessionsCountInstrument, err := meter.Int64ObservableGauge(
-		metricsPrefix+"max_allowed_sessions",
-		metric.WithDescription("The maximum number of sessions allowed. Configurable by the user."),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		logf(logger, "Error during registering instrument for metric spanner/max_allowed_sessions, error: %v", err)
-	}
-	config.maxAllowedSessionsCount = maxAllowedSessionsCountInstrument
-
-	sessionsCountInstrument, _ := meter.Int64ObservableGauge(
-		metricsPrefix+"num_sessions_in_pool",
-		metric.WithDescription("The number of sessions currently in use."),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		logf(logger, "Error during registering instrument for metric spanner/num_sessions_in_pool, error: %v", err)
-	}
-	config.sessionsCount = sessionsCountInstrument
-
-	maxInUseSessionsCountInstrument, err := meter.Int64ObservableGauge(
-		metricsPrefix+"max_in_use_sessions",
-		metric.WithDescription("The maximum number of sessions in use during the last 10 minute interval."),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		logf(logger, "Error during registering instrument for metric spanner/max_in_use_sessions, error: %v", err)
-	}
-	config.maxInUseSessionsCount = maxInUseSessionsCountInstrument
 
 	getSessionTimeoutsCountInstrument, err := meter.Int64Counter(
 		metricsPrefix+"get_session_timeouts",
@@ -202,19 +170,16 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.gfeHeaderMissingCount = gfeHeaderMissingCountInstrument
 }
 
-func registerSessionPoolOTMetrics(pool *sessionPool) error {
-	otConfig := pool.otConfig
+func registerSessionManagerOTMetrics(sm *sessionManager) error {
+	otConfig := sm.otConfig
 	if otConfig == nil || !otConfig.enabled {
 		return nil
 	}
-
-	// Since the session pool has been removed and only multiplexed sessions are used,
-	// we only report metrics for the multiplexed session.
 	reg, err := otConfig.meterProvider.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version)).RegisterCallback(
 		func(ctx context.Context, o metric.Observer) error {
-			pool.mu.Lock()
-			defer pool.mu.Unlock()
-			if pool.multiplexedSession != nil {
+			sm.mu.Lock()
+			defer sm.mu.Unlock()
+			if sm.multiplexedSession != nil {
 				o.ObserveInt64(otConfig.openSessionCount, int64(1), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
 			} else {
 				o.ObserveInt64(otConfig.openSessionCount, int64(0), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
@@ -223,7 +188,7 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 		},
 		otConfig.openSessionCount,
 	)
-	pool.otConfig.otMetricRegistration = reg
+	sm.otConfig.otMetricRegistration = reg
 	return err
 }
 

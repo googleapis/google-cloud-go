@@ -41,7 +41,7 @@ func TestSessionPoolConfigValidation(t *testing.T) {
 	t.Skip("session pool has been removed - this test validates session pool configuration")
 }
 
-// TestSessionCreation tests session creation during sessionPool.Take().
+// TestSessionCreation tests session creation during sessionManager.take().
 func TestSessionCreation(t *testing.T) {
 	t.Skip("session pool has been removed - this test validates session pool behavior")
 }
