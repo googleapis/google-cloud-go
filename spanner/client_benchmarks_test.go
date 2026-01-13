@@ -72,8 +72,6 @@ func createBenchmarkServer() (server *MockedSpannerInMemTestServer, client *Clie
 		MinimumExecutionTime: networkLatencyTime + executeSqlMinTime,
 		RandomExecutionTime:  executeSqlRndTime,
 	})
-	// Wait a moment for the multiplexed session to be ready
-	time.Sleep(100 * time.Millisecond)
 	return
 }
 

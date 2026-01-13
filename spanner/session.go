@@ -351,7 +351,6 @@ var DefaultSessionPoolConfig = SessionPoolConfig{
 	},
 }
 
-
 type muxSessionCreateRequest struct {
 	ctx   context.Context
 	force bool

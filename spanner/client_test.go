@@ -1170,8 +1170,6 @@ func testSingleQuery(t *testing.T, serverError error) error {
 func testSingleQueryWithContext(ctx context.Context, t *testing.T, serverError error) error {
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true})
 	defer teardown()
-	// Wait a moment for the multiplexed session to be ready
-	time.Sleep(100 * time.Millisecond)
 
 	if serverError != nil {
 		server.TestSpanner.SetError(serverError)

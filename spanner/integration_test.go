@@ -411,7 +411,6 @@ func getInstanceConfig() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
 }
 
-
 const (
 	str1 = "alice"
 	str2 = "a@example.com"
