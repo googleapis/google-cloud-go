@@ -525,6 +525,65 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 		}
 	})
 }
+func TestIntegration_MRDWithReadHandle(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		const (
+			dataSize = 1000
+			offset   = 0
+			limit    = 100
+		)
+
+		// Generate random content for testing.
+		content := make([]byte, dataSize)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MRDWithReadHandle"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatalf("Failed to upload test object %q: %v", objName, err)
+		}
+		// Ensure cleanup after the test.
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("Failed to delete test object %q: %v", objName, err)
+			}
+		}()
+
+		mrd, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader: %v", err)
+		}
+		readHandle := mrd.GetHandle()
+		obj = obj.ReadHandle(readHandle)
+		mrd2, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader with read handle: %v", err)
+		}
+
+		// Perform the read operation.
+		var res1, res2 multiRangeDownloaderOutput
+		mrd.Add(&res1.buf, offset, limit, func(x, y int64, err error) {
+			res1.offset = x
+			res1.limit = y
+			res1.err = err
+		})
+		mrd2.Add(&res2.buf, offset, limit, func(x, y int64, err error) {
+			res2.offset = x
+			res2.limit = y
+			res2.err = err
+		})
+
+		mrd.Wait()
+		mrd2.Wait()
+		if err := mrd.Close(); err != nil {
+			t.Fatalf("Error while closing reader: %v", err)
+		}
+		if err := mrd2.Close(); err != nil {
+			t.Fatalf("Error while closing reader created with read handle: %v", err)
+		}
+	})
+}
 
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
