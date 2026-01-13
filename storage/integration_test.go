@@ -528,9 +528,10 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 func TestIntegration_MRDWithReadHandle(t *testing.T) {
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		const (
-			dataSize = 1000
-			offset   = 0
-			limit    = 100
+			dataSize       = 1000
+			offset         = 0
+			limit          = 100
+			negativeOffset = -200
 		)
 
 		// Generate random content for testing.
@@ -562,7 +563,7 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 		}
 
 		// Perform the read operation.
-		var res1, res2 multiRangeDownloaderOutput
+		var res1, res2, res3, res4 multiRangeDownloaderOutput
 		mrd.Add(&res1.buf, offset, limit, func(x, y int64, err error) {
 			res1.offset = x
 			res1.limit = y
@@ -573,14 +574,28 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 			res2.limit = y
 			res2.err = err
 		})
+		mrd2.Add(&res3.buf, negativeOffset, limit, func(x, y int64, err error) {
+			res3.offset = x
+			res3.limit = y
+			res3.err = err
+		})
+		mrd2.Add(&res4.buf, negativeOffset, 0, func(x, y int64, err error) {
+			res4.offset = x
+			res4.limit = y
+			res4.err = err
+		})
 
 		mrd.Wait()
 		mrd2.Wait()
+
 		if res1.err != nil {
 			t.Fatalf("mrd.Add callback returned error: %v", res1.err)
 		}
 		if res2.err != nil {
-			t.Fatalf("mrd2.Add callback returned error: %v", res2.err)
+			t.Fatalf("mrd2.Add callback returned error for res2: %v", res2.err)
+		}
+		if res3.err != nil {
+			t.Fatalf("mrd2.Add callback returned error for res3: %v", res3.err)
 		}
 
 		// Validate results for mrd with read handle.
@@ -591,6 +606,16 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 		}
 		if got := res2.buf.Bytes(); !bytes.Equal(got, want) {
 			t.Errorf("mrd2 downloaded content mismatch. got %d bytes, want %d bytes", len(got), len(want))
+		}
+
+		want = content[max(0, dataSize+negativeOffset):min(dataSize, max(0, dataSize+negativeOffset)+limit)]
+		if got := res3.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		want = content[max(0, dataSize+negativeOffset):]
+		if got := res4.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
 		}
 
 		if err := mrd.Close(); err != nil {
