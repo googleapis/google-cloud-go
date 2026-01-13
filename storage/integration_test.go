@@ -576,6 +576,23 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 
 		mrd.Wait()
 		mrd2.Wait()
+		if res1.err != nil {
+			t.Fatalf("mrd.Add callback returned error: %v", res1.err)
+		}
+		if res2.err != nil {
+			t.Fatalf("mrd2.Add callback returned error: %v", res2.err)
+		}
+
+		// Validate results for mrd with read handle.
+		want := content[offset : offset+limit]
+
+		if res2.offset != offset || res2.limit != limit {
+			t.Errorf("mrd2.Add callback offset/limit got %d/%d, want %d/%d", res2.offset, res2.limit, offset, limit)
+		}
+		if got := res2.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %d bytes, want %d bytes", len(got), len(want))
+		}
+
 		if err := mrd.Close(); err != nil {
 			t.Fatalf("Error while closing reader: %v", err)
 		}
