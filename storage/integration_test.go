@@ -563,7 +563,7 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 		}
 
 		// Perform the read operation.
-		var res1, res2, res3 multiRangeDownloaderOutput
+		var res1, res2, res3, res4 multiRangeDownloaderOutput
 		mrd.Add(&res1.buf, offset, limit, func(x, y int64, err error) {
 			res1.offset = x
 			res1.limit = y
@@ -578,6 +578,11 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 			res3.offset = x
 			res3.limit = y
 			res3.err = err
+		})
+		mrd2.Add(&res4.buf, negativeOffset, 0, func(x, y int64, err error) {
+			res4.offset = x
+			res4.limit = y
+			res4.err = err
 		})
 
 		mrd.Wait()
@@ -605,6 +610,11 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 
 		want = content[max(0, dataSize+negativeOffset):min(dataSize, max(0, dataSize+negativeOffset)+limit)]
 		if got := res3.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		want = content[max(0, dataSize+negativeOffset):]
+		if got := res4.buf.Bytes(); !bytes.Equal(got, want) {
 			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
 		}
 

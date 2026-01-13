@@ -115,7 +115,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			manager.wg.Wait()
 			return nil, manager.permanentErr
 		}
-		mrd.Attrs = *manager.attrs
+		if manager.attrs != nil {
+			mrd.Attrs = *manager.attrs
+		}
 		return mrd, nil
 	case <-ctx.Done():
 		cancel()
@@ -487,7 +489,7 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 	}
 	m.readIDCounter++
 
-	// Attributes should be ready if we are processing Add commands
+	// Convert to positive offset only if attributes are available.
 	if m.attrs != nil && req.offset < 0 {
 		err := m.convertToPositiveOffset(req)
 		if err != nil {
@@ -517,7 +519,10 @@ func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest)
 	if req.offset >= 0 {
 		return nil
 	}
-	objSize := m.attrs.Size
+	var objSize int64
+	if m.attrs != nil {
+		objSize = m.attrs.Size
+	}
 	if objSize <= 0 {
 		err := errors.New("storage: cannot resolve negative offset with object size as 0")
 		m.failRange(req, err)
@@ -525,6 +530,9 @@ func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest)
 	}
 	start := max(objSize+req.offset, 0)
 	req.offset = start
+	if req.length == 0 {
+		req.length = objSize - start
+	}
 	return nil
 }
 
