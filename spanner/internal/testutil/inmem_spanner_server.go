@@ -309,8 +309,6 @@ type InMemSpannerServer interface {
 
 	TotalSessionsCreated() uint
 	TotalSessionsDeleted() uint
-	SetMaxSessionsReturnedByServerPerBatchRequest(sessionCount int32)
-	SetMaxSessionsReturnedByServerInTotal(sessionCount int32)
 
 	ReceivedRequests() chan interface{}
 	DumpSessions() map[string]bool
@@ -356,10 +354,7 @@ type inMemSpannerServer struct {
 
 	totalSessionsCreated uint
 	totalSessionsDeleted uint
-	// The maximum number of sessions that will be created per batch request.
-	maxSessionsReturnedByServerPerBatchRequest int32
-	maxSessionsReturnedByServerInTotal         int32
-	receivedRequests                           chan interface{}
+	receivedRequests     chan interface{}
 	// Session ping history.
 	pings []string
 
@@ -483,18 +478,6 @@ func (s *inMemSpannerServer) TotalSessionsDeleted() uint {
 	return s.totalSessionsDeleted
 }
 
-func (s *inMemSpannerServer) SetMaxSessionsReturnedByServerPerBatchRequest(sessionCount int32) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.maxSessionsReturnedByServerPerBatchRequest = sessionCount
-}
-
-func (s *inMemSpannerServer) SetMaxSessionsReturnedByServerInTotal(sessionCount int32) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.maxSessionsReturnedByServerInTotal = sessionCount
-}
-
 func (s *inMemSpannerServer) ReceivedRequests() chan interface{} {
 	return s.receivedRequests
 }
@@ -526,7 +509,6 @@ func (s *inMemSpannerServer) DumpSessions() map[string]bool {
 
 func (s *inMemSpannerServer) initDefaults() {
 	s.sessionCounter = 0
-	s.maxSessionsReturnedByServerPerBatchRequest = 100
 	s.sessions = make(map[string]*spannerpb.Session)
 	s.sessionLastUseTime = make(map[string]time.Time)
 	s.transactions = make(map[string]*spannerpb.Transaction)
@@ -752,9 +734,6 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) == s.maxSessionsReturnedByServerInTotal {
-		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
-	}
 	ts := getCurrentTimestamp()
 	var (
 		creatorRole   string
@@ -773,48 +752,6 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
 	return session, nil
-}
-
-func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest) (*spannerpb.BatchCreateSessionsResponse, error) {
-	if _, err := s.simulateExecutionTime(MethodBatchCreateSession, req); err != nil {
-		return nil, err
-	}
-	if req.Database == "" {
-		return nil, gstatus.Error(codes.InvalidArgument, "Missing database")
-	}
-	if req.SessionCount <= 0 {
-		return nil, gstatus.Error(codes.InvalidArgument, "Session count must be >= 0")
-	}
-	sessionsToCreate := req.SessionCount
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	// return a non-retryable error if the limit is reached
-	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) >= s.maxSessionsReturnedByServerInTotal {
-		return nil, gstatus.Error(codes.OutOfRange, "No more sessions available")
-	}
-	if sessionsToCreate > s.maxSessionsReturnedByServerPerBatchRequest {
-		sessionsToCreate = s.maxSessionsReturnedByServerPerBatchRequest
-	}
-	if s.maxSessionsReturnedByServerInTotal > int32(0) && (sessionsToCreate+int32(len(s.sessions))) > s.maxSessionsReturnedByServerInTotal {
-		sessionsToCreate = s.maxSessionsReturnedByServerInTotal - int32(len(s.sessions))
-	}
-	sessions := make([]*spannerpb.Session, sessionsToCreate)
-	for i := int32(0); i < sessionsToCreate; i++ {
-		sessionName := s.generateSessionNameLocked(req.Database, false)
-		ts := getCurrentTimestamp()
-		var creatorRole string
-		if req.SessionTemplate != nil {
-			creatorRole = req.SessionTemplate.CreatorRole
-		}
-		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
-		s.totalSessionsCreated++
-		s.sessions[sessionName] = sessions[i]
-	}
-	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
-	if err := grpc.SendHeader(ctx, header); err != nil {
-		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
-	}
-	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
 
 func (s *inMemSpannerServer) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest) (*spannerpb.Session, error) {

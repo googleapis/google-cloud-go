@@ -31,62 +31,7 @@ import (
 )
 
 func TestOCStats_SessionPool(t *testing.T) {
-	skipUnsupportedPGTest(t)
-	DisableGfeLatencyAndHeaderMissingCountViews()
-	// expectedValues is a map of expected values for different configurations of
-	// multiplexed session env="GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS".
-	expectedValues := map[string]map[bool]string{
-		"open_session_count": {
-			false: "25",
-			// since we are doing only R/O operations and MinOpened=0, we should have only one session.
-			true: "1",
-		},
-		"max_in_use_sessions": {
-			false: "1",
-			true:  "0",
-		},
-	}
-	for _, test := range []struct {
-		name    string
-		view    *view.View
-		measure string
-		value   string
-	}{
-		{
-			"OpenSessionCount",
-			OpenSessionCountView,
-			"open_session_count",
-			expectedValues["open_session_count"][isMultiplexEnabled],
-		},
-		{
-			"MaxAllowedSessionsCount",
-			MaxAllowedSessionsCountView,
-			"max_allowed_sessions",
-			"400",
-		},
-		{
-			"MaxInUseSessionsCount",
-			MaxInUseSessionsCountView,
-			"max_in_use_sessions",
-			expectedValues["max_in_use_sessions"][isMultiplexEnabled],
-		},
-		{
-			"AcquiredSessionsCount",
-			AcquiredSessionsCountView,
-			"num_acquired_sessions",
-			"1",
-		},
-		{
-			"ReleasedSessionsCount",
-			ReleasedSessionsCountView,
-			"num_released_sessions",
-			"1",
-		},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			testSimpleMetric(t, test.view, test.measure, test.value)
-		})
-	}
+	t.Skip("session pool has been removed - this test validates session pool metrics")
 }
 
 func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
@@ -141,78 +86,7 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 }
 
 func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
-	t.Skip("skipped as impacting generation https://github.com/googleapis/google-cloud-go/issues/13383")
-	DisableGfeLatencyAndHeaderMissingCountViews()
-	te := stestutil.NewTestExporter(SessionsCountView)
-	defer te.Unregister()
-
-	waitErr := &Error{}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig})
-	defer teardown()
-	// Wait for the session pool initialization to finish.
-	expectedWrites := uint64(0)
-	expectedReads := DefaultSessionPoolConfig.MinOpened - expectedWrites
-	waitFor(t, func() error {
-		client.idleSessions.mu.Lock()
-		defer client.idleSessions.mu.Unlock()
-		if client.idleSessions.numSessions == expectedReads {
-			return nil
-		}
-		return waitErr
-	})
-	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
-
-	expectedStats := 2
-	if isMultiplexEnabled {
-		// num_in_use_sessions is not exported when multiplexed sessions are enabled and only ReadOnly transactions are performed.
-		expectedStats = 1
-	}
-	// Wait for a while to see all exported metrics.
-	waitFor(t, func() error {
-		select {
-		case stat := <-te.Stats:
-			if len(stat.Rows) >= expectedStats {
-				return nil
-			}
-		}
-		return waitErr
-	})
-
-	// Wait until we see data from the view.
-	select {
-	case stat := <-te.Stats:
-		// There are 4 types for this metric, so we should see at least four
-		// rows.
-		if len(stat.Rows) < expectedStats {
-			t.Fatal("No enough metrics are exported")
-		}
-		if got, want := stat.View.Measure.Name(), statsPrefix+"num_sessions_in_pool"; got != want {
-			t.Fatalf("Incorrect measure: got %v, want %v", got, want)
-		}
-		for _, row := range stat.Rows {
-			m := getTagMap(row.Tags)
-			checkCommonTags(t, m)
-			// view.AggregationData does not have a way to extract the value. So
-			// we have to convert it to a string and then compare with expected
-			// values.
-			data := row.Data.(*view.LastValueData)
-			got := fmt.Sprintf("%v", data.Value)
-			var want string
-			switch m[tagKeyType] {
-			case "num_sessions":
-				want = "100"
-			case "num_in_use_sessions":
-				want = "0"
-			default:
-				t.Fatalf("Incorrect type: %v", m[tagKeyType])
-			}
-			if got != want {
-				t.Fatalf("Incorrect data: got %v, want %v", got, want)
-			}
-		}
-	case <-time.After(1 * time.Second):
-		t.Fatal("no stats were exported before timeout")
-	}
+	t.Skip("session pool has been removed - this test validates session pool behavior")
 }
 
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {

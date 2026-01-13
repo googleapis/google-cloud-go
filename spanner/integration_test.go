@@ -92,7 +92,8 @@ var (
 	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
 	instanceConfig = getInstanceConfig()
 
-	isMultiplexEnabled = getMultiplexEnableFlag()
+	// Multiplexed sessions are always enabled as session pool has been removed.
+	isMultiplexEnabled = true
 
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
@@ -410,9 +411,6 @@ func getInstanceConfig() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
 }
 
-func getMultiplexEnableFlag() bool {
-	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
-}
 
 const (
 	str1 = "alice"
@@ -530,65 +528,7 @@ func initIntegrationTests() (cleanup func()) {
 }
 
 func TestIntegration_InitSessionPool(t *testing.T) {
-	if isMultiplexEnabled {
-		t.Skip("Skipping session pool test in multiplex session tests")
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
-	// Set up an empty testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, []string{})
-	defer cleanup()
-	sp := client.idleSessions
-	sp.mu.Lock()
-	want := sp.MinOpened
-	sp.mu.Unlock()
-	var numOpened int
-loop:
-	for {
-		select {
-		case <-ctx.Done():
-			t.Fatalf("timed out, got %d session(s), want %d", numOpened, want)
-		default:
-			sp.mu.Lock()
-			numOpened = sp.idleList.Len()
-			sp.mu.Unlock()
-			if uint64(numOpened) == want {
-				break loop
-			}
-		}
-	}
-	// Delete all sessions in the pool on the backend and then try to execute a
-	// simple query. The 'Session not found' error should cause an automatic
-	// retry of the read-only transaction.
-	sp.mu.Lock()
-	s := sp.idleList.Front()
-	for {
-		if s == nil {
-			break
-		}
-		// This will delete the session on the backend without removing it
-		// from the pool.
-		s.Value.(*session).delete(context.Background())
-		s = s.Next()
-	}
-	sp.mu.Unlock()
-	sql := "SELECT 1, 'FOO', 'BAR'"
-	tx := client.ReadOnlyTransaction()
-	defer tx.Close()
-	iter := tx.Query(context.Background(), NewStatement(sql))
-	rows, err := readAll(iter)
-	if err != nil {
-		t.Fatalf("Unexpected error for query %q: %v", sql, err)
-	}
-	if got, want := len(rows), 1; got != want {
-		t.Fatalf("Row count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
-	}
-	if got, want := len(rows[0]), 3; got != want {
-		t.Fatalf("Column count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
-	}
-	if got, want := rows[0][0].(int64), int64(1); got != want {
-		t.Fatalf("Column value mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
-	}
+	t.Skip("session pool has been removed - this test validates session pool behavior")
 }
 
 // Test SingleUse transaction.

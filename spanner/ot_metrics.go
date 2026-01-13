@@ -208,28 +208,20 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 		return nil
 	}
 
-	attributes := otConfig.attributeMap
-	attributesInUseSessions := append(attributes, attributeNumInUseSessions)
-	attributesAvailableSessions := append(attributes, attributeNumSessions)
-
+	// Since the session pool has been removed and only multiplexed sessions are used,
+	// we only report metrics for the multiplexed session.
 	reg, err := otConfig.meterProvider.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version)).RegisterCallback(
 		func(ctx context.Context, o metric.Observer) error {
 			pool.mu.Lock()
 			defer pool.mu.Unlock()
 			if pool.multiplexedSession != nil {
 				o.ObserveInt64(otConfig.openSessionCount, int64(1), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
+			} else {
+				o.ObserveInt64(otConfig.openSessionCount, int64(0), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
 			}
-			o.ObserveInt64(otConfig.openSessionCount, int64(pool.numOpened), metric.WithAttributes(attributes...))
-			o.ObserveInt64(otConfig.maxAllowedSessionsCount, int64(pool.SessionPoolConfig.MaxOpened), metric.WithAttributes(attributes...))
-			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numInUse), metric.WithAttributes(append(attributesInUseSessions, attribute.Key("is_multiplexed").String("false"))...))
-			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numSessions), metric.WithAttributes(attributesAvailableSessions...))
-			o.ObserveInt64(otConfig.maxInUseSessionsCount, int64(pool.maxNumInUse), metric.WithAttributes(append(attributes, attribute.Key("is_multiplexed").String("false"))...))
 			return nil
 		},
 		otConfig.openSessionCount,
-		otConfig.maxAllowedSessionsCount,
-		otConfig.sessionsCount,
-		otConfig.maxInUseSessionsCount,
 	)
 	pool.otConfig.otMetricRegistration = reg
 	return err

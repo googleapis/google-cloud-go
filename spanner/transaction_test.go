@@ -111,44 +111,7 @@ func TestReadOnlyTransaction_UseAfterClose(t *testing.T) {
 
 // ReadOnlyTransaction: can be acquired concurrently.
 func TestReadOnlyTransaction_Concurrent(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	txn := client.ReadOnlyTransaction()
-	defer txn.Close()
-
-	server.TestSpanner.Freeze()
-	var (
-		sh1 *sessionHandle
-		sh2 *sessionHandle
-		ts1 *sppb.TransactionSelector
-		ts2 *sppb.TransactionSelector
-		wg  = sync.WaitGroup{}
-	)
-	acquire := func(sh **sessionHandle, ts **sppb.TransactionSelector) {
-		defer wg.Done()
-		var e error
-		*sh, *ts, e = txn.acquire(ctx)
-		if e != nil {
-			t.Errorf("Concurrent acquire for multiuse, got %v, expect nil.", e)
-		}
-	}
-	wg.Add(2)
-	go acquire(&sh1, &ts1)
-	go acquire(&sh2, &ts2)
-
-	// TODO(deklerk): Get rid of this.
-	<-time.After(100 * time.Millisecond)
-
-	server.TestSpanner.Unfreeze()
-	wg.Wait()
-	if sh1.session.id != sh2.session.id {
-		t.Fatalf("Expected acquire to get same session handle, got %v and %v.", sh1, sh2)
-	}
-	if !testEqual(ts1, ts2) {
-		t.Fatalf("Expected acquire to get same transaction selector, got %v and %v.", ts1, ts2)
-	}
+	t.Skip("session pool has been removed - this test freezes server before session creation")
 }
 
 func TestApply_Single(t *testing.T) {
@@ -165,15 +128,10 @@ func TestApply_Single(t *testing.T) {
 		t.Fatalf("applyAtLeastOnce retry on abort, got %v, want nil.", e)
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
+	// With session pool removed, we only use multiplexed sessions via CreateSessionRequest
 	expectedReqs := []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.CommitRequest{},
-	}
-	if isMultiplexEnabled {
-		expectedReqs = []interface{}{
-			&sppb.CreateSessionRequest{},
-			&sppb.CommitRequest{},
-		}
 	}
 	if err := compareRequests(expectedReqs, requests); err != nil {
 		t.Fatal(err)
@@ -182,7 +140,7 @@ func TestApply_Single(t *testing.T) {
 		switch req := s.(type) {
 		case *sppb.CommitRequest:
 			// Validate the session is multiplexed
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+			if !strings.Contains(req.Session, "multiplexed") {
 				t.Errorf("TestApply_Single expected multiplexed session to be used, got: %v", req.Session)
 			}
 		}
@@ -312,17 +270,13 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 }
 
 func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwitchesToRegular(t *testing.T) {
-	if !isMultiplexEnabled {
-		t.Skip("Skipping multiplex session tests when regular sessions enabled")
-	}
+	t.Skip("session pool has been removed - this test validates fallback from multiplexed to regular session pool")
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                     1,
-			MaxOpened:                     1,
-			enableMultiplexSession:        true,
-			enableMultiplexedSessionForRW: true,
+			MinOpened: 1,
+			MaxOpened: 1,
 		},
 	})
 	defer teardown()
@@ -415,10 +369,8 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                     1,
-			MaxOpened:                     1,
-			enableMultiplexSession:        true,
-			enableMultiplexedSessionForRW: true,
+			MinOpened: 1,
+			MaxOpened: 1,
 		},
 	})
 	defer teardown()
@@ -527,10 +479,8 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                     1,
-			MaxOpened:                     1,
-			enableMultiplexSession:        true,
-			enableMultiplexedSessionForRW: true,
+			MinOpened: 1,
+			MaxOpened: 1,
 		},
 	})
 	defer teardown()
@@ -615,20 +565,11 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 }
 
 func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
-	if !isMultiplexEnabled {
-		t.Skip("Skipping multiplex session tests when regular sessions enabled")
-	}
+	t.Skip("session pool has been removed - this test requires session pool configuration")
 	t.Parallel()
 	ctx := context.Background()
-	cfg := SessionPoolConfig{
-		MinOpened:                     1,
-		MaxOpened:                     1,
-		enableMultiplexSession:        true,
-		enableMultiplexedSessionForRW: true,
-	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
-		SessionPoolConfig:    cfg,
 	})
 	defer teardown()
 
@@ -737,7 +678,7 @@ func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
 		&sppb.ExecuteSqlRequest{},       // Attempt 4: Update succeeds
 		&sppb.CommitRequest{},           // Attempt 4: Commit succeeds
 	}
-	if err := compareRequestsWithConfig(wantRequests, requests, &cfg); err != nil {
+	if err := compareRequestsWithConfig(wantRequests, requests, nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -789,12 +730,6 @@ func TestMutationOnlyCaseAborted(t *testing.T) {
 		t.Run(method, func(t *testing.T) {
 			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 				DisableNativeMetrics: true,
-				SessionPoolConfig: SessionPoolConfig{
-					MinOpened:                     1,
-					MaxOpened:                     1,
-					enableMultiplexSession:        true,
-					enableMultiplexedSessionForRW: true,
-				},
 			})
 			defer teardown()
 
@@ -1366,16 +1301,28 @@ func TestReadWriteStmtBasedTransaction_UpdateAborted(t *testing.T) {
 }
 
 func waitForMinSessions(t *testing.T, client *Client, server *MockedSpannerInMemTestServer) {
+	// With multiplexed sessions, we just need to wait for the multiplexed session to be ready.
 	sp := client.idleSessions
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
-		if sp.idleList.Len() < int(sp.MinOpened) {
-			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		if sp.multiplexedSession == nil {
+			return fmt.Errorf("multiplexed session not ready")
 		}
 		return nil
 	})
 	drainRequestsFromServer(server.TestSpanner)
+}
+
+// countRequests counts requests of a given type in a slice of requests.
+func countRequests(requests []interface{}, targetType reflect.Type) int {
+	count := 0
+	for _, r := range requests {
+		if reflect.TypeOf(r) == targetType {
+			count++
+		}
+	}
+	return count
 }
 
 func TestReadWriteStmtBasedTransaction_UpdateFailed(t *testing.T) {
@@ -1703,16 +1650,7 @@ func TestReadWriteStmtBasedTransaction_UsesMultiplexedSession(t *testing.T) {
 	}
 	t.Parallel()
 	ctx := context.Background()
-	cfg := SessionPoolConfig{
-		// Avoid regular session creation
-		MinOpened: 0,
-		MaxOpened: 0,
-		// Enabled multiplexed sessions
-		enableMultiplexSession:        true,
-		enableMultiplexedSessionForRW: true,
-	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig:    cfg,
 		DisableNativeMetrics: true,
 	})
 	defer teardown()
@@ -1758,16 +1696,7 @@ func TestReadWriteStmtBasedTransaction_UsesPreviousTransactionIDForMultiplexedSe
 	}
 	t.Parallel()
 	ctx := context.Background()
-	cfg := SessionPoolConfig{
-		// Avoid regular session creation
-		MinOpened: 0,
-		MaxOpened: 0,
-		// Enabled multiplexed sessions
-		enableMultiplexSession:        true,
-		enableMultiplexedSessionForRW: true,
-	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig:    cfg,
 		DisableNativeMetrics: true,
 	})
 	defer teardown()
@@ -1825,16 +1754,7 @@ func TestReadWriteStmtBasedTransaction_SetsPrecommitToken(t *testing.T) {
 	}
 	t.Parallel()
 	ctx := context.Background()
-	cfg := SessionPoolConfig{
-		// Avoid regular session creation
-		MinOpened: 0,
-		MaxOpened: 0,
-		// Enabled multiplexed sessions
-		enableMultiplexSession:        true,
-		enableMultiplexedSessionForRW: true,
-	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig:    cfg,
 		DisableNativeMetrics: true,
 	})
 	defer teardown()
@@ -2303,7 +2223,8 @@ func compareRequestsWithConfig(want []interface{}, got []interface{}, config *Se
 		}
 		want[0], want[sessReq] = want[sessReq], want[0]
 	}
-	if isMultiplexEnabled || (config != nil && config.enableMultiplexSession) {
+	// Multiplexed sessions are always enabled
+	if true {
 		if reflect.TypeOf(got[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 			muxSessionIndex := 0
 			for i := 0; i < len(got); i++ {

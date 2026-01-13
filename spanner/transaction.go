@@ -2198,9 +2198,6 @@ func (t *ReadWriteStmtBasedTransaction) explicitBegin(ctx context.Context) error
 		}
 		return err
 	}
-	if isUnimplementedErrorForMultiplexedRW(err) {
-		t.client.idleSessions.disableMultiplexedSessionForRW()
-	}
 	return nil
 }
 

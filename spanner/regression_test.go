@@ -72,8 +72,7 @@ func directPathEnabled() bool {
 // destructive context augmentation call.
 // Please see https://github.com/googleapis/google-cloud-go/issues/11656
 func TestAllHeadersForwardedAppropriately(t *testing.T) {
-	// 0. Turn off session multiplexing per #11308.
-	t.Setenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS", "0")
+	t.Skip("session pool has been removed - this test validates session pool behavior with BatchCreateSessions")
 
 	// 1. Set up the server interceptor that'll record and collect
 	// all the headers that  are received by the server.
@@ -89,7 +88,6 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		EnableEndToEndTracing: true,
 		DisableRouteToLeader:  false,

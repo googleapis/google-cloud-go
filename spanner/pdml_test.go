@@ -214,12 +214,6 @@ func TestPartitionedUpdateWithMultiplexedSession(t *testing.T) {
 
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:              1,
-			MaxOpened:              1,
-			enableMultiplexSession: true,
-			enableMultiplexedSessionForPartitionedOps: true,
-		},
 	})
 	defer teardown()
 
@@ -245,20 +239,12 @@ func TestPartitionedUpdateWithMultiplexedSession(t *testing.T) {
 }
 
 func TestPDMLFallbackWithMultiplexedSession(t *testing.T) {
-	if !isMultiplexEnabled {
-		t.Skip("Skipping multiplex session tests when regular sessions enabled")
-	}
+	t.Skip("session pool has been removed - this test validates fallback from multiplexed to regular session pool")
 	t.Parallel()
 	ctx := context.Background()
 
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:              1,
-			MaxOpened:              1,
-			enableMultiplexSession: true,
-			enableMultiplexedSessionForPartitionedOps: true,
-		},
 	})
 	defer teardown()
 

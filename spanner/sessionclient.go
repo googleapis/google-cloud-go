@@ -68,7 +68,7 @@ func (cg *clientIDGenerator) nextID(database string) string {
 	return clientStrID
 }
 
-// sessionConsumer is passed to the batchCreateSessions method and will receive
+// sessionConsumer is passed to the session creation methods and will receive
 // the sessions that are created as they become available. A sessionConsumer
 // implementation must be safe for concurrent use.
 //
@@ -79,17 +79,15 @@ type sessionConsumer interface {
 	// use.
 	sessionReady(ctx context.Context, s *session)
 
-	// sessionCreationFailed is called when the creation of a sub-batch of
-	// sessions failed. The numSessions argument specifies the number of
-	// sessions that could not be created as a result of this error. A
-	// consumer may receive multiple errors per batch.
+	// sessionCreationFailed is called when the creation of a session failed.
+	// The numSessions argument specifies the number of sessions that could not
+	// be created as a result of this error.
 	sessionCreationFailed(ctx context.Context, err error, numSessions int32, isMultiplexed bool)
 }
 
-// sessionClient creates sessions for a database, either in batches or one at a
-// time. Each session will be affiliated with a gRPC channel. sessionClient
-// will ensure that the sessions that are created are evenly distributed over
-// all available channels.
+// sessionClient creates sessions for a database. Each session will be
+// affiliated with a gRPC channel. The session client now only supports
+// creating multiplexed sessions.
 type sessionClient struct {
 	waitWorkers          sync.WaitGroup
 	mu                   sync.Mutex
@@ -197,148 +195,6 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		return nil, ToSpannerError(err)
 	}
 	return &session{valid: true, client: client, id: sid.Name, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
-}
-
-// batchCreateSessions creates a batch of sessions for the database of the
-// sessionClient and returns these to the given sessionConsumer.
-//
-// createSessionCount is the number of sessions that should be created. The
-// sessionConsumer is guaranteed to receive the requested number of sessions if
-// no error occurs. If one or more errors occur, the sessionConsumer will
-// receive any number of sessions + any number of errors, where each error will
-// include the number of sessions that could not be created as a result of the
-// error. The sum of returned sessions and errored sessions will be equal to
-// the number of requested sessions.
-// If distributeOverChannels is true, the sessions will be equally distributed
-// over all the channels that are in use by the client.
-func (sc *sessionClient) batchCreateSessions(createSessionCount int32, distributeOverChannels bool, consumer sessionConsumer) error {
-	var sessionCountPerChannel int32
-	var remainder int32
-	if distributeOverChannels {
-		// The sessions that we create should be evenly distributed over all the
-		// channels (gapic clients) that are used by the client. Each gapic client
-		// will do a request for a fraction of the total.
-		sessionCountPerChannel = createSessionCount / int32(sc.connPool.Num())
-		// The remainder of the calculation will be added to the number of sessions
-		// that will be created for the first channel, to ensure that we create the
-		// exact number of requested sessions.
-		remainder = createSessionCount % int32(sc.connPool.Num())
-	} else {
-		sessionCountPerChannel = createSessionCount
-	}
-	sc.mu.Lock()
-	defer sc.mu.Unlock()
-	if sc.closed {
-		return spannerErrorf(codes.FailedPrecondition, "SessionClient is closed")
-	}
-	// Spread the session creation over all available gRPC channels. Spanner
-	// will maintain server side caches for a session on the gRPC channel that
-	// is used by the session. A session should therefore always use the same
-	// channel, and the sessions should be as evenly distributed as possible
-	// over the channels.
-	var numBeingCreated int32
-	for i := 0; i < sc.connPool.Num() && numBeingCreated < createSessionCount; i++ {
-		client, err := sc.nextClient()
-		if err != nil {
-			return err
-		}
-		// Determine the number of sessions that should be created for this
-		// channel. The createCount for the first channel will be increased
-		// with the remainder of the division of the total number of sessions
-		// with the number of channels. All other channels will just use the
-		// result of the division over all channels.
-		createCountForChannel := sessionCountPerChannel
-		if i == 0 {
-			// We add the remainder to the first gRPC channel we use. We could
-			// also spread the remainder over all channels, but this ensures
-			// that small batches of sessions (i.e. less than numChannels) are
-			// created in one RPC.
-			createCountForChannel += remainder
-		}
-		if createCountForChannel > 0 {
-			sc.waitWorkers.Add(1)
-			go sc.executeBatchCreateSessions(client, createCountForChannel, sc.sessionLabels, sc.md, consumer)
-			numBeingCreated += createCountForChannel
-		}
-	}
-	return nil
-}
-
-// executeBatchCreateSessions executes the gRPC call for creating a batch of
-// sessions.
-func (sc *sessionClient) executeBatchCreateSessions(client spannerClient, createCount int32, labels map[string]string, md metadata.MD, consumer sessionConsumer) {
-	defer sc.waitWorkers.Done()
-	ctx, cancel := context.WithTimeout(context.Background(), sc.batchTimeout)
-	defer cancel()
-	ctx, _ = startSpan(ctx, "BatchCreateSessions", sc.otConfig.commonTraceStartOptions...)
-	defer func() { endSpan(ctx, nil) }()
-	trace.TracePrintf(ctx, nil, "Creating a batch of %d sessions", createCount)
-
-	remainingCreateCount := createCount
-	for {
-		sc.mu.Lock()
-		closed := sc.closed
-		sc.mu.Unlock()
-		if closed {
-			err := spannerErrorf(codes.Canceled, "Session client closed")
-			trace.TracePrintf(ctx, nil, "Session client closed while creating a batch of %d sessions: %v", createCount, err)
-			consumer.sessionCreationFailed(ctx, err, remainingCreateCount, false)
-			break
-		}
-		if ctx.Err() != nil {
-			trace.TracePrintf(ctx, nil, "Context error while creating a batch of %d sessions: %v", createCount, ctx.Err())
-			consumer.sessionCreationFailed(ctx, ToSpannerError(ctx.Err()), remainingCreateCount, false)
-			break
-		}
-		var mdForGFELatency metadata.MD
-		response, err := client.BatchCreateSessions(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.BatchCreateSessionsRequest{
-			SessionCount:    remainingCreateCount,
-			Database:        sc.database,
-			SessionTemplate: &sppb.Session{Labels: labels, CreatorRole: sc.databaseRole},
-		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
-
-		if getGFELatencyMetricsFlag() && mdForGFELatency != nil {
-			_, instance, database, err := parseDatabaseName(sc.database)
-			if err != nil {
-				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", err)
-			}
-			// Errors should not prevent initializing the session pool.
-			ctxGFE, err := tag.New(ctx,
-				tag.Upsert(tagKeyClientID, sc.id),
-				tag.Upsert(tagKeyDatabase, database),
-				tag.Upsert(tagKeyInstance, instance),
-				tag.Upsert(tagKeyLibVersion, internal.Version),
-			)
-			if err != nil {
-				trace.TracePrintf(ctx, nil, "Error in adding tags in BatchCreateSessions for GFE Latency: %v", err)
-			}
-			err = captureGFELatencyStats(ctxGFE, mdForGFELatency, "executeBatchCreateSessions")
-			if err != nil {
-				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
-			}
-		}
-		if metricErr := recordGFELatencyMetricsOT(ctx, mdForGFELatency, "executeBatchCreateSessions", sc.otConfig); metricErr != nil {
-			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
-		}
-		if err != nil {
-			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
-			consumer.sessionCreationFailed(ctx, ToSpannerError(err), remainingCreateCount, false)
-			break
-		}
-		actuallyCreated := int32(len(response.Session))
-		trace.TracePrintf(ctx, nil, "Received a batch of %d sessions", actuallyCreated)
-		for _, s := range response.Session {
-			consumer.sessionReady(ctx, &session{valid: true, client: client, id: s.Name, createTime: time.Now(), md: md, logger: sc.logger})
-		}
-		if actuallyCreated < remainingCreateCount {
-			// Spanner could return less sessions than requested. In that case, we
-			// should do another call using the same gRPC channel.
-			remainingCreateCount -= actuallyCreated
-		} else {
-			trace.TracePrintf(ctx, nil, "Finished creating %d sessions", createCount)
-			break
-		}
-	}
 }
 
 func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, client spannerClient, md metadata.MD, consumer sessionConsumer) {

@@ -157,13 +157,6 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 				},
 			},
 			{
-				Name: []string{"/google.spanner.v1.Spanner/BatchCreateSessions"},
-				Affinity: &grpcgcppb.AffinityConfig{
-					Command:     grpcgcppb.AffinityConfig_BIND,
-					AffinityKey: "session.name",
-				},
-			},
-			{
 				Name: []string{"/google.spanner.v1.Spanner/DeleteSession"},
 				Affinity: &grpcgcppb.AffinityConfig{
 					Command:     grpcgcppb.AffinityConfig_UNBIND,
@@ -524,15 +517,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		sessionLabels[k] = v
 	}
 
-	// Default configs for session pool.
+	// Default configs for session pool (kept for backward compatibility).
+	// These are no longer used as multiplexed sessions are now the only option.
 	if config.MaxOpened == 0 {
 		config.MaxOpened = uint64(pool.Num() * 100)
-	}
-	if config.MaxBurst == 0 {
-		config.MaxBurst = DefaultSessionPoolConfig.MaxBurst
-	}
-	if config.incStep == 0 {
-		config.incStep = DefaultSessionPoolConfig.incStep
 	}
 	if config.BatchTimeout == 0 {
 		config.BatchTimeout = time.Minute
@@ -554,47 +542,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		md.Append(afeMetricHeader, "true")
 	}
 
-	if isMultiplexed, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"); found {
-		config.enableMultiplexSession, err = strconv.ParseBool(strings.ToLower(isMultiplexed))
-		if err != nil {
-			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
-		}
-	} else {
-		config.enableMultiplexSession = true
-	}
+	// Multiplexed sessions are always enabled as the session pool has been removed.
 
-	if isMultiplexForRW, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); found {
-		config.enableMultiplexedSessionForRW, err = strconv.ParseBool(strings.ToLower(isMultiplexForRW))
-		if err != nil {
-			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
-		}
-	} else {
-		config.enableMultiplexedSessionForRW = true
-	}
-
-	if isMultiplexForPartitionOps, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); found {
-		config.enableMultiplexedSessionForPartitionedOps, err = strconv.ParseBool(strings.ToLower(isMultiplexForPartitionOps))
-		if err != nil {
-			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS must be either true or false")
-		}
-	} else {
-		config.enableMultiplexedSessionForPartitionedOps = true
-	}
-
-	config.enableMultiplexedSessionForRW = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForRW
-	config.enableMultiplexedSessionForPartitionedOps = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForPartitionedOps
-
-	if config.IsExperimentalHost {
-		config.SessionPoolConfig.enableMultiplexSession = true
-		config.enableMultiplexedSessionForRW = true
-		config.enableMultiplexedSessionForPartitionedOps = true
-		config.SessionPoolConfig.MinOpened = experimentalHostMinSessions
-	}
-	// Do not initialize the session pool with any regular sessions if multiplexed sessions have been enabled for all
-	// operations, and the application has not configured a custom number of min sessions.
-	if config.enableMultiplexSession && config.enableMultiplexedSessionForRW && config.enableMultiplexedSessionForPartitionedOps && config.MinOpened == DefaultSessionPoolConfig.MinOpened {
-		config.SessionPoolConfig.MinOpened = 0
-	}
+	// MinOpened is no longer used as regular sessions have been removed.
+	config.SessionPoolConfig.MinOpened = 0
 
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
@@ -612,7 +563,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.mu.Unlock()
 
 	// Create a session pool.
-	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
 	if err != nil {
 		sc.close()
@@ -630,16 +580,10 @@ Directpath enabled: %v
 End To End Tracing enabled: %v
 Built-in metrics enabled: %v
 gRPC metrics enabled: %v
-Min Sessions: %v
-Max Sessions: %v
-Multiplexed session enabled: %v
-Multiplexed session enabled for RW: %v
-Multiplexed session enabled for Partition Ops: %v
+Multiplexed session enabled: true (always - session pool removed)
 -----------------------------`,
 			projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
-			config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled,
-			config.SessionPoolConfig.MinOpened, config.SessionPoolConfig.MaxOpened, config.enableMultiplexSession,
-			config.enableMultiplexedSessionForRW, config.enableMultiplexedSessionForPartitionedOps)
+			config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled)
 	}
 	c = &Client{
 		sc:                   sc,
@@ -921,24 +865,14 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	var (
 		tx  transactionID
 		rts time.Time
-		s   *session
 		sh  *sessionHandle
 		err error
 	)
 
-	if c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
-		sh, err = c.idleSessions.takeMultiplexed(ctx)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// Create session.
-		s, err = c.sc.createSession(ctx)
-		if err != nil {
-			return nil, err
-		}
-		sh = &sessionHandle{session: s}
-		sh.updateLastUseTime()
+	// Always use multiplexed sessions for batch read operations.
+	sh, err = c.idleSessions.takeMultiplexed(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	// Begin transaction.
@@ -951,9 +885,6 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		},
 	})
 	if err != nil {
-		if isUnimplementedErrorForMultiplexedPartitionedDML(err) && c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
-			c.idleSessions.disableMultiplexedSessionForRW()
-		}
 		return nil, ToSpannerError(err)
 	}
 	tx = res.Id
@@ -1156,9 +1087,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
-	if isUnimplementedErrorForMultiplexedRW(err) {
-		c.idleSessions.disableMultiplexedSessionForRW()
-	}
 	return resp, err
 }
 
