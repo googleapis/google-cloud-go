@@ -26,9 +26,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // PipelineResult is a result returned from executing a pipeline.
@@ -176,61 +174,6 @@ func (it *PipelineResultIterator) GetAll() ([]*PipelineResult, error) {
 		results = append(results, pr)
 	}
 	return results, nil
-}
-
-// ExplainStats returns stats from query explain.
-// If [WithExplainMode] was set to [ExplainModeExplain] or left unset, then this returns nil
-func (it *PipelineResultIterator) ExplainStats() *ExplainStats {
-	if it == nil {
-		return &ExplainStats{err: errors.New("firestore: iterator is nil")}
-	}
-	if it.err == nil || it.err != iterator.Done {
-		return &ExplainStats{err: errStatsBeforeEnd}
-	}
-	statsPb, statsErr := it.iter.getExplainStats()
-	return &ExplainStats{statsPb: statsPb, err: statsErr}
-}
-
-// ExplainStats is query explain stats.
-//
-// Contains all metadata related to pipeline planning and execution, specific
-// contents depend on the supplied pipeline options.
-type ExplainStats struct {
-	statsPb *pb.ExplainStats
-	err     error
-}
-
-// GetRawData returns the explain stats in an encoded proto format, as returned from the Firestore backend.
-// The caller is responsible for unpacking this proto message.
-func (es *ExplainStats) GetRawData() (*anypb.Any, error) {
-	if es.err != nil {
-		return nil, es.err
-	}
-	if es.statsPb == nil {
-		return nil, nil
-	}
-
-	return es.statsPb.GetData(), nil
-}
-
-// GetText returns the explain stats string verbatim as returned from the Firestore backend
-// when explain stats were requested with `outputFormat = 'text'`, this
-// If explain stats were requested with `outputFormat = 'json'`, this returns the explain stats
-// as stringified JSON, which was returned from the Firestore backend.
-func (es *ExplainStats) GetText() (string, error) {
-	if es.err != nil {
-		return "", es.err
-	}
-	if es.statsPb == nil || es.statsPb.GetData() == nil {
-		return "", nil
-	}
-
-	var data wrapperspb.StringValue
-	if err := es.statsPb.GetData().UnmarshalTo(&data); err != nil {
-		return "", fmt.Errorf("firestore: failed to unmarshal Any to wrapperspb.StringValue: %w", err)
-	}
-
-	return data.GetValue(), nil
 }
 
 // pipelineResultIteratorInternal is an unexported interface defining the core iteration logic.

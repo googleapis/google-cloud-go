@@ -1,0 +1,91 @@
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package firestore
+
+import (
+	"errors"
+	"fmt"
+
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+)
+
+type PipelineSnapshot struct {
+	iter *PipelineResultIterator
+}
+
+func (ps *PipelineSnapshot) Results() *PipelineResultIterator {
+	return ps.iter
+}
+
+// ExplainStats returns stats from query explain.
+// If [WithExplainMode] was set to [ExplainModeExplain] or left unset, then this returns nil
+func (ps *PipelineSnapshot) ExplainStats() *ExplainStats {
+	if ps == nil {
+		return &ExplainStats{err: errors.New("firestore: PipelineSnapshot is nil")}
+	}
+	if ps.iter == nil {
+		return &ExplainStats{err: errors.New("firestore: PipelineResultIterator is nil")}
+	}
+	if ps.iter == nil || ps.iter.err == nil || ps.iter.err != iterator.Done {
+		return &ExplainStats{err: errStatsBeforeEnd}
+	}
+	statsPb, statsErr := ps.iter.iter.getExplainStats()
+	return &ExplainStats{statsPb: statsPb, err: statsErr}
+}
+
+// ExplainStats is query explain stats.
+//
+// Contains all metadata related to pipeline planning and execution, specific
+// contents depend on the supplied pipeline options.
+type ExplainStats struct {
+	statsPb *pb.ExplainStats
+	err     error
+}
+
+// RawData returns the explain stats in an encoded proto format, as returned from the Firestore backend.
+// The caller is responsible for unpacking this proto message.
+func (es *ExplainStats) RawData() (*anypb.Any, error) {
+	if es.err != nil {
+		return nil, es.err
+	}
+	if es.statsPb == nil {
+		return nil, nil
+	}
+
+	return es.statsPb.GetData(), nil
+}
+
+// Text returns the explain stats string verbatim as returned from the Firestore backend
+// when explain stats were requested with `outputFormat = 'text'`, this
+// If explain stats were requested with `outputFormat = 'json'`, this returns the explain stats
+// as stringified JSON, which was returned from the Firestore backend.
+func (es *ExplainStats) Text() (string, error) {
+	if es.err != nil {
+		return "", es.err
+	}
+	if es.statsPb == nil || es.statsPb.GetData() == nil {
+		return "", nil
+	}
+
+	var data wrapperspb.StringValue
+	if err := es.statsPb.GetData().UnmarshalTo(&data); err != nil {
+		return "", fmt.Errorf("firestore: failed to unmarshal Any to wrapperspb.StringValue: %w", err)
+	}
+
+	return data.GetValue(), nil
+}
