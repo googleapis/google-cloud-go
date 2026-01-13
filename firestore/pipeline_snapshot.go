@@ -74,10 +74,10 @@ func (es *ExplainStats) RawData() (*anypb.Any, error) {
 	return es.statsPb.GetData(), nil
 }
 
-// Text returns the explain stats string verbatim as returned from the Firestore backend
-// when explain stats were requested with `outputFormat = 'text'`
-// If explain stats were requested with `outputFormat = 'json'`, this returns the explain stats
-// as stringified JSON, which was returned from the Firestore backend.
+// Text returns the explain stats as a string from the Firestore backend.
+// If explain stats were requested with `outputFormat = 'text'`, the string is
+// returned verbatim. If `outputFormat = 'json'`, this returns the explain stats
+// as stringified JSON.
 func (es *ExplainStats) Text() (string, error) {
 	if es.err != nil {
 		return "", es.err
