@@ -41,7 +41,7 @@ func (ps *PipelineSnapshot) ExplainStats() *ExplainStats {
 	if ps.iter == nil {
 		return &ExplainStats{err: errors.New("firestore: PipelineResultIterator is nil")}
 	}
-	if ps.iter == nil || ps.iter.err == nil || ps.iter.err != iterator.Done {
+if ps.iter.err == nil || ps.iter.err != iterator.Done {
 		return &ExplainStats{err: errStatsBeforeEnd}
 	}
 	statsPb, statsErr := ps.iter.iter.getExplainStats()
