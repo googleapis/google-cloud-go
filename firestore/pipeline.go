@@ -98,13 +98,6 @@ func WithExplainMode(mode ExplainMode) ExecuteOption {
 	})
 }
 
-// WithIndexMode sets the index mode for the pipeline execution.
-func WithIndexMode(indexMode string) ExecuteOption {
-	return newFuncExecuteOption(func(eo *executeSettings) {
-		eo.IndexMode = indexMode
-	})
-}
-
 // Execute executes the pipeline and returns a snapshot of the results.
 func (p *Pipeline) Execute(ctx context.Context) *PipelineSnapshot {
 	ctx = withResourceHeader(ctx, p.c.path())
