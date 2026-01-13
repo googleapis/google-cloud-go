@@ -33,7 +33,7 @@ func (ps *PipelineSnapshot) Results() *PipelineResultIterator {
 }
 
 // ExplainStats returns stats from query explain.
-// If [WithExplainMode] was set to [ExplainModeExplain] or left unset, then this returns nil
+// If [WithExplainMode] was set to [ExplainModeExplain] or left unset, then no stats will be available.
 func (ps *PipelineSnapshot) ExplainStats() *ExplainStats {
 	if ps == nil {
 		return &ExplainStats{err: errors.New("firestore: PipelineSnapshot is nil")}
