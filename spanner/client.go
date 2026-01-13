@@ -157,6 +157,13 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 				},
 			},
 			{
+				Name: []string{"/google.spanner.v1.Spanner/BatchCreateSessions"},
+				Affinity: &grpcgcppb.AffinityConfig{
+					Command:     grpcgcppb.AffinityConfig_BIND,
+					AffinityKey: "session.name",
+				},
+			},
+			{
 				Name: []string{"/google.spanner.v1.Spanner/DeleteSession"},
 				Affinity: &grpcgcppb.AffinityConfig{
 					Command:     grpcgcppb.AffinityConfig_UNBIND,
@@ -517,10 +524,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		sessionLabels[k] = v
 	}
 
-	// Default configs for session pool (kept for backward compatibility).
-	// These are no longer used as multiplexed sessions are now the only option.
+	// Default configs for session pool.
 	if config.MaxOpened == 0 {
 		config.MaxOpened = uint64(pool.Num() * 100)
+	}
+	if config.MaxBurst == 0 {
+		config.MaxBurst = DefaultSessionPoolConfig.MaxBurst
 	}
 	if config.BatchTimeout == 0 {
 		config.BatchTimeout = time.Minute
@@ -543,9 +552,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	// Multiplexed sessions are always enabled as the session pool has been removed.
-
-	// MinOpened is no longer used as regular sessions have been removed.
-	config.SessionPoolConfig.MinOpened = 0
 
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
@@ -580,7 +586,7 @@ Directpath enabled: %v
 End To End Tracing enabled: %v
 Built-in metrics enabled: %v
 gRPC metrics enabled: %v
-Multiplexed session enabled: true (always - session pool removed)
+Multiplexed session enabled: true
 -----------------------------`,
 			projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
 			config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled)
@@ -800,21 +806,6 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
-	t.txReadOnly.replaceSessionFunc = func(ctx context.Context) error {
-		if t.sh == nil {
-			return spannerErrorf(codes.InvalidArgument, "missing session handle on transaction")
-		}
-		// Remove the session that returned 'Session not found' from the pool.
-		t.sh.destroy()
-		// Reset the transaction, acquire a new session and retry.
-		t.state = txNew
-		sh, _, err := t.acquire(ctx)
-		if err != nil {
-			return err
-		}
-		t.sh = sh
-		return nil
-	}
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
@@ -1227,9 +1218,7 @@ type BatchWriteResponseIterator struct {
 	ctx                context.Context
 	stream             sppb.Spanner_BatchWriteClient
 	err                error
-	dataReceived       bool
 	meterTracerFactory *builtinMetricsTracerFactory
-	replaceSession     func(ctx context.Context) error
 	rpc                func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
 	release            func(error)
 	cancel             func()
@@ -1265,7 +1254,6 @@ func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
 
 		// Return an item.
 		if r.err == nil {
-			r.dataReceived = true
 			return response, nil
 		}
 
@@ -1273,12 +1261,6 @@ func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
 		if r.err == io.EOF {
 			r.err = iterator.Done
 			return nil, r.err
-		}
-
-		// Retry request on session not found error only if no data has been received before.
-		if !r.dataReceived && r.replaceSession != nil && isSessionNotFoundError(r.err) {
-			r.err = r.replaceSession(r.ctx)
-			r.stream = nil
 		}
 	}
 }
@@ -1392,21 +1374,9 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		return stream, rpcErr
 	}
 
-	replaceSession := func(ct context.Context) error {
-		if sh != nil {
-			sh.destroy()
-		}
-		var sessionErr error
-		sh, sessionErr = c.idleSessions.take(ct)
-		return sessionErr
-	}
-
 	release := func(err error) {
 		if sh == nil {
 			return
-		}
-		if isSessionNotFoundError(err) {
-			sh.destroy()
 		}
 		sh.recycle()
 	}
@@ -1417,7 +1387,6 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		ctx:                ctx,
 		meterTracerFactory: c.metricsTracerFactory,
 		rpc:                rpc,
-		replaceSession:     replaceSession,
 		release:            release,
 		cancel:             cancel,
 	}

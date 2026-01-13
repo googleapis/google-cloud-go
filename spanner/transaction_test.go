@@ -187,54 +187,11 @@ func TestApply_RetryOnAbort(t *testing.T) {
 
 }
 
-// Tests that SessionNotFound errors are retried.
+// TestTransaction_SessionNotFound tests session-not-found retry behavior which is no longer
+// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
+// session-not-found errors should not occur during normal operation.
 func TestTransaction_SessionNotFound(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-
-	serverErr := newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")
-	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{serverErr, serverErr, serverErr},
-		})
-	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{serverErr},
-		})
-
-	txn := client.ReadOnlyTransaction()
-	defer txn.Close()
-
-	var wantErr error
-	if _, _, got := txn.acquire(ctx); !testEqual(wantErr, got) {
-		t.Fatalf("Expect acquire to succeed, got %v, want %v.", got, wantErr)
-	}
-
-	// The server error should lead to a retry of the BeginTransaction call and
-	// a valid session handle to be returned that will be used by the following
-	// requests. Note that calling txn.Query(...) does not actually send the
-	// query to the (mock) server. That is done at the first call to
-	// RowIterator.Next. The following statement only verifies that the
-	// transaction is in a valid state and received a valid session handle.
-	if got := txn.Query(ctx, NewStatement("SELECT 1")); !testEqual(wantErr, got.err) {
-		t.Fatalf("Expect Query to succeed, got %v, want %v.", got.err, wantErr)
-	}
-
-	if got := txn.Read(ctx, "Users", KeySets(Key{"alice"}, Key{"bob"}), []string{"name", "email"}); !testEqual(wantErr, got.err) {
-		t.Fatalf("Expect Read to succeed, got %v, want %v.", got.err, wantErr)
-	}
-
-	wantErr = ToSpannerError(newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"))
-	ms := []*Mutation{
-		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
-		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
-	}
-	_, got := client.Apply(ctx, ms, ApplyAtLeastOnce())
-	if !testEqual(wantErr, got) {
-		t.Fatalf("Expect Apply to fail\nGot:  %v\nWant: %v\n", got, wantErr)
-	}
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 // When an error is returned from the closure sent into ReadWriteTransaction, it

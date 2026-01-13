@@ -727,60 +727,18 @@ func TestClient_Single_InvalidArgument(t *testing.T) {
 	}
 }
 
+// TestClient_Single_SessionNotFound tests session-not-found retry behavior which is no longer
+// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
+// session-not-found errors should not occur during normal operation.
 func TestClient_Single_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
-	rowCount := int64(0)
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		rowCount++
-	}
-	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-	}
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
+// TestClient_Single_Read_SessionNotFound tests session-not-found retry behavior which is no longer
+// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
+// session-not-found errors should not occur during normal operation.
 func TestClient_Single_Read_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodStreamingRead,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	iter := client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
-	defer iter.Stop()
-	rowCount := int64(0)
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		rowCount++
-	}
-	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-	}
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 // TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool
@@ -790,23 +748,11 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	t.Skip("Session pool has been removed. This test is no longer applicable.")
 }
 
+// TestClient_Single_ReadRow_SessionNotFound tests session-not-found retry behavior which is no longer
+// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
+// session-not-found errors should not occur during normal operation.
 func TestClient_Single_ReadRow_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodStreamingRead,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	row, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
-	if err != nil {
-		t.Fatalf("Unexpected error for read row: %v", err)
-	}
-	if row == nil {
-		t.Fatal("ReadRow did not return a row")
-	}
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
@@ -1297,40 +1243,16 @@ func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndInvalidArgument
 	}
 }
 
+// TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction tests session-not-found retry
+// behavior which is no longer applicable with multiplexed sessions.
 func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
-	t.Parallel()
-	if err := testReadOnlyTransaction(
-		t,
-		map[string]SimulatedExecutionTime{
-			MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-		},
-	); err != nil {
-		t.Fatal(err)
-	}
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
+// TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOneSession tests
+// session-not-found retry behavior which is no longer applicable with multiplexed sessions.
 func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOneSession(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServerWithConfig(
-		t,
-		ClientConfig{
-			DisableNativeMetrics: true,
-			SessionPoolConfig: SessionPoolConfig{
-				MinOpened: 0,
-				MaxOpened: 1,
-			},
-		})
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodBeginTransaction,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	tx := client.ReadOnlyTransaction()
-	defer tx.Close()
-	ctx := context.Background()
-	if err := executeSingerQuery(ctx, tx); err != nil {
-		t.Fatal(err)
-	}
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement(t *testing.T) {
@@ -3612,19 +3534,10 @@ func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
 	}
 }
 
+// TestStmtBasedReadWriteTransaction_SessionNotFoundError_shouldNotPanic tests session-not-found
+// recovery behavior which is no longer applicable with multiplexed sessions.
 func TestStmtBasedReadWriteTransaction_SessionNotFoundError_shouldNotPanic(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
-		})
-	ctx := context.Background()
-	tx, _ := NewReadWriteStmtBasedTransaction(ctx, client)
-	_ = tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
-	// This would panic, as it could not refresh the session.
-	_, _ = tx.Commit(ctx)
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 func TestClient_WriteStructWithPointers(t *testing.T) {
@@ -5222,41 +5135,11 @@ func TestClient_BatchWrite(t *testing.T) {
 	}
 }
 
+// TestClient_BatchWrite_SessionNotFound tests session-not-found retry behavior which is no longer
+// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
+// session-not-found errors should not occur during normal operation.
 func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodBatchWrite,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	mutationGroups := []*MutationGroup{
-		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
-		}},
-	}
-	iter := client.BatchWrite(context.Background(), mutationGroups)
-	responseCount := 0
-	doFunc := func(r *sppb.BatchWriteResponse) error {
-		responseCount++
-		return nil
-	}
-	if err := iter.Do(doFunc); err != nil {
-		t.Fatal(err)
-	}
-	if responseCount != len(mutationGroups) {
-		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
-	}
-
-	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BatchWriteRequest{},
-		&sppb.BatchWriteRequest{},
-	}, requests); err != nil {
-		t.Fatal(err)
-	}
+	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 func TestClient_BatchWrite_Error(t *testing.T) {

@@ -77,12 +77,6 @@ type txReadOnly struct {
 	// Atomic. Only needed for DML statements, but used forall.
 	sequenceNumber int64
 
-	// replaceSessionFunc is a function that can be called to replace the
-	// session that is used by the transaction. This function should only be
-	// defined for single-use transactions that can safely be retried on a
-	// different session. All other transactions will set this function to nil.
-	replaceSessionFunc func(ctx context.Context) error
-
 	// sp is the session pool for allocating a session to execute the read-only
 	// transaction. It is set only once during initialization of the
 	// txReadOnly.
@@ -358,7 +352,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	} else {
 		setTransactionID = nil
 	}
-	return streamWithReplaceSessionFunc(
+	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		t.sp.sc.metricsTracerFactory,
@@ -400,7 +394,6 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			}
 			return client, err
 		},
-		t.replaceSessionFunc,
 		setTransactionID,
 		func(err error) error {
 			return t.updateTxState(err)
@@ -700,7 +693,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		setTransactionID = nil
 	}
 	client := sh.getClient()
-	return streamWithReplaceSessionFunc(
+	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		t.sp.sc.metricsTracerFactory,
@@ -735,7 +728,6 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			}
 			return client, err
 		},
-		t.replaceSessionFunc,
 		setTransactionID,
 		func(err error) error {
 			return t.updateTxState(err)
@@ -901,54 +893,43 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		}
 		t.mu.Unlock()
 		if err != nil && sh != nil {
-			// Got a valid session handle, but failed to initialize transaction=
+			// Got a valid session handle, but failed to initialize transaction
 			// on Cloud Spanner.
-			if isSessionNotFoundError(err) {
-				sh.destroy()
-			}
-			// If sh.destroy was already executed, this becomes a noop.
 			sh.recycle()
 		}
 	}()
-	// Retry the BeginTransaction call if a 'Session not found' is returned.
-	for {
-		sh, err = t.sp.takeMultiplexed(ctx)
-		if err != nil {
-			return err
-		}
-		t.setSessionEligibilityForLongRunning(sh)
-		sh.updateLastUseTime()
-		var md metadata.MD
-		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
-			Session: sh.getID(),
-			Options: &sppb.TransactionOptions{
-				Mode: &sppb.TransactionOptions_ReadOnly_{
-					ReadOnly: buildTransactionOptionsReadOnly(t.getTimestampBound(), true),
-				},
+	sh, err = t.sp.takeMultiplexed(ctx)
+	if err != nil {
+		return err
+	}
+	t.setSessionEligibilityForLongRunning(sh)
+	sh.updateLastUseTime()
+	var md metadata.MD
+	res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
+		Session: sh.getID(),
+		Options: &sppb.TransactionOptions{
+			Mode: &sppb.TransactionOptions_ReadOnly_{
+				ReadOnly: buildTransactionOptionsReadOnly(t.getTimestampBound(), true),
 			},
-		}, gax.WithGRPCOptions(grpc.Header(&md)))
+		},
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-		if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
-			if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
-				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-			}
+	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
-		if metricErr := recordGFELatencyMetricsOT(ctx, md, "begin_BeginTransaction", t.otConfig); metricErr != nil {
-			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
-		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "begin_BeginTransaction", t.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+	}
 
-		if isSessionNotFoundError(err) {
-			sh.destroy()
-			continue
-		} else if err == nil {
-			tx = res.Id
-			if res.ReadTimestamp != nil {
-				rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
-			}
-		} else {
-			err = ToSpannerError(err)
+	if err == nil {
+		tx = res.Id
+		if res.ReadTimestamp != nil {
+			rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
 		}
-		break
+	} else {
+		err = ToSpannerError(err)
 	}
 	t.mu.Lock()
 
@@ -1162,11 +1143,7 @@ func (t *ReadOnlyTransaction) release(err error) {
 	sh := t.sh
 	t.mu.Unlock()
 	if sh != nil { // sh could be nil if t.acquire() fails.
-		if isSessionNotFoundError(err) || isClientClosing(err) {
-			sh.destroy()
-		}
 		if t.singleUse {
-			// If session handle is already destroyed, this becomes a noop.
 			sh.recycle()
 		}
 	}
@@ -1700,12 +1677,8 @@ func (t *ReadWriteTransaction) updatePrecommitToken(token *sppb.MultiplexedSessi
 // release implements txReadEnv.release.
 func (t *ReadWriteTransaction) release(err error) {
 	t.mu.Lock()
-	sh := t.sh
 	state := t.state
 	t.mu.Unlock()
-	if sh != nil && isSessionNotFoundError(err) {
-		sh.destroy()
-	}
 	// if transaction is released during initialization then do explicit begin transaction
 	if state == txInit {
 		t.setTransactionID(nil)
@@ -1805,47 +1778,29 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 	)
 	defer func() {
 		if err != nil && sh != nil {
-			// Got a valid session handle, but failed to initialize transaction=
+			// Got a valid session handle, but failed to initialize transaction
 			// on Cloud Spanner.
-			if isSessionNotFoundError(err) {
-				sh.destroy()
-			}
-			// If sh.destroy was already executed, this becomes a noop.
 			sh.recycle()
 		}
 	}()
-	// Retry the BeginTransaction call if a 'Session not found' is returned.
-	for {
-		if sh != nil {
-			sh.updateLastUseTime()
-		}
-		if t.getTransactionOptionsCallback != nil {
-			t.txOpts = t.txOpts.merge(t.getTransactionOptionsCallback())
-		}
-		tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
-			multiplexEnabled: t.sp.isMultiplexedSessionForRWEnabled(),
-			sessionID:        sh.getID(),
-			client:           sh.getClient(),
-			txOptions:        t.txOpts,
-			mutation:         mutation,
-			previousTx:       previousTx,
-		})
-		if isSessionNotFoundError(err) {
-			sh.destroy()
-			// this should not happen with multiplexed session, but if it does, we should not retry with multiplexed session
-			sh, err = t.sp.take(ctx)
-			if err != nil {
-				return err
-			}
-			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
-			t.setSessionEligibilityForLongRunning(sh)
-			continue
-		} else {
-			err = ToSpannerError(err)
-		}
-		t.updatePrecommitToken(precommitToken)
-		break
+	if sh != nil {
+		sh.updateLastUseTime()
 	}
+	if t.getTransactionOptionsCallback != nil {
+		t.txOpts = t.txOpts.merge(t.getTransactionOptionsCallback())
+	}
+	tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
+		multiplexEnabled: t.sp.isMultiplexedSessionForRWEnabled(),
+		sessionID:        sh.getID(),
+		client:           sh.getClient(),
+		txOptions:        t.txOpts,
+		mutation:         mutation,
+		previousTx:       previousTx,
+	})
+	if err != nil {
+		err = ToSpannerError(err)
+	}
+	t.updatePrecommitToken(precommitToken)
 	if err == nil {
 		t.mu.Lock()
 		t.tx = tx
@@ -1970,9 +1925,6 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if options.ReturnCommitStats {
 		resp.CommitStats = res.CommitStats
 	}
-	if isSessionNotFoundError(err) {
-		t.sh.destroy()
-	}
 	return resp, err
 }
 
@@ -1994,13 +1946,10 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 		return
 	}
 	t.sh.updateLastUseTime()
-	err := client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
+	_ = client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
 		Session:       sid,
 		TransactionId: t.tx,
 	})
-	if isSessionNotFoundError(err) {
-		t.sh.destroy()
-	}
 }
 
 // runInTransaction executes f under a read-write transaction context.
@@ -2023,10 +1972,6 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 			// Retry the transaction using the same session on ABORT error.
 			// Cloud Spanner will create the new transaction with the previous
 			// one's wound-wait priority.
-			return resp, err
-		}
-		if isSessionNotFoundError(err) {
-			t.sh.destroy()
 			return resp, err
 		}
 		if isFailedInlineBeginTransaction(err) {
@@ -2340,11 +2285,6 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				MaxCommitDelay: maxCommitDelay,
 			})
 			if err != nil && !isAbortedErr(err) {
-				// should not be the case with multiplexed sessions
-				if isSessionNotFoundError(err) {
-					// Discard the bad session.
-					sh.destroy()
-				}
 				return toSpannerErrorWithCommitInfo(err, true)
 			} else if err == nil {
 				if tstamp := res.GetCommitTimestamp(); tstamp != nil {
