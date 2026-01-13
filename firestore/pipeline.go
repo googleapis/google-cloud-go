@@ -105,7 +105,7 @@ func WithIndexMode(indexMode string) ExecuteOption {
 	})
 }
 
-// Execute executes the pipeline and returns an iterator for streaming the results.
+// Execute executes the pipeline and returns a snapshot of the results.
 func (p *Pipeline) Execute(ctx context.Context) *PipelineSnapshot {
 	ctx = withResourceHeader(ctx, p.c.path())
 	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(p.c.path()))
