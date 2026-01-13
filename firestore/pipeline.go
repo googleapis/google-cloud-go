@@ -431,13 +431,13 @@ type UnnestOptions struct {
 // Unnest produces a document for each element in an array field.
 // For each input document, this stage outputs zero or more documents.
 // Each output document is a copy of the input document, but the array field is replaced by an element from the array.
-// The `fieldOrSelectable` parameter specifies the array field to unnest. It can be a string representing the field path or a [Selectable] expression.
-// If a [Selectable] is provided, the alias of the selectable will be used as the new field name.
-func (p *Pipeline) Unnest(fieldpathsOrSelectable any) *Pipeline {
+// The `field` parameter specifies the array field to unnest. It can be a string representing the field path or a [Selectable] expression.
+// The alias of the selectable will be used as the new field name.
+func (p *Pipeline) Unnest(field Selectable, opts *UnnestOptions) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newUnnestStageFromAny(fieldpathsOrSelectable)
+	stage, err := newUnnestStageFromSelectable(field, opts)
 	if err != nil {
 		p.err = err
 		return p
@@ -539,7 +539,7 @@ func (p *Pipeline) Sample(spec *SampleSpec) *Pipeline {
 	return p.append(stage)
 }
 
-// Replace fully overwrites all fields in a document with those coming from a nested map.
+// ReplaceWith fully overwrites all fields in a document with those coming from a nested map.
 //
 // This stage allows you to emit a map value as a document. Each key of the map becomes a field
 // on the document that contains the corresponding value.
@@ -548,13 +548,13 @@ func (p *Pipeline) Sample(spec *SampleSpec) *Pipeline {
 //
 //	// Input: { "name": "John Doe Jr.", "parents": { "father": "John Doe Sr.", "mother": "Jane Doe" } }
 //	// Emit parents as document.
-//	client.Pipeline().Collection("people").Replace("parents")
+//	client.Pipeline().Collection("people").ReplaceWith("parents")
 //	// Output: { "father": "John Doe Sr.", "mother": "Jane Doe" }
-func (p *Pipeline) Replace(fieldpathOrSelectable any) *Pipeline {
+func (p *Pipeline) ReplaceWith(fieldpathOrExpr any) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newReplaceStage(fieldpathOrSelectable)
+	stage, err := newReplaceWithStage(fieldpathOrExpr)
 	if err != nil {
 		p.err = err
 		return p

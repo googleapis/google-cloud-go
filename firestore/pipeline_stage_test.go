@@ -324,7 +324,7 @@ func TestRemoveFieldsStage(t *testing.T) {
 }
 
 func TestReplaceStage(t *testing.T) {
-	stage, err := newReplaceStage("metadata")
+	stage, err := newReplaceWithStage("metadata")
 	if err != nil {
 		t.Fatalf("newReplaceStage() failed: %v", err)
 	}

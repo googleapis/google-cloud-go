@@ -46,7 +46,7 @@ const (
 	stageNameDocuments       = "documents"
 	stageNameFindNearest     = "find_nearest"
 	stageNameRemoveFields    = "remove_fields"
-	stageNameReplace         = "replace_with"
+	stageNameReplaceWith     = "replace_with"
 	stageNameSample          = "sample"
 	stageNameSelect          = "select"
 	stageNameUnion           = "union"
@@ -335,30 +335,30 @@ func newRemoveFieldsStage(fieldpaths ...any) (*removeFieldsStage, error) {
 	}}, nil
 }
 
-type replaceStage struct {
+type replaceWithStage struct {
 	baseStage
 }
 
-func newReplaceStage(fieldOrSelectable any) (*replaceStage, error) {
+func newReplaceWithStage(fieldpathOrExpr any) (*replaceWithStage, error) {
 	var expr Expression
-	switch v := fieldOrSelectable.(type) {
+	switch v := fieldpathOrExpr.(type) {
 	case string:
 		expr = FieldOf(v)
 	case FieldPath:
 		expr = FieldOf(v)
-	case Selectable:
-		_, expr = v.getSelectionDetails()
+	case Expression:
+		expr = v
 	default:
-		return nil, errInvalidArg(fieldOrSelectable, "string", "FieldPath", "Selectable")
+		return nil, errInvalidArg(fieldpathOrExpr, "string", "FieldPath", "Expression")
 	}
 	exprPb, err := expr.toProto()
 	if err != nil {
 		return nil, err
 	}
-	return &replaceStage{baseStage{
-		stageName: stageNameReplace,
+	return &replaceWithStage{baseStage{
+		stageName: stageNameReplaceWith,
 		stagePb: &pb.Pipeline_Stage{
-			Name: stageNameReplace,
+			Name: stageNameReplaceWith,
 			Args: []*pb.Value{exprPb, {ValueType: &pb.Value_StringValue{StringValue: "full_replace"}}},
 		},
 	}}, nil
@@ -499,19 +499,9 @@ func newUnnestStage(fieldExpr Expression, alias string, opts *UnnestOptions) (*u
 	}}, nil
 }
 
-func newUnnestStageFromAny(fieldOrSelectable any) (*unnestStage, error) {
-	var expr Expression
-	var alias string
-	switch v := fieldOrSelectable.(type) {
-	case string:
-		expr = FieldOf(v)
-		alias = v
-	case Selectable:
-		alias, expr = v.getSelectionDetails()
-	default:
-		return nil, errInvalidArg(fieldOrSelectable, "string", "Selectable")
-	}
-	return newUnnestStage(expr, alias, nil)
+func newUnnestStageFromSelectable(field Selectable, opts *UnnestOptions) (*unnestStage, error) {
+	alias, expr := field.getSelectionDetails()
+	return newUnnestStage(expr, alias, opts)
 }
 
 type whereStage struct {
