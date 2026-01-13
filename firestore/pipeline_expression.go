@@ -451,7 +451,6 @@ func (b *baseExpression) Sum() AggregateFunction           { return Sum(b) }
 func (b *baseExpression) Average() AggregateFunction       { return Average(b) }
 func (b *baseExpression) Count() AggregateFunction         { return Count(b) }
 func (b *baseExpression) CountDistinct() AggregateFunction { return CountDistinct(b) }
-func (b *baseExpression) CountIf() AggregateFunction       { return CountIf(b) }
 func (b *baseExpression) Maximum() AggregateFunction       { return Maximum(b) }
 func (b *baseExpression) Minimum() AggregateFunction       { return Minimum(b) }
 

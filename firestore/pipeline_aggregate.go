@@ -158,15 +158,13 @@ func CountDistinct(fieldOrExpr any) AggregateFunction {
 	return newBaseAggregateFunction("count_distinct", fieldOrExpr)
 }
 
-// CountIf creates an aggregation that counts the number of values of the
-// provided field or expression evaluates to TRUE.
-// fieldOrExpr can be a field path string, [FieldPath] or [Expression]
+// CountIf creates an aggregation that counts the number of stage inputs where the provided boolean
+// expression evaluates to true.
 // Example:
 //
-//	CountIf(FieldOf("published")).As("publishedCount")
-//	CountIf("published").As("publishedCount")
-func CountIf(fieldOrExpr any) AggregateFunction {
-	return newBaseAggregateFunction("count_if", fieldOrExpr)
+//	CountIf(FieldOf("published").Equal(true)).As("publishedCount")
+func CountIf(condition BooleanExpression) AggregateFunction {
+	return newBaseAggregateFunction("count_if", condition)
 }
 
 // Maximum creates an aggregation that calculates the maximum of values from an expression or a field's values

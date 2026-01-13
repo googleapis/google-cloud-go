@@ -20,9 +20,9 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
-// Function represents Firestore [Pipeline] functions, which can be evaluated within pipeline
+// FunctionExpression represents Firestore [Pipeline] functions, which can be evaluated within pipeline
 // execution.
-type Function interface {
+type FunctionExpression interface {
 	Expression
 	isFunction()
 }
@@ -33,8 +33,8 @@ type baseFunction struct {
 
 func (b *baseFunction) isFunction() {}
 
-// Ensure that *baseFunction implements the Function interface.
-var _ Function = (*baseFunction)(nil)
+// Ensure that *baseFunction implements the FunctionExpression interface.
+var _ FunctionExpression = (*baseFunction)(nil)
 
 func newBaseFunction(name string, params []Expression) *baseFunction {
 	argsPbVals := make([]*pb.Value, 0, len(params))

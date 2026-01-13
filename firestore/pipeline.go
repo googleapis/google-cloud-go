@@ -276,7 +276,7 @@ func (p *Pipeline) Offset(offset int) *Pipeline {
 // The selected fields are defined using field path string, [FieldPath] or [Selectable] expressions.
 // [Selectable] expressions can be:
 //   - Field: References an existing field.
-//   - Function: Represents the result of a function with an assigned alias name using [Function.As].
+//   - Function: Represents the result of a function with an assigned alias name using [FunctionExpression.As].
 //
 // Example:
 //
