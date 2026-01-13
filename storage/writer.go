@@ -59,8 +59,8 @@ type Writer struct {
 	// validation. By default, the Writer automatically performs checksum
 	// validation for both gRPC and JSON uploads. For gRPC, this includes
 	// validation for both individual chunks and the entire object. For JSON,
-	// checksums are calculated per-chunk. Setting this to true disables this
-	// automatic checksumming behavior.
+	// checksums are validated for full object but only for resumable uploads. Setting
+	// this to true disables this automatic checksumming behavior.
 	//
 	// Disabling automatic checksumming does not prevent a user-provided checksum
 	// from being sent. If SendCRC32C is true and the Writer's CRC32C field is
