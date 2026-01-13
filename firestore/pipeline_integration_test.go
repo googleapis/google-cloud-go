@@ -423,7 +423,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		})
 		iter := client.Pipeline().Collection(coll.ID).
 			Where(Equal(FieldOf("id"), "docWithMap")).
-			Replace("data").
+			ReplaceWith("data").
 			Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()

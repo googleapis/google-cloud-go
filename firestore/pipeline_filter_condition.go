@@ -31,6 +31,9 @@ type BooleanExpression interface {
 	IfErrorBoolean(catchExpr BooleanExpression) BooleanExpression
 	// Not creates an expression that negates a boolean expression.
 	Not() BooleanExpression
+	// CountIf creates an aggregation that counts the number of stage inputs where the this boolean expression
+	// evaluates to true.
+	CountIf() AggregateFunction
 }
 
 // baseBooleanExpression provides common methods for all BooleanExpr implementations.
@@ -47,6 +50,9 @@ func (b *baseBooleanExpression) IfErrorBoolean(catchExpr BooleanExpression) Bool
 }
 func (b *baseBooleanExpression) Not() BooleanExpression {
 	return Not(b)
+}
+func (b *baseBooleanExpression) CountIf() AggregateFunction {
+	return CountIf(b)
 }
 
 // Ensure that baseBooleanExpr implements the BooleanExpr interface.
