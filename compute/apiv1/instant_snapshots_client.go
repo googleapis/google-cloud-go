@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -172,12 +172,22 @@ func (c *InstantSnapshotsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of instantSnapshots.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *InstantSnapshotsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting
+// a single instantSnapshot might not necessarily delete all the data on that
+// instantSnapshot. If any data on the instantSnapshot that is marked for
+// deletion is needed for subsequent instantSnapshots, the data will be moved
+// to the next corresponding instantSnapshot.
+//
+// For more information, seeDeleting
+// instantSnapshots.
 func (c *InstantSnapshotsClient) Delete(ctx context.Context, req *computepb.DeleteInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -187,7 +197,8 @@ func (c *InstantSnapshotsClient) Get(ctx context.Context, req *computepb.GetInst
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *InstantSnapshotsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -197,17 +208,21 @@ func (c *InstantSnapshotsClient) Insert(ctx context.Context, req *computepb.Inse
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of InstantSnapshot resources contained within the specified zone.
+// List retrieves the list of InstantSnapshot resources contained within
+// the specified zone.
 func (c *InstantSnapshotsClient) List(ctx context.Context, req *computepb.ListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *InstantSnapshotsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about
+// labels, read the Labeling
+// Resources documentation.
 func (c *InstantSnapshotsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -310,7 +325,10 @@ func (c *instantSnapshotsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of instantSnapshots.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *instantSnapshotsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotsScopedListPairIterator {
 	it := &InstantSnapshotsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstantSnapshotsRequest)
@@ -409,7 +427,14 @@ func (c *instantSnapshotsRESTClient) AggregatedList(ctx context.Context, req *co
 	return it
 }
 
-// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting
+// a single instantSnapshot might not necessarily delete all the data on that
+// instantSnapshot. If any data on the instantSnapshot that is marked for
+// deletion is needed for subsequent instantSnapshots, the data will be moved
+// to the next corresponding instantSnapshot.
+//
+// For more information, seeDeleting
+// instantSnapshots.
 func (c *instantSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -514,7 +539,8 @@ func (c *instantSnapshotsRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *instantSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -633,7 +659,8 @@ func (c *instantSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves the list of InstantSnapshot resources contained within the specified zone.
+// List retrieves the list of InstantSnapshot resources contained within
+// the specified zone.
 func (c *instantSnapshotsRESTClient) List(ctx context.Context, req *computepb.ListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotIterator {
 	it := &InstantSnapshotIterator{}
 	req = proto.Clone(req).(*computepb.ListInstantSnapshotsRequest)
@@ -719,7 +746,8 @@ func (c *instantSnapshotsRESTClient) List(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *instantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
@@ -771,7 +799,9 @@ func (c *instantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	return resp, nil
 }
 
-// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about
+// labels, read the Labeling
+// Resources documentation.
 func (c *instantSnapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetLabelsRequestResource()

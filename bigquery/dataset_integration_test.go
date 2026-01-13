@@ -32,7 +32,7 @@ func TestIntegration_DatasetCreate(t *testing.T) {
 	}
 	ctx := context.Background()
 	ds := client.Dataset(datasetIDs.New())
-	wmd := &DatasetMetadata{Name: "name", Location: "EU"}
+	wmd := &DatasetMetadata{Name: "name", Location: defaultTestLocation}
 	err := ds.Create(ctx, wmd)
 	if err != nil {
 		t.Fatal(err)
@@ -167,7 +167,7 @@ func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T
 	ctx := context.Background()
 	ds := client.Dataset(datasetIDs.New())
 	err := ds.Create(ctx, &DatasetMetadata{
-		Location: "US",
+		Location: defaultTestLocation,
 	})
 	if err != nil {
 		t.Fatalf("Create: %v", err)

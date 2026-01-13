@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -134,7 +134,11 @@ func (c *NetworkEdgeSecurityServicesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to
+// the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *NetworkEdgeSecurityServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEdgeSecurityServicesRequest, opts ...gax.CallOption) *NetworkEdgeSecurityServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -149,7 +153,8 @@ func (c *NetworkEdgeSecurityServicesClient) Get(ctx context.Context, req *comput
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a new service in the specified project using the data included in the request.
+// Insert creates a new service in the specified project using the data included in
+// the request.
 func (c *NetworkEdgeSecurityServicesClient) Insert(ctx context.Context, req *computepb.InsertNetworkEdgeSecurityServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -252,7 +257,11 @@ func (c *networkEdgeSecurityServicesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to
+// the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *networkEdgeSecurityServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEdgeSecurityServicesRequest, opts ...gax.CallOption) *NetworkEdgeSecurityServicesScopedListPairIterator {
 	it := &NetworkEdgeSecurityServicesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkEdgeSecurityServicesRequest)
@@ -456,7 +465,8 @@ func (c *networkEdgeSecurityServicesRESTClient) Get(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Insert creates a new service in the specified project using the data included in the request.
+// Insert creates a new service in the specified project using the data included in
+// the request.
 func (c *networkEdgeSecurityServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkEdgeSecurityServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEdgeSecurityServiceResource()

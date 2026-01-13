@@ -26,6 +26,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -36,9 +37,11 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	DataChatService_Chat_FullMethodName               = "/google.cloud.geminidataanalytics.v1beta.DataChatService/Chat"
 	DataChatService_CreateConversation_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataChatService/CreateConversation"
+	DataChatService_DeleteConversation_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataChatService/DeleteConversation"
 	DataChatService_GetConversation_FullMethodName    = "/google.cloud.geminidataanalytics.v1beta.DataChatService/GetConversation"
 	DataChatService_ListConversations_FullMethodName  = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListConversations"
 	DataChatService_ListMessages_FullMethodName       = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListMessages"
+	DataChatService_QueryData_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataChatService/QueryData"
 )
 
 // DataChatServiceClient is the client API for DataChatService service.
@@ -51,12 +54,16 @@ type DataChatServiceClient interface {
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
+	// Deletes a conversation.
+	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
 	// Lists all conversations for a given parent.
 	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...grpc.CallOption) (*ListConversationsResponse, error)
 	// Lists all messages for a given conversation.
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...grpc.CallOption) (*ListMessagesResponse, error)
+	// Queries data from a natural language user query.
+	QueryData(ctx context.Context, in *QueryDataRequest, opts ...grpc.CallOption) (*QueryDataResponse, error)
 }
 
 type dataChatServiceClient struct {
@@ -108,6 +115,15 @@ func (c *dataChatServiceClient) CreateConversation(ctx context.Context, in *Crea
 	return out, nil
 }
 
+func (c *dataChatServiceClient) DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, DataChatService_DeleteConversation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataChatServiceClient) GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error) {
 	out := new(Conversation)
 	err := c.cc.Invoke(ctx, DataChatService_GetConversation_FullMethodName, in, out, opts...)
@@ -135,6 +151,15 @@ func (c *dataChatServiceClient) ListMessages(ctx context.Context, in *ListMessag
 	return out, nil
 }
 
+func (c *dataChatServiceClient) QueryData(ctx context.Context, in *QueryDataRequest, opts ...grpc.CallOption) (*QueryDataResponse, error) {
+	out := new(QueryDataResponse)
+	err := c.cc.Invoke(ctx, DataChatService_QueryData_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataChatServiceServer is the server API for DataChatService service.
 // All implementations should embed UnimplementedDataChatServiceServer
 // for forward compatibility
@@ -145,12 +170,16 @@ type DataChatServiceServer interface {
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error)
+	// Deletes a conversation.
+	DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error)
 	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(context.Context, *GetConversationRequest) (*Conversation, error)
 	// Lists all conversations for a given parent.
 	ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error)
 	// Lists all messages for a given conversation.
 	ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error)
+	// Queries data from a natural language user query.
+	QueryData(context.Context, *QueryDataRequest) (*QueryDataResponse, error)
 }
 
 // UnimplementedDataChatServiceServer should be embedded to have forward compatible implementations.
@@ -163,6 +192,9 @@ func (UnimplementedDataChatServiceServer) Chat(*ChatRequest, DataChatService_Cha
 func (UnimplementedDataChatServiceServer) CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConversation not implemented")
 }
+func (UnimplementedDataChatServiceServer) DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteConversation not implemented")
+}
 func (UnimplementedDataChatServiceServer) GetConversation(context.Context, *GetConversationRequest) (*Conversation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConversation not implemented")
 }
@@ -171,6 +203,9 @@ func (UnimplementedDataChatServiceServer) ListConversations(context.Context, *Li
 }
 func (UnimplementedDataChatServiceServer) ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMessages not implemented")
+}
+func (UnimplementedDataChatServiceServer) QueryData(context.Context, *QueryDataRequest) (*QueryDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryData not implemented")
 }
 
 // UnsafeDataChatServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -219,6 +254,24 @@ func _DataChatService_CreateConversation_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataChatServiceServer).CreateConversation(ctx, req.(*CreateConversationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataChatService_DeleteConversation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteConversationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataChatServiceServer).DeleteConversation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataChatService_DeleteConversation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataChatServiceServer).DeleteConversation(ctx, req.(*DeleteConversationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -277,6 +330,24 @@ func _DataChatService_ListMessages_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataChatService_QueryData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataChatServiceServer).QueryData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataChatService_QueryData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataChatServiceServer).QueryData(ctx, req.(*QueryDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataChatService_ServiceDesc is the grpc.ServiceDesc for DataChatService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -289,6 +360,10 @@ var DataChatService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DataChatService_CreateConversation_Handler,
 		},
 		{
+			MethodName: "DeleteConversation",
+			Handler:    _DataChatService_DeleteConversation_Handler,
+		},
+		{
 			MethodName: "GetConversation",
 			Handler:    _DataChatService_GetConversation_Handler,
 		},
@@ -299,6 +374,10 @@ var DataChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMessages",
 			Handler:    _DataChatService_ListMessages_Handler,
+		},
+		{
+			MethodName: "QueryData",
+			Handler:    _DataChatService_QueryData_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

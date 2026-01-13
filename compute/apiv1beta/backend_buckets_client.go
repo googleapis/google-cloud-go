@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
@@ -42,6 +43,7 @@ var newBackendBucketsClientHook clientHook
 // BackendBucketsCallOptions contains the retry settings for each method of BackendBucketsClient.
 type BackendBucketsCallOptions struct {
 	AddSignedUrlKey       []gax.CallOption
+	AggregatedList        []gax.CallOption
 	Delete                []gax.CallOption
 	DeleteSignedUrlKey    []gax.CallOption
 	Get                   []gax.CallOption
@@ -60,6 +62,18 @@ func defaultBackendBucketsRESTCallOptions() *BackendBucketsCallOptions {
 	return &BackendBucketsCallOptions{
 		AddSignedUrlKey: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
 		},
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -142,6 +156,7 @@ type internalBackendBucketsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddSignedUrlKey(context.Context, *computepb.AddSignedUrlKeyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
+	AggregatedList(context.Context, *computepb.AggregatedListBackendBucketsRequest, ...gax.CallOption) *BackendBucketsScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	DeleteSignedUrlKey(context.Context, *computepb.DeleteSignedUrlKeyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetBackendBucketRequest, ...gax.CallOption) (*computepb.BackendBucket, error)
@@ -191,9 +206,19 @@ func (c *BackendBucketsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend bucket.
+// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *BackendBucketsClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
+}
+
+// AggregatedList retrieves the list of all BackendBucket resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
+func (c *BackendBucketsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketsScopedListPairIterator {
+	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
 // Delete deletes the specified BackendBucket resource.
@@ -201,7 +226,8 @@ func (c *BackendBucketsClient) Delete(ctx context.Context, req *computepb.Delete
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend bucket.
+// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *BackendBucketsClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteSignedUrlKey(ctx, req, opts...)
 }
@@ -211,17 +237,20 @@ func (c *BackendBucketsClient) Get(ctx context.Context, req *computepb.GetBacken
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *BackendBucketsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a BackendBucket resource in the specified project using the data included in the request.
+// Insert creates a BackendBucket resource in the specified project using
+// the data included in the request.
 func (c *BackendBucketsClient) Insert(ctx context.Context, req *computepb.InsertBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of BackendBucket resources available to the specified project.
+// List retrieves the list of BackendBucket resources available to the specified
+// project.
 func (c *BackendBucketsClient) List(ctx context.Context, req *computepb.ListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -231,7 +260,10 @@ func (c *BackendBucketsClient) ListUsable(ctx context.Context, req *computepb.Li
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
 
-// Patch updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified BackendBucket resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *BackendBucketsClient) Patch(ctx context.Context, req *computepb.PatchBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -241,7 +273,8 @@ func (c *BackendBucketsClient) SetEdgeSecurityPolicy(ctx context.Context, req *c
 	return c.internalClient.SetEdgeSecurityPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *BackendBucketsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -251,7 +284,8 @@ func (c *BackendBucketsClient) TestIamPermissions(ctx context.Context, req *comp
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified BackendBucket resource with the data included in the request.
+// Update updates the specified BackendBucket resource with the data included in the
+// request.
 func (c *BackendBucketsClient) Update(ctx context.Context, req *computepb.UpdateBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -349,7 +383,8 @@ func (c *backendBucketsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend bucket.
+// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSignedUrlKeyResource()
@@ -415,6 +450,109 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 	return op, nil
 }
 
+// AggregatedList retrieves the list of all BackendBucket resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
+func (c *backendBucketsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketsScopedListPairIterator {
+	it := &BackendBucketsScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListBackendBucketsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]BackendBucketsScopedListPair, string, error) {
+		resp := &computepb.BackendBucketAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/backendBuckets", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AggregatedList")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+
+		elems := make([]BackendBucketsScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, BackendBucketsScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // Delete deletes the specified BackendBucket resource.
 func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.DeleteBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -474,7 +612,8 @@ func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.De
 	return op, nil
 }
 
-// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend bucket.
+// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -579,7 +718,8 @@ func (c *backendBucketsRESTClient) Get(ctx context.Context, req *computepb.GetBa
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *backendBucketsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -631,7 +771,8 @@ func (c *backendBucketsRESTClient) GetIamPolicy(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates a BackendBucket resource in the specified project using the data included in the request.
+// Insert creates a BackendBucket resource in the specified project using
+// the data included in the request.
 func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()
@@ -697,7 +838,8 @@ func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.In
 	return op, nil
 }
 
-// List retrieves the list of BackendBucket resources available to the specified project.
+// List retrieves the list of BackendBucket resources available to the specified
+// project.
 func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.ListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	it := &BackendBucketIterator{}
 	req = proto.Clone(req).(*computepb.ListBackendBucketsRequest)
@@ -869,7 +1011,10 @@ func (c *backendBucketsRESTClient) ListUsable(ctx context.Context, req *computep
 	return it
 }
 
-// Patch updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified BackendBucket resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()
@@ -1001,7 +1146,8 @@ func (c *backendBucketsRESTClient) SetEdgeSecurityPolicy(ctx context.Context, re
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *backendBucketsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
@@ -1105,7 +1251,8 @@ func (c *backendBucketsRESTClient) TestIamPermissions(ctx context.Context, req *
 	return resp, nil
 }
 
-// Update updates the specified BackendBucket resource with the data included in the request.
+// Update updates the specified BackendBucket resource with the data included in the
+// request.
 func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()

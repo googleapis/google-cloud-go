@@ -1713,18 +1713,20 @@ type ExecutePipelineResponse struct {
 	// progress message is returned.
 	//
 	// The fields present in the returned documents are only those that were
-	// explicitly requested in the pipeline, this include those like
-	// [`__name__`][google.firestore.v1.Document.name] &
+	// explicitly requested in the pipeline, this includes those like
+	// [`__name__`][google.firestore.v1.Document.name] and
 	// [`__update_time__`][google.firestore.v1.Document.update_time]. This is
 	// explicitly a divergence from `Firestore.RunQuery` / `Firestore.GetDocument`
 	// RPCs which always return such fields even when they are not specified in
 	// the [`mask`][google.firestore.v1.DocumentMask].
 	Results []*Document `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
-	// The time at which the document(s) were read.
+	// The time at which the results are valid.
 	//
-	// This may be monotonically increasing; in this case, the previous documents
-	// in the result stream are guaranteed not to have changed between their
-	// `execution_time` and this one.
+	// This is a (not strictly) monotonically increasing value across multiple
+	// responses in the same stream. The API guarantees that all previously
+	// returned results are still valid at the latest `execution_time`. This
+	// allows the API consumer to treat the query if it ran at the latest
+	// `execution_time` returned.
 	//
 	// If the query returns no results, a response with `execution_time` and no
 	// `results` will be sent, and this represents the time at which the operation
@@ -1732,8 +1734,10 @@ type ExecutePipelineResponse struct {
 	ExecutionTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=execution_time,json=executionTime,proto3" json:"execution_time,omitempty"`
 	// Query explain stats.
 	//
-	// Contains all metadata related to pipeline planning and execution, specific
-	// contents depend on the supplied pipeline options.
+	// This is present on the **last** response if the request configured explain
+	// to run in 'analyze' or 'explain' mode in the pipeline options. If the query
+	// does not return any results, a response with `explain_stats` and no
+	// `results` will still be sent.
 	ExplainStats *ExplainStats `protobuf:"bytes,4,opt,name=explain_stats,json=explainStats,proto3" json:"explain_stats,omitempty"`
 }
 
@@ -2766,7 +2770,7 @@ type Target struct {
 	// will immediately send a response with a `TargetChange::Remove` event.
 	//
 	// Note that if the client sends multiple `AddTarget` requests
-	// without an ID, the order of IDs returned in `TargetChage.target_ids` are
+	// without an ID, the order of IDs returned in `TargetChange.target_ids` are
 	// undefined. Therefore, clients should provide a target ID instead of relying
 	// on the server to assign one.
 	//

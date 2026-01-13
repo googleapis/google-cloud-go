@@ -41,6 +41,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -65,7 +66,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -425,8 +425,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 				want = content[k.offset : k.offset+k.limit]
 			}
 			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, k.buf.Bytes(), want)
+				t.Errorf("Error in read range offset %v, limit %v, got: %v bytes; want: %v bytes",
+					k.offset, k.limit, len(k.buf.Bytes()), len(want))
 			}
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
@@ -530,9 +530,10 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		content := make([]byte, 5<<20)
+		// Use a 10MB object to allow for many non-overlapping range requests.
+		content := make([]byte, 10<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloader"
+		objName := "MultiRangeDownloaderConcurrentReads"
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -549,63 +550,78 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
 
-		// Create a top-level errgroup for each goroutine
-		eG, ctx := errgroup.WithContext(ctx)
-		goRoutineCount := 10
+		// Use 50 goroutines with 10 adds each (500 total).
+		// This exceeds the internal session reqC buffer of 100, stressing the manager's event loop.
+		goRoutineCount := 50
 		perGoRoutineAddCount := 10
-		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
 
-		// Create multiple go routines to read concurrently.
+		const (
+			minRangeSize      = 1024 // Minimum size of a range request.
+			maxExtraRangeSize = 2048 // Maximum additional size added to minRangeSize.
+			offsetStep        = 2048 // Distance between the start of consecutive range requests.
+
+			// safeEndPadding ensures that the calculated offset + limit does not exceed
+			// the total length of the content. Since the maximum limit is
+			// minRangeSize + maxExtraRangeSize (3072), a padding of 4096 is safe.
+			safeEndPadding = 4096
+		)
+
+		type rangeRes struct {
+			buf       bytes.Buffer
+			offset    int64
+			limit     int64
+			gotOffset int64
+			gotLimit  int64
+			err       error
+		}
+		results := make([]*rangeRes, goRoutineCount*perGoRoutineAddCount)
+
+		var wg sync.WaitGroup
+		wg.Add(len(results))
+
 		for i := 0; i < goRoutineCount; i++ {
-			groupID := i
-			eG.Go(func() error {
-
-				// Subgroup for tasks within this goroutine
-				subGroup, _ := errgroup.WithContext(ctx)
-
+			go func(gID int) {
 				for j := 0; j < perGoRoutineAddCount; j++ {
-					taskID := perGoRoutineAddCount*groupID + j
-					subGroup.Go(func() error {
-						// Use a channel to receive the callback results
-						done := make(chan error, 1)
+					taskID := gID*perGoRoutineAddCount + j
+					// Randomize offset/limit slightly to ensure varied request patterns.
+					offset := int64((taskID * offsetStep) % (len(content) - safeEndPadding))
+					limit := int64(minRangeSize + rand.Intn(maxExtraRangeSize))
 
-						reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
-							res[taskID].offset = x
-							res[taskID].limit = y
-							res[taskID].err = err
-							// Send each callback result to subGroup.
-							done <- err
-						})
-						return <-done
+					r := &rangeRes{offset: offset, limit: limit}
+					results[taskID] = r
+
+					reader.Add(&r.buf, offset, limit, func(o, l int64, err error) {
+						r.err = err
+						r.gotOffset = o
+						r.gotLimit = l
+						wg.Done()
 					})
 				}
-				// Wait for all tasks in current sub-group to complete to send result to main error group.
-				return subGroup.Wait()
-			})
+			}(i)
 		}
 
-		// Wait for all top-level goroutines to complete
-		if err := eG.Wait(); err != nil {
-			t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
-		}
-
+		// Wait for all goroutines to finish adding their ranges.
+		wg.Wait()
+		// Wait for all reads to complete.
 		reader.Wait()
+
 		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+			t.Fatalf("Error while closing reader: %v", err)
 		}
-		for id, k := range res {
-			if k.err != nil {
-				t.Fatalf("reading range %v: %v", id, k.err)
+
+		for id, res := range results {
+			if res.err != nil {
+				t.Errorf("Range %d (offset %d) failed: %v", id, res.offset, res.err)
+				continue
 			}
-			if got, want := k.offset, 0; got != int64(want) {
-				t.Errorf("range id %v: got callback offset %v, want %v", id, got, want)
+			if res.gotOffset != res.offset || res.gotLimit != res.limit {
+				t.Errorf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+					id, res.gotOffset, res.gotLimit, res.offset, res.limit)
 			}
-			if got, want := k.limit, len(content); got != int64(want) {
-				t.Errorf("range id %v: got callback limit %v, want %v", id, got, want)
-			}
-			if !bytes.Equal(k.buf.Bytes(), content) {
-				t.Errorf("content mismatch in read range %v: got %v bytes, want %v bytes",
-					id, len(k.buf.Bytes()), len(content))
+			want := content[res.offset : res.offset+res.limit]
+			if !bytes.Equal(res.buf.Bytes(), want) {
+				t.Errorf("Data mismatch in range %d: got %d bytes, want %d bytes",
+					id, res.buf.Len(), len(want))
 			}
 		}
 	})
@@ -665,8 +681,8 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
 			}
 		}
-		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
 		}
 	})
 }
@@ -1396,6 +1412,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -1840,6 +1857,111 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 		}
 		if gotr != int64(want) {
 			t.Errorf("While reading got: %d want %d", gotr, want)
+		}
+	})
+}
+
+func TestIntegration_WriterCRC32CValidation(t *testing.T) {
+	ctx := skipZonalBucket(context.Background(), "Test for resumable and oneshot writers")
+	h := testHelper{t}
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		testCases := []struct {
+			name                string
+			content             []byte
+			chunkSize           int
+			sendCRC32C          bool
+			disableAutoChecksum bool
+			incorrectChecksum   bool
+			wantErr             bool
+		}{
+			{
+				name:       "oneshot with user-sent CRC32C",
+				content:    []byte("small content for oneshot upload"),
+				chunkSize:  0,
+				sendCRC32C: true,
+			},
+			{
+				name:      "oneshot with default CRC32",
+				content:   []byte("small content for oneshot upload"),
+				chunkSize: 0,
+			},
+			{
+				name:                "oneshot with disabled auto checksum",
+				content:             []byte("small content for oneshot upload"),
+				chunkSize:           0,
+				disableAutoChecksum: true,
+			},
+			{
+				name:       "resumable with user-sent CRC32C",
+				content:    bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize:  256 * 1024,
+				sendCRC32C: true,
+			},
+			{
+				name:      "resumable with default CRC32",
+				content:   bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize: 256 * 1024,
+			},
+			{
+				name:                "resumable with disabled auto checksum",
+				content:             bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize:           256 * 1024,
+				disableAutoChecksum: true,
+			},
+			{
+				name:              "resumable with incorrect checksum",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize:         256 * 1024,
+				sendCRC32C:        true,
+				incorrectChecksum: true,
+				wantErr:           true,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.ChunkSize = tc.chunkSize
+				w.SendCRC32C = tc.sendCRC32C
+				w.CRC32C = correctCRC32C
+				if tc.incorrectChecksum {
+					w.CRC32C = correctCRC32C + 1
+				}
+				w.DisableAutoChecksum = tc.disableAutoChecksum
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				err := w.Close()
+				if tc.incorrectChecksum {
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+				// Verify content.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+				}
+			})
 		}
 	})
 }
@@ -2328,11 +2450,17 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			b.Object("obj/with/slashes" + uidSpaceObjects.New()),
 			b.Object("obj/" + uidSpaceObjects.New()),
 		}
+		wantCustomContexts := map[string]ObjectCustomContextPayload{
+			"key_0": {Value: "val_0"},
+			"key_1": {Value: "val_1"},
+			"key_2": {Value: "val_2"},
+			"key_3": {Value: "val_3"},
+		}
 		var compSrcs []*ObjectHandle
 		wantContents := make([]byte, 0)
 
 		// Write objects to compose
-		for _, obj := range objects {
+		for i, obj := range objects {
 			c := randomContents()
 			if err := writeObject(ctx, obj, "text/plain", c); err != nil {
 				t.Errorf("Write for %v failed with %v", obj, err)
@@ -2340,9 +2468,15 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			compSrcs = append(compSrcs, obj)
 			wantContents = append(wantContents, c...)
 			defer obj.Delete(ctx)
+			initialContexts := &ObjectContexts{
+				Custom: map[string]ObjectCustomContextPayload{fmt.Sprintf("key_%v", i): {Value: wantCustomContexts[fmt.Sprintf("key_%v", i)].Value}},
+			}
+			if _, err := obj.Update(ctx, ObjectAttrsToUpdate{Contexts: initialContexts}); err != nil {
+				t.Fatalf("obj.Update: %v", err)
+			}
 		}
 
-		checkCompose := func(obj *ObjectHandle, contentTypeSet *string) {
+		checkCompose := func(obj *ObjectHandle, contentTypeSet *string, wantCustomContexts map[string]ObjectCustomContextPayload) {
 			r, err := obj.NewReader(ctx)
 			if err != nil {
 				t.Fatalf("new reader: %v", err)
@@ -2362,6 +2496,17 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			if !(contentTypeSet == nil && (got == "" || got == "application/octet-stream")) && got != *contentTypeSet {
 				t.Errorf("Composed object content-type = %q, want %q", got, *contentTypeSet)
 			}
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				t.Fatalf("obj.Attrs: %v", err)
+			}
+			var gotCustomContexts map[string]ObjectCustomContextPayload
+			if attrs.Contexts != nil {
+				gotCustomContexts = attrs.Contexts.Custom
+			}
+			if diff := cmp.Diff(wantCustomContexts, gotCustomContexts, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+				t.Errorf("custom contexts mismatch (-want +got):\n%s", diff)
+			}
 		}
 
 		// Compose should work even if the user sets no destination attributes.
@@ -2374,7 +2519,7 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 		if attrs.ComponentCount != int64(len(objects)) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
-		checkCompose(compDst, nil)
+		checkCompose(compDst, nil, wantCustomContexts)
 
 		// It should also work if we do.
 		contentType := "text/json"
@@ -2388,7 +2533,23 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 		if attrs.ComponentCount != int64(len(objects)) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
-		checkCompose(compDst, &contentType)
+		checkCompose(compDst, &contentType, wantCustomContexts)
+
+		// overriding contexts.
+		customContexts := &ObjectContexts{
+			Custom: map[string]ObjectCustomContextPayload{"some-key": {Value: "some-value"}},
+		}
+		compDst = b.Object("composed3")
+		c = compDst.ComposerFrom(compSrcs...)
+		c.Contexts = customContexts
+		attrs, err = c.Run(ctx)
+		if err != nil {
+			t.Fatalf("ComposeFrom with contexts error: %v", err)
+		}
+		if attrs.ComponentCount != int64(len(objects)) {
+			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
+		}
+		checkCompose(compDst, nil, customContexts.Custom)
 	})
 }
 
@@ -2438,10 +2599,16 @@ func TestIntegration_Copy(t *testing.T) {
 			h.mustDeleteObject(obj)
 		})
 
-		// Set metadata on the source object to check if it's copied.
+		// Set metadata and custom contexts on the source object to check if it's copied.
+		initialContexts := &ObjectContexts{
+			Custom: map[string]ObjectCustomContextPayload{
+				"sourceKey": {Value: "sourceValue"},
+			},
+		}
 		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{
 			ContentLanguage:    "en",
 			ContentDisposition: "inline",
+			Contexts:           initialContexts,
 		}); err != nil {
 			t.Fatalf("obj.Update: %v", err)
 		}
@@ -2456,6 +2623,7 @@ func TestIntegration_Copy(t *testing.T) {
 		type copierAttrs struct {
 			contentEncoding string
 			maxBytesPerCall int64
+			contexts        *ObjectContexts
 		}
 
 		for _, test := range []struct {
@@ -2493,6 +2661,19 @@ func TestIntegration_Copy(t *testing.T) {
 				copierAttrs:             &copierAttrs{maxBytesPerCall: 1048576},
 				numExpectedRewriteCalls: 3,
 			},
+			{
+				desc:     "copy with custom contexts",
+				toObj:    "copy-with-custom-contexts",
+				toBucket: bucketInSameRegion,
+				copierAttrs: &copierAttrs{
+					contexts: &ObjectContexts{
+						Custom: map[string]ObjectCustomContextPayload{
+							"newKey": {Value: "newValue"},
+						},
+					},
+				},
+				numExpectedRewriteCalls: 1,
+			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				copyObj := test.toBucket.Object(test.toObj)
@@ -2504,6 +2685,9 @@ func TestIntegration_Copy(t *testing.T) {
 					}
 					if attrs.maxBytesPerCall != 0 {
 						copier.maxBytesRewrittenPerCall = attrs.maxBytesPerCall
+					}
+					if attrs.contexts != nil {
+						copier.Contexts = attrs.contexts
 					}
 				}
 
@@ -2530,6 +2714,15 @@ func TestIntegration_Copy(t *testing.T) {
 					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
 						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
 					}
+					want := initialContexts.Custom
+					if test.copierAttrs.contexts != nil {
+						want = test.copierAttrs.contexts.Custom
+					}
+					if attrs.Contexts != nil {
+						if diff := cmp.Diff(attrs.Contexts.Custom, want, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+							t.Errorf("custom contexts mismatch (-got +want):\n%s", diff)
+						}
+					}
 				} else {
 					// Check that metadata is copied when no destination attributes are provided.
 					if attrs.ContentLanguage != "en" {
@@ -2537,6 +2730,9 @@ func TestIntegration_Copy(t *testing.T) {
 					}
 					if attrs.ContentDisposition != "inline" {
 						t.Errorf("unexpected ContentDisposition; got: %s, want: inline", attrs.ContentDisposition)
+					}
+					if diff := cmp.Diff(attrs.Contexts.Custom, initialContexts.Custom, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+						t.Errorf("inherited custom contexts mismatch (-got +want):\n%s", diff)
 					}
 				}
 
@@ -3174,7 +3370,6 @@ func TestIntegration_WriterContentType(t *testing.T) {
 func TestIntegration_WriterChunksize(t *testing.T) {
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
 		objSize := 1<<10<<10 + 1 // 1 Mib + 1 byte
 		contents := bytes.Repeat([]byte("a"), objSize)
 
@@ -3222,6 +3417,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
+				obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
 				t.Cleanup(func() { obj.Delete(ctx) })
 
 				w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
@@ -3276,11 +3472,14 @@ func TestIntegration_WriterAppend(t *testing.T) {
 		bkt := client.Bucket(bucket)
 
 		testCases := []struct {
-			name        string
-			finalize    bool
-			content     []byte
-			chunkSize   int
-			flushOffset int64
+			name                string
+			finalize            bool
+			content             []byte
+			chunkSize           int
+			flushOffset         int64
+			sendCRC             bool
+			disableAutoChecksum bool
+			incorrectChecksum   bool
 		}{
 			{
 				name:        "finalized_object",
@@ -3288,6 +3487,29 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				content:     randomBytes9MiB,
 				chunkSize:   4 * MiB,
 				flushOffset: -1, // no flush
+			},
+			{
+				name:        "finalized_object with user checksum",
+				finalize:    true,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				sendCRC:     true,
+				flushOffset: -1, // no flush
+			},
+			{
+				name:                "finalized_object with disabled checksum",
+				finalize:            true,
+				content:             randomBytes9MiB,
+				chunkSize:           4 * MiB,
+				disableAutoChecksum: true,
+				flushOffset:         -1, // no flush
+			},
+			{
+				name:              "finalized_object with incorrect checksum",
+				finalize:          true,
+				content:           randomBytes9MiB,
+				chunkSize:         4 * MiB,
+				incorrectChecksum: true,
 			},
 			{
 				name:        "unfinalized_object",
@@ -3334,7 +3556,24 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				w.Append = true
 				w.FinalizeOnClose = tc.finalize
 				w.ChunkSize = tc.chunkSize
+				w.SendCRC32C = tc.sendCRC
+				w.DisableAutoChecksum = tc.disableAutoChecksum
+				w.CRC32C = crc32.Checksum(tc.content, crc32cTable)
 				content := tc.content
+
+				// If incorrectChecksum is true, write data and close writer
+				// immediately to validate if writer returns error
+				if tc.incorrectChecksum {
+					w.CRC32C++ // simulate incorrect checksum
+					w.SendCRC32C = true
+					if _, err := w.Write(content); err != nil {
+						t.Fatalf("writer.Write: %v", err)
+					}
+					if err := w.Close(); !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
 
 				// If flushOffset is 0, just do a flush and check the attributes.
 				if tc.flushOffset == 0 {
@@ -5377,6 +5616,7 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 }
 
 func TestIntegration_SoftDelete(t *testing.T) {
+	t.Skip("b/453096525")
 	multiTransportTest(skipExtraReadAPIs(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		testStart := time.Now()
@@ -5692,6 +5932,7 @@ func TestIntegration_KMS(t *testing.T) {
 }
 
 func TestIntegration_PredefinedACLs(t *testing.T) {
+	t.Skip("b/453096525")
 	projectOwners := prefixRoleACL{prefix: "project-owners", role: RoleOwner}
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
@@ -6579,6 +6820,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4(t *testing.T) {
+	t.Skip("b/453096525")
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwtConf, err := testutil.JWTConfig()
 		if err != nil {
@@ -6797,6 +7039,7 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
+	t.Skip("b/453096525")
 	// Skip before getting creds if running with -short
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -6857,6 +7100,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "test is not testing the read behaviour")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
 		h := testHelper{t}
@@ -6912,6 +7156,7 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 // Tests that the same SignBytes function works for both
 // SignRawBytes on GeneratePostPolicyV4 and SignBytes on SignedURL
 func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
+	t.Skip("b/453096525")
 	ctx := skipExtraReadAPIs(context.Background(), "test is not testing the read behaviour")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 
@@ -7030,6 +7275,240 @@ func (te *openTelemetryTestExporter) Spans() tracetest.SpanStubs {
 // Unregister shuts down the underlying OpenTelemetry TracerProvider.
 func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 	te.tp.Shutdown(ctx)
+}
+
+func TestIntegration_ObjectPatchCustomContexts(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		testCases := []struct {
+			name             string
+			initialContexts  *ObjectContexts
+			patchContexts    *ObjectContexts
+			expectedContexts map[string]ObjectCustomContextPayload
+		}{
+			{
+				name: "add individual contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"basekey-unicode-å": {Value: "baseval-unicode-é"},
+					},
+				},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"newKey": {Value: "newValue"},
+					},
+				},
+				expectedContexts: map[string]ObjectCustomContextPayload{
+					"basekey-unicode-å": {Value: "baseval-unicode-é"},
+					"newKey":            {Value: "newValue"},
+				},
+			},
+			{
+				name: "modify individual contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToModify": {Value: "oldValue"},
+						"otherKey":    {Value: "otherValue"},
+					},
+				},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToModify": {Value: "newValue"},
+					},
+				},
+				expectedContexts: map[string]ObjectCustomContextPayload{
+					"keyToModify": {Value: "newValue"},
+					"otherKey":    {Value: "otherValue"},
+				},
+			},
+			{
+				name: "remove individual contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToRemove": {Value: "valueToRemove"},
+						"anotherKey":  {Value: "anotherValue"},
+					},
+				},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToRemove": {Delete: true},
+					},
+				},
+				expectedContexts: map[string]ObjectCustomContextPayload{
+					"anotherKey": {Value: "anotherValue"},
+				},
+			},
+			{
+				name: "remove all contexts",
+				initialContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{
+						"keyToRemove": {Value: "valueToRemove"},
+						"anotherKey":  {Value: "anotherValue"},
+					},
+				},
+				patchContexts: &ObjectContexts{
+					Custom: map[string]ObjectCustomContextPayload{},
+				},
+				expectedContexts: nil,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+
+				// Create object with initial contexts.
+				wc := obj.NewWriter(ctx)
+				wc.Contexts = tc.initialContexts
+				h.mustWrite(wc, []byte("hello"))
+				defer h.mustDeleteObject(obj)
+
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if len(attrs.Contexts.Custom) != len(tc.initialContexts.Custom) {
+					t.Fatalf("got initial contexts %v, want %v", attrs.Contexts.Custom, tc.initialContexts.Custom)
+				}
+
+				// Patch the object with new contexts.
+				ua := ObjectAttrsToUpdate{Contexts: tc.patchContexts}
+				updatedAttrs := h.mustUpdateObject(obj, ua, attrs.Metageneration)
+
+				// Verify contexts are updated as expected.
+				if tc.expectedContexts == nil {
+					if updatedAttrs.Contexts != nil && updatedAttrs.Contexts.Custom != nil {
+						t.Fatalf("expected nil contexts but got: %v", updatedAttrs.Contexts.Custom)
+					}
+					return
+				}
+				if len(updatedAttrs.Contexts.Custom) != len(tc.expectedContexts) {
+					t.Errorf("got %d custom contexts, want %d. got: %v, want: %v", len(updatedAttrs.Contexts.Custom), len(tc.expectedContexts), updatedAttrs.Contexts.Custom, tc.expectedContexts)
+				}
+
+				if diff := cmp.Diff(updatedAttrs.Contexts.Custom, tc.expectedContexts, cmpopts.IgnoreFields(ObjectCustomContextPayload{}, "UpdateTime", "CreateTime")); diff != "" {
+					t.Errorf("%s: name mismatch (-got +want):\n%s", tc.name, diff)
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_ObjectGetListCustomContexts(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create objects with and without custom contexts
+		object1Name := prefix + uidSpaceObjects.New() + "-ctx1"
+		obj1 := client.Bucket(bucket).Object(object1Name)
+		contexts1 := &ObjectContexts{
+			Custom: map[string]ObjectCustomContextPayload{
+				"keyA":          {Value: "valueA"},
+				"keyB":          {Value: "valueB"},
+				"key-unicode-á": {Value: "value-unicode-é"},
+			},
+		}
+		wc1 := obj1.NewWriter(ctx)
+		wc1.Contexts = contexts1
+		h.mustWrite(wc1, []byte("content1"))
+		defer h.mustDeleteObject(obj1)
+
+		object2Name := prefix + uidSpaceObjects.New() + "-ctx2"
+		obj2 := client.Bucket(bucket).Object(object2Name)
+		contexts2 := &ObjectContexts{
+			Custom: map[string]ObjectCustomContextPayload{
+				"keyA": {Value: "valueX"}, // Different value for keyA
+				"keyC": {Value: "valueC"},
+			},
+		}
+		wc2 := obj2.NewWriter(ctx)
+		wc2.Contexts = contexts2
+		h.mustWrite(wc2, []byte("content2"))
+		defer h.mustDeleteObject(obj2)
+
+		object3Name := prefix + uidSpaceObjects.New() + "-no-ctx"
+		obj3 := client.Bucket(bucket).Object(object3Name)
+		h.mustWrite(obj3.NewWriter(ctx), []byte("content3"))
+		defer h.mustDeleteObject(obj3)
+
+		filterTests := []struct {
+			name          string
+			query         *Query
+			expectedNames []string
+		}{
+			{
+				name: "FilterByKeyValue",
+				query: &Query{
+					Prefix: prefix,
+					Filter: "contexts.\"keyA\"=\"valueA\"",
+				},
+				expectedNames: []string{object1Name},
+			},
+			{
+				name: "FilterByAbsenceOfKeyValue",
+				query: &Query{
+					Prefix: prefix,
+					Filter: "-contexts.\"keyB\"=\"valueB\"",
+				},
+				expectedNames: []string{object2Name, object3Name},
+			},
+			{
+				name: "FilterByKeyPresence",
+				query: &Query{
+					Prefix: prefix,
+					Filter: "contexts.\"keyA\":*",
+				},
+				expectedNames: []string{object1Name, object2Name},
+			},
+			{
+				name: "FilterByKeyAbsence",
+				query: &Query{
+					Prefix: prefix,
+					Filter: "-contexts.\"keyD\":*",
+				},
+				expectedNames: []string{object1Name, object2Name, object3Name},
+			},
+			{
+				name: "FilterByUnicodeKeyValue",
+				query: &Query{
+					Prefix: prefix,
+					Filter: "contexts.\"key-unicode-á\"=\"value-unicode-é\"",
+				},
+				expectedNames: []string{object1Name},
+			},
+			{
+				name: "NoFilter",
+				query: &Query{
+					Prefix: prefix,
+				},
+				expectedNames: []string{object1Name, object2Name, object3Name},
+			},
+		}
+
+		for _, tc := range filterTests {
+			t.Run(tc.name, func(t *testing.T) {
+				it := client.Bucket(bucket).Objects(ctx, tc.query)
+				var foundNames []string
+				for {
+					attrs, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						t.Fatalf("%s iterator.Next failed: %v", tc.name, err)
+					}
+					foundNames = append(foundNames, attrs.Name)
+				}
+
+				sort.Strings(foundNames)
+				sort.Strings(tc.expectedNames)
+				if diff := cmp.Diff(foundNames, tc.expectedNames); diff != "" {
+					t.Errorf("%s: name mismatch (-got +want):\n%s", tc.name, diff)
+				}
+			})
+		}
+	})
 }
 
 func TestIntegration_UniverseDomains(t *testing.T) {

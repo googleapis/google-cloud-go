@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@
 package firestorepb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -35,8 +36,10 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Explain stats for an RPC request, includes both the optimized plan and
-// execution stats.
+// Pipeline explain stats.
+//
+// Depending on the explain options in the original request, this can contain
+// the optimized plan and / or execution stats.
 type ExplainStats struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -44,7 +47,8 @@ type ExplainStats struct {
 
 	// The format depends on the `output_format` options in the request.
 	//
-	// The only option today is `TEXT`, which is a `google.protobuf.StringValue`.
+	// Currently there are two supported options: `TEXT` and `JSON`.
+	// Both supply a `google.protobuf.StringValue`.
 	Data *anypb.Any `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 }
 

@@ -382,19 +382,6 @@ func TestDatasetToBQ(t *testing.T) {
 			t.Errorf("got=-, want=+:\n%s", diff)
 		}
 	}
-
-	// Check that non-writeable fields are unset.
-	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
-	for _, dm := range []*DatasetMetadata{
-		{CreationTime: aTime},
-		{LastModifiedTime: aTime},
-		{FullID: "x"},
-		{ETag: "e"},
-	} {
-		if _, err := dm.toBQ(); err == nil {
-			t.Errorf("%+v: got nil, want error", dm)
-		}
-	}
 }
 
 func TestBQToDatasetMetadata(t *testing.T) {

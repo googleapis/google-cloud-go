@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -172,7 +172,10 @@ func (c *ResourcePoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of resource policies.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *ResourcePoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -187,7 +190,8 @@ func (c *ResourcePoliciesClient) Get(ctx context.Context, req *computepb.GetReso
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *ResourcePoliciesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -197,7 +201,8 @@ func (c *ResourcePoliciesClient) Insert(ctx context.Context, req *computepb.Inse
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List a list all the resource policies that have been configured for the specified project in specified region.
+// List a list all the resource policies that have been configured for the
+// specified project in specified region.
 func (c *ResourcePoliciesClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -207,7 +212,8 @@ func (c *ResourcePoliciesClient) Patch(ctx context.Context, req *computepb.Patch
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *ResourcePoliciesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -310,7 +316,10 @@ func (c *resourcePoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of resource policies.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	it := &ResourcePoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListResourcePoliciesRequest)
@@ -514,7 +523,8 @@ func (c *resourcePoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -633,7 +643,8 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List a list all the resource policies that have been configured for the specified project in specified region.
+// List a list all the resource policies that have been configured for the
+// specified project in specified region.
 func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePolicyIterator {
 	it := &ResourcePolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListResourcePoliciesRequest)
@@ -789,7 +800,8 @@ func (c *resourcePoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *resourcePoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()

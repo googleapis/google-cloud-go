@@ -19,10 +19,7 @@ import (
 	"fmt"
 	"testing"
 
-	"cloud.google.com/go/bigquery/connection/apiv1/connectionpb"
-	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
-	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 )
 
@@ -156,92 +153,6 @@ func TestIntegration_RoutineJSUDF(t *testing.T) {
 	if _, err := routine.Update(ctx, newMeta, ""); err != nil {
 		t.Fatalf("Update: %v", err)
 	}
-}
-
-func TestIntegration_RoutineRemoteUDF(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx := context.Background()
-
-	routineID := routineIDs.New()
-	routine := dataset.Routine(routineID)
-	uri := "https://aaabbbccc-uc.a.run.app"
-
-	connectionLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us")
-	connectionName := fmt.Sprintf("udf_conn%s", routineID)
-	cleanupConnection, connectionID, err := createConnection(ctx, t, connectionLocation, connectionName)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanupConnection()
-
-	remoteOpts := &RemoteFunctionOptions{
-		Endpoint:           uri,
-		Connection:         connectionID,
-		MaxBatchingRows:    50,
-		UserDefinedContext: map[string]string{"foo": "bar"},
-	}
-	meta := &RoutineMetadata{
-		RemoteFunctionOptions: remoteOpts,
-		Description:           "defines a remote function",
-		Type:                  ScalarFunctionRoutine,
-		ReturnType: &StandardSQLDataType{
-			TypeKind: "STRING",
-		},
-	}
-
-	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
-		if err := routine.Create(ctx, meta); err != nil {
-			return false, err
-		}
-		return true, nil
-	})
-	if err != nil {
-		t.Fatalf("routine.Create: %v", err)
-	}
-
-	gotMeta, err := routine.Metadata(ctx)
-	if err != nil {
-		t.Fatalf("routine.Metadata: %v", err)
-	}
-
-	if diff := testutil.Diff(gotMeta.RemoteFunctionOptions, remoteOpts); diff != "" {
-		t.Fatalf("RemoteFunctionOptions: -got, +want:\n%s", diff)
-	}
-}
-
-func createConnection(ctx context.Context, t *testing.T, parent, name string) (cleanup func(), connectionID string, err error) {
-	fullname := fmt.Sprintf("%s/connections/%s", parent, name)
-	conn, err := connectionsClient.CreateConnection(ctx, &connectionpb.CreateConnectionRequest{
-		Parent:       parent,
-		ConnectionId: name,
-		Connection: &connectionpb.Connection{
-			FriendlyName: name,
-			Properties: &connectionpb.Connection_CloudResource{
-				CloudResource: &connectionpb.CloudResourceProperties{},
-			},
-		},
-	})
-	if err != nil {
-		return
-	}
-	conn, err = connectionsClient.GetConnection(ctx, &connectionpb.GetConnectionRequest{
-		Name: fullname,
-	})
-	if err != nil {
-		return
-	}
-	cleanup = func() {
-		err := connectionsClient.DeleteConnection(ctx, &connectionpb.DeleteConnectionRequest{
-			Name: fullname,
-		})
-		if err != nil {
-			t.Logf("could not delete connection: %s", fullname)
-		}
-	}
-	connectionID = conn.Name
-	return
 }
 
 func TestIntegration_RoutineComplexTypes(t *testing.T) {

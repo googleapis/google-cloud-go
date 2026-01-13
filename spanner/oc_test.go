@@ -141,6 +141,7 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 }
 
 func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
+	t.Skip("skipped as impacting generation https://github.com/googleapis/google-cloud-go/issues/13383")
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := stestutil.NewTestExporter(SessionsCountView)
 	defer te.Unregister()

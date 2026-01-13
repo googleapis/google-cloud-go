@@ -16,7 +16,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.15.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.36.0
 	go.opentelemetry.io/otel v1.38.0
-	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.36.0
+	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.38.0
 	go.opentelemetry.io/otel/sdk v1.38.0
 	go.opentelemetry.io/otel/sdk/metric v1.38.0
 	go.opentelemetry.io/otel/trace v1.38.0

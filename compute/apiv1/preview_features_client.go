@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -133,7 +133,8 @@ func (c *PreviewFeaturesClient) List(ctx context.Context, req *computepb.ListPre
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Update patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.
+// Update patches the given PreviewFeature. This method is used to enable or disable
+// a PreviewFeature.
 func (c *PreviewFeaturesClient) Update(ctx context.Context, req *computepb.UpdatePreviewFeatureRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -362,7 +363,8 @@ func (c *previewFeaturesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// Update patches the given PreviewFeature. This method is used to enable or disable a PreviewFeature.
+// Update patches the given PreviewFeature. This method is used to enable or disable
+// a PreviewFeature.
 func (c *previewFeaturesRESTClient) Update(ctx context.Context, req *computepb.UpdatePreviewFeatureRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPreviewFeatureResource()

@@ -1,6 +1,16 @@
 # Changes
 
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.12.0) (2025-12-04)
+
+### Features
+
+* add transfer metadata options proto definition ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* update tickets component number ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.3...parallelstore/v0.11.4) (2025-09-18)
 
 

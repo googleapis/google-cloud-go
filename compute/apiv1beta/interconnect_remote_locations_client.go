@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,12 +117,14 @@ func (c *InterconnectRemoteLocationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get returns the details for the specified interconnect remote location. Gets a list of available interconnect remote locations by making a list() request.
+// Get returns the details for the specified interconnect remote location. Gets a
+// list of available interconnect remote locations by making alist() request.
 func (c *InterconnectRemoteLocationsClient) Get(ctx context.Context, req *computepb.GetInterconnectRemoteLocationRequest, opts ...gax.CallOption) (*computepb.InterconnectRemoteLocation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves the list of interconnect remote locations available to the specified project.
+// List retrieves the list of interconnect remote locations available to the
+// specified project.
 func (c *InterconnectRemoteLocationsClient) List(ctx context.Context, req *computepb.ListInterconnectRemoteLocationsRequest, opts ...gax.CallOption) *InterconnectRemoteLocationIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -204,7 +206,8 @@ func (c *interconnectRemoteLocationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get returns the details for the specified interconnect remote location. Gets a list of available interconnect remote locations by making a list() request.
+// Get returns the details for the specified interconnect remote location. Gets a
+// list of available interconnect remote locations by making alist() request.
 func (c *interconnectRemoteLocationsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectRemoteLocationRequest, opts ...gax.CallOption) (*computepb.InterconnectRemoteLocation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -249,7 +252,8 @@ func (c *interconnectRemoteLocationsRESTClient) Get(ctx context.Context, req *co
 	return resp, nil
 }
 
-// List retrieves the list of interconnect remote locations available to the specified project.
+// List retrieves the list of interconnect remote locations available to the
+// specified project.
 func (c *interconnectRemoteLocationsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectRemoteLocationsRequest, opts ...gax.CallOption) *InterconnectRemoteLocationIterator {
 	it := &InterconnectRemoteLocationIterator{}
 	req = proto.Clone(req).(*computepb.ListInterconnectRemoteLocationsRequest)

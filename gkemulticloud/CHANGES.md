@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.6.0) (2025-12-04)
+
+### Features
+
+* added custom tolerations and labels support for Attached Clusters ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* mark GKE-on-AWS and GKE-on-Azure protos as being deprecated to discourage any new usage as these services turn down ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* A comment for field `requested_cancellation` in message `.google.cloud.gkemulticloud.v1.OperationMetadata` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `tags` in message `.google.cloud.gkemulticloud.v1.AttachedCluster` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `throughput` in message `.google.cloud.gkemulticloud.v1.AwsVolumeTemplate` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.5.4](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.5.3...gkemulticloud/v1.5.4) (2025-09-18)
 
 

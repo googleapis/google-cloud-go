@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -172,7 +172,11 @@ func (c *NetworkAttachmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all NetworkAttachment resources,
+// regional and global, available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *NetworkAttachmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkAttachmentsRequest, opts ...gax.CallOption) *NetworkAttachmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -187,12 +191,14 @@ func (c *NetworkAttachmentsClient) Get(ctx context.Context, req *computepb.GetNe
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *NetworkAttachmentsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNetworkAttachmentRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a NetworkAttachment in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a NetworkAttachment in the specified project in the given scope
+// using the parameters that are included in the request.
 func (c *NetworkAttachmentsClient) Insert(ctx context.Context, req *computepb.InsertNetworkAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -202,12 +208,16 @@ func (c *NetworkAttachmentsClient) List(ctx context.Context, req *computepb.List
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified NetworkAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified NetworkAttachment resource with the data included in
+// the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *NetworkAttachmentsClient) Patch(ctx context.Context, req *computepb.PatchNetworkAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *NetworkAttachmentsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNetworkAttachmentRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -310,7 +320,11 @@ func (c *networkAttachmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all NetworkAttachment resources,
+// regional and global, available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *networkAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkAttachmentsRequest, opts ...gax.CallOption) *NetworkAttachmentsScopedListPairIterator {
 	it := &NetworkAttachmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkAttachmentsRequest)
@@ -514,7 +528,8 @@ func (c *networkAttachmentsRESTClient) Get(ctx context.Context, req *computepb.G
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *networkAttachmentsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNetworkAttachmentRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -566,7 +581,8 @@ func (c *networkAttachmentsRESTClient) GetIamPolicy(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Insert creates a NetworkAttachment in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a NetworkAttachment in the specified project in the given scope
+// using the parameters that are included in the request.
 func (c *networkAttachmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkAttachmentResource()
@@ -719,7 +735,10 @@ func (c *networkAttachmentsRESTClient) List(ctx context.Context, req *computepb.
 	return it
 }
 
-// Patch patches the specified NetworkAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified NetworkAttachment resource with the data included in
+// the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *networkAttachmentsRESTClient) Patch(ctx context.Context, req *computepb.PatchNetworkAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkAttachmentResource()
@@ -786,7 +805,8 @@ func (c *networkAttachmentsRESTClient) Patch(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *networkAttachmentsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNetworkAttachmentRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()

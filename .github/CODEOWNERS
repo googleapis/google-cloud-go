@@ -9,7 +9,6 @@
 /bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /bigtable/bttest        @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
-/bigquery/              @googleapis/api-bigquery @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /datastore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /firestore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /pubsub/                @googleapis/api-pubsub @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team @googleapis/cloud-native-db-dpes
@@ -28,7 +27,3 @@
 # a single owner.  This allows multiple teams to interact with librarian operations that cause
 # changes to librarian state.
 /.librarian/state.yaml
-
-# Owned by all
-go.work
-go.work.sum

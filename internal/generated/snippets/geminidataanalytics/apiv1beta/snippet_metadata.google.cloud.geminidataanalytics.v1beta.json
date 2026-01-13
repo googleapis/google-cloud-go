@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/geminidataanalytics/apiv1beta",
-    "version": "0.2.1",
+    "version": "0.5.0",
     "language": "GO",
     "apis": [
       {
@@ -745,6 +745,51 @@
       ]
     },
     {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_DeleteConversation_sync",
+      "title": "geminidataanalytics DeleteConversation Sample",
+      "description": "DeleteConversation deletes a conversation.",
+      "file": "DataChatClient/DeleteConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversation",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.DeleteConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.DeleteConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "DeleteConversation",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService.DeleteConversation",
+          "service": {
+            "shortName": "DataChatService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_DeleteOperation_sync",
       "title": "geminidataanalytics DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -1107,6 +1152,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_QueryData_sync",
+      "title": "geminidataanalytics QueryData Sample",
+      "description": "QueryData queries data from a natural language user query.",
+      "file": "DataChatClient/QueryData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryData",
+        "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient.QueryData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "geminidataanalyticspb.QueryDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*geminidataanalyticspb.QueryDataResponse",
+        "client": {
+          "shortName": "DataChatClient",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatClient"
+        },
+        "method": {
+          "shortName": "QueryData",
+          "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService.QueryData",
+          "service": {
+            "shortName": "DataChatService",
+            "fullName": "google.cloud.geminidataanalytics.v1beta.DataChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

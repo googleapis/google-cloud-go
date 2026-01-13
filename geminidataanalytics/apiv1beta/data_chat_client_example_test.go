@@ -85,6 +85,29 @@ func ExampleDataChatClient_CreateConversation() {
 	_ = resp
 }
 
+func ExampleDataChatClient_DeleteConversation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := geminidataanalytics.NewDataChatClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &geminidataanalyticspb.DeleteConversationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#DeleteConversationRequest.
+	}
+	err = c.DeleteConversation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleDataChatClient_GetConversation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -182,6 +205,31 @@ func ExampleDataChatClient_ListMessages() {
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*geminidataanalyticspb.ListMessagesResponse)
 	}
+}
+
+func ExampleDataChatClient_QueryData() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := geminidataanalytics.NewDataChatClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &geminidataanalyticspb.QueryDataRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#QueryDataRequest.
+	}
+	resp, err := c.QueryData(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleDataChatClient_GetLocation() {

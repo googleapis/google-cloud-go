@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -182,7 +182,10 @@ func (c *ReservationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of reservations.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *ReservationsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListReservationsRequest, opts ...gax.CallOption) *ReservationsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -197,17 +200,20 @@ func (c *ReservationsClient) Get(ctx context.Context, req *computepb.GetReservat
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *ReservationsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyReservationRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a new reservation. For more information, read Reserving zonal resources.
+// Insert creates a new reservation. For more information, readReserving zonal
+// resources.
 func (c *ReservationsClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List a list of all the reservations that have been configured for the specified project in specified zone.
+// List a list of all the reservations that have been configured for the
+// specified project in specified zone.
 func (c *ReservationsClient) List(ctx context.Context, req *computepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -217,12 +223,15 @@ func (c *ReservationsClient) PerformMaintenance(ctx context.Context, req *comput
 	return c.internalClient.PerformMaintenance(ctx, req, opts...)
 }
 
-// Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
+// Resize resizes the reservation (applicable to standalone reservations only). For
+// more information, readModifying
+// reservations.
 func (c *ReservationsClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Resize(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *ReservationsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyReservationRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -330,7 +339,10 @@ func (c *reservationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of reservations.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *reservationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListReservationsRequest, opts ...gax.CallOption) *ReservationsScopedListPairIterator {
 	it := &ReservationsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListReservationsRequest)
@@ -534,7 +546,8 @@ func (c *reservationsRESTClient) Get(ctx context.Context, req *computepb.GetRese
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyReservationRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -586,7 +599,8 @@ func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// Insert creates a new reservation. For more information, read Reserving zonal resources.
+// Insert creates a new reservation. For more information, readReserving zonal
+// resources.
 func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationResource()
@@ -653,7 +667,8 @@ func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	return op, nil
 }
 
-// List a list of all the reservations that have been configured for the specified project in specified zone.
+// List a list of all the reservations that have been configured for the
+// specified project in specified zone.
 func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	it := &ReservationIterator{}
 	req = proto.Clone(req).(*computepb.ListReservationsRequest)
@@ -806,7 +821,9 @@ func (c *reservationsRESTClient) PerformMaintenance(ctx context.Context, req *co
 	return op, nil
 }
 
-// Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
+// Resize resizes the reservation (applicable to standalone reservations only). For
+// more information, readModifying
+// reservations.
 func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationsResizeRequestResource()
@@ -873,7 +890,8 @@ func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.Resi
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *reservationsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyReservationRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()

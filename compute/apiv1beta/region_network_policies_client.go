@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -211,7 +211,10 @@ func (c *RegionNetworkPoliciesClient) AddTrafficClassificationRule(ctx context.C
 	return c.internalClient.AddTrafficClassificationRule(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of network policies. To prevent failure, it’s recommended that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of network policies.
+//
+// To prevent failure, it’s recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *RegionNetworkPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -236,17 +239,20 @@ func (c *RegionNetworkPoliciesClient) GetTrafficClassificationRule(ctx context.C
 	return c.internalClient.GetTrafficClassificationRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *RegionNetworkPoliciesClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the policies that have been configured for the specified project in the given region.
+// List lists all the policies that have been configured for the specified project
+// in the given region.
 func (c *RegionNetworkPoliciesClient) List(ctx context.Context, req *computepb.ListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request.
+// Patch patches the specified policy with the data included in the
+// request.
 func (c *RegionNetworkPoliciesClient) Patch(ctx context.Context, req *computepb.PatchRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -493,7 +499,10 @@ func (c *regionNetworkPoliciesRESTClient) AddTrafficClassificationRule(ctx conte
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of network policies. To prevent failure, it’s recommended that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of network policies.
+//
+// To prevent failure, it’s recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *regionNetworkPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPoliciesScopedListPairIterator {
 	it := &NetworkPoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRegionNetworkPoliciesRequest)
@@ -801,7 +810,8 @@ func (c *regionNetworkPoliciesRESTClient) GetTrafficClassificationRule(ctx conte
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *regionNetworkPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkPolicyResource()
@@ -868,7 +878,8 @@ func (c *regionNetworkPoliciesRESTClient) Insert(ctx context.Context, req *compu
 	return op, nil
 }
 
-// List lists all the policies that have been configured for the specified project in the given region.
+// List lists all the policies that have been configured for the specified project
+// in the given region.
 func (c *regionNetworkPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPolicyIterator {
 	it := &NetworkPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionNetworkPoliciesRequest)
@@ -954,7 +965,8 @@ func (c *regionNetworkPoliciesRESTClient) List(ctx context.Context, req *compute
 	return it
 }
 
-// Patch patches the specified policy with the data included in the request.
+// Patch patches the specified policy with the data included in the
+// request.
 func (c *regionNetworkPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkPolicyResource()

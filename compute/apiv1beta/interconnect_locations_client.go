@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,12 +117,14 @@ func (c *InterconnectLocationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.
+// Get returns the details for the specified interconnect location. Gets a list of
+// available interconnect locations by making a list() request.
 func (c *InterconnectLocationsClient) Get(ctx context.Context, req *computepb.GetInterconnectLocationRequest, opts ...gax.CallOption) (*computepb.InterconnectLocation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves the list of interconnect locations available to the specified project.
+// List retrieves the list of interconnect locations available to the specified
+// project.
 func (c *InterconnectLocationsClient) List(ctx context.Context, req *computepb.ListInterconnectLocationsRequest, opts ...gax.CallOption) *InterconnectLocationIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -204,7 +206,8 @@ func (c *interconnectLocationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.
+// Get returns the details for the specified interconnect location. Gets a list of
+// available interconnect locations by making a list() request.
 func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectLocationRequest, opts ...gax.CallOption) (*computepb.InterconnectLocation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -249,7 +252,8 @@ func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// List retrieves the list of interconnect locations available to the specified project.
+// List retrieves the list of interconnect locations available to the specified
+// project.
 func (c *interconnectLocationsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectLocationsRequest, opts ...gax.CallOption) *InterconnectLocationIterator {
 	it := &InterconnectLocationIterator{}
 	req = proto.Clone(req).(*computepb.ListInterconnectLocationsRequest)

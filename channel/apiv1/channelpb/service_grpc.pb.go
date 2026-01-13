@@ -1038,8 +1038,8 @@ type CloudChannelServiceClient interface {
 	// be purchased using the same billing account and the billing accounts
 	// eligible to purchase each SKU group.
 	QueryEligibleBillingAccounts(ctx context.Context, in *QueryEligibleBillingAccountsRequest, opts ...grpc.CallOption) (*QueryEligibleBillingAccountsResponse, error)
-	// Registers a service account with subscriber privileges on the Cloud Pub/Sub
-	// topic for this Channel Services account. After you create a
+	// Registers a service account with subscriber privileges on the Pub/Sub
+	// topic for this Channel Services account or integrator. After you create a
 	// subscriber, you get the events through
 	// [SubscriberEvent][google.cloud.channel.v1.SubscriberEvent]
 	//
@@ -1057,10 +1057,10 @@ type CloudChannelServiceClient interface {
 	// Return value:
 	// The topic name with the registered service email address.
 	RegisterSubscriber(ctx context.Context, in *RegisterSubscriberRequest, opts ...grpc.CallOption) (*RegisterSubscriberResponse, error)
-	// Unregisters a service account with subscriber privileges on the Cloud
-	// Pub/Sub topic created for this Channel Services account. If there are no
-	// service accounts left with subscriber privileges, this deletes the topic.
-	// You can call ListSubscribers to check for these accounts.
+	// Unregisters a service account with subscriber privileges on the Pub/Sub
+	// topic created for this Channel Services account or integrator. If there are
+	// no service accounts left with subscriber privileges, this deletes the
+	// topic. You can call ListSubscribers to check for these accounts.
 	//
 	// Possible error codes:
 	//
@@ -1079,8 +1079,8 @@ type CloudChannelServiceClient interface {
 	// Returns a success response if the service email address wasn't registered
 	// with the topic.
 	UnregisterSubscriber(ctx context.Context, in *UnregisterSubscriberRequest, opts ...grpc.CallOption) (*UnregisterSubscriberResponse, error)
-	// Lists service accounts with subscriber privileges on the Cloud Pub/Sub
-	// topic created for this Channel Services account.
+	// Lists service accounts with subscriber privileges on the Pub/Sub topic
+	// created for this Channel Services account or integrator.
 	//
 	// Possible error codes:
 	//
@@ -2516,8 +2516,8 @@ type CloudChannelServiceServer interface {
 	// be purchased using the same billing account and the billing accounts
 	// eligible to purchase each SKU group.
 	QueryEligibleBillingAccounts(context.Context, *QueryEligibleBillingAccountsRequest) (*QueryEligibleBillingAccountsResponse, error)
-	// Registers a service account with subscriber privileges on the Cloud Pub/Sub
-	// topic for this Channel Services account. After you create a
+	// Registers a service account with subscriber privileges on the Pub/Sub
+	// topic for this Channel Services account or integrator. After you create a
 	// subscriber, you get the events through
 	// [SubscriberEvent][google.cloud.channel.v1.SubscriberEvent]
 	//
@@ -2535,10 +2535,10 @@ type CloudChannelServiceServer interface {
 	// Return value:
 	// The topic name with the registered service email address.
 	RegisterSubscriber(context.Context, *RegisterSubscriberRequest) (*RegisterSubscriberResponse, error)
-	// Unregisters a service account with subscriber privileges on the Cloud
-	// Pub/Sub topic created for this Channel Services account. If there are no
-	// service accounts left with subscriber privileges, this deletes the topic.
-	// You can call ListSubscribers to check for these accounts.
+	// Unregisters a service account with subscriber privileges on the Pub/Sub
+	// topic created for this Channel Services account or integrator. If there are
+	// no service accounts left with subscriber privileges, this deletes the
+	// topic. You can call ListSubscribers to check for these accounts.
 	//
 	// Possible error codes:
 	//
@@ -2557,8 +2557,8 @@ type CloudChannelServiceServer interface {
 	// Returns a success response if the service email address wasn't registered
 	// with the topic.
 	UnregisterSubscriber(context.Context, *UnregisterSubscriberRequest) (*UnregisterSubscriberResponse, error)
-	// Lists service accounts with subscriber privileges on the Cloud Pub/Sub
-	// topic created for this Channel Services account.
+	// Lists service accounts with subscriber privileges on the Pub/Sub topic
+	// created for this Channel Services account or integrator.
 	//
 	// Possible error codes:
 	//

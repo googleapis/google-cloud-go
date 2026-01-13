@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -138,12 +138,14 @@ func (c *RegionTargetTcpProxiesClient) Get(ctx context.Context, req *computepb.G
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetTcpProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetTcpProxy resource in the specified project and region using
+// the data included in the request.
 func (c *RegionTargetTcpProxiesClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of TargetTcpProxy resources available to the specified project in a given region.
+// List retrieves a list of TargetTcpProxy resources
+// available to the specified project in a given region.
 func (c *RegionTargetTcpProxiesClient) List(ctx context.Context, req *computepb.ListRegionTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -346,7 +348,8 @@ func (c *regionTargetTcpProxiesRESTClient) Get(ctx context.Context, req *compute
 	return resp, nil
 }
 
-// Insert creates a TargetTcpProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetTcpProxy resource in the specified project and region using
+// the data included in the request.
 func (c *regionTargetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxyResource()
@@ -413,7 +416,8 @@ func (c *regionTargetTcpProxiesRESTClient) Insert(ctx context.Context, req *comp
 	return op, nil
 }
 
-// List retrieves a list of TargetTcpProxy resources available to the specified project in a given region.
+// List retrieves a list of TargetTcpProxy resources
+// available to the specified project in a given region.
 func (c *regionTargetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.ListRegionTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxyIterator {
 	it := &TargetTcpProxyIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionTargetTcpProxiesRequest)

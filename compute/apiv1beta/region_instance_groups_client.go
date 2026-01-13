@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -138,12 +138,16 @@ func (c *RegionInstanceGroupsClient) Get(ctx context.Context, req *computepb.Get
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves the list of instance group resources contained within the specified region.
+// List retrieves the list of instance group resources contained within
+// the specified region.
 func (c *RegionInstanceGroupsClient) List(ctx context.Context, req *computepb.ListRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListInstances lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
+// ListInstances lists the instances in the specified instance group and displays
+// information about the named ports. Depending on the specified options, this
+// method can list all instances or only the instances that are running.
+// The orderBy query parameter is not supported.
 func (c *RegionInstanceGroupsClient) ListInstances(ctx context.Context, req *computepb.ListInstancesRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	return c.internalClient.ListInstances(ctx, req, opts...)
 }
@@ -296,7 +300,8 @@ func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// List retrieves the list of instance group resources contained within the specified region.
+// List retrieves the list of instance group resources contained within
+// the specified region.
 func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	it := &InstanceGroupIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionInstanceGroupsRequest)
@@ -382,7 +387,10 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 	return it
 }
 
-// ListInstances lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
+// ListInstances lists the instances in the specified instance group and displays
+// information about the named ports. Depending on the specified options, this
+// method can list all instances or only the instances that are running.
+// The orderBy query parameter is not supported.
 func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	it := &InstanceWithNamedPortsIterator{}
 	req = proto.Clone(req).(*computepb.ListInstancesRegionInstanceGroupsRequest)

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,7 +148,10 @@ func (c *TargetVpnGatewaysClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of target VPN gateways. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target VPN gateways.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetVpnGatewaysClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewaysScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -163,17 +166,20 @@ func (c *TargetVpnGatewaysClient) Get(ctx context.Context, req *computepb.GetTar
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a target VPN gateway in the specified project and region using the data included in the request.
+// Insert creates a target VPN gateway in the specified project and region using
+// the data included in the request.
 func (c *TargetVpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of target VPN gateways available to the specified project and region.
+// List retrieves a list of target VPN gateways available to the specified
+// project and region.
 func (c *TargetVpnGatewaysClient) List(ctx context.Context, req *computepb.ListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewayIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a TargetVpnGateway. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *TargetVpnGatewaysClient) SetLabels(ctx context.Context, req *computepb.SetLabelsTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -271,7 +277,10 @@ func (c *targetVpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of target VPN gateways. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target VPN gateways.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewaysScopedListPairIterator {
 	it := &TargetVpnGatewaysScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetVpnGatewaysRequest)
@@ -475,7 +484,8 @@ func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates a target VPN gateway in the specified project and region using the data included in the request.
+// Insert creates a target VPN gateway in the specified project and region using
+// the data included in the request.
 func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetVpnGatewayResource()
@@ -542,7 +552,8 @@ func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// List retrieves a list of target VPN gateways available to the specified project and region.
+// List retrieves a list of target VPN gateways available to the specified
+// project and region.
 func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewayIterator {
 	it := &TargetVpnGatewayIterator{}
 	req = proto.Clone(req).(*computepb.ListTargetVpnGatewaysRequest)
@@ -628,7 +639,8 @@ func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// SetLabels sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a TargetVpnGateway. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *targetVpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()

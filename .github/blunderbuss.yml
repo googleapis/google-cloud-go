@@ -10,10 +10,6 @@ assign_issues_by:
   to:
   - cpriti-os
 - labels:
-  - 'api: bigquery'
-  to:
-  - alvarowolfx
-- labels:
   - 'api: pubsub'
   to:
   - hongalex
@@ -25,11 +21,6 @@ assign_issues_by:
   - 'api: spanner'
   to:
   - rahul2393
-- labels:
-  - 'api: logging'
-  - 'api: clouderrorreporting'
-  to:
-  - googleapis/api-logging-go-reviewers
 - labels:
   - 'api: cloudprofiler'
   to:

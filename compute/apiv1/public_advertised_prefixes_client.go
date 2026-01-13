@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -158,7 +158,8 @@ func (c *PublicAdvertisedPrefixesClient) Get(ctx context.Context, req *computepb
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
+// Insert creates a PublicAdvertisedPrefix in the specified project
+// using the parameters that are included in the request.
 func (c *PublicAdvertisedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -168,7 +169,10 @@ func (c *PublicAdvertisedPrefixesClient) List(ctx context.Context, req *computep
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified Router resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *PublicAdvertisedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -434,7 +438,8 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
+// Insert creates a PublicAdvertisedPrefix in the specified project
+// using the parameters that are included in the request.
 func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
@@ -586,7 +591,10 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 	return it
 }
 
-// Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified Router resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()

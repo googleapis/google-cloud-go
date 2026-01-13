@@ -218,7 +218,20 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ExecutePipeline: []gax.CallOption{},
+		ExecutePipeline: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		RunAggregationQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -436,7 +449,20 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		ExecutePipeline: []gax.CallOption{},
+		ExecutePipeline: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		RunAggregationQuery: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1087,21 +1113,19 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 }
 
 func (c *gRPCClient) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
-	var routingHeaders []string
-	seen := make(map[string]bool)
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
-		if !seen["project_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "project_id", url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])))
-			seen["project_id"] = true
-		}
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
 	}
 	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
-		if !seen["database_id"] {
-			routingHeaders = append(routingHeaders, fmt.Sprintf("%s=%s", "database_id", url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])))
-			seen["database_id"] = true
-		}
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
 	}
-	hds := []string{"x-goog-request-params", strings.Join(routingHeaders, "&")}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -2053,6 +2077,11 @@ func (c *restClient) ExecutePipeline(ctx context.Context, req *firestorepb.Execu
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:executePipeline", req.GetDatabase())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	routingHeaders := ""

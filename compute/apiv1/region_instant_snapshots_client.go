@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,7 +157,14 @@ func (c *RegionInstantSnapshotsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting
+// a single instantSnapshot might not necessarily delete all the data on that
+// instantSnapshot. If any data on the instantSnapshot that is marked for
+// deletion is needed for subsequent instantSnapshots, the data will be moved
+// to the next corresponding instantSnapshot.
+//
+// For more information, seeDeleting
+// instantSnapshots.
 func (c *RegionInstantSnapshotsClient) Delete(ctx context.Context, req *computepb.DeleteRegionInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -167,7 +174,8 @@ func (c *RegionInstantSnapshotsClient) Get(ctx context.Context, req *computepb.G
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *RegionInstantSnapshotsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -177,17 +185,21 @@ func (c *RegionInstantSnapshotsClient) Insert(ctx context.Context, req *computep
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of InstantSnapshot resources contained within the specified region.
+// List retrieves the list of InstantSnapshot resources contained within
+// the specified region.
 func (c *RegionInstantSnapshotsClient) List(ctx context.Context, req *computepb.ListRegionInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *RegionInstantSnapshotsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a instantSnapshot in the given region. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a instantSnapshot in the given region. To learn more
+// about labels, read the Labeling
+// Resources documentation.
 func (c *RegionInstantSnapshotsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -290,7 +302,14 @@ func (c *regionInstantSnapshotsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting
+// a single instantSnapshot might not necessarily delete all the data on that
+// instantSnapshot. If any data on the instantSnapshot that is marked for
+// deletion is needed for subsequent instantSnapshots, the data will be moved
+// to the next corresponding instantSnapshot.
+//
+// For more information, seeDeleting
+// instantSnapshots.
 func (c *regionInstantSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -395,7 +414,8 @@ func (c *regionInstantSnapshotsRESTClient) Get(ctx context.Context, req *compute
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *regionInstantSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -514,7 +534,8 @@ func (c *regionInstantSnapshotsRESTClient) Insert(ctx context.Context, req *comp
 	return op, nil
 }
 
-// List retrieves the list of InstantSnapshot resources contained within the specified region.
+// List retrieves the list of InstantSnapshot resources contained within
+// the specified region.
 func (c *regionInstantSnapshotsRESTClient) List(ctx context.Context, req *computepb.ListRegionInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotIterator {
 	it := &InstantSnapshotIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionInstantSnapshotsRequest)
@@ -600,7 +621,8 @@ func (c *regionInstantSnapshotsRESTClient) List(ctx context.Context, req *comput
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *regionInstantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
@@ -652,7 +674,9 @@ func (c *regionInstantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req
 	return resp, nil
 }
 
-// SetLabels sets the labels on a instantSnapshot in the given region. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a instantSnapshot in the given region. To learn more
+// about labels, read the Labeling
+// Resources documentation.
 func (c *regionInstantSnapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()

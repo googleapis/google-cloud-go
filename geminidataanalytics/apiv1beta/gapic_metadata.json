@@ -179,6 +179,11 @@
                 "CreateConversation"
               ]
             },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -217,6 +222,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
               ]
             }
           }
@@ -239,6 +249,11 @@
                 "CreateConversation"
               ]
             },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -277,6 +292,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
               ]
             }
           }

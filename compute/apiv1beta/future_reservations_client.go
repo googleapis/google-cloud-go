@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,7 +153,10 @@ func (c *FutureReservationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of future reservations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of future reservations.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *FutureReservationsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListFutureReservationsRequest, opts ...gax.CallOption) *FutureReservationsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -178,7 +181,8 @@ func (c *FutureReservationsClient) Insert(ctx context.Context, req *computepb.In
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List a list of all the future reservations that have been configured for the specified project in specified zone.
+// List a list of all the future reservations that have been configured for the
+// specified project in specified zone.
 func (c *FutureReservationsClient) List(ctx context.Context, req *computepb.ListFutureReservationsRequest, opts ...gax.CallOption) *FutureReservationIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -281,7 +285,10 @@ func (c *futureReservationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of future reservations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of future reservations.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *futureReservationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListFutureReservationsRequest, opts ...gax.CallOption) *FutureReservationsScopedListPairIterator {
 	it := &FutureReservationsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListFutureReservationsRequest)
@@ -612,7 +619,8 @@ func (c *futureReservationsRESTClient) Insert(ctx context.Context, req *computep
 	return op, nil
 }
 
-// List a list of all the future reservations that have been configured for the specified project in specified zone.
+// List a list of all the future reservations that have been configured for the
+// specified project in specified zone.
 func (c *futureReservationsRESTClient) List(ctx context.Context, req *computepb.ListFutureReservationsRequest, opts ...gax.CallOption) *FutureReservationIterator {
 	it := &FutureReservationIterator{}
 	req = proto.Clone(req).(*computepb.ListFutureReservationsRequest)

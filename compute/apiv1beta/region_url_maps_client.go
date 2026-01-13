@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,22 +163,31 @@ func (c *RegionUrlMapsClient) Get(ctx context.Context, req *computepb.GetRegionU
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a UrlMap resource in the specified project using the data included in the request.
+// Insert creates a UrlMap resource in the specified project using
+// the data included in the request.
 func (c *RegionUrlMapsClient) Insert(ctx context.Context, req *computepb.InsertRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path,
+// scoped to the specified UrlMap.
+//
+// For more information, see Invalidating cached
+// content (at /cdn/docs/invalidating-cached-content).
 func (c *RegionUrlMapsClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.InvalidateCache(ctx, req, opts...)
 }
 
-// List retrieves the list of UrlMap resources available to the specified project in the specified region.
+// List retrieves the list of UrlMap resources available to the specified
+// project in the specified region.
 func (c *RegionUrlMapsClient) List(ctx context.Context, req *computepb.ListRegionUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified UrlMap resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *RegionUrlMapsClient) Patch(ctx context.Context, req *computepb.PatchRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -188,12 +197,15 @@ func (c *RegionUrlMapsClient) TestIamPermissions(ctx context.Context, req *compu
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified UrlMap resource with the data included in the request.
+// Update updates the specified UrlMap resource with the data included in the
+// request.
 func (c *RegionUrlMapsClient) Update(ctx context.Context, req *computepb.UpdateRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
-// Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+// Validate runs static validation for the UrlMap. In particular, the tests of the
+// provided UrlMap will be run. Calling this method does NOT create the
+// UrlMap.
 func (c *RegionUrlMapsClient) Validate(ctx context.Context, req *computepb.ValidateRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
 	return c.internalClient.Validate(ctx, req, opts...)
 }
@@ -396,7 +408,8 @@ func (c *regionUrlMapsRESTClient) Get(ctx context.Context, req *computepb.GetReg
 	return resp, nil
 }
 
-// Insert creates a UrlMap resource in the specified project using the data included in the request.
+// Insert creates a UrlMap resource in the specified project using
+// the data included in the request.
 func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -463,7 +476,11 @@ func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	return op, nil
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path,
+// scoped to the specified UrlMap.
+//
+// For more information, see Invalidating cached
+// content (at /cdn/docs/invalidating-cached-content).
 func (c *regionUrlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCacheInvalidationRuleResource()
@@ -530,7 +547,8 @@ func (c *regionUrlMapsRESTClient) InvalidateCache(ctx context.Context, req *comp
 	return op, nil
 }
 
-// List retrieves the list of UrlMap resources available to the specified project in the specified region.
+// List retrieves the list of UrlMap resources available to the specified
+// project in the specified region.
 func (c *regionUrlMapsRESTClient) List(ctx context.Context, req *computepb.ListRegionUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	it := &UrlMapIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionUrlMapsRequest)
@@ -616,7 +634,10 @@ func (c *regionUrlMapsRESTClient) List(ctx context.Context, req *computepb.ListR
 	return it
 }
 
-// Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified UrlMap resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *regionUrlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -735,7 +756,8 @@ func (c *regionUrlMapsRESTClient) TestIamPermissions(ctx context.Context, req *c
 	return resp, nil
 }
 
-// Update updates the specified UrlMap resource with the data included in the request.
+// Update updates the specified UrlMap resource with the data included in the
+// request.
 func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -802,7 +824,9 @@ func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.Upd
 	return op, nil
 }
 
-// Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+// Validate runs static validation for the UrlMap. In particular, the tests of the
+// provided UrlMap will be run. Calling this method does NOT create the
+// UrlMap.
 func (c *regionUrlMapsRESTClient) Validate(ctx context.Context, req *computepb.ValidateRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionUrlMapsValidateRequestResource()

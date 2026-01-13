@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@
 package firestorepb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -37,7 +38,7 @@ const (
 
 // A Firestore query represented as an ordered list of operations / stages.
 //
-// This is considered the top-level function which plans & executes a query.
+// This is considered the top-level function which plans and executes a query.
 // It is logically equivalent to `query(stages, options)`, but prevents the
 // client from having to build a function wrapper.
 type StructuredPipeline struct {

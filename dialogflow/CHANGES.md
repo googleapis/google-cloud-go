@@ -1,5 +1,26 @@
 # Changes
 
+## [1.73.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.73.0) (2025-12-18)
+
+### Features
+
+* updated v2 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v2beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v3beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+## [1.72.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.72.0) (2025-12-04)
+
+### Features
+
+* Service Account Auth in Tools and Webhooks ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add agentDesktopSource field to the Participant object ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add support for defining custom actions in code. See https://cloud.google.com/dialogflow/cx/docs/concept/playbook/code-block for more information ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* Add further clarification for when the event Type CONVERSATION_FINISHED is fired ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Update evaluator version from output only to optional. ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.71.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.71.0) (2025-11-06)
 
 ### Features

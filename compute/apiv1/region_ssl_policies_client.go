@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -147,7 +147,9 @@ func (c *RegionSslPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+// Delete deletes the specified SSL policy. The SSL policy resource can be deleted
+// only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+// resources.
 func (c *RegionSslPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -157,17 +159,20 @@ func (c *RegionSslPoliciesClient) Get(ctx context.Context, req *computepb.GetReg
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project and region using the data included in the request.
+// Insert creates a new policy in the specified project and region using the data
+// included in the request.
 func (c *RegionSslPoliciesClient) Insert(ctx context.Context, req *computepb.InsertRegionSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the SSL policies that have been configured for the specified project and region.
+// List lists all the SSL policies that have been configured for the specified
+// project and region.
 func (c *RegionSslPoliciesClient) List(ctx context.Context, req *computepb.ListRegionSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.
+// ListAvailableFeatures lists all features that can be specified in the SSL policy when using
+// custom profile.
 func (c *RegionSslPoliciesClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesRegionSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	return c.internalClient.ListAvailableFeatures(ctx, req, opts...)
 }
@@ -270,7 +275,9 @@ func (c *regionSslPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+// Delete deletes the specified SSL policy. The SSL policy resource can be deleted
+// only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+// resources.
 func (c *regionSslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -375,7 +382,8 @@ func (c *regionSslPoliciesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project and region using the data included in the request.
+// Insert creates a new policy in the specified project and region using the data
+// included in the request.
 func (c *regionSslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyResource()
@@ -442,7 +450,8 @@ func (c *regionSslPoliciesRESTClient) Insert(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// List lists all the SSL policies that have been configured for the specified project and region.
+// List lists all the SSL policies that have been configured for the specified
+// project and region.
 func (c *regionSslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	it := &SslPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionSslPoliciesRequest)
@@ -528,7 +537,8 @@ func (c *regionSslPoliciesRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.
+// ListAvailableFeatures lists all features that can be specified in the SSL policy when using
+// custom profile.
 func (c *regionSslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesRegionSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

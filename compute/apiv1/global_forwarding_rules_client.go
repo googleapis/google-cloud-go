@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,32 +148,42 @@ func (c *GlobalForwardingRulesClient) Delete(ctx context.Context, req *computepb
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
+// Get returns the specified GlobalForwardingRule resource. Gets a list of
+// available forwarding rules by making a list() request.
 func (c *GlobalForwardingRulesClient) Get(ctx context.Context, req *computepb.GetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.ForwardingRule, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a GlobalForwardingRule resource in the specified project using the data included in the request.
+// Insert creates a GlobalForwardingRule resource in the specified project using
+// the data included in the request.
 func (c *GlobalForwardingRulesClient) Insert(ctx context.Context, req *computepb.InsertGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of GlobalForwardingRule resources available to the specified project.
+// List retrieves a list of GlobalForwardingRule resources available to the
+// specified project.
 func (c *GlobalForwardingRulesClient) List(ctx context.Context, req *computepb.ListGlobalForwardingRulesRequest, opts ...gax.CallOption) *ForwardingRuleIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
+// Patch updates the specified forwarding rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules. Currently, you can only
+// patch the network_tier field.
 func (c *GlobalForwardingRulesClient) Patch(ctx context.Context, req *computepb.PatchGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
+// SetLabels sets the labels on the specified resource. To learn more about labels,
+// read the
+// Labeling resources documentation.
 func (c *GlobalForwardingRulesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
-// SetTarget changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
+// SetTarget changes target URL for the GlobalForwardingRule resource. The new target
+// should be of the same type as the old target.
 func (c *GlobalForwardingRulesClient) SetTarget(ctx context.Context, req *computepb.SetTargetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetTarget(ctx, req, opts...)
 }
@@ -330,7 +340,8 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 	return op, nil
 }
 
-// Get returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
+// Get returns the specified GlobalForwardingRule resource. Gets a list of
+// available forwarding rules by making a list() request.
 func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computepb.GetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.ForwardingRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -375,7 +386,8 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// Insert creates a GlobalForwardingRule resource in the specified project using the data included in the request.
+// Insert creates a GlobalForwardingRule resource in the specified project using
+// the data included in the request.
 func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
@@ -441,7 +453,8 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 	return op, nil
 }
 
-// List retrieves a list of GlobalForwardingRule resources available to the specified project.
+// List retrieves a list of GlobalForwardingRule resources available to the
+// specified project.
 func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *computepb.ListGlobalForwardingRulesRequest, opts ...gax.CallOption) *ForwardingRuleIterator {
 	it := &ForwardingRuleIterator{}
 	req = proto.Clone(req).(*computepb.ListGlobalForwardingRulesRequest)
@@ -527,7 +540,11 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 	return it
 }
 
-// Patch updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
+// Patch updates the specified forwarding rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules. Currently, you can only
+// patch the network_tier field.
 func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
@@ -593,7 +610,9 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
+// SetLabels sets the labels on the specified resource. To learn more about labels,
+// read the
+// Labeling resources documentation.
 func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
@@ -652,7 +671,8 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 	return op, nil
 }
 
-// SetTarget changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
+// SetTarget changes target URL for the GlobalForwardingRule resource. The new target
+// should be of the same type as the old target.
 func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *computepb.SetTargetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetReferenceResource()

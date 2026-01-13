@@ -365,6 +365,12 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
 		req.MatchGlob(it.query.MatchGlob)
 		req.IncludeFoldersAsPrefixes(it.query.IncludeFoldersAsPrefixes)
+
+		// Cannot pass empty filter
+		if it.query.Filter != "" {
+			req.Filter(it.query.Filter)
+		}
+
 		if selection := it.query.toFieldSelection(); selection != "" {
 			req.Fields("nextPageToken", googleapi.Field(selection))
 		}
@@ -518,6 +524,19 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObje
 			forceSendFields = append(forceSendFields, "Retention")
 		}
 	}
+
+	if uattrs.Contexts != nil && uattrs.Contexts.Custom != nil {
+		if len(uattrs.Contexts.Custom) == 0 {
+			// To delete all contexts, "Contexts" must be added to nullFields.
+			// Sending empty Custom map in the request body is a no-op without this.
+			nullFields = append(nullFields, "Contexts")
+		} else {
+			attrs.Contexts = uattrs.Contexts
+			// This is to ensure any new values or deletions are updated
+			forceSendFields = append(forceSendFields, "Contexts")
+		}
+	}
+
 	rawObj := attrs.toRawObject(params.bucket)
 	rawObj.ForceSendFields = forceSendFields
 	rawObj.NullFields = nullFields

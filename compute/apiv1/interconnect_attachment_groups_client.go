@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -176,22 +176,26 @@ func (c *InterconnectAttachmentGroupsClient) Delete(ctx context.Context, req *co
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified InterconnectAttachmentGroup resource in the given scope.
+// Get returns the specified InterconnectAttachmentGroup resource in the given
+// scope.
 func (c *InterconnectAttachmentGroupsClient) Get(ctx context.Context, req *computepb.GetInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *InterconnectAttachmentGroupsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.
+// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified
+// InterconnectAttachmentGroup resource.
 func (c *InterconnectAttachmentGroupsClient) GetOperationalStatus(ctx context.Context, req *computepb.GetOperationalStatusInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroupsGetOperationalStatusResponse, error) {
 	return c.internalClient.GetOperationalStatus(ctx, req, opts...)
 }
 
-// Insert creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a InterconnectAttachmentGroup in the specified project in the given
+// scope using the parameters that are included in the request.
 func (c *InterconnectAttachmentGroupsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -201,12 +205,16 @@ func (c *InterconnectAttachmentGroupsClient) List(ctx context.Context, req *comp
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified InterconnectAttachmentGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified InterconnectAttachmentGroup resource with the data
+// included in the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *InterconnectAttachmentGroupsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *InterconnectAttachmentGroupsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -368,7 +376,8 @@ func (c *interconnectAttachmentGroupsRESTClient) Delete(ctx context.Context, req
 	return op, nil
 }
 
-// Get returns the specified InterconnectAttachmentGroup resource in the given scope.
+// Get returns the specified InterconnectAttachmentGroup resource in the given
+// scope.
 func (c *interconnectAttachmentGroupsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -413,7 +422,8 @@ func (c *interconnectAttachmentGroupsRESTClient) Get(ctx context.Context, req *c
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *interconnectAttachmentGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -465,7 +475,8 @@ func (c *interconnectAttachmentGroupsRESTClient) GetIamPolicy(ctx context.Contex
 	return resp, nil
 }
 
-// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.
+// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified
+// InterconnectAttachmentGroup resource.
 func (c *interconnectAttachmentGroupsRESTClient) GetOperationalStatus(ctx context.Context, req *computepb.GetOperationalStatusInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroupsGetOperationalStatusResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -510,7 +521,8 @@ func (c *interconnectAttachmentGroupsRESTClient) GetOperationalStatus(ctx contex
 	return resp, nil
 }
 
-// Insert creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a InterconnectAttachmentGroup in the specified project in the given
+// scope using the parameters that are included in the request.
 func (c *interconnectAttachmentGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentGroupResource()
@@ -662,7 +674,10 @@ func (c *interconnectAttachmentGroupsRESTClient) List(ctx context.Context, req *
 	return it
 }
 
-// Patch patches the specified InterconnectAttachmentGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified InterconnectAttachmentGroup resource with the data
+// included in the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *interconnectAttachmentGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentGroupResource()
@@ -731,7 +746,8 @@ func (c *interconnectAttachmentGroupsRESTClient) Patch(ctx context.Context, req 
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *interconnectAttachmentGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()

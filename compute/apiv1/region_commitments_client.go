@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -143,7 +143,10 @@ func (c *RegionCommitmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of commitments by region.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *RegionCommitmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -153,17 +156,21 @@ func (c *RegionCommitmentsClient) Get(ctx context.Context, req *computepb.GetReg
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a commitment in the specified project using the data included in the request.
+// Insert creates a commitment in the specified project using the data
+// included in the request.
 func (c *RegionCommitmentsClient) Insert(ctx context.Context, req *computepb.InsertRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of commitments contained within the specified region.
+// List retrieves a list of commitments contained within
+// the specified region.
 func (c *RegionCommitmentsClient) List(ctx context.Context, req *computepb.ListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.
+// Update updates the specified commitment with the data included in the request.
+// Update is performed only on selected fields included as part of
+// update-mask. Only the following fields can be updated: auto_renew and plan.
 func (c *RegionCommitmentsClient) Update(ctx context.Context, req *computepb.UpdateRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -261,7 +268,10 @@ func (c *regionCommitmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of commitments by region.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentsScopedListPairIterator {
 	it := &CommitmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRegionCommitmentsRequest)
@@ -405,7 +415,8 @@ func (c *regionCommitmentsRESTClient) Get(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates a commitment in the specified project using the data included in the request.
+// Insert creates a commitment in the specified project using the data
+// included in the request.
 func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCommitmentResource()
@@ -472,7 +483,8 @@ func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// List retrieves a list of commitments contained within the specified region.
+// List retrieves a list of commitments contained within
+// the specified region.
 func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.ListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentIterator {
 	it := &CommitmentIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionCommitmentsRequest)
@@ -558,7 +570,9 @@ func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.
+// Update updates the specified commitment with the data included in the request.
+// Update is performed only on selected fields included as part of
+// update-mask. Only the following fields can be updated: auto_renew and plan.
 func (c *regionCommitmentsRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCommitmentResource()
