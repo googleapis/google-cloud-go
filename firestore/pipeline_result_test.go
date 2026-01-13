@@ -405,14 +405,14 @@ func TestPipelineResultIterator_ExplainStats(t *testing.T) {
 			p:       p,
 			statsPb: statsTextPb,
 		}
-		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done} // Pre-set to done
+		ps := &PipelineSnapshot{&PipelineResultIterator{iter: mockIter, err: iterator.Done}} // Pre-set to done
 
-		stats := publicIter.ExplainStats()
+		stats := ps.ExplainStats()
 		if stats.err != nil {
 			t.Fatalf("ExplainStats() error: %v", stats.err)
 		}
 
-		text, err := stats.GetText()
+		text, err := stats.Text()
 		if err != nil {
 			t.Fatalf("GetText() error: %v", err)
 		}
@@ -428,14 +428,14 @@ func TestPipelineResultIterator_ExplainStats(t *testing.T) {
 			p:       p,
 			statsPb: statsRawPb,
 		}
-		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done}
+		ps := &PipelineSnapshot{&PipelineResultIterator{iter: mockIter, err: iterator.Done}}
 
-		stats := publicIter.ExplainStats()
+		stats := ps.ExplainStats()
 		if stats.err != nil {
 			t.Fatalf("ExplainStats() error: %v", stats.err)
 		}
 
-		rawData, err := stats.GetRawData()
+		rawData, err := stats.RawData()
 		if err != nil {
 			t.Fatalf("GetRawData() error: %v", err)
 		}
@@ -446,9 +446,9 @@ func TestPipelineResultIterator_ExplainStats(t *testing.T) {
 
 	t.Run("error case - iterator not done", func(t *testing.T) {
 		mockIter := &streamPipelineResultIterator{}
-		publicIter := &PipelineResultIterator{iter: mockIter} // err is nil
+		ps := &PipelineSnapshot{&PipelineResultIterator{iter: mockIter}} // err is nil
 
-		stats := publicIter.ExplainStats()
+		stats := ps.ExplainStats()
 		if stats.err == nil {
 			t.Fatal("ExplainStats() expected error, got nil")
 		}
@@ -458,8 +458,8 @@ func TestPipelineResultIterator_ExplainStats(t *testing.T) {
 	})
 
 	t.Run("error case - iterator is nil", func(t *testing.T) {
-		var publicIter *PipelineResultIterator
-		stats := publicIter.ExplainStats()
+		var ps *PipelineSnapshot
+		stats := ps.ExplainStats()
 		if stats.err == nil {
 			t.Fatal("ExplainStats() on nil iterator expected error, got nil")
 		}
@@ -467,10 +467,10 @@ func TestPipelineResultIterator_ExplainStats(t *testing.T) {
 
 	t.Run("error case - GetText with wrong data type", func(t *testing.T) {
 		mockIter := &streamPipelineResultIterator{statsPb: statsRawPb}
-		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done}
+		ps := &PipelineSnapshot{&PipelineResultIterator{iter: mockIter, err: iterator.Done}}
 
-		stats := publicIter.ExplainStats()
-		_, err := stats.GetText()
+		stats := ps.ExplainStats()
+		_, err := stats.Text()
 		if err == nil {
 			t.Fatal("GetText() with wrong data type expected error, got nil")
 		}
@@ -478,14 +478,14 @@ func TestPipelineResultIterator_ExplainStats(t *testing.T) {
 
 	t.Run("no stats available", func(t *testing.T) {
 		mockIter := &streamPipelineResultIterator{statsPb: nil} // No stats
-		publicIter := &PipelineResultIterator{iter: mockIter, err: iterator.Done}
+		ps := &PipelineSnapshot{&PipelineResultIterator{iter: mockIter, err: iterator.Done}}
 
-		stats := publicIter.ExplainStats()
+		stats := ps.ExplainStats()
 		if stats.err != nil {
 			t.Fatalf("ExplainStats() error: %v", stats.err)
 		}
 
-		text, err := stats.GetText()
+		text, err := stats.Text()
 		if err != nil {
 			t.Fatalf("GetText() error: %v", err)
 		}
@@ -493,7 +493,7 @@ func TestPipelineResultIterator_ExplainStats(t *testing.T) {
 			t.Errorf("GetText(): got %q, want empty string", text)
 		}
 
-		rawData, err := stats.GetRawData()
+		rawData, err := stats.RawData()
 		if err != nil {
 			t.Fatalf("GetRawData() error: %v", err)
 		}

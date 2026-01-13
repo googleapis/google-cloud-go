@@ -348,7 +348,7 @@ func TestTransactionErrors(t *testing.T) {
 				return err
 			}
 			p := c.Pipeline().Collection("C").Select("x")
-			it := tx.Execute(p)
+			it := tx.Execute(p).Results()
 			it.Stop()
 			return it.err
 		})
