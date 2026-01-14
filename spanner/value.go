@@ -2242,7 +2242,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if acode != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
+		if acode != sppb.TypeCode_JSON || atypeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
