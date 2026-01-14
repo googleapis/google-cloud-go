@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -168,6 +168,36 @@ func ExampleClient_CreateBackupVault() {
 		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#CreateBackupVaultRequest.
 	}
 	op, err := c.CreateBackupVault(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateHostGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := netapp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &netapppb.CreateHostGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#CreateHostGroupRequest.
+	}
+	op, err := c.CreateHostGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -462,6 +492,34 @@ func ExampleClient_DeleteBackupVault() {
 		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#DeleteBackupVaultRequest.
 	}
 	op, err := c.DeleteBackupVault(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteHostGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := netapp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &netapppb.DeleteHostGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#DeleteHostGroupRequest.
+	}
+	op, err := c.DeleteHostGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -800,6 +858,31 @@ func ExampleClient_GetBackupVault() {
 	_ = resp
 }
 
+func ExampleClient_GetHostGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := netapp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &netapppb.GetHostGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#GetHostGroupRequest.
+	}
+	resp, err := c.GetHostGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetKmsConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1098,6 +1181,43 @@ func ExampleClient_ListBackups() {
 	}
 }
 
+func ExampleClient_ListHostGroups() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := netapp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &netapppb.ListHostGroupsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#ListHostGroupsRequest.
+	}
+	it := c.ListHostGroups(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*netapppb.ListHostGroupsResponse)
+	}
+}
+
 func ExampleClient_ListKmsConfigs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1318,6 +1438,36 @@ func ExampleClient_ListVolumes() {
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*netapppb.ListVolumesResponse)
 	}
+}
+
+func ExampleClient_RestoreBackupFiles() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := netapp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &netapppb.RestoreBackupFilesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#RestoreBackupFilesRequest.
+	}
+	op, err := c.RestoreBackupFiles(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_ResumeReplication() {
@@ -1608,6 +1758,36 @@ func ExampleClient_UpdateBackupVault() {
 		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#UpdateBackupVaultRequest.
 	}
 	op, err := c.UpdateBackupVault(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateHostGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := netapp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &netapppb.UpdateHostGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#UpdateHostGroupRequest.
+	}
+	op, err := c.UpdateHostGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

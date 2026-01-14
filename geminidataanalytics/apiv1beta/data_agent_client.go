@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,8 +52,11 @@ type DataAgentCallOptions struct {
 	ListAccessibleDataAgents []gax.CallOption
 	GetDataAgent             []gax.CallOption
 	CreateDataAgent          []gax.CallOption
+	CreateDataAgentSync      []gax.CallOption
 	UpdateDataAgent          []gax.CallOption
+	UpdateDataAgentSync      []gax.CallOption
 	DeleteDataAgent          []gax.CallOption
+	DeleteDataAgentSync      []gax.CallOption
 	GetIamPolicy             []gax.CallOption
 	SetIamPolicy             []gax.CallOption
 	GetLocation              []gax.CallOption
@@ -129,6 +132,18 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 				})
 			}),
 		},
+		CreateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		UpdateDataAgent: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -141,7 +156,31 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 				})
 			}),
 		},
+		UpdateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteDataAgent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDataAgentSync: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -298,6 +337,17 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		UpdateDataAgent: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -309,7 +359,29 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		DeleteDataAgent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteDataAgentSync: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -421,10 +493,13 @@ type internalDataAgentClient interface {
 	GetDataAgent(context.Context, *geminidataanalyticspb.GetDataAgentRequest, ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error)
 	CreateDataAgent(context.Context, *geminidataanalyticspb.CreateDataAgentRequest, ...gax.CallOption) (*CreateDataAgentOperation, error)
 	CreateDataAgentOperation(name string) *CreateDataAgentOperation
+	CreateDataAgentSync(context.Context, *geminidataanalyticspb.CreateDataAgentRequest, ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error)
 	UpdateDataAgent(context.Context, *geminidataanalyticspb.UpdateDataAgentRequest, ...gax.CallOption) (*UpdateDataAgentOperation, error)
 	UpdateDataAgentOperation(name string) *UpdateDataAgentOperation
+	UpdateDataAgentSync(context.Context, *geminidataanalyticspb.UpdateDataAgentRequest, ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error)
 	DeleteDataAgent(context.Context, *geminidataanalyticspb.DeleteDataAgentRequest, ...gax.CallOption) (*DeleteDataAgentOperation, error)
 	DeleteDataAgentOperation(name string) *DeleteDataAgentOperation
+	DeleteDataAgentSync(context.Context, *geminidataanalyticspb.DeleteDataAgentRequest, ...gax.CallOption) error
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -502,6 +577,11 @@ func (c *DataAgentClient) CreateDataAgentOperation(name string) *CreateDataAgent
 	return c.internalClient.CreateDataAgentOperation(name)
 }
 
+// CreateDataAgentSync creates a new DataAgent in a given project and location synchronously.
+func (c *DataAgentClient) CreateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.CreateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	return c.internalClient.CreateDataAgentSync(ctx, req, opts...)
+}
+
 // UpdateDataAgent updates the parameters of a single DataAgent.
 func (c *DataAgentClient) UpdateDataAgent(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*UpdateDataAgentOperation, error) {
 	return c.internalClient.UpdateDataAgent(ctx, req, opts...)
@@ -513,6 +593,11 @@ func (c *DataAgentClient) UpdateDataAgentOperation(name string) *UpdateDataAgent
 	return c.internalClient.UpdateDataAgentOperation(name)
 }
 
+// UpdateDataAgentSync updates the parameters of a single DataAgent synchronously.
+func (c *DataAgentClient) UpdateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	return c.internalClient.UpdateDataAgentSync(ctx, req, opts...)
+}
+
 // DeleteDataAgent deletes a single DataAgent.
 func (c *DataAgentClient) DeleteDataAgent(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) (*DeleteDataAgentOperation, error) {
 	return c.internalClient.DeleteDataAgent(ctx, req, opts...)
@@ -522,6 +607,11 @@ func (c *DataAgentClient) DeleteDataAgent(ctx context.Context, req *geminidataan
 // The name must be that of a previously created DeleteDataAgentOperation, possibly from a different process.
 func (c *DataAgentClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	return c.internalClient.DeleteDataAgentOperation(name)
+}
+
+// DeleteDataAgentSync deletes a single DataAgent synchronously.
+func (c *DataAgentClient) DeleteDataAgentSync(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDataAgentSync(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the IAM policy for DataAgent
@@ -884,6 +974,24 @@ func (c *dataAgentGRPCClient) CreateDataAgent(ctx context.Context, req *geminida
 	}, nil
 }
 
+func (c *dataAgentGRPCClient) CreateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.CreateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDataAgentSync[0:len((*c.CallOptions).CreateDataAgentSync):len((*c.CallOptions).CreateDataAgentSync)], opts...)
+	var resp *geminidataanalyticspb.DataAgent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataAgentClient.CreateDataAgentSync, req, settings.GRPC, c.logger, "CreateDataAgentSync")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *dataAgentGRPCClient) UpdateDataAgent(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*UpdateDataAgentOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_agent.name", url.QueryEscape(req.GetDataAgent().GetName()))}
 
@@ -904,6 +1012,24 @@ func (c *dataAgentGRPCClient) UpdateDataAgent(ctx context.Context, req *geminida
 	}, nil
 }
 
+func (c *dataAgentGRPCClient) UpdateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_agent.name", url.QueryEscape(req.GetDataAgent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDataAgentSync[0:len((*c.CallOptions).UpdateDataAgentSync):len((*c.CallOptions).UpdateDataAgentSync)], opts...)
+	var resp *geminidataanalyticspb.DataAgent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataAgentClient.UpdateDataAgentSync, req, settings.GRPC, c.logger, "UpdateDataAgentSync")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *dataAgentGRPCClient) DeleteDataAgent(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) (*DeleteDataAgentOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -922,6 +1048,20 @@ func (c *dataAgentGRPCClient) DeleteDataAgent(ctx context.Context, req *geminida
 	return &DeleteDataAgentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *dataAgentGRPCClient) DeleteDataAgentSync(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDataAgentSync[0:len((*c.CallOptions).DeleteDataAgentSync):len((*c.CallOptions).DeleteDataAgentSync)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.dataAgentClient.DeleteDataAgentSync, req, settings.GRPC, c.logger, "DeleteDataAgentSync")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *dataAgentGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
@@ -1410,6 +1550,69 @@ func (c *dataAgentRESTClient) CreateDataAgent(ctx context.Context, req *geminida
 	}, nil
 }
 
+// CreateDataAgentSync creates a new DataAgent in a given project and location synchronously.
+func (c *dataAgentRESTClient) CreateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.CreateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAgent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataAgents:createSync", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetDataAgentId() != "" {
+		params.Add("dataAgentId", fmt.Sprintf("%v", req.GetDataAgentId()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDataAgentSync[0:len((*c.CallOptions).CreateDataAgentSync):len((*c.CallOptions).CreateDataAgentSync)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &geminidataanalyticspb.DataAgent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataAgentSync")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // UpdateDataAgent updates the parameters of a single DataAgent.
 func (c *dataAgentRESTClient) UpdateDataAgent(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*UpdateDataAgentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1480,6 +1683,73 @@ func (c *dataAgentRESTClient) UpdateDataAgent(ctx context.Context, req *geminida
 	}, nil
 }
 
+// UpdateDataAgentSync updates the parameters of a single DataAgent synchronously.
+func (c *dataAgentRESTClient) UpdateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAgent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:updateSync", req.GetDataAgent().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_agent.name", url.QueryEscape(req.GetDataAgent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDataAgentSync[0:len((*c.CallOptions).UpdateDataAgentSync):len((*c.CallOptions).UpdateDataAgentSync)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &geminidataanalyticspb.DataAgent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataAgentSync")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // DeleteDataAgent deletes a single DataAgent.
 func (c *dataAgentRESTClient) DeleteDataAgent(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) (*DeleteDataAgentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1534,6 +1804,44 @@ func (c *dataAgentRESTClient) DeleteDataAgent(ctx context.Context, req *geminida
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// DeleteDataAgentSync deletes a single DataAgent synchronously.
+func (c *dataAgentRESTClient) DeleteDataAgentSync(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:deleteSync", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataAgentSync")
+		return err
+	}, opts...)
 }
 
 // GetIamPolicy gets the IAM policy for DataAgent

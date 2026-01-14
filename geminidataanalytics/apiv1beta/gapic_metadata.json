@@ -20,9 +20,19 @@
                 "CreateDataAgent"
               ]
             },
+            "CreateDataAgentSync": {
+              "methods": [
+                "CreateDataAgentSync"
+              ]
+            },
             "DeleteDataAgent": {
               "methods": [
                 "DeleteDataAgent"
+              ]
+            },
+            "DeleteDataAgentSync": {
+              "methods": [
+                "DeleteDataAgentSync"
               ]
             },
             "DeleteOperation": {
@@ -78,6 +88,11 @@
             "UpdateDataAgent": {
               "methods": [
                 "UpdateDataAgent"
+              ]
+            },
+            "UpdateDataAgentSync": {
+              "methods": [
+                "UpdateDataAgentSync"
               ]
             }
           }
@@ -95,9 +110,19 @@
                 "CreateDataAgent"
               ]
             },
+            "CreateDataAgentSync": {
+              "methods": [
+                "CreateDataAgentSync"
+              ]
+            },
             "DeleteDataAgent": {
               "methods": [
                 "DeleteDataAgent"
+              ]
+            },
+            "DeleteDataAgentSync": {
+              "methods": [
+                "DeleteDataAgentSync"
               ]
             },
             "DeleteOperation": {
@@ -153,6 +178,11 @@
             "UpdateDataAgent": {
               "methods": [
                 "UpdateDataAgent"
+              ]
+            },
+            "UpdateDataAgentSync": {
+              "methods": [
+                "UpdateDataAgentSync"
               ]
             }
           }

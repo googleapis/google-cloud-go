@@ -515,6 +515,52 @@
       ]
     },
     {
+      "regionTag": "config_v1_generated_Config_GetAutoMigrationConfig_sync",
+      "title": "config GetAutoMigrationConfig Sample",
+      "description": "GetAutoMigrationConfig get the AutoMigrationConfig for a given project and location.",
+      "file": "Client/GetAutoMigrationConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAutoMigrationConfig",
+        "fullName": "google.cloud.config.v1.Client.GetAutoMigrationConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetAutoMigrationConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.AutoMigrationConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAutoMigrationConfig",
+          "fullName": "google.cloud.config.v1.Config.GetAutoMigrationConfig",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "config_v1_generated_Config_GetDeployment_sync",
       "title": "config GetDeployment Sample",
       "description": "GetDeployment gets details about a [Deployment][google.cloud.config.v1.Deployment].",
@@ -1603,6 +1649,52 @@
         "method": {
           "shortName": "UnlockDeployment",
           "fullName": "google.cloud.config.v1.Config.UnlockDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_UpdateAutoMigrationConfig_sync",
+      "title": "config UpdateAutoMigrationConfig Sample",
+      "description": "UpdateAutoMigrationConfig updates the AutoMigrationConfig for a given project and location.",
+      "file": "Client/UpdateAutoMigrationConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAutoMigrationConfig",
+        "fullName": "google.cloud.config.v1.Client.UpdateAutoMigrationConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.UpdateAutoMigrationConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAutoMigrationConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAutoMigrationConfig",
+          "fullName": "google.cloud.config.v1.Config.UpdateAutoMigrationConfig",
           "service": {
             "shortName": "Config",
             "fullName": "google.cloud.config.v1.Config"
