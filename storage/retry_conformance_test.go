@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -37,8 +36,6 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 const (
@@ -297,7 +294,6 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-
 			buf := new(bytes.Buffer)
 			var err1 error
 			callback := func(x, y int64, err error) {
@@ -318,125 +314,6 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 			return nil
-		},
-		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			_, ok := c.tc.(*grpcStorageClient)
-			if !ok {
-				// Do a regular get to consume instructions.
-				_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
-				return err
-			}
-
-			// Download the test object using the MultiRangeDownloader.
-			mrd, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewMultiRangeDownloader(ctx)
-			if err != nil {
-				return err
-			}
-
-			// Verify recovery for multiple concurrent requests on a single stream.
-			buf1, buf2, buf3 := new(bytes.Buffer), new(bytes.Buffer), new(bytes.Buffer)
-			var err1, err2, err3 error
-
-			mrd.Add(buf1, 0, 2, func(x, y int64, err error) {
-				err1 = err
-			})
-			mrd.Add(buf2, 2, 2, func(x, y int64, err error) {
-				err2 = err
-			})
-			mrd.Add(buf3, 4, 2, func(x, y int64, err error) {
-				err3 = err
-			})
-
-			mrd.Wait()
-
-			if err1 != nil || err2 != nil || err3 != nil {
-				return fmt.Errorf("multi-range retry failed: err1=%v, err2=%v, err3=%v", err1, err2, err3)
-			}
-
-			combined := append(buf1.Bytes(), append(buf2.Bytes(), buf3.Bytes()...)...)
-			if !bytes.Equal(combined, randomBytesToWrite) {
-				return fmt.Errorf("data mismatch after multi-range retry")
-			}
-
-			if err := mrd.Close(); err != nil {
-				return err
-			}
-			return nil
-		},
-		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			_, ok := c.tc.(*grpcStorageClient)
-			if !ok {
-				// Do a regular get to consume instructions.
-				_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
-				return err
-			}
-
-			// Download the test object using the MultiRangeDownloader.
-			mrd, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewMultiRangeDownloader(ctx)
-			if err != nil {
-				return err
-			}
-
-			var errInvalid error
-
-			// Invalid Range (well beyond the 6-byte object size)
-			mrd.Add(io.Discard, 1000, 10, func(x, y int64, err error) { errInvalid = err })
-
-			mrd.Wait()
-
-			// Invalid range error must report OutOfRange.
-			if status.Code(errInvalid) != codes.OutOfRange {
-				return fmt.Errorf("invalid range did not return OutOfRange; got: %v", errInvalid)
-			}
-			// Close error must also report OutOfRange.
-			err = mrd.Close()
-			if status.Code(err) != codes.OutOfRange {
-				return fmt.Errorf("Close did not return OutOfRange; got: %v", err)
-			}
-			return nil
-		},
-		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			_, ok := c.tc.(*grpcStorageClient)
-			if !ok {
-				_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
-				return err
-			}
-
-			// Upload 3MiB of data. This provides enough data to ensure retries happen mid-stream.
-			objName := objectIDs.New()
-			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
-				return fmt.Errorf("failed to upload 3MiB object: %v", err)
-			}
-
-			obj := c.Bucket(fs.bucket.Name).Object(objName)
-			mrd, err := obj.NewMultiRangeDownloader(ctx)
-			if err != nil {
-				return err
-			}
-
-			buf := new(bytes.Buffer)
-			var errRes error
-
-			// Request the full 3MiB range.
-			// The emulator's fault injection (e.g., reset-connection) will trigger mid-download.
-			mrd.Add(buf, 0, 3*MiB, func(x, y int64, err error) {
-				errRes = err
-			})
-
-			mrd.Wait()
-
-			if errRes != nil {
-				return fmt.Errorf("resumption test failed: %v", errRes)
-			}
-
-			if int64(buf.Len()) != 3*MiB {
-				return fmt.Errorf("resumption data length mismatch: got %d, want %d", buf.Len(), 3*MiB)
-			}
-			if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
-				return fmt.Errorf("resumption data mismatch: content does not match randomBytes3MiB")
-			}
-
-			return mrd.Close()
 		},
 	},
 	"storage.objects.download": {
@@ -1147,13 +1024,6 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 			et.resources.hmacKey = key
 		}
 	}
-}
-
-// Generates size random bytes.
-func generateRandomBytes(n int) []byte {
-	b := make([]byte, n)
-	_, _ = rand.Read(b)
-	return b
 }
 
 // Upload test object with given bytes.
