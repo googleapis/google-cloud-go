@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,6 +75,8 @@ type CallOptions struct {
 	GetResourceChange         []gax.CallOption
 	ListResourceDrifts        []gax.CallOption
 	GetResourceDrift          []gax.CallOption
+	GetAutoMigrationConfig    []gax.CallOption
+	UpdateAutoMigrationConfig []gax.CallOption
 	GetLocation               []gax.CallOption
 	ListLocations             []gax.CallOption
 	GetIamPolicy              []gax.CallOption
@@ -427,6 +429,30 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		GetAutoMigrationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAutoMigrationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -738,6 +764,28 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetAutoMigrationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateAutoMigrationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -789,6 +837,9 @@ type internalClient interface {
 	GetResourceChange(context.Context, *configpb.GetResourceChangeRequest, ...gax.CallOption) (*configpb.ResourceChange, error)
 	ListResourceDrifts(context.Context, *configpb.ListResourceDriftsRequest, ...gax.CallOption) *ResourceDriftIterator
 	GetResourceDrift(context.Context, *configpb.GetResourceDriftRequest, ...gax.CallOption) (*configpb.ResourceDrift, error)
+	GetAutoMigrationConfig(context.Context, *configpb.GetAutoMigrationConfigRequest, ...gax.CallOption) (*configpb.AutoMigrationConfig, error)
+	UpdateAutoMigrationConfig(context.Context, *configpb.UpdateAutoMigrationConfigRequest, ...gax.CallOption) (*UpdateAutoMigrationConfigOperation, error)
+	UpdateAutoMigrationConfigOperation(name string) *UpdateAutoMigrationConfigOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -1022,6 +1073,22 @@ func (c *Client) ListResourceDrifts(ctx context.Context, req *configpb.ListResou
 // GetResourceDrift get a ResourceDrift for a given preview.
 func (c *Client) GetResourceDrift(ctx context.Context, req *configpb.GetResourceDriftRequest, opts ...gax.CallOption) (*configpb.ResourceDrift, error) {
 	return c.internalClient.GetResourceDrift(ctx, req, opts...)
+}
+
+// GetAutoMigrationConfig get the AutoMigrationConfig for a given project and location.
+func (c *Client) GetAutoMigrationConfig(ctx context.Context, req *configpb.GetAutoMigrationConfigRequest, opts ...gax.CallOption) (*configpb.AutoMigrationConfig, error) {
+	return c.internalClient.GetAutoMigrationConfig(ctx, req, opts...)
+}
+
+// UpdateAutoMigrationConfig updates the AutoMigrationConfig for a given project and location.
+func (c *Client) UpdateAutoMigrationConfig(ctx context.Context, req *configpb.UpdateAutoMigrationConfigRequest, opts ...gax.CallOption) (*UpdateAutoMigrationConfigOperation, error) {
+	return c.internalClient.UpdateAutoMigrationConfig(ctx, req, opts...)
+}
+
+// UpdateAutoMigrationConfigOperation returns a new UpdateAutoMigrationConfigOperation from a given name.
+// The name must be that of a previously created UpdateAutoMigrationConfigOperation, possibly from a different process.
+func (c *Client) UpdateAutoMigrationConfigOperation(name string) *UpdateAutoMigrationConfigOperation {
+	return c.internalClient.UpdateAutoMigrationConfigOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -1965,6 +2032,44 @@ func (c *gRPCClient) GetResourceDrift(ctx context.Context, req *configpb.GetReso
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) GetAutoMigrationConfig(ctx context.Context, req *configpb.GetAutoMigrationConfigRequest, opts ...gax.CallOption) (*configpb.AutoMigrationConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAutoMigrationConfig[0:len((*c.CallOptions).GetAutoMigrationConfig):len((*c.CallOptions).GetAutoMigrationConfig)], opts...)
+	var resp *configpb.AutoMigrationConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAutoMigrationConfig, req, settings.GRPC, c.logger, "GetAutoMigrationConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateAutoMigrationConfig(ctx context.Context, req *configpb.UpdateAutoMigrationConfigRequest, opts ...gax.CallOption) (*UpdateAutoMigrationConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "auto_migration_config.name", url.QueryEscape(req.GetAutoMigrationConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAutoMigrationConfig[0:len((*c.CallOptions).UpdateAutoMigrationConfig):len((*c.CallOptions).UpdateAutoMigrationConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAutoMigrationConfig, req, settings.GRPC, c.logger, "UpdateAutoMigrationConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateAutoMigrationConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -3872,6 +3977,123 @@ func (c *restClient) GetResourceDrift(ctx context.Context, req *configpb.GetReso
 	return resp, nil
 }
 
+// GetAutoMigrationConfig get the AutoMigrationConfig for a given project and location.
+func (c *restClient) GetAutoMigrationConfig(ctx context.Context, req *configpb.GetAutoMigrationConfigRequest, opts ...gax.CallOption) (*configpb.AutoMigrationConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAutoMigrationConfig[0:len((*c.CallOptions).GetAutoMigrationConfig):len((*c.CallOptions).GetAutoMigrationConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &configpb.AutoMigrationConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAutoMigrationConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateAutoMigrationConfig updates the AutoMigrationConfig for a given project and location.
+func (c *restClient) UpdateAutoMigrationConfig(ctx context.Context, req *configpb.UpdateAutoMigrationConfigRequest, opts ...gax.CallOption) (*UpdateAutoMigrationConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAutoMigrationConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAutoMigrationConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "auto_migration_config.name", url.QueryEscape(req.GetAutoMigrationConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAutoMigrationConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateAutoMigrationConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4492,6 +4714,24 @@ func (c *gRPCClient) UnlockDeploymentOperation(name string) *UnlockDeploymentOpe
 func (c *restClient) UnlockDeploymentOperation(name string) *UnlockDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UnlockDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateAutoMigrationConfigOperation returns a new UpdateAutoMigrationConfigOperation from a given name.
+// The name must be that of a previously created UpdateAutoMigrationConfigOperation, possibly from a different process.
+func (c *gRPCClient) UpdateAutoMigrationConfigOperation(name string) *UpdateAutoMigrationConfigOperation {
+	return &UpdateAutoMigrationConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateAutoMigrationConfigOperation returns a new UpdateAutoMigrationConfigOperation from a given name.
+// The name must be that of a previously created UpdateAutoMigrationConfigOperation, possibly from a different process.
+func (c *restClient) UpdateAutoMigrationConfigOperation(name string) *UpdateAutoMigrationConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAutoMigrationConfigOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
