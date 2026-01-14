@@ -16,12 +16,14 @@ package storage
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"maps"
-	"math/rand"
 	"path"
 	"runtime"
+	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -108,7 +110,7 @@ type defaultNamingStrategy struct{}
 
 // newPartName creates a unique name for a temporary part to avoid hotspotting.
 func (d *defaultNamingStrategy) newPartName(bucket, prefix, finalName string, partNumber int) string {
-	rnd := rand.Uint64()
+	rnd := generateRandomBytes(4)
 	return path.Join(prefix, fmt.Sprintf("%x-%s-part-%d", rnd, finalName, partNumber))
 }
 
@@ -196,6 +198,11 @@ type pcuState struct {
 
 	// Function to upload a part; can be overridden for testing.
 	uploadPartFn func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error)
+	// Function to delete an object; can be overridden for testing.
+	deleteFn       func(ctx context.Context, h *ObjectHandle) error
+	doCleanupFn    func(s *pcuState)
+	composePartsFn func(s *pcuState) error
+	composeFn      func(ctx context.Context, composer *Composer) (*ObjectAttrs, error)
 }
 
 type uploadTask struct {
@@ -229,11 +236,19 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		w:               w,
 		config:          cfg,
 		bufferCh:        make(chan []byte, cfg.bufferPoolSize),
-		uploadCh:        make(chan uploadTask),
+		uploadCh:        make(chan uploadTask, cfg.numWorkers), // Buffered to prevent worker starvation
 		resultCh:        make(chan uploadResult),
 		partMap:         make(map[int]*ObjectHandle),
 		intermediateMap: make(map[string]*ObjectHandle),
 		uploadPartFn:    (*pcuState).uploadPart,
+		deleteFn: func(ctx context.Context, h *ObjectHandle) error {
+			return h.Delete(ctx)
+		},
+		doCleanupFn:    (*pcuState).doCleanup,
+		composePartsFn: (*pcuState).composeParts,
+		composeFn: func(ctx context.Context, c *Composer) (*ObjectAttrs, error) {
+			return c.Run(ctx)
+		},
 	}
 	// TODO: Assign the state to the Writer
 
@@ -307,9 +322,8 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	pw.ObjectAttrs.MD5 = nil
 	setPartMetadata(pw, s, task)
 
-	_, err := pw.Write(task.buffer[:task.size])
-	if err != nil {
-		pw.CloseWithError(err)
+	if _, err := pw.Write(task.buffer[:task.size]); err != nil {
+		_ = pw.CloseWithError(err)
 		return nil, nil, fmt.Errorf("failed to write part %d: %w", task.partNumber, err)
 	}
 
@@ -361,4 +375,261 @@ func (s *pcuState) setError(err error) {
 		s.firstErr = err
 		s.cancel() // Cancel context on first error.
 	})
+}
+
+func (s *pcuState) write(p []byte) (int, error) {
+	if !s.started {
+		return 0, fmt.Errorf("pcuState not started")
+	}
+	s.mu.Lock()
+	err := s.firstErr
+	s.mu.Unlock()
+	if err != nil {
+		return 0, err
+	}
+
+	total := len(p)
+	for len(p) > 0 {
+		// Acquire a buffer from the pool if we don't have one.
+		if s.currentBuffer == nil {
+			// Fail-fast check before taking a new buffer.
+			s.mu.Lock()
+			err = s.firstErr
+			s.mu.Unlock()
+			if err != nil {
+				return total - len(p), err
+			}
+
+			select {
+			case <-s.ctx.Done():
+				return total - len(p), s.ctx.Err()
+			case s.currentBuffer = <-s.bufferCh:
+				s.bytesBuffered = 0
+			}
+		}
+
+		n := copy(s.currentBuffer[s.bytesBuffered:], p)
+		s.bytesBuffered += int64(n)
+		p = p[n:]
+
+		// If the buffer is full, dispatch it to a worker.
+		if s.bytesBuffered == int64(s.config.partSize) {
+			if err := s.flushCurrentBuffer(); err != nil {
+				return total - len(p), err
+			}
+		}
+	}
+	return total, nil
+}
+
+func (s *pcuState) flushCurrentBuffer() error {
+	if s.bytesBuffered == 0 {
+		return nil
+	}
+
+	// Capture state for the task while under lock, then release immediately.
+	s.mu.Lock()
+	if s.firstErr != nil {
+		s.mu.Unlock()
+		return s.firstErr
+	}
+	s.partNum++
+	task := uploadTask{
+		partNumber: s.partNum,
+		buffer:     s.currentBuffer,
+		size:       s.bytesBuffered,
+	}
+	s.mu.Unlock()
+
+	// Clear current state so the next Write call picks up a fresh buffer.
+	s.currentBuffer = nil
+	s.bytesBuffered = 0
+
+	// Dispatch the task. Using a select ensures we don't hang indefinitely
+	// if the context is cancelled while the upload queue is full.
+	select {
+	case <-s.ctx.Done():
+		// Return buffer to pool if we couldn't dispatch.
+		s.bufferCh <- task.buffer
+		return s.ctx.Err()
+	case s.uploadCh <- task:
+		return nil
+	}
+}
+
+func (s *pcuState) close() error {
+	if !s.started {
+		return nil
+	}
+
+	// Flush the final partial buffer if it exists.
+	if err := s.flushCurrentBuffer(); err != nil {
+		s.setError(err)
+	}
+
+	// Wait for workers, then close resultCh.
+	// This prevents "send on closed channel" panics.
+	close(s.uploadCh)
+	s.workerWG.Wait()
+	close(s.resultCh)
+	s.collectorWG.Wait()
+
+	// Cleanup is always attempted.
+	defer s.doCleanupFn(s)
+
+	s.mu.Lock()
+	err := s.firstErr
+	s.mu.Unlock()
+
+	if err != nil {
+		return err
+	}
+
+	// If no parts were actually uploaded (e.g. empty file),
+	// fall back to a standard empty object creation.
+	if len(s.partMap) == 0 {
+		ow := s.w.o.NewWriter(s.w.ctx)
+		if ow == nil {
+			return fmt.Errorf("failed to create writer for empty object")
+		}
+		ow.ObjectAttrs = s.w.ObjectAttrs
+		return ow.Close()
+	}
+
+	// Perform the recursive composition of parts.
+	return s.composePartsFn(s)
+}
+
+// getSortedParts returns the uploaded parts sorted by part number.
+func (s *pcuState) getSortedParts() []*ObjectHandle {
+	keys := make([]int, 0, len(s.partMap))
+	for k := range s.partMap {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+
+	parts := make([]*ObjectHandle, 0, len(keys))
+	for _, k := range keys {
+		parts = append(parts, s.partMap[k])
+	}
+	return parts
+}
+
+// composeParts performs the multi-level compose operation to create the final object.
+func (s *pcuState) composeParts() error {
+	finalComps := s.getSortedParts()
+	level := 0
+
+	for len(finalComps) > maxComposeComponents {
+		level++
+		numIntermediates := (len(finalComps) + maxComposeComponents - 1) / maxComposeComponents
+		nextLevel := make([]*ObjectHandle, numIntermediates)
+
+		var wg sync.WaitGroup
+		// Use a thread-safe way to capture the first error at this level.
+		var levelErr error
+		var errOnce sync.Once
+
+		for i := 0; i < numIntermediates; i++ {
+			wg.Add(1)
+			go func(idx int) {
+				defer wg.Done()
+
+				start := idx * maxComposeComponents
+				end := min(start+maxComposeComponents, len(finalComps))
+
+				// Level-based naming with hash to prevent exceeding 1024 bytes.
+				h := hex.EncodeToString(generateRandomBytes(4))
+				compName := path.Join(s.config.tmpObjectPrefix, fmt.Sprintf("int-%s-lv%d-%d", h, level, idx))
+
+				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
+				composer := interHandle.ComposerFrom(finalComps[start:end]...)
+				// composer.SendCRC32C = s.w.SendCRC32C
+
+				attrs, err := s.composeFn(s.ctx, composer)
+				if err != nil {
+					errOnce.Do(func() { levelErr = err })
+					return
+				}
+
+				s.mu.Lock()
+				s.intermediateMap[attrs.Name] = interHandle
+				s.mu.Unlock()
+				nextLevel[idx] = interHandle
+			}(i)
+		}
+		wg.Wait()
+		if levelErr != nil {
+			return levelErr
+		}
+		finalComps = nextLevel
+	}
+
+	// Final Compose
+	composer := s.w.o.ComposerFrom(finalComps...)
+	composer.ObjectAttrs = s.w.ObjectAttrs
+	composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
+	composer.SendCRC32C = s.w.SendCRC32C
+
+	attrs, err := s.composeFn(s.ctx, composer)
+	if err != nil {
+		return err
+	}
+	s.w.obj = attrs
+	return nil
+}
+
+func (s *pcuState) doCleanup() {
+	skip := s.config.cleanupStrategy == cleanupNever ||
+		(s.config.cleanupStrategy == cleanupOnSuccess && s.firstErr != nil)
+
+	if skip || (len(s.partMap) == 0 && len(s.intermediateMap) == 0) {
+		return
+	}
+
+	var wg sync.WaitGroup
+
+	// Semaphore to avoid spawning too many goroutines for deletion.
+	sem := make(chan struct{}, s.config.numWorkers)
+	failedCh := make(chan *ObjectHandle, len(s.partMap)+len(s.intermediateMap))
+
+	runDelete := func(h *ObjectHandle) {
+		defer wg.Done()
+		sem <- struct{}{}
+		defer func() { <-sem }()
+
+		// Use WithoutCancel to ensure cleanup isn't killed by parent context cancellation
+		if err := s.deleteFn(context.WithoutCancel(s.ctx), h); err != nil {
+			failedCh <- h
+		}
+	}
+
+	for _, h := range s.partMap {
+		wg.Add(1)
+		go runDelete(h)
+	}
+	for _, h := range s.intermediateMap {
+		wg.Add(1)
+		go runDelete(h)
+	}
+
+	go func() {
+		wg.Wait()
+		close(failedCh)
+	}()
+
+	for h := range failedCh {
+		s.failedDeletes = append(s.failedDeletes, h)
+	}
+
+	if n := len(s.failedDeletes); n > 0 {
+		fmt.Printf("Warning: failed to delete %d temporary objects. Use FailedCleanupHandles() for manual retry.\n", n)
+	}
+}
+
+// Generates size random bytes.
+func generateRandomBytes(n int) []byte {
+	b := make([]byte, n)
+	_, _ = rand.Read(b)
+	return b
 }
