@@ -749,7 +749,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.6.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -1724,7 +1724,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: config
     version: 1.5.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/config/v1
         service_config: config_v1.yaml
@@ -2715,7 +2715,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
     version: 0.5.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
         service_config: geminidataanalytics_v1beta.yaml
@@ -3115,7 +3115,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: kms
     version: 1.23.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/kms/v1
         service_config: cloudkms_v1.yaml
@@ -3816,7 +3816,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: netapp
     version: 1.11.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/netapp/v1
         service_config: netapp_v1.yaml
@@ -4460,7 +4460,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.3.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/pubsub/v1
         service_config: pubsub_v1.yaml
@@ -4799,7 +4799,7 @@ libraries:
     tag_format: v{version}
   - id: run
     version: 1.13.0
-    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/run/v2
         service_config: run_v2.yaml
@@ -5622,7 +5622,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.87.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
