@@ -20,10 +20,12 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
+	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // op is the mutation operation.
@@ -47,10 +49,19 @@ const (
 	// opUpdate updates a row in a table.  If the row does not already
 	// exist, the write or transaction fails.
 	opUpdate
+	// opSend sends a message to a queue. Users need to specify the queue
+	// name, a key, payload, and optionally delivery time and sending
+	// a message.
+	opSend
+	// opAck acks a message in a queue, effectively remove it from the
+	// queue. Users need to specify the queue name and the key, and optionally
+	// a bool value to ignore error if the message does not exist.
+	opAck
 )
 
 // A Mutation describes a modification to one or more Cloud Spanner rows.  The
-// mutation represents an insert, update, delete, etc on a table.
+// mutation represents an insert, update, delete, etc on a table, or send, ack
+// on a queue.
 //
 // Many mutations can be applied in a single atomic commit. For purposes of
 // constraint checking (such as foreign key constraints), the operations can be
@@ -141,6 +152,18 @@ type Mutation struct {
 	// values specifies the new values for the target columns
 	// named by Columns.
 	values []interface{}
+
+	// Queue related fields
+	// Target queue name to be modified
+	queue string
+	// key is the primary key used in send or ack
+	key Key
+	// payload is the content of the message
+	payload interface{}
+	// deliverTime is optionally set for opSend
+	deliverTime time.Time
+	// ignoreNotFound is optionally set for opAck
+	ignoreNotFound bool
 
 	// wrapped is the protobuf mutation that is the source for this Mutation.
 	// This is only set if the [WrapMutation] function was used to create the Mutation.
@@ -365,14 +388,63 @@ func Delete(table string, ks KeySet) *Mutation {
 	}
 }
 
+type SendOption func(*Mutation)
+type AckOption func(*Mutation)
+
+func WithDeliveryTime(t time.Time) SendOption {
+	return func(m *Mutation) {
+		m.deliverTime = t
+	}
+}
+
+// Send returns a Mutation to send a message to a queue.
+func Send(queue string, key Key, payload interface{}, opts ...SendOption) *Mutation {
+	m := &Mutation{
+		op:      opSend,
+		queue:   queue,
+		key:     key,
+		payload: payload,
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+func WithIgnoreNotFound(ignoreNotFound bool) AckOption {
+	return func(m *Mutation) {
+		m.ignoreNotFound = ignoreNotFound
+	}
+}
+
+// Ack returns a Mutation to acknowledge (and thus delete) a message from a queue.
+func Ack(queue string, key Key, opts ...AckOption) *Mutation {
+	m := &Mutation{
+		op:    opAck,
+		queue: queue,
+		key:   key,
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
 // WrapMutation creates a mutation that wraps an existing protobuf mutation object.
 func WrapMutation(proto *sppb.Mutation) (*Mutation, error) {
 	if proto == nil {
 		return nil, fmt.Errorf("protobuf mutation may not be nil")
 	}
-	op, table, err := getTableAndSpannerOperation(proto)
+	op, table, queue, err := getTableOrQueueAndSpannerOperation(proto)
 	if err != nil {
 		return nil, err
+	}
+	if queue != "" {
+		return &Mutation{
+			op:      op,
+			queue:   queue,
+			wrapped: proto,
+		}, nil
 	}
 	return &Mutation{
 		op:      op,
@@ -381,19 +453,23 @@ func WrapMutation(proto *sppb.Mutation) (*Mutation, error) {
 	}, nil
 }
 
-func getTableAndSpannerOperation(proto *sppb.Mutation) (op, string, error) {
+func getTableOrQueueAndSpannerOperation(proto *sppb.Mutation) (op, string, string, error) {
 	if proto.GetInsert() != nil {
-		return opInsert, proto.GetInsert().Table, nil
+		return opInsert, proto.GetInsert().Table, "", nil
 	} else if proto.GetUpdate() != nil {
-		return opUpdate, proto.GetUpdate().Table, nil
+		return opUpdate, proto.GetUpdate().Table, "", nil
 	} else if proto.GetReplace() != nil {
-		return opReplace, proto.GetReplace().Table, nil
+		return opReplace, proto.GetReplace().Table, "", nil
 	} else if proto.GetDelete() != nil {
-		return opDelete, proto.GetDelete().Table, nil
+		return opDelete, proto.GetDelete().Table, "", nil
 	} else if proto.GetInsertOrUpdate() != nil {
-		return opInsertOrUpdate, proto.GetInsertOrUpdate().Table, nil
+		return opInsertOrUpdate, proto.GetInsertOrUpdate().Table, "", nil
+	} else if proto.GetSend() != nil {
+		return opSend, "", proto.GetSend().Queue, nil
+	} else if proto.GetAck() != nil {
+		return opAck, "", proto.GetAck().Queue, nil
 	}
-	return 0, "", spannerErrorf(codes.InvalidArgument, "unknown op type: %d", proto.Operation)
+	return 0, "", "", spannerErrorf(codes.InvalidArgument, "unknown op type: %d", proto.Operation)
 }
 
 // prepareWrite generates sppb.Mutation_Write from table name, column names
@@ -465,6 +541,43 @@ func (m Mutation) proto() (*sppb.Mutation, error) {
 			return nil, err
 		}
 		pb = &sppb.Mutation{Operation: &sppb.Mutation_Update{Update: w}}
+	case opSend:
+		k, err := encodeValueArray([]interface{}(m.key))
+		if err != nil {
+			return nil, err
+		}
+		p, _, err := encodeValue(m.payload)
+		if err != nil {
+			return nil, err
+		}
+		var dt *timestamppb.Timestamp
+		if !m.deliverTime.IsZero() {
+			dt = timestamppb.New(m.deliverTime)
+		}
+		pb = &sppb.Mutation{
+			Operation: &sppb.Mutation_Send_{
+				Send: &sppb.Mutation_Send{
+					Queue:       m.queue,
+					Key:         k,
+					Payload:     p,
+					DeliverTime: dt,
+				},
+			},
+		}
+	case opAck:
+		k, err := encodeValueArray([]interface{}(m.key))
+		if err != nil {
+			return nil, err
+		}
+		pb = &sppb.Mutation{
+			Operation: &sppb.Mutation_Ack_{
+				Ack: &sppb.Mutation_Ack{
+					Queue:          m.queue,
+					Key:            k,
+					IgnoreNotFound: m.ignoreNotFound,
+				},
+			},
+		}
 	default:
 		return nil, errInvdMutationOp(m)
 	}
