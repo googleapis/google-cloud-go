@@ -67,13 +67,7 @@ func directPathEnabled() bool {
 	return enabled
 }
 
-// This is a regression test to assert that all the expected headers are propagated
-// along to the final gRPC server avoiding scenarios where headers got dropped from a
-// destructive context augmentation call.
-// Please see https://github.com/googleapis/google-cloud-go/issues/11656
 func TestAllHeadersForwardedAppropriately(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior with BatchCreateSessions")
-
 	// 1. Set up the server interceptor that'll record and collect
 	// all the headers that  are received by the server.
 	oint := new(ourInterceptor)
@@ -84,11 +78,6 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 	defer teardown()
 
 	clientConfig := ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:     2,
-			MaxOpened:     10,
-			WriteSessions: 0.2,
-		},
 		EnableEndToEndTracing: true,
 		DisableRouteToLeader:  false,
 	}
@@ -150,7 +139,7 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 
 	wantUnaryExpectations := []*headerExpectation{
 		{
-			"/google.spanner.v1.Spanner/BatchCreateSessions",
+			"/google.spanner.v1.Spanner/CreateSession",
 			append([]string{
 				":authority", "content-type", "google-cloud-resource-prefix",
 				"grpc-accept-encoding", "user-agent", "x-goog-api-client",

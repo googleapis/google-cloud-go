@@ -1005,7 +1005,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			sh.recycle()
 		}
 	}()
-	err = runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx, func(ctx context.Context) error {
+	err = runWithRetryOnAbortedOrFailedInlineBegin(ctx, func(ctx context.Context) error {
 		var (
 			err error
 		)
@@ -1014,8 +1014,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			if err != nil {
 				return err
 			}
-			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
-			t.setSessionEligibilityForLongRunning(sh)
 		}
 		initTx := func(t *ReadWriteTransaction) {
 			t.txReadOnly.sp = c.idleSessions
@@ -1344,7 +1342,6 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 
 	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
 		var md metadata.MD
-		sh.updateLastUseTime()
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:                     sh.getID(),
 			MutationGroups:              mgsPb,

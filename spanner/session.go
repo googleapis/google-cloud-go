@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
@@ -84,15 +83,9 @@ type sessionHandle struct {
 	session *session
 	// client is the RPC channel to Cloud Spanner.
 	client spannerClient
-	// checkoutTime is the time the session was checked out.
-	checkoutTime time.Time
-	// lastUseTime is the time the session was last used.
-	lastUseTime time.Time
-	// eligibleForLongRunning tells if the inner session is eligible to be long-running.
-	eligibleForLongRunning bool
 }
 
-// recycle returns the session handle back to the pool.
+// recycle marks the session handle as no longer in use.
 func (sh *sessionHandle) recycle() {
 	sh.mu.Lock()
 	if sh.session == nil {
@@ -100,13 +93,9 @@ func (sh *sessionHandle) recycle() {
 		return
 	}
 	p := sh.session.pool
-	s := sh.session
 	sh.session = nil
 	sh.client = nil
-	sh.checkoutTime = time.Time{}
-	sh.lastUseTime = time.Time{}
 	sh.mu.Unlock()
-	s.recycle()
 	if p != nil {
 		p.mu.Lock()
 		p.decNumMultiplexedInUseLocked(context.Background())
@@ -147,43 +136,6 @@ func (sh *sessionHandle) getMetadata() metadata.MD {
 	return sh.session.md
 }
 
-// getTransactionID returns the transaction id in the session if available.
-func (sh *sessionHandle) getTransactionID() transactionID {
-	sh.mu.Lock()
-	defer sh.mu.Unlock()
-	if sh.session == nil {
-		return nil
-	}
-	return sh.session.tx
-}
-
-// destroy destroys the inner session object.
-func (sh *sessionHandle) destroy() {
-	sh.mu.Lock()
-	s := sh.session
-	if s == nil {
-		sh.mu.Unlock()
-		return
-	}
-	sh.session = nil
-	sh.client = nil
-	sh.checkoutTime = time.Time{}
-	sh.lastUseTime = time.Time{}
-	sh.mu.Unlock()
-	// Multiplexed sessions should not be destroyed
-	if !s.isMultiplexed {
-		s.destroy(false, true)
-	}
-}
-
-func (sh *sessionHandle) updateLastUseTime() {
-	sh.mu.Lock()
-	defer sh.mu.Unlock()
-	if sh.session != nil {
-		sh.lastUseTime = time.Now()
-	}
-}
-
 // session wraps a Cloud Spanner session ID through which transactions are
 // created and executed.
 type session struct {
@@ -203,8 +155,6 @@ type session struct {
 	valid bool
 	// md is the Metadata to be sent with each request.
 	md metadata.MD
-	// tx contains the transaction id if the session has been prepared for write.
-	tx transactionID
 	// isMultiplexed is true if the session is multiplexed.
 	isMultiplexed bool
 }
@@ -216,13 +166,6 @@ func (s *session) isValid() bool {
 	return s.valid
 }
 
-// isWritePrepared returns true if the session is prepared for write.
-func (s *session) isWritePrepared() bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.tx != nil
-}
-
 // String implements fmt.Stringer for session.
 func (s *session) String() string {
 	s.mu.Lock()
@@ -231,53 +174,11 @@ func (s *session) String() string {
 		s.id, s.valid, s.createTime, s.isMultiplexed)
 }
 
-// setTransactionID sets the transaction id in the session
-func (s *session) setTransactionID(tx transactionID) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.tx = tx
-}
-
 // getID returns the session ID which uniquely identifies the session in Cloud Spanner.
 func (s *session) getID() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.id
-}
-
-// recycle turns the session back to its home session pool.
-func (s *session) recycle() {
-	s.setTransactionID(nil)
-	// Multiplexed sessions don't need to be recycled to a pool
-}
-
-// destroy removes the session from Cloud Spanner service.
-func (s *session) destroy(isExpire, wasInUse bool) bool {
-	// Multiplexed sessions should not be destroyed
-	if s.isMultiplexed {
-		return false
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	return s.destroyWithContext(ctx, isExpire, wasInUse)
-}
-
-func (s *session) destroyWithContext(ctx context.Context, isExpire, wasInUse bool) bool {
-	if s.isMultiplexed {
-		return false
-	}
-	s.delete(ctx)
-	return true
-}
-
-func (s *session) delete(ctx context.Context) {
-	if s.isMultiplexed {
-		return
-	}
-	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md, true), &sppb.DeleteSessionRequest{Name: s.getID()})
-	if err != nil && ErrCode(err) != codes.DeadlineExceeded {
-		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
-	}
 }
 
 // SessionPoolConfig stores configurations of a session pool.
@@ -501,21 +402,22 @@ func (p *sessionManager) createMultiplexedSession() {
 func (p *sessionManager) sessionReady(ctx context.Context, s *session) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	if s.isMultiplexed {
-		s.pool = p
-		p.multiplexedSession = s
-		p.multiplexedSessionCreationError = nil
-		p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
-		p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
-		select {
-		case p.mayGetMultiplexedSession <- true:
-		case <-ctx.Done():
-			return
-		}
+	if !s.isMultiplexed {
+		// Regular sessions are no longer supported - this should not be called for non-multiplexed sessions
+		logf(p.sc.logger, "Warning: sessionReady called for non-multiplexed session, ignoring")
 		return
 	}
-	// Regular sessions are no longer supported - this should not be called for non-multiplexed sessions
-	logf(p.sc.logger, "Warning: sessionReady called for non-multiplexed session, ignoring")
+	s.pool = p
+	p.multiplexedSession = s
+	p.multiplexedSessionCreationError = nil
+	p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
+	p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
+	select {
+	case p.mayGetMultiplexedSession <- true:
+	case <-ctx.Done():
+		return
+	}
+	return
 }
 
 // sessionCreationFailed is called when session creation fails.
@@ -585,13 +487,10 @@ var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canc
 
 // newSessionHandle creates a new session handle for the given session.
 func (p *sessionManager) newSessionHandle(s *session) (sh *sessionHandle) {
-	sh = &sessionHandle{session: s, checkoutTime: time.Now(), lastUseTime: time.Now()}
-	if s.isMultiplexed {
-		p.mu.Lock()
-		sh.client = p.getRoundRobinClient()
-		p.mu.Unlock()
-		return sh
-	}
+	sh = &sessionHandle{session: s}
+	p.mu.Lock()
+	sh.client = p.getRoundRobinClient()
+	p.mu.Unlock()
 	return sh
 }
 
@@ -624,14 +523,6 @@ func (p *sessionManager) errGetSessionTimeout(ctx context.Context) error {
 		code = codes.Canceled
 	}
 	return spannerErrorf(code, "timeout / context canceled during getting session.")
-}
-
-// take returns a multiplexed session.
-//
-// Deprecated: Regular session pool has been removed. This method now returns
-// a multiplexed session for backward compatibility.
-func (p *sessionManager) take(ctx context.Context) (*sessionHandle, error) {
-	return p.takeMultiplexed(ctx)
 }
 
 // takeMultiplexed returns a multiplexed session.
@@ -732,60 +623,9 @@ func (p *sessionManager) multiplexSessionWorker() {
 // sessionResourceType is the type name of Spanner sessions.
 const sessionResourceType = "type.googleapis.com/google.spanner.v1.Session"
 
-// isSessionNotFoundError returns true if the given error is a `Session not found` error.
-func isSessionNotFoundError(err error) bool {
-	if err == nil {
-		return false
-	}
-	if ErrCode(err) == codes.NotFound {
-		if rt, ok := extractResourceType(err); ok {
-			return rt == sessionResourceType
-		}
-	}
-	return strings.Contains(err.Error(), "Session not found")
-}
-
-func isUnimplementedError(err error) bool {
-	if err == nil {
-		return false
-	}
-	return ErrCode(err) == codes.Unimplemented
-}
-
-// isUnimplementedErrorForMultiplexedRW returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with ReadWrite txn.
-func isUnimplementedErrorForMultiplexedRW(err error) bool {
-	if err == nil {
-		return false
-	}
-	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type read_write not supported with multiplexed sessions")
-}
-
-// isUnimplementedErrorForMultiplexedPartitionedDML returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with partitioned ops.
-func isUnimplementedErrorForMultiplexedPartitionedDML(err error) bool {
-	if err == nil {
-		return false
-	}
-	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type partitioned_dml not supported with multiplexed sessions")
-}
-
-func isUnimplementedErrorForMultiplexedPartitionReads(err error) bool {
-	if err == nil {
-		return false
-	}
-	return strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
-}
-
 func isFailedInlineBeginTransaction(err error) bool {
 	if err == nil {
 		return false
 	}
 	return ErrCode(err) == codes.Internal && strings.Contains(err.Error(), errInlineBeginTransactionFailedMsg)
-}
-
-// isClientClosing returns true if the given error is a `Connection is closing` error.
-func isClientClosing(err error) bool {
-	if err == nil {
-		return false
-	}
-	return ErrCode(err) == codes.Canceled && strings.Contains(err.Error(), "the client connection is closing")
 }

@@ -17,7 +17,6 @@ limitations under the License.
 package spanner
 
 import (
-	"bytes"
 	"context"
 	"testing"
 	"time"
@@ -267,16 +266,6 @@ func TestMultiplexSessionWorker(t *testing.T) {
 // See: https://github.com/googleapis/google-cloud-go/issues/1259
 func TestInit_CreatesSessions(t *testing.T) {
 	t.Skip("session pool has been removed - this test validates session pool behavior")
-}
-
-func (s1 *session) Equal(s2 *session) bool {
-	return s1.client == s2.client &&
-		s1.id == s2.id &&
-		s1.pool == s2.pool &&
-		s1.createTime == s2.createTime &&
-		s1.valid == s2.valid &&
-		testEqual(s1.md, s2.md) &&
-		bytes.Equal(s1.tx, s2.tx)
 }
 
 func waitFor(t *testing.T, assert func() error) {

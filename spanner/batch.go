@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
-	"log"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -133,7 +132,6 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		return nil, err
 	}
 	var md metadata.MD
-	sh.updateLastUseTime()
 	resp, err = client.PartitionRead(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.PartitionReadRequest{
 		Session:          sid,
 		Transaction:      ts,
@@ -208,7 +206,6 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		Params:           params,
 		ParamTypes:       paramTypes,
 	}
-	sh.updateLastUseTime()
 	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
@@ -280,31 +277,6 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 		return
 	}
 	t.sh = nil
-	sid, client := sh.getID(), sh.getClient()
-	// skip cleanup if session is multiplexed
-	if sh.session.isMultiplexed {
-		return
-	}
-
-	var md metadata.MD
-	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
-		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Cleanup"); err != nil {
-			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-		}
-	}
-	if metricErr := recordGFELatencyMetricsOT(ctx, md, "Cleanup", t.otConfig); metricErr != nil {
-		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
-	}
-
-	if err != nil {
-		var logger *log.Logger
-		if sh.session != nil {
-			logger = sh.session.logger
-		}
-		logf(logger, "Failed to delete session %v. Error: %v", sid, err)
-	}
 }
 
 // Execute runs a single Partition obtained from PartitionRead or
@@ -323,7 +295,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
-	sh.updateLastUseTime()
 	// Read or query partition.
 	if p.rreq != nil {
 		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {

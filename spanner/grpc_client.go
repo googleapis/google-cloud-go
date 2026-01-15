@@ -49,6 +49,7 @@ type spannerClient interface {
 	Close() error
 	Connection() *grpc.ClientConn
 	CreateSession(context.Context, *spannerpb.CreateSessionRequest, ...gax.CallOption) (*spannerpb.Session, error)
+	BatchCreateSessions(context.Context, *spannerpb.BatchCreateSessionsRequest, ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error)
 	GetSession(context.Context, *spannerpb.GetSessionRequest, ...gax.CallOption) (*spannerpb.Session, error)
 	ListSessions(context.Context, *spannerpb.ListSessionsRequest, ...gax.CallOption) *vkit.SessionIterator
 	DeleteSession(context.Context, *spannerpb.DeleteSessionRequest, ...gax.CallOption) error
@@ -134,6 +135,16 @@ func (g *grpcSpannerClient) CreateSession(ctx context.Context, req *spannerpb.Cr
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
 	resp, err := g.raw.CreateSession(ctx, req, g.optsWithNextRequestID(opts)...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
+}
+
+func (g *grpcSpannerClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
+	mt := g.newBuiltinMetricsTracer(ctx)
+	defer recordOperationCompletion(mt)
+	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	resp, err := g.raw.BatchCreateSessions(ctx, req, g.optsWithNextRequestID(opts)...)
 	statusCode, _ := status.FromError(err)
 	mt.currOp.setStatus(statusCode.Code().String())
 	return resp, err

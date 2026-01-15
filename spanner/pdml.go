@@ -60,11 +60,6 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		return 0, spannerErrorf(codes.Internal, "no session available")
 	}
 	defer sh.recycle()
-	// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running
-	sh.mu.Lock()
-	sh.eligibleForLongRunning = true
-	sh.mu.Unlock()
-
 	// Create the parameters and the SQL request, but without a transaction.
 	// The transaction reference will be added by the executePdml method.
 	params, paramTypes, err := statement.convertParams()
@@ -109,7 +104,6 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 // Note that PDML transactions cannot be committed or rolled back.
 func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlRequest, options QueryOptions) (count int64, err error) {
 	var md metadata.MD
-	sh.updateLastUseTime()
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sh.getID(),
@@ -126,7 +120,6 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 		Selector: &sppb.TransactionSelector_Id{Id: res.Id},
 	}
 
-	sh.updateLastUseTime()
 	resultSet, err := sh.getClient().ExecuteSql(ctx, req, gax.WithGRPCOptions(grpc.Header(&md)))
 	if getGFELatencyMetricsFlag() && md != nil && sh.session.pool != nil {
 		err := captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_ExecuteSql")

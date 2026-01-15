@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -1731,7 +1732,62 @@ func TestRequestIDHeader_Commit_ContextDeadlineExceeded(t *testing.T) {
 }
 
 func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		DisableNativeMetrics: true,
+		NumChannels:          4,
+	}
+
+	_, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	iterators := make([]*RowIterator, 0, clientConfig.NumChannels)
+	for i := 0; i < int(clientConfig.NumChannels); i++ {
+		iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
+		iterators = append(iterators, iter)
+		_, err := iter.Next()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	// Verify that we've seen request IDs for each channel number.
+	for channel := uint32(1); channel <= uint32(clientConfig.NumChannels); channel++ {
+		if !slices.ContainsFunc(interceptorTracker.streamClientRequestIDSegments, func(segments *requestIDSegments) bool {
+			return segments.ChannelID == channel
+		}) {
+			t.Fatalf("missing channel %d in unary requests", channel)
+		}
+	}
+
+	// Verify that we've only seen channel numbers in the range [1, config.NumChannels].
+	for _, segmentsSlice := range [][]*requestIDSegments{interceptorTracker.streamClientRequestIDSegments, interceptorTracker.unaryClientRequestIDSegments} {
+		if slices.ContainsFunc(segmentsSlice, func(segments *requestIDSegments) bool {
+			return segments.ChannelID < 1 || segments.ChannelID > uint32(clientConfig.NumChannels)
+		}) {
+			t.Fatalf("invalid channel in requests: %v", segmentsSlice)
+		}
+	}
+
+	// only one CreateSession request
+	if g, w := interceptorTracker.unaryCallCount(), uint64(1); g != w {
+		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if g, w := interceptorTracker.streamCallCount(), uint64(clientConfig.NumChannels); g != w {
+		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if err := interceptorTracker.validateRequestIDsMonotonicity(); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestRequestIDInError(t *testing.T) {

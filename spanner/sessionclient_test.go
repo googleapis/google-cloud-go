@@ -130,10 +130,6 @@ func TestCreateAndCloseSession(t *testing.T) {
 
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 0,
-			MaxOpened: 100,
-		},
 	})
 	defer teardown()
 
@@ -144,16 +140,8 @@ func TestCreateAndCloseSession(t *testing.T) {
 	if s == nil {
 		t.Fatalf("batch.next() return value mismatch\ngot: %v\nwant: any session", s)
 	}
-	expectedCount := uint(1)
-	if isMultiplexEnabled {
-		expectedCount = 2
-	}
-	if server.TestSpanner.TotalSessionsCreated() != expectedCount {
-		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", server.TestSpanner.TotalSessionsCreated(), 1)
-	}
-	s.delete(context.Background())
-	if server.TestSpanner.TotalSessionsDeleted() != 1 {
-		t.Fatalf("number of sessions deleted mismatch\ngot: %v\nwant: %v", server.TestSpanner.TotalSessionsDeleted(), 1)
+	if server.TestSpanner.TotalSessionsCreated() != uint(2) {
+		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", server.TestSpanner.TotalSessionsCreated(), 2)
 	}
 }
 
@@ -174,11 +162,8 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 	if s == nil {
 		t.Fatalf("batch.next() return value mismatch\ngot: %v\nwant: any session", s)
 	}
-	expectedCount := uint(1)
-	if isMultiplexEnabled {
-		expectedCount = 2
-	}
-	if g, w := server.TestSpanner.TotalSessionsCreated(), expectedCount; g != w {
+
+	if g, w := server.TestSpanner.TotalSessionsCreated(), uint(2); g != w {
 		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", g, w)
 	}
 
@@ -188,11 +173,6 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 	}
 	if g, w := resp.CreatorRole, "test"; g != w {
 		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
-	}
-
-	s.delete(ctx)
-	if g, w := server.TestSpanner.TotalSessionsDeleted(), uint(1); g != w {
-		t.Fatalf("number of sessions deleted mismatch\ngot: %v\nwant: %v", g, w)
 	}
 }
 
