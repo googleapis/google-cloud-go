@@ -181,6 +181,7 @@ type pipelineResultIteratorInternal interface {
 	next() (*PipelineResult, error)
 	stop()
 	getExplainStats() (*pb.ExplainStats, error)
+	getExecutionTime() (time.Time, error)
 }
 
 // streamPipelineResultIterator is the concrete implementation for gRPC streaming of pipeline results.
@@ -192,6 +193,7 @@ type streamPipelineResultIterator struct {
 	currResp           *pb.ExecutePipelineResponse
 	currRespResultsIdx int
 	statsPb            *pb.ExplainStats
+	executionTime      *timestamppb.Timestamp
 }
 
 // Ensure that streamPipelineResultIterator implements the pipelineResultIteratorInternal interface.
@@ -245,10 +247,17 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 			if err != nil {
 				return nil, err
 			}
-			if res.GetResults() != nil {
+
+			if res.GetExplainStats() != nil {
+				it.statsPb = res.GetExplainStats()
+			}
+			if res.GetExecutionTime() != nil {
+				it.executionTime = res.GetExecutionTime()
+			}
+
+			if len(res.GetResults()) > 0 {
 				it.currResp = res
 				it.currRespResultsIdx = 0
-				it.statsPb = res.GetExplainStats()
 				break
 			}
 			// No results => partial progress; keep receiving
@@ -268,7 +277,7 @@ func (it *streamPipelineResultIterator) next() (_ *PipelineResult, err error) {
 		}
 	}
 
-	pr, err := newPipelineResult(docRef, docProto, client, it.currResp.GetExecutionTime())
+	pr, err := newPipelineResult(docRef, docProto, client, it.executionTime)
 	if err != nil {
 		return nil, err
 	}
@@ -284,4 +293,17 @@ func (it *streamPipelineResultIterator) getExplainStats() (*pb.ExplainStats, err
 		return nil, fmt.Errorf("firestore: iterator is nil")
 	}
 	return it.statsPb, nil
+}
+
+func (it *streamPipelineResultIterator) getExecutionTime() (time.Time, error) {
+	if it == nil {
+		return time.Time{}, fmt.Errorf("firestore: iterator is nil")
+	}
+	if it.executionTime == nil {
+		return time.Time{}, nil
+	}
+	if err := it.executionTime.CheckValid(); err != nil {
+		return time.Time{}, err
+	}
+	return it.executionTime.AsTime(), nil
 }

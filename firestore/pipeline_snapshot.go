@@ -17,6 +17,7 @@ package firestore
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/api/iterator"
@@ -31,9 +32,26 @@ type PipelineSnapshot struct {
 	iter *PipelineResultIterator
 }
 
+var errExecutionTimeBeforeEnd = errors.New("firestore: ExecutionTime is available only after the iterator reaches the end")
+
 // Results returns an iterator over the query results.
 func (ps *PipelineSnapshot) Results() *PipelineResultIterator {
 	return ps.iter
+}
+
+// ExecutionTime returns the time at which the pipeline was executed.
+// It is available only after the iterator reaches the end.
+func (ps *PipelineSnapshot) ExecutionTime() (time.Time, error) {
+	if ps == nil {
+		return time.Time{}, errors.New("firestore: PipelineSnapshot is nil")
+	}
+	if ps.iter == nil {
+		return time.Time{}, errors.New("firestore: PipelineResultIterator is nil")
+	}
+	if ps.iter.err == nil || ps.iter.err != iterator.Done {
+		return time.Time{}, errExecutionTimeBeforeEnd
+	}
+	return ps.iter.iter.getExecutionTime()
 }
 
 // ExplainStats returns stats from query explain.
