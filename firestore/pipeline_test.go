@@ -402,3 +402,35 @@ func TestPipeline_AggregateWithSpec(t *testing.T) {
 		t.Errorf("toExecutePipelineRequest() mismatch for aggregate stage (-want +got):\n%s", diff)
 	}
 }
+
+func TestPipeline_CreateFromQuery(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	coll := client.Collection("users")
+
+	// CreateFromQuery should now accept CollectionRef
+	p := ps.CreateFromQuery(coll)
+
+	if p.err != nil {
+		t.Fatalf("CreateFromQuery returned error: %v", p.err)
+	}
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	// Should have 1 stage: collection
+	if len(stages) != 1 {
+		t.Fatalf("Expected 1 stage in proto, got %d", len(stages))
+	}
+
+	wantCollStage := &pb.Pipeline_Stage{
+		Name: "collection",
+		Args: []*pb.Value{{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/users"}}},
+	}
+	if diff := cmp.Diff(wantCollStage, stages[0], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for collection stage (-want +got):\n%s", diff)
+	}
+}

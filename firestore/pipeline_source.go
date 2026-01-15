@@ -199,13 +199,13 @@ func (ps *PipelineSource) Documents(refs ...*DocumentRef) *Pipeline {
 	return newPipeline(ps.client, newInputStageDocuments(refs...))
 }
 
-// CreateFromQuery creates a new [Pipeline] from the given [Query]. Under the hood, this will
+// CreateFromQuery creates a new [Pipeline] from the given [Queryer]. Under the hood, this will
 // translate the query semantics (order by document ID, etc.) to an equivalent pipeline.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (ps *PipelineSource) CreateFromQuery(query Query) *Pipeline {
-	return query.Pipeline()
+func (ps *PipelineSource) CreateFromQuery(query Queryer) *Pipeline {
+	return query.query().Pipeline()
 }
 
 // CreateFromAggregationQuery creates a new [Pipeline] from the given [AggregationQuery]. Under the hood, this will
