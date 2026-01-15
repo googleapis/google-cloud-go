@@ -2628,7 +2628,7 @@ libraries:
       - internal/generated/snippets/financialservices/
     tag_format: '{id}/v{version}'
   - id: firestore
-    version: 1.20.0
+    version: 1.21.0
     last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/firestore/admin/v1
