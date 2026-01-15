@@ -31,21 +31,21 @@ import (
 
 // PipelineResult is a result returned from executing a pipeline.
 type PipelineResult struct {
-	// Ref is the DocumentRef for this result. It may be nil if the result
+	// ref is the DocumentRef for this result. It may be nil if the result
 	// does not correspond to a specific Firestore document (e.g., an aggregation result
 	// without grouping, or a synthetic document from a stage).
-	Ref *DocumentRef
+	ref *DocumentRef
 
-	// CreateTime is the time at which the document was created.
+	// createTime is the time at which the document was created.
 	// It may be nil if the result does not correspond to a specific Firestore document
-	CreateTime *time.Time
+	createTime *time.Time
 
-	// UpdateTime is the time at which the document was last changed.
+	// updateTime is the time at which the document was last changed.
 	// It may be nil if the result does not correspond to a specific Firestore document
-	UpdateTime *time.Time
+	updateTime *time.Time
 
-	// ExecutionTime is the time at which the document(s) were read.
-	ExecutionTime *time.Time
+	// executionTime is the time at which the document(s) were read.
+	executionTime *time.Time
 
 	c     *Client
 	proto *pb.Document
@@ -53,7 +53,7 @@ type PipelineResult struct {
 
 func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executionTime *timestamppb.Timestamp) (*PipelineResult, error) {
 	pr := &PipelineResult{
-		Ref:   ref,
+		ref:   ref,
 		c:     c,
 		proto: proto,
 	}
@@ -63,14 +63,14 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 				return nil, err
 			}
 			createTime := proto.GetCreateTime().AsTime()
-			pr.CreateTime = &createTime
+			pr.createTime = &createTime
 		}
 		if proto.GetUpdateTime() != nil {
 			if err := proto.GetUpdateTime().CheckValid(); err != nil {
 				return nil, err
 			}
 			updateTime := proto.GetUpdateTime().AsTime()
-			pr.UpdateTime = &updateTime
+			pr.updateTime = &updateTime
 		}
 	}
 	if executionTime != nil {
@@ -78,9 +78,29 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 			return nil, err
 		}
 		execTime := executionTime.AsTime()
-		pr.ExecutionTime = &execTime
+		pr.executionTime = &execTime
 	}
 	return pr, nil
+}
+
+// Ref returns the DocumentRef for this result.
+func (p *PipelineResult) Ref() *DocumentRef {
+	return p.ref
+}
+
+// CreateTime returns the time at which the document was created.
+func (p *PipelineResult) CreateTime() *time.Time {
+	return p.createTime
+}
+
+// UpdateTime returns the time at which the document was last changed.
+func (p *PipelineResult) UpdateTime() *time.Time {
+	return p.updateTime
+}
+
+// ExecutionTime returns the time at which the document(s) were read.
+func (p *PipelineResult) ExecutionTime() *time.Time {
+	return p.executionTime
 }
 
 // Exists reports whether the PipelineResult represents an  document.
