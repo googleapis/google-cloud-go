@@ -30,6 +30,9 @@ import (
 )
 
 // PipelineResult is a result returned from executing a pipeline.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type PipelineResult struct {
 	// Ref is the DocumentRef for this result. It may be nil if the result
 	// does not correspond to a specific Firestore document (e.g., an aggregation result
@@ -85,6 +88,9 @@ func newPipelineResult(ref *DocumentRef, proto *pb.Document, c *Client, executio
 
 // Exists reports whether the PipelineResult represents an  document.
 // Even if Exists returns false, the rest of the fields are valid.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *PipelineResult) Exists() bool {
 	return p.proto != nil
 }
@@ -94,6 +100,9 @@ func (p *PipelineResult) Exists() bool {
 //
 //	var m map[string]any
 //	p.DataTo(&m)
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *PipelineResult) Data() map[string]any {
 	if p == nil || !p.Exists() {
 		return nil
@@ -110,6 +119,9 @@ func (p *PipelineResult) Data() map[string]any {
 // DataTo uses the PipelineResult's fields to populate v, which can be a pointer to a
 // map[string]any or a pointer to a struct.
 // This is similar to [DocumentSnapshot.DataTo]
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *PipelineResult) DataTo(v any) error {
 	if p == nil || !p.Exists() {
 		return status.Errorf(codes.NotFound, "document does not exist")
@@ -118,6 +130,9 @@ func (p *PipelineResult) DataTo(v any) error {
 }
 
 // PipelineResultIterator is an iterator over PipelineResults from a pipeline execution.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type PipelineResultIterator struct {
 	iter pipelineResultIteratorInternal
 	err  error // Stores sticky error from Next() or construction
@@ -126,6 +141,9 @@ type PipelineResultIterator struct {
 // Next returns the next result. Its second return value is iterator.Done if there
 // are no more results. Once Next returns Done, all subsequent calls will return
 // Done.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (it *PipelineResultIterator) Next() (*PipelineResult, error) {
 	if it.err != nil {
 		return nil, it.err
@@ -144,6 +162,9 @@ func (it *PipelineResultIterator) Next() (*PipelineResult, error) {
 // Stop stops the iterator, freeing its resources.
 // Always call Stop when you are done with a DocumentIterator.
 // It is not safe to call Stop concurrently with Next.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (it *PipelineResultIterator) Stop() {
 	if it.iter != nil {
 		it.iter.stop()
@@ -156,6 +177,9 @@ func (it *PipelineResultIterator) Stop() {
 
 // GetAll returns all the documents remaining from the iterator.
 // It is not necessary to call Stop on the iterator after calling GetAll.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (it *PipelineResultIterator) GetAll() ([]*PipelineResult, error) {
 	if it.err != nil {
 		return nil, it.err

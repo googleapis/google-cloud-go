@@ -15,6 +15,9 @@
 package firestore
 
 // BooleanExpression is an interface that represents a boolean expression in a pipeline.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type BooleanExpression interface {
 	Expression // Embed Expr interface
 	isBooleanExpr()
@@ -66,6 +69,9 @@ var _ BooleanExpression = (*baseBooleanExpression)(nil)
 //
 //	// Check if the 'tags' array contains "Go".
 //	ArrayContains("tags", "Go")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func ArrayContains(exprOrFieldPath any, value any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("array_contains", []Expression{asFieldExpr(exprOrFieldPath), toExprOrConstant(value)})}
 }
@@ -78,6 +84,9 @@ func ArrayContains(exprOrFieldPath any, value any) BooleanExpression {
 //
 //	// Check if the 'tags' array contains both "Go" and "Firestore".
 //	ArrayContainsAll("tags", []string{"Go", "Firestore"})
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func ArrayContainsAll(exprOrFieldPath any, values any) BooleanExpression {
 	return newFieldAndArrayBooleanExpr("array_contains_all", exprOrFieldPath, values)
 }
@@ -90,6 +99,9 @@ func ArrayContainsAll(exprOrFieldPath any, values any) BooleanExpression {
 //
 //	// Check if the 'tags' array contains either "Go" or "Firestore".
 //	ArrayContainsAny("tags", []string{"Go", "Firestore"})
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func ArrayContainsAny(exprOrFieldPath any, values any) BooleanExpression {
 	return newFieldAndArrayBooleanExpr("array_contains_any", exprOrFieldPath, values)
 }
@@ -102,6 +114,9 @@ func ArrayContainsAny(exprOrFieldPath any, values any) BooleanExpression {
 //
 //	// Check if the 'status' field is either "active" or "pending".
 //	EqualAny("status", []string{"active", "pending"})
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func EqualAny(exprOrFieldPath any, values any) BooleanExpression {
 	return newFieldAndArrayBooleanExpr("equal_any", exprOrFieldPath, values)
 }
@@ -114,6 +129,9 @@ func EqualAny(exprOrFieldPath any, values any) BooleanExpression {
 //
 //	// Check if the 'status' field is not "archived" or "deleted".
 //	NotEqualAny("status", []string{"archived", "deleted"})
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func NotEqualAny(exprOrFieldPath any, values any) BooleanExpression {
 	return newFieldAndArrayBooleanExpr("not_equal_any", exprOrFieldPath, values)
 }
@@ -136,6 +154,9 @@ func NotEqualAny(exprOrFieldPath any, values any) BooleanExpression {
 //
 //		// Check if the 'city' field is equal to string constant "London"
 //		Equal("city", "London")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Equal(left, right any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: leftRightToBaseFunction("equal", left, right)}
 }
@@ -158,6 +179,9 @@ func Equal(left, right any) BooleanExpression {
 //
 //		// Check if the 'city' field is not equal to string constant "London"
 //		NotEqual("city", "London")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func NotEqual(left, right any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: leftRightToBaseFunction("not_equal", left, right)}
 }
@@ -177,6 +201,9 @@ func NotEqual(left, right any) BooleanExpression {
 //
 //		// Check if the 'age' field is greater than the 'limit' field
 //		GreaterThan("age", FieldOf("limit"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func GreaterThan(left, right any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: leftRightToBaseFunction("greater_than", left, right)}
 }
@@ -196,6 +223,9 @@ func GreaterThan(left, right any) BooleanExpression {
 //
 //		// Check if the 'age' field is greater than or equal to the 'limit' field
 //		GreaterThanOrEqual("age", FieldOf("limit"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func GreaterThanOrEqual(left, right any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: leftRightToBaseFunction("greater_than_or_equal", left, right)}
 }
@@ -215,6 +245,9 @@ func GreaterThanOrEqual(left, right any) BooleanExpression {
 //
 //		// Check if the 'age' field is less than the 'limit' field
 //		LessThan("age", FieldOf("limit"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func LessThan(left, right any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: leftRightToBaseFunction("less_than", left, right)}
 }
@@ -234,6 +267,9 @@ func LessThan(left, right any) BooleanExpression {
 //
 //		// Check if the 'age' field is less than or equal to the 'limit' field
 //		LessThanOrEqual("age", FieldOf("limit"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func LessThanOrEqual(left, right any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: leftRightToBaseFunction("less_than_or_equal", left, right)}
 }
@@ -246,6 +282,9 @@ func LessThanOrEqual(left, right any) BooleanExpression {
 //
 //	// Check if the 'filename' field ends with ".go".
 //	EndsWith("filename", ".go")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func EndsWith(exprOrFieldPath any, suffix any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("ends_with", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(suffix)})}
 }
@@ -258,6 +297,9 @@ func EndsWith(exprOrFieldPath any, suffix any) BooleanExpression {
 //
 //	// Check if the 'name' field starts with "G".
 //	Like("name", "G%")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Like(exprOrFieldPath any, pattern any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("like", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(pattern)})}
 }
@@ -270,6 +312,9 @@ func Like(exprOrFieldPath any, pattern any) BooleanExpression {
 //
 //	// Check if the 'email' field contains a gmail address.
 //	RegexContains("email", "@gmail\\.com$")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func RegexContains(exprOrFieldPath any, pattern any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("regex_contains", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(pattern)})}
 }
@@ -282,6 +327,9 @@ func RegexContains(exprOrFieldPath any, pattern any) BooleanExpression {
 //
 //	// Check if the 'zip_code' field is a 5-digit number.
 //	RegexMatch("zip_code", "^[0-9]{5}$")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func RegexMatch(exprOrFieldPath any, pattern any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("regex_match", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(pattern)})}
 }
@@ -294,6 +342,9 @@ func RegexMatch(exprOrFieldPath any, pattern any) BooleanExpression {
 //
 //	// Check if the 'name' field starts with "Mr.".
 //	StartsWith("name", "Mr.")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func StartsWith(exprOrFieldPath any, prefix any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("starts_with", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(prefix)})}
 }
@@ -306,41 +357,65 @@ func StartsWith(exprOrFieldPath any, prefix any) BooleanExpression {
 //
 //	// Check if the 'description' field contains the word "Firestore".
 //	StringContains("description", "Firestore")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func StringContains(exprOrFieldPath any, substring any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("string_contains", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(substring)})}
 }
 
 // And creates an expression that performs a logical 'AND' operation.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func And(condition BooleanExpression, right ...BooleanExpression) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunctionFromBooleans("and", append([]BooleanExpression{condition}, right...))}
 }
 
 // FieldExists creates an expression that checks if a field exists.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func FieldExists(exprOrField any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("exists", []Expression{asFieldExpr(exprOrField)})}
 }
 
 // Not creates an expression that negates a boolean expression.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Not(condition BooleanExpression) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("not", []Expression{condition})}
 }
 
 // Or creates an expression that performs a logical 'OR' operation.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Or(condition BooleanExpression, right ...BooleanExpression) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunctionFromBooleans("or", append([]BooleanExpression{condition}, right...))}
 }
 
 // Xor creates an expression that performs a logical 'XOR' operation.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Xor(condition BooleanExpression, right ...BooleanExpression) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunctionFromBooleans("xor", append([]BooleanExpression{condition}, right...))}
 }
 
 // IsError creates an expression that checks if an expression evaluates to an error.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func IsError(expr Expression) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("is_error", []Expression{expr})}
 }
 
 // IsAbsent creates an expression that checks if an expression evaluates to an absent value.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func IsAbsent(exprOrField any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("is_absent", []Expression{asFieldExpr(exprOrField)})}
 }
