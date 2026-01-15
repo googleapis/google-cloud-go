@@ -30,6 +30,9 @@ type constant struct {
 }
 
 // ConstantOf creates a new constant [Expression] from a Go value.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func ConstantOf(value any) Expression {
 	if value == nil {
 		return ConstantOfNull()
@@ -59,17 +62,26 @@ func ConstantOf(value any) Expression {
 }
 
 // ConstantOfNull creates a new constant [Expression] representing a null value.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func ConstantOfNull() Expression {
 	pbVal, _, err := toProtoValue(reflect.ValueOf(nil))
 	return &constant{baseExpression: &baseExpression{pbVal: pbVal, err: err}}
 }
 
 // ConstantOfVector32 creates a new [Vector32] constant [Expression] from a slice of float32s.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func ConstantOfVector32(value []float32) Expression {
 	return ConstantOf(Vector32(value))
 }
 
 // ConstantOfVector64 creates a new [Vector64] constant [Expression] from a slice of float64s.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func ConstantOfVector64(value []float64) Expression {
 	return ConstantOf(Vector64(value))
 }

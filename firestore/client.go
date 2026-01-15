@@ -182,6 +182,9 @@ func withRequestParamsHeader(ctx context.Context, requestParams string) context.
 }
 
 // Pipeline creates a PipelineSource to start building a Firestore pipeline.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (c *Client) Pipeline() *PipelineSource {
 	return &PipelineSource{client: c}
 }
