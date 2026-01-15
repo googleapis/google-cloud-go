@@ -35,6 +35,9 @@ import (
 // NOTE: The chained stages do not prescribe exactly how Firestore will execute the pipeline.
 // Instead, Firestore only guarantees that the result is the same as if the chained stages were
 // executed in order.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type Pipeline struct {
 	c               *Client
 	stages          []pipelineStage
@@ -60,6 +63,9 @@ type executeSettings struct {
 }
 
 // ExecuteOption is an option for executing a pipeline query.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type ExecuteOption interface {
 	apply(*executeSettings)
 }
@@ -79,6 +85,9 @@ func newFuncExecuteOption(f func(*executeSettings)) *funcExecuteOption {
 }
 
 // ExplainMode is the execution mode for pipeline explain.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type ExplainMode string
 
 const (
@@ -92,6 +101,9 @@ type executeExplainOptions struct {
 }
 
 // WithExplainMode sets the execution mode for pipeline explain.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func WithExplainMode(mode ExplainMode) ExecuteOption {
 	return newFuncExecuteOption(func(eo *executeSettings) {
 		eo.ExplainOptions = &executeExplainOptions{Mode: mode}
@@ -99,6 +111,9 @@ func WithExplainMode(mode ExplainMode) ExecuteOption {
 }
 
 // Execute executes the pipeline and returns a snapshot of the results.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Execute(ctx context.Context) *PipelineSnapshot {
 	ctx = withResourceHeader(ctx, p.c.path())
 	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(p.c.path()))
@@ -181,6 +196,9 @@ func (p *Pipeline) copy() *Pipeline {
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // such as ReadTime.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
 	newP := p.copy()
 	for _, opt := range opts {
@@ -192,6 +210,9 @@ func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
 }
 
 // WithExecuteOptions specifies options for executing a pipeline.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) WithExecuteOptions(opts ...ExecuteOption) *Pipeline {
 	newP := p.copy()
 	for _, opt := range opts {
@@ -213,11 +234,17 @@ func (p *Pipeline) append(s pipelineStage) *Pipeline {
 }
 
 // Limit limits the maximum number of documents returned by previous stages.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Limit(limit int) *Pipeline {
 	return p.append(newLimitStage(limit))
 }
 
 // OrderingDirection is the sort direction for pipeline result ordering.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type OrderingDirection string
 
 const (
@@ -229,22 +256,34 @@ const (
 )
 
 // Ordering specifies the field and direction for sorting.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type Ordering struct {
 	Expr      Expression
 	Direction OrderingDirection
 }
 
 // Ascending creates an Ordering for ascending sort direction.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Ascending(expr Expression) Ordering {
 	return Ordering{Expr: expr, Direction: OrderingAsc}
 }
 
 // Descending creates an Ordering for descending sort direction.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Descending(expr Expression) Ordering {
 	return Ordering{Expr: expr, Direction: OrderingDesc}
 }
 
 // Sort sorts the documents by the given fields and directions.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Sort(orders ...Ordering) *Pipeline {
 	return p.append(newSortStage(orders...))
 }
@@ -261,6 +300,9 @@ func (p *Pipeline) Sort(orders ...Ordering) *Pipeline {
 //	  client.Pipeline().Collection("books").
 //		  .Offset(20)   // Skip the first 20 results
 //		  .Limit(20)    // Take the next 20 results
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Offset(offset int) *Pipeline {
 	return p.append(newOffsetStage(offset))
 }
@@ -278,6 +320,9 @@ func (p *Pipeline) Offset(offset int) *Pipeline {
 //		client.Pipeline().Collection("users").Select(FieldOf([]string{"info", "email"}))
 //		client.Pipeline().Collection("users").Select(FieldOf([]string{"info", "email"}))
 //	 	client.Pipeline().Collection("users").Select(Add("age", 5).As("agePlus5"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Select(fieldpathsOrSelectables ...any) *Pipeline {
 	if p.err != nil {
 		return p
@@ -294,6 +339,9 @@ func (p *Pipeline) Select(fieldpathsOrSelectables ...any) *Pipeline {
 //
 // You can optionally specify fields or [Selectable] expressions to determine distinctness.
 // If no fields are specified, the entire document is used to determine distinctness.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Distinct(fieldpathsOrSelectables ...any) *Pipeline {
 	if p.err != nil {
 		return p
@@ -313,6 +361,9 @@ func (p *Pipeline) Distinct(fieldpathsOrSelectables ...any) *Pipeline {
 // is name overlaps).
 //
 // The added fields are defined using [Selectable]s
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
 	if p.err != nil {
 		return p
@@ -326,6 +377,9 @@ func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
 }
 
 // RemoveFields removes fields from outputs from previous stages.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) RemoveFields(fieldpaths ...any) *Pipeline {
 	if p.err != nil {
 		return p
@@ -341,6 +395,9 @@ func (p *Pipeline) RemoveFields(fieldpaths ...any) *Pipeline {
 // Where filters the documents from previous stages to only include those matching the specified [BooleanExpression].
 //
 // This stage allows you to apply conditions to the data, similar to a "WHERE" clause in SQL.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Where(condition BooleanExpression) *Pipeline {
 	if p.err != nil {
 		return p
@@ -354,6 +411,9 @@ func (p *Pipeline) Where(condition BooleanExpression) *Pipeline {
 }
 
 // AggregateSpec is used to perform aggregation operations.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type AggregateSpec struct {
 	groups     []Selectable
 	accTargets []*AliasedAggregate
@@ -361,11 +421,17 @@ type AggregateSpec struct {
 }
 
 // NewAggregateSpec creates a new AggregateSpec with the given accumulator targets.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func NewAggregateSpec(accumulators ...*AliasedAggregate) *AggregateSpec {
 	return &AggregateSpec{accTargets: accumulators}
 }
 
 // WithGroups sets the grouping keys for the aggregation.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (a *AggregateSpec) WithGroups(fieldpathsOrSelectables ...any) *AggregateSpec {
 	a.groups, a.err = fieldsOrSelectablesToSelectables(fieldpathsOrSelectables...)
 	return a
@@ -379,6 +445,9 @@ func (a *AggregateSpec) WithGroups(fieldpathsOrSelectables ...any) *AggregateSpe
 //
 //	client.Pipeline().Collection("users").
 //		Aggregate(Sum("age").As("age_sum"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Aggregate(accumulators ...*AliasedAggregate) *Pipeline {
 	a := NewAggregateSpec(accumulators...)
 	aggStage, err := newAggregateStage(a)
@@ -406,6 +475,9 @@ func (p *Pipeline) Aggregate(accumulators ...*AliasedAggregate) *Pipeline {
 //		// Calculate the average rating for each genre.
 //		client.Pipeline().Collection("books").
 //	        AggregateWithSpec(NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
 	aggStage, err := newAggregateStage(spec)
 	if err != nil {
@@ -416,6 +488,9 @@ func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
 }
 
 // UnnestOptions holds the configuration for the Unnest stage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type UnnestOptions struct {
 	// IndexField specifies the name of the field to store the array index of the unnested element.
 	IndexField any
@@ -426,6 +501,9 @@ type UnnestOptions struct {
 // Each output document is a copy of the input document, but the array field is replaced by an element from the array.
 // The `field` parameter specifies the array field to unnest. It can be a string representing the field path or a [Selectable] expression.
 // The alias of the selectable will be used as the new field name.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Unnest(field Selectable, opts *UnnestOptions) *Pipeline {
 	if p.err != nil {
 		return p
@@ -440,6 +518,9 @@ func (p *Pipeline) Unnest(field Selectable, opts *UnnestOptions) *Pipeline {
 
 // UnnestWithAlias produces a document for each element in an array field, with a specified alias for the unnested field.
 // It can optionally take UnnestOptions.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts *UnnestOptions) *Pipeline {
 	if p.err != nil {
 		return p
@@ -475,6 +556,9 @@ func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts *UnnestOpti
 //	// Emit documents from books collection and magazines collection.
 //	client.Pipeline().Collection("books").
 //		Union(client.Pipeline().Collection("magazines"))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Union(other *Pipeline) *Pipeline {
 	if p.err != nil {
 		return p
@@ -488,6 +572,9 @@ func (p *Pipeline) Union(other *Pipeline) *Pipeline {
 }
 
 // SampleMode defines the mode for the sample stage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type SampleMode string
 
 const (
@@ -498,12 +585,18 @@ const (
 )
 
 // SampleSpec is used to define a sample operation.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type SampleSpec struct {
 	Size any
 	Mode SampleMode
 }
 
 // SampleByDocuments creates a SampleSpec for sampling a fixed number of documents.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func SampleByDocuments(limit int) *SampleSpec {
 	return &SampleSpec{Size: limit, Mode: SampleModeDocuments}
 }
@@ -520,6 +613,9 @@ func SampleByDocuments(limit int) *SampleSpec {
 //
 //	// Sample 50% of books.
 //	client.Pipeline().Collection("books").Sample(&SampleSpec{Size: 0.5, Mode: SampleModePercent})
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Sample(spec *SampleSpec) *Pipeline {
 	if p.err != nil {
 		return p
@@ -543,6 +639,9 @@ func (p *Pipeline) Sample(spec *SampleSpec) *Pipeline {
 //	// Emit parents as document.
 //	client.Pipeline().Collection("people").ReplaceWith("parents")
 //	// Output: { "father": "John Doe Sr.", "mother": "Jane Doe" }
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) ReplaceWith(fieldpathOrExpr any) *Pipeline {
 	if p.err != nil {
 		return p
@@ -556,6 +655,9 @@ func (p *Pipeline) ReplaceWith(fieldpathOrExpr any) *Pipeline {
 }
 
 // PipelineDistanceMeasure is the distance measure for find_nearest pipeline stage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type PipelineDistanceMeasure string
 
 const (
@@ -568,6 +670,9 @@ const (
 )
 
 // PipelineFindNearestOptions are options for a FindNearest pipeline stage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type PipelineFindNearestOptions struct {
 	Limit         *int
 	DistanceField *string
@@ -581,6 +686,9 @@ type PipelineFindNearestOptions struct {
 //
 // The vectorField can be a string, a FieldPath or an Expr.
 // The queryVector can be Vector32, Vector64, []float32, or []float64.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure PipelineDistanceMeasure, options *PipelineFindNearestOptions) *Pipeline {
 	if p.err != nil {
 		return p
@@ -608,6 +716,9 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 //				),
 //		).
 //		Select("title", "author")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (p *Pipeline) RawStage(stage *RawStage) *Pipeline {
 	if p.err != nil {
 		return p

@@ -529,12 +529,18 @@ func newWhereStage(condition BooleanExpression) (*whereStage, error) {
 }
 
 // RawStageOptions holds the options for a RawStage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type RawStageOptions map[string]any
 
 // RawStage is a generic stage in the pipeline.
 // It provides a flexible way to extend the pipeline's functionality by adding custom
 // stages. It also allows the users to call the stages that are supported by the Firestore backend
 // but not yet available in the current SDK version.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 type RawStage struct {
 	stageName string
 	args      []any
@@ -542,17 +548,26 @@ type RawStage struct {
 }
 
 // NewRawStage creates a new RawStage with the given name.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func NewRawStage(name string) *RawStage {
 	return &RawStage{stageName: name}
 }
 
 // WithArguments sets the arguments for the RawStage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (s *RawStage) WithArguments(args ...any) *RawStage {
 	s.args = args
 	return s
 }
 
 // WithOptions sets the options for the RawStage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (s *RawStage) WithOptions(options RawStageOptions) *RawStage {
 	s.options = options
 	return s
