@@ -92,7 +92,7 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -194,7 +194,7 @@ func TestPartitionedUpdate_ExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{}}, requests); err != nil {
 		t.Fatal(err)

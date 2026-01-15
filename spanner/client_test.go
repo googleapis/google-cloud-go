@@ -151,7 +151,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 		client.idleSessions.mu.Lock()
 		defer client.idleSessions.mu.Unlock()
 		if client.idleSessions.multiplexedSession == nil {
-			return errInvalidSessionPool
+			return errInvalidSession
 		}
 		return nil
 	})
@@ -514,9 +514,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -554,9 +551,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -594,9 +588,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the regular session is used, total session created should be 1
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -629,9 +620,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -725,34 +713,6 @@ func TestClient_Single_InvalidArgument(t *testing.T) {
 	if status.Code(err) != codes.InvalidArgument {
 		t.Fatalf("got: %v, want: %v", err, codes.InvalidArgument)
 	}
-}
-
-// TestClient_Single_SessionNotFound tests session-not-found retry behavior which is no longer
-// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
-// session-not-found errors should not occur during normal operation.
-func TestClient_Single_SessionNotFound(t *testing.T) {
-	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
-}
-
-// TestClient_Single_Read_SessionNotFound tests session-not-found retry behavior which is no longer
-// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
-// session-not-found errors should not occur during normal operation.
-func TestClient_Single_Read_SessionNotFound(t *testing.T) {
-	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
-}
-
-// TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool
-// is skipped because the session pool has been removed. Multiplexed sessions are now used
-// for all operations, and inactive transaction removal doesn't apply.
-func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
-}
-
-// TestClient_Single_ReadRow_SessionNotFound tests session-not-found retry behavior which is no longer
-// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
-// session-not-found errors should not occur during normal operation.
-func TestClient_Single_ReadRow_SessionNotFound(t *testing.T) {
-	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
@@ -1243,26 +1203,6 @@ func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndInvalidArgument
 	}
 }
 
-// TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction tests session-not-found retry
-// behavior which is no longer applicable with multiplexed sessions.
-func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
-	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
-}
-
-// TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOneSession tests
-// session-not-found retry behavior which is no longer applicable with multiplexed sessions.
-func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOneSession(t *testing.T) {
-	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_AndThenSessionNotFoundForBeginTransaction(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates fallback from multiplexed to regular session pool")
-}
-
-func TestClient_ReadWriteTransaction_AbortedForFirstStatement_AndThenSessionNotFoundForBeginTransaction(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates fallback from multiplexed to regular session pool")
-}
-
 func TestClient_ReadOnlyTransaction_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1431,12 +1371,6 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-}
-
-// TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated
-// is skipped because the session pool has been removed. Multiplexed sessions are now used.
-func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
 }
 
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
@@ -1736,7 +1670,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1790,7 +1724,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1843,7 +1777,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithError(t 
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1894,7 +1828,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithErrorTha
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1947,7 +1881,7 @@ func TestClient_ReadWriteTransaction_OnlyBufferWritesDuringInitialAttempt(t *tes
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1986,7 +1920,7 @@ func TestClient_ReadWriteTransaction_BlindWriteWithAbortedCommit(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -2000,18 +1934,6 @@ func TestClient_ReadWriteTransaction_BlindWriteWithAbortedCommit(t *testing.T) {
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
 	}
-}
-
-// TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail
-// is skipped because the session pool has been removed.
-func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
-}
-
-// TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated
-// is skipped because the session pool has been removed.
-func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
 }
 
 func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *testing.T) {
@@ -2045,12 +1967,6 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
 	}
-}
-
-// TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAction
-// is skipped because the session pool has been removed.
-func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAction(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
 }
 
 func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
@@ -2303,7 +2219,7 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ExecuteSqlRequest(t *
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -2346,7 +2262,7 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ReadRequest(t *testin
 	requests := drainRequestsFromServer(server.TestSpanner)
 
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ReadRequest{},
 		&sppb.ReadRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -2436,22 +2352,17 @@ func TestClient_ReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 	}
 }
 
-// TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic
-// is skipped because the session pool has been removed.
-func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
-}
-
-// TestClient_SessionContainsDatabaseRole
-// is skipped because the session pool has been removed.
 func TestClient_SessionContainsDatabaseRole(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
-}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, DatabaseRole: "test"})
+	defer teardown()
 
-// TestClient_SessionNotFound
-// is skipped because the session pool has been removed.
-func TestClient_SessionNotFound(t *testing.T) {
-	t.Skip("Session pool has been removed. This test is no longer applicable.")
+	resp, err := server.TestSpanner.GetSession(context.Background(), &sppb.GetSessionRequest{Name: client.idleSessions.multiplexedSession.id})
+	if err != nil {
+		t.Fatalf("Failed to get session unexpectedly: %v", err)
+	}
+	if g, w := resp.CreatorRole, "test"; g != w {
+		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
+	}
 }
 
 func TestClient_ReadWriteTransactionExecuteStreamingSqlAborted(t *testing.T) {
@@ -2742,7 +2653,7 @@ func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
@@ -2799,7 +2710,7 @@ func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetr
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -2851,7 +2762,7 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ReadRequest{},
 		&sppb.ReadRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
@@ -2897,7 +2808,7 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testin
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
@@ -2948,7 +2859,7 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnSecondStatement(t *testi
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
@@ -2992,7 +2903,7 @@ func TestClient_ReadWriteTransaction_MultipleReadsWithoutNext(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -3124,14 +3035,6 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 			}
 		}
 	}
-}
-
-func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
-}
-
-func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
 }
 
 func TestClient_ApplyAtLeastOnce_NonRetryableInternalErrors(t *testing.T) {
@@ -3321,12 +3224,6 @@ func TestReadWriteTransaction_WrapError(t *testing.T) {
 	if err == nil || err.Error() != msg {
 		t.Fatalf("Unexpected error\nGot: %v\nWant: %v", err, msg)
 	}
-}
-
-// TestStmtBasedReadWriteTransaction_SessionNotFoundError_shouldNotPanic tests session-not-found
-// recovery behavior which is no longer applicable with multiplexed sessions.
-func TestStmtBasedReadWriteTransaction_SessionNotFoundError_shouldNotPanic(t *testing.T) {
-	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 func TestClient_WriteStructWithPointers(t *testing.T) {
@@ -3557,7 +3454,61 @@ func TestClient_WriteStructWithCustomTypes(t *testing.T) {
 }
 
 func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     1,
+			WriteSessions: 0,
+		},
+	})
+	defer teardown()
+
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: time.Minute,
+		})
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		tx.BufferWrite([]*Mutation{Insert("FOO", []string{"ID", "NAME"}, []interface{}{int64(1), "bar"})})
+		return nil
+	})
+
+	errContext, cancel := context.WithTimeout(context.Background(), -time.Second)
+	defer cancel()
+
+	w := toSpannerErrorWithCommitInfo(errContext.Err(), true).(*Error)
+	var se *Error
+	if !errors.As(err, &se) {
+		t.Fatalf("Error mismatch\nGot: %v\nWant: %v", err, w)
+	}
+	if se.GRPCStatus().Code() != w.GRPCStatus().Code() {
+		t.Fatalf("Error status mismatch:\nGot: %v\nWant: %v", se.GRPCStatus(), w.GRPCStatus())
+	}
+	// Check that the error code is DeadlineExceeded
+	if se.GRPCStatus().Code() != codes.DeadlineExceeded {
+		t.Fatalf("Expected error code DeadlineExceeded, got: %v", se.GRPCStatus().Code())
+	}
+
+	// Check that the error message contains the essential information
+	errMsg := se.Error()
+	if !strings.Contains(errMsg, "DeadlineExceeded") {
+		t.Errorf("Error message should contain 'DeadlineExceeded', got: %s", errMsg)
+	}
+	if !strings.Contains(errMsg, "transaction outcome unknown") {
+		t.Errorf("Error message should contain 'transaction outcome unknown', got: %s", errMsg)
+	}
+
+	// Check that the error wraps a TransactionOutcomeUnknownError
+	var outcome *TransactionOutcomeUnknownError
+	if !errors.As(err, &outcome) {
+		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
+	}
+
+	if w.RequestID != "" {
+		t.Fatal("Missing .RequestID")
+	}
 }
 
 func TestFailedCommit_NoRollback(t *testing.T) {
@@ -3584,7 +3535,7 @@ func TestFailedCommit_NoRollback(t *testing.T) {
 	}
 	// The failed commit should not trigger a rollback after the commit.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 	}); err != nil {
@@ -3617,7 +3568,7 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	}
 	// The failed update should trigger a rollback.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		//	first failure should trigger an explicit BeginTransaction.
 		&sppb.BeginTransactionRequest{},
@@ -4393,14 +4344,6 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 	}
 }
 
-func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
-}
-
-func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
-}
-
 func TestClient_ReadOnlyTransaction_Priority(t *testing.T) {
 	t.Parallel()
 
@@ -4513,10 +4456,6 @@ func TestClient_PDML_Priority(t *testing.T) {
 		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
 		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, &sppb.RequestOptions{Priority: qo.Priority})
 	}
-}
-
-func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
 }
 
 func TestClient_Apply_Priority(t *testing.T) {
@@ -4846,7 +4785,26 @@ func TestClient_Single_ReadRowWithOptions(t *testing.T) {
 }
 
 func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			DisableNativeMetrics: true,
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	server.TestSpanner.Freeze()
+	defer server.TestSpanner.Unfreeze()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
+	defer cancel()
+	sp.close(ctx)
+
+	// session pool close does not trigger any request to backend
+	if ctx.Err() != nil {
+		t.Fatalf("context error mismatch\nWant: nil\nGot: %v", ctx.Err())
+	}
 }
 
 func TestClient_CustomRetryAndTimeoutSettings(t *testing.T) {
@@ -4917,18 +4875,11 @@ func TestClient_BatchWrite(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BatchWriteRequest{},
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-}
-
-// TestClient_BatchWrite_SessionNotFound tests session-not-found retry behavior which is no longer
-// applicable with multiplexed sessions. Multiplexed sessions are managed by the server and
-// session-not-found errors should not occur during normal operation.
-func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
-	t.Skip("Session pool has been removed. Session-not-found retry behavior is no longer applicable with multiplexed sessions.")
 }
 
 func TestClient_BatchWrite_Error(t *testing.T) {
@@ -5033,36 +4984,6 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 	}
 }
 
-func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
-	// Session pool has been removed - this function validated session pool behavior
-	// The test calling this function is already skipped
-}
-func TestClient_BatchWrite_SpanExported(t *testing.T) {
-	t.Skip("open census spans are no longer exported by gapics")
-	testcases := []struct {
-		name   string
-		code   codes.Code
-		errors []error
-	}{
-		{
-			name:   "Success",
-			code:   codes.OK,
-			errors: []error{},
-		},
-		{
-			name:   "Error",
-			code:   codes.InvalidArgument,
-			errors: []error{status.Error(codes.InvalidArgument, "Invalid argument")},
-		},
-	}
-
-	for _, tt := range testcases {
-		t.Run(tt.name, func(t *testing.T) {
-			checkBatchWriteSpan(t, tt.errors, tt.code)
-		})
-	}
-}
-
 func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -5097,7 +5018,7 @@ func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -5134,10 +5055,6 @@ func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	}
 }
 
-func TestClient_ReadWriteTransactionWithTag_SessionNotFound(t *testing.T) {
-	t.Skip("session pool has been removed - this test expects BatchCreateSessionsRequest")
-}
-
 func TestClient_NestedReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -5167,7 +5084,7 @@ func TestClient_NestedReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -5224,7 +5141,7 @@ func TestClient_NestedReadWriteTransactionWithTag_OuterAbortedOnce(t *testing.T)
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -5285,7 +5202,7 @@ func TestClient_NestedReadWriteTransactionWithTag_InnerBlindWrite(t *testing.T) 
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -5335,7 +5252,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_ExecuteSqlRe
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -5363,7 +5280,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BufferWrite(
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -5390,7 +5307,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BatchUpdate(
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -5452,7 +5369,7 @@ func TestClient_ApplyExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -5477,7 +5394,7 @@ func TestClient_ApplyAtLeastOnceExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 
 	expectedReqs := []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.CommitRequest{},
 	}
 	if isMultiplexEnabled {

@@ -92,7 +92,7 @@ func (sh *sessionHandle) recycle() {
 		sh.mu.Unlock()
 		return
 	}
-	p := sh.session.pool
+	p := sh.session.sm
 	sh.session = nil
 	sh.client = nil
 	sh.mu.Unlock()
@@ -143,8 +143,8 @@ type session struct {
 	client spannerClient
 	// id is the unique id of the session in Cloud Spanner.
 	id string
-	// pool is the session's sessionManager.
-	pool *sessionManager
+	// sm is the session's sessionManager.
+	sm *sessionManager
 	// createTime is the timestamp of the session's creation.
 	createTime time.Time
 	// logger is the logger configured for the Spanner client.
@@ -407,7 +407,7 @@ func (p *sessionManager) sessionReady(ctx context.Context, s *session) {
 		logf(p.sc.logger, "Warning: sessionReady called for non-multiplexed session, ignoring")
 		return
 	}
-	s.pool = p
+	s.sm = p
 	p.multiplexedSession = s
 	p.multiplexedSessionCreationError = nil
 	p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
@@ -457,7 +457,7 @@ func (p *sessionManager) isValid() bool {
 	return p.valid
 }
 
-// close marks the session pool as closed.
+// close marks the session as closed.
 func (p *sessionManager) close(ctx context.Context) {
 	if p == nil {
 		return
@@ -479,11 +479,8 @@ func (p *sessionManager) close(ctx context.Context) {
 	close(p.multiplexedSessionReq)
 }
 
-// errInvalidSessionPool is the error for using an invalid session pool.
-var errInvalidSessionPool = spannerErrorf(codes.InvalidArgument, "invalid session pool")
-
-// errGetSessionTimeout returns error for context timeout during session acquisition.
-var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canceled during getting session")
+// errInvalidSession is the error for using an invalid session.
+var errInvalidSession = spannerErrorf(codes.InvalidArgument, "invalid session")
 
 // newSessionHandle creates a new session handle for the given session.
 func (p *sessionManager) newSessionHandle(s *session) (sh *sessionHandle) {
@@ -533,7 +530,7 @@ func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, e
 		p.mu.Lock()
 		if !p.valid {
 			p.mu.Unlock()
-			return nil, errInvalidSessionPool
+			return nil, errInvalidSession
 		}
 		if p.multiplexedSession != nil {
 			s = p.multiplexedSession

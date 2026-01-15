@@ -76,11 +76,11 @@ type txReadOnly struct {
 	// Atomic. Only needed for DML statements, but used forall.
 	sequenceNumber int64
 
-	// sp is the session pool for allocating a session to execute the read-only
+	// sm is the session manager for allocating a session to execute the read-only
 	// transaction. It is set only once during initialization of the
 	// txReadOnly.
-	sp *sessionManager
-	// sh is the sessionHandle allocated from sp.
+	sm *sessionManager
+	// sh is the sessionHandle allocated from the session manager.
 	sh *sessionHandle
 
 	// qo provides options for executing a sql query.
@@ -300,12 +300,12 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	kset, err := keys.keySetProto()
 	if err != nil {
 		return &RowIterator{
-			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			meterTracerFactory: t.sm.sc.metricsTracerFactory,
 			err:                err}
 	}
 	if sh, ts, err = t.acquire(ctx); err != nil {
 		return &RowIterator{
-			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			meterTracerFactory: t.sm.sc.metricsTracerFactory,
 			err:                err}
 	}
 	// Cloud Spanner will return "Session not found" on bad sessions.
@@ -313,7 +313,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	if client == nil {
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{
-			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			meterTracerFactory: t.sm.sc.metricsTracerFactory,
 			err:                errSessionClosed(sh)}
 	}
 	index := t.ro.Index
@@ -354,7 +354,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
-		t.sp.sc.metricsTracerFactory,
+		t.sm.sc.metricsTracerFactory,
 		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
@@ -678,7 +678,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
 		return &RowIterator{
-			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			meterTracerFactory: t.sm.sc.metricsTracerFactory,
 			err:                err,
 		}
 	}
@@ -692,7 +692,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
-		t.sp.sc.metricsTracerFactory,
+		t.sm.sc.metricsTracerFactory,
 		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			// The session handle is removed from the transaction when the transaction is committed or rolled back.
 			// This ensures that we return a reasonable error instead of panic if the application tries to use the
@@ -892,7 +892,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			sh.recycle()
 		}
 	}()
-	sh, err = t.sp.takeMultiplexed(ctx)
+	sh, err = t.sm.takeMultiplexed(ctx)
 	if err != nil {
 		return err
 	}
@@ -980,7 +980,7 @@ func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHan
 				},
 			},
 		}
-		sh, err := t.sp.takeMultiplexed(ctx)
+		sh, err := t.sm.takeMultiplexed(ctx)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -1030,7 +1030,7 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 			t.mu.Unlock()
 			// Begin a read-only transaction.
 			if t.beginTransactionOption == InlinedBeginTransaction {
-				sh, err := t.sp.takeMultiplexed(ctx)
+				sh, err := t.sm.takeMultiplexed(ctx)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -1966,9 +1966,7 @@ func (t *ReadWriteStmtBasedTransaction) isDefaultInlinedBegin() bool {
 }
 
 // NewReadWriteStmtBasedTransaction starts a read-write transaction. Commit() or
-// Rollback() must be called to end a transaction. If Commit() or Rollback() is
-// not called, the session that is used by the transaction will not be returned
-// to the pool and cause a session leak.
+// Rollback() must be called to end a transaction.
 //
 // This method should only be used when manual error handling and retry
 // management is needed. Cloud Spanner may abort a read/write transaction at any
@@ -1976,16 +1974,14 @@ func (t *ReadWriteStmtBasedTransaction) isDefaultInlinedBegin() bool {
 // checked for an Aborted error, including queries and read operations.
 //
 // For most use cases, client.ReadWriteTransaction should be used, as it will
-// handle all Aborted and 'Session not found' errors automatically.
+// handle all Aborted errors automatically.
 func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWriteStmtBasedTransaction, error) {
 	return NewReadWriteStmtBasedTransactionWithOptions(ctx, c, TransactionOptions{})
 }
 
 // NewReadWriteStmtBasedTransactionWithOptions starts a read-write transaction
 // with configurable options. Commit() or Rollback() must be called to end a
-// transaction. If Commit() or Rollback() is not called, the session that is
-// used by the transaction will not be returned to the pool and cause a session
-// leak.
+// transaction.
 //
 // ResetForRetry resets the transaction before a retry attempt. This function
 // returns a new transaction that should be used for the retry attempt. The
@@ -2001,9 +1997,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 
 // NewReadWriteStmtBasedTransactionWithCallbackForOptions starts a read-write
 // transaction with a callback that gives the actual transaction options.
-// Commit() or Rollback() must be called to end a transaction. If Commit() or
-// Rollback() is not called, the session that is used by the transaction will
-// not be returned to the pool and cause a session leak.
+// Commit() or Rollback() must be called to end a transaction.
 //
 // ResetForRetry resets the transaction before a retry attempt. This function
 // returns a new transaction that should be used for the retry attempt. The
@@ -2039,7 +2033,7 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 	if previousTransactionID != nil {
 		t.previousTx = previousTransactionID
 	}
-	t.txReadOnly.sp = c.idleSessions
+	t.txReadOnly.sm = c.idleSessions
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -2153,9 +2147,9 @@ func (t *ReadWriteStmtBasedTransaction) ResetForRetry(ctx context.Context) (*Rea
 // writeOnlyTransaction provides the most efficient way of doing write-only
 // transactions. It essentially does blind writes to Cloud Spanner.
 type writeOnlyTransaction struct {
-	// sp is the session pool which writeOnlyTransaction uses to get Cloud
+	// sm is the session manager which writeOnlyTransaction uses to get Cloud
 	// Spanner sessions for blind writes.
-	sp *sessionManager
+	sm *sessionManager
 	// transactionTag is the tag that will be included with the CommitRequest
 	// of the write-only transaction.
 	transactionTag string
@@ -2207,7 +2201,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		for {
 			if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 				// No usable session for doing the commit, take one from pool.
-				sh, err = t.sp.takeMultiplexed(ctx)
+				sh, err = t.sm.takeMultiplexed(ctx)
 				if err != nil {
 					// sessionManager.Take already retries for session
 					// creations/retrivals.

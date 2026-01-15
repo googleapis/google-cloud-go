@@ -490,7 +490,7 @@ func TestRequestIDHeader_onRetriesWithFailedTransactionCommit(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}, // First commit fails.
 		&sppb.BeginTransactionRequest{},
@@ -639,7 +639,7 @@ func TestRequestIDHeader_BatchDMLWithMultipleDML(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -722,7 +722,7 @@ func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BatchWriteRequest{},
 	}, requests); err != nil {
 		t.Fatal(err)
@@ -789,7 +789,7 @@ func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BatchWriteRequest{},
 		&sppb.BatchWriteRequest{},
 	}, requests); err != nil {
@@ -1103,7 +1103,7 @@ func TestRequestIDHeader_ReadWriteTransactionUpdate(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1383,7 +1383,7 @@ func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.CommitRequest{},
@@ -1472,8 +1472,8 @@ func TestRequestIDHeader_BatchCreateSessions_Unavailable(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 	}); err != nil {
 		t.Fatal(err)
@@ -1557,7 +1557,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *te
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1871,7 +1871,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuring
 		}
 	}
 	if _, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},

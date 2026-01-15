@@ -526,10 +526,6 @@ func initIntegrationTests() (cleanup func()) {
 	}
 }
 
-func TestIntegration_InitSessionPool(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
-}
-
 // Test SingleUse transaction.
 func TestIntegration_SingleUse(t *testing.T) {
 	t.Parallel()
@@ -2074,7 +2070,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 			client.idleSessions.mu.Lock()
 			defer client.idleSessions.mu.Unlock()
 			if client.idleSessions.multiplexedSession == nil {
-				return errInvalidSessionPool
+				return errInvalidSession
 			}
 			return nil
 		})

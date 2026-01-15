@@ -146,7 +146,7 @@ func TestCreateAndCloseSession(t *testing.T) {
 }
 
 func TestCreateSessionWithDatabaseRole(t *testing.T) {
-	// Make sure that there is always only one session in the pool.
+	// Make sure that there is always only one session in the sm.
 	sc := SessionPoolConfig{
 		MinOpened: 0,
 		MaxOpened: 1,
@@ -174,30 +174,6 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 	if g, w := resp.CreatorRole, "test"; g != w {
 		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
 	}
-}
-
-func TestBatchCreateAndCloseSession(t *testing.T) {
-	t.Skip("session pool has been removed - batch session creation no longer exists")
-}
-
-func TestBatchCreateSessionsWithDatabaseRole(t *testing.T) {
-	t.Skip("session pool has been removed - batch session creation no longer exists")
-}
-
-func TestBatchCreateSessionsWithExceptions(t *testing.T) {
-	t.Skip("session pool has been removed - batch session creation no longer exists")
-}
-
-func TestBatchCreateSessions_ServerReturnsLessThanRequestedSessions(t *testing.T) {
-	t.Skip("session pool has been removed - batch session creation no longer exists")
-}
-
-func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
-	t.Skip("session pool has been removed - batch session creation no longer exists")
-}
-
-func TestBatchCreateSessions_WithTimeout(t *testing.T) {
-	t.Skip("session pool has been removed - batch session creation no longer exists")
 }
 
 func TestClientIDGenerator(t *testing.T) {

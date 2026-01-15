@@ -30,65 +30,6 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestOCStats_SessionPool(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool metrics")
-}
-
-func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
-	DisableGfeLatencyAndHeaderMissingCountViews()
-	te := stestutil.NewTestExporter(v)
-	defer te.Unregister()
-
-	_, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-
-	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
-
-	// Wait for a while to see all exported metrics.
-	waitErr := &Error{}
-	waitFor(t, func() error {
-		select {
-		case stat := <-te.Stats:
-			if len(stat.Rows) > 0 {
-				return nil
-			}
-		}
-		return waitErr
-	})
-
-	// Wait until we see data from the view.
-	select {
-	case stat := <-te.Stats:
-		if len(stat.Rows) == 0 {
-			t.Fatal("No metrics are exported")
-		}
-		if got, want := stat.View.Measure.Name(), statsPrefix+measure; got != want {
-			t.Fatalf("Incorrect measure: got %v, want %v", got, want)
-		}
-		row := stat.Rows[0]
-		m := getTagMap(row.Tags)
-		checkCommonTags(t, m)
-		var data string
-		switch row.Data.(type) {
-		default:
-			data = fmt.Sprintf("%v", row.Data)
-		case *view.CountData:
-			data = fmt.Sprintf("%v", row.Data.(*view.CountData).Value)
-		case *view.LastValueData:
-			data = fmt.Sprintf("%v", row.Data.(*view.LastValueData).Value)
-		}
-		if got, want := data, value; got != want {
-			t.Fatalf("Incorrect data: got %v, want %v", got, want)
-		}
-	case <-time.After(1 * time.Second):
-		t.Fatal("no stats were exported before timeout")
-	}
-}
-
-func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
-	t.Skip("session pool has been removed - this test validates session pool behavior")
-}
-
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := stestutil.NewTestExporter(GetSessionTimeoutsCountView)
