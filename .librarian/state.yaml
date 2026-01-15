@@ -748,7 +748,7 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.6.0
+    version: 1.7.0
     last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/backupdr/v1
@@ -1723,7 +1723,7 @@ libraries:
       - internal/generated/snippets/confidentialcomputing/
     tag_format: '{id}/v{version}'
   - id: config
-    version: 1.5.1
+    version: 1.6.0
     last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/config/v1
@@ -2714,7 +2714,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.5.0
+    version: 0.6.0
     last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -3114,7 +3114,7 @@ libraries:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
   - id: kms
-    version: 1.23.2
+    version: 1.24.0
     last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/kms/v1
@@ -3815,7 +3815,7 @@ libraries:
       - internal/generated/snippets/monitoring/
     tag_format: '{id}/v{version}'
   - id: netapp
-    version: 1.11.0
+    version: 1.12.0
     last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/netapp/v1
@@ -4798,7 +4798,7 @@ libraries:
       - internal/version
     tag_format: v{version}
   - id: run
-    version: 1.13.0
+    version: 1.14.0
     last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/run/v2
