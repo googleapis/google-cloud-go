@@ -335,11 +335,11 @@ func TestPipelineResult_DataExtraction(t *testing.T) {
 	}
 
 	// Test Timestamps
-	if pr.CreateTime == nil || !pr.CreateTime.Equal(now) {
-		t.Errorf("CreateTime: got %v, want %v", pr.CreateTime, now)
+	if pr.CreateTime() == nil || !pr.CreateTime().Equal(now) {
+		t.Errorf("CreateTime: got %v, want %v", pr.CreateTime(), now)
 	}
-	if pr.ExecutionTime == nil || !pr.ExecutionTime.Equal(now.Add(time.Second)) {
-		t.Errorf("ExecutionTime: got %v, want %v", pr.ExecutionTime, now.Add(time.Second))
+	if pr.ExecutionTime() == nil || !pr.ExecutionTime().Equal(now.Add(time.Second)) {
+		t.Errorf("ExecutionTime: got %v, want %v", pr.ExecutionTime(), now.Add(time.Second))
 	}
 }
 
@@ -371,8 +371,8 @@ func TestPipelineResult_NoResults(t *testing.T) {
 		t.Errorf("Struct Foo for non-existent result: got %q, want \"\"", s.Foo)
 	}
 
-	if pr.ExecutionTime == nil || !pr.ExecutionTime.Equal(execTime) {
-		t.Errorf("ExecutionTime for non-existent result: got %v, want %v", pr.ExecutionTime, execTime)
+	if pr.ExecutionTime() == nil || !pr.ExecutionTime().Equal(execTime) {
+		t.Errorf("ExecutionTime for non-existent result: got %v, want %v", pr.ExecutionTime(), execTime)
 	}
 }
 
