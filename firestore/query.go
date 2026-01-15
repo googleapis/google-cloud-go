@@ -2092,6 +2092,9 @@ func newCursorFilterWithValues(orders []order, values []interface{}, before, isS
 // All of the operations of the query will be converted to pipeline stages.
 // For example, `query.Where("f", "==", 1).Limit(10).OrderBy("f", Asc).Pipeline()` is equivalent to
 // `client.Pipeline().Collection("C").Where(Equal("f", 1)).Limit(10).Sort(Ascending("f"))`.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (q Query) Pipeline() *Pipeline {
 	return q.toPipeline()
 }
@@ -2099,6 +2102,9 @@ func (q Query) Pipeline() *Pipeline {
 // Pipeline creates a new [Pipeline] from the aggregation query.
 // All of the operations of the underlying query will be converted to pipeline stages,
 // and an aggregate stage will be added for the aggregations.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (aq *AggregationQuery) Pipeline() *Pipeline {
 	p := aq.query.toPipeline()
 	if p.err != nil {
