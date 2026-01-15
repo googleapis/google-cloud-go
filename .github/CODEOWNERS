@@ -16,8 +16,8 @@
 /spanner/               @googleapis/spanner-client-libraries-go @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /storage/               @googleapis/gcs-sdk-team @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /httpreplay/            @googleapis/gcs-sdk-team @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
-/errorreporting/        @googleapis/api-logging @googleapis/api-logging-partners @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
-/logging/               @googleapis/api-logging @googleapis/api-logging-partners @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
+/errorreporting/        @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
+/logging/               @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /profiler/              @googleapis/api-profiler @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /vertexai/              @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team
 /internal/protoveneer/  @googleapis/cloud-sdk-go-eng @googleapis/cloud-sdk-librarian-team @jba
