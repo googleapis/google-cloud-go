@@ -57,7 +57,7 @@ func (ps *PipelineSnapshot) ExecutionTime() (*time.Time, error) {
 	if ps.iter == nil {
 		return nil, errors.New("firestore: PipelineResultIterator is nil")
 	}
-	if ps.iter.err == nil || ps.iter.err != iterator.Done {
+	if ps.iter.err != iterator.Done {
 		return nil, errExecutionTimeBeforeEnd
 	}
 	return ps.iter.iter.getExecutionTime()
