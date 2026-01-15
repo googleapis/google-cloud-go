@@ -41,15 +41,15 @@ func (ps *PipelineSnapshot) Results() *PipelineResultIterator {
 
 // ExecutionTime returns the time at which the pipeline was executed.
 // It is available only after the iterator reaches the end.
-func (ps *PipelineSnapshot) ExecutionTime() (time.Time, error) {
+func (ps *PipelineSnapshot) ExecutionTime() (*time.Time, error) {
 	if ps == nil {
-		return time.Time{}, errors.New("firestore: PipelineSnapshot is nil")
+		return nil, errors.New("firestore: PipelineSnapshot is nil")
 	}
 	if ps.iter == nil {
-		return time.Time{}, errors.New("firestore: PipelineResultIterator is nil")
+		return nil, errors.New("firestore: PipelineResultIterator is nil")
 	}
 	if ps.iter.err == nil || ps.iter.err != iterator.Done {
-		return time.Time{}, errExecutionTimeBeforeEnd
+		return nil, errExecutionTimeBeforeEnd
 	}
 	return ps.iter.iter.getExecutionTime()
 }

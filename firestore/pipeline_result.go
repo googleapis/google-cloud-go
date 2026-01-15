@@ -181,7 +181,7 @@ type pipelineResultIteratorInternal interface {
 	next() (*PipelineResult, error)
 	stop()
 	getExplainStats() (*pb.ExplainStats, error)
-	getExecutionTime() (time.Time, error)
+	getExecutionTime() (*time.Time, error)
 }
 
 // streamPipelineResultIterator is the concrete implementation for gRPC streaming of pipeline results.
@@ -295,15 +295,16 @@ func (it *streamPipelineResultIterator) getExplainStats() (*pb.ExplainStats, err
 	return it.statsPb, nil
 }
 
-func (it *streamPipelineResultIterator) getExecutionTime() (time.Time, error) {
+func (it *streamPipelineResultIterator) getExecutionTime() (*time.Time, error) {
 	if it == nil {
-		return time.Time{}, fmt.Errorf("firestore: iterator is nil")
+		return nil, fmt.Errorf("firestore: iterator is nil")
 	}
 	if it.executionTime == nil {
-		return time.Time{}, nil
+		return nil, nil
 	}
 	if err := it.executionTime.CheckValid(); err != nil {
-		return time.Time{}, err
+		return nil, err
 	}
-	return it.executionTime.AsTime(), nil
+	t := it.executionTime.AsTime()
+	return &t, nil
 }

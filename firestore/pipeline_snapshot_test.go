@@ -96,6 +96,9 @@ func TestPipeline_Execute_ExecutionTime(t *testing.T) {
 	if err != nil {
 		t.Errorf("ExecutionTime() failed: %v", err)
 	}
+	if gotTime == nil {
+		t.Fatal("ExecutionTime() returned nil")
+	}
 	if !gotTime.Equal(execTime) {
 		t.Errorf("ExecutionTime(): got %v, want %v", gotTime, execTime)
 	}
@@ -151,6 +154,9 @@ func TestPipeline_Execute_ExecutionTime_Updated(t *testing.T) {
 	gotTime, err := snap.ExecutionTime()
 	if err != nil {
 		t.Errorf("ExecutionTime() failed: %v", err)
+	}
+	if gotTime == nil {
+		t.Fatal("ExecutionTime() returned nil")
 	}
 	if !gotTime.Equal(execTime2) {
 		t.Errorf("ExecutionTime(): got %v, want %v", gotTime, execTime2)
