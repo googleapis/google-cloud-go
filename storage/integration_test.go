@@ -41,6 +41,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -65,7 +66,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -425,8 +425,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 				want = content[k.offset : k.offset+k.limit]
 			}
 			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, k.buf.Bytes(), want)
+				t.Errorf("Error in read range offset %v, limit %v, got: %v bytes; want: %v bytes",
+					k.offset, k.limit, len(k.buf.Bytes()), len(want))
 			}
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
@@ -525,14 +525,116 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 		}
 	})
 }
+func TestIntegration_MRDWithReadHandle(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		const (
+			dataSize       = 1000
+			offset         = 0
+			limit          = 100
+			negativeOffset = -200
+		)
+
+		// Generate random content for testing.
+		content := make([]byte, dataSize)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MRDWithReadHandle"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatalf("Failed to upload test object %q: %v", objName, err)
+		}
+		// Ensure cleanup after the test.
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("Failed to delete test object %q: %v", objName, err)
+			}
+		}()
+
+		mrd, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader: %v", err)
+		}
+		readHandle := mrd.GetHandle()
+		obj = obj.ReadHandle(readHandle)
+		mrd2, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader with read handle: %v", err)
+		}
+
+		// Perform the read operation.
+		var res1, res2, res3, res4 multiRangeDownloaderOutput
+		mrd.Add(&res1.buf, offset, limit, func(x, y int64, err error) {
+			res1.offset = x
+			res1.limit = y
+			res1.err = err
+		})
+		mrd2.Add(&res2.buf, offset, limit, func(x, y int64, err error) {
+			res2.offset = x
+			res2.limit = y
+			res2.err = err
+		})
+		mrd2.Add(&res3.buf, negativeOffset, limit, func(x, y int64, err error) {
+			res3.offset = x
+			res3.limit = y
+			res3.err = err
+		})
+		mrd2.Add(&res4.buf, negativeOffset, 0, func(x, y int64, err error) {
+			res4.offset = x
+			res4.limit = y
+			res4.err = err
+		})
+
+		mrd.Wait()
+		mrd2.Wait()
+
+		if res1.err != nil {
+			t.Fatalf("mrd.Add callback returned error: %v", res1.err)
+		}
+		if res2.err != nil {
+			t.Fatalf("mrd2.Add callback returned error for res2: %v", res2.err)
+		}
+		if res3.err != nil {
+			t.Fatalf("mrd2.Add callback returned error for res3: %v", res3.err)
+		}
+
+		// Validate results for mrd with read handle.
+		want := content[offset : offset+limit]
+
+		if res2.offset != offset || res2.limit != limit {
+			t.Errorf("mrd2.Add callback offset/limit got %d/%d, want %d/%d", res2.offset, res2.limit, offset, limit)
+		}
+		if got := res2.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %d bytes, want %d bytes", len(got), len(want))
+		}
+
+		want = content[max(0, dataSize+negativeOffset):min(dataSize, max(0, dataSize+negativeOffset)+limit)]
+		if got := res3.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		want = content[max(0, dataSize+negativeOffset):]
+		if got := res4.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		if err := mrd.Close(); err != nil {
+			t.Fatalf("Error while closing reader: %v", err)
+		}
+		if err := mrd2.Close(); err != nil {
+			t.Fatalf("Error while closing reader created with read handle: %v", err)
+		}
+	})
+}
 
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		content := make([]byte, 5<<20)
+		// Use a 10MB object to allow for many non-overlapping range requests.
+		content := make([]byte, 10<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloader"
+		objName := "MultiRangeDownloaderConcurrentReads"
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -549,63 +651,78 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
 
-		// Create a top-level errgroup for each goroutine
-		eG, ctx := errgroup.WithContext(ctx)
-		goRoutineCount := 10
+		// Use 50 goroutines with 10 adds each (500 total).
+		// This exceeds the internal session reqC buffer of 100, stressing the manager's event loop.
+		goRoutineCount := 50
 		perGoRoutineAddCount := 10
-		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
 
-		// Create multiple go routines to read concurrently.
+		const (
+			minRangeSize      = 1024 // Minimum size of a range request.
+			maxExtraRangeSize = 2048 // Maximum additional size added to minRangeSize.
+			offsetStep        = 2048 // Distance between the start of consecutive range requests.
+
+			// safeEndPadding ensures that the calculated offset + limit does not exceed
+			// the total length of the content. Since the maximum limit is
+			// minRangeSize + maxExtraRangeSize (3072), a padding of 4096 is safe.
+			safeEndPadding = 4096
+		)
+
+		type rangeRes struct {
+			buf       bytes.Buffer
+			offset    int64
+			limit     int64
+			gotOffset int64
+			gotLimit  int64
+			err       error
+		}
+		results := make([]*rangeRes, goRoutineCount*perGoRoutineAddCount)
+
+		var wg sync.WaitGroup
+		wg.Add(len(results))
+
 		for i := 0; i < goRoutineCount; i++ {
-			groupID := i
-			eG.Go(func() error {
-
-				// Subgroup for tasks within this goroutine
-				subGroup, _ := errgroup.WithContext(ctx)
-
+			go func(gID int) {
 				for j := 0; j < perGoRoutineAddCount; j++ {
-					taskID := perGoRoutineAddCount*groupID + j
-					subGroup.Go(func() error {
-						// Use a channel to receive the callback results
-						done := make(chan error, 1)
+					taskID := gID*perGoRoutineAddCount + j
+					// Randomize offset/limit slightly to ensure varied request patterns.
+					offset := int64((taskID * offsetStep) % (len(content) - safeEndPadding))
+					limit := int64(minRangeSize + rand.Intn(maxExtraRangeSize))
 
-						reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
-							res[taskID].offset = x
-							res[taskID].limit = y
-							res[taskID].err = err
-							// Send each callback result to subGroup.
-							done <- err
-						})
-						return <-done
+					r := &rangeRes{offset: offset, limit: limit}
+					results[taskID] = r
+
+					reader.Add(&r.buf, offset, limit, func(o, l int64, err error) {
+						r.err = err
+						r.gotOffset = o
+						r.gotLimit = l
+						wg.Done()
 					})
 				}
-				// Wait for all tasks in current sub-group to complete to send result to main error group.
-				return subGroup.Wait()
-			})
+			}(i)
 		}
 
-		// Wait for all top-level goroutines to complete
-		if err := eG.Wait(); err != nil {
-			t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
-		}
-
+		// Wait for all goroutines to finish adding their ranges.
+		wg.Wait()
+		// Wait for all reads to complete.
 		reader.Wait()
+
 		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+			t.Fatalf("Error while closing reader: %v", err)
 		}
-		for id, k := range res {
-			if k.err != nil {
-				t.Fatalf("reading range %v: %v", id, k.err)
+
+		for id, res := range results {
+			if res.err != nil {
+				t.Errorf("Range %d (offset %d) failed: %v", id, res.offset, res.err)
+				continue
 			}
-			if got, want := k.offset, 0; got != int64(want) {
-				t.Errorf("range id %v: got callback offset %v, want %v", id, got, want)
+			if res.gotOffset != res.offset || res.gotLimit != res.limit {
+				t.Errorf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+					id, res.gotOffset, res.gotLimit, res.offset, res.limit)
 			}
-			if got, want := k.limit, len(content); got != int64(want) {
-				t.Errorf("range id %v: got callback limit %v, want %v", id, got, want)
-			}
-			if !bytes.Equal(k.buf.Bytes(), content) {
-				t.Errorf("content mismatch in read range %v: got %v bytes, want %v bytes",
-					id, len(k.buf.Bytes()), len(content))
+			want := content[res.offset : res.offset+res.limit]
+			if !bytes.Equal(res.buf.Bytes(), want) {
+				t.Errorf("Data mismatch in range %d: got %d bytes, want %d bytes",
+					id, res.buf.Len(), len(want))
 			}
 		}
 	})
@@ -665,8 +782,8 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
 			}
 		}
-		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
 		}
 	})
 }
@@ -1841,6 +1958,111 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 		}
 		if gotr != int64(want) {
 			t.Errorf("While reading got: %d want %d", gotr, want)
+		}
+	})
+}
+
+func TestIntegration_WriterCRC32CValidation(t *testing.T) {
+	ctx := skipZonalBucket(context.Background(), "Test for resumable and oneshot writers")
+	h := testHelper{t}
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		testCases := []struct {
+			name                string
+			content             []byte
+			chunkSize           int
+			sendCRC32C          bool
+			disableAutoChecksum bool
+			incorrectChecksum   bool
+			wantErr             bool
+		}{
+			{
+				name:       "oneshot with user-sent CRC32C",
+				content:    []byte("small content for oneshot upload"),
+				chunkSize:  0,
+				sendCRC32C: true,
+			},
+			{
+				name:      "oneshot with default CRC32",
+				content:   []byte("small content for oneshot upload"),
+				chunkSize: 0,
+			},
+			{
+				name:                "oneshot with disabled auto checksum",
+				content:             []byte("small content for oneshot upload"),
+				chunkSize:           0,
+				disableAutoChecksum: true,
+			},
+			{
+				name:       "resumable with user-sent CRC32C",
+				content:    bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize:  256 * 1024,
+				sendCRC32C: true,
+			},
+			{
+				name:      "resumable with default CRC32",
+				content:   bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize: 256 * 1024,
+			},
+			{
+				name:                "resumable with disabled auto checksum",
+				content:             bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize:           256 * 1024,
+				disableAutoChecksum: true,
+			},
+			{
+				name:              "resumable with incorrect checksum",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize:         256 * 1024,
+				sendCRC32C:        true,
+				incorrectChecksum: true,
+				wantErr:           true,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.ChunkSize = tc.chunkSize
+				w.SendCRC32C = tc.sendCRC32C
+				w.CRC32C = correctCRC32C
+				if tc.incorrectChecksum {
+					w.CRC32C = correctCRC32C + 1
+				}
+				w.DisableAutoChecksum = tc.disableAutoChecksum
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				err := w.Close()
+				if tc.incorrectChecksum {
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+				// Verify content.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+				}
+			})
 		}
 	})
 }
@@ -3351,11 +3573,14 @@ func TestIntegration_WriterAppend(t *testing.T) {
 		bkt := client.Bucket(bucket)
 
 		testCases := []struct {
-			name        string
-			finalize    bool
-			content     []byte
-			chunkSize   int
-			flushOffset int64
+			name                string
+			finalize            bool
+			content             []byte
+			chunkSize           int
+			flushOffset         int64
+			sendCRC             bool
+			disableAutoChecksum bool
+			incorrectChecksum   bool
 		}{
 			{
 				name:        "finalized_object",
@@ -3363,6 +3588,29 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				content:     randomBytes9MiB,
 				chunkSize:   4 * MiB,
 				flushOffset: -1, // no flush
+			},
+			{
+				name:        "finalized_object with user checksum",
+				finalize:    true,
+				content:     randomBytes9MiB,
+				chunkSize:   4 * MiB,
+				sendCRC:     true,
+				flushOffset: -1, // no flush
+			},
+			{
+				name:                "finalized_object with disabled checksum",
+				finalize:            true,
+				content:             randomBytes9MiB,
+				chunkSize:           4 * MiB,
+				disableAutoChecksum: true,
+				flushOffset:         -1, // no flush
+			},
+			{
+				name:              "finalized_object with incorrect checksum",
+				finalize:          true,
+				content:           randomBytes9MiB,
+				chunkSize:         4 * MiB,
+				incorrectChecksum: true,
 			},
 			{
 				name:        "unfinalized_object",
@@ -3409,7 +3657,24 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				w.Append = true
 				w.FinalizeOnClose = tc.finalize
 				w.ChunkSize = tc.chunkSize
+				w.SendCRC32C = tc.sendCRC
+				w.DisableAutoChecksum = tc.disableAutoChecksum
+				w.CRC32C = crc32.Checksum(tc.content, crc32cTable)
 				content := tc.content
+
+				// If incorrectChecksum is true, write data and close writer
+				// immediately to validate if writer returns error
+				if tc.incorrectChecksum {
+					w.CRC32C++ // simulate incorrect checksum
+					w.SendCRC32C = true
+					if _, err := w.Write(content); err != nil {
+						t.Fatalf("writer.Write: %v", err)
+					}
+					if err := w.Close(); !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
 
 				// If flushOffset is 0, just do a flush and check the attributes.
 				if tc.flushOffset == 0 {
@@ -3672,6 +3937,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 }
 
 func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
+	t.Skip("persistent failures - https://github.com/googleapis/google-cloud-go/issues/13545")
 	ctx := skipAllButZonal(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}

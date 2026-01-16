@@ -1,6 +1,29 @@
 # Changes
 
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.4.0) (2025-12-18)
+
+### Features
+
+* A new field `Instance.simulate_maintenance_event` is added to message `.google.cloud.memorystore.v1.` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `allow_fewer_zones_deployment` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `available_maintenance_versions` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `effective_maintenance_version` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `encryption_info` is added to message `.google.cloud.memorystore.v1.Backup` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `encryption_info` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `kms_key` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `last_backup_time` is added to message `.google.cloud.memorystore.v1.BackupCollection` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `maintenance_version` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `satisfies_pzi` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `satisfies_pzs` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `total_backup_count` is added to message `.google.cloud.memorystore.v1.BackupCollection` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `total_backup_size_bytes` is added to message `.google.cloud.memorystore.v1.BackupCollection` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `EncryptionInfo` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* A comment for field `discovery_endpoints` in message `.google.cloud.memorystore.v1.Instance` is changed ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/memorystore/v0.3.0...memorystore/v0.3.1) (2025-09-18)
 
 

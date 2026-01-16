@@ -18,7 +18,7 @@ package bigtable
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -60,7 +60,7 @@ func TestConformance(t *testing.T) {
 	}
 
 	for _, f := range files {
-		inBytes, err := ioutil.ReadFile(f)
+		inBytes, err := os.ReadFile(f)
 		if err != nil {
 			t.Fatalf("%s: %v", f, err)
 		}

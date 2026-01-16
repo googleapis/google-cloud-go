@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,7 +153,8 @@ func (c *GlobalAddressesClient) Get(ctx context.Context, req *computepb.GetGloba
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an address resource in the specified project by using the data included in the request.
+// Insert creates an address resource in the specified project by using the data
+// included in the request.
 func (c *GlobalAddressesClient) Insert(ctx context.Context, req *computepb.InsertGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -168,7 +169,8 @@ func (c *GlobalAddressesClient) Move(ctx context.Context, req *computepb.MoveGlo
 	return c.internalClient.Move(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a GlobalAddress. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *GlobalAddressesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -375,7 +377,8 @@ func (c *globalAddressesRESTClient) Get(ctx context.Context, req *computepb.GetG
 	return resp, nil
 }
 
-// Insert creates an address resource in the specified project by using the data included in the request.
+// Insert creates an address resource in the specified project by using the data
+// included in the request.
 func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAddressResource()
@@ -593,7 +596,8 @@ func (c *globalAddressesRESTClient) Move(ctx context.Context, req *computepb.Mov
 	return op, nil
 }
 
-// SetLabels sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a GlobalAddress. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *globalAddressesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()

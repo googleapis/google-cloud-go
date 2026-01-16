@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -196,7 +196,10 @@ func (c *SubnetworksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of subnetworks.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *SubnetworksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) *SubnetworksScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -216,17 +219,20 @@ func (c *SubnetworksClient) Get(ctx context.Context, req *computepb.GetSubnetwor
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *SubnetworksClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a subnetwork in the specified project using the data included in the request.
+// Insert creates a subnetwork in the specified project using the data
+// included in the request.
 func (c *SubnetworksClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of subnetworks available to the specified project.
+// List retrieves a list of subnetworks available to the specified
+// project.
 func (c *SubnetworksClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) *SubnetworkIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -236,17 +242,23 @@ func (c *SubnetworksClient) ListUsable(ctx context.Context, req *computepb.ListU
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
 
-// Patch patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
+// Patch patches the specified subnetwork with the data included in the request.
+// Only certain fields can be updated with a patch request
+// as indicated in the field descriptions.
+// You must specify the current fingerprint of the
+// subnetwork resource being patched.
 func (c *SubnetworksClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *SubnetworksClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
+// SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning
+// external IP addresses through Private Google Access.
 func (c *SubnetworksClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetPrivateIpGoogleAccess(ctx, req, opts...)
 }
@@ -349,7 +361,10 @@ func (c *subnetworksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of subnetworks.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) *SubnetworksScopedListPairIterator {
 	it := &SubnetworksScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListSubnetworksRequest)
@@ -391,6 +406,9 @@ func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *compute
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
+		if req != nil && req.Views != nil {
+			params.Add("views", fmt.Sprintf("%v", req.GetViews()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -627,7 +645,8 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -679,7 +698,8 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// Insert creates a subnetwork in the specified project using the data included in the request.
+// Insert creates a subnetwork in the specified project using the data
+// included in the request.
 func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
@@ -746,7 +766,8 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List retrieves a list of subnetworks available to the specified project.
+// List retrieves a list of subnetworks available to the specified
+// project.
 func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) *SubnetworkIterator {
 	it := &SubnetworkIterator{}
 	req = proto.Clone(req).(*computepb.ListSubnetworksRequest)
@@ -924,7 +945,11 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 	return it
 }
 
-// Patch patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
+// Patch patches the specified subnetwork with the data included in the request.
+// Only certain fields can be updated with a patch request
+// as indicated in the field descriptions.
+// You must specify the current fingerprint of the
+// subnetwork resource being patched.
 func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
@@ -994,7 +1019,8 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
@@ -1046,7 +1072,8 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
+// SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning
+// external IP addresses through Private Google Access.
 func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworksSetPrivateIpGoogleAccessRequestResource()

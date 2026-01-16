@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -201,7 +201,11 @@ func (c *SecurityPoliciesClient) AddRule(ctx context.Context, req *computepb.Add
 	return c.internalClient.AddRule(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *SecurityPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -221,7 +225,8 @@ func (c *SecurityPoliciesClient) GetRule(ctx context.Context, req *computepb.Get
 	return c.internalClient.GetRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *SecurityPoliciesClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -231,17 +236,23 @@ func (c *SecurityPoliciesClient) List(ctx context.Context, req *computepb.ListSe
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF)
+// expressions.
 func (c *SecurityPoliciesClient) ListPreconfiguredExpressionSets(ctx context.Context, req *computepb.ListPreconfiguredExpressionSetsSecurityPoliciesRequest, opts ...gax.CallOption) (*computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse, error) {
 	return c.internalClient.ListPreconfiguredExpressionSets(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To
+// clear fields in the policy, leave the fields empty and specify them in the
+// updateMask. This cannot be used to be update the rules in the policy.
+// Please use the per rule methods like addRule, patchRule, and removeRule
+// instead.
 func (c *SecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+// PatchRule patches a rule at the specified priority. To clear fields in the rule,
+// leave the fields empty and specify them in the updateMask.
 func (c *SecurityPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
 }
@@ -251,7 +262,9 @@ func (c *SecurityPoliciesClient) RemoveRule(ctx context.Context, req *computepb.
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a security policy. To learn more about labels,
+// read the Labeling Resources
+// documentation.
 func (c *SecurityPoliciesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -415,7 +428,11 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *securityPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPoliciesScopedListPairIterator {
 	it := &SecurityPoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListSecurityPoliciesRequest)
@@ -670,7 +687,8 @@ func (c *securityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -825,7 +843,8 @@ func (c *securityPoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF)
+// expressions.
 func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context.Context, req *computepb.ListPreconfiguredExpressionSetsSecurityPoliciesRequest, opts ...gax.CallOption) (*computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -889,7 +908,11 @@ func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context
 	return resp, nil
 }
 
-// Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To
+// clear fields in the policy, leave the fields empty and specify them in the
+// updateMask. This cannot be used to be update the rules in the policy.
+// Please use the per rule methods like addRule, patchRule, and removeRule
+// instead.
 func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -958,7 +981,8 @@ func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	return op, nil
 }
 
-// PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+// PatchRule patches a rule at the specified priority. To clear fields in the rule,
+// leave the fields empty and specify them in the updateMask.
 func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
@@ -1089,7 +1113,9 @@ func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a security policy. To learn more about labels,
+// read the Labeling Resources
+// documentation.
 func (c *securityPoliciesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()

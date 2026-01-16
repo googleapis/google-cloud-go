@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -133,12 +133,17 @@ func (c *InstanceGroupManagerResizeRequestsClient) Connection() *grpc.ClientConn
 	return c.internalClient.Connection()
 }
 
-// Cancel cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+// Cancel cancels the specified resize request and removes it from the queue.
+// Cancelled resize request does no longer wait for the resources to be
+// provisioned. Cancel is only possible for requests that are accepted in the
+// queue.
 func (c *InstanceGroupManagerResizeRequestsClient) Cancel(ctx context.Context, req *computepb.CancelInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Cancel(ctx, req, opts...)
 }
 
-// Delete deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+// Delete deletes the specified, inactive resize request. Requests that are still
+// active cannot be deleted. Deleting request does not delete instances that
+// were provisioned previously.
 func (c *InstanceGroupManagerResizeRequestsClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -148,12 +153,14 @@ func (c *InstanceGroupManagerResizeRequestsClient) Get(ctx context.Context, req 
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a new resize request that starts provisioning VMs immediately or queues VM creation.
+// Insert creates a new resize request that starts provisioning VMs immediately
+// or queues VM creation.
 func (c *InstanceGroupManagerResizeRequestsClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of resize requests that are contained in the managed instance group.
+// List retrieves a list of resize requests that are contained in the
+// managed instance group.
 func (c *InstanceGroupManagerResizeRequestsClient) List(ctx context.Context, req *computepb.ListInstanceGroupManagerResizeRequestsRequest, opts ...gax.CallOption) *InstanceGroupManagerResizeRequestIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -251,7 +258,10 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Connection() *grpc.Client
 	return nil
 }
 
-// Cancel cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+// Cancel cancels the specified resize request and removes it from the queue.
+// Cancelled resize request does no longer wait for the resources to be
+// provisioned. Cancel is only possible for requests that are accepted in the
+// queue.
 func (c *instanceGroupManagerResizeRequestsRESTClient) Cancel(ctx context.Context, req *computepb.CancelInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -311,7 +321,9 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Cancel(ctx context.Contex
 	return op, nil
 }
 
-// Delete deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+// Delete deletes the specified, inactive resize request. Requests that are still
+// active cannot be deleted. Deleting request does not delete instances that
+// were provisioned previously.
 func (c *instanceGroupManagerResizeRequestsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -416,7 +428,8 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Get(ctx context.Context, 
 	return resp, nil
 }
 
-// Insert creates a new resize request that starts provisioning VMs immediately or queues VM creation.
+// Insert creates a new resize request that starts provisioning VMs immediately
+// or queues VM creation.
 func (c *instanceGroupManagerResizeRequestsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagerResizeRequestResource()
@@ -483,7 +496,8 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Insert(ctx context.Contex
 	return op, nil
 }
 
-// List retrieves a list of resize requests that are contained in the managed instance group.
+// List retrieves a list of resize requests that are contained in the
+// managed instance group.
 func (c *instanceGroupManagerResizeRequestsRESTClient) List(ctx context.Context, req *computepb.ListInstanceGroupManagerResizeRequestsRequest, opts ...gax.CallOption) *InstanceGroupManagerResizeRequestIterator {
 	it := &InstanceGroupManagerResizeRequestIterator{}
 	req = proto.Clone(req).(*computepb.ListInstanceGroupManagerResizeRequestsRequest)

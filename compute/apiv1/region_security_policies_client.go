@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -187,22 +187,29 @@ func (c *RegionSecurityPoliciesClient) GetRule(ctx context.Context, req *compute
 	return c.internalClient.GetRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *RegionSecurityPoliciesClient) Insert(ctx context.Context, req *computepb.InsertRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List list all the policies that have been configured for the specified project and region.
+// List list all the policies that have been configured for the specified project
+// and region.
 func (c *RegionSecurityPoliciesClient) List(ctx context.Context, req *computepb.ListRegionSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To
+// clear fields in the policy, leave the fields empty and specify them in the
+// updateMask. This cannot be used to be update the rules in the policy.
+// Please use the per rule methods like addRule, patchRule, and removeRule
+// instead.
 func (c *RegionSecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+// PatchRule patches a rule at the specified priority. To clear fields in the rule,
+// leave the fields empty and specify them in the updateMask.
 func (c *RegionSecurityPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
 }
@@ -212,7 +219,9 @@ func (c *RegionSecurityPoliciesClient) RemoveRule(ctx context.Context, req *comp
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a security policy. To learn more about labels,
+// read the Labeling Resources
+// documentation.
 func (c *RegionSecurityPoliciesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -534,7 +543,8 @@ func (c *regionSecurityPoliciesRESTClient) GetRule(ctx context.Context, req *com
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -604,7 +614,8 @@ func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *comp
 	return op, nil
 }
 
-// List list all the policies that have been configured for the specified project and region.
+// List list all the policies that have been configured for the specified project
+// and region.
 func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	it := &SecurityPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionSecurityPoliciesRequest)
@@ -690,7 +701,11 @@ func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *comput
 	return it
 }
 
-// Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To
+// clear fields in the policy, leave the fields empty and specify them in the
+// updateMask. This cannot be used to be update the rules in the policy.
+// Please use the per rule methods like addRule, patchRule, and removeRule
+// instead.
 func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -760,7 +775,8 @@ func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *compu
 	return op, nil
 }
 
-// PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+// PatchRule patches a rule at the specified priority. To clear fields in the rule,
+// leave the fields empty and specify them in the updateMask.
 func (c *regionSecurityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
@@ -893,7 +909,9 @@ func (c *regionSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *
 	return op, nil
 }
 
-// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a security policy. To learn more about labels,
+// read the Labeling Resources
+// documentation.
 func (c *regionSecurityPoliciesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()

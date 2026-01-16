@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -264,7 +264,8 @@ func (c *FirewallPoliciesClient) GetAssociation(ctx context.Context, req *comput
 	return c.internalClient.GetAssociation(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *FirewallPoliciesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -274,12 +275,14 @@ func (c *FirewallPoliciesClient) GetRule(ctx context.Context, req *computepb.Get
 	return c.internalClient.GetRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *FirewallPoliciesClient) Insert(ctx context.Context, req *computepb.InsertFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the policies that have been configured for the specified folder or organization.
+// List lists all the policies that have been configured for the specified
+// folder or organization.
 func (c *FirewallPoliciesClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -314,7 +317,8 @@ func (c *FirewallPoliciesClient) RemoveRule(ctx context.Context, req *computepb.
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *FirewallPoliciesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -766,7 +770,8 @@ func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *co
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -870,7 +875,8 @@ func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyResource()
@@ -933,7 +939,8 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List lists all the policies that have been configured for the specified folder or organization.
+// List lists all the policies that have been configured for the specified
+// folder or organization.
 func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	it := &FirewallPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListFirewallPoliciesRequest)
@@ -1385,7 +1392,8 @@ func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalOrganizationSetPolicyRequestResource()

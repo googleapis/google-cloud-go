@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/artifactregistry/apiv1",
-    "version": "1.18.0",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
@@ -564,7 +564,7 @@
     {
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ExportArtifact_sync",
       "title": "artifactregistry ExportArtifact Sample",
-      "description": "ExportArtifact exports an artifact.",
+      "description": "ExportArtifact exports an artifact to a Cloud Storage bucket.",
       "file": "Client/ExportArtifact/main.go",
       "language": "GO",
       "clientMethod": {

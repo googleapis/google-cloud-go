@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -167,12 +167,18 @@ func (c *InstanceTemplatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *InstanceTemplatesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplatesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
+// Delete deletes the specified instance template. Deleting an instance template is
+// permanent and cannot be undone. It is not possible to delete templates
+// that are already in use by a managed instance group.
 func (c *InstanceTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -182,22 +188,29 @@ func (c *InstanceTemplatesClient) Get(ctx context.Context, req *computepb.GetIns
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *InstanceTemplatesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
+// Insert creates an instance template in the specified project using the
+// data that is included in the request. If you are creating a new template to
+// update an existing instance group, your new instance template must use the
+// same network or, if applicable, the same subnetwork as the original
+// template.
 func (c *InstanceTemplatesClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of instance templates that are contained within the specified project.
+// List retrieves a list of instance templates that are contained within
+// the specified project.
 func (c *InstanceTemplatesClient) List(ctx context.Context, req *computepb.ListInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplateIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *InstanceTemplatesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -300,7 +313,11 @@ func (c *instanceTemplatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *instanceTemplatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplatesScopedListPairIterator {
 	it := &InstanceTemplatesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstanceTemplatesRequest)
@@ -399,7 +416,9 @@ func (c *instanceTemplatesRESTClient) AggregatedList(ctx context.Context, req *c
 	return it
 }
 
-// Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
+// Delete deletes the specified instance template. Deleting an instance template is
+// permanent and cannot be undone. It is not possible to delete templates
+// that are already in use by a managed instance group.
 func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -503,7 +522,8 @@ func (c *instanceTemplatesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -555,7 +575,11 @@ func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *com
 	return resp, nil
 }
 
-// Insert creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
+// Insert creates an instance template in the specified project using the
+// data that is included in the request. If you are creating a new template to
+// update an existing instance group, your new instance template must use the
+// same network or, if applicable, the same subnetwork as the original
+// template.
 func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceTemplateResource()
@@ -621,7 +645,8 @@ func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// List retrieves a list of instance templates that are contained within the specified project.
+// List retrieves a list of instance templates that are contained within
+// the specified project.
 func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.ListInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplateIterator {
 	it := &InstanceTemplateIterator{}
 	req = proto.Clone(req).(*computepb.ListInstanceTemplatesRequest)
@@ -707,7 +732,8 @@ func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *instanceTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()

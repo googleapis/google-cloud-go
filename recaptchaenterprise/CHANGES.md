@@ -1,6 +1,20 @@
 # Changes
 
 
+## [2.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/recaptchaenterprise%2Fv2.21.0) (2025-12-18)
+
+### Features
+
+* Add `phone_authentication_event` to `AnnotateAssessmentRequest`. This new field allows you to indicate the phone number associated with a multi-factor authentication event, i.e. `INITIATED_TWO_FACTOR`, `PASSED_TWO_FACTOR`, `FAILED_TWO_FACTOR` reasons, and the time of such an event ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add a POLICY_BASED_CHALLENGE IntegrationType and associated settings ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add risk reasons to FraudPreventionAssessment ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add verifiedBots field to RiskAnalysis and definitions for a Bot object to store metadata for a detected bot ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* clarify that WafFeature.EXPRESS is deprecated ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* document domain, package name and bundle id limits and validation ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [2.20.5](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.20.4...recaptchaenterprise/v2.20.5) (2025-09-22)
 
 

@@ -127,11 +127,11 @@ func newBigtableClientMonitoredResource(ctx context.Context, project, appProfile
 	return smr, nil
 }
 
-type metricsContext struct {
+type otelMetricsContext struct {
 	// client options passed to gRPC channels
 	clientOpts []option.ClientOption
 	// instance of metric reader used by gRPC client-side metrics
-	provider *metric.MeterProvider
+	otelMeterProvider *metric.MeterProvider
 	// clean func to call when closing gRPC client
 	close func()
 }
@@ -149,7 +149,7 @@ type metricsConfig struct {
 	resourceOpts    []resource.Option    // used by tests
 }
 
-func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
+func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
 	var exporter metric.Exporter
 	meterOpts := []metric.Option{}
 	if cfg.customExporter == nil {
@@ -187,9 +187,9 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*metricsCont
 		meterOpts = append(meterOpts, metric.WithReader(
 			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 	}
-	provider := metric.NewMeterProvider(meterOpts...)
+	otelMeterProvider := metric.NewMeterProvider(meterOpts...)
 	mo := opentelemetry.MetricsOptions{
-		MeterProvider: provider,
+		MeterProvider: otelMeterProvider,
 		Metrics: stats.NewMetricSet(
 			"grpc.client.attempt.duration",
 			"grpc.lb.rls.default_target_picks",
@@ -206,11 +206,11 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*metricsCont
 		option.WithGRPCDialOption(
 			grpc.WithDefaultCallOptions(grpc.StaticMethodCallOption{})),
 	}
-	return &metricsContext{
-		clientOpts: opts,
-		provider:   provider,
+	return &otelMetricsContext{
+		clientOpts:        opts,
+		otelMeterProvider: otelMeterProvider,
 		close: func() {
-			provider.Shutdown(ctx)
+			otelMeterProvider.Shutdown(ctx)
 		},
 	}, nil
 }

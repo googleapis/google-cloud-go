@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -106,12 +106,19 @@ func (c *LicenseCodesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get return a specified license code. License codes are mirrored across
+// all projects that have permissions to read the License Code.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *LicenseCodesClient) Get(ctx context.Context, req *computepb.GetLicenseCodeRequest, opts ...gax.CallOption) (*computepb.LicenseCode, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *LicenseCodesClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseCodeRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
@@ -193,7 +200,11 @@ func (c *licenseCodesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get return a specified license code. License codes are mirrored across
+// all projects that have permissions to read the License Code.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *licenseCodesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseCodeRequest, opts ...gax.CallOption) (*computepb.LicenseCode, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -238,7 +249,10 @@ func (c *licenseCodesRESTClient) Get(ctx context.Context, req *computepb.GetLice
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *licenseCodesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseCodeRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()

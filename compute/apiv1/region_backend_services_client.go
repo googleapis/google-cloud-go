@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -196,42 +196,55 @@ func (c *RegionBackendServicesClient) Get(ctx context.Context, req *computepb.Ge
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetHealth gets the most recent health check results for this regional BackendService.
+// GetHealth gets the most recent health check results for this
+// regional BackendService.
 func (c *RegionBackendServicesClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
 	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *RegionBackendServicesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview.
+// Insert creates a regional BackendService resource in the specified project using
+// the data included in the request. For more information, see
+// Backend services overview.
 func (c *RegionBackendServicesClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of regional BackendService resources available to the specified project in the given region.
+// List retrieves the list of regional BackendService resources available to the
+// specified project in the given region.
 func (c *RegionBackendServicesClient) List(ctx context.Context, req *computepb.ListRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListUsable retrieves a list of all usable backend services in the specified project in the given region.
+// ListUsable retrieves a list of all usable backend services in the specified project in
+// the given region.
 func (c *RegionBackendServicesClient) ListUsable(ctx context.Context, req *computepb.ListUsableRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
 
-// Patch updates the specified regional BackendService resource with the data included in the request. For more information, see Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional BackendService resource with the data
+// included in the request. For more information, see
+// Understanding backend services This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *RegionBackendServicesClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *RegionBackendServicesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend
+// service. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *RegionBackendServicesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
@@ -241,7 +254,10 @@ func (c *RegionBackendServicesClient) TestIamPermissions(ctx context.Context, re
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified regional BackendService resource with the data included in the request. For more information, see Backend services overview .
+// Update updates the specified regional BackendService resource with the data
+// included in the request. For more information,
+// see
+// Backend services overview.
 func (c *RegionBackendServicesClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -444,7 +460,8 @@ func (c *regionBackendServicesRESTClient) Get(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// GetHealth gets the most recent health check results for this regional BackendService.
+// GetHealth gets the most recent health check results for this
+// regional BackendService.
 func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourceGroupReferenceResource()
@@ -496,7 +513,8 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *regionBackendServicesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -548,7 +566,9 @@ func (c *regionBackendServicesRESTClient) GetIamPolicy(ctx context.Context, req 
 	return resp, nil
 }
 
-// Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview.
+// Insert creates a regional BackendService resource in the specified project using
+// the data included in the request. For more information, see
+// Backend services overview.
 func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
@@ -615,7 +635,8 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 	return op, nil
 }
 
-// List retrieves the list of regional BackendService resources available to the specified project in the given region.
+// List retrieves the list of regional BackendService resources available to the
+// specified project in the given region.
 func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *computepb.ListRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionBackendServicesRequest)
@@ -701,7 +722,8 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 	return it
 }
 
-// ListUsable retrieves a list of all usable backend services in the specified project in the given region.
+// ListUsable retrieves a list of all usable backend services in the specified project in
+// the given region.
 func (c *regionBackendServicesRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
 	req = proto.Clone(req).(*computepb.ListUsableRegionBackendServicesRequest)
@@ -787,7 +809,11 @@ func (c *regionBackendServicesRESTClient) ListUsable(ctx context.Context, req *c
 	return it
 }
 
-// Patch updates the specified regional BackendService resource with the data included in the request. For more information, see Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional BackendService resource with the data
+// included in the request. For more information, see
+// Understanding backend services This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
@@ -854,7 +880,8 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *regionBackendServicesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
@@ -906,7 +933,9 @@ func (c *regionBackendServicesRESTClient) SetIamPolicy(ctx context.Context, req 
 	return resp, nil
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend
+// service. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *regionBackendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()
@@ -1025,7 +1054,10 @@ func (c *regionBackendServicesRESTClient) TestIamPermissions(ctx context.Context
 	return resp, nil
 }
 
-// Update updates the specified regional BackendService resource with the data included in the request. For more information, see Backend services overview .
+// Update updates the specified regional BackendService resource with the data
+// included in the request. For more information,
+// see
+// Backend services overview.
 func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()

@@ -56,18 +56,24 @@ type Writer struct {
 	SendCRC32C bool
 
 	// DisableAutoChecksum disables automatic CRC32C checksum calculation and
-	// validation in gRPC Writer. By default when using gRPC, the Writer
-	// automatically performs checksum validation for both individual chunks and
-	// the entire object. Setting this to true disables this behavior. This flag
-	// is ignored when not using gRPC.
+	// validation. By default, the Writer automatically performs checksum
+	// validation for both gRPC and JSON uploads. For gRPC, this includes
+	// validation for both individual chunks and the entire object. For JSON,
+	// checksums are validated for full object but only for resumable uploads. Setting
+	// this to true disables this automatic checksumming behavior.
 	//
 	// Disabling automatic checksumming does not prevent a user-provided checksum
 	// from being sent. If SendCRC32C is true and the Writer's CRC32C field is
 	// populated, that checksum will still be sent to GCS for validation.
 	//
+	// Automatic CRC32C checksum calculation introduces increased CPU overhead
+	// because of checksum computation in gRPC writes. Use this field to disable
+	// it if needed.
+	//
 	// Note: DisableAutoChecksum must be set before the first call to
 	// Writer.Write(). Automatic checksumming is not enabled for writes
-	// using the HTTP client or for unfinalized writes to appendable objects in gRPC.
+	// using the HTTP client or for full object checksums for unfinalized writes to
+	// appendable objects in gRPC.
 	DisableAutoChecksum bool
 
 	// ChunkSize controls the maximum number of bytes of the object that the

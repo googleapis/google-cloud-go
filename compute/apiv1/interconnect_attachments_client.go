@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,7 +153,10 @@ func (c *InterconnectAttachmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of interconnect attachments.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *InterconnectAttachmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -168,22 +171,29 @@ func (c *InterconnectAttachmentsClient) Get(ctx context.Context, req *computepb.
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an InterconnectAttachment in the specified project using the data included in the request.
+// Insert creates an InterconnectAttachment in the specified project using the data
+// included in the request.
 func (c *InterconnectAttachmentsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of interconnect attachments contained within the specified region.
+// List retrieves the list of interconnect attachments contained within
+// the specified region.
 func (c *InterconnectAttachmentsClient) List(ctx context.Context, req *computepb.ListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified interconnect attachment with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *InterconnectAttachmentsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an InterconnectAttachment. To learn more about labels,
+// read the Labeling
+// Resources documentation.
 func (c *InterconnectAttachmentsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -281,7 +291,10 @@ func (c *interconnectAttachmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of interconnect attachments.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentsScopedListPairIterator {
 	it := &InterconnectAttachmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInterconnectAttachmentsRequest)
@@ -485,7 +498,8 @@ func (c *interconnectAttachmentsRESTClient) Get(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates an InterconnectAttachment in the specified project using the data included in the request.
+// Insert creates an InterconnectAttachment in the specified project using the data
+// included in the request.
 func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentResource()
@@ -555,7 +569,8 @@ func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *com
 	return op, nil
 }
 
-// List retrieves the list of interconnect attachments contained within the specified region.
+// List retrieves the list of interconnect attachments contained within
+// the specified region.
 func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentIterator {
 	it := &InterconnectAttachmentIterator{}
 	req = proto.Clone(req).(*computepb.ListInterconnectAttachmentsRequest)
@@ -641,7 +656,10 @@ func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *compu
 	return it
 }
 
-// Patch updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified interconnect attachment with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *interconnectAttachmentsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentResource()
@@ -708,7 +726,9 @@ func (c *interconnectAttachmentsRESTClient) Patch(ctx context.Context, req *comp
 	return op, nil
 }
 
-// SetLabels sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an InterconnectAttachment. To learn more about labels,
+// read the Labeling
+// Resources documentation.
 func (c *interconnectAttachmentsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()

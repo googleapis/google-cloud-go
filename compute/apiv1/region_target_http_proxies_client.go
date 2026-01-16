@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -143,12 +143,14 @@ func (c *RegionTargetHttpProxiesClient) Get(ctx context.Context, req *computepb.
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetHttpProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetHttpProxy resource in the specified project and region
+// using the data included in the request.
 func (c *RegionTargetHttpProxiesClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetHttpProxy resources available to the specified project in the specified region.
+// List retrieves the list of TargetHttpProxy resources available
+// to the specified project in the specified region.
 func (c *RegionTargetHttpProxiesClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpProxiesRequest, opts ...gax.CallOption) *TargetHttpProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -356,7 +358,8 @@ func (c *regionTargetHttpProxiesRESTClient) Get(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates a TargetHttpProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetHttpProxy resource in the specified project and region
+// using the data included in the request.
 func (c *regionTargetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpProxyResource()
@@ -423,7 +426,8 @@ func (c *regionTargetHttpProxiesRESTClient) Insert(ctx context.Context, req *com
 	return op, nil
 }
 
-// List retrieves the list of TargetHttpProxy resources available to the specified project in the specified region.
+// List retrieves the list of TargetHttpProxy resources available
+// to the specified project in the specified region.
 func (c *regionTargetHttpProxiesRESTClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpProxiesRequest, opts ...gax.CallOption) *TargetHttpProxyIterator {
 	it := &TargetHttpProxyIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionTargetHttpProxiesRequest)

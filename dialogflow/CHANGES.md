@@ -1,5 +1,13 @@
 # Changes
 
+## [1.73.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.73.0) (2025-12-18)
+
+### Features
+
+* updated v2 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v2beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v3beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [1.72.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.72.0) (2025-12-04)
 
 ### Features
