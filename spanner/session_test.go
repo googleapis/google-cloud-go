@@ -54,7 +54,7 @@ func TestMultiplexSessionWorker(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	sp := client.idleSessions
+	sp := client.sm
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()

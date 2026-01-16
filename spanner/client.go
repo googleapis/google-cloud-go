@@ -118,7 +118,7 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
 	sc                   *sessionClient
-	idleSessions         *sessionManager
+	sm                   *sessionManager
 	logger               *log.Logger
 	qo                   QueryOptions
 	ro                   ReadOptions
@@ -589,7 +589,7 @@ Multiplexed session enabled: true
 	}
 	c = &Client{
 		sc:                   sc,
-		idleSessions:         sp,
+		sm:                   sp,
 		logger:               config.Logger,
 		qo:                   getQueryOptions(config.QueryOptions),
 		ro:                   config.ReadOptions,
@@ -778,10 +778,10 @@ func (c *Client) Close() {
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.shutdown(context.Background())
 	}
-	if c.idleSessions != nil {
+	if c.sm != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		c.idleSessions.close(ctx)
+		c.sm.close(ctx)
 	}
 	c.sc.close()
 }
@@ -797,7 +797,7 @@ func (c *Client) Close() {
 // TimestampBound for details.
 func (c *Client) Single() *ReadOnlyTransaction {
 	t := &ReadOnlyTransaction{singleUse: true}
-	t.txReadOnly.sm = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
@@ -824,7 +824,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 		singleUse:       false,
 		txReadyOrClosed: make(chan struct{}),
 	}
-	t.txReadOnly.sm = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
@@ -857,7 +857,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	)
 
 	// Always use multiplexed sessions for batch read operations.
-	sh, err = c.idleSessions.takeMultiplexed(ctx)
+	sh, err = c.sm.takeMultiplexed(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -893,7 +893,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 			rts: rts,
 		},
 	}
-	t.txReadOnly.sm = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -929,7 +929,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 		},
 		ID: tid,
 	}
-	t.txReadOnly.sm = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -1010,13 +1010,13 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			err error
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			sh, err = c.idleSessions.takeMultiplexed(ctx)
+			sh, err = c.sm.takeMultiplexed(ctx)
 			if err != nil {
 				return err
 			}
 		}
 		initTx := func(t *ReadWriteTransaction) {
-			t.txReadOnly.sm = c.idleSessions
+			t.txReadOnly.sm = c.sm
 			t.txReadOnly.txReadEnv = t
 			t.txReadOnly.qo = c.qo
 			t.txReadOnly.ro = c.ro
@@ -1165,7 +1165,7 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions, IsolationLevel: ao.isolationLevel})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sm: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel}
+	t := &writeOnlyTransaction{sm: c.sm, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
@@ -1335,7 +1335,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}
 
 	var sh *sessionHandle
-	sh, err = c.idleSessions.takeMultiplexed(ctx)
+	sh, err = c.sm.takeMultiplexed(ctx)
 	if err != nil {
 		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
 	}

@@ -2067,18 +2067,18 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 		// TODO: confirm that this is the valid scenario for multiplexed sessions, and what's expected behavior.
 		// wait for the multiplexed session to be created.
 		waitFor(t, func() error {
-			client.idleSessions.mu.Lock()
-			defer client.idleSessions.mu.Unlock()
-			if client.idleSessions.multiplexedSession == nil {
+			client.sm.mu.Lock()
+			defer client.sm.mu.Unlock()
+			if client.sm.multiplexedSession == nil {
 				return errInvalidSession
 			}
 			return nil
 		})
 		// Close the multiplexed session to prevent the session pool maintainer
 		// from repeatedly trying to use sessions for the invalid database.
-		client.idleSessions.mu.Lock()
-		client.idleSessions.multiplexedSession = nil
-		client.idleSessions.mu.Unlock()
+		client.sm.mu.Lock()
+		client.sm.multiplexedSession = nil
+		client.sm.mu.Unlock()
 	}
 
 	// Drop the testing database.

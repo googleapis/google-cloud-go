@@ -148,9 +148,9 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 	}
 	// Multiplexed sessions are always enabled - wait for session creation
 	waitFor(t, func() error {
-		client.idleSessions.mu.Lock()
-		defer client.idleSessions.mu.Unlock()
-		if client.idleSessions.multiplexedSession == nil {
+		client.sm.mu.Lock()
+		defer client.sm.mu.Unlock()
+		if client.sm.multiplexedSession == nil {
 			return errInvalidSession
 		}
 		return nil
@@ -2356,7 +2356,7 @@ func TestClient_SessionContainsDatabaseRole(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, DatabaseRole: "test"})
 	defer teardown()
 
-	resp, err := server.TestSpanner.GetSession(context.Background(), &sppb.GetSessionRequest{Name: client.idleSessions.multiplexedSession.id})
+	resp, err := server.TestSpanner.GetSession(context.Background(), &sppb.GetSessionRequest{Name: client.sm.multiplexedSession.id})
 	if err != nil {
 		t.Fatalf("Failed to get session unexpectedly: %v", err)
 	}
@@ -4792,7 +4792,7 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 			DisableNativeMetrics: true,
 		})
 	defer teardown()
-	sp := client.idleSessions
+	sp := client.sm
 
 	server.TestSpanner.Freeze()
 	defer server.TestSpanner.Unfreeze()

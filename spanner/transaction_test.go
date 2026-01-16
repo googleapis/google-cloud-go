@@ -1135,7 +1135,7 @@ func TestReadWriteStmtBasedTransaction_UpdateAborted(t *testing.T) {
 
 func waitForMinSessions(t *testing.T, client *Client, server *MockedSpannerInMemTestServer) {
 	// With multiplexed sessions, we just need to wait for the multiplexed session to be ready.
-	sp := client.idleSessions
+	sp := client.sm
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()

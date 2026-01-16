@@ -52,7 +52,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		return 0, err
 	}
 	// Always use multiplexed sessions for partitioned operations.
-	sh, err := c.idleSessions.takeMultiplexed(ctx)
+	sh, err := c.sm.takeMultiplexed(ctx)
 	if err != nil {
 		return 0, ToSpannerError(err)
 	}

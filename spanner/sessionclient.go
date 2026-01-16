@@ -80,9 +80,7 @@ type sessionConsumer interface {
 	sessionReady(ctx context.Context, s *session)
 
 	// sessionCreationFailed is called when the creation of a session failed.
-	// The numSessions argument specifies the number of sessions that could not
-	// be created as a result of this error.
-	sessionCreationFailed(ctx context.Context, err error, numSessions int32, isMultiplexed bool)
+	sessionCreationFailed(ctx context.Context, err error)
 }
 
 // sessionClient creates sessions for a database. Each session will be
@@ -194,7 +192,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 	if err != nil {
 		return nil, ToSpannerError(err)
 	}
-	return &session{valid: true, client: client, id: sid.Name, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
+	return &session{client: client, id: sid.Name, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
 }
 
 func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, client spannerClient, md metadata.MD, consumer sessionConsumer) {
@@ -211,7 +209,7 @@ func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, cl
 	}
 	if ctx.Err() != nil {
 		trace.TracePrintf(ctx, nil, "Context error while creating a multiplexed session: %v", ctx.Err())
-		consumer.sessionCreationFailed(ctx, ToSpannerError(ctx.Err()), 1, true)
+		consumer.sessionCreationFailed(ctx, ToSpannerError(ctx.Err()))
 		return
 	}
 	var mdForGFELatency metadata.MD
@@ -246,10 +244,10 @@ func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, cl
 	}
 	if err != nil {
 		trace.TracePrintf(ctx, nil, "Error creating a multiplexed sessions: %v", err)
-		consumer.sessionCreationFailed(ctx, ToSpannerError(err), 1, true)
+		consumer.sessionCreationFailed(ctx, ToSpannerError(err))
 		return
 	}
-	consumer.sessionReady(ctx, &session{valid: true, client: client, id: response.Name, createTime: time.Now(), md: md, logger: sc.logger, isMultiplexed: response.Multiplexed})
+	consumer.sessionReady(ctx, &session{client: client, id: response.Name, createTime: time.Now(), md: md, logger: sc.logger})
 	trace.TracePrintf(ctx, nil, "Finished creating multiplexed sessions")
 }
 
@@ -260,7 +258,7 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &session{valid: true, client: client, id: id, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
+	return &session{client: client, id: id, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
 }
 
 // nextClient returns the next gRPC client to use for session creation. The

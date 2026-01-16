@@ -2018,7 +2018,7 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 		t   *ReadWriteStmtBasedTransaction
 	)
 	if sh == nil {
-		sh, err = c.idleSessions.takeMultiplexed(ctx)
+		sh, err = c.sm.takeMultiplexed(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -2033,7 +2033,7 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 	if previousTransactionID != nil {
 		t.previousTx = previousTransactionID
 	}
-	t.txReadOnly.sm = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo

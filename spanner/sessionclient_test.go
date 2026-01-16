@@ -53,14 +53,14 @@ func (tc *testConsumer) sessionReady(_ context.Context, s *session) {
 	tc.checkReceivedAll()
 }
 
-func (tc *testConsumer) sessionCreationFailed(_ context.Context, err error, num int32, _ bool) {
+func (tc *testConsumer) sessionCreationFailed(_ context.Context, err error) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.errors = append(tc.errors, &testSessionCreateError{
 		err: err,
-		num: num,
+		num: 1,
 	})
-	tc.numErr += num
+	tc.numErr++
 	tc.checkReceivedAll()
 }
 
@@ -94,7 +94,7 @@ func TestNextClient(t *testing.T) {
 		},
 	})
 	defer teardown()
-	sc := client.idleSessions.sc
+	sc := client.sm.sc
 	connections := make(map[*grpc.ClientConn]int)
 	for i := 0; i < n; i++ {
 		client, err := sc.nextClient()
