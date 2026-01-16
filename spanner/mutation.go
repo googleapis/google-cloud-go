@@ -439,37 +439,32 @@ func WrapMutation(proto *sppb.Mutation) (*Mutation, error) {
 	if err != nil {
 		return nil, err
 	}
-	if queue != "" {
-		return &Mutation{
-			op:      op,
-			queue:   queue,
-			wrapped: proto,
-		}, nil
-	}
 	return &Mutation{
 		op:      op,
 		table:   table,
+		queue:   queue,
 		wrapped: proto,
 	}, nil
 }
 
 func getTableOrQueueAndSpannerOperation(proto *sppb.Mutation) (op, string, string, error) {
-	if proto.GetInsert() != nil {
-		return opInsert, proto.GetInsert().Table, "", nil
-	} else if proto.GetUpdate() != nil {
-		return opUpdate, proto.GetUpdate().Table, "", nil
-	} else if proto.GetReplace() != nil {
-		return opReplace, proto.GetReplace().Table, "", nil
-	} else if proto.GetDelete() != nil {
-		return opDelete, proto.GetDelete().Table, "", nil
-	} else if proto.GetInsertOrUpdate() != nil {
-		return opInsertOrUpdate, proto.GetInsertOrUpdate().Table, "", nil
-	} else if proto.GetSend() != nil {
-		return opSend, "", proto.GetSend().Queue, nil
-	} else if proto.GetAck() != nil {
-		return opAck, "", proto.GetAck().Queue, nil
+	switch op := proto.Operation.(type) {
+	case *sppb.Mutation_Insert:
+		return opInsert, op.Insert.Table, "", nil
+	case *sppb.Mutation_Update:
+		return opUpdate, op.Update.Table, "", nil
+	case *sppb.Mutation_Replace:
+		return opReplace, op.Replace.Table, "", nil
+	case *sppb.Mutation_Delete_:
+		return opDelete, op.Delete.Table, "", nil
+	case *sppb.Mutation_InsertOrUpdate:
+		return opInsertOrUpdate, op.InsertOrUpdate.Table, "", nil
+	case *sppb.Mutation_Send_:
+		return opSend, "", op.Send.Queue, nil
+	case *sppb.Mutation_Ack_:
+		return opAck, "", op.Ack.Queue, nil
 	}
-	return 0, "", "", spannerErrorf(codes.InvalidArgument, "unknown op type: %d", proto.Operation)
+	return 0, "", "", spannerErrorf(codes.InvalidArgument, "unknown op type: %T", proto.Operation)
 }
 
 // prepareWrite generates sppb.Mutation_Write from table name, column names
