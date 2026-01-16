@@ -200,6 +200,14 @@ type InternalOptions struct {
 	// SkipValidation bypasses validation on Options. It should only be used
 	// internally for clients that needs more control over their transport.
 	SkipValidation bool
+	// TelemetryAttributes specifies a map of telemetry attributes to be added
+	// to all OpenTelemetry signals, such as tracing and metrics, for purposes
+	// including representing the static identity of the client (e.g., service
+	// name, version). These attributes are expected to be consistent across all
+	// signals to enable cross-signal correlation.
+	//
+	// It should only be used internally by generated clients.
+	TelemetryAttributes map[string]string
 }
 
 // Dial returns a GRPCClientConnPool that can be used to communicate with a
