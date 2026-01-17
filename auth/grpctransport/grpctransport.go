@@ -24,7 +24,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"sync"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
@@ -36,7 +35,6 @@ import (
 	"google.golang.org/grpc"
 	grpccreds "google.golang.org/grpc/credentials"
 	grpcinsecure "google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/stats"
 )
 
 const (
@@ -53,27 +51,6 @@ var (
 	// Set at init time by dial_socketopt.go. If nil, socketopt is not supported.
 	timeoutDialerOption grpc.DialOption
 )
-
-// otelStatsHandler is a singleton otelgrpc.clientHandler to be used across
-// all dial connections to avoid the memory leak documented in
-// https://github.com/open-telemetry/opentelemetry-go-contrib/issues/4226
-//
-// TODO: When this module depends on a version of otelgrpc containing the fix,
-// replace this singleton with inline usage for simplicity.
-// The fix should be in https://github.com/open-telemetry/opentelemetry-go/pull/5797.
-var (
-	initOtelStatsHandlerOnce sync.Once
-	otelStatsHandler         stats.Handler
-)
-
-// otelGRPCStatsHandler returns singleton otelStatsHandler for reuse across all
-// dial connections.
-func otelGRPCStatsHandler() stats.Handler {
-	initOtelStatsHandlerOnce.Do(func() {
-		otelStatsHandler = otelgrpc.NewClientHandler()
-	})
-	return otelStatsHandler
-}
 
 // ClientCertProvider is a function that returns a TLS client certificate to be
 // used when opening TLS connections. It follows the same semantics as
@@ -444,5 +421,5 @@ func addOpenTelemetryStatsHandler(dialOpts []grpc.DialOption, opts *Options) []g
 	if opts.DisableTelemetry {
 		return dialOpts
 	}
-	return append(dialOpts, grpc.WithStatsHandler(otelGRPCStatsHandler()))
+	return append(dialOpts, grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 }

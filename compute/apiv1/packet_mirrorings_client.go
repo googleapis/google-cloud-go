@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,7 +153,10 @@ func (c *PacketMirroringsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of packetMirrorings.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *PacketMirroringsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -168,17 +171,22 @@ func (c *PacketMirroringsClient) Get(ctx context.Context, req *computepb.GetPack
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
+// Insert creates a PacketMirroring resource in the specified project and region
+// using the data included in the request.
 func (c *PacketMirroringsClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of PacketMirroring resources available to the specified project and region.
+// List retrieves a list of PacketMirroring resources available to the specified
+// project and region.
 func (c *PacketMirroringsClient) List(ctx context.Context, req *computepb.ListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified PacketMirroring resource with the data included in
+// the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *PacketMirroringsClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -281,7 +289,10 @@ func (c *packetMirroringsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of packetMirrorings.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	it := &PacketMirroringsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListPacketMirroringsRequest)
@@ -485,7 +496,8 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
+// Insert creates a PacketMirroring resource in the specified project and region
+// using the data included in the request.
 func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
@@ -552,7 +564,8 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves a list of PacketMirroring resources available to the specified project and region.
+// List retrieves a list of PacketMirroring resources available to the specified
+// project and region.
 func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.ListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringIterator {
 	it := &PacketMirroringIterator{}
 	req = proto.Clone(req).(*computepb.ListPacketMirroringsRequest)
@@ -638,7 +651,10 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified PacketMirroring resource with the data included in
+// the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()

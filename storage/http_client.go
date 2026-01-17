@@ -1014,6 +1014,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	if params.chunkTransferTimeout != 0 {
 		mediaOpts = append(mediaOpts, googleapi.ChunkTransferTimeout(params.chunkTransferTimeout))
 	}
+	if !params.disableAutoChecksum {
+		mediaOpts = append(mediaOpts, googleapi.EnableAutoChecksum())
+	}
 
 	pr, pw := io.Pipe()
 

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -274,7 +274,12 @@ func (c *NetworkFirewallPoliciesClient) AddRule(ctx context.Context, req *comput
 	return c.internalClient.AddRule(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of network firewall policies, listing network
+// firewall policies from all applicable scopes (global and regional) and
+// grouping the results per scope.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *NetworkFirewallPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -299,7 +304,8 @@ func (c *NetworkFirewallPoliciesClient) GetAssociation(ctx context.Context, req 
 	return c.internalClient.GetAssociation(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *NetworkFirewallPoliciesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -314,7 +320,8 @@ func (c *NetworkFirewallPoliciesClient) GetRule(ctx context.Context, req *comput
 	return c.internalClient.GetRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *NetworkFirewallPoliciesClient) Insert(ctx context.Context, req *computepb.InsertNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -354,7 +361,8 @@ func (c *NetworkFirewallPoliciesClient) RemoveRule(ctx context.Context, req *com
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *NetworkFirewallPoliciesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -670,7 +678,12 @@ func (c *networkFirewallPoliciesRESTClient) AddRule(ctx context.Context, req *co
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of network firewall policies, listing network
+// firewall policies from all applicable scopes (global and regional) and
+// grouping the results per scope.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *networkFirewallPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPoliciesScopedListPairIterator {
 	it := &FirewallPoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkFirewallPoliciesRequest)
@@ -987,7 +1000,8 @@ func (c *networkFirewallPoliciesRESTClient) GetAssociation(ctx context.Context, 
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *networkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1143,7 +1157,8 @@ func (c *networkFirewallPoliciesRESTClient) GetRule(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *networkFirewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyResource()
@@ -1685,7 +1700,8 @@ func (c *networkFirewallPoliciesRESTClient) RemoveRule(ctx context.Context, req 
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *networkFirewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()

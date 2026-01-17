@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -122,7 +122,8 @@ func (c *NetworkProfilesClient) Get(ctx context.Context, req *computepb.GetNetwo
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of network profiles available to the specified project.
+// List retrieves a list of network profiles available to the specified
+// project.
 func (c *NetworkProfilesClient) List(ctx context.Context, req *computepb.ListNetworkProfilesRequest, opts ...gax.CallOption) *NetworkProfileIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -249,7 +250,8 @@ func (c *networkProfilesRESTClient) Get(ctx context.Context, req *computepb.GetN
 	return resp, nil
 }
 
-// List retrieves a list of network profiles available to the specified project.
+// List retrieves a list of network profiles available to the specified
+// project.
 func (c *networkProfilesRESTClient) List(ctx context.Context, req *computepb.ListNetworkProfilesRequest, opts ...gax.CallOption) *NetworkProfileIterator {
 	it := &NetworkProfileIterator{}
 	req = proto.Clone(req).(*computepb.ListNetworkProfilesRequest)

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,7 +92,8 @@ func (c *RegionInstancesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
+// BulkInsert creates multiple instances in a given region. Count specifies the number of
+// instances to create.
 func (c *RegionInstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
@@ -190,7 +191,8 @@ func (c *regionInstancesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
+// BulkInsert creates multiple instances in a given region. Count specifies the number of
+// instances to create.
 func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()

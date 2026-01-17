@@ -1,5 +1,52 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.6.0) (2026-01-15)
+
+### Features
+
+* added sync APIs for the CRUD operations of Data Agent ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.5.0) (2026-01-08)
+
+### Features
+
+* add LookerGoldenQuery to Context ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.4.0) (2025-12-18)
+
+### Features
+
+* A new field `alloy_db_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.Datasource` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `alloydb` is added to message `.google.cloud.geminidataanalytics.v1beta.DatasourceReferences` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `cloud_sql_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.DatasourceReferences` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `cloud_sql_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.Datasource` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `spanner_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.DatasourceReferences` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `spanner_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.Datasource` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `AgentContextReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `AlloyDbDatabaseReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `AlloyDbReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `CloudSqlDatabaseReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `CloudSqlReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `ExecutedQueryResult` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `GenerationOptions` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `QueryDataContext` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `QueryDataRequest` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `QueryDataResponse` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `SpannerDatabaseReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `SpannerReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new method `QueryData` is added to service `DataChatService` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add LookerGoldenQuery to Context ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add a QueryData API for NL2SQL conversion ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* specify the data sources supported only by the QueryData API ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.3.0) (2025-12-04)
 
 ### Features

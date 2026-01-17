@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -171,22 +171,34 @@ func (c *InterconnectsClient) Delete(ctx context.Context, req *computepb.DeleteI
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
+// Get returns the specified Interconnect. Get a list of available Interconnects
+// by making a list() request.
 func (c *InterconnectsClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect. In the event of a global outage, do not use this API to make decisions about where to redirect your network traffic. Unlike a VLAN attachment, which is regional, a Cloud Interconnect connection is a global resource. A global outage can prevent this API from functioning properly.
+// GetDiagnostics returns the interconnectDiagnostics for the specified
+// Interconnect.
+//
+// In the event of a
+// global outage, do not use this API to make decisions about where to
+// redirect your network traffic.
+//
+// Unlike a VLAN attachment, which is regional, a Cloud Interconnect
+// connection is a global resource. A global outage can prevent this
+// API from functioning properly.
 func (c *InterconnectsClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	return c.internalClient.GetDiagnostics(ctx, req, opts...)
 }
 
-// GetMacsecConfig returns the interconnectMacsecConfig for the specified Interconnect.
+// GetMacsecConfig returns the interconnectMacsecConfig for the specified
+// Interconnect.
 func (c *InterconnectsClient) GetMacsecConfig(ctx context.Context, req *computepb.GetMacsecConfigInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetMacsecConfigResponse, error) {
 	return c.internalClient.GetMacsecConfig(ctx, req, opts...)
 }
 
-// Insert creates an Interconnect in the specified project using the data included in the request.
+// Insert creates an Interconnect in the specified project using
+// the data included in the request.
 func (c *InterconnectsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -196,12 +208,17 @@ func (c *InterconnectsClient) List(ctx context.Context, req *computepb.ListInter
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified Interconnect with the data included in the request.
+// This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *InterconnectsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an Interconnect. To learn more about labels,
+// read the Labeling
+// Resources documentation.
 func (c *InterconnectsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -358,7 +375,8 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	return op, nil
 }
 
-// Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
+// Get returns the specified Interconnect. Get a list of available Interconnects
+// by making a list() request.
 func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -403,7 +421,16 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	return resp, nil
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect. In the event of a global outage, do not use this API to make decisions about where to redirect your network traffic. Unlike a VLAN attachment, which is regional, a Cloud Interconnect connection is a global resource. A global outage can prevent this API from functioning properly.
+// GetDiagnostics returns the interconnectDiagnostics for the specified
+// Interconnect.
+//
+// In the event of a
+// global outage, do not use this API to make decisions about where to
+// redirect your network traffic.
+//
+// Unlike a VLAN attachment, which is regional, a Cloud Interconnect
+// connection is a global resource. A global outage can prevent this
+// API from functioning properly.
 func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -448,7 +475,8 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// GetMacsecConfig returns the interconnectMacsecConfig for the specified Interconnect.
+// GetMacsecConfig returns the interconnectMacsecConfig for the specified
+// Interconnect.
 func (c *interconnectsRESTClient) GetMacsecConfig(ctx context.Context, req *computepb.GetMacsecConfigInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetMacsecConfigResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -493,7 +521,8 @@ func (c *interconnectsRESTClient) GetMacsecConfig(ctx context.Context, req *comp
 	return resp, nil
 }
 
-// Insert creates an Interconnect in the specified project using the data included in the request.
+// Insert creates an Interconnect in the specified project using
+// the data included in the request.
 func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
@@ -645,7 +674,10 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 	return it
 }
 
-// Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified Interconnect with the data included in the request.
+// This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
@@ -711,7 +743,9 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	return op, nil
 }
 
-// SetLabels sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an Interconnect. To learn more about labels,
+// read the Labeling
+// Resources documentation.
 func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,7 +157,14 @@ func (c *SnapshotsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.
+// Delete deletes the specified Snapshot resource. Keep in mind that deleting
+// a single snapshot might not necessarily delete all the data on that
+// snapshot. If any data on the snapshot that is marked for deletion is
+// needed for subsequent snapshots, the data will be moved to the next
+// corresponding snapshot.
+//
+// For more information, seeDeleting
+// snapshots.
 func (c *SnapshotsClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -167,27 +174,35 @@ func (c *SnapshotsClient) Get(ctx context.Context, req *computepb.GetSnapshotReq
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *SnapshotsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
+// Insert creates a snapshot in the specified project using the data included
+// in the request. For regular snapshot creation, consider using this method
+// instead of disks.createSnapshot,
+// as this method supports more features, such as creating snapshots in a
+// project different from the source disk project.
 func (c *SnapshotsClient) Insert(ctx context.Context, req *computepb.InsertSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of Snapshot resources contained within the specified project.
+// List retrieves the list of Snapshot resources contained within
+// the specified project.
 func (c *SnapshotsClient) List(ctx context.Context, req *computepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *SnapshotsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a snapshot. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *SnapshotsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -290,7 +305,14 @@ func (c *snapshotsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.
+// Delete deletes the specified Snapshot resource. Keep in mind that deleting
+// a single snapshot might not necessarily delete all the data on that
+// snapshot. If any data on the snapshot that is marked for deletion is
+// needed for subsequent snapshots, the data will be moved to the next
+// corresponding snapshot.
+//
+// For more information, seeDeleting
+// snapshots.
 func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -394,7 +416,8 @@ func (c *snapshotsRESTClient) Get(ctx context.Context, req *computepb.GetSnapsho
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -446,7 +469,11 @@ func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 	return resp, nil
 }
 
-// Insert creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
+// Insert creates a snapshot in the specified project using the data included
+// in the request. For regular snapshot creation, consider using this method
+// instead of disks.createSnapshot,
+// as this method supports more features, such as creating snapshots in a
+// project different from the source disk project.
 func (c *snapshotsRESTClient) Insert(ctx context.Context, req *computepb.InsertSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
@@ -512,7 +539,8 @@ func (c *snapshotsRESTClient) Insert(ctx context.Context, req *computepb.InsertS
 	return op, nil
 }
 
-// List retrieves the list of Snapshot resources contained within the specified project.
+// List retrieves the list of Snapshot resources contained within
+// the specified project.
 func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
 	req = proto.Clone(req).(*computepb.ListSnapshotsRequest)
@@ -598,7 +626,8 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
@@ -650,7 +679,8 @@ func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 	return resp, nil
 }
 
-// SetLabels sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a snapshot. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()

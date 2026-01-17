@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ const (
 	DataChatService_GetConversation_FullMethodName    = "/google.cloud.geminidataanalytics.v1beta.DataChatService/GetConversation"
 	DataChatService_ListConversations_FullMethodName  = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListConversations"
 	DataChatService_ListMessages_FullMethodName       = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListMessages"
+	DataChatService_QueryData_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataChatService/QueryData"
 )
 
 // DataChatServiceClient is the client API for DataChatService service.
@@ -61,6 +62,8 @@ type DataChatServiceClient interface {
 	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...grpc.CallOption) (*ListConversationsResponse, error)
 	// Lists all messages for a given conversation.
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...grpc.CallOption) (*ListMessagesResponse, error)
+	// Queries data from a natural language user query.
+	QueryData(ctx context.Context, in *QueryDataRequest, opts ...grpc.CallOption) (*QueryDataResponse, error)
 }
 
 type dataChatServiceClient struct {
@@ -148,6 +151,15 @@ func (c *dataChatServiceClient) ListMessages(ctx context.Context, in *ListMessag
 	return out, nil
 }
 
+func (c *dataChatServiceClient) QueryData(ctx context.Context, in *QueryDataRequest, opts ...grpc.CallOption) (*QueryDataResponse, error) {
+	out := new(QueryDataResponse)
+	err := c.cc.Invoke(ctx, DataChatService_QueryData_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataChatServiceServer is the server API for DataChatService service.
 // All implementations should embed UnimplementedDataChatServiceServer
 // for forward compatibility
@@ -166,6 +178,8 @@ type DataChatServiceServer interface {
 	ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error)
 	// Lists all messages for a given conversation.
 	ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error)
+	// Queries data from a natural language user query.
+	QueryData(context.Context, *QueryDataRequest) (*QueryDataResponse, error)
 }
 
 // UnimplementedDataChatServiceServer should be embedded to have forward compatible implementations.
@@ -189,6 +203,9 @@ func (UnimplementedDataChatServiceServer) ListConversations(context.Context, *Li
 }
 func (UnimplementedDataChatServiceServer) ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMessages not implemented")
+}
+func (UnimplementedDataChatServiceServer) QueryData(context.Context, *QueryDataRequest) (*QueryDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryData not implemented")
 }
 
 // UnsafeDataChatServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -313,6 +330,24 @@ func _DataChatService_ListMessages_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataChatService_QueryData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataChatServiceServer).QueryData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataChatService_QueryData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataChatServiceServer).QueryData(ctx, req.(*QueryDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataChatService_ServiceDesc is the grpc.ServiceDesc for DataChatService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -339,6 +374,10 @@ var DataChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMessages",
 			Handler:    _DataChatService_ListMessages_Handler,
+		},
+		{
+			MethodName: "QueryData",
+			Handler:    _DataChatService_QueryData_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

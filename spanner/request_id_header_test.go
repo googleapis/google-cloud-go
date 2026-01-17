@@ -1759,8 +1759,8 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 	}
 	clientConfig := ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 100,
-			MaxOpened: 400,
+			MinOpened: 40,
+			MaxOpened: 40,
 			incStep:   25,
 		},
 		NumChannels:          4,
@@ -1822,7 +1822,7 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
 	}
 
-	if g, w := interceptorTracker.streamCallCount(), uint64(101); g != w {
+	if g, w := interceptorTracker.streamCallCount(), clientConfig.MinOpened+1; g != w {
 		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
 	}
 

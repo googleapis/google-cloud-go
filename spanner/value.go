@@ -1051,6 +1051,11 @@ func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
+func (n PGNumeric) GormDataType() string {
+	return "numeric"
+}
+
 // NullProtoMessage represents a Cloud Spanner PROTO that may be NULL.
 // To write a NULL value using NullProtoMessage set ProtoMessageVal to typed nil and set Valid to true.
 type NullProtoMessage struct {
@@ -1283,6 +1288,11 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 	n.Value = v
 	n.Valid = true
 	return nil
+}
+
+// GormDataType is used by gorm to determine the default data type for fields with this type.
+func (n PGJsonB) GormDataType() string {
+	return "jsonb"
 }
 
 func nulljson(valid bool, v interface{}) ([]byte, error) {
@@ -2232,7 +2242,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if acode != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
+		if acode != sppb.TypeCode_JSON || atypeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {

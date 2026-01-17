@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -196,6 +196,12 @@ func (it *FutureReservationIterator) All() iter.Seq2[*computepb.FutureReservatio
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *FutureReservationsScopedListPairIterator) All() iter.Seq2[FutureReservationsScopedListPair, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlobalVmExtensionPolicyIterator) All() iter.Seq2[*computepb.GlobalVmExtensionPolicy, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -616,6 +622,18 @@ func (it *ResourcePoliciesScopedListPairIterator) All() iter.Seq2[ResourcePolici
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ResourcePolicyIterator) All() iter.Seq2[*computepb.ResourcePolicy, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutIterator) All() iter.Seq2[*computepb.Rollout, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutPlanIterator) All() iter.Seq2[*computepb.RolloutPlan, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

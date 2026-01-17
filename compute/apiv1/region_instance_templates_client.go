@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -128,7 +128,8 @@ func (c *RegionInstanceTemplatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.
+// Delete deletes the specified instance template. Deleting an instance template is
+// permanent and cannot be undone.
 func (c *RegionInstanceTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -138,12 +139,14 @@ func (c *RegionInstanceTemplatesClient) Get(ctx context.Context, req *computepb.
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an instance template in the specified project and region using the global instance template whose URL is included in the request.
+// Insert creates an instance template in the specified project and region using the
+// global instance template whose URL is included in the request.
 func (c *RegionInstanceTemplatesClient) Insert(ctx context.Context, req *computepb.InsertRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of instance templates that are contained within the specified project and region.
+// List retrieves a list of instance templates that are contained within the
+// specified project and region.
 func (c *RegionInstanceTemplatesClient) List(ctx context.Context, req *computepb.ListRegionInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplateIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -241,7 +244,8 @@ func (c *regionInstanceTemplatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.
+// Delete deletes the specified instance template. Deleting an instance template is
+// permanent and cannot be undone.
 func (c *regionInstanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -346,7 +350,8 @@ func (c *regionInstanceTemplatesRESTClient) Get(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates an instance template in the specified project and region using the global instance template whose URL is included in the request.
+// Insert creates an instance template in the specified project and region using the
+// global instance template whose URL is included in the request.
 func (c *regionInstanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceTemplateResource()
@@ -413,7 +418,8 @@ func (c *regionInstanceTemplatesRESTClient) Insert(ctx context.Context, req *com
 	return op, nil
 }
 
-// List retrieves a list of instance templates that are contained within the specified project and region.
+// List retrieves a list of instance templates that are contained within the
+// specified project and region.
 func (c *regionInstanceTemplatesRESTClient) List(ctx context.Context, req *computepb.ListRegionInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplateIterator {
 	it := &InstanceTemplateIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionInstanceTemplatesRequest)

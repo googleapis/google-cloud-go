@@ -1730,8 +1730,7 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 	if opts.multiplexEnabled {
 		readWriteOptions.MultiplexedSessionPreviousTransactionId = opts.previousTx
 	}
-
-	res, err := opts.client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
+	request := &sppb.BeginTransactionRequest{
 		Session: opts.sessionID,
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
@@ -1741,7 +1740,13 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 			IsolationLevel:              opts.txOptions.IsolationLevel,
 		},
 		MutationKey: opts.mutation,
-	})
+	}
+	// When using multiplexed sessions, the BeginTransaction request must include the transaction tag (if any).
+	if opts.multiplexEnabled && opts.txOptions.TransactionTag != "" {
+		request.RequestOptions = &sppb.RequestOptions{TransactionTag: opts.txOptions.TransactionTag}
+	}
+
+	res, err := opts.client.BeginTransaction(ctx, request)
 	if err != nil {
 		return nil, nil, err
 	}

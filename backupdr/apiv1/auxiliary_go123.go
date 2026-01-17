@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,5 +84,11 @@ func (it *ManagementServerIterator) All() iter.Seq2[*backupdrpb.ManagementServer
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceBackupConfigIterator) All() iter.Seq2[*backupdrpb.ResourceBackupConfig, error] {
 	return iterator.RangeAdapter(it.Next)
 }
