@@ -1464,9 +1464,12 @@ func TestAggregationQuery(t *testing.T) {
 		t.Errorf("aggregation query key not found")
 	}
 
-	cv := count.(*pb.Value)
-	if cv.GetIntegerValue() != 1 {
-		t.Errorf("got: %v\nwant: %v\n; result: %v\n", cv.GetIntegerValue(), 1, count)
+	cv, ok := count.(int64)
+	if !ok {
+		t.Fatalf("expected int64, got %T", count)
+	}
+	if cv != 1 {
+		t.Errorf("got: %v, want: %v", cv, 1)
 	}
 }
 
