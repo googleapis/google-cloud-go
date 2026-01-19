@@ -246,7 +246,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	}
 
 	// Create default meter provider
-	mpOptions, err := builtInMeterProviderOptions(project, opts...)
+	mpOptions, err := builtInMeterProviderOptions(ctx, project, opts...)
 	if err != nil {
 		// Swallow the error and disable metrics
 		return disabledMetricsTracerFactory, nil
@@ -289,9 +289,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	return tracerFactory, nil
 }
 
-func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+func builtInMeterProviderOptions(ctx context.Context, project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
 	allOpts := createExporterOptions(opts...)
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
+	defaultExporter, err := newMonitoringExporter(ctx, project, allOpts...)
 	if err != nil {
 		return nil, err
 	}
