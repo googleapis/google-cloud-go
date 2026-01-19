@@ -185,7 +185,7 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetrics
 	}
 	if !cfg.disableExporter {
 		meterOpts = append(meterOpts, metric.WithReader(
-			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
+			metric.NewPeriodicReaderWithContext(ctx, &exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 	}
 	otelMeterProvider := metric.NewMeterProvider(meterOpts...)
 	mo := opentelemetry.MetricsOptions{
