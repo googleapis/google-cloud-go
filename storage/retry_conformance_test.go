@@ -251,6 +251,7 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
+			defer r.Close()
 
 			// Request the full 3MiB range.
 			// The emulator's fault injection (e.g., reset-connection) will trigger mid-download.
@@ -258,7 +259,6 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return fmt.Errorf("resumption test failed: %v", err)
 			}
-			defer r.Close()
 
 			if int64(len(buf)) != 3*MiB {
 				return fmt.Errorf("resumption data length mismatch: got %d, want %d", len(buf), 3*MiB)
