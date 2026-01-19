@@ -1033,9 +1033,11 @@ type httpInternalWriter struct {
 
 	// closeOnce ensures that the channels are closed at most once.
 	closeOnce sync.Once
-	// communicateOnce ensures that we only signal the uploader goroutine once,
-	// either with a checksum or to transition to multi-chunk mode.
-	communicateOnce sync.Once
+	// sendOnce ensures a signal is sent to the uploader goroutine exactly once.
+	// The signal is either the computed checksum for a single-chunk upload or a
+	// multi-chunk transition signal or server checksum sent by uploader goroutine
+	// for single-shot uploads
+	sendOnce sync.Once
 }
 
 func (hiw *httpInternalWriter) closeChannels() {
@@ -1045,25 +1047,23 @@ func (hiw *httpInternalWriter) closeChannels() {
 	})
 }
 
-func (hiw *httpInternalWriter) doOnce(f func()) {
+func (hiw *httpInternalWriter) communicateOnce(f func()) {
 	if hiw.ctx.Err() == nil {
-		hiw.communicateOnce.Do(f)
+		hiw.sendOnce.Do(f)
 	}
 }
 
 // validateChecksum validates the computed checksum against the server-provided checksum.
 func (hiw *httpInternalWriter) validateChecksum() error {
 	var err error
-	if hiw.ctx.Err() == nil {
-		hiw.communicateOnce.Do(func() {
-			serverChecksum, ok := <-hiw.serverChecksumChan
-			// Do not check for channel closure as error is already set on the writer
-			// if serverChecksumChan is closed without checksum
-			if ok && hiw.fullObjectChecksum != serverChecksum {
-				err = fmt.Errorf("storage: computed object checksum (%q) doesn't match with server's object checksum (%q)", encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
-			}
-		})
-	}
+	hiw.communicateOnce(func() {
+		serverChecksum, ok := <-hiw.serverChecksumChan
+		// Do not check for channel closure as error is already set on the writer
+		// if serverChecksumChan is closed without checksum
+		if ok && hiw.fullObjectChecksum != serverChecksum {
+			err = fmt.Errorf("storage: computed object checksum (%q) doesn't match with server's object checksum (%q)", encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
+		}
+	})
 	return err
 }
 
@@ -1086,7 +1086,7 @@ func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
 		// If data overflows the buffer, transition to MultiChunk
 		// by unblocking uploader goroutine.
 		if hiw.bufferedWriter.Available() <= len(data) {
-			hiw.doOnce(func() { hiw.multiChunkChan <- true })
+			hiw.communicateOnce(func() { hiw.multiChunkChan <- true })
 			hiw.state = stateMultiChunk
 		} else {
 			// Otherwise, keep tracking the checksum.
@@ -1113,7 +1113,7 @@ func (hiw *httpInternalWriter) Close() error {
 	hiw.mu.Lock()
 	defer hiw.mu.Unlock()
 	if hiw.state == stateSingleChunk {
-		hiw.doOnce(func() { hiw.checksumChan <- hiw.fullObjectChecksum })
+		hiw.communicateOnce(func() { hiw.checksumChan <- hiw.fullObjectChecksum })
 	}
 	err := hiw.bufferedWriter.Flush()
 	return errors.Join(err, hiw.PipeWriter.Close())
