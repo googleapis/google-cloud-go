@@ -174,7 +174,8 @@ type InternalOptions struct {
 	// name, version). These attributes are expected to be consistent across all
 	// signals to enable cross-signal correlation.
 	//
-	// It should only be used internally by generated clients.
+	// It should only be used internally by generated clients. Callers should not
+	// modify the map after it is passed in.
 	TelemetryAttributes map[string]string
 }
 
