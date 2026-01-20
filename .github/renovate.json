@@ -26,6 +26,11 @@
                 "^github.com/cloudprober/cloudprober"
             ],
             "enabled": false
+        },
+        {
+          "matchPackageNames": ["cloud.google.com/go/pubsub"],
+          "matchUpdateTypes": ["major"],
+          "enabled": false
         }
     ],
     "vulnerabilityAlerts": {
