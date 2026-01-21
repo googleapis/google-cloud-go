@@ -388,9 +388,13 @@ func Delete(table string, ks KeySet) *Mutation {
 	}
 }
 
+// SendOption specifies optional fields for Send mutation
 type SendOption func(*Mutation)
+
+// AckOption specifies optional fields for Ack mutation
 type AckOption func(*Mutation)
 
+// WithDeliveryTime returns an SendOption to set field `deliverTime`
 func WithDeliveryTime(t time.Time) SendOption {
 	return func(m *Mutation) {
 		m.deliverTime = t
@@ -411,6 +415,7 @@ func Send(queue string, key Key, payload interface{}, opts ...SendOption) *Mutat
 	return m
 }
 
+// WithIgnoreNotFound returns an AckOption to set field `ignoreNotFound`
 func WithIgnoreNotFound(ignoreNotFound bool) AckOption {
 	return func(m *Mutation) {
 		m.ignoreNotFound = ignoreNotFound
