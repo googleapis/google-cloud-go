@@ -41,10 +41,11 @@ var newRegionNotificationEndpointsClientHook clientHook
 
 // RegionNotificationEndpointsCallOptions contains the retry settings for each method of RegionNotificationEndpointsClient.
 type RegionNotificationEndpointsCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
+	Delete             []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	List               []gax.CallOption
+	TestIamPermissions []gax.CallOption
 }
 
 func defaultRegionNotificationEndpointsRESTCallOptions() *RegionNotificationEndpointsCallOptions {
@@ -79,6 +80,9 @@ func defaultRegionNotificationEndpointsRESTCallOptions() *RegionNotificationEndp
 					http.StatusServiceUnavailable)
 			}),
 		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -91,6 +95,7 @@ type internalRegionNotificationEndpointsClient interface {
 	Get(context.Context, *computepb.GetRegionNotificationEndpointRequest, ...gax.CallOption) (*computepb.NotificationEndpoint, error)
 	Insert(context.Context, *computepb.InsertRegionNotificationEndpointRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionNotificationEndpointsRequest, ...gax.CallOption) *NotificationEndpointIterator
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionNotificationEndpointRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
 // RegionNotificationEndpointsClient is a client for interacting with Google Compute Engine API.
@@ -147,6 +152,11 @@ func (c *RegionNotificationEndpointsClient) Insert(ctx context.Context, req *com
 // List lists the NotificationEndpoints for a project in the given region.
 func (c *RegionNotificationEndpointsClient) List(ctx context.Context, req *computepb.ListRegionNotificationEndpointsRequest, opts ...gax.CallOption) *NotificationEndpointIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *RegionNotificationEndpointsClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -499,4 +509,56 @@ func (c *regionNotificationEndpointsRESTClient) List(ctx context.Context, req *c
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *regionNotificationEndpointsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
