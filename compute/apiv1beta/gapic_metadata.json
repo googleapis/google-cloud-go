@@ -3955,6 +3955,25 @@
         }
       }
     },
+    "RegionMultiMigMembers": {
+      "clients": {
+        "rest": {
+          "libraryClient": "RegionMultiMigMembersClient",
+          "rpcs": {
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            }
+          }
+        }
+      }
+    },
     "RegionMultiMigs": {
       "clients": {
         "rest": {

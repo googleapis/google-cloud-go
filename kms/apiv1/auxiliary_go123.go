@@ -67,3 +67,15 @@ func (it *KeyRingIterator) All() iter.Seq2[*kmspb.KeyRing, error] {
 func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 	return iterator.RangeAdapter(it.Next)
 }
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SingleTenantHsmInstanceIterator) All() iter.Seq2[*kmspb.SingleTenantHsmInstance, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SingleTenantHsmInstanceProposalIterator) All() iter.Seq2[*kmspb.SingleTenantHsmInstanceProposal, error] {
+	return iterator.RangeAdapter(it.Next)
+}
