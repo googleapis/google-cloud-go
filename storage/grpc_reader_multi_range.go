@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"container/list"
 	"context"
 	"errors"
 	"fmt"
@@ -83,18 +84,19 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	// Create the manager
 	manager := &multiRangeDownloaderManager{
-		ctx:           mCtx,
-		cancel:        cancel,
-		client:        c,
-		settings:      s,
-		params:        params,
-		cmds:          make(chan mrdCommand, mrdCommandChannelSize),
-		sessionResps:  make(chan mrdSessionResult, mrdResponseChannelSize),
-		pendingRanges: make(map[int64]*rangeRequest),
-		readIDCounter: 1,
-		readSpec:      readSpec,
-		attrsReady:    make(chan struct{}),
-		spanCtx:       ctx,
+		ctx:            mCtx,
+		cancel:         cancel,
+		client:         c,
+		settings:       s,
+		params:         params,
+		cmds:           make(chan mrdCommand, mrdCommandChannelSize),
+		sessionResps:   make(chan mrdSessionResult, mrdResponseChannelSize),
+		pendingRanges:  make(map[int64]*rangeRequest),
+		readIDCounter:  1,
+		readSpec:       readSpec,
+		attrsReady:     make(chan struct{}),
+		spanCtx:        ctx,
+		unsentRequests: list.New(),
 	}
 
 	mrd := &MultiRangeDownloader{
@@ -227,6 +229,7 @@ type multiRangeDownloaderManager struct {
 	attrsOnce      sync.Once
 	spanCtx        context.Context
 	callbackWg     sync.WaitGroup
+	unsentRequests *list.List
 }
 
 type rangeRequest struct {
@@ -374,9 +377,21 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 	}
 
 	for {
+		var nextReq *storagepb.BidiReadObjectRequest
+		var targetChan chan<- *storagepb.BidiReadObjectRequest
+
+		// Only try to send if we have queued requests
+		if m.unsentRequests.Len() > 0 && m.currentSession != nil {
+			nextReq = m.unsentRequests.Front().Value.(*storagepb.BidiReadObjectRequest)
+			targetChan = m.currentSession.reqC
+		}
 		select {
 		case <-m.ctx.Done():
 			return
+			// This path only triggers if space is available in the channel.
+		// It never blocks the eventLoop.
+		case targetChan <- nextReq:
+			m.unsentRequests.Remove(m.unsentRequests.Front())
 		case cmd := <-m.cmds:
 			cmd.apply(m.ctx, m)
 			if _, ok := cmd.(*mrdCloseCmd); ok {
@@ -386,7 +401,7 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 			m.processSessionResult(result)
 		}
 
-		if len(m.pendingRanges) == 0 {
+		if len(m.pendingRanges) == 0 && m.unsentRequests.Len() == 0 {
 			for _, waiter := range m.waiters {
 				close(waiter)
 			}
@@ -505,6 +520,11 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 
 	m.pendingRanges[req.readID] = req
 
+	if m.unsentRequests.Len() >= 10000 {
+		err := fmt.Errorf("storage: MultiRangeDownloader congested")
+		m.runCallback(cmd.offset, cmd.length, err, cmd.callback)
+		return
+	}
 	protoReq := &storagepb.BidiReadObjectRequest{
 		ReadRanges: []*storagepb.ReadRange{{
 			ReadOffset: req.offset,
@@ -512,7 +532,7 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 			ReadId:     req.readID,
 		}},
 	}
-	m.currentSession.SendRequest(protoReq)
+	m.unsentRequests.PushBack(protoReq)
 }
 
 func (m *multiRangeDownloaderManager) convertToPositiveOffset(req *rangeRequest) error {
@@ -655,7 +675,8 @@ func (m *multiRangeDownloaderManager) ensureSession(ctx context.Context) error {
 			}
 		}
 		if len(rangesToResend) > 0 {
-			m.currentSession.SendRequest(&storagepb.BidiReadObjectRequest{ReadRanges: rangesToResend})
+			retryReq := &storagepb.BidiReadObjectRequest{ReadRanges: rangesToResend}
+			m.unsentRequests.PushFront(retryReq)
 		}
 		return nil
 	}, m.settings.retry, true)
