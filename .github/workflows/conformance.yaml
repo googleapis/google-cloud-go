@@ -39,15 +39,20 @@ jobs:
         go: [ '1.24', '1.25']
         folders: ['bigtable']
     steps:
-    - uses: actions/checkout@v4
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       with:
         path: google-cloud-go
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       with:
         repository: googleapis/cloud-bigtable-clients-test
         ref: v0.0.3
         path: cloud-bigtable-clients-test
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
       with:
           go-version: ${{ matrix.go }}
     - run: go version

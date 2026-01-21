@@ -1,7 +1,7 @@
-FROM golang:1.24-alpine as godist
+FROM golang:1.24-alpine@sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae as godist
 RUN go version
 
-FROM docker:25.0
+FROM docker:25.0@sha256:b41d0183012e2334aacd4e0b8e339b89246c4fdb7eada6cc86b0355f41328549
 
 # Log the version of Alpine in use.
 RUN cat /etc/alpine-release
