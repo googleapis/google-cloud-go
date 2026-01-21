@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.114.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.114.0) (2026-01-21)
+
+### Features
+
+* RAG - add mode config to RagEngineConfig with Spanner and Serverless ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* RAG - deprecate tier from RagEngineConfig ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+### Documentation
+
+* A comment for field `basic` in message `.google.cloud.aiplatform.v1beta1.RagManagedDbConfig` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* A comment for field `scaled` in message `.google.cloud.aiplatform.v1beta1.RagManagedDbConfig` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* A comment for field `unprovisioned` in message `.google.cloud.aiplatform.v1beta1.RagManagedDbConfig` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* A comment for message `RagManagedDbConfig` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
 ## [1.113.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.113.0) (2026-01-08)
 
 ### Features

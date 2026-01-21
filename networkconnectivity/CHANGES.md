@@ -1,5 +1,11 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkconnectivity%2Fv1.20.0) (2026-01-21)
+
+### Features
+
+* Added OUTPUT_ONLY annotations to create_time and update_time in InternalRange to reflect existing service behavior ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
 ## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.19.0...networkconnectivity/v1.19.1) (2025-09-18)
 
 

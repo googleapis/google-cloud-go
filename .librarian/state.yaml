@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.113.0
+    version: 1.114.0
     last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/aiplatform/v1
@@ -1637,7 +1637,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.53.0
+    version: 1.54.0
     last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/compute/v1
@@ -2246,7 +2246,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.73.0
+    version: 1.74.0
     last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -3114,7 +3114,7 @@ libraries:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
   - id: kms
-    version: 1.24.0
+    version: 1.25.0
     last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/kms/v1
@@ -3840,7 +3840,7 @@ libraries:
       - internal/generated/snippets/netapp/
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
-    version: 1.19.1
+    version: 1.20.0
     last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/networkconnectivity/v1
@@ -4798,7 +4798,7 @@ libraries:
       - internal/version
     tag_format: v{version}
   - id: run
-    version: 1.14.0
+    version: 1.15.0
     last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/run/v2

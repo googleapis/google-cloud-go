@@ -1,5 +1,19 @@
 # Changes
 
+## [1.74.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.74.0) (2026-01-21)
+
+### Features
+
+* updated v3 dialogflow client libraries ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+### Bug Fixes
+
+* An existing field `start_flow` is moved in to oneof in message `.google.cloud.dialogflow.cx.v3.Agent` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_display_names` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_ids` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_latencies` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_tags` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
 ## [1.73.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.73.0) (2025-12-18)
 
 ### Features
