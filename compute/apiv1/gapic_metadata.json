@@ -127,6 +127,11 @@
                 "Patch"
               ]
             },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "Update": {
               "methods": [
                 "Update"
@@ -993,6 +998,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "Update": {
@@ -2935,6 +2945,11 @@
                 "Patch"
               ]
             },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "Update": {
               "methods": [
                 "Update"
@@ -3222,6 +3237,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "Update": {
@@ -3644,6 +3664,11 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -4308,6 +4333,11 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -5044,6 +5074,11 @@
               "methods": [
                 "SetSslPolicy"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
             }
           }
         }
@@ -5087,6 +5122,11 @@
             "SetProxyHeader": {
               "methods": [
                 "SetProxyHeader"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -5170,6 +5210,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "Update": {
