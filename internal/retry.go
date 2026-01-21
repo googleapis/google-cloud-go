@@ -31,29 +31,7 @@ import (
 // When the provided context is done, Retry returns with an error that
 // includes both ctx.Error() and the last error returned by f.
 func Retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error)) error {
-	return retry(ctx, bo, f, gax.Sleep)
-}
-
-func retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error),
-	sleep func(context.Context, time.Duration) error) error {
-	var lastErr error
-	for {
-		stop, err := f()
-		if stop {
-			return err
-		}
-		// Remember the last "real" error from f.
-		if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
-			lastErr = err
-		}
-		p := bo.Pause()
-		if ctxErr := sleep(ctx, p); ctxErr != nil {
-			if lastErr != nil {
-				return wrappedCallErr{ctxErr: ctxErr, wrappedErr: lastErr}
-			}
-			return ctxErr
-		}
-	}
+	return RetryN(ctx, bo, 0, f)
 }
 
 // RetryN calls the supplied function f repeatedly according to the provided
@@ -73,13 +51,10 @@ func RetryN(ctx context.Context, bo gax.Backoff, maxRetries int, f func() (stop 
 
 func retryN(ctx context.Context, bo gax.Backoff, maxRetries int, f func() (stop bool, err error),
 	sleep func(context.Context, time.Duration) error) error {
-	// If maxRetries <= 0, fall back to original infinite retry behavior
-	if maxRetries <= 0 {
-		return retry(ctx, bo, f, sleep)
-	}
-
+	var lastErr error
 	var collectedErrors []error
 	retryCount := 0
+	limitedRetries := maxRetries > 0
 
 	for {
 		stop, err := f()
@@ -87,14 +62,17 @@ func retryN(ctx context.Context, bo gax.Backoff, maxRetries int, f func() (stop 
 			return err
 		}
 
-		// Collect the error if it's a "real" error (not context errors)
+		// Track errors if it's a "real" error (not context errors)
 		if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
-			collectedErrors = append(collectedErrors, err)
-			retryCount++
+			lastErr = err
+			if limitedRetries {
+				collectedErrors = append(collectedErrors, err)
+				retryCount++
+			}
 		}
 
 		// Check if we've exhausted the maximum number of retries
-		if retryCount >= maxRetries {
+		if limitedRetries && retryCount >= maxRetries {
 			return &RetryExhaustedError{
 				MaxRetries: maxRetries,
 				Errors:     collectedErrors,
@@ -104,8 +82,11 @@ func retryN(ctx context.Context, bo gax.Backoff, maxRetries int, f func() (stop 
 		p := bo.Pause()
 		if ctxErr := sleep(ctx, p); ctxErr != nil {
 			// Context was cancelled/deadline exceeded during sleep
-			if len(collectedErrors) > 0 {
+			if limitedRetries && len(collectedErrors) > 0 {
 				return wrappedCallErr{ctxErr: ctxErr, wrappedErr: collectedErrors[len(collectedErrors)-1]}
+			}
+			if lastErr != nil {
+				return wrappedCallErr{ctxErr: ctxErr, wrappedErr: lastErr}
 			}
 			return ctxErr
 		}

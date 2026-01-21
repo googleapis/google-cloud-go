@@ -235,14 +235,6 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 	return runWithRetryExplicitN(ctx, call, allowedReasons, 0)
 }
 
-// runWithRetryN calls the function with configurable max retries.
-// If maxRetries <= 0, it behaves like runWithRetry (infinite retries).
-// If maxRetries > 0, after maxRetries consecutive retryable failures,
-// it returns a RetryExhaustedError containing all collected errors.
-func runWithRetryN(ctx context.Context, call func() error, maxRetries int) error {
-	return runWithRetryExplicitN(ctx, call, defaultRetryReasons, maxRetries)
-}
-
 func runWithRetryExplicitN(ctx context.Context, call func() error, allowedReasons []string, maxRetries int) error {
 	// These parameters match the suggestions in https://cloud.google.com/bigquery/sla.
 	backoff := gax.Backoff{

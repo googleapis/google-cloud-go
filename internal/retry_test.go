@@ -32,7 +32,7 @@ func TestRetry(t *testing.T) {
 	// says not to retry any more.
 	n := 0
 	endRetry := errors.New("end retry")
-	err := retry(ctx, gax.Backoff{},
+	err := retryN(ctx, gax.Backoff{}, 0, // 0 means infinite retries
 		func() (bool, error) {
 			n++
 			if n < 10 {
@@ -51,7 +51,7 @@ func TestRetry(t *testing.T) {
 	// If the context has a deadline, sleep will return an error
 	// and end the function.
 	n = 0
-	err = retry(ctx, gax.Backoff{},
+	err = retryN(ctx, gax.Backoff{}, 0,
 		func() (bool, error) { return false, nil },
 		func(context.Context, time.Duration) error {
 			n++
@@ -68,7 +68,7 @@ func TestRetry(t *testing.T) {
 func TestRetryPreserveError(t *testing.T) {
 	// Retry tries to preserve the type and other information from
 	// the last error returned by the function.
-	err := retry(context.Background(), gax.Backoff{},
+	err := retryN(context.Background(), gax.Backoff{}, 0,
 		func() (bool, error) {
 			return false, status.Error(codes.NotFound, "not found")
 		},
@@ -98,7 +98,7 @@ func TestRetryPreserveError(t *testing.T) {
 func TestRetryWrapsErrorWithStatusUnknown(t *testing.T) {
 	// When retrying on an error that is not a grpc error, make sure to return
 	// a valid gRPC status.
-	err := retry(context.Background(), gax.Backoff{},
+	err := retryN(context.Background(), gax.Backoff{}, 0,
 		func() (bool, error) {
 			return false, errors.New("test error")
 		},
