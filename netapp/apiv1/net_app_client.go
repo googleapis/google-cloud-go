@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,6 +107,12 @@ type CallOptions struct {
 	CreateQuotaRule             []gax.CallOption
 	UpdateQuotaRule             []gax.CallOption
 	DeleteQuotaRule             []gax.CallOption
+	RestoreBackupFiles          []gax.CallOption
+	ListHostGroups              []gax.CallOption
+	GetHostGroup                []gax.CallOption
+	CreateHostGroup             []gax.CallOption
+	UpdateHostGroup             []gax.CallOption
+	DeleteHostGroup             []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -451,17 +457,23 @@ func defaultCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		ListQuotaRules:  []gax.CallOption{},
-		GetQuotaRule:    []gax.CallOption{},
-		CreateQuotaRule: []gax.CallOption{},
-		UpdateQuotaRule: []gax.CallOption{},
-		DeleteQuotaRule: []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListQuotaRules:     []gax.CallOption{},
+		GetQuotaRule:       []gax.CallOption{},
+		CreateQuotaRule:    []gax.CallOption{},
+		UpdateQuotaRule:    []gax.CallOption{},
+		DeleteQuotaRule:    []gax.CallOption{},
+		RestoreBackupFiles: []gax.CallOption{},
+		ListHostGroups:     []gax.CallOption{},
+		GetHostGroup:       []gax.CallOption{},
+		CreateHostGroup:    []gax.CallOption{},
+		UpdateHostGroup:    []gax.CallOption{},
+		DeleteHostGroup:    []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -768,17 +780,23 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		ListQuotaRules:  []gax.CallOption{},
-		GetQuotaRule:    []gax.CallOption{},
-		CreateQuotaRule: []gax.CallOption{},
-		UpdateQuotaRule: []gax.CallOption{},
-		DeleteQuotaRule: []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListQuotaRules:     []gax.CallOption{},
+		GetQuotaRule:       []gax.CallOption{},
+		CreateQuotaRule:    []gax.CallOption{},
+		UpdateQuotaRule:    []gax.CallOption{},
+		DeleteQuotaRule:    []gax.CallOption{},
+		RestoreBackupFiles: []gax.CallOption{},
+		ListHostGroups:     []gax.CallOption{},
+		GetHostGroup:       []gax.CallOption{},
+		CreateHostGroup:    []gax.CallOption{},
+		UpdateHostGroup:    []gax.CallOption{},
+		DeleteHostGroup:    []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -886,6 +904,16 @@ type internalClient interface {
 	UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation
 	DeleteQuotaRule(context.Context, *netapppb.DeleteQuotaRuleRequest, ...gax.CallOption) (*DeleteQuotaRuleOperation, error)
 	DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation
+	RestoreBackupFiles(context.Context, *netapppb.RestoreBackupFilesRequest, ...gax.CallOption) (*RestoreBackupFilesOperation, error)
+	RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation
+	ListHostGroups(context.Context, *netapppb.ListHostGroupsRequest, ...gax.CallOption) *HostGroupIterator
+	GetHostGroup(context.Context, *netapppb.GetHostGroupRequest, ...gax.CallOption) (*netapppb.HostGroup, error)
+	CreateHostGroup(context.Context, *netapppb.CreateHostGroupRequest, ...gax.CallOption) (*CreateHostGroupOperation, error)
+	CreateHostGroupOperation(name string) *CreateHostGroupOperation
+	UpdateHostGroup(context.Context, *netapppb.UpdateHostGroupRequest, ...gax.CallOption) (*UpdateHostGroupOperation, error)
+	UpdateHostGroupOperation(name string) *UpdateHostGroupOperation
+	DeleteHostGroup(context.Context, *netapppb.DeleteHostGroupRequest, ...gax.CallOption) (*DeleteHostGroupOperation, error)
+	DeleteHostGroupOperation(name string) *DeleteHostGroupOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -1477,6 +1505,61 @@ func (c *Client) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQuotaR
 // The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
 func (c *Client) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
 	return c.internalClient.DeleteQuotaRuleOperation(name)
+}
+
+// RestoreBackupFiles restore files from a backup to a volume.
+func (c *Client) RestoreBackupFiles(ctx context.Context, req *netapppb.RestoreBackupFilesRequest, opts ...gax.CallOption) (*RestoreBackupFilesOperation, error) {
+	return c.internalClient.RestoreBackupFiles(ctx, req, opts...)
+}
+
+// RestoreBackupFilesOperation returns a new RestoreBackupFilesOperation from a given name.
+// The name must be that of a previously created RestoreBackupFilesOperation, possibly from a different process.
+func (c *Client) RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation {
+	return c.internalClient.RestoreBackupFilesOperation(name)
+}
+
+// ListHostGroups returns a list of host groups in a location. Use - as location to list
+// host groups across all locations.
+func (c *Client) ListHostGroups(ctx context.Context, req *netapppb.ListHostGroupsRequest, opts ...gax.CallOption) *HostGroupIterator {
+	return c.internalClient.ListHostGroups(ctx, req, opts...)
+}
+
+// GetHostGroup returns details of the specified host group.
+func (c *Client) GetHostGroup(ctx context.Context, req *netapppb.GetHostGroupRequest, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	return c.internalClient.GetHostGroup(ctx, req, opts...)
+}
+
+// CreateHostGroup creates a new host group.
+func (c *Client) CreateHostGroup(ctx context.Context, req *netapppb.CreateHostGroupRequest, opts ...gax.CallOption) (*CreateHostGroupOperation, error) {
+	return c.internalClient.CreateHostGroup(ctx, req, opts...)
+}
+
+// CreateHostGroupOperation returns a new CreateHostGroupOperation from a given name.
+// The name must be that of a previously created CreateHostGroupOperation, possibly from a different process.
+func (c *Client) CreateHostGroupOperation(name string) *CreateHostGroupOperation {
+	return c.internalClient.CreateHostGroupOperation(name)
+}
+
+// UpdateHostGroup updates an existing host group.
+func (c *Client) UpdateHostGroup(ctx context.Context, req *netapppb.UpdateHostGroupRequest, opts ...gax.CallOption) (*UpdateHostGroupOperation, error) {
+	return c.internalClient.UpdateHostGroup(ctx, req, opts...)
+}
+
+// UpdateHostGroupOperation returns a new UpdateHostGroupOperation from a given name.
+// The name must be that of a previously created UpdateHostGroupOperation, possibly from a different process.
+func (c *Client) UpdateHostGroupOperation(name string) *UpdateHostGroupOperation {
+	return c.internalClient.UpdateHostGroupOperation(name)
+}
+
+// DeleteHostGroup deletes a host group.
+func (c *Client) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHostGroupRequest, opts ...gax.CallOption) (*DeleteHostGroupOperation, error) {
+	return c.internalClient.DeleteHostGroup(ctx, req, opts...)
+}
+
+// DeleteHostGroupOperation returns a new DeleteHostGroupOperation from a given name.
+// The name must be that of a previously created DeleteHostGroupOperation, possibly from a different process.
+func (c *Client) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation {
+	return c.internalClient.DeleteHostGroupOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -3133,6 +3216,150 @@ func (c *gRPCClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 		return nil, err
 	}
 	return &DeleteQuotaRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RestoreBackupFiles(ctx context.Context, req *netapppb.RestoreBackupFilesRequest, opts ...gax.CallOption) (*RestoreBackupFilesOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreBackupFiles[0:len((*c.CallOptions).RestoreBackupFiles):len((*c.CallOptions).RestoreBackupFiles)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RestoreBackupFiles, req, settings.GRPC, c.logger, "RestoreBackupFiles")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RestoreBackupFilesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListHostGroups(ctx context.Context, req *netapppb.ListHostGroupsRequest, opts ...gax.CallOption) *HostGroupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListHostGroups[0:len((*c.CallOptions).ListHostGroups):len((*c.CallOptions).ListHostGroups)], opts...)
+	it := &HostGroupIterator{}
+	req = proto.Clone(req).(*netapppb.ListHostGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.HostGroup, string, error) {
+		resp := &netapppb.ListHostGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListHostGroups, req, settings.GRPC, c.logger, "ListHostGroups")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetHostGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetHostGroup(ctx context.Context, req *netapppb.GetHostGroupRequest, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetHostGroup[0:len((*c.CallOptions).GetHostGroup):len((*c.CallOptions).GetHostGroup)], opts...)
+	var resp *netapppb.HostGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetHostGroup, req, settings.GRPC, c.logger, "GetHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateHostGroup(ctx context.Context, req *netapppb.CreateHostGroupRequest, opts ...gax.CallOption) (*CreateHostGroupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateHostGroup[0:len((*c.CallOptions).CreateHostGroup):len((*c.CallOptions).CreateHostGroup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateHostGroup, req, settings.GRPC, c.logger, "CreateHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateHostGroupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateHostGroup(ctx context.Context, req *netapppb.UpdateHostGroupRequest, opts ...gax.CallOption) (*UpdateHostGroupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "host_group.name", url.QueryEscape(req.GetHostGroup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateHostGroup[0:len((*c.CallOptions).UpdateHostGroup):len((*c.CallOptions).UpdateHostGroup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateHostGroup, req, settings.GRPC, c.logger, "UpdateHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateHostGroupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHostGroupRequest, opts ...gax.CallOption) (*DeleteHostGroupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteHostGroup[0:len((*c.CallOptions).DeleteHostGroup):len((*c.CallOptions).DeleteHostGroup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteHostGroup, req, settings.GRPC, c.logger, "DeleteHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteHostGroupOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -7044,6 +7271,381 @@ func (c *restClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 	}, nil
 }
 
+// RestoreBackupFiles restore files from a backup to a volume.
+func (c *restClient) RestoreBackupFiles(ctx context.Context, req *netapppb.RestoreBackupFilesRequest, opts ...gax.CallOption) (*RestoreBackupFilesOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:restore", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestoreBackupFiles")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RestoreBackupFilesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListHostGroups returns a list of host groups in a location. Use - as location to list
+// host groups across all locations.
+func (c *restClient) ListHostGroups(ctx context.Context, req *netapppb.ListHostGroupsRequest, opts ...gax.CallOption) *HostGroupIterator {
+	it := &HostGroupIterator{}
+	req = proto.Clone(req).(*netapppb.ListHostGroupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.HostGroup, string, error) {
+		resp := &netapppb.ListHostGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/hostGroups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListHostGroups")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetHostGroups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetHostGroup returns details of the specified host group.
+func (c *restClient) GetHostGroup(ctx context.Context, req *netapppb.GetHostGroupRequest, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetHostGroup[0:len((*c.CallOptions).GetHostGroup):len((*c.CallOptions).GetHostGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.HostGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHostGroup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateHostGroup creates a new host group.
+func (c *restClient) CreateHostGroup(ctx context.Context, req *netapppb.CreateHostGroupRequest, opts ...gax.CallOption) (*CreateHostGroupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetHostGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/hostGroups", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("hostGroupId", fmt.Sprintf("%v", req.GetHostGroupId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateHostGroup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateHostGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateHostGroup updates an existing host group.
+func (c *restClient) UpdateHostGroup(ctx context.Context, req *netapppb.UpdateHostGroupRequest, opts ...gax.CallOption) (*UpdateHostGroupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetHostGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetHostGroup().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "host_group.name", url.QueryEscape(req.GetHostGroup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateHostGroup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateHostGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteHostGroup deletes a host group.
+func (c *restClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHostGroupRequest, opts ...gax.CallOption) (*DeleteHostGroupOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteHostGroup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteHostGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -7457,6 +8059,24 @@ func (c *restClient) CreateBackupVaultOperation(name string) *CreateBackupVaultO
 	}
 }
 
+// CreateHostGroupOperation returns a new CreateHostGroupOperation from a given name.
+// The name must be that of a previously created CreateHostGroupOperation, possibly from a different process.
+func (c *gRPCClient) CreateHostGroupOperation(name string) *CreateHostGroupOperation {
+	return &CreateHostGroupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateHostGroupOperation returns a new CreateHostGroupOperation from a given name.
+// The name must be that of a previously created CreateHostGroupOperation, possibly from a different process.
+func (c *restClient) CreateHostGroupOperation(name string) *CreateHostGroupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateHostGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateKmsConfigOperation returns a new CreateKmsConfigOperation from a given name.
 // The name must be that of a previously created CreateKmsConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOperation {
@@ -7637,6 +8257,24 @@ func (c *restClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultO
 	}
 }
 
+// DeleteHostGroupOperation returns a new DeleteHostGroupOperation from a given name.
+// The name must be that of a previously created DeleteHostGroupOperation, possibly from a different process.
+func (c *gRPCClient) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation {
+	return &DeleteHostGroupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteHostGroupOperation returns a new DeleteHostGroupOperation from a given name.
+// The name must be that of a previously created DeleteHostGroupOperation, possibly from a different process.
+func (c *restClient) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteHostGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteKmsConfigOperation returns a new DeleteKmsConfigOperation from a given name.
 // The name must be that of a previously created DeleteKmsConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOperation {
@@ -7776,6 +8414,24 @@ func (c *gRPCClient) EstablishPeeringOperation(name string) *EstablishPeeringOpe
 func (c *restClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// RestoreBackupFilesOperation returns a new RestoreBackupFilesOperation from a given name.
+// The name must be that of a previously created RestoreBackupFilesOperation, possibly from a different process.
+func (c *gRPCClient) RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation {
+	return &RestoreBackupFilesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RestoreBackupFilesOperation returns a new RestoreBackupFilesOperation from a given name.
+// The name must be that of a previously created RestoreBackupFilesOperation, possibly from a different process.
+func (c *restClient) RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RestoreBackupFilesOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -7956,6 +8612,24 @@ func (c *gRPCClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultO
 func (c *restClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateHostGroupOperation returns a new UpdateHostGroupOperation from a given name.
+// The name must be that of a previously created UpdateHostGroupOperation, possibly from a different process.
+func (c *gRPCClient) UpdateHostGroupOperation(name string) *UpdateHostGroupOperation {
+	return &UpdateHostGroupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateHostGroupOperation returns a new UpdateHostGroupOperation from a given name.
+// The name must be that of a previously created UpdateHostGroupOperation, possibly from a different process.
+func (c *restClient) UpdateHostGroupOperation(name string) *UpdateHostGroupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateHostGroupOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

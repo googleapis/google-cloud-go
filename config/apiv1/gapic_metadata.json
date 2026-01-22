@@ -65,6 +65,11 @@
                 "ExportRevisionStatefile"
               ]
             },
+            "GetAutoMigrationConfig": {
+              "methods": [
+                "GetAutoMigrationConfig"
+              ]
+            },
             "GetDeployment": {
               "methods": [
                 "GetDeployment"
@@ -183,6 +188,11 @@
             "UnlockDeployment": {
               "methods": [
                 "UnlockDeployment"
+              ]
+            },
+            "UpdateAutoMigrationConfig": {
+              "methods": [
+                "UpdateAutoMigrationConfig"
               ]
             },
             "UpdateDeployment": {
@@ -250,6 +260,11 @@
                 "ExportRevisionStatefile"
               ]
             },
+            "GetAutoMigrationConfig": {
+              "methods": [
+                "GetAutoMigrationConfig"
+              ]
+            },
             "GetDeployment": {
               "methods": [
                 "GetDeployment"
@@ -368,6 +383,11 @@
             "UnlockDeployment": {
               "methods": [
                 "UnlockDeployment"
+              ]
+            },
+            "UpdateAutoMigrationConfig": {
+              "methods": [
+                "UpdateAutoMigrationConfig"
               ]
             },
             "UpdateDeployment": {
