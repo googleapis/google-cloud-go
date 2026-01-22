@@ -154,6 +154,66 @@ func TestConvertSmallTimes(t *testing.T) {
 	}
 }
 
+func TestConvertTimestampVariablePrecision(t *testing.T) {
+	picoSampleValue := "2026-01-22T11:30:02.123456789Z"
+	milliSampleValue := "2026-01-22T11:30:02.123Z"
+
+	picoOutputNano := time.Date(2026, 01, 22, 11, 30, 02, 123456789, time.UTC)
+	for _, tc := range []struct {
+		desc     string
+		inVal    string
+		inSchema *FieldSchema
+		wantVal  Value
+		wantErr  bool
+	}{
+		{
+			desc:    "empty value and schema",
+			wantErr: true,
+		},
+		{
+			desc:     "empty value default schema",
+			inSchema: &FieldSchema{Name: "foo", Type: TimestampFieldType},
+			wantErr:  true,
+		},
+		{
+			// The service shouldn't return this, it's a mismatch.
+			desc:     "pico value and default schema",
+			inVal:    picoSampleValue,
+			inSchema: &FieldSchema{Type: TimestampFieldType},
+			wantVal:  picoOutputNano,
+		},
+		{
+			desc:     "milli value and default schema",
+			inVal:    milliSampleValue,
+			inSchema: &FieldSchema{Type: TimestampFieldType},
+			wantVal:  picoOutputNano.Round(time.Millisecond),
+		},
+		{
+			desc:     "pico value pico output",
+			inVal:    picoSampleValue,
+			inSchema: &FieldSchema{Type: TimestampFieldType, TimestampPrecision: 12},
+			wantVal:  picoSampleValue,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			got, err := convertBasicType(tc.inVal, tc.inSchema)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("expected error, conversion succeeded")
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("got error: %v", err)
+				return
+			}
+			if diff := testutil.Diff(got, tc.wantVal); diff != "" {
+				t.Errorf("%+v:\n, -got, +want:\n%s", tc.inVal, diff)
+			}
+		})
+	}
+}
+
 func TestConvertNullValues(t *testing.T) {
 	schema := Schema{{Type: StringFieldType}}
 	row := &bq.TableRow{
