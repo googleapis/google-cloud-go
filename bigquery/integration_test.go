@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -280,13 +281,33 @@ func initTestState(client *Client, t time.Time) func() {
 }
 
 // features we use for skipping tests.
-const skipFeaturePublicIAMTest string = "SKIP_BIGQUERY_PUBLIC_IAM_TESTS"
+const skipBigQueryPrefix string = "GCLOUD_TESTS_GOLANG_BIGQUERY"
+const skipBigQueryPublicIAMTestEnv string = "GCLOUD_TESTS_GOLANG_BIGQUERY_SKIP_PUBLIC_IAM_TESTS"
 
-// a utility method for skipping tests based on feature enablement.
-func skipOnFeatureEnabled(t *testing.T, featureID string) {
+var (
+	envEnabledOnce sync.Once
+	// populated on first check via envEnabledOnce.
+	envEnablementResults map[string]bool
+)
+
+// a utility method for skipping tests based on env variable enablement.
+func skipOnEnvEnabled(t *testing.T, envID string) {
 	t.Helper()
-	if gax.IsFeatureEnabled(featureID) {
-		t.Skipf("skipping test due to feature enablement: %s", featureID)
+	envEnabledOnce.Do(func() {
+		envEnablementResults = make(map[string]bool)
+		for _, env := range os.Environ() {
+			if strings.HasPrefix(env, skipBigQueryPrefix) {
+
+				kv := strings.SplitN(env, "=", 2)
+				if len(kv) == 2 && strings.ToLower(kv[1]) == "true" {
+					envEnablementResults[envID] = true
+				}
+
+			}
+		}
+	})
+	if envEnablementResults[envID] {
+		t.Skipf("skipping test due to env enablement: %s", envID)
 	}
 }
 

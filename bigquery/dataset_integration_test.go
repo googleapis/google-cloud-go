@@ -303,7 +303,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	skipOnFeatureEnabled(t, skipFeaturePublicIAMTest)
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	md, err := dataset.Metadata(ctx)
 	if err != nil {
@@ -372,7 +372,7 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	skipOnFeatureEnabled(t, skipFeaturePublicIAMTest)
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	// Use our test dataset for a base access policy.
 	md, err := dataset.Metadata(ctx)
@@ -500,7 +500,7 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	skipOnFeatureEnabled(t, skipFeaturePublicIAMTest)
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	_, err := dataset.Metadata(ctx)
 	if err != nil {
