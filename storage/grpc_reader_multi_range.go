@@ -374,16 +374,24 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 	}
 
 	for {
+		// Prefer processing a sessionResult (error or success), if possible.
 		select {
 		case <-m.ctx.Done():
 			return
-		case cmd := <-m.cmds:
-			cmd.apply(m.ctx, m)
-			if _, ok := cmd.(*mrdCloseCmd); ok {
-				return
-			}
 		case result := <-m.sessionResps:
 			m.processSessionResult(result)
+		default:
+			// If no session results are available, process outgoing commands.
+			select {
+			case <-m.ctx.Done():
+				return
+			case cmd := <-m.cmds:
+				cmd.apply(m.ctx, m)
+				if _, ok := cmd.(*mrdCloseCmd); ok {
+					return
+				}
+			}
+
 		}
 
 		if len(m.pendingRanges) == 0 {
