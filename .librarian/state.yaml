@@ -1562,6 +1562,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/cloudquotas/
     tag_format: '{id}/v{version}'
+  - id: cloudsecuritycompliance
+    version: 0.0.0
+    last_generated_commit: 64f78809d70ea0d49f6ffbc7e6858eb37e350947
+    apis:
+      - path: google/cloud/cloudsecuritycompliance/v1
+        service_config: cloudsecuritycompliance_v1.yaml
+    source_roots:
+      - cloudsecuritycompliance
+      - internal/generated/snippets/cloudsecuritycompliance
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/cloudsecuritycompliance/
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client\.go$
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client_example_test\.go$
+      - ^cloudsecuritycompliance/apiv1/auxiliary\.go$
+      - ^cloudsecuritycompliance/apiv1/auxiliary_go123\.go$
+      - ^cloudsecuritycompliance/apiv1/doc\.go$
+      - ^cloudsecuritycompliance/apiv1/gapic_metadata\.json$
+      - ^cloudsecuritycompliance/apiv1/helpers\.go$
+      - ^cloudsecuritycompliance/apiv1/\.repo-metadata\.json$
+      - ^cloudsecuritycompliance/apiv1/cloudsecuritycompliancepb/.*$
+    tag_format: '{id}/v{version}'
   - id: cloudtasks
     version: 1.13.7
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
