@@ -381,7 +381,8 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		case result := <-m.sessionResps:
 			m.processSessionResult(result)
 		default:
-			// If no session results are available, process outgoing commands.
+			// If no session results are available, also allow incoming
+			// commands to be processed.
 			select {
 			case <-m.ctx.Done():
 				return
@@ -390,6 +391,8 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 				if _, ok := cmd.(*mrdCloseCmd); ok {
 					return
 				}
+			case result := <-m.sessionResps:
+				m.processSessionResult(result)
 			}
 
 		}
