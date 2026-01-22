@@ -98,7 +98,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		attrsReady:     make(chan struct{}),
 		spanCtx:        ctx,
 		unsentRequests: list.New(),
-		queueReady:     make(chan struct{}, 1),
 	}
 
 	mrd := &MultiRangeDownloader{
@@ -232,7 +231,6 @@ type multiRangeDownloaderManager struct {
 	spanCtx        context.Context
 	callbackWg     sync.WaitGroup
 	unsentRequests *list.List
-	queueReady     chan struct{}
 }
 
 type rangeRequest struct {
@@ -261,20 +259,6 @@ func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64
 	if length < 0 {
 		m.runCallback(offset, length, fmt.Errorf("storage: MultiRangeDownloader.Add limit cannot be negative"), callback)
 		return
-	}
-
-	// Wait here if the internal queue has too many requests.
-	for m.unsentRequests.Len() >= mrdAddInternalQueueMaxSize {
-		select {
-		case <-m.ctx.Done():
-			err := m.ctx.Err()
-			if m.permanentErr != nil {
-				err = m.permanentErr
-			}
-			m.runCallback(offset, length, err, callback)
-			return
-		case <-m.queueReady:
-		}
 	}
 
 	cmd := &mrdAddCmd{output: output, offset: offset, length: length, callback: callback}
@@ -402,6 +386,11 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 			nextReq = m.unsentRequests.Front().Value.(*storagepb.BidiReadObjectRequest)
 			targetChan = m.currentSession.reqC
 		}
+		// Only read from cmds if we have space in the unsentRequests queue.
+		var cmdsChan chan mrdCommand
+		if m.unsentRequests.Len() < mrdAddInternalQueueMaxSize {
+			cmdsChan = m.cmds
+		}
 		select {
 		case <-m.ctx.Done():
 			return
@@ -409,24 +398,13 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		// It never blocks the eventLoop.
 		case targetChan <- nextReq:
 			m.unsentRequests.Remove(m.unsentRequests.Front())
-			// Wake up the 'add' method so it can send the next command.
-			select {
-			case m.queueReady <- struct{}{}:
-			default:
-				// No one is waiting, move on.
-			}
-		case cmd := <-m.cmds:
+		case cmd := <-cmdsChan:
 			cmd.apply(m.ctx, m)
 			if _, ok := cmd.(*mrdCloseCmd); ok {
 				return
 			}
 		case result := <-m.sessionResps:
 			m.processSessionResult(result)
-			select {
-			// Wake up the 'add' method so it can send the next command.
-			case m.queueReady <- struct{}{}:
-			default:
-			}
 		}
 
 		if len(m.pendingRanges) == 0 && m.unsentRequests.Len() == 0 {
