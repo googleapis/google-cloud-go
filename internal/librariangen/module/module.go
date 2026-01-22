@@ -34,6 +34,9 @@ import (
 var (
 	//go:embed _internal_version.go.txt
 	internalVersionTmpl string
+
+	// This regex finds a version string like "1.2.3" or "1.2.3-preview.1".
+	versionRegexp = regexp.MustCompile(`\d+\.\d+\.\d+(-preview\.[0-9]+)?`)
 )
 
 // GenerateInternalVersionFile creates an internal/version.go file for the module.
@@ -101,13 +104,9 @@ func UpdateSnippetsMetadata(lib *request.Library, sourceDir string, destDir stri
 		if strings.Contains(content, "$VERSION") {
 			newContent = strings.Replace(content, "$VERSION", version, 1)
 			oldVersion = "$VERSION"
-		} else {
-			// This regex finds a version string like "1.2.3".
-			re := regexp.MustCompile(`\d+\.\d+\.\d+`)
-			if foundVersion := re.FindString(content); foundVersion != "" {
-				newContent = strings.Replace(content, foundVersion, version, 1)
-				oldVersion = foundVersion
-			}
+		} else if foundVersion := versionRegexp.FindString(content); foundVersion != "" {
+			newContent = strings.Replace(content, foundVersion, version, 1)
+			oldVersion = foundVersion
 		}
 
 		if newContent == "" {
