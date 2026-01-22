@@ -33,8 +33,11 @@ import (
 )
 
 const (
-	mrdCommandChannelSize      = 1
-	mrdResponseChannelSize     = 100
+	mrdCommandChannelSize  = 1
+	mrdResponseChannelSize = 100
+	// This should never be hit in practice, but is a safety valve to prevent
+	// unbounded memory usage if the user is adding ranges faster than they
+	// can be processed.
 	mrdAddInternalQueueMaxSize = 50000
 )
 
@@ -378,13 +381,21 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 	}
 
 	for {
+		var nextElem *list.Element
 		var nextReq *storagepb.BidiReadObjectRequest
 		var targetChan chan<- *storagepb.BidiReadObjectRequest
 
 		// Only try to send if we have queued requests
 		if m.unsentRequests.Len() > 0 && m.currentSession != nil {
-			nextReq = m.unsentRequests.Front().Value.(*storagepb.BidiReadObjectRequest)
-			targetChan = m.currentSession.reqC
+			nextElem = m.unsentRequests.Front()
+			if nextElem != nil {
+				var ok bool
+				// Safely assert the type and check for nil value.
+				nextReq, ok = nextElem.Value.(*storagepb.BidiReadObjectRequest)
+				if ok && nextReq != nil {
+					targetChan = m.currentSession.reqC
+				}
+			}
 		}
 		// Only read from cmds if we have space in the unsentRequests queue.
 		var cmdsChan chan mrdCommand
@@ -397,7 +408,9 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		// This path only triggers if space is available in the channel.
 		// It never blocks the eventLoop.
 		case targetChan <- nextReq:
-			m.unsentRequests.Remove(m.unsentRequests.Front())
+			if nextElem != nil {
+				m.unsentRequests.Remove(nextElem)
+			}
 		case cmd := <-cmdsChan:
 			cmd.apply(m.ctx, m)
 			if _, ok := cmd.(*mrdCloseCmd); ok {
