@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:718167d5c23ed389b41f617b3a00ac839bdd938a6bd2d48ae0c2f1fa51ab1c3d
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:d2dee66d7c8c1d673fac26280164ea24015b79491b7f9d6ba369e6a98ab3420c
 libraries:
   - id: accessapproval
     version: 1.8.8
@@ -137,8 +137,8 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.113.0
-    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
+    version: 1.114.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -691,7 +691,7 @@ libraries:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
   - id: auth
-    version: 0.18.0
+    version: 0.18.1
     last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
     apis: []
     source_roots:
@@ -748,8 +748,8 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.6.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    version: 1.7.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -1562,6 +1562,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/cloudquotas/
     tag_format: '{id}/v{version}'
+  - id: cloudsecuritycompliance
+    version: 0.0.0
+    last_generated_commit: 64f78809d70ea0d49f6ffbc7e6858eb37e350947
+    apis:
+      - path: google/cloud/cloudsecuritycompliance/v1
+        service_config: cloudsecuritycompliance_v1.yaml
+    source_roots:
+      - cloudsecuritycompliance
+      - internal/generated/snippets/cloudsecuritycompliance
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/cloudsecuritycompliance/
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client\.go$
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client_example_test\.go$
+      - ^cloudsecuritycompliance/apiv1/auxiliary\.go$
+      - ^cloudsecuritycompliance/apiv1/auxiliary_go123\.go$
+      - ^cloudsecuritycompliance/apiv1/doc\.go$
+      - ^cloudsecuritycompliance/apiv1/gapic_metadata\.json$
+      - ^cloudsecuritycompliance/apiv1/helpers\.go$
+      - ^cloudsecuritycompliance/apiv1/\.repo-metadata\.json$
+      - ^cloudsecuritycompliance/apiv1/cloudsecuritycompliancepb/.*$
+    tag_format: '{id}/v{version}'
   - id: cloudtasks
     version: 1.13.7
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -1637,8 +1660,8 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.53.0
-    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
+    version: 1.54.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -1723,8 +1746,8 @@ libraries:
       - internal/generated/snippets/confidentialcomputing/
     tag_format: '{id}/v{version}'
   - id: config
-    version: 1.5.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.6.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/config/v1
         service_config: config_v1.yaml
@@ -2246,8 +2269,8 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.73.0
-    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
+    version: 1.74.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -2628,7 +2651,7 @@ libraries:
       - internal/generated/snippets/financialservices/
     tag_format: '{id}/v{version}'
   - id: firestore
-    version: 1.20.0
+    version: 1.21.0
     last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/firestore/admin/v1
@@ -2714,8 +2737,8 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.5.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    version: 0.6.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
         service_config: geminidataanalytics_v1beta.yaml
@@ -3114,8 +3137,8 @@ libraries:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
   - id: kms
-    version: 1.23.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.25.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/kms/v1
         service_config: cloudkms_v1.yaml
@@ -3815,8 +3838,8 @@ libraries:
       - internal/generated/snippets/monitoring/
     tag_format: '{id}/v{version}'
   - id: netapp
-    version: 1.11.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    version: 1.12.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/netapp/v1
         service_config: netapp_v1.yaml
@@ -3840,8 +3863,8 @@ libraries:
       - internal/generated/snippets/netapp/
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
-    version: 1.19.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.20.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/networkconnectivity/v1
         service_config: networkconnectivity_v1.yaml
@@ -4460,7 +4483,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.3.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/pubsub/v1
         service_config: pubsub_v1.yaml
@@ -4798,8 +4821,8 @@ libraries:
       - internal/version
     tag_format: v{version}
   - id: run
-    version: 1.13.0
-    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
+    version: 1.15.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/run/v2
         service_config: run_v2.yaml
@@ -5622,7 +5645,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.87.0
-    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
@@ -5750,7 +5773,7 @@ libraries:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
-    version: 1.58.0
+    version: 1.59.1
     last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/storage/control/v2
@@ -6431,7 +6454,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: workflows
     version: 1.14.3
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/workflows/executions/v1
         service_config: workflowexecutions_v1.yaml

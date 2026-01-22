@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,6 +65,12 @@ func (it *EnvironmentIterator) All() iter.Seq2[*cxpb.Environment, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ExampleIterator) All() iter.Seq2[*cxpb.Example, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ExperimentIterator) All() iter.Seq2[*cxpb.Experiment, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -107,6 +113,18 @@ func (it *PageIterator) All() iter.Seq2[*cxpb.Page, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *PlaybookIterator) All() iter.Seq2[*cxpb.Playbook, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PlaybookVersionIterator) All() iter.Seq2[*cxpb.PlaybookVersion, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *SecuritySettingsIterator) All() iter.Seq2[*cxpb.SecuritySettings, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -126,6 +144,18 @@ func (it *TestCaseIterator) All() iter.Seq2[*cxpb.TestCase, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *TestCaseResultIterator) All() iter.Seq2[*cxpb.TestCaseResult, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolIterator) All() iter.Seq2[*cxpb.Tool, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolVersionIterator) All() iter.Seq2[*cxpb.ToolVersion, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

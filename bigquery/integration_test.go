@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -276,6 +277,37 @@ func initTestState(client *Client, t time.Time) func() {
 		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
 		}
+	}
+}
+
+// features we use for skipping tests.
+const skipBigQueryPrefix string = "GCLOUD_TESTS_GOLANG_BIGQUERY"
+const skipBigQueryPublicIAMTestEnv string = "GCLOUD_TESTS_GOLANG_BIGQUERY_SKIP_PUBLIC_IAM_TESTS"
+
+var (
+	envEnabledOnce sync.Once
+	// populated on first check via envEnabledOnce.
+	envEnablementResults map[string]bool
+)
+
+// a utility method for skipping tests based on env variable enablement.
+func skipOnEnvEnabled(t *testing.T, envID string) {
+	t.Helper()
+	envEnabledOnce.Do(func() {
+		envEnablementResults = make(map[string]bool)
+		for _, env := range os.Environ() {
+			if strings.HasPrefix(env, skipBigQueryPrefix) {
+
+				kv := strings.SplitN(env, "=", 2)
+				if len(kv) == 2 && strings.ToLower(kv[1]) == "true" {
+					envEnablementResults[envID] = true
+				}
+
+			}
+		}
+	})
+	if envEnablementResults[envID] {
+		t.Skipf("skipping test due to env enablement: %s", envID)
 	}
 }
 

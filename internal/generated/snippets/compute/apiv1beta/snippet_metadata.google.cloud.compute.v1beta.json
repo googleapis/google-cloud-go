@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1beta",
-    "version": "1.53.0",
+    "version": "1.54.0",
     "language": "GO",
     "apis": [
       {
@@ -30137,6 +30137,98 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionMultiMigMembers_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get retrieves information about the specified multi-MIG member.",
+      "file": "RegionMultiMigMembersClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembersClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionMultiMigMemberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.MultiMigMember",
+        "client": {
+          "shortName": "RegionMultiMigMembersClient",
+          "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembersClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembers.Get",
+          "service": {
+            "shortName": "RegionMultiMigMembers",
+            "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_RegionMultiMigMembers_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of members of a specific multi-MIG.",
+      "file": "RegionMultiMigMembersClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembersClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionMultiMigMembersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MultiMigMemberIterator",
+        "client": {
+          "shortName": "RegionMultiMigMembersClient",
+          "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembersClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembers.List",
+          "service": {
+            "shortName": "RegionMultiMigMembers",
+            "fullName": "google.cloud.compute.v1beta.RegionMultiMigMembers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]

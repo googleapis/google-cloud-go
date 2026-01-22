@@ -1420,7 +1420,7 @@ func TestRemoveConnections(t *testing.T) {
 
 	t.Run("MixedDrainingState", func(t *testing.T) {
 		poolSize := 5
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, poolOpts()...)
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Unix(0, 0), poolOpts()...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}

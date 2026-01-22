@@ -56,6 +56,9 @@ const (
 	replayFilename = "datastore.replay"
 	envDatabases   = "GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES"
 	keyPrefix      = "TestIntegration_"
+	// readTimeConsistencyBuffer is a buffer duration to ensure the ReadTime timestamp
+	// is not in the future relative to the backend's clock.
+	readTimeConsistencyBuffer = 100 * time.Millisecond
 )
 
 type replayInfo struct {
@@ -283,10 +286,12 @@ func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 	})
 
 	// Save entities with an extra field
+	kind := "IgnoreFieldMismatchX" + suffix
 	keys := []*Key{
-		NameKey("X", "x1"+suffix, nil),
-		NameKey("X", "x2"+suffix, nil),
+		NameKey(kind, "x1"+suffix, nil),
+		NameKey(kind, "x2"+suffix, nil),
 	}
+
 	entitiesOld := []OldX{
 		{I: 10, J: 20},
 		{I: 30, J: 40},
@@ -328,7 +333,8 @@ func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			defer test.client.Close()
 			// FieldMismatch error in Next
-			query := NewQuery("X").FilterField("I", ">=", 10)
+			query := NewQuery(kind).FilterField("I", ">=", 10)
+
 			it := test.client.Run(ctx, query)
 			resIndex := 0
 			for {
@@ -337,7 +343,10 @@ func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 				if err == iterator.Done {
 					break
 				}
-
+				if resIndex >= len(wants) {
+					t.Errorf("Received more results than expected: got index %d, want length %d", resIndex, len(wants))
+					break
+				}
 				compareIgnoreFieldMismatchResults(t, []NewX{wants[resIndex]}, []NewX{newX}, test.wantErr, err, "Next")
 				resIndex++
 			}
@@ -471,17 +480,28 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 
 	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
-		tm := ReadTime(time.Now())
+		time.Sleep(readTimeConsistencyBuffer)
+		tm := ReadTime(time.Now().Truncate(time.Microsecond))
 
-		client.WithReadOptions(tm)
+		runCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+		runClient := newTestClient(runCtx, t)
+		defer cancel()
+		defer runClient.Close()
+
+		runClient.WithReadOptions(tm)
 
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
 		// exposed in anyway in the response.
-		err = client.Get(ctx, k, &got)
-		client.Run(ctx, NewQuery("RT"))
+		err = runClient.Get(runCtx, k, &got)
 		if err != nil {
 			r.Errorf("client.Get: %v", err)
+		}
+
+		it := runClient.Run(runCtx, NewQuery("RT"))
+		_, err = it.Next(nil)
+		if err != nil && err != iterator.Done {
+			r.Errorf("client.Run: %v", err)
 		}
 	})
 
@@ -519,16 +539,19 @@ func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
 		t.Fatalf("client.Put: %v", err)
 	}
 
-	var e EntityWithKey
-	err = client.Get(ctx, k, &e)
-	if err != nil {
-		t.Fatalf("client.Get: %v", err)
-	}
+	testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+		var e EntityWithKey
+		err = client.Get(ctx, k, &e)
+		if err != nil {
+			r.Errorf("client.Get: %v", err)
+			return
+		}
 
-	// The two keys should be absolutely identical.
-	if !testutil.Equal(e.K, k) {
-		t.Fatalf("e.K not equal to k; got %#v, want %#v", e.K, k)
-	}
+		// The two keys should be absolutely identical.
+		if !testutil.Equal(e.K, k) {
+			r.Errorf("e.K not equal to k; got %#v, want %#v", e.K, k)
+		}
+	})
 
 }
 

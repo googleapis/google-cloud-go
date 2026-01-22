@@ -1691,10 +1691,20 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode an invalid json string", proto: stringProto(invalidJSONStr), protoType: jsonType(), want: NullJSON{}, wantErr: true},
 		{desc: "decode a json string with empty array to a NullJSON", proto: stringProto(emptyArrayJSONStr), protoType: jsonType(), want: NullJSON{unmarshalledEmptyJSONArray, true}},
 		{desc: "decode a json string with null to a NullJSON", proto: stringProto(nullValueJSONStr), protoType: jsonType(), want: NullJSON{unmarshalledStructWithNull, true}},
+		// PG_JSONB
+		{desc: "decode json to PGJsonB", proto: stringProto(jsonStr), protoType: pgJsonbType(), want: PGJsonB{Value: unmarshalledJSONStruct, Valid: true}},
+		{desc: "decode NULL to PGJsonB", proto: nullProto(), protoType: pgJsonbType(), want: PGJsonB{}},
+		{desc: "decode an invalid json string", proto: stringProto(invalidJSONStr), protoType: pgJsonbType(), want: PGJsonB{}, wantErr: true},
+		{desc: "decode a json string with empty array to a PGJsonB", proto: stringProto(emptyArrayJSONStr), protoType: pgJsonbType(), want: PGJsonB{Value: unmarshalledEmptyJSONArray, Valid: true}},
+		{desc: "decode a json string with null to a PGJsonB", proto: stringProto(nullValueJSONStr), protoType: pgJsonbType(), want: PGJsonB{Value: unmarshalledStructWithNull, Valid: true}},
 		// JSON ARRAY with []NullJSON
 		{desc: "decode ARRAY<JSON> to []NullJSON", proto: listProto(stringProto(jsonStr), stringProto(jsonStr), nullProto()), protoType: listType(jsonType()), want: []NullJSON{{unmarshalledJSONStruct, true}, {unmarshalledJSONStruct, true}, {}}},
 		{desc: "decode ARRAY<JSON> to NullJSON", proto: listProto(stringProto(jsonStr), nullProto(), stringProto("true")), protoType: listType(jsonType()), want: NullJSON{unmarshalledJSONArray, true}},
 		{desc: "decode NULL to []NullJSON", proto: nullProto(), protoType: listType(jsonType()), want: []NullJSON(nil)},
+		// PG_JSONB ARRAY with []PGJsonB
+		{desc: "decode ARRAY<PG_JSONB> to []PGJsonB", proto: listProto(stringProto(jsonStr), stringProto(jsonStr), nullProto()), protoType: listType(pgJsonbType()), want: []PGJsonB{{Value: unmarshalledJSONStruct, Valid: true}, {Value: unmarshalledJSONStruct, Valid: true}, {}}},
+		{desc: "decode empty ARRAY<PG_JSONB> to []PGJsonB", proto: listProto(), protoType: listType(pgJsonbType()), want: []PGJsonB{}},
+		{desc: "decode NULL to []PGJsonB", proto: nullProto(), protoType: listType(pgJsonbType()), want: []PGJsonB(nil)},
 		// PG NUMERIC
 		{desc: "decode PG NUMERIC to PGNumeric", proto: stringProto("123.456"), protoType: pgNumericType(), want: PGNumeric{"123.456", true}},
 		{desc: "decode NaN to PGNumeric", proto: stringProto("NaN"), protoType: pgNumericType(), want: PGNumeric{"NaN", true}},
