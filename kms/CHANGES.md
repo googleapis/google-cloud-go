@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.25.0) (2026-01-22)
+
+### Features
+
+* add the SingleTenantHsm functionality including the management API and resource types ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+### Documentation
+
+* A comment for enum value `MODIFIED_CUSTOMER_INITIATED_ACCESS` in enum `AccessReason` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* A comment for enum value `MODIFIED_GOOGLE_INITIATED_SYSTEM_OPERATION` in enum `AccessReason` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* A comment for field `crypto_key_backend` in message `.google.cloud.kms.v1.CryptoKey` is expanded to include SingleTenantHsmInstances ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.24.0) (2026-01-15)
 
 ### Documentation
