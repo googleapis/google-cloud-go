@@ -33,8 +33,9 @@ import (
 )
 
 const (
-	mrdCommandChannelSize  = 1
-	mrdResponseChannelSize = 100
+	mrdCommandChannelSize      = 1
+	mrdResponseChannelSize     = 100
+	mrdAddInternalQueueMaxSize = 50000
 )
 
 // --- internalMultiRangeDownloader Interface ---
@@ -97,6 +98,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		attrsReady:     make(chan struct{}),
 		spanCtx:        ctx,
 		unsentRequests: list.New(),
+		queueReady:     make(chan struct{}, 1),
 	}
 
 	mrd := &MultiRangeDownloader{
@@ -230,6 +232,7 @@ type multiRangeDownloaderManager struct {
 	spanCtx        context.Context
 	callbackWg     sync.WaitGroup
 	unsentRequests *list.List
+	queueReady     chan struct{}
 }
 
 type rangeRequest struct {
@@ -258,6 +261,20 @@ func (m *multiRangeDownloaderManager) add(output io.Writer, offset, length int64
 	if length < 0 {
 		m.runCallback(offset, length, fmt.Errorf("storage: MultiRangeDownloader.Add limit cannot be negative"), callback)
 		return
+	}
+
+	// Wait here if the internal queue has too many requests.
+	for m.unsentRequests.Len() >= mrdAddInternalQueueMaxSize {
+		select {
+		case <-m.ctx.Done():
+			err := m.ctx.Err()
+			if m.permanentErr != nil {
+				err = m.permanentErr
+			}
+			m.runCallback(offset, length, err, callback)
+			return
+		case <-m.queueReady:
+		}
 	}
 
 	cmd := &mrdAddCmd{output: output, offset: offset, length: length, callback: callback}
@@ -388,10 +405,16 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		select {
 		case <-m.ctx.Done():
 			return
-			// This path only triggers if space is available in the channel.
+		// This path only triggers if space is available in the channel.
 		// It never blocks the eventLoop.
 		case targetChan <- nextReq:
 			m.unsentRequests.Remove(m.unsentRequests.Front())
+			// Wake up the 'add' method so it can send the next command.
+			select {
+			case m.queueReady <- struct{}{}:
+			default:
+				// No one is waiting, move on.
+			}
 		case cmd := <-m.cmds:
 			cmd.apply(m.ctx, m)
 			if _, ok := cmd.(*mrdCloseCmd); ok {
@@ -399,6 +422,11 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 			}
 		case result := <-m.sessionResps:
 			m.processSessionResult(result)
+			select {
+			// Wake up the 'add' method so it can send the next command.
+			case m.queueReady <- struct{}{}:
+			default:
+			}
 		}
 
 		if len(m.pendingRanges) == 0 && m.unsentRequests.Len() == 0 {
@@ -520,11 +548,6 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 
 	m.pendingRanges[req.readID] = req
 
-	if m.unsentRequests.Len() >= 10000 {
-		err := fmt.Errorf("storage: MultiRangeDownloader congested")
-		m.runCallback(cmd.offset, cmd.length, err, cmd.callback)
-		return
-	}
 	protoReq := &storagepb.BidiReadObjectRequest{
 		ReadRanges: []*storagepb.ReadRange{{
 			ReadOffset: req.offset,
