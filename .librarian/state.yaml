@@ -410,10 +410,12 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apiregistry
     version: 0.1.0
-    last_generated_commit: b607ece2e97f19a8f105a6cd40368da68e7bc613
+    last_generated_commit: 2ac88973cbafba24e4fb6f31038e0c76174ae704
     apis:
       - path: google/cloud/apiregistry/v1beta
         service_config: cloudapiregistry_v1beta.yaml
+      - path: google/cloud/apiregistry/v1
+        service_config: cloudapiregistry_v1.yaml
     source_roots:
       - apiregistry
       - internal/generated/snippets/apiregistry
@@ -430,6 +432,16 @@ libraries:
       - ^apiregistry/apiv1beta/helpers\.go$
       - ^apiregistry/apiv1beta/\.repo-metadata\.json$
       - ^apiregistry/apiv1beta/apiregistrypb/.*$
+      - ^apiregistry/apiv1/[^/]*_client\.go$
+      - ^apiregistry/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^apiregistry/apiv1/[^/]*_client_example_test\.go$
+      - ^apiregistry/apiv1/auxiliary\.go$
+      - ^apiregistry/apiv1/auxiliary_go123\.go$
+      - ^apiregistry/apiv1/doc\.go$
+      - ^apiregistry/apiv1/gapic_metadata\.json$
+      - ^apiregistry/apiv1/helpers\.go$
+      - ^apiregistry/apiv1/\.repo-metadata\.json$
+      - ^apiregistry/apiv1/apiregistrypb/.*$
     tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.9.7
