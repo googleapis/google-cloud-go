@@ -500,7 +500,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		MaxSlots:           int64(q.MaxSlots),
 		Labels:             q.Labels,
 		FormatOptions: &bq.DataFormatOptions{
-			TimestampOutputFormat: defaultTimestampWireFormat,
+			UseInt64Timestamp: true,
 		},
 	}
 	if q.QueryConfig.DisableQueryCache {

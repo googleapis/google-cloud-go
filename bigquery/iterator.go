@@ -25,10 +25,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-const (
-	defaultTimestampWireFormat string = "INT64"
-)
-
 // Construct a RowIterator.
 func newRowIterator(ctx context.Context, src *rowSource, pf pageFetcher) *RowIterator {
 	it := &RowIterator{
@@ -294,7 +290,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		}()
 	}
 	call := src.t.c.bqs.Tabledata.List(src.t.ProjectID, src.t.DatasetID, src.t.TableID)
-	call = call.FormatOptionsTimestampOutputFormat(defaultTimestampWireFormat)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -332,7 +328,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	// reduce data transferred by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
-	call = call.FormatOptionsTimestampOutputFormat(defaultTimestampWireFormat)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")
