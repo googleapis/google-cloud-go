@@ -3562,6 +3562,45 @@ func TestScanNullNumeric(t *testing.T) {
 	}
 }
 
+func TestScanPGNumeric(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		input any
+		want  PGNumeric
+	}{
+		{name: "string", input: "3.14", want: PGNumeric{Numeric: "3.14", Valid: true}},
+		{name: "stringptr", input: stringPointer("3.14"), want: PGNumeric{Numeric: "3.14", Valid: true}},
+		{name: "nil", input: nil, want: PGNumeric{}},
+		{name: "nilstringptr", input: (*string)(nil), want: PGNumeric{}},
+		{name: "float32", input: float32(3.14), want: PGNumeric{Numeric: "3.140000105", Valid: true}},
+		{name: "float32ptr", input: float32Pointer(float32(3.14)), want: PGNumeric{Numeric: "3.140000105", Valid: true}},
+		{name: "float64", input: 3.14, want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "float64ptr", input: float64Pointer(3.14), want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "NullNumeric", input: NullNumeric{Numeric: *bigRatFromString("3.14"), Valid: true}, want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "NullNumericPtr", input: &NullNumeric{Numeric: *bigRatFromString("3.14"), Valid: true}, want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "NullNumericWithNullValue", input: NullNumeric{}, want: PGNumeric{}},
+		{name: "NullNumericPtrWithNullValue", input: &NullNumeric{}, want: PGNumeric{}},
+		{name: "bigrat", input: *bigRatFromString("3.14"), want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "bigratptr", input: bigRatFromString("3.14"), want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "nilbigratptr", input: (*big.Rat)(nil), want: PGNumeric{}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			n := PGNumeric{}
+			if err := n.Scan(test.input); err != nil {
+				t.Fatal(err)
+			}
+			if g, w := n, test.want; !reflect.DeepEqual(g, w) {
+				t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+			}
+		})
+	}
+}
+
+func bigRatFromString(s string) *big.Rat {
+	r, _ := (&big.Rat{}).SetString("3.14")
+	return r
+}
+
 func TestInterval(t *testing.T) {
 	tests := []struct {
 		name     string

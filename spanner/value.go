@@ -1051,6 +1051,76 @@ func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
+func (n PGNumeric) Value() (driver.Value, error) {
+	if n.IsNull() {
+		return nil, nil
+	}
+	return n.Numeric, nil
+}
+
+// Scan implements the sql.Scanner interface.
+func (n *PGNumeric) Scan(value interface{}) error {
+	if value == nil {
+		n.Numeric, n.Valid = "", false
+		return nil
+	}
+	n.Valid = true
+	switch p := value.(type) {
+	default:
+		return spannerErrorf(codes.InvalidArgument, "invalid type for PGNumeric: %v", p)
+	case *big.Rat:
+		if p == nil {
+			n.Numeric, n.Valid = "", false
+		} else {
+			n.Numeric = NumericString(p)
+		}
+	case big.Rat:
+		n.Numeric = NumericString(&p)
+	case *NullNumeric:
+		if p == nil {
+			n.Numeric, n.Valid = "", false
+		} else {
+			if p.Valid {
+				n.Numeric = p.String()
+			}
+			n.Valid = p.Valid
+		}
+	case NullNumeric:
+		if p.Valid {
+			n.Numeric = p.String()
+		}
+		n.Valid = p.Valid
+	case string:
+		n.Numeric = p
+		n.Valid = true
+	case *string:
+		if p == nil {
+			n.Numeric, n.Valid = "", false
+		} else {
+			n.Numeric = *p
+			n.Valid = true
+		}
+	case float32:
+		n.Numeric = strconv.FormatFloat(float64(p), 'f', 9, 32)
+	case *float32:
+		if p == nil {
+			n.Numeric, n.Valid = "", false
+		} else {
+			n.Numeric = strconv.FormatFloat(float64(*p), 'f', 9, 32)
+		}
+	case float64:
+		n.Numeric = strconv.FormatFloat(p, 'f', 9, 64)
+	case *float64:
+		if p == nil {
+			n.Numeric, n.Valid = "", false
+		} else {
+			n.Numeric = strconv.FormatFloat(*p, 'f', 9, 64)
+		}
+	}
+	return nil
+}
+
 // GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n PGNumeric) GormDataType() string {
 	return "numeric"
