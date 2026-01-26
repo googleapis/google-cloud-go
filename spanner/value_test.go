@@ -3580,12 +3580,12 @@ func TestScanPGNumeric(t *testing.T) {
 		{name: "NullNumericPtr", input: &NullNumeric{Numeric: *bigRatFromString("3.14"), Valid: true}, want: PGNumeric{Numeric: "3.140000000", Valid: true}},
 		{name: "NullNumericWithNullValue", input: NullNumeric{}, want: PGNumeric{}},
 		{name: "NullNumericPtrWithNullValue", input: &NullNumeric{}, want: PGNumeric{}},
-		{name: "bigrat", input: *bigRatFromString("3.14"), want: PGNumeric{Numeric: "3.140000000", Valid: true}},
-		{name: "bigratptr", input: bigRatFromString("3.14"), want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "bigrat", input: *bigRatFromString("6.626"), want: PGNumeric{Numeric: "6.626000000", Valid: true}},
+		{name: "bigratptr", input: bigRatFromString("9.99"), want: PGNumeric{Numeric: "9.990000000", Valid: true}},
 		{name: "nilbigratptr", input: (*big.Rat)(nil), want: PGNumeric{}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			n := PGNumeric{}
+			n := PGNumeric{Numeric: "should be overwritten", Valid: true}
 			if err := n.Scan(test.input); err != nil {
 				t.Fatal(err)
 			}
@@ -3597,7 +3597,7 @@ func TestScanPGNumeric(t *testing.T) {
 }
 
 func bigRatFromString(s string) *big.Rat {
-	r, _ := (&big.Rat{}).SetString("3.14")
+	r, _ := (&big.Rat{}).SetString(s)
 	return r
 }
 

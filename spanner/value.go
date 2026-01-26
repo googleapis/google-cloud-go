@@ -1083,12 +1083,16 @@ func (n *PGNumeric) Scan(value interface{}) error {
 		} else {
 			if p.Valid {
 				n.Numeric = p.String()
+			} else {
+				n.Numeric = ""
 			}
 			n.Valid = p.Valid
 		}
 	case NullNumeric:
 		if p.Valid {
 			n.Numeric = p.String()
+		} else {
+			n.Numeric = ""
 		}
 		n.Valid = p.Valid
 	case string:
