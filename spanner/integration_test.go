@@ -2218,7 +2218,6 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 func TestIntegration_BasicTypes(t *testing.T) {
 	t.Parallel()
 	skipUnsupportedPGTest(t)
-	onlyRunOnCloudDevel(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
