@@ -1,5 +1,13 @@
 # Changes
 
+## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.18.0) (2025-12-15)
+
+### Features
+
+* Support scopes field from impersonated credential json (#13308) ([e3f62e1](https://github.com/googleapis/google-cloud-go/commit/e3f62e102840127a0058f5cced4c9738f2bf45f2))
+* add support for parsing EC private key (#13317) ([ea6bc62](https://github.com/googleapis/google-cloud-go/commit/ea6bc62ffe2cc0a6d607d698a181b37fa46c340d))
+* deprecate unsafe credentials JSON loading options (#13397) ([0dd2a3b](https://github.com/googleapis/google-cloud-go/commit/0dd2a3bdece9a85ee7216a737559fa9f5a869545))
+
 ## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.17.0) (2025-10-02)
 
 ### Features

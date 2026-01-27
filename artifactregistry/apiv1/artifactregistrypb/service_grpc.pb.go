@@ -208,7 +208,7 @@ type ArtifactRegistryClient interface {
 	// finish once the attachments has been deleted. It will not have any
 	// Operation metadata and will return a `google.protobuf.Empty` response.
 	DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Exports an artifact.
+	// Exports an artifact to a Cloud Storage bucket.
 	ExportArtifact(ctx context.Context, in *ExportArtifactRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -789,7 +789,7 @@ type ArtifactRegistryServer interface {
 	// finish once the attachments has been deleted. It will not have any
 	// Operation metadata and will return a `google.protobuf.Empty` response.
 	DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*longrunningpb.Operation, error)
-	// Exports an artifact.
+	// Exports an artifact to a Cloud Storage bucket.
 	ExportArtifact(context.Context, *ExportArtifactRequest) (*longrunningpb.Operation, error)
 }
 

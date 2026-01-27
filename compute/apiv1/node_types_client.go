@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -132,7 +132,10 @@ func (c *NodeTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of node types.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *NodeTypesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTypesRequest, opts ...gax.CallOption) *NodeTypesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -142,7 +145,8 @@ func (c *NodeTypesClient) Get(ctx context.Context, req *computepb.GetNodeTypeReq
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of node types available to the specified project.
+// List retrieves a list of node types available to the specified
+// project.
 func (c *NodeTypesClient) List(ctx context.Context, req *computepb.ListNodeTypesRequest, opts ...gax.CallOption) *NodeTypeIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -224,7 +228,10 @@ func (c *nodeTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of node types.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTypesRequest, opts ...gax.CallOption) *NodeTypesScopedListPairIterator {
 	it := &NodeTypesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNodeTypesRequest)
@@ -368,7 +375,8 @@ func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTyp
 	return resp, nil
 }
 
-// List retrieves a list of node types available to the specified project.
+// List retrieves a list of node types available to the specified
+// project.
 func (c *nodeTypesRESTClient) List(ctx context.Context, req *computepb.ListNodeTypesRequest, opts ...gax.CallOption) *NodeTypeIterator {
 	it := &NodeTypeIterator{}
 	req = proto.Clone(req).(*computepb.ListNodeTypesRequest)

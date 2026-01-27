@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -193,7 +193,10 @@ func (c *TargetPoolsClient) AddInstance(ctx context.Context, req *computepb.AddI
 	return c.internalClient.AddInstance(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target pools.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetPoolsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -208,17 +211,20 @@ func (c *TargetPoolsClient) Get(ctx context.Context, req *computepb.GetTargetPoo
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetHealth gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
+// GetHealth gets the most recent health check results for each IP for the
+// instance that is referenced by the given target pool.
 func (c *TargetPoolsClient) GetHealth(ctx context.Context, req *computepb.GetHealthTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPoolInstanceHealth, error) {
 	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
-// Insert creates a target pool in the specified project and region using the data included in the request.
+// Insert creates a target pool in the specified project and region using
+// the data included in the request.
 func (c *TargetPoolsClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of target pools available to the specified project and region.
+// List retrieves a list of target pools available to the specified
+// project and region.
 func (c *TargetPoolsClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -238,7 +244,9 @@ func (c *TargetPoolsClient) SetBackup(ctx context.Context, req *computepb.SetBac
 	return c.internalClient.SetBackup(ctx, req, opts...)
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool.
+// For more information, seeGoogle
+// Cloud Armor Overview
 func (c *TargetPoolsClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
@@ -475,7 +483,10 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target pools.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	it := &TargetPoolsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetPoolsRequest)
@@ -679,7 +690,8 @@ func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTarge
 	return resp, nil
 }
 
-// GetHealth gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
+// GetHealth gets the most recent health check results for each IP for the
+// instance that is referenced by the given target pool.
 func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPoolInstanceHealth, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceReferenceResource()
@@ -731,7 +743,8 @@ func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates a target pool in the specified project and region using the data included in the request.
+// Insert creates a target pool in the specified project and region using
+// the data included in the request.
 func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolResource()
@@ -798,7 +811,8 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List retrieves a list of target pools available to the specified project and region.
+// List retrieves a list of target pools available to the specified
+// project and region.
 func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolIterator {
 	it := &TargetPoolIterator{}
 	req = proto.Clone(req).(*computepb.ListTargetPoolsRequest)
@@ -1088,7 +1102,9 @@ func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.Se
 	return op, nil
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool.
+// For more information, seeGoogle
+// Cloud Armor Overview
 func (c *targetPoolsRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()

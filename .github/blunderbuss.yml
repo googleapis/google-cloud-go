@@ -22,11 +22,6 @@ assign_issues_by:
   to:
   - rahul2393
 - labels:
-  - 'api: logging'
-  - 'api: clouderrorreporting'
-  to:
-  - googleapis/api-logging-go-reviewers
-- labels:
   - 'api: cloudprofiler'
   to:
   - googleapis/api-profiler

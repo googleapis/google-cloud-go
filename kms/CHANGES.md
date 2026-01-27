@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.24.0) (2026-01-15)
+
+### Documentation
+
+* Marking MODIFIED_CUSTOMER_INITIATED_ACCESS and MODIFIED_GOOGLE_INITIATED_SYSTEM_OPERATION Key Access Justification codes as deprecated in favor of GOOGLE_RESPONSE_TO_PRODUCTION_ALERT ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
 ## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.23.1...kms/v1.23.2) (2025-10-15)
 
 

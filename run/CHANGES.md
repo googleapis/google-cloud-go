@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.14.0) (2026-01-15)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.13.0) (2025-12-11)
+
+### Features
+
+* add SourceCode proto to Run container config ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
+### Documentation
+
+* A comment for field `custom_audiences` in message `.google.cloud.run.v2.WorkerPool` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `etag` in message `.google.cloud.run.v2.Job` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `etag` in message `.google.cloud.run.v2.Service` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `etag` in message `.google.cloud.run.v2.WorkerPool` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `invoker_iam_disabled` in message `.google.cloud.run.v2.Service` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `items` in message `.google.cloud.run.v2.SecretVolumeSource` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `latest_ready_revision` in message `.google.cloud.run.v2.WorkerPool` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `limits` in message `.google.cloud.run.v2.ResourceRequirements` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `name` in message `.google.cloud.run.v2.Service` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `observed_generation` in message `.google.cloud.run.v2.WorkerPool` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* A comment for field `reconciling` in message `.google.cloud.run.v2.WorkerPool` is changed ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.12.0...run/v1.12.1) (2025-10-07)
 
 

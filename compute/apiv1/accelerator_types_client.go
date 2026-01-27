@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -134,7 +134,10 @@ func (c *AcceleratorTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of accelerator types.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *AcceleratorTypesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -144,7 +147,8 @@ func (c *AcceleratorTypesClient) Get(ctx context.Context, req *computepb.GetAcce
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of accelerator types that are available to the specified project.
+// List retrieves a list of accelerator types that are available to the specified
+// project.
 func (c *AcceleratorTypesClient) List(ctx context.Context, req *computepb.ListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypeIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -228,7 +232,10 @@ func (c *acceleratorTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of accelerator types.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypesScopedListPairIterator {
 	it := &AcceleratorTypesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListAcceleratorTypesRequest)
@@ -372,7 +379,8 @@ func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// List retrieves a list of accelerator types that are available to the specified project.
+// List retrieves a list of accelerator types that are available to the specified
+// project.
 func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.ListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypeIterator {
 	it := &AcceleratorTypeIterator{}
 	req = proto.Clone(req).(*computepb.ListAcceleratorTypesRequest)

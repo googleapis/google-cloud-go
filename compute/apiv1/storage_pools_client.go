@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -186,32 +186,43 @@ func (c *StoragePoolsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of storage pools.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *StoragePoolsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified storage pool. Deleting a storagePool removes its data permanently and is irreversible. However, deleting a storagePool does not delete any snapshots previously made from the storagePool. You must separately delete snapshots.
+// Delete deletes the specified storage pool. Deleting a storagePool
+// removes its data permanently and is irreversible. However, deleting a
+// storagePool does not delete any snapshots previously
+// made from the storagePool. You must separately delete
+// snapshots.
 func (c *StoragePoolsClient) Delete(ctx context.Context, req *computepb.DeleteStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns a specified storage pool. Gets a list of available storage pools by making a list() request.
+// Get returns a specified storage pool. Gets a list of available
+// storage pools by making a list() request.
 func (c *StoragePoolsClient) Get(ctx context.Context, req *computepb.GetStoragePoolRequest, opts ...gax.CallOption) (*computepb.StoragePool, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *StoragePoolsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyStoragePoolRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a storage pool in the specified project using the data in the request.
+// Insert creates a storage pool in the specified project using the data
+// in the request.
 func (c *StoragePoolsClient) Insert(ctx context.Context, req *computepb.InsertStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of storage pools contained within the specified zone.
+// List retrieves a list of storage pools contained within
+// the specified zone.
 func (c *StoragePoolsClient) List(ctx context.Context, req *computepb.ListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -221,7 +232,8 @@ func (c *StoragePoolsClient) ListDisks(ctx context.Context, req *computepb.ListD
 	return c.internalClient.ListDisks(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *StoragePoolsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyStoragePoolRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -231,7 +243,11 @@ func (c *StoragePoolsClient) TestIamPermissions(ctx context.Context, req *comput
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.
+// Update updates the specified storagePool with the data included in the request.
+// The update is performed only on selected fields included as part
+// of update-mask. Only the following fields can be modified:
+// pool_provisioned_capacity_gb, pool_provisioned_iops and
+// pool_provisioned_throughput.
 func (c *StoragePoolsClient) Update(ctx context.Context, req *computepb.UpdateStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -329,7 +345,10 @@ func (c *storagePoolsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of storage pools.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *storagePoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolsScopedListPairIterator {
 	it := &StoragePoolsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListStoragePoolsRequest)
@@ -428,7 +447,11 @@ func (c *storagePoolsRESTClient) AggregatedList(ctx context.Context, req *comput
 	return it
 }
 
-// Delete deletes the specified storage pool. Deleting a storagePool removes its data permanently and is irreversible. However, deleting a storagePool does not delete any snapshots previously made from the storagePool. You must separately delete snapshots.
+// Delete deletes the specified storage pool. Deleting a storagePool
+// removes its data permanently and is irreversible. However, deleting a
+// storagePool does not delete any snapshots previously
+// made from the storagePool. You must separately delete
+// snapshots.
 func (c *storagePoolsRESTClient) Delete(ctx context.Context, req *computepb.DeleteStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -488,7 +511,8 @@ func (c *storagePoolsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	return op, nil
 }
 
-// Get returns a specified storage pool. Gets a list of available storage pools by making a list() request.
+// Get returns a specified storage pool. Gets a list of available
+// storage pools by making a list() request.
 func (c *storagePoolsRESTClient) Get(ctx context.Context, req *computepb.GetStoragePoolRequest, opts ...gax.CallOption) (*computepb.StoragePool, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -533,7 +557,8 @@ func (c *storagePoolsRESTClient) Get(ctx context.Context, req *computepb.GetStor
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *storagePoolsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyStoragePoolRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -585,7 +610,8 @@ func (c *storagePoolsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// Insert creates a storage pool in the specified project using the data in the request.
+// Insert creates a storage pool in the specified project using the data
+// in the request.
 func (c *storagePoolsRESTClient) Insert(ctx context.Context, req *computepb.InsertStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetStoragePoolResource()
@@ -652,7 +678,8 @@ func (c *storagePoolsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	return op, nil
 }
 
-// List retrieves a list of storage pools contained within the specified zone.
+// List retrieves a list of storage pools contained within
+// the specified zone.
 func (c *storagePoolsRESTClient) List(ctx context.Context, req *computepb.ListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolIterator {
 	it := &StoragePoolIterator{}
 	req = proto.Clone(req).(*computepb.ListStoragePoolsRequest)
@@ -824,7 +851,8 @@ func (c *storagePoolsRESTClient) ListDisks(ctx context.Context, req *computepb.L
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *storagePoolsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyStoragePoolRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
@@ -928,7 +956,11 @@ func (c *storagePoolsRESTClient) TestIamPermissions(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.
+// Update updates the specified storagePool with the data included in the request.
+// The update is performed only on selected fields included as part
+// of update-mask. Only the following fields can be modified:
+// pool_provisioned_capacity_gb, pool_provisioned_iops and
+// pool_provisioned_throughput.
 func (c *storagePoolsRESTClient) Update(ctx context.Context, req *computepb.UpdateStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetStoragePoolResource()

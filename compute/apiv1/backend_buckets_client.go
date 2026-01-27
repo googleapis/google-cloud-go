@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -177,7 +177,8 @@ func (c *BackendBucketsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend bucket.
+// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *BackendBucketsClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
@@ -187,7 +188,8 @@ func (c *BackendBucketsClient) Delete(ctx context.Context, req *computepb.Delete
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend bucket.
+// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *BackendBucketsClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteSignedUrlKey(ctx, req, opts...)
 }
@@ -197,22 +199,28 @@ func (c *BackendBucketsClient) Get(ctx context.Context, req *computepb.GetBacken
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *BackendBucketsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a BackendBucket resource in the specified project using the data included in the request.
+// Insert creates a BackendBucket resource in the specified project using
+// the data included in the request.
 func (c *BackendBucketsClient) Insert(ctx context.Context, req *computepb.InsertBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of BackendBucket resources available to the specified project.
+// List retrieves the list of BackendBucket resources available to the specified
+// project.
 func (c *BackendBucketsClient) List(ctx context.Context, req *computepb.ListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified BackendBucket resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *BackendBucketsClient) Patch(ctx context.Context, req *computepb.PatchBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -222,7 +230,8 @@ func (c *BackendBucketsClient) SetEdgeSecurityPolicy(ctx context.Context, req *c
 	return c.internalClient.SetEdgeSecurityPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *BackendBucketsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -232,7 +241,8 @@ func (c *BackendBucketsClient) TestIamPermissions(ctx context.Context, req *comp
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified BackendBucket resource with the data included in the request.
+// Update updates the specified BackendBucket resource with the data included in the
+// request.
 func (c *BackendBucketsClient) Update(ctx context.Context, req *computepb.UpdateBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -330,7 +340,8 @@ func (c *backendBucketsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend bucket.
+// AddSignedUrlKey adds a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSignedUrlKeyResource()
@@ -455,7 +466,8 @@ func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.De
 	return op, nil
 }
 
-// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend bucket.
+// DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend
+// bucket.
 func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -560,7 +572,8 @@ func (c *backendBucketsRESTClient) Get(ctx context.Context, req *computepb.GetBa
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *backendBucketsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -612,7 +625,8 @@ func (c *backendBucketsRESTClient) GetIamPolicy(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates a BackendBucket resource in the specified project using the data included in the request.
+// Insert creates a BackendBucket resource in the specified project using
+// the data included in the request.
 func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()
@@ -678,7 +692,8 @@ func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.In
 	return op, nil
 }
 
-// List retrieves the list of BackendBucket resources available to the specified project.
+// List retrieves the list of BackendBucket resources available to the specified
+// project.
 func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.ListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	it := &BackendBucketIterator{}
 	req = proto.Clone(req).(*computepb.ListBackendBucketsRequest)
@@ -764,7 +779,10 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 	return it
 }
 
-// Patch updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified BackendBucket resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()
@@ -896,7 +914,8 @@ func (c *backendBucketsRESTClient) SetEdgeSecurityPolicy(ctx context.Context, re
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *backendBucketsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
@@ -1000,7 +1019,8 @@ func (c *backendBucketsRESTClient) TestIamPermissions(ctx context.Context, req *
 	return resp, nil
 }
 
-// Update updates the specified BackendBucket resource with the data included in the request.
+// Update updates the specified BackendBucket resource with the data included in the
+// request.
 func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()

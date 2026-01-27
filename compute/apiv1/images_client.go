@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -186,7 +186,9 @@ func (c *ImagesClient) Delete(ctx context.Context, req *computepb.DeleteImageReq
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Deprecate sets the deprecation status of an image. If an empty request body is given, clears the deprecation status instead.
+// Deprecate sets the deprecation status of an image.
+//
+// If an empty request body is given, clears the deprecation status instead.
 func (c *ImagesClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Deprecate(ctx, req, opts...)
 }
@@ -196,37 +198,51 @@ func (c *ImagesClient) Get(ctx context.Context, req *computepb.GetImageRequest, 
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetFromFamily returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
+// GetFromFamily returns the latest image that is part of an image family and is not
+// deprecated. For more information on image families, seePublic
+// image families documentation.
 func (c *ImagesClient) GetFromFamily(ctx context.Context, req *computepb.GetFromFamilyImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	return c.internalClient.GetFromFamily(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *ImagesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates an image in the specified project using the data included in the request.
+// Insert creates an image in the specified project using the data included
+// in the request.
 func (c *ImagesClient) Insert(ctx context.Context, req *computepb.InsertImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+// List retrieves the list of custom images
+// available to the specified project. Custom images are images you
+// create that belong to your project. This method does not
+// get any images that belong to other projects, including publicly-available
+// images, like Debian 8. If you want to get a list of publicly-available
+// images, use this method to make a request to the respective image project,
+// such as debian-cloud or windows-cloud.
 func (c *ImagesClient) List(ctx context.Context, req *computepb.ListImagesRequest, opts ...gax.CallOption) *ImageIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
+// Patch patches the specified image with the data included in the request.
+// Only the following fields can be modified: family, description,
+// deprecation status.
 func (c *ImagesClient) Patch(ctx context.Context, req *computepb.PatchImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *ImagesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an image. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *ImagesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -388,7 +404,9 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 	return op, nil
 }
 
-// Deprecate sets the deprecation status of an image. If an empty request body is given, clears the deprecation status instead.
+// Deprecate sets the deprecation status of an image.
+//
+// If an empty request body is given, clears the deprecation status instead.
 func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDeprecationStatusResource()
@@ -499,7 +517,9 @@ func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageReque
 	return resp, nil
 }
 
-// GetFromFamily returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
+// GetFromFamily returns the latest image that is part of an image family and is not
+// deprecated. For more information on image families, seePublic
+// image families documentation.
 func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.GetFromFamilyImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -544,7 +564,8 @@ func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -596,7 +617,8 @@ func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetI
 	return resp, nil
 }
 
-// Insert creates an image in the specified project using the data included in the request.
+// Insert creates an image in the specified project using the data included
+// in the request.
 func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetImageResource()
@@ -665,7 +687,13 @@ func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImag
 	return op, nil
 }
 
-// List retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+// List retrieves the list of custom images
+// available to the specified project. Custom images are images you
+// create that belong to your project. This method does not
+// get any images that belong to other projects, including publicly-available
+// images, like Debian 8. If you want to get a list of publicly-available
+// images, use this method to make a request to the respective image project,
+// such as debian-cloud or windows-cloud.
 func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRequest, opts ...gax.CallOption) *ImageIterator {
 	it := &ImageIterator{}
 	req = proto.Clone(req).(*computepb.ListImagesRequest)
@@ -751,7 +779,9 @@ func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRe
 	return it
 }
 
-// Patch patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
+// Patch patches the specified image with the data included in the request.
+// Only the following fields can be modified: family, description,
+// deprecation status.
 func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetImageResource()
@@ -817,7 +847,8 @@ func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageR
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
@@ -869,7 +900,8 @@ func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 	return resp, nil
 }
 
-// SetLabels sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an image. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
