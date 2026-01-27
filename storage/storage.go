@@ -1210,8 +1210,6 @@ func (o *ObjectHandle) Restore(ctx context.Context, opts *RestoreOptions) (*Obje
 // Any preconditions set on the ObjectHandle will be applied for the source
 // object. Set preconditions on the destination object using
 // [MoveObjectDestination.Conditions].
-//
-// This API is in preview and is not yet publicly available.
 func (o *ObjectHandle) Move(ctx context.Context, destination MoveObjectDestination) (*ObjectAttrs, error) {
 	if err := o.validate(); err != nil {
 		return nil, err
