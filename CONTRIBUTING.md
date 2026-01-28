@@ -227,7 +227,7 @@ $ gcloud kms keys create key2 --keyring $MY_KEYRING --location $MY_LOCATION --pu
 # Sets the GCLOUD_TESTS_GOLANG_KEYRING environment variable.
 $ export GCLOUD_TESTS_GOLANG_KEYRING=projects/$GCLOUD_TESTS_GOLANG_PROJECT_ID/locations/$MY_LOCATION/keyRings/$MY_KEYRING
 # Authorizes Google Cloud Storage to encrypt and decrypt using key1.
-$ gcloud storage service-agent --project=$GCLOUD_TESTS_GOLANG_PROJECT_ID \ --authorize-cmek=$GCLOUD_TESTS_GOLANG_KEYRING/cryptoKeys/key1
+$ gcloud storage service-agent --project=$GCLOUD_TESTS_GOLANG_PROJECT_ID --authorize-cmek=$GCLOUD_TESTS_GOLANG_KEYRING/cryptoKeys/key1
 
 # Create KMS Key in one region for Bigtable
 $ gcloud kms keyrings create $MY_KEYRING --location $MY_SINGLE_LOCATION
