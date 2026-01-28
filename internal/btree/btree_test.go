@@ -22,15 +22,9 @@ import (
 	"sort"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
-
-func init() {
-	seed := time.Now().Unix()
-	rand.Seed(seed)
-}
 
 type itemWithIndex struct {
 	Key   Key
