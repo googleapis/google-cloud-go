@@ -50,6 +50,8 @@ const (
 	BigtableConnectionPoolEnvVar = "CBT_BIGTABLE_CONN_POOL"
 )
 
+var schemeRegexp = regexp.MustCompile("^(http://|https://|passthrough:///)")
+
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
 // metadata merged with the provided mds.
 func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
@@ -109,7 +111,7 @@ func DefaultClientOptions(endpoint, mtlsEndpoint, scope, userAgent string) ([]op
 	// Check the environment variables for the bigtable emulator.
 	// Dial it directly and don't pass any credentials.
 	if addr := os.Getenv("BIGTABLE_EMULATOR_HOST"); addr != "" {
-		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(addr, "")
+		schemeRemoved := schemeRegexp.ReplaceAllString(addr, "")
 		conn, err := grpc.Dial("passthrough:///"+schemeRemoved, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return nil, fmt.Errorf("emulator grpc.Dial: %w", err)
