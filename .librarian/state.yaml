@@ -410,7 +410,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apiregistry
     version: 0.1.0
-    last_generated_commit: 2ac88973cbafba24e4fb6f31038e0c76174ae704
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/apiregistry/v1beta
         service_config: cloudapiregistry_v1beta.yaml
@@ -1539,7 +1539,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudquotas
     version: 1.4.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/api/cloudquotas/v1
         service_config: cloudquotas_v1.yaml
@@ -1846,7 +1846,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: container
     version: 1.45.0
-    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/container/v1
         service_config: container_v1.yaml
@@ -2415,7 +2415,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: documentai
     version: 1.39.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/documentai/v1
         service_config: documentai_v1.yaml
@@ -3913,7 +3913,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.21.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/networkmanagement/v1
         service_config: networkmanagement_v1.yaml
@@ -4755,7 +4755,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: retail
     version: 1.25.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/retail/v2
         service_config: retail_v2.yaml
