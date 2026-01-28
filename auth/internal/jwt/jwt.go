@@ -38,6 +38,8 @@ const (
 	HeaderAlgES256 = "ES256"
 	// HeaderType is the standard [Header.Type].
 	HeaderType = "JWT"
+	// ES256 key size
+	es256KeySize = 32
 )
 
 // Header represents a JWT header.
@@ -139,14 +141,10 @@ func EncodeJWS(header *Header, c *Claims, signer crypto.Signer) (string, error) 
 			return "", err
 		}
 
-		keySize := 32 // Size for ES256
-		rawSig := make([]byte, keySize*2)
+		rawSig := make([]byte, es256KeySize*2)
 
-		// Convert R and S to bytes and pad to 32 bytes each
-		rBytes := ecSig.R.Bytes()
-		sBytes := ecSig.S.Bytes()
-		copy(rawSig[keySize-len(rBytes):keySize], rBytes)
-		copy(rawSig[keySize*2-len(sBytes):], sBytes)
+		ecSig.R.FillBytes(rawSig[:es256KeySize])
+		ecSig.S.FillBytes(rawSig[es256KeySize:])
 
 		sig = rawSig
 	}

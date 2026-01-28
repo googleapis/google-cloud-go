@@ -147,7 +147,6 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	g.logger.Error("set content type as json")
 	g.logger.DebugContext(ctx, "gdch token request", "request", internallog.HTTPRequest(req, r))
 	resp, body, err := internal.DoRequest(g.client, req)
 	if err != nil {
