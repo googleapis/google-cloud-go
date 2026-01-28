@@ -17,13 +17,16 @@ package jwt
 import (
 	"bytes"
 	"crypto"
+	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
+	"encoding/asn1"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 )
@@ -127,6 +130,26 @@ func EncodeJWS(header *Header, c *Claims, signer crypto.Signer) (string, error) 
 	if err != nil {
 		return "", err
 	}
+
+	if header.Algorithm == HeaderAlgES256 {
+		var ecSig struct {
+			R, S *big.Int
+		}
+		if _, err := asn1.Unmarshal(sig, &ecSig); err != nil {
+			return "", err
+		}
+
+		keySize := 32 // Size for ES256
+		rawSig := make([]byte, keySize*2)
+
+		// Convert R and S to bytes and pad to 32 bytes each
+		rBytes := ecSig.R.Bytes()
+		sBytes := ecSig.S.Bytes()
+		copy(rawSig[keySize-len(rBytes):keySize], rBytes)
+		copy(rawSig[keySize*2-len(sBytes):], sBytes)
+
+		sig = rawSig
+	}
 	return fmt.Sprintf("%s.%s", ss, base64.RawURLEncoding.EncodeToString(sig)), nil
 }
 
@@ -153,7 +176,7 @@ func DecodeJWS(payload string) (*Claims, error) {
 
 // VerifyJWS tests whether the provided JWT token's signature was produced by
 // the private key associated with the provided public key.
-func VerifyJWS(token string, key *rsa.PublicKey) error {
+func VerifyJWS(token string, key crypto.PublicKey) error {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
 		return errors.New("jwt: invalid token received, token must have 3 parts")
@@ -167,5 +190,21 @@ func VerifyJWS(token string, key *rsa.PublicKey) error {
 
 	h := sha256.New()
 	h.Write([]byte(signedContent))
-	return rsa.VerifyPKCS1v15(key, crypto.SHA256, h.Sum(nil), signatureString)
+	hashed := h.Sum(nil)
+
+	switch pub := key.(type) {
+	case *rsa.PublicKey:
+		return rsa.VerifyPKCS1v15(pub, crypto.SHA256, hashed, signatureString)
+	case *ecdsa.PublicKey:
+		if len(signatureString) != 2*32 {
+			return fmt.Errorf("jwt: ecdsa signature size should be 64 bytes, got %d", len(signatureString))
+		}
+		r := new(big.Int).SetBytes(signatureString[:32])
+		s := new(big.Int).SetBytes(signatureString[32:])
+		if !ecdsa.Verify(pub, hashed, r, s) {
+			return errors.New("jwt: ecdsa signature verification failed")
+		}
+		return nil
+	}
+	return fmt.Errorf("jwt: unsupported public key type: %T", key)
 }
