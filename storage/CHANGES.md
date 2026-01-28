@@ -3,10 +3,6 @@
 
 ## [1.59.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.2) (2026-01-28)
 
-### Features
-
-* support checksum validation in resumable json uploads (#13573) ([337ca07](https://github.com/googleapis/google-cloud-go/commit/337ca078a09d687aa758ed3982f2047bee3da57a))
-
 ### Bug Fixes
 
 * deadlock in event loop while coordinating channels (#13652) ([7d9d00c](https://github.com/googleapis/google-cloud-go/commit/7d9d00c6d0fcdb7a966c868b549ea103bb781e1b))
