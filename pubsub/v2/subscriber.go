@@ -267,11 +267,11 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		clientID:               s.clientID,
 	}
 
-	var fc flowController
+	var clientFlowController flowController
 	// When using the legacy per-client flow control, limits
 	// are applied per-client rather than per stream/iterator.
 	if !s.ReceiveSettings.EnablePerStreamFlowControl {
-		fc = newSubscriberFlowController(FlowControlSettings{
+		clientFlowController = newSubscriberFlowController(FlowControlSettings{
 			MaxOutstandingMessages: maxCount,
 			MaxOutstandingBytes:    maxBytes,
 			LimitExceededBehavior:  FlowControlBlock,
@@ -308,14 +308,17 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		iter := newMessageIterator(s.c.SubscriptionAdminClient, s.name, po)
 		iter.enableTracing = s.enableTracing
 
+		var fc flowController
 		if s.ReceiveSettings.EnablePerStreamFlowControl {
 			fc = newSubscriberFlowController(FlowControlSettings{
 				MaxOutstandingMessages: maxCount,
 				MaxOutstandingBytes:    maxBytes,
 				LimitExceededBehavior:  FlowControlBlock,
 			})
+		} else {
+			fc = clientFlowController
 		}
-		
+
 		// We cannot use errgroup from Receive here. Receive might already be
 		// calling group.Wait, and group.Wait cannot be called concurrently with
 		// group.Go. We give each receive() its own WaitGroup instead.
