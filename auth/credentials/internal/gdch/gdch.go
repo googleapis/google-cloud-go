@@ -138,6 +138,9 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 	}
 
 	r, err := json.Marshal(v)
+	if err != nil {
+		return nil, fmt.Errorf("credentials: cannot marshal token request: %w", err)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", g.tokenURL, bytes.NewReader(r))
 	if err != nil {
