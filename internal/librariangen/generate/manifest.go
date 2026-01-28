@@ -15,7 +15,6 @@
 package generate
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -47,7 +46,7 @@ const gapicAutoLibraryType = "GAPIC_AUTO"
 // It gathers metadata from the service YAML, Bazel configuration, and Go module information.
 // The generated file is written to the appropriate location within the output directory,
 // following the expected structure for .repo-metadata.json files.
-func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library, api *request.API, moduleConfig *config.ModuleConfig, bazelConfig *bazel.Config) error {
+func generateRepoMetadata(cfg *Config, api *request.API, moduleConfig *config.ModuleConfig, bazelConfig *bazel.Config) error {
 	if api.ServiceConfig == "" {
 		slog.Info("librariangen: no service config for API, skipping .repo-metadata.json generation", "api_path", api.Path)
 		return nil
