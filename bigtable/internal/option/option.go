@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -108,7 +109,8 @@ func DefaultClientOptions(endpoint, mtlsEndpoint, scope, userAgent string) ([]op
 	// Check the environment variables for the bigtable emulator.
 	// Dial it directly and don't pass any credentials.
 	if addr := os.Getenv("BIGTABLE_EMULATOR_HOST"); addr != "" {
-		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(addr, "")
+		conn, err := grpc.Dial("passthrough:///"+schemeRemoved, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return nil, fmt.Errorf("emulator grpc.Dial: %w", err)
 		}
