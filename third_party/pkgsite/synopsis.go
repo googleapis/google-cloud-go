@@ -82,10 +82,7 @@ func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int, linkify fun
 		if len(recv) > 0 {
 			recv = "(" + recv + ") "
 		}
-		fnc := oneLineNodeDepth(fset, n.Type, depth, linkify)
-		if strings.Index(fnc, "func") == 0 {
-			fnc = fnc[4:]
-		}
+		_, fnc, _ := strings.Cut(oneLineNodeDepth(fset, n.Type, depth, linkify), "func")
 		return fmt.Sprintf("func %s%s%s", recv, name, fnc)
 
 	case *ast.TypeSpec:
