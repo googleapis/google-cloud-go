@@ -100,7 +100,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		readSpec:       readSpec,
 		attrsReady:     make(chan struct{}),
 		spanCtx:        ctx,
-		unsentRequests: list.New(),
+		unsentRequests: newRequestQueue(),
 	}
 
 	mrd := &MultiRangeDownloader{
@@ -233,7 +233,7 @@ type multiRangeDownloaderManager struct {
 	attrsOnce      sync.Once
 	spanCtx        context.Context
 	callbackWg     sync.WaitGroup
-	unsentRequests *list.List
+	unsentRequests *requestQueue
 }
 
 type rangeRequest struct {
@@ -381,20 +381,14 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 	}
 
 	for {
-		var nextElem *list.Element
 		var nextReq *storagepb.BidiReadObjectRequest
 		var targetChan chan<- *storagepb.BidiReadObjectRequest
 
 		// Only try to send if we have queued requests
 		if m.unsentRequests.Len() > 0 && m.currentSession != nil {
-			nextElem = m.unsentRequests.Front()
-			if nextElem != nil {
-				var ok bool
-				// Safely assert the type and check for nil value.
-				nextReq, ok = nextElem.Value.(*storagepb.BidiReadObjectRequest)
-				if ok && nextReq != nil {
-					targetChan = m.currentSession.reqC
-				}
+			nextReq = m.unsentRequests.Front()
+			if nextReq != nil {
+				targetChan = m.currentSession.reqC
 			}
 		}
 		// Only read from cmds if we have space in the unsentRequests queue.
@@ -408,9 +402,7 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		// This path only triggers if space is available in the channel.
 		// It never blocks the eventLoop.
 		case targetChan <- nextReq:
-			if nextElem != nil {
-				m.unsentRequests.Remove(nextElem)
-			}
+			m.unsentRequests.RemoveFront()
 		case cmd := <-cmdsChan:
 			cmd.apply(m.ctx, m)
 			if _, ok := cmd.(*mrdCloseCmd); ok {
@@ -933,5 +925,30 @@ func readerAttrsFromObject(o *ObjectAttrs) ReaderObjectAttrs {
 		Generation:      o.Generation,
 		Metageneration:  o.Metageneration,
 		CRC32C:          o.CRC32C,
+	}
+}
+
+type requestQueue struct {
+	l *list.List
+}
+
+func newRequestQueue() *requestQueue {
+	return &requestQueue{l: list.New()}
+}
+
+func (q *requestQueue) PushBack(r *storagepb.BidiReadObjectRequest)  { q.l.PushBack(r) }
+func (q *requestQueue) PushFront(r *storagepb.BidiReadObjectRequest) { q.l.PushFront(r) }
+func (q *requestQueue) Len() int                                     { return q.l.Len() }
+
+func (q *requestQueue) Front() *storagepb.BidiReadObjectRequest {
+	if f := q.l.Front(); f != nil {
+		return f.Value.(*storagepb.BidiReadObjectRequest)
+	}
+	return nil
+}
+
+func (q *requestQueue) RemoveFront() {
+	if f := q.l.Front(); f != nil {
+		q.l.Remove(f)
 	}
 }
