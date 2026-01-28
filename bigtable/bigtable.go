@@ -1262,7 +1262,8 @@ func decodeFamilyProto(r Row, row string, f *btpb.Family) {
 }
 
 // RowSet is a set of rows to be read. It is satisfied by RowList, RowRange and RowRangeList.
-// The serialized size of the RowSet must be no larger than 512KB.
+// The serialized size of the ReadRowsRequest that uses this RowSet must be no larger than 512KB.
+// See https://docs.cloud.google.com/bigtable/docs/reads#large-rows for more information.
 type RowSet interface {
 	proto() *btpb.RowSet
 
