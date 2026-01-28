@@ -2221,3 +2221,119 @@ func TestSessionRecycle_AlreadyInvalidSession(t *testing.T) {
 		t.Errorf("Unexpected error \"Number of sessions in use is negative\" logged: %s", logOutput)
 	}
 }
+
+// TestSessionPool_CreateMultiplexedSession_NoGoroutineLeak tests that closing
+// the session pool properly cleans up the createMultiplexedSession goroutine.
+// This is a regression test for issue #13396.
+//
+// Before the fix, the multiplexedSessionReq channel was not closed when the
+// pool was closed, causing the createMultiplexedSession goroutine to block
+// forever waiting for requests.
+//
+// Note: This test validates the fix by checking that the multiplexedSessionReq
+// channel is properly closed. We test channel closure directly rather than
+// counting goroutines, as goroutine counting is unreliable in test environments.
+func TestSessionPool_CreateMultiplexedSession_NoGoroutineLeak(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// Create a client with multiplexed sessions enabled
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:              0,
+			MaxOpened:              1,
+			enableMultiplexSession: true,
+		},
+	})
+	defer teardown()
+
+	pool := client.idleSessions
+
+	// Verify the channel exists and is open by sending a request
+	select {
+	case pool.multiplexedSessionReq <- muxSessionCreateRequest{force: false, ctx: ctx}:
+		// Successfully sent, channel is open
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("multiplexedSessionReq channel appears to be blocked or closed before pool close")
+	}
+
+	// Give the createMultiplexedSession goroutine time to process the request
+	time.Sleep(50 * time.Millisecond)
+
+	// Close the pool
+	client.Close()
+
+	// Give some time for cleanup
+	time.Sleep(100 * time.Millisecond)
+
+	// Verify the channel is properly closed
+	// A receive from a closed channel returns immediately with zero value and ok=false
+	select {
+	case _, ok := <-pool.multiplexedSessionReq:
+		if ok {
+			t.Fatal("multiplexedSessionReq channel is still open after pool close; this would cause a goroutine leak")
+		}
+		// Channel is properly closed, test passes
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("multiplexedSessionReq channel is not closed after pool close; createMultiplexedSession goroutine is leaked")
+	}
+}
+
+// TestSessionPool_MultiplexedSessionReqChannelClosed tests that the
+// multiplexedSessionReq channel is properly closed when the pool is closed.
+func TestSessionPool_MultiplexedSessionReqChannelClosed(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// Create a client with multiplexed sessions enabled
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:              0,
+			MaxOpened:              1,
+			enableMultiplexSession: true,
+		},
+	})
+	defer teardown()
+
+	pool := client.idleSessions
+
+	// Verify the channel exists and is open
+	select {
+	case pool.multiplexedSessionReq <- muxSessionCreateRequest{force: false, ctx: ctx}:
+		// Successfully sent, channel is open
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("multiplexedSessionReq channel appears to be blocked or closed before pool close")
+	}
+
+	// Close the pool
+	client.Close()
+
+	// Give some time for cleanup
+	time.Sleep(50 * time.Millisecond)
+
+	// Verify the channel is closed by attempting to send
+	// A send on a closed channel will panic, so we recover from it
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Fatal("Sending to multiplexedSessionReq panicked, which means channel might not be closed properly or send was attempted incorrectly")
+			}
+		}()
+
+		// Try to receive from the closed channel
+		// A receive from a closed channel returns immediately with zero value
+		select {
+		case _, ok := <-pool.multiplexedSessionReq:
+			if ok {
+				t.Fatal("multiplexedSessionReq channel is still open after pool close")
+			}
+			// Channel is properly closed
+		case <-time.After(100 * time.Millisecond):
+			t.Fatal("multiplexedSessionReq channel is not closed after pool close")
+		}
+	}()
+}
