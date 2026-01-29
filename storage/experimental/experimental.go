@@ -107,3 +107,10 @@ func WithGRPCBidiReads() option.ClientOption {
 func WithZonalBucketAPIs() option.ClientOption {
 	return internal.WithZonalBucketAPIs.(func() option.ClientOption)()
 }
+
+// WithDirectConnectivityEnforced is a function which is implemented by the storage package.
+// It sets the gRPC client to use direct path connectivity for all requests and may return error
+// if direct path connectivity cannot be established for a request.
+func WithDirectConnectivityEnforced() option.ClientOption {
+	return internal.WithDirectConnectivityEnforced.(func() option.ClientOption)()
+}
