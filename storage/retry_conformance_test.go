@@ -240,6 +240,35 @@ var methods = map[string][]retryFunc{
 			return err
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Upload 3MiB of data. This provides enough data to ensure retries happen mid-stream.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
+				return fmt.Errorf("failed to upload 3MiB object: %v", err)
+			}
+
+			obj := c.Bucket(fs.bucket.Name).Object(objName)
+			r, err := obj.NewRangeReader(ctx, 0, 3*MiB)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+
+			// Request the full 3MiB range.
+			// The emulator's fault injection (e.g., reset-connection) will trigger mid-download.
+			buf, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("resumption test failed: %v", err)
+			}
+
+			if int64(len(buf)) != 3*MiB {
+				return fmt.Errorf("resumption data length mismatch: got %d, want %d", len(buf), 3*MiB)
+			}
+			if !bytes.Equal(buf, randomBytes3MiB) {
+				return fmt.Errorf("resumption data mismatch: content does not match randomBytes3MiB")
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			// Test JSON reads.
 			client, ok := c.tc.(*httpStorageClient)
 			if ok {
