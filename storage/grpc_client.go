@@ -198,7 +198,7 @@ func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, 
 			md = metadata.MD{}
 		}
 
-		// Merge with existing routing headers (like bucket=...)
+		// Merge with existing x-goog-request-params if present.
 		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
 			md.Set(requestParamsHeaderKey, vals[0]+"&"+param)
 		} else {
@@ -212,7 +212,7 @@ func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, 
 		if !ok {
 			md = metadata.MD{}
 		}
-
+		// Merge with existing x-goog-request-params if present.
 		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
 			md.Set(requestParamsHeaderKey, vals[0]+"&"+param)
 		} else {
