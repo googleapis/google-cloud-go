@@ -819,7 +819,6 @@ func TestRsdNonblockingStates(t *testing.T) {
 				cancel,
 				nil,
 				test.rpc,
-				nil,
 				mc.(*grpcSpannerClient),
 			)
 			st := []resumableStreamDecoderState{}
@@ -1125,7 +1124,6 @@ func TestRsdBlockingStates(t *testing.T) {
 				cancel,
 				nil,
 				test.rpc,
-				nil,
 				mc.(*grpcSpannerClient),
 			)
 			// Override backoff to make the test run faster.
@@ -1309,7 +1307,6 @@ func TestQueueBytes(t *testing.T) {
 			sr.rpcReceiver = r
 			return sr, err
 		},
-		nil,
 		mc.(*grpcSpannerClient),
 	)
 

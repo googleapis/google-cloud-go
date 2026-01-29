@@ -164,7 +164,7 @@ func TestRunWithRetryOnInternalAuthError(t *testing.T) {
 	}
 	defer func() { DefaultRetryBackoff = originalBackoff }() // Restore original backoff
 
-	err := runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx, mockFunc)
+	err := runWithRetryOnAbortedOrFailedInlineBegin(ctx, mockFunc)
 
 	if err != nil {
 		t.Errorf("Expected runWithRetry to succeed after retry, but got error: %v", err)
