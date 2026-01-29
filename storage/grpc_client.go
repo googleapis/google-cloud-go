@@ -67,6 +67,12 @@ const (
 	// Default value for Read ID on BidiReadObject streams. Used for NewRangeReader
 	// which only does a single read per stream.
 	defaultReadID = 1
+
+	forceDirectConnectivityFallbackAllowed = "FALLBACK_ALLOWED"
+	forceDirectConnectivityEnforced        = "ENFORCED"
+	forceDirectConnectivityOptedOut        = "OPTED_OUT"
+	directConnectivityHeaderKey            = "force_direct_connectivity"
+	requestParamsHeaderKey                 = "x-goog-request-params"
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -160,16 +166,62 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 			log.Printf("Failed to enable client metrics: %v", err)
 		}
 	}
+	c := &grpcStorageClient{
+		settings: s,
+		config:   &config,
+	}
+	// Add routing interceptors to inject headers.
+	ui, si := c.routingInterceptors()
+	s.clientOption = append(s.clientOption,
+		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(ui)),
+		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(si)),
+	)
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, err
 	}
+	c.raw = g
+	return c, nil
+}
 
-	return &grpcStorageClient{
-		raw:      g,
-		settings: s,
-		config:   &config,
-	}, nil
+func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
+	value := forceDirectConnectivityFallbackAllowed // default
+	if c.config.grpcDirectPathEnforced == true {
+		value = forceDirectConnectivityEnforced
+	}
+
+	param := directConnectivityHeaderKey + "=" + value
+
+	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		md, ok := metadata.FromOutgoingContext(ctx)
+		if !ok {
+			md = metadata.MD{}
+		}
+
+		// Merge with existing routing headers (like bucket=...)
+		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
+			md.Set(requestParamsHeaderKey, vals[0]+"&"+param)
+		} else {
+			md.Set(requestParamsHeaderKey, param)
+		}
+		return invoker(metadata.NewOutgoingContext(ctx, md), method, req, reply, cc, opts...)
+	}
+
+	stream := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		md, ok := metadata.FromOutgoingContext(ctx)
+		if !ok {
+			md = metadata.MD{}
+		}
+
+		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
+			md.Set(requestParamsHeaderKey, vals[0]+"&"+param)
+		} else {
+			md.Set(requestParamsHeaderKey, param)
+		}
+		return streamer(metadata.NewOutgoingContext(ctx, md), desc, cc, method, opts...)
+	}
+
+	return unary, stream
 }
 
 func (c *grpcStorageClient) Close() error {
