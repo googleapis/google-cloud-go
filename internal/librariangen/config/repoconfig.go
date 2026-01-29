@@ -49,7 +49,7 @@ type GlobalConfig struct {
 	EnabledGeneratorFeatures []string `yaml:"enabled_generator_features"`
 }
 
-// Returns the resolved generator features to be enabled globally.
+// ResolvedGeneratorFeatures returns the resolved generator features to be enabled globally.
 func (gc *GlobalConfig) ResolvedGeneratorFeatures() []string {
 	if gc == nil {
 		return nil
@@ -85,7 +85,7 @@ type ModuleConfig struct {
 	resolvedGeneratorFeatures []string `yaml:"-"` // Runtime generated. Not part of file.
 }
 
-// Returns the resolved generator features to be enabled for a module.
+// ResolvedGeneratorFeatures returns the resolved generator features to be enabled for a module.
 func (mc *ModuleConfig) ResolvedGeneratorFeatures() []string {
 	return mc.resolvedGeneratorFeatures
 }
@@ -126,7 +126,7 @@ type APIConfig struct {
 	resolvedGeneratorFeatures []string `yaml:"-"` // Runtime generated.  Not part of file.
 }
 
-// Returns the resolved generator features to be enabled for an API config.
+// ResolvedGeneratorFeatures returns the resolved generator features to be enabled for an API config.
 func (ac *APIConfig) ResolvedGeneratorFeatures() []string {
 	return ac.resolvedGeneratorFeatures
 }
