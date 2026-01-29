@@ -701,7 +701,8 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 			}
 
 		}
-		return convertBasicType(qval.Value, paramTypeToFieldType[qtype.Type])
+
+		return convertBasicType(qval.Value, &FieldSchema{Type: paramTypeToFieldType[qtype.Type]})
 	}
 }
 

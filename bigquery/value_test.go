@@ -76,14 +76,14 @@ func TestConvertTime(t *testing.T) {
 		{Type: DateTimeFieldType},
 		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
-	ts := testTimestamp.Round(time.Millisecond)
+	ts := testTimestamp
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprint(ts.UnixMicro())},
+			{V: fmt.Sprint(ts.Format(picoFormatString))},
 			{V: testDate.String()},
 			{V: testTime.String()},
 			{V: testDateTime.String()},
-			{V: fmt.Sprintf("[UNBOUNDED, %d)", ts.UnixMicro())},
+			{V: fmt.Sprintf("[UNBOUNDED, %s)", ts.Format(picoFormatString))},
 		},
 	}
 	got, err := convertRow(row, schema)
@@ -113,10 +113,10 @@ func TestConvertRange(t *testing.T) {
 		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
 
-	ts := testTimestamp.Round(time.Millisecond)
+	ts := testTimestamp.Round(time.Nanosecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprintf("[%d, UNBOUNDED)", ts.UnixMicro())},
+			{V: fmt.Sprintf("[%s, UNBOUNDED)", ts.Format(picoFormatString))},
 			{V: fmt.Sprintf("[UNBOUNDED, %s)", testDateTime.String())},
 			{V: fmt.Sprintf("[%s, %s)", testDate.String(), testDate.String())},
 			{V: nil}, // NULL RANGE
@@ -143,14 +143,74 @@ func TestConvertRange(t *testing.T) {
 func TestConvertSmallTimes(t *testing.T) {
 	for _, year := range []int{1600, 1066, 1} {
 		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-		s := fmt.Sprint(time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).UnixMicro())
-		got, err := convertBasicType(s, TimestampFieldType)
+		s := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).Format(picoFormatString)
+		got, err := convertBasicType(s, &FieldSchema{Type: TimestampFieldType})
 		if err != nil {
 			t.Fatal(err)
 		}
 		if !got.(time.Time).Equal(want) {
 			t.Errorf("got %v, want %v", got, want)
 		}
+	}
+}
+
+func TestConvertTimestampVariablePrecision(t *testing.T) {
+	picoSampleValue := "2026-01-22T11:30:02.123456789Z"
+	milliSampleValue := "2026-01-22T11:30:02.123Z"
+
+	picoOutputNano := time.Date(2026, 01, 22, 11, 30, 02, 123456789, time.UTC)
+	for _, tc := range []struct {
+		desc     string
+		inVal    string
+		inSchema *FieldSchema
+		wantVal  Value
+		wantErr  bool
+	}{
+		{
+			desc:    "empty value and schema",
+			wantErr: true,
+		},
+		{
+			desc:     "empty value default schema",
+			inSchema: &FieldSchema{Name: "foo", Type: TimestampFieldType},
+			wantErr:  true,
+		},
+		{
+			// The service shouldn't return this, it's a mismatch.
+			desc:     "pico value and default schema",
+			inVal:    picoSampleValue,
+			inSchema: &FieldSchema{Type: TimestampFieldType},
+			wantVal:  picoOutputNano,
+		},
+		{
+			desc:     "milli value and default schema",
+			inVal:    milliSampleValue,
+			inSchema: &FieldSchema{Type: TimestampFieldType},
+			wantVal:  picoOutputNano.Round(time.Millisecond),
+		},
+		{
+			desc:     "pico value pico output",
+			inVal:    picoSampleValue,
+			inSchema: &FieldSchema{Type: TimestampFieldType, TimestampPrecision: 12},
+			wantVal:  picoSampleValue,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			got, err := convertBasicType(tc.inVal, tc.inSchema)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("expected error, conversion succeeded")
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("got error: %v", err)
+				return
+			}
+			if diff := testutil.Diff(got, tc.wantVal); diff != "" {
+				t.Errorf("%+v:\n, -got, +want:\n%s", tc.inVal, diff)
+			}
+		})
 	}
 }
 
@@ -436,7 +496,7 @@ func TestConvertRowErrors(t *testing.T) {
 	}
 
 	// bad field type
-	if _, err := convertBasicType("", FieldType("BAD")); err == nil {
+	if _, err := convertBasicType("", &FieldSchema{Type: FieldType("BAD")}); err == nil {
 		t.Error("got nil, want error")
 	}
 }
