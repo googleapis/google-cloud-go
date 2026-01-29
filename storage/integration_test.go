@@ -1999,6 +1999,11 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				sendCRC32C: true,
 			},
 			{
+				name:      "small uploads - data size < chunk size with default CRC32C",
+				content:   bytes.Repeat([]byte("a"), 200*1024),
+				chunkSize: 256 * 1024,
+			},
+			{
 				name:      "resumable with default CRC32",
 				content:   bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize: 256 * 1024,
