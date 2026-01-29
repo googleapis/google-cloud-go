@@ -73,6 +73,7 @@ const (
 	fkdcDDLStatements                 = "FKDC_DDL_STATEMENTS"
 	intervalDDLStatements             = "INTERVAL_DDL_STATEMENTS"
 	testTableBitReversedSeqStatements = "TEST_TABLE_BIT_REVERSED_SEQUENCE_STATEMENTS"
+	queueDDLStatements                = "QUEUE_DDL_STATEMENTS"
 )
 
 var (
@@ -345,6 +346,19 @@ var (
 		    interval_array_len bigint GENERATED ALWAYS AS (ARRAY_LENGTH(ARRAY[INTERVAL '1-2 3 4:5:6'], 1)) STORED
     	)`,
 	}
+	queueDBStatements = []string{
+		`CREATE QUEUE TestQueue (
+			Id INT64 NOT NULL,
+			Payload BYTES(MAX) NOT NULL,
+		) PRIMARY KEY (Id),
+		OPTIONS(receive_mode="PULL")`,
+	}
+	queueDBPGStatements = []string{
+		`CREATE QUEUE TestQueue (
+			Id BIGINT PRIMARY KEY,
+			"Payload" BYTEA NOT NULL
+		) WITH (receive_mode = 'PULL')`,
+	}
 
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
@@ -356,6 +370,7 @@ var (
 			fkdcDDLStatements:                 fkdcDBStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBStatments,
 			intervalDDLStatements:             intervalDBStatements,
+			queueDDLStatements:                queueDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:               singerDBPGStatements,
@@ -366,6 +381,7 @@ var (
 			fkdcDDLStatements:                 fkdcDBPGStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBPGStatments,
 			intervalDDLStatements:             intervalDBPGStatements,
+			queueDDLStatements:                queueDBPGStatements,
 		},
 	}
 
@@ -503,6 +519,8 @@ func initIntegrationTests() (cleanup func()) {
 			Config:      configName,
 			DisplayName: testInstanceID,
 			NodeCount:   1,
+			// Set Edition to ENTERPRISE to enable Queue support.
+			Edition: instancepb.Instance_ENTERPRISE_PLUS,
 		},
 	})
 	if err != nil {
@@ -6018,6 +6036,70 @@ func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowErr
 	}
 	if msg, ok := matchError(err, codes.InvalidArgument, "Directed reads can only be performed in a read-only transaction"); !ok {
 		t.Fatal(msg)
+	}
+}
+
+func TestIntegration_QueueMutations(t *testing.T) {
+	// Run in cloud-devel only since this queue feature is not fully enabled yet.
+	onlyRunOnCloudDevel(t)
+	// DDL not fully enabled for PG yet.
+	skipUnsupportedPGTest(t)
+	// Queue not supported in emulator yet.
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	// Set up testing environment with the queue DDL.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][queueDDLStatements])
+	defer cleanup()
+
+	// 1. Test Send Mutation
+	payload := []byte("Hello Queue")
+	_, err := client.Apply(ctx, []*Mutation{
+		Send("TestQueue", Key{1}, payload, WithDeliveryTime(time.Now())),
+	})
+	if err != nil {
+		t.Fatalf("Failed to apply Send mutation: %v", err)
+	}
+	// Verify the message exists in the queue table.
+	// Spanner Queues can be queried like normal tables.
+	stmt := Statement{SQL: "SELECT Id, Payload FROM TestQueue WHERE Id = 1"}
+	row, err := client.Single().Query(ctx, stmt).Next()
+	if err != nil {
+		t.Fatalf("Failed to read sent message: %v", err)
+	}
+	var val []byte
+	err = row.ColumnByName("Payload", &val)
+	if err != nil {
+		t.Fatalf("Failed to read message payload bytes: %v", err)
+	}
+	if !testEqual(val, payload) {
+		t.Errorf("Send verification failed. Got payload: %v, want payload: %v", val, payload)
+	}
+
+	// 2. Test Ack Mutation
+	if _, err := client.Apply(ctx, []*Mutation{Ack("TestQueue", Key{1})}); err != nil {
+		t.Fatalf("Failed to apply Ack mutation: %v", err)
+	}
+	// Verify message is deleted.
+	row, err = client.Single().Query(ctx, stmt).Next()
+	if err == nil || err != iterator.Done {
+		t.Error("Ack failed: message still exists in queue")
+	}
+
+	// 3. Test Ack with IgnoreNotFound.
+	// Acknowledge a non-existent key (Id=99) with IgnoreNotFound.
+	if _, err := client.Apply(ctx, []*Mutation{Ack("TestQueue", Key{99}, WithIgnoreNotFound(true))}); err != nil {
+		t.Errorf("Ack with IgnoreNotFound should succeed for missing keys, but got: %v", err)
+	}
+
+	// 4. Test Ack without IgnoreNotFound (Should Fail).
+	// The spec says Ack returns an error if the message doesn't exist.
+	_, err = client.Apply(ctx, []*Mutation{Ack("TestQueue", Key{100})})
+	if err == nil {
+		t.Error("Ack without IgnoreNotFound should have failed for non-existent message")
 	}
 }
 
