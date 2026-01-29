@@ -180,8 +180,7 @@ func (rc *RepoConfig) GetModuleConfig(name string) *ModuleConfig {
 	for _, df := range mc.DisabledGeneratorFeatures {
 		delete(featureMap, df)
 	}
-	mc.resolvedGeneratorFeatures = slices.Collect(maps.Keys(featureMap))
-	slices.Sort(mc.resolvedGeneratorFeatures)
+	mc.resolvedGeneratorFeatures = slices.Sorted(maps.Keys(featureMap))
 	return mc
 }
 
@@ -216,8 +215,7 @@ func (mc *ModuleConfig) GetAPIConfig(path string) *APIConfig {
 	for _, df := range ac.DisabledGeneratorFeatures {
 		delete(featureMap, df)
 	}
-	ac.resolvedGeneratorFeatures = slices.Collect(maps.Keys(featureMap))
-	slices.Sort(ac.resolvedGeneratorFeatures)
+	ac.resolvedGeneratorFeatures = slices.Sorted(maps.Keys(featureMap))
 	return ac
 }
 
