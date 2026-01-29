@@ -54,6 +54,7 @@ func (gc *GlobalConfig) ResolvedGeneratorFeatures() []string {
 	if gc == nil {
 		return nil
 	}
+	slices.Sort(gc.EnabledGeneratorFeatures)
 	return gc.EnabledGeneratorFeatures
 }
 
@@ -180,6 +181,7 @@ func (rc *RepoConfig) GetModuleConfig(name string) *ModuleConfig {
 		delete(featureMap, df)
 	}
 	mc.resolvedGeneratorFeatures = slices.Collect(maps.Keys(featureMap))
+	slices.Sort(mc.resolvedGeneratorFeatures)
 	return mc
 }
 
@@ -215,6 +217,7 @@ func (mc *ModuleConfig) GetAPIConfig(path string) *APIConfig {
 		delete(featureMap, df)
 	}
 	ac.resolvedGeneratorFeatures = slices.Collect(maps.Keys(featureMap))
+	slices.Sort(ac.resolvedGeneratorFeatures)
 	return ac
 }
 

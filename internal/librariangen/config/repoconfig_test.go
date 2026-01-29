@@ -20,7 +20,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"gopkg.in/yaml.v3"
 )
 
@@ -360,8 +359,6 @@ global:
     - F_global_feat3
 `
 
-	sortSliceFn := func(a, b string) bool { return a < b }
-
 	var rc RepoConfig
 	if err := yaml.Unmarshal([]byte(configFileContent), &rc); err != nil {
 		t.Fatalf("yaml.Unmarshal: %v", err)
@@ -370,30 +367,30 @@ global:
 	// Validate the resolved state:
 	wantGlobalFeatures := []string{"F_global_feat1", "F_global_feat2", "F_global_feat3"}
 	got := rc.Global.ResolvedGeneratorFeatures()
-	if diff := cmp.Diff(wantGlobalFeatures, got, cmpopts.SortSlices(sortSliceFn)); diff != "" {
+	if diff := cmp.Diff(wantGlobalFeatures, got); diff != "" {
 		t.Errorf("global feature mismatch (-want +got):\n%s", diff)
 	}
 
 	mc := rc.GetModuleConfig("maps")
 	wantModuleFeatures := []string{"F_global_feat1", "F_global_feat3", "F_module_feat1"}
 	got = mc.ResolvedGeneratorFeatures()
-	if diff := cmp.Diff(wantModuleFeatures, got, cmpopts.SortSlices(sortSliceFn)); diff != "" {
+	if diff := cmp.Diff(wantModuleFeatures, got); diff != "" {
 		t.Errorf("global feature mismatch (-want +got):\n%s", diff)
 	}
 
 	apiPath := "google/maps/foo/v1"
 	ac := mc.GetAPIConfig(apiPath)
-	wantAPIFeatures := []string{"F_global_feat1", "F_global_feat3", "F_module_feat1", "F_api_feat1"}
+	wantAPIFeatures := []string{"F_api_feat1", "F_global_feat1", "F_global_feat3", "F_module_feat1"}
 	got = ac.ResolvedGeneratorFeatures()
-	if diff := cmp.Diff(wantAPIFeatures, got, cmpopts.SortSlices(sortSliceFn)); diff != "" {
+	if diff := cmp.Diff(wantAPIFeatures, got); diff != "" {
 		t.Errorf("global feature (%q) mismatch (-want +got):\n%s", apiPath, diff)
 	}
 
 	apiPath = "google/maps/foo/v2"
 	ac = mc.GetAPIConfig(apiPath)
-	wantAPIFeatures = []string{"F_global_feat1", "F_module_feat1", "F_api_feat2"}
+	wantAPIFeatures = []string{"F_api_feat2", "F_global_feat1", "F_module_feat1"}
 	got = ac.ResolvedGeneratorFeatures()
-	if diff := cmp.Diff(wantAPIFeatures, got, cmpopts.SortSlices(sortSliceFn)); diff != "" {
+	if diff := cmp.Diff(wantAPIFeatures, got); diff != "" {
 		t.Errorf("global feature (%q) mismatch (-want +got):\n%s", apiPath, diff)
 	}
 
