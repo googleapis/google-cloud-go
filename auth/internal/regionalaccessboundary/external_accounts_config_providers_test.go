@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package trustboundary
+package regionalaccessboundary
 
 import (
 	"context"
@@ -141,14 +141,14 @@ func TestWorkloadIdentityPoolConfigProvider(t *testing.T) {
 		}
 	})
 
-	t.Run("GetTrustBoundaryEndpoint", func(t *testing.T) {
+	t.Run("GetRegionalAccessBoundaryEndpoint", func(t *testing.T) {
 		want := "https://iamcredentials.example.com/v1/projects/12345/locations/global/workloadIdentityPools/my-pool/allowedLocations"
-		endpoint, err := p.GetTrustBoundaryEndpoint(ctx)
+		endpoint, err := p.GetRegionalAccessBoundaryEndpoint(ctx)
 		if err != nil {
-			t.Fatalf("GetTrustBoundaryEndpoint() unexpected error: %v", err)
+			t.Fatalf("GetRegionalAccessBoundaryEndpoint() unexpected error: %v", err)
 		}
 		if endpoint != want {
-			t.Errorf("GetTrustBoundaryEndpoint() = %q, want %q", endpoint, want)
+			t.Errorf("GetRegionalAccessBoundaryEndpoint() = %q, want %q", endpoint, want)
 		}
 	})
 }
@@ -170,14 +170,14 @@ func TestWorkforcePoolConfigProvider(t *testing.T) {
 		}
 	})
 
-	t.Run("GetTrustBoundaryEndpoint", func(t *testing.T) {
+	t.Run("GetRegionalAccessBoundaryEndpoint", func(t *testing.T) {
 		want := "https://iamcredentials.example.com/v1/locations/global/workforcePools/my-pool/allowedLocations"
-		endpoint, err := p.GetTrustBoundaryEndpoint(ctx)
+		endpoint, err := p.GetRegionalAccessBoundaryEndpoint(ctx)
 		if err != nil {
-			t.Fatalf("GetTrustBoundaryEndpoint() unexpected error: %v", err)
+			t.Fatalf("GetRegionalAccessBoundaryEndpoint() unexpected error: %v", err)
 		}
 		if endpoint != want {
-			t.Errorf("GetTrustBoundaryEndpoint() = %q, want %q", endpoint, want)
+			t.Errorf("GetRegionalAccessBoundaryEndpoint() = %q, want %q", endpoint, want)
 		}
 	})
 }
