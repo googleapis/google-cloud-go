@@ -409,7 +409,7 @@ libraries:
       - internal/generated/snippets/apikeys/
     tag_format: '{id}/v{version}'
   - id: apiregistry
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/apiregistry/v1beta
@@ -1538,7 +1538,7 @@ libraries:
       - internal/generated/snippets/cloudprofiler/
     tag_format: '{id}/v{version}'
   - id: cloudquotas
-    version: 1.4.0
+    version: 1.5.0
     last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/api/cloudquotas/v1
@@ -1575,7 +1575,7 @@ libraries:
       - internal/generated/snippets/cloudquotas/
     tag_format: '{id}/v{version}'
   - id: cloudsecuritycompliance
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 64f78809d70ea0d49f6ffbc7e6858eb37e350947
     apis:
       - path: google/cloud/cloudsecuritycompliance/v1
@@ -1845,7 +1845,7 @@ libraries:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
   - id: container
-    version: 1.45.0
+    version: 1.46.0
     last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/container/v1
@@ -2414,7 +2414,7 @@ libraries:
       - ^dlp/apiv2/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: documentai
-    version: 1.39.0
+    version: 1.40.0
     last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/documentai/v1
@@ -3912,7 +3912,7 @@ libraries:
       - internal/generated/snippets/networkconnectivity/
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.21.0
+    version: 1.22.0
     last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/networkmanagement/v1
@@ -4754,7 +4754,7 @@ libraries:
       - internal/generated/snippets/resourcemanager/
     tag_format: '{id}/v{version}'
   - id: retail
-    version: 1.25.1
+    version: 1.26.0
     last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/retail/v2
