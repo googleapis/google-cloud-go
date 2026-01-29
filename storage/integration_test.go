@@ -90,8 +90,8 @@ const (
 	testUniverseLocation   = "TEST_UNIVERSE_LOCATION"
 	testUniverseCreds      = "TEST_UNIVERSE_DOMAIN_CREDENTIAL"
 	// Location and Zone for zonal buckets tests
-	testZonalLocation = "us-central1"
-	testZonalZone     = "us-central1-a"
+	testZonalLocation = "us-west4"
+	testZonalZone     = "us-west4-a"
 )
 
 var (

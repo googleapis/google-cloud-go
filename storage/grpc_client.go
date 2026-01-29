@@ -186,11 +186,11 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 
 func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
 	value := forceDirectConnectivityFallbackAllowed // default
-	if c.config.grpcDirectPathEnforced == true {
+	if c.config.grpcDirectPathEnforced {
 		value = forceDirectConnectivityEnforced
 	}
 
-	param := directConnectivityHeaderKey + "=" + value
+	dc := directConnectivityHeaderKey + "=" + value
 
 	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		md, ok := metadata.FromOutgoingContext(ctx)
@@ -200,9 +200,9 @@ func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, 
 
 		// Merge with existing x-goog-request-params if present.
 		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
-			md.Set(requestParamsHeaderKey, vals[0]+"&"+param)
+			md.Set(requestParamsHeaderKey, vals[0]+"&"+dc)
 		} else {
-			md.Set(requestParamsHeaderKey, param)
+			md.Set(requestParamsHeaderKey, dc)
 		}
 		return invoker(metadata.NewOutgoingContext(ctx, md), method, req, reply, cc, opts...)
 	}
@@ -214,9 +214,9 @@ func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, 
 		}
 		// Merge with existing x-goog-request-params if present.
 		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
-			md.Set(requestParamsHeaderKey, vals[0]+"&"+param)
+			md.Set(requestParamsHeaderKey, vals[0]+"&"+dc)
 		} else {
-			md.Set(requestParamsHeaderKey, param)
+			md.Set(requestParamsHeaderKey, dc)
 		}
 		return streamer(metadata.NewOutgoingContext(ctx, md), desc, cc, method, opts...)
 	}

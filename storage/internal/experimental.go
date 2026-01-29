@@ -44,7 +44,7 @@ var (
 	WithZonalBucketAPIs any // func() option.ClientOption
 
 	// WithDirectConnectivityEnforced is a function which is implemented by the storage package.
-	// It sets the gRPC client to use direct path connectivity for all requests and may return error
+	// It sets the gRPC client to use direct path connectivity for all requests and may fail
 	// if direct path connectivity cannot be established for a request.
 	WithDirectConnectivityEnforced any // func() option.ClientOption
 )
