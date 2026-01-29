@@ -68,14 +68,14 @@ jobs:
     - name: Create Go package baseline
       run: cd ${{ matrix.changed }} && apidiff -m -w ${{ steps.baseline.outputs.pkg }} .
     - name: Upload baseline package data
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}/${{ steps.baseline.outputs.pkg }}
         retention-days: 1
     - uses: actions/checkout@v6
     - name: Download baseline package data
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}
