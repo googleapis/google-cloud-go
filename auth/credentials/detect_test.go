@@ -57,10 +57,11 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 		if r.Method != "POST" {
 			t.Errorf("unexpected request method: %v", r.Method)
 		}
-		if err := r.ParseForm(); err != nil {
-			t.Error(err)
+		var v map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&v); err != nil {
+			t.Fatalf("unable to decode request body: %v", err)
 		}
-		parts := strings.Split(r.FormValue("subject_token"), ".")
+		parts := strings.Split(v["subject_token"], ".")
 		var header jwt.Header
 		var claims jwt.Claims
 		b, err = base64.RawURLEncoding.DecodeString(parts[0])
@@ -78,10 +79,10 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if got := r.FormValue("audience"); got != aud {
+		if got := v["audience"]; got != aud {
 			t.Errorf("got audience %v, want %v", got, gdch.GrantType)
 		}
-		if want := jwt.HeaderAlgRSA256; header.Algorithm != want {
+		if want := jwt.HeaderAlgES256; header.Algorithm != want {
 			t.Errorf("got alg %q, want %q", header.Algorithm, want)
 		}
 		if want := jwt.HeaderType; header.Type != want {
