@@ -16,6 +16,7 @@ package config
 
 import (
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -36,6 +37,24 @@ const RepoConfigFile string = "repo-config.yaml"
 type RepoConfig struct {
 	// Modules is the list of all the modules in the repository which need overrides.
 	Modules []*ModuleConfig `yaml:"modules"`
+
+	// GlobalConfig contains customizations that apply to all modules.
+	Global *GlobalConfig `yaml:"global"`
+}
+
+// GlobalConfig is the top-level config that applies to all modules and APIs.
+type GlobalConfig struct {
+	// EnabledGeneratorFeatures provides a mechanism for enabling generator features
+	// globally.  Individual modules and APIs can disable global features.
+	EnabledGeneratorFeatures []string `yaml:"enabled_generator_features"`
+}
+
+// Returns the resolved generator features to be enabled globally.
+func (gc *GlobalConfig) ResolvedGeneratorFeatures() []string {
+	if gc == nil {
+		return nil
+	}
+	return gc.EnabledGeneratorFeatures
 }
 
 // ModuleConfig is the configuration for a single module.
@@ -53,6 +72,21 @@ type ModuleConfig struct {
 	// which it is difficult to prevent from being generated, but which shouldn't appear
 	// in the repo.
 	DeleteGenerationOutputPaths []string `yaml:"delete_generation_output_paths"`
+
+	// EnabledGeneratorFeatures provides a mechanism for enabling generator features
+	// at the module level.
+	EnabledGeneratorFeatures []string `yaml:"enabled_generator_features"`
+
+	// DisabledGeneratorFeatures provides a way to turn off features that were enabled
+	// at higher levels of abstraction (e.g. globally).
+	DisabledGeneratorFeatures []string `yaml:"disabled_generator_features"`
+
+	resolvedGeneratorFeatures []string `yaml:"-"` // Runtime generated. Not part of file.
+}
+
+// Returns the resolved generator features to be enabled for a module.
+func (mc *ModuleConfig) ResolvedGeneratorFeatures() []string {
+	return mc.resolvedGeneratorFeatures
 }
 
 // APIConfig provides per-API configuration to override defaults,
@@ -79,6 +113,21 @@ type APIConfig struct {
 	// present in the YAML file. It is populated when the APIConfig is returned
 	// from GetAPIConfig().
 	ModuleName string
+
+	// EnabledGeneratorFeatures provides a mechanism for enabling generator features
+	// at the API level.
+	EnabledGeneratorFeatures []string `yaml:"enabled_generator_features"`
+
+	// DisabledGeneratorFeatures provides a way to turn off features that were enabled
+	// at higher levels of abstraction (e.g. globally or per-module).
+	DisabledGeneratorFeatures []string `yaml:"disabled_generator_features"`
+
+	resolvedGeneratorFeatures []string `yaml:"-"` // Runtime generated.  Not part of file.
+}
+
+// Returns the resolved generator features to be enabled for an API config.
+func (ac *APIConfig) ResolvedGeneratorFeatures() []string {
+	return ac.resolvedGeneratorFeatures
 }
 
 // LoadRepoConfig loads the repository configuration with module-specific overrides,
@@ -96,35 +145,77 @@ func LoadRepoConfig(librarianDir string) (*RepoConfig, error) {
 	return &config, nil
 }
 
+func (rc *RepoConfig) GetGlobalConfig() *GlobalConfig {
+	if rc.Global == nil {
+		return &GlobalConfig{}
+	}
+	return rc.Global
+}
+
 // GetModuleConfig returns the configuration for the named module
 // (top-level directory). If no module-specific configuration is found,
 // an empty configuration (with the right name) is returned.
+//
+// It also computes the resolved generator features based on global config.
 func (rc *RepoConfig) GetModuleConfig(name string) *ModuleConfig {
-	for _, moduleConfig := range rc.Modules {
-		if moduleConfig.Name == name {
-			return moduleConfig
-		}
-	}
-	return &ModuleConfig{
+	mc := &ModuleConfig{
 		Name: name,
 	}
+	for _, moduleConfig := range rc.Modules {
+		if moduleConfig.Name == name {
+			mc = moduleConfig
+			break
+		}
+	}
+	// Compute enabled features.
+	featureMap := make(map[string]bool)
+	// merge features from global and module level.
+	for _, ef := range rc.GetGlobalConfig().ResolvedGeneratorFeatures() {
+		featureMap[ef] = true
+	}
+	for _, ef := range mc.EnabledGeneratorFeatures {
+		featureMap[ef] = true
+	}
+	for _, df := range mc.DisabledGeneratorFeatures {
+		delete(featureMap, df)
+	}
+	mc.resolvedGeneratorFeatures = slices.Collect(maps.Keys(featureMap))
+	return mc
 }
 
 // GetAPIConfig returns the configuration for the API identified by
 // its path within googleapis (e.g. "google/cloud/functions/v2").
 // If no API-specific configuration is found, an empty configuration
 // (with the right name) is returned.
+//
+// It also computes the enabled generator features based on global, module,
+// and per-api settings.
 func (mc *ModuleConfig) GetAPIConfig(path string) *APIConfig {
+	ac := &APIConfig{
+		Path: path,
+	}
 	for _, apiConfig := range mc.APIs {
 		if apiConfig.Path == path {
-			apiConfig.ModuleName = mc.Name
-			return apiConfig
+			ac = apiConfig
+			break
 		}
 	}
-	return &APIConfig{
-		Path:       path,
-		ModuleName: mc.Name,
+	// Normalize APIConfig.
+	ac.ModuleName = mc.Name
+
+	// Compute enabled features.
+	featureMap := make(map[string]bool)
+	for _, ef := range mc.ResolvedGeneratorFeatures() {
+		featureMap[ef] = true
 	}
+	for _, ef := range ac.EnabledGeneratorFeatures {
+		featureMap[ef] = true
+	}
+	for _, df := range ac.DisabledGeneratorFeatures {
+		delete(featureMap, df)
+	}
+	ac.resolvedGeneratorFeatures = slices.Collect(maps.Keys(featureMap))
+	return ac
 }
 
 // GetModulePath returns the module path for the module, applying
