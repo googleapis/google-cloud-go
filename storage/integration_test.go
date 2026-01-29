@@ -627,6 +627,88 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 	})
 }
 
+func TestIntegration_MRDWithNegativeOffsetsAndZeroLength(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		dataSize := 100
+		// Generate random content for testing.
+		content := make([]byte, dataSize)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MRDWithReadHandle"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatalf("Failed to upload test object %q: %v", objName, err)
+		}
+		// Ensure cleanup after the test.
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("Failed to delete test object %q: %v", objName, err)
+			}
+		}()
+
+		tests := []struct {
+			name   string
+			offset int64
+			length int64
+		}{
+			{
+				name:   "positive offset positive length",
+				offset: 10,
+				length: 20,
+			},
+			{
+				name:   "positive offset zero length",
+				offset: 10,
+				length: 0,
+			},
+			{
+				name:   "negative offset positive length",
+				offset: -10,
+				length: 20,
+			},
+			{
+				name:   "negative offset zero length",
+				offset: -10,
+				length: 0,
+			},
+		}
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				mrd, err := obj.NewMultiRangeDownloader(ctx)
+				if err != nil {
+					t.Fatalf("Failed to create MultiRangeDownloader: %v", err)
+				}
+				var res multiRangeDownloaderOutput
+				mrd.Add(&res.buf, test.offset, test.length, func(x, y int64, err error) {
+					res.offset = x
+					res.limit = y
+					res.err = err
+				})
+				mrd.Wait()
+				if err := mrd.Close(); err != nil {
+					t.Fatalf("Error while closing MRD: %v", err)
+				}
+				var startIdx, endIdx int
+				if test.offset < 0 {
+					startIdx = max(0, int(test.offset)+dataSize)
+				} else {
+					startIdx = int(test.offset)
+				}
+				if test.length == 0 {
+					endIdx = dataSize
+				} else {
+					endIdx = min(dataSize, startIdx+int(test.length))
+				}
+				wantContent := content[startIdx:endIdx]
+				if !bytes.Equal(res.buf.Bytes(), wantContent) {
+					t.Errorf("Downloaded content mismatch. got %v bytes, want %v bytes", res.buf.Bytes(), wantContent)
+				}
+			})
+		}
+	})
+}
+
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
