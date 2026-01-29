@@ -1749,7 +1749,11 @@ func (a *AggregationQuery) GetResponse(ctx context.Context) (aro *AggregationRes
 			f := res.Result.AggregateFields
 
 			for k, v := range f {
-				resp[k] = v
+				converted, err := createFromProtoValue(v, a.query.c)
+				if err != nil {
+					return nil, err
+				}
+				resp[k] = converted
 			}
 		}
 		aro.ExplainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
