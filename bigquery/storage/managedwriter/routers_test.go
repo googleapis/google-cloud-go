@@ -339,7 +339,7 @@ func BenchmarkRoutingParallel(b *testing.B) {
 			b.Run(benchName, func(b *testing.B) {
 				r := rand.New(rand.NewSource(1))
 				b.ResetTimer()
-				for i := 0; i < b.N; i++ {
+				for b.Loop() {
 					// pick a random explicit writer each time.
 					writer := explicitWriters[r.Intn(bm.numWriters)]
 					pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
@@ -374,7 +374,7 @@ func BenchmarkRoutingParallel(b *testing.B) {
 			b.Run(benchName, func(b *testing.B) {
 				r := rand.New(rand.NewSource(1))
 				b.ResetTimer()
-				for i := 0; i < b.N; i++ {
+				for b.Loop() {
 					// pick a random default writer each time.
 					writer := defaultWriters[r.Intn(bm.numDefaultWriters)]
 					pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
@@ -473,7 +473,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 				if b.N > 9999 {
 					b.Skip("benchmark unstable, only run with -benchtime=NNNNx")
 				}
-				for i := 0; i < b.N; i++ {
+				for b.Loop() {
 					b.StopTimer()
 					// Each iteration, we reset the loads to the predetermined values, and repoint
 					// all writers to the first connection.

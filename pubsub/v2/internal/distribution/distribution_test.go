@@ -105,7 +105,7 @@ func BenchmarkDistribution(b *testing.B) {
 	b.ReportAllocs()
 
 	var index int
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		if index = d.Percentile(0.5); index < 0 {
 			b.Fatalf("Invalid index: %d", index)
 		}

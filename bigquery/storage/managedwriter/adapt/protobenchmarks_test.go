@@ -73,7 +73,7 @@ func BenchmarkStorageSchemaToDescriptor(b *testing.B) {
 				if err != nil {
 					b.Errorf("%q: schema conversion fail: %v", bm.name, err)
 				}
-				for n := 0; n < b.N; n++ {
+				for b.Loop() {
 					if s == "proto3" {
 						benchDescriptor, err = adapt.StorageSchemaToProto3Descriptor(convSchema, "root")
 					} else {
@@ -204,7 +204,7 @@ func BenchmarkStaticProtoSerialization(b *testing.B) {
 	} {
 		b.Run(bm.name, func(b *testing.B) {
 			var totalBytes int64
-			for n := 0; n < b.N; n++ {
+			for b.Loop() {
 				m := bm.setterF()
 				out, err := proto.Marshal(m)
 				if err != nil {

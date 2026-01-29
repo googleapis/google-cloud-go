@@ -28,7 +28,7 @@ func BenchmarkPublisher_Unkeyed(b *testing.B) {
 	wait := make(chan struct{}, b.N)
 	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle interface{}) {
 		nlen := reflect.ValueOf(bundle).Len()
-		for i := 0; i < nlen; i++ {
+		for range nlen {
 			wait <- struct{}{}
 		}
 	})
@@ -48,7 +48,7 @@ func BenchmarkPublisher_SingleKey(b *testing.B) {
 	wait := make(chan struct{}, b.N)
 	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle interface{}) {
 		nlen := reflect.ValueOf(bundle).Len()
-		for i := 0; i < nlen; i++ {
+		for range nlen {
 			wait <- struct{}{}
 		}
 	})

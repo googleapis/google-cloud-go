@@ -2234,7 +2234,7 @@ func TestNewRow(t *testing.T) {
 
 func BenchmarkColumn(b *testing.B) {
 	var s string
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		if err := row.Column(0, &s); err != nil {
 			b.Fatal(err)
 		}

@@ -1327,7 +1327,7 @@ func BenchmarkConcurrentWrites(b *testing.B) {
 			)
 			b.SetBytes(int64(nEntries * len(payload)))
 			b.StartTimer()
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				for j := 0; j < nEntries; j++ {
 					lg.Log(logging.Entry{Payload: payload})
 				}
@@ -1495,7 +1495,7 @@ func BenchmarkSourceLocationPopulation(b *testing.B) {
 	var err error
 	for _, tc := range tests {
 		b.Run(tc.name, func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
+			for b.Loop() {
 				_, err = logger.ToLogEntry(tc.in, "projects/P")
 				if err != nil {
 					b.Fatalf("Unexpected error: %+v: %v", tc.in, err)

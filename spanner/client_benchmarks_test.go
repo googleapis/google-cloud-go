@@ -177,7 +177,7 @@ func Benchmark_Client_BurstRead_IncStep100(b *testing.B) {
 }
 
 func benchmarkClientBurstRead(b *testing.B, incStep uint64) {
-	for n := 0; n < b.N; n++ {
+	for b.Loop() {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
 		if uint64(sp.idleList.Len()) != sp.MinOpened {
@@ -189,15 +189,15 @@ func benchmarkClientBurstRead(b *testing.B, incStep uint64) {
 		results := make(chan int, totalQueries)
 		parallel := int(sp.MaxOpened * 2)
 
-		for w := 0; w < parallel; w++ {
+		for range parallel {
 			go readWorker(client, b, jobs, results)
 		}
-		for j := 0; j < totalQueries; j++ {
+		for j := range totalQueries {
 			jobs <- j
 		}
 		close(jobs)
 		totalRows := 0
-		for a := 0; a < totalQueries; a++ {
+		for range totalQueries {
 			totalRows = totalRows + <-results
 		}
 		reportBenchmark(b, sp, server)
@@ -238,7 +238,7 @@ func Benchmark_Client_BurstWrite100(b *testing.B) {
 }
 
 func benchmarkClientBurstWrite(b *testing.B, incStep uint64) {
-	for n := 0; n < b.N; n++ {
+	for b.Loop() {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
 		if uint64(sp.idleList.Len()) != sp.MinOpened {
@@ -250,15 +250,15 @@ func benchmarkClientBurstWrite(b *testing.B, incStep uint64) {
 		results := make(chan int64, totalUpdates)
 		parallel := int(sp.MaxOpened * 2)
 
-		for w := 0; w < parallel; w++ {
+		for range parallel {
 			go writeWorker(client, b, jobs, results)
 		}
-		for j := 0; j < totalUpdates; j++ {
+		for j := range totalUpdates {
 			jobs <- j
 		}
 		close(jobs)
 		totalRows := int64(0)
-		for a := 0; a < totalUpdates; a++ {
+		for range totalUpdates {
 			totalRows = totalRows + <-results
 		}
 		reportBenchmark(b, sp, server)
@@ -378,7 +378,7 @@ func Benchmark_Client_SteadyIncrease100(b *testing.B) {
 }
 
 func benchmarkClientSteadyIncrease(b *testing.B, incStep uint64) {
-	for n := 0; n < b.N; n++ {
+	for b.Loop() {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
 		if uint64(sp.idleList.Len()) != sp.MinOpened {
