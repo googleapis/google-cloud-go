@@ -146,6 +146,8 @@ func LoadRepoConfig(librarianDir string) (*RepoConfig, error) {
 	return &config, nil
 }
 
+// GetGlobalConfig returns information about global configuration setting for the repo.
+// Primarily this is for expressing generator features to be enabled for all targets.
 func (rc *RepoConfig) GetGlobalConfig() *GlobalConfig {
 	if rc.Global == nil {
 		return &GlobalConfig{}
