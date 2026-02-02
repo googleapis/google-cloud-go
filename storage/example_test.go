@@ -1105,3 +1105,67 @@ func ExampleMultiRangeDownloader() {
 	fmt.Printf("Downloaded %d bytes to first buffer: %s\n", b1.Len(), b1.String())
 	fmt.Printf("Downloaded %d bytes to second buffer: %s\n", b2.Len(), b2.String())
 }
+
+func ExampleWithErrorFunc() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer client.Close()
+
+	// Basic retry logic using the legacy signature
+	customRetry := func(err error) bool {
+		// Only retry on specific errors
+		return storage.ShouldRetry(err)
+	}
+
+	bucket := client.Bucket("my-bucket")
+	obj := bucket.Object("my-object").Retryer(
+		storage.WithErrorFunc(customRetry),
+		storage.WithPolicy(storage.RetryAlways),
+	)
+
+	// Operations on this object will use the custom retry logic
+	_, err = obj.Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleWithErrorFuncWithContext() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer client.Close()
+
+	// Advanced retry logic with full retry context
+	// This provides comprehensive context including operation, bucket, and object information.
+	customRetryWithContext := func(err error, retryCtx *storage.RetryContext) bool {
+		// Log the retry attempt and operation context
+		log.Printf("Retry decision for %s (bucket=%s, object=%s), invocation=%s, attempt=%d: %v",
+			retryCtx.Operation, retryCtx.Bucket, retryCtx.Object, retryCtx.InvocationID, retryCtx.Attempt, err)
+
+		// Don't retry after 3 attempts
+		if retryCtx.Attempt > 3 {
+			return false
+		}
+
+		// Use the default ShouldRetry logic for other cases
+		return storage.ShouldRetry(err)
+	}
+
+	bucket := client.Bucket("my-bucket")
+	obj := bucket.Object("my-object").Retryer(
+		storage.WithErrorFuncWithContext(customRetryWithContext),
+		storage.WithPolicy(storage.RetryAlways),
+	)
+
+	// Operations on this object will use the custom retry logic
+	_, err = obj.Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+}

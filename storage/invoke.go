@@ -53,17 +53,50 @@ var (
 	})
 )
 
-func (r *retryConfig) runShouldRetry(err error) bool {
+// runShouldRetry calls the configured shouldRetry function.
+// The shouldRetry function has already been normalized to the new signature
+// (with error and *RetryContext) by withErrorFunc.apply().
+func (r *retryConfig) runShouldRetry(err error, ctx *RetryContext) bool {
 	if r == nil || r.shouldRetry == nil {
 		return ShouldRetry(err)
 	}
-	return r.shouldRetry(err)
+	return r.shouldRetry(err, ctx)
+}
+
+// runOptions holds optional metadata for retry operations.
+type runOptions struct {
+	operation string
+	bucket    string
+	object    string
+}
+
+// RunOption configures optional metadata for run.
+type RunOption func(*runOptions)
+
+// WithOperation specifies the operation name for retry context.
+func WithOperation(op string) RunOption {
+	return func(o *runOptions) { o.operation = op }
+}
+
+// WithBucket specifies the bucket name for retry context.
+func WithBucket(bucket string) RunOption {
+	return func(o *runOptions) { o.bucket = bucket }
+}
+
+// WithObject specifies the object name for retry context.
+func WithObject(object string) RunOption {
+	return func(o *runOptions) { o.object = object }
 }
 
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
-func run(ctx context.Context, call func(ctx context.Context) error, retry *retryConfig, isIdempotent bool) error {
+func run(ctx context.Context, call func(ctx context.Context) error, retry *retryConfig, isIdempotent bool, opts ...RunOption) error {
+	options := &runOptions{}
+	for _, opt := range opts {
+		opt(options)
+	}
+
 	attempts := 1
 	invocationID := uuid.New().String()
 
@@ -105,8 +138,15 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		if lastErr != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
 			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
 		}
+		retryCtx := &RetryContext{
+			Attempt:      attempts,
+			InvocationID: invocationID,
+			Operation:    options.operation,
+			Bucket:       options.bucket,
+			Object:       options.object,
+		}
+		retryable := retry.runShouldRetry(lastErr, retryCtx)
 		attempts++
-		retryable := retry.runShouldRetry(lastErr)
 		// Explicitly check context cancellation so that we can distinguish between a
 		// DEADLINE_EXCEEDED error from the server and a user-set context deadline.
 		// Unfortunately gRPC will codes.DeadlineExceeded (which may be retryable if it's

@@ -226,7 +226,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, writerRetry, w.settings.idempotent))
+		}, w.settings.retry, w.settings.idempotent, WithOperation("WriteObject"), WithBucket(w.bucket), WithObject(w.attrs.Name)))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
@@ -1524,17 +1524,17 @@ func withBidiWriteObjectRedirectionErrorRetries(s *settings) (newr *retryConfig)
 		// not contain a handle and are "affirmative failures" which indicate that
 		// no server-side action occurred.
 		newr.policy = RetryAlways
-		newr.shouldRetry = func(err error) bool {
+		newr.shouldRetry = func(err error, ctx *RetryContext) bool {
 			return errors.Is(err, bidiWriteObjectRedirectionError{})
 		}
 		return newr
 	}
 	// If retry settings allow retries normally, fall back to that behavior.
-	newr.shouldRetry = func(err error) bool {
+	newr.shouldRetry = func(err error, ctx *RetryContext) bool {
 		if errors.Is(err, bidiWriteObjectRedirectionError{}) {
 			return true
 		}
-		v := oldr.runShouldRetry(err)
+		v := oldr.runShouldRetry(err, &RetryContext{})
 		return v
 	}
 	return newr

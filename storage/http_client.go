@@ -335,6 +335,7 @@ func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 		return err
 	}, s.retry, s.idempotent)
 }
+
 func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
 	it := &ObjectIterator{
@@ -385,7 +386,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		err = run(it.ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, WithOperation("ListObjects"), WithBucket(bucket))
 		if err != nil {
 			return "", formatBucketError(err)
 		}
@@ -416,7 +417,7 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	if s.userProject != "" {
 		req.UserProject(s.userProject)
 	}
-	err := run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
+	err := run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent, WithOperation("DeleteObject"), WithBucket(bucket), WithObject(object))
 	return formatObjectErr(err)
 }
 
@@ -441,7 +442,7 @@ func (c *httpStorageClient) GetObject(ctx context.Context, params *getObjectPara
 	err = run(ctx, func(ctx context.Context) error {
 		obj, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, WithOperation("GetObject"), WithBucket(params.bucket), WithObject(params.object))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -560,7 +561,7 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObje
 
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent)
+	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent, WithOperation("UpdateObject"), WithBucket(params.bucket), WithObject(params.object))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -586,7 +587,7 @@ func (c *httpStorageClient) RestoreObject(ctx context.Context, params *restoreOb
 
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent)
+	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent, WithOperation("RestoreObject"), WithBucket(params.bucket), WithObject(params.object))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -610,7 +611,7 @@ func (c *httpStorageClient) MoveObject(ctx context.Context, params *moveObjectPa
 	}
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent)
+	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent, WithOperation("MoveObject"), WithBucket(params.bucket), WithObject(params.srcObject))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -799,7 +800,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	var err error
 	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent, WithOperation("ComposeObject"), WithBucket(req.dstBucket), WithObject(req.dstObject.name)); err != nil {
 		return nil, formatObjectErr(err)
 	}
 	return newObject(obj), nil
@@ -846,7 +847,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 
 	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent, WithOperation("RewriteObject"), WithBucket(req.srcObject.bucket), WithObject(req.srcObject.name)); err != nil {
 		return nil, formatObjectErr(err)
 	}
 
@@ -1114,7 +1115,17 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 			if useRetry {
 				if s.retry != nil {
-					call.WithRetry(s.retry.backoff, s.retry.shouldRetry)
+					// Wrap shouldRetry to adapt to the googleapi WithRetry signature.
+					// WithRetry expects func(error) bool, but our shouldRetry uses
+					// func(error, int, string) bool. Since WithRetry doesn't provide
+					// attempt/invocation context, we pass default values.
+					var retryFunc func(error) bool
+					if s.retry.shouldRetry != nil {
+						retryFunc = func(err error) bool {
+							return s.retry.shouldRetry(err, &RetryContext{})
+						}
+					}
+					call.WithRetry(s.retry.backoff, retryFunc)
 				} else {
 					call.WithRetry(nil, nil)
 				}
