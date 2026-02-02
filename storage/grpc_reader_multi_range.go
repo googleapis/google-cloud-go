@@ -483,7 +483,7 @@ func (m *multiRangeDownloaderManager) establishInitialSession() error {
 		m.currentSession = session
 		firstResult = result
 		return nil
-	}, retry, true, "", "", "")
+	}, retry, true, "BidiReadObject", m.params.bucket, m.params.object)
 
 	if err != nil {
 		m.setPermanentError(err)
@@ -685,7 +685,7 @@ func (m *multiRangeDownloaderManager) ensureSession(ctx context.Context) error {
 			m.unsentRequests.PushFront(retryReq)
 		}
 		return nil
-	}, m.settings.retry, true, "", "", "")
+	}, m.settings.retry, true, "BidiReadObject", m.params.bucket, m.params.object)
 }
 
 var errBidiReadRedirect = errors.New("bidi read object redirected")

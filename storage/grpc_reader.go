@@ -157,7 +157,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			}
 			err = decoder.readFullObjectResponse()
 			return err
-		}, s.retry, s.idempotent, "", "", "")
+		}, s.retry, s.idempotent, "ReadObject", params.bucket, params.object)
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.

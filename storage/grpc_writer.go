@@ -218,7 +218,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, w.settings.retry, w.settings.idempotent, "", "", ""))
+		}, w.settings.retry, w.settings.idempotent, "WriteObject", w.bucket, w.attrs.Name))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()

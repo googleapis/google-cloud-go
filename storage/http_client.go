@@ -232,7 +232,7 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 		err = run(it.ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, "", "", "")
+		}, s.retry, s.idempotent, "ListBuckets", "", "")
 		if err != nil {
 			return "", err
 		}
@@ -285,7 +285,7 @@ func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	err = run(ctx, func(ctx context.Context) error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, "", "", "")
+	}, s.retry, s.idempotent, "GetBucket", bucket, "")
 
 	if err != nil {
 		return nil, formatBucketError(err)
@@ -314,7 +314,7 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	err = run(ctx, func(ctx context.Context) error {
 		rawBucket, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, "", "", "")
+	}, s.retry, s.idempotent, "UpdateBucket", bucket, "")
 	if err != nil {
 		return nil, err
 	}
@@ -335,6 +335,7 @@ func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 		return err
 	}, s.retry, s.idempotent, "LockBucketRetentionPolicy", bucket, "")
 }
+
 func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
 	it := &ObjectIterator{
@@ -385,7 +386,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		err = run(it.ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, "", "", "")
+		}, s.retry, s.idempotent, "ListObjects", bucket, "")
 		if err != nil {
 			return "", formatBucketError(err)
 		}
@@ -441,7 +442,7 @@ func (c *httpStorageClient) GetObject(ctx context.Context, params *getObjectPara
 	err = run(ctx, func(ctx context.Context) error {
 		obj, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, "", "", "")
+	}, s.retry, s.idempotent, "GetObject", params.bucket, params.object)
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -732,7 +733,7 @@ func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 	err = run(ctx, func(ctx context.Context) error {
 		acls, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, "", "", "")
+	}, s.retry, s.idempotent, "ListObjectACLs", bucket, object)
 	if err != nil {
 		return nil, err
 	}
@@ -1206,7 +1207,7 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 		err = run(it.ctx, func(ctx context.Context) error {
 			resp, err = call.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, "", "", "")
+		}, s.retry, s.idempotent, "ListHMACKeys", "", "")
 		if err != nil {
 			return "", err
 		}
@@ -1305,7 +1306,7 @@ func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string
 	err = run(ctx, func(ctx context.Context) error {
 		res, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, true, "", "", "")
+	}, s.retry, true, "ListNotifications", bucket, "")
 	if err != nil {
 		return nil, err
 	}
@@ -1322,7 +1323,7 @@ func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket strin
 	err = run(ctx, func(ctx context.Context) error {
 		rn, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, "", "", "")
+	}, s.retry, s.idempotent, "CreateNotification", bucket, "")
 	if err != nil {
 		return nil, err
 	}

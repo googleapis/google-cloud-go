@@ -2542,11 +2542,11 @@ type RetryContext struct {
 	Attempt int
 	// InvocationID is a unique identifier for the current operation invocation.
 	InvocationID string
-	// Operation describes the operation being performed (e.g., "storage.objects.get", "storage.objects.insert").
+	// Operation describes the operation being performed (e.g., "GetObject", "DeleteObject").
 	Operation string
-	// Bucket is the name of the bucket involved in the operation.
+	// Bucket is the name of the bucket involved in the operation, empty if not applicable.
 	Bucket string
-	// Object is the name of the object involved in the operation.
+	// Object is the name of the object involved in the operation, empty if not applicable.
 	Object string
 }
 
