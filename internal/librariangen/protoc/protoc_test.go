@@ -69,6 +69,7 @@ func TestBuild(t *testing.T) {
 		features      []string
 		nestedProtos  []string
 		want          []string
+		wantError     bool
 	}{
 		{
 			name:    "go_grpc_library rule",
@@ -158,6 +159,21 @@ func TestBuild(t *testing.T) {
 				filepath.Join(sourceDir, "google/cloud/secretmanager/v1beta2/secretmanager.proto"),
 			},
 		},
+		{
+			name:    "bad feature list",
+			apiPath: "google/cloud/workflows/v1",
+			reqID:   "workflows",
+			config: mockConfigProvider{
+				gapicImportPath:   "cloud.google.com/go/workflows/apiv1;workflows",
+				transport:         "grpc",
+				grpcServiceConfig: "workflows_grpc_service_config.json",
+				serviceYAML:       "workflows_v1.yaml",
+				hasGoGRPC:         true,
+				hasGAPIC:          true,
+			},
+			features:  []string{"random string"},
+			wantError: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -170,6 +186,12 @@ func TestBuild(t *testing.T) {
 			}
 
 			got, err := Build(req, api, &tt.config, sourceDir, "/output", tt.nestedProtos, tt.features)
+			if tt.wantError {
+				if err == nil {
+					t.Fatal("expected error, Build() succeeded")
+				}
+				return //
+			}
 			if err != nil {
 				t.Fatalf("Build() failed: %v", err)
 			}

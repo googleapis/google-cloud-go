@@ -23,6 +23,9 @@ import (
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
 
+// All generator features have a known prefix.
+const featurePrefix = "F_" // Defined in gapic-generator-go
+
 // ConfigProvider is an interface that describes the configuration needed
 // by the Build function. This allows the protoc package to be decoupled
 // from the source of the configuration (e.g., Bazel files, JSON, etc.).
