@@ -41,10 +41,11 @@ var newRoutesClientHook clientHook
 
 // RoutesCallOptions contains the retry settings for each method of RoutesClient.
 type RoutesCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
+	Delete             []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	List               []gax.CallOption
+	TestIamPermissions []gax.CallOption
 }
 
 func defaultRoutesRESTCallOptions() *RoutesCallOptions {
@@ -79,6 +80,9 @@ func defaultRoutesRESTCallOptions() *RoutesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -91,6 +95,7 @@ type internalRoutesClient interface {
 	Get(context.Context, *computepb.GetRouteRequest, ...gax.CallOption) (*computepb.Route, error)
 	Insert(context.Context, *computepb.InsertRouteRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRoutesRequest, ...gax.CallOption) *RouteIterator
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRouteRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
 // RoutesClient is a client for interacting with Google Compute Engine API.
@@ -147,6 +152,11 @@ func (c *RoutesClient) Insert(ctx context.Context, req *computepb.InsertRouteReq
 // List retrieves the list of Route resources available to the specified project.
 func (c *RoutesClient) List(ctx context.Context, req *computepb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *RoutesClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRouteRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -497,4 +507,56 @@ func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRe
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *routesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRouteRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes/%v/testIamPermissions", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

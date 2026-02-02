@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/netapp/apiv1",
-    "version": "1.11.0",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -225,6 +225,52 @@
         "method": {
           "shortName": "CreateBackupVault",
           "fullName": "google.cloud.netapp.v1.NetApp.CreateBackupVault",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateHostGroup_sync",
+      "title": "netapp CreateHostGroup Sample",
+      "description": "CreateHostGroup creates a new host group.",
+      "file": "Client/CreateHostGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateHostGroup",
+        "fullName": "google.cloud.netapp.v1.Client.CreateHostGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateHostGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateHostGroupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateHostGroup",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateHostGroup",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"
@@ -685,6 +731,52 @@
         "method": {
           "shortName": "DeleteBackupVault",
           "fullName": "google.cloud.netapp.v1.NetApp.DeleteBackupVault",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteHostGroup_sync",
+      "title": "netapp DeleteHostGroup Sample",
+      "description": "DeleteHostGroup deletes a host group.",
+      "file": "Client/DeleteHostGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteHostGroup",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteHostGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteHostGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteHostGroupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteHostGroup",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteHostGroup",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"
@@ -1298,6 +1390,52 @@
       ]
     },
     {
+      "regionTag": "netapp_v1_generated_NetApp_GetHostGroup_sync",
+      "title": "netapp GetHostGroup Sample",
+      "description": "GetHostGroup returns details of the specified host group.",
+      "file": "Client/GetHostGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetHostGroup",
+        "fullName": "google.cloud.netapp.v1.Client.GetHostGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetHostGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.HostGroup",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetHostGroup",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetHostGroup",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "netapp_v1_generated_NetApp_GetKmsConfig_sync",
       "title": "netapp GetKmsConfig Sample",
       "description": "GetKmsConfig returns the description of the specified KMS config by kms_config_id.",
@@ -1850,6 +1988,52 @@
       ]
     },
     {
+      "regionTag": "netapp_v1_generated_NetApp_ListHostGroups_sync",
+      "title": "netapp ListHostGroups Sample",
+      "description": "ListHostGroups returns a list of host groups in a `location`. Use `-` as location to list\nhost groups across all locations.",
+      "file": "Client/ListHostGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListHostGroups",
+        "fullName": "google.cloud.netapp.v1.Client.ListHostGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListHostGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HostGroupIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListHostGroups",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListHostGroups",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "netapp_v1_generated_NetApp_ListKmsConfigs_sync",
       "title": "netapp ListKmsConfigs Sample",
       "description": "ListKmsConfigs returns descriptions of all KMS configs owned by the caller.",
@@ -2213,6 +2397,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_RestoreBackupFiles_sync",
+      "title": "netapp RestoreBackupFiles Sample",
+      "description": "RestoreBackupFiles restore files from a backup to a volume.",
+      "file": "Client/RestoreBackupFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreBackupFiles",
+        "fullName": "google.cloud.netapp.v1.Client.RestoreBackupFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.RestoreBackupFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreBackupFilesOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "RestoreBackupFiles",
+          "fullName": "google.cloud.netapp.v1.NetApp.RestoreBackupFiles",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2662,6 +2892,52 @@
         "method": {
           "shortName": "UpdateBackupVault",
           "fullName": "google.cloud.netapp.v1.NetApp.UpdateBackupVault",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateHostGroup_sync",
+      "title": "netapp UpdateHostGroup Sample",
+      "description": "UpdateHostGroup updates an existing host group.",
+      "file": "Client/UpdateHostGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateHostGroup",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateHostGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateHostGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateHostGroupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateHostGroup",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateHostGroup",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"

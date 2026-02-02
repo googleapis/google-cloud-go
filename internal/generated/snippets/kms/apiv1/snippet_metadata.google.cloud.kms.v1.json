@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.23.2",
+    "version": "1.25.0",
     "language": "GO",
     "apis": [
       {
@@ -1425,6 +1425,695 @@
           "service": {
             "shortName": "EkmService",
             "fullName": "google.cloud.kms.v1.EkmService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_ApproveSingleTenantHsmInstanceProposal_sync",
+      "title": "cloudkms ApproveSingleTenantHsmInstanceProposal Sample",
+      "description": "ApproveSingleTenantHsmInstanceProposal approves a\n[SingleTenantHsmInstanceProposal][google.cloud.kms.v1.SingleTenantHsmInstanceProposal]\nfor a given\n[SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance]. The\nproposal must be in the\n[PENDING][google.cloud.kms.v1.SingleTenantHsmInstanceProposal.State.PENDING]\nstate.",
+      "file": "HsmManagementClient/ApproveSingleTenantHsmInstanceProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ApproveSingleTenantHsmInstanceProposal",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.ApproveSingleTenantHsmInstanceProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.ApproveSingleTenantHsmInstanceProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.ApproveSingleTenantHsmInstanceProposalResponse",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "ApproveSingleTenantHsmInstanceProposal",
+          "fullName": "google.cloud.kms.v1.HsmManagement.ApproveSingleTenantHsmInstanceProposal",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_CreateSingleTenantHsmInstance_sync",
+      "title": "cloudkms CreateSingleTenantHsmInstance Sample",
+      "description": "CreateSingleTenantHsmInstance creates a new\n[SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance] in a\ngiven Project and Location. User must create a RegisterTwoFactorAuthKeys\nproposal with this single-tenant HSM instance to finish setup of the\ninstance.",
+      "file": "HsmManagementClient/CreateSingleTenantHsmInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSingleTenantHsmInstance",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.CreateSingleTenantHsmInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.CreateSingleTenantHsmInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSingleTenantHsmInstanceOperation",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "CreateSingleTenantHsmInstance",
+          "fullName": "google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstance",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_CreateSingleTenantHsmInstanceProposal_sync",
+      "title": "cloudkms CreateSingleTenantHsmInstanceProposal Sample",
+      "description": "CreateSingleTenantHsmInstanceProposal creates a new\n[SingleTenantHsmInstanceProposal][google.cloud.kms.v1.SingleTenantHsmInstanceProposal]\nfor a given\n[SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance].",
+      "file": "HsmManagementClient/CreateSingleTenantHsmInstanceProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSingleTenantHsmInstanceProposal",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.CreateSingleTenantHsmInstanceProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.CreateSingleTenantHsmInstanceProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSingleTenantHsmInstanceProposalOperation",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "CreateSingleTenantHsmInstanceProposal",
+          "fullName": "google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstanceProposal",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_DeleteSingleTenantHsmInstanceProposal_sync",
+      "title": "cloudkms DeleteSingleTenantHsmInstanceProposal Sample",
+      "description": "DeleteSingleTenantHsmInstanceProposal deletes a\n[SingleTenantHsmInstanceProposal][google.cloud.kms.v1.SingleTenantHsmInstanceProposal].",
+      "file": "HsmManagementClient/DeleteSingleTenantHsmInstanceProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSingleTenantHsmInstanceProposal",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.DeleteSingleTenantHsmInstanceProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.DeleteSingleTenantHsmInstanceProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "DeleteSingleTenantHsmInstanceProposal",
+          "fullName": "google.cloud.kms.v1.HsmManagement.DeleteSingleTenantHsmInstanceProposal",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_ExecuteSingleTenantHsmInstanceProposal_sync",
+      "title": "cloudkms ExecuteSingleTenantHsmInstanceProposal Sample",
+      "description": "ExecuteSingleTenantHsmInstanceProposal executes a\n[SingleTenantHsmInstanceProposal][google.cloud.kms.v1.SingleTenantHsmInstanceProposal]\nfor a given\n[SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance]. The\nproposal must be in the\n[APPROVED][google.cloud.kms.v1.SingleTenantHsmInstanceProposal.State.APPROVED]\nstate.",
+      "file": "HsmManagementClient/ExecuteSingleTenantHsmInstanceProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteSingleTenantHsmInstanceProposal",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.ExecuteSingleTenantHsmInstanceProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.ExecuteSingleTenantHsmInstanceProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExecuteSingleTenantHsmInstanceProposalOperation",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "ExecuteSingleTenantHsmInstanceProposal",
+          "fullName": "google.cloud.kms.v1.HsmManagement.ExecuteSingleTenantHsmInstanceProposal",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_GetIamPolicy_sync",
+      "title": "cloudkms GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "HsmManagementClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_GetLocation_sync",
+      "title": "cloudkms GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "HsmManagementClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_GetOperation_sync",
+      "title": "cloudkms GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "HsmManagementClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_GetSingleTenantHsmInstance_sync",
+      "title": "cloudkms GetSingleTenantHsmInstance Sample",
+      "description": "GetSingleTenantHsmInstance returns metadata for a given\n[SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance].",
+      "file": "HsmManagementClient/GetSingleTenantHsmInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSingleTenantHsmInstance",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.GetSingleTenantHsmInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.GetSingleTenantHsmInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.SingleTenantHsmInstance",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "GetSingleTenantHsmInstance",
+          "fullName": "google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstance",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_GetSingleTenantHsmInstanceProposal_sync",
+      "title": "cloudkms GetSingleTenantHsmInstanceProposal Sample",
+      "description": "GetSingleTenantHsmInstanceProposal returns metadata for a given\n[SingleTenantHsmInstanceProposal][google.cloud.kms.v1.SingleTenantHsmInstanceProposal].",
+      "file": "HsmManagementClient/GetSingleTenantHsmInstanceProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSingleTenantHsmInstanceProposal",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.GetSingleTenantHsmInstanceProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.GetSingleTenantHsmInstanceProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.SingleTenantHsmInstanceProposal",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "GetSingleTenantHsmInstanceProposal",
+          "fullName": "google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstanceProposal",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_ListLocations_sync",
+      "title": "cloudkms ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "HsmManagementClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_ListSingleTenantHsmInstanceProposals_sync",
+      "title": "cloudkms ListSingleTenantHsmInstanceProposals Sample",
+      "description": "ListSingleTenantHsmInstanceProposals lists\n[SingleTenantHsmInstanceProposals][google.cloud.kms.v1.SingleTenantHsmInstanceProposal].",
+      "file": "HsmManagementClient/ListSingleTenantHsmInstanceProposals/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSingleTenantHsmInstanceProposals",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.ListSingleTenantHsmInstanceProposals",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.ListSingleTenantHsmInstanceProposalsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SingleTenantHsmInstanceProposalIterator",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "ListSingleTenantHsmInstanceProposals",
+          "fullName": "google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstanceProposals",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_ListSingleTenantHsmInstances_sync",
+      "title": "cloudkms ListSingleTenantHsmInstances Sample",
+      "description": "ListSingleTenantHsmInstances lists\n[SingleTenantHsmInstances][google.cloud.kms.v1.SingleTenantHsmInstance].",
+      "file": "HsmManagementClient/ListSingleTenantHsmInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSingleTenantHsmInstances",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.ListSingleTenantHsmInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.ListSingleTenantHsmInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SingleTenantHsmInstanceIterator",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "ListSingleTenantHsmInstances",
+          "fullName": "google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstances",
+          "service": {
+            "shortName": "HsmManagement",
+            "fullName": "google.cloud.kms.v1.HsmManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_SetIamPolicy_sync",
+      "title": "cloudkms SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "HsmManagementClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_HsmManagement_TestIamPermissions_sync",
+      "title": "cloudkms TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "HsmManagementClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.kms.v1.HsmManagementClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "HsmManagementClient",
+          "fullName": "google.cloud.kms.v1.HsmManagementClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },

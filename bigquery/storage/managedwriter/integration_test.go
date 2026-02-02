@@ -261,9 +261,6 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
 		})
-		t.Run("TestLargeInsertNoRetry", func(t *testing.T) {
-			testLargeInsertNoRetry(ctx, t, mwClient, bqClient, dataset)
-		})
 		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
 			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})

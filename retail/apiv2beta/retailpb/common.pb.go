@@ -1694,6 +1694,100 @@ func (x *PinControlMetadata) GetDroppedPins() map[int64]*PinControlMetadata_Prod
 	return nil
 }
 
+// A list of string values.
+type StringList struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// String values.
+	Values []string `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
+}
+
+func (x *StringList) Reset() {
+	*x = StringList{}
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StringList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StringList) ProtoMessage() {}
+
+func (x *StringList) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StringList.ProtoReflect.Descriptor instead.
+func (*StringList) Descriptor() ([]byte, []int) {
+	return file_google_cloud_retail_v2beta_common_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *StringList) GetValues() []string {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
+// A message with a list of double values.
+type DoubleList struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The list of double values.
+	Values []float64 `protobuf:"fixed64,1,rep,packed,name=values,proto3" json:"values,omitempty"`
+}
+
+func (x *DoubleList) Reset() {
+	*x = DoubleList{}
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DoubleList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DoubleList) ProtoMessage() {}
+
+func (x *DoubleList) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DoubleList.ProtoReflect.Descriptor instead.
+func (*DoubleList) Descriptor() ([]byte, []int) {
+	return file_google_cloud_retail_v2beta_common_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *DoubleList) GetValues() []float64 {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
 // Query terms that we want to match on.
 type Condition_QueryTerm struct {
 	state         protoimpl.MessageState
@@ -1713,7 +1807,7 @@ type Condition_QueryTerm struct {
 
 func (x *Condition_QueryTerm) Reset() {
 	*x = Condition_QueryTerm{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[13]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1725,7 +1819,7 @@ func (x *Condition_QueryTerm) String() string {
 func (*Condition_QueryTerm) ProtoMessage() {}
 
 func (x *Condition_QueryTerm) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[13]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1770,7 +1864,7 @@ type Condition_TimeRange struct {
 
 func (x *Condition_TimeRange) Reset() {
 	*x = Condition_TimeRange{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[14]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1782,7 +1876,7 @@ func (x *Condition_TimeRange) String() string {
 func (*Condition_TimeRange) ProtoMessage() {}
 
 func (x *Condition_TimeRange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[14]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1856,7 +1950,7 @@ type Rule_BoostAction struct {
 
 func (x *Rule_BoostAction) Reset() {
 	*x = Rule_BoostAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[15]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1868,7 +1962,7 @@ func (x *Rule_BoostAction) String() string {
 func (*Rule_BoostAction) ProtoMessage() {}
 
 func (x *Rule_BoostAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[15]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1941,7 +2035,7 @@ type Rule_FilterAction struct {
 
 func (x *Rule_FilterAction) Reset() {
 	*x = Rule_FilterAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[16]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1953,7 +2047,7 @@ func (x *Rule_FilterAction) String() string {
 func (*Rule_FilterAction) ProtoMessage() {}
 
 func (x *Rule_FilterAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[16]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1994,7 +2088,7 @@ type Rule_RedirectAction struct {
 
 func (x *Rule_RedirectAction) Reset() {
 	*x = Rule_RedirectAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[17]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2006,7 +2100,7 @@ func (x *Rule_RedirectAction) String() string {
 func (*Rule_RedirectAction) ProtoMessage() {}
 
 func (x *Rule_RedirectAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[17]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2047,7 +2141,7 @@ type Rule_TwowaySynonymsAction struct {
 
 func (x *Rule_TwowaySynonymsAction) Reset() {
 	*x = Rule_TwowaySynonymsAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[18]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2059,7 +2153,7 @@ func (x *Rule_TwowaySynonymsAction) String() string {
 func (*Rule_TwowaySynonymsAction) ProtoMessage() {}
 
 func (x *Rule_TwowaySynonymsAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[18]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2107,7 +2201,7 @@ type Rule_OnewaySynonymsAction struct {
 
 func (x *Rule_OnewaySynonymsAction) Reset() {
 	*x = Rule_OnewaySynonymsAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[19]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2119,7 +2213,7 @@ func (x *Rule_OnewaySynonymsAction) String() string {
 func (*Rule_OnewaySynonymsAction) ProtoMessage() {}
 
 func (x *Rule_OnewaySynonymsAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[19]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2177,7 +2271,7 @@ type Rule_DoNotAssociateAction struct {
 
 func (x *Rule_DoNotAssociateAction) Reset() {
 	*x = Rule_DoNotAssociateAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[20]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2189,7 +2283,7 @@ func (x *Rule_DoNotAssociateAction) String() string {
 func (*Rule_DoNotAssociateAction) ProtoMessage() {}
 
 func (x *Rule_DoNotAssociateAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[20]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2246,7 +2340,7 @@ type Rule_ReplacementAction struct {
 
 func (x *Rule_ReplacementAction) Reset() {
 	*x = Rule_ReplacementAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[21]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2258,7 +2352,7 @@ func (x *Rule_ReplacementAction) String() string {
 func (*Rule_ReplacementAction) ProtoMessage() {}
 
 func (x *Rule_ReplacementAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[21]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2308,7 +2402,7 @@ type Rule_IgnoreAction struct {
 
 func (x *Rule_IgnoreAction) Reset() {
 	*x = Rule_IgnoreAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[22]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2320,7 +2414,7 @@ func (x *Rule_IgnoreAction) String() string {
 func (*Rule_IgnoreAction) ProtoMessage() {}
 
 func (x *Rule_IgnoreAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[22]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2382,7 +2476,7 @@ type Rule_ForceReturnFacetAction struct {
 
 func (x *Rule_ForceReturnFacetAction) Reset() {
 	*x = Rule_ForceReturnFacetAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[23]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2394,7 +2488,7 @@ func (x *Rule_ForceReturnFacetAction) String() string {
 func (*Rule_ForceReturnFacetAction) ProtoMessage() {}
 
 func (x *Rule_ForceReturnFacetAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[23]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2449,7 +2543,7 @@ type Rule_RemoveFacetAction struct {
 
 func (x *Rule_RemoveFacetAction) Reset() {
 	*x = Rule_RemoveFacetAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[24]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2461,7 +2555,7 @@ func (x *Rule_RemoveFacetAction) String() string {
 func (*Rule_RemoveFacetAction) ProtoMessage() {}
 
 func (x *Rule_RemoveFacetAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[24]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2532,7 +2626,7 @@ type Rule_PinAction struct {
 
 func (x *Rule_PinAction) Reset() {
 	*x = Rule_PinAction{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[25]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2544,7 +2638,7 @@ func (x *Rule_PinAction) String() string {
 func (*Rule_PinAction) ProtoMessage() {}
 
 func (x *Rule_PinAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[25]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2585,7 +2679,7 @@ type Rule_ForceReturnFacetAction_FacetPositionAdjustment struct {
 
 func (x *Rule_ForceReturnFacetAction_FacetPositionAdjustment) Reset() {
 	*x = Rule_ForceReturnFacetAction_FacetPositionAdjustment{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[26]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2597,7 +2691,7 @@ func (x *Rule_ForceReturnFacetAction_FacetPositionAdjustment) String() string {
 func (*Rule_ForceReturnFacetAction_FacetPositionAdjustment) ProtoMessage() {}
 
 func (x *Rule_ForceReturnFacetAction_FacetPositionAdjustment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[26]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2654,7 +2748,7 @@ type PriceInfo_PriceRange struct {
 
 func (x *PriceInfo_PriceRange) Reset() {
 	*x = PriceInfo_PriceRange{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[28]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2666,7 +2760,7 @@ func (x *PriceInfo_PriceRange) String() string {
 func (*PriceInfo_PriceRange) ProtoMessage() {}
 
 func (x *PriceInfo_PriceRange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[28]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2708,7 +2802,7 @@ type PinControlMetadata_ProductPins struct {
 
 func (x *PinControlMetadata_ProductPins) Reset() {
 	*x = PinControlMetadata_ProductPins{}
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[30]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2720,7 +2814,7 @@ func (x *PinControlMetadata_ProductPins) String() string {
 func (*PinControlMetadata_ProductPins) ProtoMessage() {}
 
 func (x *PinControlMetadata_ProductPins) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[30]
+	mi := &file_google_cloud_retail_v2beta_common_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3071,55 +3165,60 @@ var file_google_cloud_retail_v2beta_common_proto_rawDesc = []byte{
 	0x6f, 0x75, 0x64, 0x2e, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x2e, 0x76, 0x32, 0x62, 0x65, 0x74,
 	0x61, 0x2e, 0x50, 0x69, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x4d, 0x65, 0x74, 0x61,
 	0x64, 0x61, 0x74, 0x61, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x50, 0x69, 0x6e, 0x73,
-	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x2a, 0x86, 0x01, 0x0a, 0x14,
-	0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x4c,
-	0x65, 0x76, 0x65, 0x6c, 0x12, 0x26, 0x0a, 0x22, 0x41, 0x54, 0x54, 0x52, 0x49, 0x42, 0x55, 0x54,
-	0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x46, 0x49, 0x47, 0x5f, 0x4c, 0x45, 0x56, 0x45, 0x4c, 0x5f, 0x55,
-	0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x22, 0x0a, 0x1e,
-	0x50, 0x52, 0x4f, 0x44, 0x55, 0x43, 0x54, 0x5f, 0x4c, 0x45, 0x56, 0x45, 0x4c, 0x5f, 0x41, 0x54,
-	0x54, 0x52, 0x49, 0x42, 0x55, 0x54, 0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x46, 0x49, 0x47, 0x10, 0x01,
-	0x12, 0x22, 0x0a, 0x1e, 0x43, 0x41, 0x54, 0x41, 0x4c, 0x4f, 0x47, 0x5f, 0x4c, 0x45, 0x56, 0x45,
-	0x4c, 0x5f, 0x41, 0x54, 0x54, 0x52, 0x49, 0x42, 0x55, 0x54, 0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x46,
-	0x49, 0x47, 0x10, 0x02, 0x2a, 0x69, 0x0a, 0x0c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e,
-	0x54, 0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a, 0x19, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e,
-	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
-	0x44, 0x10, 0x00, 0x12, 0x20, 0x0a, 0x1c, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f,
-	0x54, 0x59, 0x50, 0x45, 0x5f, 0x52, 0x45, 0x43, 0x4f, 0x4d, 0x4d, 0x45, 0x4e, 0x44, 0x41, 0x54,
-	0x49, 0x4f, 0x4e, 0x10, 0x01, 0x12, 0x18, 0x0a, 0x14, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f,
-	0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x53, 0x45, 0x41, 0x52, 0x43, 0x48, 0x10, 0x02, 0x2a,
-	0xa1, 0x01, 0x0a, 0x1e, 0x52, 0x65, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x64, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x73, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x4f, 0x70, 0x74, 0x69,
-	0x6f, 0x6e, 0x12, 0x30, 0x0a, 0x2c, 0x52, 0x45, 0x43, 0x4f, 0x4d, 0x4d, 0x45, 0x4e, 0x44, 0x41,
-	0x54, 0x49, 0x4f, 0x4e, 0x53, 0x5f, 0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x49, 0x4e, 0x47, 0x5f,
-	0x4f, 0x50, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49,
-	0x45, 0x44, 0x10, 0x00, 0x12, 0x26, 0x0a, 0x22, 0x52, 0x45, 0x43, 0x4f, 0x4d, 0x4d, 0x45, 0x4e,
-	0x44, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x53, 0x5f, 0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x49, 0x4e,
-	0x47, 0x5f, 0x44, 0x49, 0x53, 0x41, 0x42, 0x4c, 0x45, 0x44, 0x10, 0x01, 0x12, 0x25, 0x0a, 0x21,
-	0x52, 0x45, 0x43, 0x4f, 0x4d, 0x4d, 0x45, 0x4e, 0x44, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x53, 0x5f,
-	0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x49, 0x4e, 0x47, 0x5f, 0x45, 0x4e, 0x41, 0x42, 0x4c, 0x45,
-	0x44, 0x10, 0x03, 0x2a, 0x8b, 0x01, 0x0a, 0x15, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x53, 0x6f,
-	0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x73, 0x65, 0x43, 0x61, 0x73, 0x65, 0x12, 0x28, 0x0a,
-	0x24, 0x53, 0x45, 0x41, 0x52, 0x43, 0x48, 0x5f, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e,
-	0x5f, 0x55, 0x53, 0x45, 0x5f, 0x43, 0x41, 0x53, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43,
-	0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x23, 0x0a, 0x1f, 0x53, 0x45, 0x41, 0x52, 0x43,
-	0x48, 0x5f, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x55, 0x53, 0x45, 0x5f, 0x43,
-	0x41, 0x53, 0x45, 0x5f, 0x53, 0x45, 0x41, 0x52, 0x43, 0x48, 0x10, 0x01, 0x12, 0x23, 0x0a, 0x1f,
-	0x53, 0x45, 0x41, 0x52, 0x43, 0x48, 0x5f, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f,
-	0x55, 0x53, 0x45, 0x5f, 0x43, 0x41, 0x53, 0x45, 0x5f, 0x42, 0x52, 0x4f, 0x57, 0x53, 0x45, 0x10,
-	0x02, 0x42, 0xca, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x2e, 0x76, 0x32,
-	0x62, 0x65, 0x74, 0x61, 0x42, 0x0b, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x36, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x2f,
-	0x61, 0x70, 0x69, 0x76, 0x32, 0x62, 0x65, 0x74, 0x61, 0x2f, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x70, 0x62, 0x3b, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x70, 0x62, 0xa2, 0x02, 0x06, 0x52, 0x45,
-	0x54, 0x41, 0x49, 0x4c, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c,
-	0x6f, 0x75, 0x64, 0x2e, 0x52, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x2e, 0x56, 0x32, 0x42, 0x65, 0x74,
-	0x61, 0xca, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x5c, 0x52, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x5c, 0x56, 0x32, 0x62, 0x65, 0x74, 0x61, 0xea, 0x02,
-	0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a,
-	0x52, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x65, 0x74, 0x61, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x24, 0x0a, 0x0a, 0x53,
+	0x74, 0x72, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06, 0x76, 0x61, 0x6c, 0x75, 0x65,
+	0x73, 0x22, 0x24, 0x0a, 0x0a, 0x44, 0x6f, 0x75, 0x62, 0x6c, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x12,
+	0x16, 0x0a, 0x06, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x01, 0x52,
+	0x06, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x2a, 0x86, 0x01, 0x0a, 0x14, 0x41, 0x74, 0x74, 0x72,
+	0x69, 0x62, 0x75, 0x74, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x4c, 0x65, 0x76, 0x65, 0x6c,
+	0x12, 0x26, 0x0a, 0x22, 0x41, 0x54, 0x54, 0x52, 0x49, 0x42, 0x55, 0x54, 0x45, 0x5f, 0x43, 0x4f,
+	0x4e, 0x46, 0x49, 0x47, 0x5f, 0x4c, 0x45, 0x56, 0x45, 0x4c, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45,
+	0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x22, 0x0a, 0x1e, 0x50, 0x52, 0x4f, 0x44,
+	0x55, 0x43, 0x54, 0x5f, 0x4c, 0x45, 0x56, 0x45, 0x4c, 0x5f, 0x41, 0x54, 0x54, 0x52, 0x49, 0x42,
+	0x55, 0x54, 0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x46, 0x49, 0x47, 0x10, 0x01, 0x12, 0x22, 0x0a, 0x1e,
+	0x43, 0x41, 0x54, 0x41, 0x4c, 0x4f, 0x47, 0x5f, 0x4c, 0x45, 0x56, 0x45, 0x4c, 0x5f, 0x41, 0x54,
+	0x54, 0x52, 0x49, 0x42, 0x55, 0x54, 0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x46, 0x49, 0x47, 0x10, 0x02,
+	0x2a, 0x69, 0x0a, 0x0c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
+	0x12, 0x1d, 0x0a, 0x19, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50,
+	0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12,
+	0x20, 0x0a, 0x1c, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45,
+	0x5f, 0x52, 0x45, 0x43, 0x4f, 0x4d, 0x4d, 0x45, 0x4e, 0x44, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x10,
+	0x01, 0x12, 0x18, 0x0a, 0x14, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59,
+	0x50, 0x45, 0x5f, 0x53, 0x45, 0x41, 0x52, 0x43, 0x48, 0x10, 0x02, 0x2a, 0xa1, 0x01, 0x0a, 0x1e,
+	0x52, 0x65, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x30,
+	0x0a, 0x2c, 0x52, 0x45, 0x43, 0x4f, 0x4d, 0x4d, 0x45, 0x4e, 0x44, 0x41, 0x54, 0x49, 0x4f, 0x4e,
+	0x53, 0x5f, 0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x49, 0x4e, 0x47, 0x5f, 0x4f, 0x50, 0x54, 0x49,
+	0x4f, 0x4e, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00,
+	0x12, 0x26, 0x0a, 0x22, 0x52, 0x45, 0x43, 0x4f, 0x4d, 0x4d, 0x45, 0x4e, 0x44, 0x41, 0x54, 0x49,
+	0x4f, 0x4e, 0x53, 0x5f, 0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x49, 0x4e, 0x47, 0x5f, 0x44, 0x49,
+	0x53, 0x41, 0x42, 0x4c, 0x45, 0x44, 0x10, 0x01, 0x12, 0x25, 0x0a, 0x21, 0x52, 0x45, 0x43, 0x4f,
+	0x4d, 0x4d, 0x45, 0x4e, 0x44, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x53, 0x5f, 0x46, 0x49, 0x4c, 0x54,
+	0x45, 0x52, 0x49, 0x4e, 0x47, 0x5f, 0x45, 0x4e, 0x41, 0x42, 0x4c, 0x45, 0x44, 0x10, 0x03, 0x2a,
+	0x8b, 0x01, 0x0a, 0x15, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69,
+	0x6f, 0x6e, 0x55, 0x73, 0x65, 0x43, 0x61, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x24, 0x53, 0x45, 0x41,
+	0x52, 0x43, 0x48, 0x5f, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x55, 0x53, 0x45,
+	0x5f, 0x43, 0x41, 0x53, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
+	0x44, 0x10, 0x00, 0x12, 0x23, 0x0a, 0x1f, 0x53, 0x45, 0x41, 0x52, 0x43, 0x48, 0x5f, 0x53, 0x4f,
+	0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x55, 0x53, 0x45, 0x5f, 0x43, 0x41, 0x53, 0x45, 0x5f,
+	0x53, 0x45, 0x41, 0x52, 0x43, 0x48, 0x10, 0x01, 0x12, 0x23, 0x0a, 0x1f, 0x53, 0x45, 0x41, 0x52,
+	0x43, 0x48, 0x5f, 0x53, 0x4f, 0x4c, 0x55, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x55, 0x53, 0x45, 0x5f,
+	0x43, 0x41, 0x53, 0x45, 0x5f, 0x42, 0x52, 0x4f, 0x57, 0x53, 0x45, 0x10, 0x02, 0x42, 0xca, 0x01,
+	0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x2e, 0x76, 0x32, 0x62, 0x65, 0x74, 0x61,
+	0x42, 0x0b, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
+	0x36, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x2f, 0x61, 0x70, 0x69, 0x76,
+	0x32, 0x62, 0x65, 0x74, 0x61, 0x2f, 0x72, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x70, 0x62, 0x3b, 0x72,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x70, 0x62, 0xa2, 0x02, 0x06, 0x52, 0x45, 0x54, 0x41, 0x49, 0x4c,
+	0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
+	0x52, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x2e, 0x56, 0x32, 0x42, 0x65, 0x74, 0x61, 0xca, 0x02, 0x1a,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x52, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x5c, 0x56, 0x32, 0x62, 0x65, 0x74, 0x61, 0xea, 0x02, 0x1d, 0x47, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x52, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x65, 0x74, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -3135,7 +3234,7 @@ func file_google_cloud_retail_v2beta_common_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_retail_v2beta_common_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_retail_v2beta_common_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
+var file_google_cloud_retail_v2beta_common_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_google_cloud_retail_v2beta_common_proto_goTypes = []any{
 	(AttributeConfigLevel)(0),           // 0: google.cloud.retail.v2beta.AttributeConfigLevel
 	(SolutionType)(0),                   // 1: google.cloud.retail.v2beta.SolutionType
@@ -3154,59 +3253,61 @@ var file_google_cloud_retail_v2beta_common_proto_goTypes = []any{
 	(*UserInfo)(nil),                    // 14: google.cloud.retail.v2beta.UserInfo
 	(*LocalInventory)(nil),              // 15: google.cloud.retail.v2beta.LocalInventory
 	(*PinControlMetadata)(nil),          // 16: google.cloud.retail.v2beta.PinControlMetadata
-	(*Condition_QueryTerm)(nil),         // 17: google.cloud.retail.v2beta.Condition.QueryTerm
-	(*Condition_TimeRange)(nil),         // 18: google.cloud.retail.v2beta.Condition.TimeRange
-	(*Rule_BoostAction)(nil),            // 19: google.cloud.retail.v2beta.Rule.BoostAction
-	(*Rule_FilterAction)(nil),           // 20: google.cloud.retail.v2beta.Rule.FilterAction
-	(*Rule_RedirectAction)(nil),         // 21: google.cloud.retail.v2beta.Rule.RedirectAction
-	(*Rule_TwowaySynonymsAction)(nil),   // 22: google.cloud.retail.v2beta.Rule.TwowaySynonymsAction
-	(*Rule_OnewaySynonymsAction)(nil),   // 23: google.cloud.retail.v2beta.Rule.OnewaySynonymsAction
-	(*Rule_DoNotAssociateAction)(nil),   // 24: google.cloud.retail.v2beta.Rule.DoNotAssociateAction
-	(*Rule_ReplacementAction)(nil),      // 25: google.cloud.retail.v2beta.Rule.ReplacementAction
-	(*Rule_IgnoreAction)(nil),           // 26: google.cloud.retail.v2beta.Rule.IgnoreAction
-	(*Rule_ForceReturnFacetAction)(nil), // 27: google.cloud.retail.v2beta.Rule.ForceReturnFacetAction
-	(*Rule_RemoveFacetAction)(nil),      // 28: google.cloud.retail.v2beta.Rule.RemoveFacetAction
-	(*Rule_PinAction)(nil),              // 29: google.cloud.retail.v2beta.Rule.PinAction
-	(*Rule_ForceReturnFacetAction_FacetPositionAdjustment)(nil), // 30: google.cloud.retail.v2beta.Rule.ForceReturnFacetAction.FacetPositionAdjustment
-	nil,                                    // 31: google.cloud.retail.v2beta.Rule.PinAction.PinMapEntry
-	(*PriceInfo_PriceRange)(nil),           // 32: google.cloud.retail.v2beta.PriceInfo.PriceRange
-	nil,                                    // 33: google.cloud.retail.v2beta.LocalInventory.AttributesEntry
-	(*PinControlMetadata_ProductPins)(nil), // 34: google.cloud.retail.v2beta.PinControlMetadata.ProductPins
-	nil,                                    // 35: google.cloud.retail.v2beta.PinControlMetadata.AllMatchedPinsEntry
-	nil,                                    // 36: google.cloud.retail.v2beta.PinControlMetadata.DroppedPinsEntry
-	(*timestamppb.Timestamp)(nil),          // 37: google.protobuf.Timestamp
+	(*StringList)(nil),                  // 17: google.cloud.retail.v2beta.StringList
+	(*DoubleList)(nil),                  // 18: google.cloud.retail.v2beta.DoubleList
+	(*Condition_QueryTerm)(nil),         // 19: google.cloud.retail.v2beta.Condition.QueryTerm
+	(*Condition_TimeRange)(nil),         // 20: google.cloud.retail.v2beta.Condition.TimeRange
+	(*Rule_BoostAction)(nil),            // 21: google.cloud.retail.v2beta.Rule.BoostAction
+	(*Rule_FilterAction)(nil),           // 22: google.cloud.retail.v2beta.Rule.FilterAction
+	(*Rule_RedirectAction)(nil),         // 23: google.cloud.retail.v2beta.Rule.RedirectAction
+	(*Rule_TwowaySynonymsAction)(nil),   // 24: google.cloud.retail.v2beta.Rule.TwowaySynonymsAction
+	(*Rule_OnewaySynonymsAction)(nil),   // 25: google.cloud.retail.v2beta.Rule.OnewaySynonymsAction
+	(*Rule_DoNotAssociateAction)(nil),   // 26: google.cloud.retail.v2beta.Rule.DoNotAssociateAction
+	(*Rule_ReplacementAction)(nil),      // 27: google.cloud.retail.v2beta.Rule.ReplacementAction
+	(*Rule_IgnoreAction)(nil),           // 28: google.cloud.retail.v2beta.Rule.IgnoreAction
+	(*Rule_ForceReturnFacetAction)(nil), // 29: google.cloud.retail.v2beta.Rule.ForceReturnFacetAction
+	(*Rule_RemoveFacetAction)(nil),      // 30: google.cloud.retail.v2beta.Rule.RemoveFacetAction
+	(*Rule_PinAction)(nil),              // 31: google.cloud.retail.v2beta.Rule.PinAction
+	(*Rule_ForceReturnFacetAction_FacetPositionAdjustment)(nil), // 32: google.cloud.retail.v2beta.Rule.ForceReturnFacetAction.FacetPositionAdjustment
+	nil,                                    // 33: google.cloud.retail.v2beta.Rule.PinAction.PinMapEntry
+	(*PriceInfo_PriceRange)(nil),           // 34: google.cloud.retail.v2beta.PriceInfo.PriceRange
+	nil,                                    // 35: google.cloud.retail.v2beta.LocalInventory.AttributesEntry
+	(*PinControlMetadata_ProductPins)(nil), // 36: google.cloud.retail.v2beta.PinControlMetadata.ProductPins
+	nil,                                    // 37: google.cloud.retail.v2beta.PinControlMetadata.AllMatchedPinsEntry
+	nil,                                    // 38: google.cloud.retail.v2beta.PinControlMetadata.DroppedPinsEntry
+	(*timestamppb.Timestamp)(nil),          // 39: google.protobuf.Timestamp
 }
 var file_google_cloud_retail_v2beta_common_proto_depIdxs = []int32{
-	17, // 0: google.cloud.retail.v2beta.Condition.query_terms:type_name -> google.cloud.retail.v2beta.Condition.QueryTerm
-	18, // 1: google.cloud.retail.v2beta.Condition.active_time_range:type_name -> google.cloud.retail.v2beta.Condition.TimeRange
-	19, // 2: google.cloud.retail.v2beta.Rule.boost_action:type_name -> google.cloud.retail.v2beta.Rule.BoostAction
-	21, // 3: google.cloud.retail.v2beta.Rule.redirect_action:type_name -> google.cloud.retail.v2beta.Rule.RedirectAction
-	23, // 4: google.cloud.retail.v2beta.Rule.oneway_synonyms_action:type_name -> google.cloud.retail.v2beta.Rule.OnewaySynonymsAction
-	24, // 5: google.cloud.retail.v2beta.Rule.do_not_associate_action:type_name -> google.cloud.retail.v2beta.Rule.DoNotAssociateAction
-	25, // 6: google.cloud.retail.v2beta.Rule.replacement_action:type_name -> google.cloud.retail.v2beta.Rule.ReplacementAction
-	26, // 7: google.cloud.retail.v2beta.Rule.ignore_action:type_name -> google.cloud.retail.v2beta.Rule.IgnoreAction
-	20, // 8: google.cloud.retail.v2beta.Rule.filter_action:type_name -> google.cloud.retail.v2beta.Rule.FilterAction
-	22, // 9: google.cloud.retail.v2beta.Rule.twoway_synonyms_action:type_name -> google.cloud.retail.v2beta.Rule.TwowaySynonymsAction
-	27, // 10: google.cloud.retail.v2beta.Rule.force_return_facet_action:type_name -> google.cloud.retail.v2beta.Rule.ForceReturnFacetAction
-	28, // 11: google.cloud.retail.v2beta.Rule.remove_facet_action:type_name -> google.cloud.retail.v2beta.Rule.RemoveFacetAction
-	29, // 12: google.cloud.retail.v2beta.Rule.pin_action:type_name -> google.cloud.retail.v2beta.Rule.PinAction
+	19, // 0: google.cloud.retail.v2beta.Condition.query_terms:type_name -> google.cloud.retail.v2beta.Condition.QueryTerm
+	20, // 1: google.cloud.retail.v2beta.Condition.active_time_range:type_name -> google.cloud.retail.v2beta.Condition.TimeRange
+	21, // 2: google.cloud.retail.v2beta.Rule.boost_action:type_name -> google.cloud.retail.v2beta.Rule.BoostAction
+	23, // 3: google.cloud.retail.v2beta.Rule.redirect_action:type_name -> google.cloud.retail.v2beta.Rule.RedirectAction
+	25, // 4: google.cloud.retail.v2beta.Rule.oneway_synonyms_action:type_name -> google.cloud.retail.v2beta.Rule.OnewaySynonymsAction
+	26, // 5: google.cloud.retail.v2beta.Rule.do_not_associate_action:type_name -> google.cloud.retail.v2beta.Rule.DoNotAssociateAction
+	27, // 6: google.cloud.retail.v2beta.Rule.replacement_action:type_name -> google.cloud.retail.v2beta.Rule.ReplacementAction
+	28, // 7: google.cloud.retail.v2beta.Rule.ignore_action:type_name -> google.cloud.retail.v2beta.Rule.IgnoreAction
+	22, // 8: google.cloud.retail.v2beta.Rule.filter_action:type_name -> google.cloud.retail.v2beta.Rule.FilterAction
+	24, // 9: google.cloud.retail.v2beta.Rule.twoway_synonyms_action:type_name -> google.cloud.retail.v2beta.Rule.TwowaySynonymsAction
+	29, // 10: google.cloud.retail.v2beta.Rule.force_return_facet_action:type_name -> google.cloud.retail.v2beta.Rule.ForceReturnFacetAction
+	30, // 11: google.cloud.retail.v2beta.Rule.remove_facet_action:type_name -> google.cloud.retail.v2beta.Rule.RemoveFacetAction
+	31, // 12: google.cloud.retail.v2beta.Rule.pin_action:type_name -> google.cloud.retail.v2beta.Rule.PinAction
 	4,  // 13: google.cloud.retail.v2beta.Rule.condition:type_name -> google.cloud.retail.v2beta.Condition
-	37, // 14: google.cloud.retail.v2beta.PriceInfo.price_effective_time:type_name -> google.protobuf.Timestamp
-	37, // 15: google.cloud.retail.v2beta.PriceInfo.price_expire_time:type_name -> google.protobuf.Timestamp
-	32, // 16: google.cloud.retail.v2beta.PriceInfo.price_range:type_name -> google.cloud.retail.v2beta.PriceInfo.PriceRange
+	39, // 14: google.cloud.retail.v2beta.PriceInfo.price_effective_time:type_name -> google.protobuf.Timestamp
+	39, // 15: google.cloud.retail.v2beta.PriceInfo.price_expire_time:type_name -> google.protobuf.Timestamp
+	34, // 16: google.cloud.retail.v2beta.PriceInfo.price_range:type_name -> google.cloud.retail.v2beta.PriceInfo.PriceRange
 	12, // 17: google.cloud.retail.v2beta.LocalInventory.price_info:type_name -> google.cloud.retail.v2beta.PriceInfo
-	33, // 18: google.cloud.retail.v2beta.LocalInventory.attributes:type_name -> google.cloud.retail.v2beta.LocalInventory.AttributesEntry
-	35, // 19: google.cloud.retail.v2beta.PinControlMetadata.all_matched_pins:type_name -> google.cloud.retail.v2beta.PinControlMetadata.AllMatchedPinsEntry
-	36, // 20: google.cloud.retail.v2beta.PinControlMetadata.dropped_pins:type_name -> google.cloud.retail.v2beta.PinControlMetadata.DroppedPinsEntry
-	37, // 21: google.cloud.retail.v2beta.Condition.TimeRange.start_time:type_name -> google.protobuf.Timestamp
-	37, // 22: google.cloud.retail.v2beta.Condition.TimeRange.end_time:type_name -> google.protobuf.Timestamp
-	30, // 23: google.cloud.retail.v2beta.Rule.ForceReturnFacetAction.facet_position_adjustments:type_name -> google.cloud.retail.v2beta.Rule.ForceReturnFacetAction.FacetPositionAdjustment
-	31, // 24: google.cloud.retail.v2beta.Rule.PinAction.pin_map:type_name -> google.cloud.retail.v2beta.Rule.PinAction.PinMapEntry
+	35, // 18: google.cloud.retail.v2beta.LocalInventory.attributes:type_name -> google.cloud.retail.v2beta.LocalInventory.AttributesEntry
+	37, // 19: google.cloud.retail.v2beta.PinControlMetadata.all_matched_pins:type_name -> google.cloud.retail.v2beta.PinControlMetadata.AllMatchedPinsEntry
+	38, // 20: google.cloud.retail.v2beta.PinControlMetadata.dropped_pins:type_name -> google.cloud.retail.v2beta.PinControlMetadata.DroppedPinsEntry
+	39, // 21: google.cloud.retail.v2beta.Condition.TimeRange.start_time:type_name -> google.protobuf.Timestamp
+	39, // 22: google.cloud.retail.v2beta.Condition.TimeRange.end_time:type_name -> google.protobuf.Timestamp
+	32, // 23: google.cloud.retail.v2beta.Rule.ForceReturnFacetAction.facet_position_adjustments:type_name -> google.cloud.retail.v2beta.Rule.ForceReturnFacetAction.FacetPositionAdjustment
+	33, // 24: google.cloud.retail.v2beta.Rule.PinAction.pin_map:type_name -> google.cloud.retail.v2beta.Rule.PinAction.PinMapEntry
 	11, // 25: google.cloud.retail.v2beta.PriceInfo.PriceRange.price:type_name -> google.cloud.retail.v2beta.Interval
 	11, // 26: google.cloud.retail.v2beta.PriceInfo.PriceRange.original_price:type_name -> google.cloud.retail.v2beta.Interval
 	8,  // 27: google.cloud.retail.v2beta.LocalInventory.AttributesEntry.value:type_name -> google.cloud.retail.v2beta.CustomAttribute
-	34, // 28: google.cloud.retail.v2beta.PinControlMetadata.AllMatchedPinsEntry.value:type_name -> google.cloud.retail.v2beta.PinControlMetadata.ProductPins
-	34, // 29: google.cloud.retail.v2beta.PinControlMetadata.DroppedPinsEntry.value:type_name -> google.cloud.retail.v2beta.PinControlMetadata.ProductPins
+	36, // 28: google.cloud.retail.v2beta.PinControlMetadata.AllMatchedPinsEntry.value:type_name -> google.cloud.retail.v2beta.PinControlMetadata.ProductPins
+	36, // 29: google.cloud.retail.v2beta.PinControlMetadata.DroppedPinsEntry.value:type_name -> google.cloud.retail.v2beta.PinControlMetadata.ProductPins
 	30, // [30:30] is the sub-list for method output_type
 	30, // [30:30] is the sub-list for method input_type
 	30, // [30:30] is the sub-list for extension type_name
@@ -3245,7 +3346,7 @@ func file_google_cloud_retail_v2beta_common_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_retail_v2beta_common_proto_rawDesc,
 			NumEnums:      4,
-			NumMessages:   33,
+			NumMessages:   35,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

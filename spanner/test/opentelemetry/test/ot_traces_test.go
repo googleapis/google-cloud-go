@@ -130,6 +130,7 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		"cloud.region":        "global",
 		"gcp.client.version":  internal.Version,
 		"gcp.client.repo":     "googleapis/google-cloud-go",
+		"gcp.resource.name":   spanner.GcpResourceNamePrefix + "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]",
 		"gcp.client.artifact": "cloud.google.com/go/spanner",
 		"transaction.tag":     transactionTag,
 	}
