@@ -987,7 +987,7 @@ func TestObjectRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithMaxAttempts(5),
-					WithMaxRetryDuration(90 * time.Second),
+					WithMaxRetryDuration(90*time.Second),
 					WithPolicy(RetryAlways),
 					WithErrorFunc(func(err error) bool { return false }))
 			},

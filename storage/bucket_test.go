@@ -1121,7 +1121,7 @@ func TestBucketRetryer(t *testing.T) {
 					}),
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
-					WithMaxRetryDuration(120 * time.Second),
+					WithMaxRetryDuration(120*time.Second),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{

@@ -2594,7 +2594,6 @@ type retryConfig struct {
 	maxAttempts *int
 	// maxRetryDuration, if set, specifies a deadline after which the request
 	// will no longer be retried. A value of 0 allows infinite retries.
-	// This can be set via WithMaxRetryDuration or Writer.ChunkRetryDeadline.
 	maxRetryDuration time.Duration
 }
 
