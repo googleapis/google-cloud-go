@@ -190,7 +190,7 @@ func TestBuild(t *testing.T) {
 				if err == nil {
 					t.Fatal("expected error, Build() succeeded")
 				}
-				return //
+				return
 			}
 			if err != nil {
 				t.Fatalf("Build() failed: %v", err)
