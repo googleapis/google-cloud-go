@@ -988,7 +988,7 @@ func TestObjectRetryer(t *testing.T) {
 					}),
 					WithMaxAttempts(5),
 					WithPolicy(RetryAlways),
-					WithErrorFunc(func(err error, ctx *RetryContext) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1036,7 +1036,7 @@ func TestObjectRetryer(t *testing.T) {
 			name: "set ErrorFunc only",
 			call: func(o *ObjectHandle) *ObjectHandle {
 				return o.Retryer(
-					WithErrorFunc(func(err error, ctx *RetryContext) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
@@ -1085,7 +1085,7 @@ func TestClientSetRetry(t *testing.T) {
 				}),
 				WithMaxAttempts(5),
 				WithPolicy(RetryAlways),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return false }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1131,7 +1131,7 @@ func TestClientSetRetry(t *testing.T) {
 		{
 			name: "set ErrorFunc only",
 			clientOptions: []RetryOption{
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return false }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }),
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
@@ -1182,7 +1182,7 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(5),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
@@ -1200,7 +1200,7 @@ func TestRetryer(t *testing.T) {
 				}),
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(11),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1223,7 +1223,7 @@ func TestRetryer(t *testing.T) {
 				}),
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(7),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1244,7 +1244,7 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithMaxAttempts(5),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
@@ -1260,7 +1260,7 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithMaxAttempts(11),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
@@ -1283,7 +1283,7 @@ func TestRetryer(t *testing.T) {
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
 				}),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 				WithMaxAttempts(5),
 			},
 			want: &retryConfig{
@@ -1322,7 +1322,7 @@ func TestRetryer(t *testing.T) {
 			name: "object retryer does not override bucket retryer if option is not set",
 			bucketOptions: []RetryOption{
 				WithPolicy(RetryNever),
-				WithErrorFunc(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 				WithMaxAttempts(5),
 			},
 			objectOptions: []RetryOption{

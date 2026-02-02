@@ -2535,10 +2535,8 @@ func (ws *withPolicy) apply(config *retryConfig) {
 	config.policy = ws.policy
 }
 
-// WithErrorFunc allows users to pass a custom function to the retryer. Errors
-// will be retried if and only if `shouldRetry(err)` returns true.
 // RetryContext provides comprehensive context about a retry attempt.
-// It is passed to custom retry functions configured via WithErrorFunc.
+// It is passed to custom retry functions configured via WithErrorFuncWithContext.
 type RetryContext struct {
 	// Attempt is the current attempt number (1-based, so first call is attempt 1).
 	Attempt int
@@ -2552,6 +2550,12 @@ type RetryContext struct {
 	Object string
 }
 
+// WithErrorFunc allows users to pass a custom function to the retryer. Errors
+// will be retried if and only if `shouldRetry(err)` returns true.
+//
+// Deprecated: Use WithErrorFuncWithContext instead to access additional retry
+// context such as attempt number, operation name, bucket, and object information.
+//
 // By default, the following errors are retried (see ShouldRetry for the default
 // function):
 //
@@ -2566,39 +2570,60 @@ type RetryContext struct {
 // This option can be used to retry on a different set of errors than the
 // default. Users can use the default ShouldRetry function inside their custom
 // function if they only want to make minor modifications to default behavior.
-//
-// The shouldRetry function can have one of two signatures for backward compatibility:
-//   - func(err error) bool  (legacy signature)
-//   - func(err error, ctx *RetryContext) bool  (new signature with full retry context)
-//
-// The new signature provides comprehensive context through the RetryContext struct,
-// including attempt number, invocation ID, operation name, bucket, and object.
-// The function signature is automatically detected at runtime.
-func WithErrorFunc(shouldRetry interface{}) RetryOption {
+func WithErrorFunc(shouldRetry func(err error) bool) RetryOption {
 	return &withErrorFunc{
 		shouldRetry: shouldRetry,
 	}
 }
 
 type withErrorFunc struct {
-	shouldRetry interface{}
+	shouldRetry func(err error) bool
 }
 
 func (wef *withErrorFunc) apply(config *retryConfig) {
-	// Detect and adapt the function signature
-	switch fn := wef.shouldRetry.(type) {
-	case func(error, *RetryContext) bool:
-		// New comprehensive signature - use directly
-		config.shouldRetry = fn
-	case func(error) bool:
-		// Legacy signature - wrap to new signature
-		config.shouldRetry = func(err error, ctx *RetryContext) bool {
-			return fn(err)
-		}
-	default:
-		// Invalid signature - set to nil and let validation handle it
-		config.shouldRetry = nil
+	// Wrap legacy signature to new signature
+	config.shouldRetry = func(err error, ctx *RetryContext) bool {
+		return wef.shouldRetry(err)
 	}
+}
+
+// WithErrorFuncWithContext allows users to pass a custom function to the retryer
+// with access to comprehensive retry context. Errors will be retried if and only
+// if `shouldRetry(err, ctx)` returns true.
+//
+// The RetryContext provides:
+// - Attempt: current attempt number (1-based)
+// - InvocationID: unique identifier for the operation invocation
+// - Operation: the operation being performed (e.g., "GetObject", "UpdateBucket")
+// - Bucket: name of the bucket involved in the operation
+// - Object: name of the object involved in the operation
+//
+// By default, the following errors are retried (see ShouldRetry for the default
+// function):
+//
+// - HTTP responses with codes 408, 429, 502, 503, and 504.
+//
+// - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
+//
+// - Errors which are considered transient using the Temporary() interface.
+//
+// - Wrapped versions of these errors.
+//
+// This option can be used to retry on a different set of errors than the
+// default. Users can use the default ShouldRetry function inside their custom
+// function if they only want to make minor modifications to default behavior.
+func WithErrorFuncWithContext(shouldRetry func(err error, ctx *RetryContext) bool) RetryOption {
+	return &withErrorFuncWithContext{
+		shouldRetry: shouldRetry,
+	}
+}
+
+type withErrorFuncWithContext struct {
+	shouldRetry func(err error, ctx *RetryContext) bool
+}
+
+func (wef *withErrorFuncWithContext) apply(config *retryConfig) {
+	config.shouldRetry = wef.shouldRetry
 }
 
 type retryConfig struct {

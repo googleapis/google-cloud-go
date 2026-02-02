@@ -1114,15 +1114,42 @@ func ExampleWithErrorFunc() {
 	}
 	defer client.Close()
 
-	// Example 1: New signature with full retry context
+	// Basic retry logic using the legacy signature
+	customRetry := func(err error) bool {
+		// Only retry on specific errors
+		return storage.ShouldRetry(err)
+	}
+
+	bucket := client.Bucket("my-bucket")
+	obj := bucket.Object("my-object").Retryer(
+		storage.WithErrorFunc(customRetry),
+		storage.WithPolicy(storage.RetryAlways),
+	)
+
+	// Operations on this object will use the custom retry logic
+	_, err = obj.Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleWithErrorFuncWithContext() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer client.Close()
+
+	// Advanced retry logic with full retry context
 	// This provides comprehensive context including operation, bucket, and object information.
-	customRetryWithContext := func(err error, ctx *storage.RetryContext) bool {
+	customRetryWithContext := func(err error, retryCtx *storage.RetryContext) bool {
 		// Log the retry attempt and operation context
 		log.Printf("Retry decision for %s (bucket=%s, object=%s), invocation=%s, attempt=%d: %v",
-			ctx.Operation, ctx.Bucket, ctx.Object, ctx.InvocationID, ctx.Attempt, err)
+			retryCtx.Operation, retryCtx.Bucket, retryCtx.Object, retryCtx.InvocationID, retryCtx.Attempt, err)
 
 		// Don't retry after 3 attempts
-		if ctx.Attempt > 3 {
+		if retryCtx.Attempt > 3 {
 			return false
 		}
 
@@ -1130,17 +1157,9 @@ func ExampleWithErrorFunc() {
 		return storage.ShouldRetry(err)
 	}
 
-	// Example 2: Legacy signature (backward compatible)
-	// This simpler signature still works for basic retry logic.
-	_ = func(err error) bool {
-		// Only retry on specific errors
-		return storage.ShouldRetry(err)
-	}
-
-	// Both signatures work with WithErrorFunc
 	bucket := client.Bucket("my-bucket")
 	obj := bucket.Object("my-object").Retryer(
-		storage.WithErrorFunc(customRetryWithContext),
+		storage.WithErrorFuncWithContext(customRetryWithContext),
 		storage.WithPolicy(storage.RetryAlways),
 	)
 

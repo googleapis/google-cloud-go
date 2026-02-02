@@ -1121,7 +1121,7 @@ func TestBucketRetryer(t *testing.T) {
 					}),
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
-					WithErrorFunc(func(err error, ctx *RetryContext) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1169,7 +1169,7 @@ func TestBucketRetryer(t *testing.T) {
 			name: "set ErrorFunc only",
 			call: func(b *BucketHandle) *BucketHandle {
 				return b.Retryer(
-					WithErrorFunc(func(err error, ctx *RetryContext) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error, ctx *RetryContext) bool { return false },

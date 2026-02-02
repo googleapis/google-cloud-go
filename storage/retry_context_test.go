@@ -20,63 +20,43 @@ import (
 )
 
 func TestRetryContextSignatures(t *testing.T) {
-	tests := []struct {
-		name        string
-		errFunc     interface{}
-		shouldBeNil bool
-		description string
-	}{
-		{
-			name: "legacy signature func(error) bool",
-			errFunc: func(err error) bool {
-				return err != nil
-			},
-			shouldBeNil: false,
-			description: "Should accept legacy single-parameter signature",
-		},
-		{
-			name: "new signature func(error, *RetryContext) bool",
-			errFunc: func(err error, ctx *RetryContext) bool {
-				return err != nil && ctx.Attempt < 3
-			},
-			shouldBeNil: false,
-			description: "Should accept new context-aware signature",
-		},
-		{
-			name: "invalid signature func(string) bool",
-			errFunc: func(s string) bool {
-				return true
-			},
-			shouldBeNil: true,
-			description: "Should set shouldRetry to nil on invalid signature",
-		},
-	}
+	t.Run("legacy signature func(error) bool", func(t *testing.T) {
+		errFunc := func(err error) bool {
+			return err != nil
+		}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			config := &retryConfig{}
-			WithErrorFunc(tt.errFunc).apply(config)
+		config := &retryConfig{}
+		WithErrorFunc(errFunc).apply(config)
 
-			if tt.shouldBeNil && config.shouldRetry != nil {
-				t.Errorf("Expected shouldRetry to be nil for invalid signature")
-			}
-			if !tt.shouldBeNil && config.shouldRetry == nil {
-				t.Errorf("Expected shouldRetry to be set for valid signature")
-			}
-		})
-	}
+		if config.shouldRetry == nil {
+			t.Errorf("Expected shouldRetry to be set for valid signature")
+		}
+	})
+
+	t.Run("new signature func(error, *RetryContext) bool", func(t *testing.T) {
+		errFunc := func(err error, ctx *RetryContext) bool {
+			return err != nil && ctx.Attempt < 3
+		}
+
+		config := &retryConfig{}
+		WithErrorFuncWithContext(errFunc).apply(config)
+
+		if config.shouldRetry == nil {
+			t.Errorf("Expected shouldRetry to be set for valid signature")
+		}
+	})
 }
 
 func TestRetryContextFields(t *testing.T) {
 	var capturedCtx *RetryContext
-	
+
 	errFunc := func(err error, ctx *RetryContext) bool {
 		capturedCtx = ctx
 		return false // don't actually retry
 	}
 
 	config := &retryConfig{}
-	WithErrorFunc(errFunc).apply(config)
+	WithErrorFuncWithContext(errFunc).apply(config)
 
 	testErr := errors.New("test error")
 	ctx := &RetryContext{
@@ -112,7 +92,7 @@ func TestRetryContextFields(t *testing.T) {
 
 func TestLegacySignatureStillWorks(t *testing.T) {
 	var called bool
-	
+
 	errFunc := func(err error) bool {
 		called = true
 		return false

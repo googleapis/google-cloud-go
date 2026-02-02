@@ -1574,7 +1574,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		}
 
 		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-		a = o.Retryer(WithErrorFunc(retrier), WithPolicy(RetryAlways)).ACL()
+		a = o.Retryer(WithErrorFuncWithContext(retrier), WithPolicy(RetryAlways)).ACL()
 		err = a.Set(ctxWithTimeout, AllUsers, RoleReader)
 		cancelCtx()
 		if err != nil {
@@ -5472,7 +5472,7 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
 		defer cancel()
 
-		o = o.Retryer(WithErrorFunc(retry), WithPolicy(RetryAlways))
+		o = o.Retryer(WithErrorFuncWithContext(retry), WithPolicy(RetryAlways))
 		if err := o.Delete(ctx); err != nil {
 			t.Fatalf("object delete: %v", err)
 		}
@@ -8289,10 +8289,10 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 	}
 }
 
-func retryOnNilAndTransientErrs(err error, currentAttempt int, invocationID string) bool {
+func retryOnNilAndTransientErrs(err error) bool {
 	return err == nil || ShouldRetry(err)
 }
-func retryOnTransient400and403(err error, currentAttempt int, invocationID string) bool {
+func retryOnTransient400and403(err error) bool {
 	var e *googleapi.Error
 	var ae *apierror.APIError
 	return ShouldRetry(err) ||
