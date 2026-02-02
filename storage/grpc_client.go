@@ -207,8 +207,10 @@ func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, 
 }
 
 func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, target string) (context.Context, error) {
-	// Endpoint Inspection: Check if the connection target supports DirectPath.
+	// Check if the connection target supports DirectPath.
 	isDirectPath := true
+	// Target should not be empty in a normal scenario, but treat empty target
+	// as DirectPath compatible for safety.
 	if target != "" && !strings.HasPrefix(target, directPathEndpointPrefix) {
 		isDirectPath = false
 	}
