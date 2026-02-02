@@ -96,7 +96,7 @@ func Build(lib *request.Library, api *request.API, config ConfigProvider, source
 	// Propagate requested generator features.
 	// Provide minimal validation by checking for a valid feature prefix.
 	for _, f := range generatorFeatures {
-		if !strings.HasPrefix(f, "F_") {
+		if !strings.HasPrefix(f, featurePrefix) {
 			return nil, fmt.Errorf("Build: invalid feature string %q", f)
 		}
 		gapicOpts = append(gapicOpts, f)
