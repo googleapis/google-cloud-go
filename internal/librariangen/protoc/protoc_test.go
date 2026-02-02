@@ -66,6 +66,7 @@ func TestBuild(t *testing.T) {
 		apiServiceDir string
 		reqID         string
 		config        mockConfigProvider
+		features      []string
 		nestedProtos  []string
 		want          []string
 	}{
@@ -84,6 +85,7 @@ func TestBuild(t *testing.T) {
 				hasGoGRPC:         true,
 				hasGAPIC:          true,
 			},
+			features:     []string{"F_foo_feature", "F_bar_feature"},
 			nestedProtos: []string{"nested/x.proto", "nested/y.proto"},
 			want: []string{
 				"protoc",
@@ -99,6 +101,8 @@ func TestBuild(t *testing.T) {
 				"--go_gapic_opt=release-level=ga",
 				"--go_gapic_opt=metadata",
 				"--go_gapic_opt=rest-numeric-enums",
+				"--go_gapic_opt=F_foo_feature",
+				"--go_gapic_opt=F_bar_feature",
 				"-I=" + sourceDir,
 				filepath.Join(sourceDir, "google/cloud/workflows/v1/workflows.proto"),
 				filepath.Join(sourceDir, "google/cloud/workflows/v1/nested/x.proto"),
@@ -165,7 +169,7 @@ func TestBuild(t *testing.T) {
 				Path: tt.apiPath,
 			}
 
-			got, err := Build(req, api, &tt.config, sourceDir, "/output", tt.nestedProtos)
+			got, err := Build(req, api, &tt.config, sourceDir, "/output", tt.nestedProtos, tt.features)
 			if err != nil {
 				t.Fatalf("Build() failed: %v", err)
 			}

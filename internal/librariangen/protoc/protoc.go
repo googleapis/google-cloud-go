@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
@@ -39,7 +40,7 @@ type ConfigProvider interface {
 }
 
 // Build constructs the full protoc command arguments for a given API.
-func Build(lib *request.Library, api *request.API, config ConfigProvider, sourceDir, outputDir string, nestedProtos []string) ([]string, error) {
+func Build(lib *request.Library, api *request.API, config ConfigProvider, sourceDir, outputDir string, nestedProtos []string, generatorFeatures []string) ([]string, error) {
 	// Gather all .proto files in the API's source directory (but not in subdirectories).
 	apiServiceDir := filepath.Join(sourceDir, api.Path)
 	entries, err := os.ReadDir(apiServiceDir)
@@ -89,6 +90,14 @@ func Build(lib *request.Library, api *request.API, config ConfigProvider, source
 		}
 	}
 
+	// Propagate requested generator features.
+	// Provide minimal validation by checking for a valid feature prefix.
+	for _, f := range generatorFeatures {
+		if !strings.HasPrefix(f, "F_") {
+			return nil, fmt.Errorf("Build: invalid feature string %q", f)
+		}
+		gapicOpts = append(gapicOpts, f)
+	}
 	args := []string{
 		"protoc",
 		"--experimental_allow_proto3_optional",

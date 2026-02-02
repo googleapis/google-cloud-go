@@ -149,13 +149,14 @@ func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Library
 		slog.Info("processing api", "service_dir", apiServiceDir)
 		bazelConfig, err := bazelParse(apiServiceDir)
 		apiConfig := moduleConfig.GetAPIConfig(api.Path)
+		features := apiConfig.ResolvedGeneratorFeatures()
 		if apiConfig.HasDisableGAPIC() {
 			bazelConfig.DisableGAPIC()
 		}
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to parse BUILD.bazel for %s: %w", apiServiceDir, err)
 		}
-		args, err := protoc.Build(generateReq, &api, bazelConfig, cfg.SourceDir, cfg.OutputDir, apiConfig.NestedProtos)
+		args, err := protoc.Build(generateReq, &api, bazelConfig, cfg.SourceDir, cfg.OutputDir, apiConfig.NestedProtos, features)
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to build protoc command for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
