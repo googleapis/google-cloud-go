@@ -2719,6 +2719,39 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 	})
 }
 
+// Test that errors are wrapped correctly if retry happens until max retry duration is reached.
+func TestRetryMaxDurationEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		// Set up many errors to ensure we don't run out during the duration
+		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		// Set a short max retry duration with a very small backoff to ensure we hit the duration limit
+		config := &retryConfig{maxRetryDuration: 200 * time.Millisecond, backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
+
+		var ae *apierror.APIError
+		if errors.As(err, &ae) {
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
+			// error, the test should fail.
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
+			}
+		}
+		// Error should be wrapped so it indicates that retry deadline has been reached.
+		if got, want := err.Error(), "retry deadline of"; !strings.Contains(got, want) {
+			t.Errorf("got error: %q, want to contain: %q", got, want)
+		}
+		if got, want := err.Error(), "200ms"; !strings.Contains(got, want) {
+			t.Errorf("got error: %q, want to contain duration: %q", got, want)
+		}
+	})
+}
+
 // Test that a timeout returns a DeadlineExceeded error, in spite of DeadlineExceeded being a retryable
 // status when it is returned by the server.
 func TestTimeoutErrorEmulated(t *testing.T) {
