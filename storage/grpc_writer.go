@@ -1516,17 +1516,17 @@ func withBidiWriteObjectRedirectionErrorRetries(s *settings) (newr *retryConfig)
 		// not contain a handle and are "affirmative failures" which indicate that
 		// no server-side action occurred.
 		newr.policy = RetryAlways
-		newr.shouldRetry = func(err error) bool {
+		newr.shouldRetry = func(err error, currentAttempt int, invocationID string) bool {
 			return errors.Is(err, bidiWriteObjectRedirectionError{})
 		}
 		return newr
 	}
 	// If retry settings allow retries normally, fall back to that behavior.
-	newr.shouldRetry = func(err error) bool {
+	newr.shouldRetry = func(err error, currentAttempt int, invocationID string) bool {
 		if errors.Is(err, bidiWriteObjectRedirectionError{}) {
 			return true
 		}
-		v := oldr.runShouldRetry(err)
+		v := oldr.runShouldRetry(err, currentAttempt, invocationID)
 		return v
 	}
 	return newr

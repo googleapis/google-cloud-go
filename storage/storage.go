@@ -2551,28 +2551,51 @@ func (ws *withPolicy) apply(config *retryConfig) {
 // This option can be used to retry on a different set of errors than the
 // default. Users can use the default ShouldRetry function inside their custom
 // function if they only want to make minor modifications to default behavior.
-func WithErrorFunc(shouldRetry func(err error) bool) RetryOption {
+//
+// The shouldRetry function can have one of two signatures for backward compatibility:
+//   - func(err error) bool  (legacy signature)
+//   - func(err error, currentAttempt int, invocationID string) bool  (new signature with retry context)
+//
+// The new signature provides additional parameters:
+//   - currentAttempt: the current attempt number (1-based, so first call is attempt 1)
+//   - invocationID: a unique identifier for the current operation invocation
+//
+// The function signature is automatically detected at runtime.
+func WithErrorFunc(shouldRetry interface{}) RetryOption {
 	return &withErrorFunc{
 		shouldRetry: shouldRetry,
 	}
 }
 
 type withErrorFunc struct {
-	shouldRetry func(err error) bool
+	shouldRetry interface{}
 }
 
 func (wef *withErrorFunc) apply(config *retryConfig) {
-	config.shouldRetry = wef.shouldRetry
+	// Detect and adapt the function signature
+	switch fn := wef.shouldRetry.(type) {
+	case func(error, int, string) bool:
+		// New signature - use directly
+		config.shouldRetry = fn
+	case func(error) bool:
+		// Legacy signature - wrap to new signature
+		config.shouldRetry = func(err error, currentAttempt int, invocationID string) bool {
+			return fn(err)
+		}
+	default:
+		// Invalid signature - set to nil and let validation handle it
+		config.shouldRetry = nil
+	}
 }
 
 type retryConfig struct {
 	backoff     *gax.Backoff
 	policy      RetryPolicy
-	shouldRetry func(err error) bool
+	shouldRetry func(err error, currentAttempt int, invocationID string) bool
 	maxAttempts *int
 	// maxRetryDuration, if set, specifies a deadline after which the request
 	// will no longer be retried. A value of 0 allows infinite retries.
-	// maxRetryDuration is currently only set by Writer.ChunkRetryDeadline.
+	// maxRetryDuration can be set via WithMaxRetryDuration or Writer.ChunkRetryDeadline.
 	maxRetryDuration time.Duration
 }
 

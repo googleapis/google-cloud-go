@@ -702,7 +702,7 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 		m.readSpec.RoutingToken = result.redirect.RoutingToken
 		m.readSpec.ReadHandle = result.redirect.ReadHandle
 		ensureErr = m.ensureSession(m.ctx)
-	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err) {
+	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err, 1, "") {
 		ensureErr = m.ensureSession(m.ctx)
 	} else {
 		if !errors.Is(err, context.Canceled) && !errors.Is(err, errClosed) {

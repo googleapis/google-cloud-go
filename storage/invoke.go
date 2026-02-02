@@ -53,11 +53,14 @@ var (
 	})
 )
 
-func (r *retryConfig) runShouldRetry(err error) bool {
+// runShouldRetry calls the configured shouldRetry function.
+// The shouldRetry function has already been normalized to the new signature
+// (with currentAttempt and invocationID) by withErrorFunc.apply().
+func (r *retryConfig) runShouldRetry(err error, currentAttempt int, invocationID string) bool {
 	if r == nil || r.shouldRetry == nil {
 		return ShouldRetry(err)
 	}
-	return r.shouldRetry(err)
+	return r.shouldRetry(err, currentAttempt, invocationID)
 }
 
 // run determines whether a retry is necessary based on the config and
@@ -105,8 +108,8 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		if lastErr != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
 			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
 		}
+		retryable := retry.runShouldRetry(lastErr, attempts, invocationID)
 		attempts++
-		retryable := retry.runShouldRetry(lastErr)
 		// Explicitly check context cancellation so that we can distinguish between a
 		// DEADLINE_EXCEEDED error from the server and a user-set context deadline.
 		// Unfortunately gRPC will codes.DeadlineExceeded (which may be retryable if it's

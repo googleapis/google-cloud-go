@@ -150,7 +150,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, currentAttempt int, invocationID string) bool {
 					return err == io.ErrNoProgress
 				},
 			},
@@ -164,7 +164,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, currentAttempt int, invocationID string) bool {
 					return err == io.ErrNoProgress
 				},
 			},
@@ -178,7 +178,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, currentAttempt int, invocationID string) bool {
 					return err == io.ErrUnexpectedEOF
 				},
 				policy: RetryNever,
@@ -213,7 +213,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, currentAttempt int, invocationID string) bool {
 					return err == io.ErrNoProgress
 				},
 				maxAttempts: intPointer(2),

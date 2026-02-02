@@ -1070,13 +1070,23 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			} else if s.retry != nil && s.retry.policy == RetryAlways {
 				useRetry = true
 			}
-			if useRetry {
-				if s.retry != nil {
-					call.WithRetry(s.retry.backoff, s.retry.shouldRetry)
-				} else {
-					call.WithRetry(nil, nil)
+	if useRetry {
+		if s.retry != nil {
+			// Wrap shouldRetry to adapt to the googleapi WithRetry signature.
+			// WithRetry expects func(error) bool, but our shouldRetry uses
+			// func(error, int, string) bool. Since WithRetry doesn't provide
+			// attempt/invocation context, we pass default values.
+			var retryFunc func(error) bool
+			if s.retry.shouldRetry != nil {
+				retryFunc = func(err error) bool {
+					return s.retry.shouldRetry(err, 1, "")
 				}
 			}
+			call.WithRetry(s.retry.backoff, retryFunc)
+		} else {
+			call.WithRetry(nil, nil)
+		}
+	}
 			resp, err = call.Do()
 		}
 		if err != nil {

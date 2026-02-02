@@ -424,7 +424,7 @@ func (r *gRPCReadObjectReader) recv() error {
 	databufs := mem.BufferSlice{}
 	err := r.stream.RecvMsg(&databufs)
 
-	if err != nil && r.settings.retry.runShouldRetry(err) {
+	if err != nil && r.settings.retry.runShouldRetry(err, 1, "") {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
