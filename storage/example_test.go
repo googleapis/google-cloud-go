@@ -1107,45 +1107,45 @@ func ExampleMultiRangeDownloader() {
 }
 
 func ExampleWithErrorFunc() {
-ctx := context.Background()
-client, err := storage.NewClient(ctx)
-if err != nil {
-// TODO: handle error.
-}
-defer client.Close()
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer client.Close()
 
-// Example 1: New signature with retry context (currentAttempt and invocationID)
-// This allows for more sophisticated retry decisions.
-customRetryWithContext := func(err error, currentAttempt int, invocationID string) bool {
-// Log the retry attempt and operation context
-log.Printf("Retry decision for invocation %s, attempt %d: %v", invocationID, currentAttempt, err)
+	// Example 1: New signature with retry context (currentAttempt and invocationID)
+	// This allows for more sophisticated retry decisions.
+	customRetryWithContext := func(err error, currentAttempt int, invocationID string) bool {
+		// Log the retry attempt and operation context
+		log.Printf("Retry decision for invocation %s, attempt %d: %v", invocationID, currentAttempt, err)
 
-// Don't retry after 3 attempts
-if currentAttempt > 3 {
-return false
-}
+		// Don't retry after 3 attempts
+		if currentAttempt > 3 {
+			return false
+		}
 
-// Use the default ShouldRetry logic for other cases
-return storage.ShouldRetry(err)
-}
+		// Use the default ShouldRetry logic for other cases
+		return storage.ShouldRetry(err)
+	}
 
-// Example 2: Legacy signature (backward compatible)
-// This simpler signature still works for basic retry logic.
-_ = func(err error) bool {
-// Only retry on specific errors
-return storage.ShouldRetry(err)
-}
+	// Example 2: Legacy signature (backward compatible)
+	// This simpler signature still works for basic retry logic.
+	_ = func(err error) bool {
+		// Only retry on specific errors
+		return storage.ShouldRetry(err)
+	}
 
-// Both signatures work with WithErrorFunc
-bucket := client.Bucket("my-bucket")
-obj := bucket.Object("my-object").Retryer(
-storage.WithErrorFunc(customRetryWithContext),
-storage.WithPolicy(storage.RetryAlways),
-)
+	// Both signatures work with WithErrorFunc
+	bucket := client.Bucket("my-bucket")
+	obj := bucket.Object("my-object").Retryer(
+		storage.WithErrorFunc(customRetryWithContext),
+		storage.WithPolicy(storage.RetryAlways),
+	)
 
-// Operations on this object will use the custom retry logic
-_, err = obj.Attrs(ctx)
-if err != nil {
-// TODO: handle error.
-}
+	// Operations on this object will use the custom retry logic
+	_, err = obj.Attrs(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
 }
