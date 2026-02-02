@@ -2537,6 +2537,21 @@ func (ws *withPolicy) apply(config *retryConfig) {
 
 // WithErrorFunc allows users to pass a custom function to the retryer. Errors
 // will be retried if and only if `shouldRetry(err)` returns true.
+// RetryContext provides comprehensive context about a retry attempt.
+// It is passed to custom retry functions configured via WithErrorFunc.
+type RetryContext struct {
+	// Attempt is the current attempt number (1-based, so first call is attempt 1).
+	Attempt int
+	// InvocationID is a unique identifier for the current operation invocation.
+	InvocationID string
+	// Operation describes the operation being performed (e.g., "storage.objects.get", "storage.objects.insert").
+	Operation string
+	// Bucket is the name of the bucket involved in the operation.
+	Bucket string
+	// Object is the name of the object involved in the operation.
+	Object string
+}
+
 // By default, the following errors are retried (see ShouldRetry for the default
 // function):
 //
@@ -2554,12 +2569,10 @@ func (ws *withPolicy) apply(config *retryConfig) {
 //
 // The shouldRetry function can have one of two signatures for backward compatibility:
 //   - func(err error) bool  (legacy signature)
-//   - func(err error, currentAttempt int, invocationID string) bool  (new signature with retry context)
+//   - func(err error, ctx *RetryContext) bool  (new signature with full retry context)
 //
-// The new signature provides additional parameters:
-//   - currentAttempt: the current attempt number (1-based, so first call is attempt 1)
-//   - invocationID: a unique identifier for the current operation invocation
-//
+// The new signature provides comprehensive context through the RetryContext struct,
+// including attempt number, invocation ID, operation name, bucket, and object.
 // The function signature is automatically detected at runtime.
 func WithErrorFunc(shouldRetry interface{}) RetryOption {
 	return &withErrorFunc{
@@ -2574,12 +2587,12 @@ type withErrorFunc struct {
 func (wef *withErrorFunc) apply(config *retryConfig) {
 	// Detect and adapt the function signature
 	switch fn := wef.shouldRetry.(type) {
-	case func(error, int, string) bool:
-		// New signature - use directly
+	case func(error, *RetryContext) bool:
+		// New comprehensive signature - use directly
 		config.shouldRetry = fn
 	case func(error) bool:
 		// Legacy signature - wrap to new signature
-		config.shouldRetry = func(err error, currentAttempt int, invocationID string) bool {
+		config.shouldRetry = func(err error, ctx *RetryContext) bool {
 			return fn(err)
 		}
 	default:
@@ -2591,7 +2604,7 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 type retryConfig struct {
 	backoff     *gax.Backoff
 	policy      RetryPolicy
-	shouldRetry func(err error, currentAttempt int, invocationID string) bool
+	shouldRetry func(error, *RetryContext) bool
 	maxAttempts *int
 	// maxRetryDuration, if set, specifies a deadline after which the request
 	// will no longer be retried. A value of 0 allows infinite retries.

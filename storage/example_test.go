@@ -1114,14 +1114,15 @@ func ExampleWithErrorFunc() {
 	}
 	defer client.Close()
 
-	// Example 1: New signature with retry context (currentAttempt and invocationID)
-	// This allows for more sophisticated retry decisions.
-	customRetryWithContext := func(err error, currentAttempt int, invocationID string) bool {
+	// Example 1: New signature with full retry context
+	// This provides comprehensive context including operation, bucket, and object information.
+	customRetryWithContext := func(err error, ctx *storage.RetryContext) bool {
 		// Log the retry attempt and operation context
-		log.Printf("Retry decision for invocation %s, attempt %d: %v", invocationID, currentAttempt, err)
+		log.Printf("Retry decision for %s (bucket=%s, object=%s), invocation=%s, attempt=%d: %v",
+			ctx.Operation, ctx.Bucket, ctx.Object, ctx.InvocationID, ctx.Attempt, err)
 
 		// Don't retry after 3 attempts
-		if currentAttempt > 3 {
+		if ctx.Attempt > 3 {
 			return false
 		}
 

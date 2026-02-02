@@ -347,7 +347,7 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 				Payload: base64.StdEncoding.EncodeToString(in),
 			}).Do()
 			return err
-		}, b.retry, true); err != nil {
+		}, b.retry, true, "", "", ""); err != nil {
 			return nil, fmt.Errorf("unable to sign bytes: %w", err)
 		}
 		out, err := base64.StdEncoding.DecodeString(resp.SignedBlob)

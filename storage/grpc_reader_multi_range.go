@@ -483,7 +483,7 @@ func (m *multiRangeDownloaderManager) establishInitialSession() error {
 		m.currentSession = session
 		firstResult = result
 		return nil
-	}, retry, true)
+	}, retry, true, "", "", "")
 
 	if err != nil {
 		m.setPermanentError(err)
@@ -685,7 +685,7 @@ func (m *multiRangeDownloaderManager) ensureSession(ctx context.Context) error {
 			m.unsentRequests.PushFront(retryReq)
 		}
 		return nil
-	}, m.settings.retry, true)
+	}, m.settings.retry, true, "", "", "")
 }
 
 var errBidiReadRedirect = errors.New("bidi read object redirected")
@@ -702,7 +702,7 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult) {
 		m.readSpec.RoutingToken = result.redirect.RoutingToken
 		m.readSpec.ReadHandle = result.redirect.ReadHandle
 		ensureErr = m.ensureSession(m.ctx)
-	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err, 1, "") {
+	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err, &RetryContext{}) {
 		ensureErr = m.ensureSession(m.ctx)
 	} else {
 		if !errors.Is(err, context.Canceled) && !errors.Is(err, errClosed) {
