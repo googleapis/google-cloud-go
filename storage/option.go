@@ -109,9 +109,6 @@ type storageClientOption interface {
 	ApplyStorageOpt(*storageConfig)
 }
 
-// withDirectConnectivityEnforced is an option that may be passed to [NewClient].
-// It enforces the use of Direct Path connectivity for gRPC clients and
-// may return an error on calls that fail to connect via Direct Path.
 func withDirectConnectivityEnforced() option.ClientOption {
 	return &withDirectPathEnforced{}
 }

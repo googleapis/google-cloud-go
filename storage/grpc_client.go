@@ -24,6 +24,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -73,6 +74,7 @@ const (
 	forceDirectConnectivityOptedOut        = "OPTED_OUT"
 	directConnectivityHeaderKey            = "force_direct_connectivity"
 	requestParamsHeaderKey                 = "x-goog-request-params"
+	directPathEndpointPrefix               = "google-c2p:///"
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -185,43 +187,60 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 }
 
 func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
-	value := forceDirectConnectivityFallbackAllowed // default
+	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		ctx, err := c.prepareDirectPathMetadata(ctx, cc.Target())
+		if err != nil {
+			return err
+		}
+		return invoker(ctx, method, req, reply, cc, opts...)
+	}
+
+	stream := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		ctx, err := c.prepareDirectPathMetadata(ctx, cc.Target())
+		if err != nil {
+			return nil, err
+		}
+		return streamer(ctx, desc, cc, method, opts...)
+	}
+
+	return unary, stream
+}
+
+func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, target string) (context.Context, error) {
+	// Endpoint Inspection: Check if the connection target supports DirectPath.
+	isDirectPath := true
+	if target != "" && !strings.HasPrefix(target, directPathEndpointPrefix) {
+		isDirectPath = false
+	}
+
+	// Determine the intended mode based on user configuration.
+	value := forceDirectConnectivityFallbackAllowed // Default
 	if c.config.grpcDirectPathEnforced {
 		value = forceDirectConnectivityEnforced
 	}
 
+	// Downgrade based on connection status.
+	if !isDirectPath {
+		// TODO: Reject call if set to ENFORCED when supported.
+		// Downgrade to OPTED_OUT for server-side monitoring.
+		value = forceDirectConnectivityOptedOut
+	}
+
 	dc := directConnectivityHeaderKey + "=" + value
 
-	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		md, ok := metadata.FromOutgoingContext(ctx)
-		if !ok {
-			md = metadata.MD{}
-		}
-
-		// Merge with existing x-goog-request-params if present.
-		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
-			md.Set(requestParamsHeaderKey, vals[0]+"&"+dc)
-		} else {
-			md.Set(requestParamsHeaderKey, dc)
-		}
-		return invoker(metadata.NewOutgoingContext(ctx, md), method, req, reply, cc, opts...)
+	// Inject header.
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.MD{}
 	}
 
-	stream := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		md, ok := metadata.FromOutgoingContext(ctx)
-		if !ok {
-			md = metadata.MD{}
-		}
-		// Merge with existing x-goog-request-params if present.
-		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
-			md.Set(requestParamsHeaderKey, vals[0]+"&"+dc)
-		} else {
-			md.Set(requestParamsHeaderKey, dc)
-		}
-		return streamer(metadata.NewOutgoingContext(ctx, md), desc, cc, method, opts...)
+	if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
+		md.Set(requestParamsHeaderKey, vals[0]+"&"+dc)
+	} else {
+		md.Set(requestParamsHeaderKey, dc)
 	}
 
-	return unary, stream
+	return metadata.NewOutgoingContext(ctx, md), nil
 }
 
 func (c *grpcStorageClient) Close() error {
