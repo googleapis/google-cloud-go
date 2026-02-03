@@ -68,7 +68,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	if s.retry == nil {
 		s.retry = defaultRetry
 	}
-
+	params.defaults()
 	b := bucketResourceName(globalProjectAlias, params.bucket)
 	readSpec := &storagepb.BidiReadObjectSpec{
 		Bucket:                    b,
@@ -129,6 +129,21 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		cancel()
 		manager.wg.Wait()
 		return nil, ctx.Err()
+	}
+}
+
+func (m *newMultiRangeDownloaderParams) defaults() {
+	if m.minConnections <= 0 {
+		m.minConnections = 1
+	}
+	if m.maxConnections < m.minConnections {
+		m.maxConnections = m.minConnections
+	}
+	if m.targetPendingRanges == 0 {
+		m.targetPendingRanges = 20000
+	}
+	if m.targetPendingBytes == 0 {
+		m.targetPendingBytes = 1 << 30
 	}
 }
 
