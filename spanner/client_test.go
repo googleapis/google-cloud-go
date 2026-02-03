@@ -146,16 +146,15 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 	if err != nil {
 		t.Fatal(err)
 	}
-	if isMultiplexEnabled || config.enableMultiplexSession {
-		waitFor(t, func() error {
-			client.idleSessions.mu.Lock()
-			defer client.idleSessions.mu.Unlock()
-			if client.idleSessions.multiplexedSession == nil {
-				return errInvalidSessionPool
-			}
-			return nil
-		})
-	}
+	// Multiplexed sessions are always enabled - wait for session creation
+	waitFor(t, func() error {
+		client.sm.mu.Lock()
+		defer client.sm.mu.Unlock()
+		if client.sm.multiplexedSession == nil {
+			return errInvalidSession
+		}
+		return nil
+	})
 	return server, client, func() {
 		client.Close()
 		serverTeardown()
@@ -515,9 +514,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -555,9 +551,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -595,9 +588,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the regular session is used, total session created should be 1
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -630,9 +620,6 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
 				expectedSessionCount := uint(1)
-				if !isMultiplexEnabled {
-					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
-				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
@@ -725,151 +712,6 @@ func TestClient_Single_InvalidArgument(t *testing.T) {
 	err := testSingleQuery(t, status.Error(codes.InvalidArgument, "Invalid argument"))
 	if status.Code(err) != codes.InvalidArgument {
 		t.Fatalf("got: %v, want: %v", err, codes.InvalidArgument)
-	}
-}
-
-func TestClient_Single_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	iter := client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
-	rowCount := int64(0)
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		rowCount++
-	}
-	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-	}
-}
-
-func TestClient_Single_Read_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodStreamingRead,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	iter := client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
-	defer iter.Stop()
-	rowCount := int64(0)
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		rowCount++
-	}
-	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-	}
-}
-
-func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 1,
-			MaxOpened: 1,
-			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
-			},
-		},
-	})
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	single := client.Single()
-	iter := single.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	p := client.idleSessions
-	sh := single.sh
-	// simulate session to be last used before 60 mins
-	sh.mu.Lock()
-	sh.lastUseTime = time.Now().Add(-time.Hour)
-	sh.mu.Unlock()
-
-	// force run task to clean up unexpected long-running sessions
-	p.removeLongRunningSessions()
-	rowCount := int64(0)
-	for {
-		// Backend throws SessionNotFoundError. Session gets replaced with new session
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		rowCount++
-	}
-	// New session returns back to pool
-	iter.Stop()
-
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	if g, w := p.idleList.Len(), 1; g != w {
-		t.Fatalf("Idle Sessions in pool, count mismatch\nGot: %d\nWant: %d\n", g, w)
-	}
-	if g, w := p.numInUse, uint64(0); g != w {
-		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
-	}
-	if g, w := p.numOpened, uint64(1); g != w {
-		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
-	}
-
-	sh.mu.Lock()
-	defer sh.mu.Unlock()
-	if g, w := sh.eligibleForLongRunning, false; g != w {
-		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
-	}
-	expectedLeakedSessions := uint64(1)
-	if isMultiplexEnabled {
-		expectedLeakedSessions = 0
-	}
-	if g, w := p.numOfLeakedSessionsRemoved, expectedLeakedSessions; g != w {
-		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
-	}
-}
-
-func TestClient_Single_ReadRow_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodStreamingRead,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	row, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
-	if err != nil {
-		t.Fatalf("Unexpected error for read row: %v", err)
-	}
-	if row == nil {
-		t.Fatal("ReadRow did not return a row")
 	}
 }
 
@@ -1232,18 +1074,8 @@ func testSingleQuery(t *testing.T, serverError error) error {
 }
 
 func testSingleQueryWithContext(ctx context.Context, t *testing.T, serverError error) error {
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: SessionPoolConfig{MinOpened: 1}})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true})
 	defer teardown()
-	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
-	sp := client.idleSessions
-	waitFor(t, func() error {
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if uint64(sp.idleList.Len()) != sp.MinOpened {
-			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
-		}
-		return nil
-	})
 
 	if serverError != nil {
 		server.TestSpanner.SetError(serverError)
@@ -1368,284 +1200,6 @@ func TestClient_ReadOnlyTransaction_UnavailableOnCreateSessionAndInvalidArgument
 		t.Fatalf("Missing expected exception")
 	} else if status.Code(err) != codes.InvalidArgument {
 		t.Fatalf("Got unexpected exception: %v", err)
-	}
-}
-
-func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
-	t.Parallel()
-	if err := testReadOnlyTransaction(
-		t,
-		map[string]SimulatedExecutionTime{
-			MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-		},
-	); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOneSession(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServerWithConfig(
-		t,
-		ClientConfig{
-			DisableNativeMetrics: true,
-			SessionPoolConfig: SessionPoolConfig{
-				MinOpened: 0,
-				MaxOpened: 1,
-			},
-		})
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodBeginTransaction,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	tx := client.ReadOnlyTransaction()
-	defer tx.Close()
-	ctx := context.Background()
-	if err := executeSingerQuery(ctx, tx); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement(t *testing.T) {
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-
-	expectedAttempts := 2
-	var attempts int
-	_, err := client.ReadWriteTransaction(
-		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			attempts++
-			iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
-			defer iter.Stop()
-			for {
-				_, err := iter.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if expectedAttempts != attempts {
-		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
-	}
-	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.ExecuteSqlRequest{},
-		&sppb.CommitRequest{},
-	}, requests); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_AndThenSessionNotFoundForBeginTransaction(t *testing.T) {
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	server.TestSpanner.PutExecutionTime(
-		MethodBeginTransaction,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-
-	expectedAttempts := 2
-	var attempts int
-	_, err := client.ReadWriteTransaction(
-		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			attempts++
-			iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
-			defer iter.Stop()
-			for {
-				_, err := iter.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if expectedAttempts != attempts {
-		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
-	}
-	var want []interface{}
-	if isMultiplexEnabled {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.BeginTransactionRequest{},
-			// when no session found error thrown in multiplex session
-			// it will fallback to regular session
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.CommitRequest{},
-		}
-	} else {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.CommitRequest{},
-		}
-	}
-	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests(want, requests); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_AbortedForFirstStatement_AndThenSessionNotFoundForBeginTransaction(t *testing.T) {
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
-	)
-	server.TestSpanner.PutExecutionTime(
-		MethodBeginTransaction,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-
-	expectedAttempts := 2
-	var attempts int
-	_, err := client.ReadWriteTransaction(
-		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			attempts++
-			iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
-			defer iter.Stop()
-			for {
-				_, err := iter.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if expectedAttempts != attempts {
-		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
-	}
-	var want []interface{}
-	if isMultiplexEnabled {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.BeginTransactionRequest{},
-			// when no session found error thrown in multiplex session
-			// it will fallback to regular session
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.CommitRequest{},
-		}
-	} else {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.CommitRequest{},
-		}
-	}
-
-	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests(want, requests); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_DoesNotLeakSession(t *testing.T) {
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 1,
-			MaxOpened: 1,
-		},
-	})
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-
-	expectedAttempts := 2
-	var attempts int
-	_, err := client.ReadWriteTransaction(
-		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			attempts++
-			iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
-			defer iter.Stop()
-			for {
-				_, err := iter.Next()
-				if err == iterator.Done {
-					break
-				}
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if expectedAttempts != attempts {
-		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
-	}
-	requests := drainRequestsFromServer(server.TestSpanner)
-	var want []interface{}
-	if isMultiplexEnabled {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.CommitRequest{},
-		}
-	} else {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.BatchCreateSessionsRequest{}, // We need to create more sessions, as the one used first was destroyed.
-			&sppb.BeginTransactionRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.CommitRequest{},
-		}
-	}
-	if err := compareRequests(want, requests); err != nil {
-		t.Fatal(err)
 	}
 }
 
@@ -1816,73 +1370,6 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 1,
-			MaxOpened: 1,
-			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
-				idleTimeThreshold:           300 * time.Millisecond,
-			},
-		},
-	})
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
-		SimulatedExecutionTime{
-			MinimumExecutionTime: 200 * time.Millisecond,
-		})
-	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
-		SimulatedExecutionTime{
-			MinimumExecutionTime: 200 * time.Millisecond,
-		})
-	ctx := context.Background()
-	p := client.idleSessions
-
-	roTxn := client.ReadOnlyTransaction()
-	defer roTxn.Close()
-	iter := roTxn.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	iter.Next()
-	iter.Stop()
-
-	// Get the session last use time.
-	roTxn.sh.mu.Lock()
-	sessionPrevLastUseTime := roTxn.sh.lastUseTime
-	roTxn.sh.mu.Unlock()
-
-	iter = roTxn.Read(ctx, "FOO", AllKeys(), []string{"BAR"})
-	iter.Next()
-	iter.Stop()
-
-	// Get the latest session last use time
-	roTxn.sh.mu.Lock()
-	sessionLatestLastUseTime := roTxn.sh.lastUseTime
-	sessionCheckoutTime := roTxn.sh.checkoutTime
-	roTxn.sh.mu.Unlock()
-
-	// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
-	// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
-	if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
-		t.Fatalf("Session lastUseTime times should not be equal")
-	}
-
-	if time.Since(sessionPrevLastUseTime).Milliseconds() < 400 {
-		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
-	}
-	if time.Since(sessionCheckoutTime).Milliseconds() < 400 {
-		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
-	}
-	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
-	// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
-	p.removeLongRunningSessions()
-	if p.numOfLeakedSessionsRemoved > 0 {
-		t.Fatalf("Expected session to not get cleaned by background maintainer")
 	}
 }
 
@@ -2183,7 +1670,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -2237,7 +1724,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -2290,7 +1777,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithError(t 
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -2341,7 +1828,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithErrorTha
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -2394,7 +1881,7 @@ func TestClient_ReadWriteTransaction_OnlyBufferWritesDuringInitialAttempt(t *tes
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -2433,7 +1920,7 @@ func TestClient_ReadWriteTransaction_BlindWriteWithAbortedCommit(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -2446,190 +1933,6 @@ func TestClient_ReadWriteTransaction_BlindWriteWithAbortedCommit(t *testing.T) {
 	g, w := len(commit.Mutations), 1
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundOnCommit(t *testing.T) {
-	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
-		MethodCommitTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	}, 2); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
-	t.Parallel()
-	// We expect only 1 attempt, as the 'Session not found' error is already
-	//handled in the session pool where the session is prepared.
-	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
-		MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	}, 1); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteStreamingSql(t *testing.T) {
-	t.Parallel()
-	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
-		MethodExecuteStreamingSql: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	}, 2); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteSql,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	var attempts int
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		rowCount, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-		if err != nil {
-			return err
-		}
-		if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
-			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if g, w := attempts, 2; g != w {
-		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
-	}
-}
-
-func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
-	if isMultiplexEnabled {
-		t.Skip("Skipping regular session tests in multiplex session enabled tests")
-	}
-	t.Parallel()
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 1,
-			MaxOpened: 1,
-			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
-			},
-		},
-	})
-	defer teardown()
-	ctx := context.Background()
-	p := client.idleSessions
-	msg := "session is already recycled / destroyed"
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		rowCount, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-		if err != nil {
-			return err
-		}
-		if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
-			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
-		}
-
-		// Simulate the session to be last used before 60 mins.
-		// The background task cleans up this long-running session.
-		tx.sh.mu.Lock()
-		tx.sh.lastUseTime = time.Now().Add(-time.Hour)
-		if g, w := tx.sh.eligibleForLongRunning, false; g != w {
-			tx.sh.mu.Unlock()
-			return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
-		}
-		tx.sh.mu.Unlock()
-
-		// force run task to clean up unexpected long-running sessions
-		p.removeLongRunningSessions()
-
-		// The session associated with this transaction tx has been destroyed. So the below call should fail.
-		// Eventually this means the entire transaction should not succeed.
-		_, err = tx.Update(ctx, NewStatement("UPDATE FOO SET BAR='value' WHERE ID=1"))
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	if err == nil {
-		t.Fatalf("Missing expected exception")
-	}
-	if status.Code(err) != codes.FailedPrecondition || !strings.Contains(err.Error(), msg) {
-		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, msg)
-	}
-}
-
-func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 1,
-			MaxOpened: 1,
-			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
-				idleTimeThreshold:           300 * time.Millisecond,
-			},
-		},
-	})
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
-		SimulatedExecutionTime{
-			MinimumExecutionTime: 200 * time.Millisecond,
-		})
-	ctx := context.Background()
-	p := client.idleSessions
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		// Execute first operation on the transaction
-		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-		if err != nil {
-			return err
-		}
-
-		// Get the session last use time.
-		tx.sh.mu.Lock()
-		sessionPrevLastUseTime := tx.sh.lastUseTime
-		tx.sh.mu.Unlock()
-
-		// Execute second operation on the transaction
-		_, err = tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-		if err != nil {
-			return err
-		}
-		// Get the latest session last use time
-		tx.sh.mu.Lock()
-		sessionLatestLastUseTime := tx.sh.lastUseTime
-		sessionCheckoutTime := tx.sh.checkoutTime
-		tx.sh.mu.Unlock()
-
-		// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
-		// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
-		if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
-			t.Fatalf("Session lastUseTime times should not be equal")
-		}
-
-		if time.Since(sessionPrevLastUseTime).Milliseconds() < 400 {
-			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
-		}
-		if time.Since(sessionCheckoutTime).Milliseconds() < 400 {
-			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
-		}
-		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
-		// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
-		p.removeLongRunningSessions()
-		if p.numOfLeakedSessionsRemoved > 0 {
-			t.Fatalf("Expected session to not get cleaned by background maintainer")
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 }
 
@@ -2663,66 +1966,6 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 	}
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
-	}
-}
-
-func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAction(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 1,
-			MaxOpened: 1,
-			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
-			},
-		},
-	})
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteBatchDml,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	ctx := context.Background()
-	p := client.idleSessions
-	var attempts int
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		if attempts == 2 {
-			// Simulate the session to be long-running. The background task should not clean up this long-running session.
-			tx.sh.mu.Lock()
-			tx.sh.lastUseTime = time.Now().Add(-time.Hour)
-			if g, w := tx.sh.eligibleForLongRunning, true; g != w {
-				tx.sh.mu.Unlock()
-				return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
-			}
-			tx.sh.mu.Unlock()
-
-			// force run task to clean up unexpected long-running sessions
-			p.removeLongRunningSessions()
-		}
-		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
-		if err != nil {
-			return err
-		}
-		if g, w := len(rowCounts), 1; g != w {
-			return status.Errorf(codes.FailedPrecondition, "Row counts length mismatch\nGot: %v\nWant: %v", g, w)
-		}
-		if g, w := rowCounts[0], int64(UpdateBarSetFooRowCount); g != w {
-			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if g, w := attempts, 2; g != w {
-		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
-	}
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
-		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -2976,7 +2219,7 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ExecuteSqlRequest(t *
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -3019,7 +2262,7 @@ func TestClient_ReadWriteTransactionWithOptimisticLockMode_ReadRequest(t *testin
 	requests := drainRequestsFromServer(server.TestSpanner)
 
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ReadRequest{},
 		&sppb.ReadRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -3109,111 +2352,16 @@ func TestClient_ReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 	}
 }
 
-func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
-	// Make sure that there is always only one session in the pool.
-	sc := SessionPoolConfig{
-		MinOpened: 1,
-		MaxOpened: 1,
-	}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc})
-	defer teardown()
-	ctx := context.Background()
-
-	// If a panic occurs during a transaction, the session will not leak.
-	func() {
-		defer func() { recover() }()
-
-		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			panic("cause panic")
-		})
-		if err != nil {
-			t.Fatalf("Unexpected error during transaction: %v", err)
-		}
-	}()
-
-	if g, w := client.idleSessions.idleList.Len(), 1; g != w {
-		t.Fatalf("idle session count mismatch.\nGot: %v\nWant: %v", g, w)
-	}
-}
-
 func TestClient_SessionContainsDatabaseRole(t *testing.T) {
-	// Make sure that there is always only one session in the pool.
-	sc := SessionPoolConfig{
-		MinOpened: 1,
-		MaxOpened: 1,
-	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc, DatabaseRole: "test"})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, DatabaseRole: "test"})
 	defer teardown()
 
-	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
-	sp := client.idleSessions
-	waitFor(t, func() error {
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if uint64(sp.idleList.Len()) != 1 {
-			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
-		}
-		return nil
-	})
-
-	resp, err := server.TestSpanner.GetSession(context.Background(), &sppb.GetSessionRequest{Name: client.idleSessions.idleList.Front().Value.(*session).id})
+	resp, err := server.TestSpanner.GetSession(context.Background(), &sppb.GetSessionRequest{Name: client.sm.multiplexedSession.id})
 	if err != nil {
 		t.Fatalf("Failed to get session unexpectedly: %v", err)
 	}
 	if g, w := resp.CreatorRole, "test"; g != w {
 		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
-	}
-}
-
-func TestClient_SessionNotFound(t *testing.T) {
-	// Ensure we always have at least one session in the pool.
-	sc := SessionPoolConfig{
-		MinOpened: 1,
-	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc})
-	defer teardown()
-	ctx := context.Background()
-	for {
-		client.idleSessions.mu.Lock()
-		numSessions := client.idleSessions.idleList.Len()
-		client.idleSessions.mu.Unlock()
-		if numSessions > 0 {
-			break
-		}
-		time.After(time.Millisecond)
-	}
-	// Remove the session from the server without the pool knowing it.
-	_, err := server.TestSpanner.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: client.idleSessions.idleList.Front().Value.(*session).id})
-	if err != nil {
-		t.Fatalf("Failed to delete session unexpectedly: %v", err)
-	}
-
-	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-		defer iter.Stop()
-		rowCount := int64(0)
-		for {
-			row, err := iter.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return err
-			}
-			var singerID, albumID int64
-			var albumTitle string
-			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
-				return err
-			}
-			rowCount++
-		}
-		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
-			return spannerErrorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("Unexpected error during transaction: %v", err)
 	}
 }
 
@@ -3505,7 +2653,7 @@ func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
@@ -3562,7 +2710,7 @@ func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetr
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -3614,7 +2762,7 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ReadRequest{},
 		&sppb.ReadRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
@@ -3660,7 +2808,7 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testin
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
@@ -3711,7 +2859,7 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnSecondStatement(t *testi
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
@@ -3755,7 +2903,7 @@ func TestClient_ReadWriteTransaction_MultipleReadsWithoutNext(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -3886,108 +3034,6 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 				t.Fatalf("unexpected MaxCommitDelay: %v", r.MaxCommitDelay)
 			}
 		}
-	}
-}
-
-func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:           0,
-			WriteSessions:       0.0,
-			TrackSessionHandles: true,
-		},
-	})
-	defer teardown()
-	sp := client.idleSessions
-	ms := []*Mutation{
-		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
-		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
-	}
-	for i := 0; i < 10; i++ {
-		_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
-		if err != nil {
-			t.Fatal(err)
-		}
-		expectedIdleSesions := sp.incStep
-		if isMultiplexEnabled {
-			expectedIdleSesions = 0
-		}
-		sp.mu.Lock()
-		if g, w := uint64(sp.idleList.Len())+sp.createReqs, expectedIdleSesions; g != w {
-			sp.mu.Unlock()
-			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
-		}
-		expectedSessions := expectedIdleSesions
-		if isMultiplexEnabled {
-			expectedSessions++
-		}
-		if g, w := uint64(len(server.TestSpanner.DumpSessions())), expectedSessions; g != w {
-			sp.mu.Unlock()
-			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
-		}
-		sp.mu.Unlock()
-	}
-	// There should be no sessions marked as checked out.
-	sp.mu.Lock()
-	g, w := sp.trackedSessionHandles.Len(), 0
-	sp.mu.Unlock()
-	if g != w {
-		t.Fatalf("checked out sessions count mismatch:\nGot: %v\nWant: %v", g, w)
-	}
-}
-
-func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:           0,
-			WriteSessions:       0.0,
-			TrackSessionHandles: true,
-		},
-	})
-	defer teardown()
-	sp := client.idleSessions
-	ms := []*Mutation{
-		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
-		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
-	}
-	for i := 0; i < 10; i++ {
-		server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
-			SimulatedExecutionTime{
-				Errors: []error{status.Error(codes.InvalidArgument, "Invalid data")},
-			})
-		_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
-		if status.Code(err) != codes.InvalidArgument {
-			t.Fatal(err)
-		}
-		sp.mu.Lock()
-		expectedIdleSesions := sp.incStep
-		if isMultiplexEnabled {
-			expectedIdleSesions = 0
-		}
-		if g, w := uint64(sp.idleList.Len())+sp.createReqs, expectedIdleSesions; g != w {
-			sp.mu.Unlock()
-			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
-		}
-		var countMuxSess uint64
-		if isMultiplexEnabled {
-			countMuxSess = 1
-		}
-		if g, w := uint64(len(server.TestSpanner.DumpSessions())), expectedIdleSesions+countMuxSess; g != w {
-			sp.mu.Unlock()
-			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
-		}
-		sp.mu.Unlock()
-	}
-	// There should be no sessions marked as checked out.
-	client.idleSessions.mu.Lock()
-	g, w := client.idleSessions.trackedSessionHandles.Len(), 0
-	client.idleSessions.mu.Unlock()
-	if g != w {
-		t.Fatalf("checked out sessions count mismatch:\nGot: %v\nWant: %v", g, w)
 	}
 }
 
@@ -4178,64 +3224,6 @@ func TestReadWriteTransaction_WrapError(t *testing.T) {
 	if err == nil || err.Error() != msg {
 		t.Fatalf("Unexpected error\nGot: %v\nWant: %v", err, msg)
 	}
-}
-
-func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
-		SimulatedExecutionTime{
-			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
-		})
-	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
-		})
-	msg := "query failed"
-	numAttempts := 0
-	ctx := context.Background()
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		numAttempts++
-		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-		defer iter.Stop()
-		for {
-			_, err := iter.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				// Wrap the error in another error that implements the
-				// (xerrors|errors).Wrapper interface.
-				return &wrappedTestError{err, msg}
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("Unexpected error\nGot: %v\nWant: nil", err)
-	}
-	// We want 3 attempts. The 'Session not found' error on BeginTransaction
-	// will not retry the entire transaction, which means that we will have two
-	// failed attempts and then a successful attempt.
-	if g, w := numAttempts, 3; g != w {
-		t.Fatalf("Number of transaction attempts mismatch\nGot: %d\nWant: %d", g, w)
-	}
-}
-
-func TestStmtBasedReadWriteTransaction_SessionNotFoundError_shouldNotPanic(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
-		})
-	ctx := context.Background()
-	tx, _ := NewReadWriteStmtBasedTransaction(ctx, client)
-	_ = tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
-	// This would panic, as it could not refresh the session.
-	_, _ = tx.Commit(ctx)
 }
 
 func TestClient_WriteStructWithPointers(t *testing.T) {
@@ -4476,18 +3464,6 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	})
 	defer teardown()
 
-	// Wait until session creation has seized so that
-	// context timeout won't happen while a session is being created.
-	waitFor(t, func() error {
-		sp := client.idleSessions
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if sp.createReqs != 0 {
-			return fmt.Errorf("%d sessions are still in creation", sp.createReqs)
-		}
-		return nil
-	})
-
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
 			MinimumExecutionTime: time.Minute,
@@ -4559,7 +3535,7 @@ func TestFailedCommit_NoRollback(t *testing.T) {
 	}
 	// The failed commit should not trigger a rollback after the commit.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 	}); err != nil {
@@ -4592,7 +3568,7 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	}
 	// The failed update should trigger a rollback.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		//	first failure should trigger an explicit BeginTransaction.
 		&sppb.BeginTransactionRequest{},
@@ -5368,102 +4344,6 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 	}
 }
 
-func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T) {
-	t.Skip("open census spans are no longer exported by gapics")
-	// This test cannot be parallel, as the TestExporter does not support that.
-	te := NewTestExporter()
-	defer te.Unregister()
-	minOpened := uint64(1)
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:     minOpened,
-			WriteSessions: 0,
-		},
-	})
-	defer teardown()
-
-	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
-	sp := client.idleSessions
-	waitFor(t, func() error {
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if uint64(sp.idleList.Len()) != minOpened {
-			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
-		}
-		return nil
-	})
-
-	iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	iter.Do(func(r *Row) error {
-		return nil
-	})
-	select {
-	case <-te.Stats:
-	case <-time.After(1 * time.Second):
-		t.Fatal("No stats were exported before timeout")
-	}
-	spans := te.Spans()
-	if len(spans) == 0 {
-		t.Fatal("No spans were exported")
-	}
-	s := spans[len(spans)-1].Status
-	if s.Code != int32(codes.OK) {
-		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.OK)
-	}
-}
-
-func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
-	t.Skip("open census spans are no longer exported by gapics")
-	// This test cannot be parallel, as the TestExporter does not support that.
-	te := NewTestExporter()
-	defer te.Unregister()
-	minOpened := uint64(1)
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:     minOpened,
-			WriteSessions: 0,
-		},
-	})
-	defer teardown()
-
-	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
-	sp := client.idleSessions
-	waitFor(t, func() error {
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if uint64(sp.idleList.Len()) != minOpened {
-			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
-		}
-		return nil
-	})
-
-	sql := "SELECT * FROM"
-	server.TestSpanner.PutStatementResult(sql, &StatementResult{
-		Type: StatementResultError,
-		Err:  status.Error(codes.InvalidArgument, "Invalid query"),
-	})
-
-	iter := client.Single().Query(context.Background(), NewStatement(sql))
-	iter.Do(func(r *Row) error {
-		return nil
-	})
-	select {
-	case <-te.Stats:
-	case <-time.After(1 * time.Second):
-		t.Fatal("No stats were exported before timeout")
-	}
-	spans := te.Spans()
-	if len(spans) == 0 {
-		t.Fatal("No spans were exported")
-	}
-	s := spans[len(spans)-1].Status
-	if s.Code != int32(codes.InvalidArgument) {
-		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
-	}
-}
-
 func TestClient_ReadOnlyTransaction_Priority(t *testing.T) {
 	t.Parallel()
 
@@ -5575,45 +4455,6 @@ func TestClient_PDML_Priority(t *testing.T) {
 	} {
 		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
 		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, &sppb.RequestOptions{Priority: qo.Priority})
-	}
-}
-
-func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 1,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
-			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
-				executionFrequency:          15 * time.Millisecond, // check long-running sessions every 15ms
-			},
-		},
-	})
-	defer teardown()
-	// delay the rpc by 30ms. The background task runs to clean long-running sessions.
-	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
-		SimulatedExecutionTime{
-			MinimumExecutionTime: 30 * time.Millisecond,
-		})
-
-	stmt := NewStatement(UpdateBarSetFoo)
-	// This transaction is eligible to be long-running, so the background task should not clean its session.
-	rowCount, err := client.PartitionedUpdate(ctx, stmt)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
-		t.Errorf("Row count mismatch\nGot: %v\nWant: %v", g, w)
-	}
-	p := client.idleSessions
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
-		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -5946,25 +4787,13 @@ func TestClient_Single_ReadRowWithOptions(t *testing.T) {
 func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	t.Parallel()
 
-	minOpened := uint64(5)
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			DisableNativeMetrics: true,
-			SessionPoolConfig: SessionPoolConfig{
-				MinOpened: minOpened,
-			},
 		})
 	defer teardown()
-	sp := client.idleSessions
+	sp := client.sm
 
-	waitFor(t, func() error {
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if uint64(sp.idleList.Len()) != minOpened {
-			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
-		}
-		return nil
-	})
 	server.TestSpanner.Freeze()
 	defer server.TestSpanner.Unfreeze()
 
@@ -6046,44 +4875,7 @@ func TestClient_BatchWrite(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BatchWriteRequest{},
-	}, requests); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
-	t.Parallel()
-
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-	server.TestSpanner.PutExecutionTime(
-		MethodBatchWrite,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	)
-	mutationGroups := []*MutationGroup{
-		{[]*Mutation{
-			{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo1", 1}},
-		}},
-	}
-	iter := client.BatchWrite(context.Background(), mutationGroups)
-	responseCount := 0
-	doFunc := func(r *sppb.BatchWriteResponse) error {
-		responseCount++
-		return nil
-	}
-	if err := iter.Do(doFunc); err != nil {
-		t.Fatal(err)
-	}
-	if responseCount != len(mutationGroups) {
-		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
-	}
-
-	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BatchWriteRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BatchWriteRequest{},
 	}, requests); err != nil {
 		t.Fatal(err)
@@ -6192,84 +4984,6 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 	}
 }
 
-func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
-	// This test cannot be parallel, as the TestExporter does not support that.
-	te := NewTestExporter()
-	defer te.Unregister()
-	minOpened := uint64(1)
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:     minOpened,
-			WriteSessions: 0,
-		},
-	})
-	defer teardown()
-
-	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
-	sp := client.idleSessions
-	waitFor(t, func() error {
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if uint64(sp.idleList.Len()) != minOpened {
-			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
-		}
-		return nil
-	})
-
-	server.TestSpanner.PutExecutionTime(
-		MethodBatchWrite,
-		SimulatedExecutionTime{Errors: errors},
-	)
-	mutationGroups := []*MutationGroup{
-		{[]*Mutation{
-			{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo1", 1}},
-		}},
-	}
-	iter := client.BatchWrite(context.Background(), mutationGroups)
-	iter.Do(func(r *sppb.BatchWriteResponse) error {
-		return nil
-	})
-	select {
-	case <-te.Stats:
-	case <-time.After(1 * time.Second):
-		t.Fatal("No stats were exported before timeout")
-	}
-	spans := te.Spans()
-	if len(spans) == 0 {
-		t.Fatal("No spans were exported")
-	}
-	s := spans[len(spans)-1].Status
-	if s.Code != int32(code) {
-		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, code)
-	}
-}
-func TestClient_BatchWrite_SpanExported(t *testing.T) {
-	t.Skip("open census spans are no longer exported by gapics")
-	testcases := []struct {
-		name   string
-		code   codes.Code
-		errors []error
-	}{
-		{
-			name:   "Success",
-			code:   codes.OK,
-			errors: []error{},
-		},
-		{
-			name:   "Error",
-			code:   codes.InvalidArgument,
-			errors: []error{status.Error(codes.InvalidArgument, "Invalid argument")},
-		},
-	}
-
-	for _, tt := range testcases {
-		t.Run(tt.name, func(t *testing.T) {
-			checkBatchWriteSpan(t, tt.errors, tt.code)
-		})
-	}
-}
-
 func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -6304,7 +5018,7 @@ func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -6341,76 +5055,6 @@ func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	}
 }
 
-func TestClient_ReadWriteTransactionWithTag_SessionNotFound(t *testing.T) {
-	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-
-	ctx := context.Background()
-	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
-		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}})
-
-	var attempts int
-	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
-	}, TransactionOptions{TransactionTag: "test-tag1"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if g, w := attempts, 1; g != w {
-		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
-	}
-
-	attempts = 0
-	_, err = client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
-	}, TransactionOptions{TransactionTag: "test-tag2"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if g, w := attempts, 1; g != w {
-		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
-	}
-
-	var want []interface{}
-	if isMultiplexEnabled {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.CommitRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.CommitRequest{},
-		}
-	} else {
-		want = []interface{}{
-			&sppb.BatchCreateSessionsRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.CommitRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.CommitRequest{},
-		}
-	}
-	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests(want, requests); err != nil {
-		t.Fatal(err)
-	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if g, w := requests[3+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
-		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
-	}
-	if g, w := requests[5+muxCreateBuffer].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
-		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
-	}
-}
-
 func TestClient_NestedReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -6440,7 +5084,7 @@ func TestClient_NestedReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -6497,7 +5141,7 @@ func TestClient_NestedReadWriteTransactionWithTag_OuterAbortedOnce(t *testing.T)
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -6558,7 +5202,7 @@ func TestClient_NestedReadWriteTransactionWithTag_InnerBlindWrite(t *testing.T) 
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -6608,7 +5252,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_ExecuteSqlRe
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -6636,7 +5280,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BufferWrite(
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -6663,7 +5307,7 @@ func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BatchUpdate(
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -6725,7 +5369,7 @@ func TestClient_ApplyExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -6750,7 +5394,7 @@ func TestClient_ApplyAtLeastOnceExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 
 	expectedReqs := []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.CommitRequest{},
 	}
 	if isMultiplexEnabled {
@@ -6797,16 +5441,13 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
+	// With session pool removed, we only have CreateSessionRequest for multiplexed session
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BatchWriteRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.BatchWriteRequest).ExcludeTxnFromChangeStreams {
+	if !requests[1].(*sppb.BatchWriteRequest).ExcludeTxnFromChangeStreams {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }

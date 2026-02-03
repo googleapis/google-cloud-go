@@ -48,5 +48,5 @@ for f in $(find obj/api -name docs.metadata); do
     --file=$name \
     --gzip \
     .
-  gsutil cp $name gs://docs-staging-v2/$tar_dir
+  gcloud storage cp $name gs://docs-staging-v2/$tar_dir
 done
