@@ -143,3 +143,12 @@ func mapval(m map[string]*pb.Value) *pb.Value {
 func refval(path string) *pb.Value {
 	return &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: path}}
 }
+
+func docsToMaps(t *testing.T, docs []*PipelineResult) []map[string]interface{} {
+	var maps []map[string]interface{}
+	for _, doc := range docs {
+		data := doc.Data()
+		maps = append(maps, data)
+	}
+	return maps
+}

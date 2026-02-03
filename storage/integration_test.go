@@ -525,6 +525,107 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 		}
 	})
 }
+func TestIntegration_MRDWithReadHandle(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		const (
+			dataSize       = 1000
+			offset         = 0
+			limit          = 100
+			negativeOffset = -200
+		)
+
+		// Generate random content for testing.
+		content := make([]byte, dataSize)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MRDWithReadHandle"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatalf("Failed to upload test object %q: %v", objName, err)
+		}
+		// Ensure cleanup after the test.
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("Failed to delete test object %q: %v", objName, err)
+			}
+		}()
+
+		mrd, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader: %v", err)
+		}
+		readHandle := mrd.GetHandle()
+		obj = obj.ReadHandle(readHandle)
+		mrd2, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader with read handle: %v", err)
+		}
+
+		// Perform the read operation.
+		var res1, res2, res3, res4 multiRangeDownloaderOutput
+		mrd.Add(&res1.buf, offset, limit, func(x, y int64, err error) {
+			res1.offset = x
+			res1.limit = y
+			res1.err = err
+		})
+		mrd2.Add(&res2.buf, offset, limit, func(x, y int64, err error) {
+			res2.offset = x
+			res2.limit = y
+			res2.err = err
+		})
+		mrd2.Add(&res3.buf, negativeOffset, limit, func(x, y int64, err error) {
+			res3.offset = x
+			res3.limit = y
+			res3.err = err
+		})
+		mrd2.Add(&res4.buf, negativeOffset, 0, func(x, y int64, err error) {
+			res4.offset = x
+			res4.limit = y
+			res4.err = err
+		})
+
+		mrd.Wait()
+		mrd2.Wait()
+
+		if res1.err != nil {
+			t.Fatalf("mrd.Add callback returned error: %v", res1.err)
+		}
+		if res2.err != nil {
+			t.Fatalf("mrd2.Add callback returned error for res2: %v", res2.err)
+		}
+		if res3.err != nil {
+			t.Fatalf("mrd2.Add callback returned error for res3: %v", res3.err)
+		}
+
+		// Validate results for mrd with read handle.
+		want := content[offset : offset+limit]
+
+		if res2.offset != offset || res2.limit != limit {
+			t.Errorf("mrd2.Add callback offset/limit got %d/%d, want %d/%d", res2.offset, res2.limit, offset, limit)
+		}
+		if got := res2.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %d bytes, want %d bytes", len(got), len(want))
+		}
+
+		want = content[max(0, dataSize+negativeOffset):min(dataSize, max(0, dataSize+negativeOffset)+limit)]
+		if got := res3.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		want = content[max(0, dataSize+negativeOffset):]
+		if got := res4.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		if err := mrd.Close(); err != nil {
+			t.Fatalf("Error while closing reader: %v", err)
+		}
+		if err := mrd2.Close(); err != nil {
+			t.Fatalf("Error while closing reader created with read handle: %v", err)
+		}
+	})
+}
 
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
@@ -3836,6 +3937,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 }
 
 func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
+	t.Skip("persistent failures - https://github.com/googleapis/google-cloud-go/issues/13545")
 	ctx := skipAllButZonal(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}

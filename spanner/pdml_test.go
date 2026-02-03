@@ -92,7 +92,7 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
@@ -194,7 +194,7 @@ func TestPartitionedUpdate_ExcludeTxnFromChangeStreams(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{}}, requests); err != nil {
 		t.Fatal(err)
@@ -214,12 +214,6 @@ func TestPartitionedUpdateWithMultiplexedSession(t *testing.T) {
 
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:              1,
-			MaxOpened:              1,
-			enableMultiplexSession: true,
-			enableMultiplexedSessionForPartitionedOps: true,
-		},
 	})
 	defer teardown()
 
@@ -245,58 +239,5 @@ func TestPartitionedUpdateWithMultiplexedSession(t *testing.T) {
 }
 
 func TestPDMLFallbackWithMultiplexedSession(t *testing.T) {
-	if !isMultiplexEnabled {
-		t.Skip("Skipping multiplex session tests when regular sessions enabled")
-	}
-	t.Parallel()
-	ctx := context.Background()
-
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:              1,
-			MaxOpened:              1,
-			enableMultiplexSession: true,
-			enableMultiplexedSessionForPartitionedOps: true,
-		},
-	})
-	defer teardown()
-
-	// Set up mock server behavior
-	server.TestSpanner.PutExecutionTime(
-		MethodBeginTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{
-				status.Error(codes.Unimplemented, "Transaction type partitioned_dml not supported with multiplexed sessions"),
-			},
-		})
-
-	_, err := client.PartitionedUpdate(ctx, NewStatement(UpdateBarSetFoo))
-	if err != nil {
-		t.Fatalf("got error from PartitionedUpdate: %v", err)
-	}
-
-	// Verify that multiplexed sessions were disabled after the unimplemented error
-	if client.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
-		t.Error("multiplexed sessions for partitioned ops should be disabled after unimplemented error")
-	}
-
-	// Verify the sequence of requests
-	requests := drainRequestsFromServer(server.TestSpanner)
-	foundMultiplexedSession := false
-	for _, req := range requests {
-		if sqlReq, ok := req.(*sppb.BeginTransactionRequest); ok {
-			if strings.Contains(sqlReq.Session, "multiplexed") {
-				foundMultiplexedSession = true
-			}
-		}
-		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
-			if strings.Contains(sqlReq.Session, "multiplexed") {
-				t.Fatalf("Expected execute request to use a non-multiplexed session, but it used a multiplexed session")
-			}
-		}
-	}
-	if !foundMultiplexedSession {
-		t.Fatalf("Expected first attempt to use a multiplexed session, but it did not")
-	}
+	t.Skip("Multiplexed sessions are always enabled and cannot be disabled.")
 }

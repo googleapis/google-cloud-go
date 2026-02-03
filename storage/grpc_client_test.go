@@ -16,6 +16,7 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"crypto/md5"
 	"fmt"
 	"hash/crc32"
@@ -25,8 +26,10 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/mem"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
@@ -338,5 +341,163 @@ func TestErrorExtension(t *testing.T) {
 				t.Errorf("cmp.Diff got(-),want(+):\n%s", diff)
 			}
 		}
+	}
+}
+
+func TestRoutingInterceptors(t *testing.T) {
+	tests := []struct {
+		desc          string
+		enforced      bool
+		initialParams string
+		want          string
+	}{
+		{
+			desc:     "enforced new header",
+			enforced: true,
+			want:     "force_direct_connectivity=ENFORCED",
+		},
+		{
+			desc:     "default new header",
+			enforced: false,
+			want:     "force_direct_connectivity=FALLBACK_ALLOWED",
+		},
+		{
+			desc:          "enforced append to existing",
+			enforced:      true,
+			initialParams: "bucket=my-bucket",
+			want:          "bucket=my-bucket&force_direct_connectivity=ENFORCED",
+		},
+		{
+			desc:          "default append to existing",
+			enforced:      false,
+			initialParams: "bucket=my-bucket",
+			want:          "bucket=my-bucket&force_direct_connectivity=FALLBACK_ALLOWED",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			c := &grpcStorageClient{
+				config: &storageConfig{grpcDirectPathEnforced: tc.enforced},
+			}
+			unary, stream := c.routingInterceptors()
+
+			ctx := context.Background()
+			if tc.initialParams != "" {
+				ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(requestParamsHeaderKey, tc.initialParams))
+			}
+			cc := &grpc.ClientConn{}
+			// Unary Interceptor
+			t.Run("unary", func(t *testing.T) {
+				var got string
+				invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+					md, _ := metadata.FromOutgoingContext(ctx)
+					if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
+						got = vals[0]
+					}
+					return nil
+				}
+
+				if err := unary(ctx, "/test/method", nil, nil, cc, invoker); err != nil {
+					t.Errorf("unary error: %v", err)
+				}
+				if got != tc.want {
+					t.Errorf("got %q, want %q", got, tc.want)
+				}
+			})
+
+			// Stream Interceptor
+			t.Run("stream", func(t *testing.T) {
+				var got string
+				streamer := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+					md, _ := metadata.FromOutgoingContext(ctx)
+					if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
+						got = vals[0]
+					}
+					return nil, nil
+				}
+
+				if _, err := stream(ctx, nil, cc, "/test/stream", streamer); err != nil {
+					t.Errorf("stream error: %v", err)
+				}
+				if got != tc.want {
+					t.Errorf("got %q, want %q", got, tc.want)
+				}
+			})
+		})
+	}
+}
+
+func TestPrepareDirectPathMetadata(t *testing.T) {
+	tests := []struct {
+		desc          string
+		enforced      bool
+		target        string
+		initialParams string
+		want          string
+	}{
+		{
+			desc:     "DirectPath target with ENFORCED",
+			enforced: true,
+			target:   "google-c2p:///storage.googleapis.com",
+			want:     "force_direct_connectivity=ENFORCED",
+		},
+		{
+			desc:     "DirectPath target with FALLBACK_ALLOWED",
+			enforced: false,
+			target:   "google-c2p:///storage.googleapis.com",
+			want:     "force_direct_connectivity=FALLBACK_ALLOWED",
+		},
+		{
+			desc:     "CloudPath target with ENFORCED",
+			enforced: true,
+			target:   "dns:///storage.googleapis.com",
+			// This currently downgrades to OPTED_OUT instead of rejecting.
+			want: "force_direct_connectivity=OPTED_OUT",
+		},
+		{
+			desc:     "CloudPath target with FALLBACK_ALLOWED",
+			enforced: false,
+			target:   "dns:///storage.googleapis.com",
+			want:     "force_direct_connectivity=OPTED_OUT",
+		},
+		{
+			desc:     "Empty target with ENFORCED",
+			enforced: true,
+			target:   "",
+			want:     "force_direct_connectivity=ENFORCED",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			c := &grpcStorageClient{
+				config: &storageConfig{grpcDirectPathEnforced: tc.enforced},
+			}
+
+			ctx := context.Background()
+			if tc.initialParams != "" {
+				ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(requestParamsHeaderKey, tc.initialParams))
+			}
+
+			newCtx, err := c.prepareDirectPathMetadata(ctx, tc.target)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			md, ok := metadata.FromOutgoingContext(newCtx)
+			if !ok {
+				t.Fatal("metadata not found in context")
+			}
+
+			got := md.Get(requestParamsHeaderKey)
+			if len(got) == 0 {
+				t.Fatal("request params header not found")
+			}
+
+			if got[0] != tc.want {
+				t.Errorf("got metadata %q, want %q", got[0], tc.want)
+			}
+		})
 	}
 }
