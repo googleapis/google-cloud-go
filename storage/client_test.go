@@ -3100,6 +3100,81 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 	})
 }
 
+// Test that maxRetryDuration does not apply to Writer operations - Writers should
+// only use ChunkRetryDeadline for per-chunk retry timeouts.
+func TestWriterIgnoresMaxRetryDurationEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		const (
+			// Resumable upload with smallest chunksize.
+			chunkSize = 256 * 1024
+			fileSize  = 600 * 1024
+			// Set a very short maxRetryDuration - if applied, would allow almost no retries
+			maxRetryDuration = 2 * time.Millisecond
+			// Set ChunkRetryDeadline longer to allow all retries to complete
+			chunkRetryDeadline = 10 * time.Second
+			errCode            = 503
+		)
+
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+
+		// Create enough errors that will be exhausted within chunkRetryDeadline.
+		// Error only after the first chunk has been sent.
+		manyErrs := []string{fmt.Sprintf("return-%d-after-%dK", errCode, 257)}
+		// Add more errors to prove maxRetryDuration is not limiting retries
+		// Use fewer errors since gRPC seems to consume them slowly
+		for i := 0; i < 7; i++ {
+			manyErrs = append(manyErrs, fmt.Sprintf("return-%d", errCode))
+		}
+		instructions := map[string][]string{"storage.objects.insert": manyErrs}
+		testID := createRetryTest(t, client, instructions)
+
+		var cancel context.CancelFunc
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		// Context deadline must be longer than ChunkRetryDeadline to allow retries to complete
+		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
+		defer cancel()
+
+		// Create a veneer client with maxRetryDuration set
+		vc := &Client{tc: client}
+		obj := vc.Bucket(bucket).Object(fmt.Sprintf("object-%d", time.Now().Nanosecond()))
+		// Set maxRetryDuration on the object handle with a proper backoff config
+		obj = obj.Retryer(
+			WithPolicy(RetryAlways), // Use RetryAlways since writes without preconditions aren't idempotent
+			WithMaxRetryDuration(maxRetryDuration),
+			WithBackoff(gax.Backoff{
+				Initial:    1 * time.Millisecond,
+				Max:        50 * time.Millisecond,
+				Multiplier: 2,
+			}),
+		)
+
+		w := obj.NewWriter(ctx)
+		w.ChunkSize = chunkSize
+		w.ChunkRetryDeadline = chunkRetryDeadline
+
+		buffer := bytes.Repeat([]byte("A"), fileSize)
+		if _, err := w.Write(buffer); err != nil {
+			// Expected to fail after exhausting retries
+		}
+		w.Close()
+
+		// Verify that all retry instructions were consumed, proving maxRetryDuration was ignored.
+		// If maxRetryDuration (2ms) were applied, only 1 instruction would be consumed.
+		// With backoff (Initial=1ms, Max=50ms) and 10s ChunkRetryDeadline, all instructions
+		// should be consumed since maxRetryDuration is ignored.
+		got, err := numInstructionsLeft(testID, "storage.objects.insert")
+		if err != nil {
+			t.Errorf("getting emulator instructions: %v", err)
+		}
+		if got > 0 {
+			t.Errorf("expected all instructions to be consumed (<=0 left), but got %d instructions left", got)
+		}
+	})
+}
+
 // Used to test gRPC buffer pool allocs and frees.
 // See https://pkg.go.dev/google.golang.org/grpc/mem
 type testBufferPool struct {

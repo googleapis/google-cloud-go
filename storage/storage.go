@@ -2505,6 +2505,10 @@ func (wb *withMaxAttempts) apply(config *retryConfig) {
 // Without this setting, operations will continue retrying until either the passed context
 // is canceled or timedout, or the maximum number of attempts is exhausted.
 // A value of 0 allows infinite retries (subject to other constraints).
+//
+// Note: This does not apply to Writer operations. For Writer operations,
+// use Writer.ChunkRetryDeadline to control per-chunk retry timeouts, and use
+// context timeout or cancellation to control the overall upload timeout.
 func WithMaxRetryDuration(maxRetryDuration time.Duration) RetryOption {
 	return &withMaxRetryDuration{
 		maxRetryDuration: maxRetryDuration,
