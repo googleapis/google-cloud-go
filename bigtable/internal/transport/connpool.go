@@ -927,7 +927,6 @@ func (cf *connectionFactory) primeWithRetry(ctx context.Context, conn *BigtableC
 	for attempt := 0; attempt < maxAttempts; attempt++ {
 
 		// ctx.Done() returns a error
-		fmt.Println(ctx.Err())
 		if err := ctx.Err(); err != nil {
 			return fmt.Errorf("bigtable_connpool:  error before prime attempt %d: %w", attempt, err)
 		}
