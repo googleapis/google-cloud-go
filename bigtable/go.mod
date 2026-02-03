@@ -4,8 +4,6 @@ go 1.24.0
 
 toolchain go1.25.5
 
-toolchain go1.25.5
-
 require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/iam v1.5.3
