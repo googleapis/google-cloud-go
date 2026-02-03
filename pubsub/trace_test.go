@@ -707,7 +707,7 @@ func BenchmarkNoTracingEnabled(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		r := topic.Publish(ctx, m)
 		_, err = r.Get(ctx)
 		if err != nil {

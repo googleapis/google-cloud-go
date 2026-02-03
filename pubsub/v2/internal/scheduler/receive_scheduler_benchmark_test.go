@@ -35,7 +35,7 @@ func BenchmarkReceive_SingleKey(b *testing.B) {
 			}
 		}
 	}()
-	for j := 0; j < b.N; j++ {
+	for b.Loop() {
 		<-wait
 	}
 }
@@ -52,7 +52,7 @@ func BenchmarkReceive_Unkeyed(b *testing.B) {
 			}
 		}
 	}()
-	for j := 0; j < b.N; j++ {
+	for b.Loop() {
 		<-wait
 	}
 }

@@ -1343,7 +1343,7 @@ func BenchmarkMutationsProto(b *testing.B) {
 
 	for _, bc := range benchmarkCases {
 		b.Run(bc.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				_, _, _ = mutationsProto(bc.mutations)
 			}
 		})

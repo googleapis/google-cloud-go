@@ -1661,19 +1661,19 @@ func BenchmarkSelectionStrategies(b *testing.B) {
 			poolP2 := setupBenchmarkPool(b, btopt.PowerOfTwoLeastInFlight, size, serverAddr)
 
 			b.Run("RoundRobin", func(b *testing.B) {
-				for i := 0; i < b.N; i++ {
+				for b.Loop() {
 					poolRR.selectRoundRobin()
 				}
 			})
 
 			b.Run("LeastInFlight", func(b *testing.B) {
-				for i := 0; i < b.N; i++ {
+				for b.Loop() {
 					poolLIF.selectLeastLoaded()
 				}
 			})
 
 			b.Run("PowerOfTwoLeastInFlight", func(b *testing.B) {
-				for i := 0; i < b.N; i++ {
+				for b.Loop() {
 					poolP2.selectLeastLoadedRandomOfTwo()
 				}
 			})
