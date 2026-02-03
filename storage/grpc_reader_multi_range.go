@@ -39,7 +39,7 @@ const (
 	// unbounded memory usage if the user is adding ranges faster than they
 	// can be processed.
 	mrdAddInternalQueueMaxSize = 50000
-	defaultTargetPendingBytes  = 1 << 30 // 1 GB
+	defaultTargetPendingBytes  = 1 << 30 // 1 GiB
 	defaultTargetPendingRanges = 20000
 )
 

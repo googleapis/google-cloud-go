@@ -154,7 +154,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	return r, err
 }
 
-// MRDOption is an option for MutliRangeDownloader.
+// MRDOption is an option for MultiRangeDownloader.
 type MRDOption interface {
 	apply(*newMultiRangeDownloaderParams)
 }
@@ -213,7 +213,7 @@ func (c targetPendingBytes) apply(params *newMultiRangeDownloaderParams) {
 // WithTargetPendingBytes returns an MRDOption that sets target pending
 // bytes on the MRD to c. If number of connections in the MRD is less than
 // maximum connections, MRD will trigger creation of a new connection when
-// oustanding bytes on each of the existing stream exceed c.
+// outstanding bytes on each of the existing stream exceed c.
 //
 // Note: A new connection can be triggered by either the pending byte threshold
 // (WithTargetPendingBytes) or the pending range threshold (WithTargetPendingRanges).
