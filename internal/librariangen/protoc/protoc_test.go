@@ -66,8 +66,10 @@ func TestBuild(t *testing.T) {
 		apiServiceDir string
 		reqID         string
 		config        mockConfigProvider
+		features      []string
 		nestedProtos  []string
 		want          []string
+		wantError     bool
 	}{
 		{
 			name:    "go_grpc_library rule",
@@ -84,6 +86,7 @@ func TestBuild(t *testing.T) {
 				hasGoGRPC:         true,
 				hasGAPIC:          true,
 			},
+			features:     []string{"F_foo_feature", "F_bar_feature"},
 			nestedProtos: []string{"nested/x.proto", "nested/y.proto"},
 			want: []string{
 				"protoc",
@@ -99,6 +102,8 @@ func TestBuild(t *testing.T) {
 				"--go_gapic_opt=release-level=ga",
 				"--go_gapic_opt=metadata",
 				"--go_gapic_opt=rest-numeric-enums",
+				"--go_gapic_opt=F_foo_feature",
+				"--go_gapic_opt=F_bar_feature",
 				"-I=" + sourceDir,
 				filepath.Join(sourceDir, "google/cloud/workflows/v1/workflows.proto"),
 				filepath.Join(sourceDir, "google/cloud/workflows/v1/nested/x.proto"),
@@ -154,6 +159,21 @@ func TestBuild(t *testing.T) {
 				filepath.Join(sourceDir, "google/cloud/secretmanager/v1beta2/secretmanager.proto"),
 			},
 		},
+		{
+			name:    "bad feature list",
+			apiPath: "google/cloud/workflows/v1",
+			reqID:   "workflows",
+			config: mockConfigProvider{
+				gapicImportPath:   "cloud.google.com/go/workflows/apiv1;workflows",
+				transport:         "grpc",
+				grpcServiceConfig: "workflows_grpc_service_config.json",
+				serviceYAML:       "workflows_v1.yaml",
+				hasGoGRPC:         true,
+				hasGAPIC:          true,
+			},
+			features:  []string{"random string"},
+			wantError: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -165,7 +185,13 @@ func TestBuild(t *testing.T) {
 				Path: tt.apiPath,
 			}
 
-			got, err := Build(req, api, &tt.config, sourceDir, "/output", tt.nestedProtos)
+			got, err := Build(req, api, &tt.config, sourceDir, "/output", tt.nestedProtos, tt.features)
+			if tt.wantError {
+				if err == nil {
+					t.Fatal("expected error, Build() succeeded")
+				}
+				return
+			}
 			if err != nil {
 				t.Fatalf("Build() failed: %v", err)
 			}
