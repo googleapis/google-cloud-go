@@ -112,3 +112,107 @@ func TestOtelMetricsContext(t *testing.T) {
 		}
 	}
 }
+
+func TestOtelMetricsSchema(t *testing.T) {
+	tests := []struct {
+		name         string
+		inputAttrs   []attribute.KeyValue
+		wantRegion   string
+		wantHostName string
+	}{
+		{
+			name: "zone",
+			inputAttrs: []attribute.KeyValue{
+				{Key: "cloud.availability_zone", Value: attribute.StringValue("us-central1-a")},
+				{Key: "cloud.platform", Value: attribute.StringValue("gcp_compute_engine")},
+				{Key: "host.name", Value: attribute.StringValue("explicit-host")},
+			},
+			wantRegion:   "us-central1",
+			wantHostName: "explicit-host",
+		},
+		{
+			name: "Pod Name",
+			inputAttrs: []attribute.KeyValue{
+				{Key: "k8s.pod.name", Value: attribute.StringValue("pod-123")},
+				{Key: "cloud.region", Value: attribute.StringValue("us-west1")},
+			},
+			wantRegion:   "us-west1",
+			wantHostName: "pod-123",
+		},
+		{
+			name: "K8s Node Name",
+			inputAttrs: []attribute.KeyValue{
+				{Key: "k8s.node.name", Value: attribute.StringValue("node-abc")},
+				{Key: "cloud.region", Value: attribute.StringValue("us-west1")},
+			},
+			wantRegion:   "us-west1",
+			wantHostName: "node-abc",
+		},
+		{
+			name: "aws zone",
+			inputAttrs: []attribute.KeyValue{
+				{Key: "k8s.node.name", Value: attribute.StringValue("node-abc")},
+				{Key: "cloud.availability_zone", Value: attribute.StringValue("us-west-1a")},
+			},
+			wantRegion:   "us-west",
+			wantHostName: "node-abc",
+		},
+		{
+			name: "Global Default",
+			inputAttrs: []attribute.KeyValue{
+				{Key: "cloud.platform", Value: attribute.StringValue("unknown")},
+			},
+			wantRegion:   "global",
+			wantHostName: "unknown",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			mr := metric.NewManualReader()
+
+			// Basic required attributes for the test setup
+			baseAttrs := []attribute.KeyValue{
+				{Key: "cloud.account.id", Value: attribute.StringValue("test-account")},
+				{Key: "host.id", Value: attribute.StringValue("test-host-id")},
+			}
+			allAttrs := append(baseAttrs, tc.inputAttrs...)
+
+			cfg := metricsConfig{
+				project:         "test-project",
+				instance:        "test-instance",
+				appProfile:      "default",
+				clientName:      "test-client",
+				clientUID:       "test-uid",
+				manualReader:    mr,
+				disableExporter: true,
+				resourceOpts:    []resource.Option{resource.WithAttributes(allAttrs...)},
+			}
+
+			mc, err := newOtelMetricsContext(ctx, cfg)
+			if err != nil {
+				t.Fatalf("newOtelMetricsContext failed: %v", err)
+			}
+			defer mc.close()
+
+			rm := metricdata.ResourceMetrics{}
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect failed: %v", err)
+			}
+
+			// Extract attributes into a map for easy lookup
+			gotAttrs := make(map[string]string)
+			for _, attr := range rm.Resource.Attributes() {
+				gotAttrs[string(attr.Key)] = attr.Value.AsString()
+			}
+
+			if gotAttrs["region"] != tc.wantRegion {
+				t.Errorf("region: got %q, want %q", gotAttrs["region"], tc.wantRegion)
+			}
+			if gotAttrs["host_name"] != tc.wantHostName {
+				t.Errorf("host_name: got %q, want %q", gotAttrs["host_name"], tc.wantHostName)
+			}
+		})
+	}
+}
