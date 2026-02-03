@@ -39,6 +39,8 @@ const (
 	// unbounded memory usage if the user is adding ranges faster than they
 	// can be processed.
 	mrdAddInternalQueueMaxSize = 50000
+	defaultTargetPendingBytes  = 1 << 30 // 1 GB
+	defaultTargetPendingRanges = 20000
 )
 
 // --- internalMultiRangeDownloader Interface ---
@@ -140,10 +142,10 @@ func (m *newMultiRangeDownloaderParams) defaults() {
 		m.maxConnections = m.minConnections
 	}
 	if m.targetPendingRanges == 0 {
-		m.targetPendingRanges = 20000
+		m.targetPendingRanges = defaultTargetPendingRanges
 	}
 	if m.targetPendingBytes == 0 {
-		m.targetPendingBytes = 1 << 30
+		m.targetPendingBytes = defaultTargetPendingBytes
 	}
 }
 
