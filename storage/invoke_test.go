@@ -282,12 +282,22 @@ func TestInvoke(t *testing.T) {
 		},
 		{
 			desc:              "maxRetryDuration reached before maxAttempts",
-			count:             20,
+			count:             1000,
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: true,
-			retry:             &retryConfig{policy: RetryAlways, maxAttempts: intPointer(100), maxRetryDuration: time.Millisecond * 100},
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: intPointer(1005), maxRetryDuration: time.Millisecond * 10},
 			expectFinalErr:    false,
+		},
+		{
+			desc:              "maxRetryDuration set to 0 allows infinite retries",
+			count:             5,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{policy: RetryAlways, maxRetryDuration: 0},
+			expectFinalErr:    true,
+			wantAttempts:      intPointer(6),
 		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
