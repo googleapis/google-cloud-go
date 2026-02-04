@@ -2727,7 +2727,7 @@ func TestRetryMaxDurationEmulated(t *testing.T) {
 			t.Fatalf("creating bucket: %v", err)
 		}
 		// Set up many errors to ensure we don't run out during the duration
-		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503", "return-503"}}
+		instructions := map[string][]string{"storage.buckets.get": slices.Repeat([]string{"return-503"}, 10)}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 		// Set a short max retry duration with a very small backoff to ensure we hit the duration limit
