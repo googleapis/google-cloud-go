@@ -403,7 +403,9 @@ func TestPerStreamFlowControl(t *testing.T) {
 	// This test verifies that flow control can be applied per-stream (per-goroutine)
 	// instead of per-subscriber.
 
-	// Use a fake server.
+	// Use a fake server. The fake doesn't currently implement server-side flow
+	// control, so it will deliver messages as soon as client requests them.
+	// This is perfect for testing both forms of flow control.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	client, srv := newFake(t)
