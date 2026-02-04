@@ -170,7 +170,5 @@ and use a client as usual:
 	defer client.Close()
 
 Deprecated: Please use cloud.google.com/go/pubsub/v2.
-
-Test comment to elicit a test run.
 */
 package pubsub // import "cloud.google.com/go/pubsub"
