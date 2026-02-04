@@ -1,6 +1,17 @@
 # Changes
 
 
+## [1.115.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.115.0) (2026-02-04)
+
+### Features
+
+* Add `fps` to message `VideoMetadata` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* Add `imageOutputOptions, personGeneration, imageSize` to `ImageConfig` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* Add `mediaResolution` to `Part` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* Add `responseModalities, audioTimestamp, mediaResolution` to `GenerationConfig` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* Add `thinkingLevel` to `ThinkingConfig` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* Force-delete for RagCorpora, ignoring any external errors and ensuring deletion of the RagCorpus ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
 ## [1.114.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.114.0) (2026-01-22)
 
 ### Features
