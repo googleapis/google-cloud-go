@@ -39,7 +39,7 @@ cd $GOCLOUD_HOME
 # git clone of a local repo only clones the single branch and default branch
 # (main) which means we need to explicitly fetch preview if evaluating a pull
 # request against it so that git diff functions appropriately.
-if [[$KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go == "preview"]]; then
+if [[ $KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go == "preview" ]]; then
   git fetch origin preview
 fi
 
