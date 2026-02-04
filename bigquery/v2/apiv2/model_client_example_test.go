@@ -21,7 +21,6 @@ import (
 
 	bigquery "cloud.google.com/go/bigquery/v2/apiv2"
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
-	"google.golang.org/api/iterator"
 )
 
 func ExampleNewModelClient() {
@@ -123,24 +122,12 @@ func ExampleModelClient_ListModels() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/bigquery/v2/apiv2/bigquerypb#ListModelsRequest.
 	}
-	it := c.ListModels(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-
-		// If you need to access the underlying RPC response,
-		// you can do so by casting the `Response` as below.
-		// Otherwise, remove this line. Only populated after
-		// first call to Next(). Not safe for concurrent access.
-		_ = it.Response.(*bigquerypb.ListModelsResponse)
+	resp, err := c.ListModels(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleModelClient_PatchModel() {

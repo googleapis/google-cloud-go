@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "ListFormatDatasetIterator",
+        "resultType": "*bigquerypb.DatasetList",
         "client": {
           "shortName": "DatasetClient",
           "fullName": "google.cloud.bigquery.v2.DatasetClient"
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 67,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "ListFormatJobIterator",
+        "resultType": "*bigquerypb.JobList",
         "client": {
           "shortName": "JobClient",
           "fullName": "google.cloud.bigquery.v2.JobClient"
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 67,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -767,7 +767,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "ModelIterator",
+        "resultType": "*bigquerypb.ListModelsResponse",
         "client": {
           "shortName": "ModelClient",
           "fullName": "google.cloud.bigquery.v2.ModelClient"
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 67,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1042,7 +1042,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "RoutineIterator",
+        "resultType": "*bigquerypb.ListRoutinesResponse",
         "client": {
           "shortName": "RoutineClient",
           "fullName": "google.cloud.bigquery.v2.RoutineClient"
@@ -1060,7 +1060,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 67,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1545,7 +1545,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "ListFormatTableIterator",
+        "resultType": "*bigquerypb.TableList",
         "client": {
           "shortName": "TableClient",
           "fullName": "google.cloud.bigquery.v2.TableClient"
@@ -1563,7 +1563,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 67,
+          "end": 53,
           "type": "FULL"
         }
       ]

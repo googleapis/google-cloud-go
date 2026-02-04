@@ -1121,13 +1121,8 @@ func (c *gRPCClient) ExecutePipeline(ctx context.Context, req *firestorepb.Execu
 	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
 		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
 	}
-	if headerValue, ok := routingHeadersMap["project_id"]; ok {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "project_id", headerValue)
-		delete(routingHeadersMap, "project_id")
-	}
-	if headerValue, ok := routingHeadersMap["database_id"]; ok {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "database_id", headerValue)
-		delete(routingHeadersMap, "database_id")
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
 	hds := []string{"x-goog-request-params", routingHeaders}
@@ -2097,13 +2092,8 @@ func (c *restClient) ExecutePipeline(ctx context.Context, req *firestorepb.Execu
 	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
 		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
 	}
-	if headerValue, ok := routingHeadersMap["project_id"]; ok {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "project_id", headerValue)
-		delete(routingHeadersMap, "project_id")
-	}
-	if headerValue, ok := routingHeadersMap["database_id"]; ok {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "database_id", headerValue)
-		delete(routingHeadersMap, "database_id")
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
 	hds := []string{"x-goog-request-params", routingHeaders}
