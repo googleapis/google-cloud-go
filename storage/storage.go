@@ -2535,8 +2535,27 @@ func (ws *withPolicy) apply(config *retryConfig) {
 	config.policy = ws.policy
 }
 
+// RetryContext provides comprehensive context about a retry attempt.
+// It is passed to custom retry functions configured via WithErrorFuncWithContext.
+type RetryContext struct {
+	// Attempt is the current attempt number (1-based, so first call is attempt 1).
+	Attempt int
+	// InvocationID is a unique identifier for the current operation invocation.
+	InvocationID string
+	// Operation describes the operation being performed (e.g., "GetObject", "DeleteObject").
+	Operation string
+	// Bucket is the name of the bucket involved in the operation, empty if not applicable.
+	Bucket string
+	// Object is the name of the object involved in the operation, empty if not applicable.
+	Object string
+}
+
 // WithErrorFunc allows users to pass a custom function to the retryer. Errors
 // will be retried if and only if `shouldRetry(err)` returns true.
+//
+// Deprecated: Use WithErrorFuncWithContext instead to access additional retry
+// context such as attempt number, operation name, bucket, and object information.
+//
 // By default, the following errors are retried (see ShouldRetry for the default
 // function):
 //
@@ -2562,17 +2581,59 @@ type withErrorFunc struct {
 }
 
 func (wef *withErrorFunc) apply(config *retryConfig) {
+	// Wrap legacy signature to new signature
+	config.shouldRetry = func(err error, ctx *RetryContext) bool {
+		return wef.shouldRetry(err)
+	}
+}
+
+// WithErrorFuncWithContext allows users to pass a custom function to the retryer
+// with access to comprehensive retry context. Errors will be retried if and only
+// if `shouldRetry(err, ctx)` returns true.
+//
+// The RetryContext provides:
+// - Attempt: current attempt number (1-based)
+// - InvocationID: unique identifier for the operation invocation
+// - Operation: the operation being performed (e.g., "GetObject", "UpdateBucket")
+// - Bucket: name of the bucket involved in the operation
+// - Object: name of the object involved in the operation
+//
+// By default, the following errors are retried (see ShouldRetry for the default
+// function):
+//
+// - HTTP responses with codes 408, 429, 502, 503, and 504.
+//
+// - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
+//
+// - Errors which are considered transient using the Temporary() interface.
+//
+// - Wrapped versions of these errors.
+//
+// This option can be used to retry on a different set of errors than the
+// default. Users can use the default ShouldRetry function inside their custom
+// function if they only want to make minor modifications to default behavior.
+func WithErrorFuncWithContext(shouldRetry func(err error, ctx *RetryContext) bool) RetryOption {
+	return &withErrorFuncWithContext{
+		shouldRetry: shouldRetry,
+	}
+}
+
+type withErrorFuncWithContext struct {
+	shouldRetry func(err error, ctx *RetryContext) bool
+}
+
+func (wef *withErrorFuncWithContext) apply(config *retryConfig) {
 	config.shouldRetry = wef.shouldRetry
 }
 
 type retryConfig struct {
 	backoff     *gax.Backoff
 	policy      RetryPolicy
-	shouldRetry func(err error) bool
+	shouldRetry func(error, *RetryContext) bool
 	maxAttempts *int
 	// maxRetryDuration, if set, specifies a deadline after which the request
 	// will no longer be retried. A value of 0 allows infinite retries.
-	// maxRetryDuration is currently only set by Writer.ChunkRetryDeadline.
+	// maxRetryDuration can be set via WithMaxRetryDuration or Writer.ChunkRetryDeadline.
 	maxRetryDuration time.Duration
 }
 

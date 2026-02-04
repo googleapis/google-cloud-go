@@ -988,7 +988,7 @@ func TestObjectRetryer(t *testing.T) {
 					}),
 					WithMaxAttempts(5),
 					WithPolicy(RetryAlways),
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -998,7 +998,7 @@ func TestObjectRetryer(t *testing.T) {
 				},
 				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 		{
@@ -1036,10 +1036,10 @@ func TestObjectRetryer(t *testing.T) {
 			name: "set ErrorFunc only",
 			call: func(o *ObjectHandle) *ObjectHandle {
 				return o.Retryer(
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 	}
@@ -1052,7 +1052,7 @@ func TestObjectRetryer(t *testing.T) {
 				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
+				cmp.Comparer(func(a, b func(err error, ctx *RetryContext) bool) bool {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {
@@ -1085,7 +1085,7 @@ func TestClientSetRetry(t *testing.T) {
 				}),
 				WithMaxAttempts(5),
 				WithPolicy(RetryAlways),
-				WithErrorFunc(func(err error) bool { return false }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1095,7 +1095,7 @@ func TestClientSetRetry(t *testing.T) {
 				},
 				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 		{
@@ -1131,10 +1131,10 @@ func TestClientSetRetry(t *testing.T) {
 		{
 			name: "set ErrorFunc only",
 			clientOptions: []RetryOption{
-				WithErrorFunc(func(err error) bool { return false }),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }),
 			},
 			want: &retryConfig{
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 	}
@@ -1153,7 +1153,7 @@ func TestClientSetRetry(t *testing.T) {
 				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
+				cmp.Comparer(func(a, b func(err error, ctx *RetryContext) bool) bool {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {
@@ -1182,10 +1182,10 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(5),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
 				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 			},
@@ -1200,7 +1200,7 @@ func TestRetryer(t *testing.T) {
 				}),
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(11),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1208,7 +1208,7 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
 				maxAttempts: intPointer(11),
 				policy:      RetryAlways,
 			},
@@ -1223,7 +1223,7 @@ func TestRetryer(t *testing.T) {
 				}),
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(7),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1231,7 +1231,7 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
 				maxAttempts: intPointer(7),
 				policy:      RetryAlways,
 			},
@@ -1244,12 +1244,12 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithMaxAttempts(5),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
 				maxAttempts: intPointer(5),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
 			},
 		},
 		{
@@ -1260,12 +1260,12 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithMaxAttempts(11),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
 				maxAttempts: intPointer(11),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
 			},
 		},
 		{
@@ -1283,13 +1283,13 @@ func TestRetryer(t *testing.T) {
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
 				}),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 				WithMaxAttempts(5),
 			},
 			want: &retryConfig{
 				policy:      RetryAlways,
 				maxAttempts: intPointer(5),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
@@ -1322,7 +1322,7 @@ func TestRetryer(t *testing.T) {
 			name: "object retryer does not override bucket retryer if option is not set",
 			bucketOptions: []RetryOption{
 				WithPolicy(RetryNever),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return ShouldRetry(err) }),
 				WithMaxAttempts(5),
 			},
 			objectOptions: []RetryOption{
@@ -1334,7 +1334,7 @@ func TestRetryer(t *testing.T) {
 			want: &retryConfig{
 				policy:      RetryNever,
 				maxAttempts: intPointer(5),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, ctx *RetryContext) bool { return ShouldRetry(err) },
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Second,
@@ -1419,7 +1419,7 @@ func TestRetryer(t *testing.T) {
 						cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 						// ErrorFunc cannot be compared directly, but we check if both are
 						// either nil or non-nil.
-						cmp.Comparer(func(a, b func(err error) bool) bool {
+						cmp.Comparer(func(a, b func(err error, ctx *RetryContext) bool) bool {
 							return (a == nil && b == nil) || (a != nil && b != nil)
 						}),
 					); diff != "" {

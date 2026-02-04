@@ -1121,7 +1121,7 @@ func TestBucketRetryer(t *testing.T) {
 					}),
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1131,7 +1131,7 @@ func TestBucketRetryer(t *testing.T) {
 				},
 				policy:      RetryAlways,
 				maxAttempts: intPointer(5),
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 		{
@@ -1169,10 +1169,10 @@ func TestBucketRetryer(t *testing.T) {
 			name: "set ErrorFunc only",
 			call: func(b *BucketHandle) *BucketHandle {
 				return b.Retryer(
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 	}
@@ -1185,7 +1185,7 @@ func TestBucketRetryer(t *testing.T) {
 				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
+				cmp.Comparer(func(a, b func(err error, ctx *RetryContext) bool) bool {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {

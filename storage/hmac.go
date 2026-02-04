@@ -280,7 +280,7 @@ func (it *HMACKeysIterator) fetch(pageSize int, pageToken string) (token string,
 	err = run(it.ctx, func(ctx context.Context) error {
 		resp, err = call.Context(ctx).Do()
 		return err
-	}, it.retry, true)
+	}, it.retry, true, "", "", "")
 	if err != nil {
 		return "", err
 	}

@@ -150,7 +150,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, ctx *RetryContext) bool {
 					return err == io.ErrNoProgress
 				},
 			},
@@ -164,7 +164,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, ctx *RetryContext) bool {
 					return err == io.ErrNoProgress
 				},
 			},
@@ -178,7 +178,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, ctx *RetryContext) bool {
 					return err == io.ErrUnexpectedEOF
 				},
 				policy: RetryNever,
@@ -213,7 +213,7 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry: &retryConfig{
-				shouldRetry: func(err error) bool {
+				shouldRetry: func(err error, ctx *RetryContext) bool {
 					return err == io.ErrNoProgress
 				},
 				maxAttempts: intPointer(2),
@@ -295,7 +295,7 @@ func TestInvoke(t *testing.T) {
 				test.retry = defaultRetry.clone()
 			}
 			test.retry.backoff = &gax.Backoff{Initial: time.Millisecond}
-			got := run(ctx, call, test.retry, test.isIdempotentValue)
+			got := run(ctx, call, test.retry, test.isIdempotentValue, "test", "", "")
 			if test.expectFinalErr && !errors.Is(got, test.finalErr) {
 				s.Errorf("got %v, want %v", got, test.finalErr)
 			} else if !test.expectFinalErr && !errors.Is(got, test.initialErr) {
@@ -451,7 +451,7 @@ func TestInvokeWithCookie(t *testing.T) {
 		gotCookie = headers["cookie"][0]
 		gotDirectpathCookie = headers["x-directpath-tracing-cookie"][0]
 		return nil
-	}, nil, false); err != nil {
+	}, nil, false, "", "", ""); err != nil {
 		t.Errorf("error during run; got %v, want nil", err)
 	}
 

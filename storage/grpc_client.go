@@ -291,7 +291,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 		battrs = newBucketFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "CreateBucket", bucket, "")
 
 	return battrs, err
 }
@@ -325,7 +325,7 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 			}
 			buckets, next, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, "ListBuckets", "", "")
 		if err != nil {
 			return "", err
 		}
@@ -364,7 +364,7 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 
 	return run(ctx, func(ctx context.Context) error {
 		return c.raw.DeleteBucket(ctx, req, s.gax...)
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "DeleteBucket", bucket, "")
 }
 
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
@@ -385,7 +385,7 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 		res, err := c.raw.GetBucket(ctx, req, s.gax...)
 		battrs = newBucketFromProto(res)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "GetBucket", bucket, "")
 
 	return battrs, formatBucketError(err)
 }
@@ -493,7 +493,7 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		res, err := c.raw.UpdateBucket(ctx, req, s.gax...)
 		battrs = newBucketFromProto(res)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "UpdateBucket", bucket, "")
 
 	return battrs, err
 }
@@ -509,7 +509,7 @@ func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	return run(ctx, func(ctx context.Context) error {
 		_, err := c.raw.LockBucketRetentionPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "LockBucketRetentionPolicy", bucket, "")
 
 }
 func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
@@ -548,7 +548,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 			it.ctx = ctx
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, "ListObjects", bucket, req.Prefix)
 		if err != nil {
 			return "", formatBucketError(err)
 		}
@@ -590,7 +590,7 @@ func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	}
 	err := run(ctx, func(ctx context.Context) error {
 		return c.raw.DeleteObject(ctx, req, s.gax...)
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "DeleteObject", bucket, object)
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return formatObjectErr(err)
 	}
@@ -624,7 +624,7 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, params *getObjectPara
 		attrs = newObjectFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "GetObject", params.bucket, params.object)
 
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
@@ -733,7 +733,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 		res, err := c.raw.UpdateObject(ctx, req, s.gax...)
 		attrs = newObjectFromProto(res)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "", "", "")
 	if e, ok := status.FromError(err); ok && e.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
 	}
@@ -760,7 +760,7 @@ func (c *grpcStorageClient) RestoreObject(ctx context.Context, params *restoreOb
 		res, err := c.raw.RestoreObject(ctx, req, s.gax...)
 		attrs = newObjectFromProto(res)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "RestoreObject", params.bucket, params.object)
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
 	}
@@ -790,7 +790,7 @@ func (c *grpcStorageClient) MoveObject(ctx context.Context, params *moveObjectPa
 		res, err := c.raw.MoveObject(ctx, req, s.gax...)
 		attrs = newObjectFromProto(res)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "MoveObject", params.bucket, params.srcObject)
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
 	}
@@ -1033,7 +1033,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	if err := run(ctx, func(ctx context.Context) error {
 		obj, err = c.raw.ComposeObject(ctx, rawReq, s.gax...)
 		return err
-	}, s.retry, s.idempotent); err != nil {
+	}, s.retry, s.idempotent, "ComposeObject", req.dstObject.bucket, req.dstObject.name); err != nil {
 		if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 			return nil, formatObjectErr(err)
 		}
@@ -1095,7 +1095,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 
 	retryCall := func(ctx context.Context) error { res, err = c.raw.RewriteObject(ctx, call, s.gax...); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent, "RewriteObject", req.srcObject.bucket, req.srcObject.name); err != nil {
 		if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 			return nil, formatObjectErr(err)
 		}
@@ -1291,7 +1291,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			}
 			err = decoder.readFullObjectResponse()
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, "", "", "")
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.
@@ -1424,7 +1424,7 @@ func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, v
 		var err error
 		rp, err = c.raw.GetIamPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "GetIamPolicy", "", "")
 
 	return rp, err
 }
@@ -1441,7 +1441,7 @@ func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 	return run(ctx, func(ctx context.Context) error {
 		_, err := c.raw.SetIamPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "SetIamPolicy", "", "")
 }
 
 func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
@@ -1456,7 +1456,7 @@ func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource str
 		var err error
 		res, err = c.raw.TestIamPermissions(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, "TestIamPermissions", "", "")
 	if err != nil {
 		return nil, err
 	}
@@ -1700,7 +1700,7 @@ func (r *gRPCReader) recv() error {
 	err := r.stream.RecvMsg(&databufs)
 	// If we get a mid-stream error on a recv call, reopen the stream.
 	// ABORTED could indicate a redirect so should also trigger a reopen.
-	if err != nil && (r.settings.retry.runShouldRetry(err) || status.Code(err) == codes.Aborted) {
+	if err != nil && (r.settings.retry.runShouldRetry(err, &RetryContext{}) || status.Code(err) == codes.Aborted) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
