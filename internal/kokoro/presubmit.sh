@@ -40,7 +40,7 @@ cd $GOCLOUD_HOME
 # (main) which means we need to explicitly fetch preview if evaluating a pull
 # request against it so that git diff functions appropriately.
 if [[ $KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go == "preview" ]]; then
-  git fetch origin preview
+  git fetch origin origin/preview
 fi
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
