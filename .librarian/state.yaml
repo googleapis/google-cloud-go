@@ -1182,7 +1182,7 @@ libraries:
       - internal/generated/snippets/bigquery/v2
     tag_format: bigquery/v{version}
   - id: bigtable
-    version: 1.41.0
+    version: 1.42.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/bigtable/admin/v2
