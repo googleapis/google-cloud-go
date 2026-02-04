@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ const (
 	VectorSearchService_CreateIndex_FullMethodName       = "/google.cloud.vectorsearch.v1beta.VectorSearchService/CreateIndex"
 	VectorSearchService_DeleteIndex_FullMethodName       = "/google.cloud.vectorsearch.v1beta.VectorSearchService/DeleteIndex"
 	VectorSearchService_ImportDataObjects_FullMethodName = "/google.cloud.vectorsearch.v1beta.VectorSearchService/ImportDataObjects"
+	VectorSearchService_ExportDataObjects_FullMethodName = "/google.cloud.vectorsearch.v1beta.VectorSearchService/ExportDataObjects"
 )
 
 // VectorSearchServiceClient is the client API for VectorSearchService service.
@@ -71,6 +72,8 @@ type VectorSearchServiceClient interface {
 	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Initiates a Long-Running Operation to import DataObjects into a Collection.
 	ImportDataObjects(ctx context.Context, in *ImportDataObjectsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Initiates a Long-Running Operation to export DataObjects from a Collection.
+	ExportDataObjects(ctx context.Context, in *ExportDataObjectsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type vectorSearchServiceClient struct {
@@ -171,6 +174,15 @@ func (c *vectorSearchServiceClient) ImportDataObjects(ctx context.Context, in *I
 	return out, nil
 }
 
+func (c *vectorSearchServiceClient) ExportDataObjects(ctx context.Context, in *ExportDataObjectsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VectorSearchService_ExportDataObjects_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VectorSearchServiceServer is the server API for VectorSearchService service.
 // All implementations should embed UnimplementedVectorSearchServiceServer
 // for forward compatibility
@@ -195,6 +207,8 @@ type VectorSearchServiceServer interface {
 	DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunningpb.Operation, error)
 	// Initiates a Long-Running Operation to import DataObjects into a Collection.
 	ImportDataObjects(context.Context, *ImportDataObjectsRequest) (*longrunningpb.Operation, error)
+	// Initiates a Long-Running Operation to export DataObjects from a Collection.
+	ExportDataObjects(context.Context, *ExportDataObjectsRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedVectorSearchServiceServer should be embedded to have forward compatible implementations.
@@ -230,6 +244,9 @@ func (UnimplementedVectorSearchServiceServer) DeleteIndex(context.Context, *Dele
 }
 func (UnimplementedVectorSearchServiceServer) ImportDataObjects(context.Context, *ImportDataObjectsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportDataObjects not implemented")
+}
+func (UnimplementedVectorSearchServiceServer) ExportDataObjects(context.Context, *ExportDataObjectsRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportDataObjects not implemented")
 }
 
 // UnsafeVectorSearchServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -423,6 +440,24 @@ func _VectorSearchService_ImportDataObjects_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VectorSearchService_ExportDataObjects_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportDataObjectsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VectorSearchServiceServer).ExportDataObjects(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VectorSearchService_ExportDataObjects_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VectorSearchServiceServer).ExportDataObjects(ctx, req.(*ExportDataObjectsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VectorSearchService_ServiceDesc is the grpc.ServiceDesc for VectorSearchService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -469,6 +504,10 @@ var VectorSearchService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ImportDataObjects",
 			Handler:    _VectorSearchService_ImportDataObjects_Handler,
+		},
+		{
+			MethodName: "ExportDataObjects",
+			Handler:    _VectorSearchService_ExportDataObjects_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

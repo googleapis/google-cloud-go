@@ -57,6 +57,7 @@ type CallOptions struct {
 	CreateIndex       []gax.CallOption
 	DeleteIndex       []gax.CallOption
 	ImportDataObjects []gax.CallOption
+	ExportDataObjects []gax.CallOption
 	GetLocation       []gax.CallOption
 	ListLocations     []gax.CallOption
 	CancelOperation   []gax.CallOption
@@ -108,12 +109,39 @@ func defaultCallOptions() *CallOptions {
 		},
 		CreateCollection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		UpdateCollection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		DeleteCollection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		ListIndexes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -141,19 +169,47 @@ func defaultCallOptions() *CallOptions {
 		},
 		CreateIndex: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		DeleteIndex: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		ImportDataObjects: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ExportDataObjects: []gax.CallOption{},
+		GetLocation:       []gax.CallOption{},
+		ListLocations:     []gax.CallOption{},
+		CancelOperation:   []gax.CallOption{},
+		DeleteOperation:   []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
+		ListOperations:    []gax.CallOption{},
 	}
 }
 
@@ -183,12 +239,36 @@ func defaultRESTCallOptions() *CallOptions {
 		},
 		CreateCollection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
 		UpdateCollection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
 		DeleteCollection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
 		ListIndexes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -214,19 +294,44 @@ func defaultRESTCallOptions() *CallOptions {
 		},
 		CreateIndex: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
 		DeleteIndex: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
 		ImportDataObjects: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ExportDataObjects: []gax.CallOption{},
+		GetLocation:       []gax.CallOption{},
+		ListLocations:     []gax.CallOption{},
+		CancelOperation:   []gax.CallOption{},
+		DeleteOperation:   []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
+		ListOperations:    []gax.CallOption{},
 	}
 }
 
@@ -251,6 +356,8 @@ type internalClient interface {
 	DeleteIndexOperation(name string) *DeleteIndexOperation
 	ImportDataObjects(context.Context, *vectorsearchpb.ImportDataObjectsRequest, ...gax.CallOption) (*ImportDataObjectsOperation, error)
 	ImportDataObjectsOperation(name string) *ImportDataObjectsOperation
+	ExportDataObjects(context.Context, *vectorsearchpb.ExportDataObjectsRequest, ...gax.CallOption) (*ExportDataObjectsOperation, error)
+	ExportDataObjectsOperation(name string) *ExportDataObjectsOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -389,12 +496,31 @@ func (c *Client) ImportDataObjectsOperation(name string) *ImportDataObjectsOpera
 	return c.internalClient.ImportDataObjectsOperation(name)
 }
 
+// ExportDataObjects initiates a Long-Running Operation to export DataObjects from a Collection.
+func (c *Client) ExportDataObjects(ctx context.Context, req *vectorsearchpb.ExportDataObjectsRequest, opts ...gax.CallOption) (*ExportDataObjectsOperation, error) {
+	return c.internalClient.ExportDataObjects(ctx, req, opts...)
+}
+
+// ExportDataObjectsOperation returns a new ExportDataObjectsOperation from a given name.
+// The name must be that of a previously created ExportDataObjectsOperation, possibly from a different process.
+func (c *Client) ExportDataObjectsOperation(name string) *ExportDataObjectsOperation {
+	return c.internalClient.ExportDataObjectsOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -861,6 +987,26 @@ func (c *gRPCClient) ImportDataObjects(ctx context.Context, req *vectorsearchpb.
 		return nil, err
 	}
 	return &ImportDataObjectsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ExportDataObjects(ctx context.Context, req *vectorsearchpb.ExportDataObjectsRequest, opts ...gax.CallOption) (*ExportDataObjectsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportDataObjects[0:len((*c.CallOptions).ExportDataObjects):len((*c.CallOptions).ExportDataObjects)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExportDataObjects, req, settings.GRPC, c.logger, "ExportDataObjects")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportDataObjectsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1658,6 +1804,65 @@ func (c *restClient) ImportDataObjects(ctx context.Context, req *vectorsearchpb.
 	}, nil
 }
 
+// ExportDataObjects initiates a Long-Running Operation to export DataObjects from a Collection.
+func (c *restClient) ExportDataObjects(ctx context.Context, req *vectorsearchpb.ExportDataObjectsRequest, opts ...gax.CallOption) (*ExportDataObjectsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:exportDataObjects", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportDataObjects")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &ExportDataObjectsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1709,6 +1914,14 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -2066,6 +2279,24 @@ func (c *gRPCClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 func (c *restClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteIndexOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportDataObjectsOperation returns a new ExportDataObjectsOperation from a given name.
+// The name must be that of a previously created ExportDataObjectsOperation, possibly from a different process.
+func (c *gRPCClient) ExportDataObjectsOperation(name string) *ExportDataObjectsOperation {
+	return &ExportDataObjectsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportDataObjectsOperation returns a new ExportDataObjectsOperation from a given name.
+// The name must be that of a previously created ExportDataObjectsOperation, possibly from a different process.
+func (c *restClient) ExportDataObjectsOperation(name string) *ExportDataObjectsOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &ExportDataObjectsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

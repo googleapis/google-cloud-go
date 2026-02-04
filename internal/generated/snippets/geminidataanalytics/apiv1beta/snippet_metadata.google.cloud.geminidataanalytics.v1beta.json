@@ -563,7 +563,7 @@
     {
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListLocations_sync",
       "title": "geminidataanalytics ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "DataAgentClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1158,7 +1158,7 @@
     {
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListLocations_sync",
       "title": "geminidataanalytics ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "DataChatClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {

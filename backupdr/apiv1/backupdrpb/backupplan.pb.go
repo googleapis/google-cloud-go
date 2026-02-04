@@ -346,7 +346,7 @@ type BackupPlan struct {
 	// BackupVault for taking backups. Specify the email address of the Backup
 	// Vault Service Account.
 	BackupVaultServiceAccount string `protobuf:"bytes,11,opt,name=backup_vault_service_account,json=backupVaultServiceAccount,proto3" json:"backup_vault_service_account,omitempty"`
-	// Optional. Applicable only for CloudSQL resource_type.
+	// Optional. Applicable only for CloudSQL and AlloyDB resource_type.
 	//
 	// Configures how long logs will be stored. It is defined in “days”. This
 	// value should be greater than or equal to minimum enforced log retention
