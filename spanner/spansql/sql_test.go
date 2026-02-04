@@ -2066,6 +2066,180 @@ FROM ParentTable AS parent`,
 	STRUCT<INT64, STRING(MAX), BOOL>(42, "world", FALSE)`,
 			reparseQuery,
 		},
+		// STRUCT with NULL values
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						StructLiteral{
+							Fields: []Expr{
+								IntegerLiteral(1),
+								Null,
+								StringLiteral("test"),
+							},
+						},
+					},
+				},
+			},
+			`SELECT
+	STRUCT(1, NULL, "test")`,
+			reparseQuery,
+		},
+		// Nested STRUCT literals
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						StructLiteral{
+							Fields: []Expr{
+								IntegerLiteral(1),
+								StructLiteral{
+									Fields: []Expr{
+										StringLiteral("nested"),
+										IntegerLiteral(2),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			`SELECT
+	STRUCT(1, STRUCT("nested", 2))`,
+			reparseQuery,
+		},
+		// ARRAY of STRUCT literals
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Array{
+							StructLiteral{
+								Fields: []Expr{
+									IntegerLiteral(1),
+									StringLiteral("a"),
+								},
+							},
+							StructLiteral{
+								Fields: []Expr{
+									IntegerLiteral(2),
+									StringLiteral("b"),
+								},
+							},
+						},
+					},
+				},
+			},
+			`SELECT
+	[STRUCT(1, "a"), STRUCT(2, "b")]`,
+			reparseQuery,
+		},
+		// DISTINCT with AS STRUCT
+		{
+			Query{
+				Select: Select{
+					Distinct: true,
+					AsStruct: true,
+					List: []Expr{
+						ID("col1"),
+						ID("col2"),
+					},
+					From: []SelectFrom{SelectFromTable{
+						Table: "tbl",
+					}},
+				},
+			},
+			`SELECT DISTINCT AS STRUCT
+	col1,
+	col2
+FROM tbl`,
+			reparseQuery,
+		},
+		// ARRAY subquery with WHERE and ORDER BY
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("id"),
+						ArraySubquery{
+							Query: Query{
+								Select: Select{
+									AsStruct: true,
+									List: []Expr{
+										ID("item_id"),
+										ID("quantity"),
+									},
+									From: []SelectFrom{SelectFromTable{
+										Table: "items",
+									}},
+									Where: ComparisonOp{
+										Op:  Eq,
+										LHS: ID("order_id"),
+										RHS: PathExp{"orders", "id"},
+									},
+								},
+								Order: []Order{
+									{Expr: ID("item_id")},
+								},
+							},
+						},
+					},
+					ListAliases: []ID{"", "items"},
+					From: []SelectFrom{SelectFromTable{
+						Table: "orders",
+					}},
+				},
+			},
+			`SELECT
+	id,
+	ARRAY(SELECT AS STRUCT
+	item_id,
+	quantity
+FROM items
+WHERE order_id = orders.id
+ORDER BY item_id) AS items
+FROM orders`,
+			reparseQuery,
+		},
+		// Multiple SELECT AS STRUCT with different columns
+		{
+			Query{
+				Select: Select{
+					AsStruct: true,
+					List: []Expr{
+						PathExp{"t1", "id"},
+						PathExp{"t2", "name"},
+						Func{Name: "COUNT", Args: []Expr{Star}},
+					},
+					ListAliases: []ID{"", "", "total"},
+					From: []SelectFrom{
+						SelectFromJoin{
+							Type: InnerJoin,
+							LHS: SelectFromTable{
+								Table: "t1",
+							},
+							RHS: SelectFromTable{
+								Table: "t2",
+							},
+							On: ComparisonOp{
+								Op:  Eq,
+								LHS: PathExp{"t1", "id"},
+								RHS: PathExp{"t2", "t1_id"},
+							},
+						},
+					},
+					GroupBy: []Expr{PathExp{"t1", "id"}, PathExp{"t2", "name"}},
+				},
+			},
+			`SELECT AS STRUCT
+	t1.id,
+	t2.name,
+	COUNT(*) AS total
+FROM t1
+INNER JOIN t2 ON t1.id = t2.t1_id
+GROUP BY t1.id, t2.name`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
