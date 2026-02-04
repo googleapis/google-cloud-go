@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.114.0
+    version: 1.115.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/aiplatform/v1
