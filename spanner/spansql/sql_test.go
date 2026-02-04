@@ -1951,6 +1951,121 @@ ORDER BY region
 LIMIT 100`,
 			reparseQuery,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						PathExp{"parent", "id"},
+						PathExp{"parent", "name"},
+						ArraySubquery{
+							Query: Query{
+								Select: Select{
+									AsStruct: true,
+									List: []Expr{
+										PathExp{"detail", "field1"},
+										PathExp{"detail", "field2"},
+										PathExp{"main", "field3"},
+										PathExp{"detail", "field4"},
+										PathExp{"main", "field5"},
+									},
+									From: []SelectFrom{
+										SelectFromJoin{
+											Type: LeftJoin,
+											LHS: SelectFromTable{
+												Table: "MainTable",
+												Alias: "main",
+											},
+											RHS: SelectFromTable{
+												Table: "DetailTable",
+												Alias: "detail",
+											},
+											On: ComparisonOp{
+												Op:  Eq,
+												LHS: PathExp{"detail", "id"},
+												RHS: PathExp{"main", "detail_id"},
+											},
+										},
+									},
+									Where: LogicalOp{
+										Op: And,
+										LHS: ComparisonOp{
+											Op:  Eq,
+											LHS: PathExp{"main", "parent_id"},
+											RHS: PathExp{"parent", "id"},
+										},
+										RHS: ComparisonOp{
+											Op:  Eq,
+											LHS: PathExp{"main", "account_id"},
+											RHS: PathExp{"parent", "account_id"},
+										},
+									},
+								},
+							},
+						},
+					},
+					ListAliases: []ID{"", "", "details"},
+					From: []SelectFrom{SelectFromTable{
+						Table: "ParentTable",
+						Alias: "parent",
+					}},
+				},
+			},
+			`SELECT
+	parent.id,
+	parent.name,
+	ARRAY(SELECT AS STRUCT
+	detail.field1,
+	detail.field2,
+	main.field3,
+	detail.field4,
+	main.field5
+FROM MainTable AS main
+LEFT JOIN DetailTable AS detail ON detail.id = main.detail_id
+WHERE main.parent_id = parent.id AND main.account_id = parent.account_id) AS details
+FROM ParentTable AS parent`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						StructLiteral{
+							Fields: []Expr{
+								IntegerLiteral(1),
+								StringLiteral("hello"),
+								True,
+							},
+						},
+					},
+				},
+			},
+			`SELECT
+	STRUCT(1, "hello", TRUE)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						StructLiteral{
+							FieldTypes: []Type{
+								{Base: Int64},
+								{Base: String, Len: MaxLen},
+								{Base: Bool},
+							},
+							Fields: []Expr{
+								IntegerLiteral(42),
+								StringLiteral("world"),
+								False,
+							},
+						},
+					},
+				},
+			},
+			`SELECT
+	STRUCT<INT64, STRING(MAX), BOOL>(42, "world", FALSE)`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
