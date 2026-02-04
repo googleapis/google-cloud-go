@@ -196,6 +196,52 @@
       ]
     },
     {
+      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportVmInventory_sync",
+      "title": "osconfig ReportVmInventory Sample",
+      "description": "ReportVmInventory reports the VMs current inventory.",
+      "file": "Client/ReportVmInventory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportVmInventory",
+        "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.ReportVmInventory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "agentendpointpb.ReportVmInventoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*agentendpointpb.ReportVmInventoryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
+        },
+        "method": {
+          "shortName": "ReportVmInventory",
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportVmInventory",
+          "service": {
+            "shortName": "AgentEndpointService",
+            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "osconfig_v1_generated_AgentEndpointService_StartNextTask_sync",
       "title": "osconfig StartNextTask Sample",
       "description": "StartNextTask signals the start of a task execution and returns the task info.",

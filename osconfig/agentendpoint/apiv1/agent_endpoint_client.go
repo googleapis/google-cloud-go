@@ -41,6 +41,7 @@ type CallOptions struct {
 	ReportTaskComplete      []gax.CallOption
 	RegisterAgent           []gax.CallOption
 	ReportInventory         []gax.CallOption
+	ReportVmInventory       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -135,6 +136,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ReportVmInventory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -149,6 +162,7 @@ type internalClient interface {
 	ReportTaskComplete(context.Context, *agentendpointpb.ReportTaskCompleteRequest, ...gax.CallOption) (*agentendpointpb.ReportTaskCompleteResponse, error)
 	RegisterAgent(context.Context, *agentendpointpb.RegisterAgentRequest, ...gax.CallOption) (*agentendpointpb.RegisterAgentResponse, error)
 	ReportInventory(context.Context, *agentendpointpb.ReportInventoryRequest, ...gax.CallOption) (*agentendpointpb.ReportInventoryResponse, error)
+	ReportVmInventory(context.Context, *agentendpointpb.ReportVmInventoryRequest, ...gax.CallOption) (*agentendpointpb.ReportVmInventoryResponse, error)
 }
 
 // Client is a client for interacting with OS Config API.
@@ -215,6 +229,11 @@ func (c *Client) RegisterAgent(ctx context.Context, req *agentendpointpb.Registe
 // ReportInventory reports the VMs current inventory.
 func (c *Client) ReportInventory(ctx context.Context, req *agentendpointpb.ReportInventoryRequest, opts ...gax.CallOption) (*agentendpointpb.ReportInventoryResponse, error) {
 	return c.internalClient.ReportInventory(ctx, req, opts...)
+}
+
+// ReportVmInventory reports the VMs current inventory.
+func (c *Client) ReportVmInventory(ctx context.Context, req *agentendpointpb.ReportVmInventoryRequest, opts ...gax.CallOption) (*agentendpointpb.ReportVmInventoryResponse, error) {
+	return c.internalClient.ReportVmInventory(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with OS Config API over gRPC transport.
@@ -378,6 +397,21 @@ func (c *gRPCClient) ReportInventory(ctx context.Context, req *agentendpointpb.R
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.ReportInventory, req, settings.GRPC, c.logger, "ReportInventory")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ReportVmInventory(ctx context.Context, req *agentendpointpb.ReportVmInventoryRequest, opts ...gax.CallOption) (*agentendpointpb.ReportVmInventoryResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ReportVmInventory[0:len((*c.CallOptions).ReportVmInventory):len((*c.CallOptions).ReportVmInventory)], opts...)
+	var resp *agentendpointpb.ReportVmInventoryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ReportVmInventory, req, settings.GRPC, c.logger, "ReportVmInventory")
 		return err
 	}, opts...)
 	if err != nil {

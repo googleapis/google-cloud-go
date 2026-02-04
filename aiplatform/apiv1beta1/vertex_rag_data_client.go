@@ -1337,6 +1337,9 @@ func (c *vertexRagDataRESTClient) DeleteRagCorpus(ctx context.Context, req *aipl
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
+	if req.GetForceDelete() {
+		params.Add("forceDelete", fmt.Sprintf("%v", req.GetForceDelete()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
