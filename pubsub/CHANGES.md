@@ -1,5 +1,7 @@
 # Changes
 
+## [2.3.1](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.3.1) (2026-02-04)
+
 ## [1.50.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.0...pubsub/v1.50.1) (2025-09-04)
 
 
