@@ -1154,7 +1154,7 @@ libraries:
       - internal/generated/snippets/bigquery/
     tag_format: '{id}/v{version}'
   - id: bigquery/v2
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 9a477cd3c26a704130e2a2fb44a40281d9312e4c
     apis:
       - path: google/cloud/bigquery/v2
