@@ -130,6 +130,7 @@ type Client struct {
 	dro                  *sppb.DirectedReadOptions
 	otConfig             *openTelemetryConfig
 	metricsTracerFactory *builtinMetricsTracerFactory
+	clientContext        *sppb.RequestOptions_ClientContext
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -368,6 +369,9 @@ type ClientConfig struct {
 
 	// Default: false
 	IsExperimentalHost bool
+
+	// ClientContext is the default context for all requests made by the client.
+	ClientContext *sppb.RequestOptions_ClientContext
 }
 
 type openTelemetryConfig struct {
@@ -601,6 +605,7 @@ Multiplexed session enabled: true
 		dro:                  config.DirectedReadOptions,
 		otConfig:             otConfig,
 		metricsTracerFactory: metricsTracerFactory,
+		clientContext:        config.ClientContext,
 	}
 	return c, nil
 }
@@ -805,6 +810,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -832,6 +838,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -902,6 +909,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t, nil
@@ -938,6 +946,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -1021,6 +1030,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t.txReadOnly.qo = c.qo
 			t.txReadOnly.ro = c.ro
 			t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+			t.txReadOnly.clientContext = c.clientContext
 			t.wb = []*Mutation{}
 			t.txOpts = c.txo.merge(options)
 			t.ct = c.ct
@@ -1165,7 +1175,7 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions, IsolationLevel: ao.isolationLevel})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sm: c.sm, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel}
+	t := &writeOnlyTransaction{sm: c.sm, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel, clientContext: c.clientContext}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
@@ -1181,6 +1191,9 @@ type BatchWriteOptions struct {
 	// in this batch write request will not be recorded in allowed tracking
 	// change treams with DDL option allow_txn_exclusion=true.
 	ExcludeTxnFromChangeStreams bool
+
+	// ClientContext contains client-owned context information to be passed with the batch write request.
+	ClientContext *sppb.RequestOptions_ClientContext
 }
 
 // merge combines two BatchWriteOptions such that the input parameter will have higher
@@ -1190,6 +1203,7 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 		TransactionTag:              bwo.TransactionTag,
 		Priority:                    bwo.Priority,
 		ExcludeTxnFromChangeStreams: bwo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
+		ClientContext:               mergeClientContext(bwo.ClientContext, opts.ClientContext),
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -1345,7 +1359,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:                     sh.getID(),
 			MutationGroups:              mgsPb,
-			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag),
+			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag, mergeClientContext(c.clientContext, opts.ClientContext)),
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 

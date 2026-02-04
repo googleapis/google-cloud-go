@@ -99,6 +99,9 @@ type txReadOnly struct {
 	// need to be routed to the leader region.
 	disableRouteToLeader bool
 
+	// clientContext provides the default client context for the transaction.
+	clientContext *sppb.RequestOptions_ClientContext
+
 	otConfig *openTelemetryConfig
 }
 
@@ -167,6 +170,9 @@ type TransactionOptions struct {
 	// or whether the BeginTransaction operation should be inlined with the first statement
 	// in the transaction.
 	BeginTransactionOption BeginTransactionOption
+
+	// ClientContext contains client-owned context information to be passed with the transaction.
+	ClientContext *sppb.RequestOptions_ClientContext
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
@@ -179,6 +185,7 @@ func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 		ExcludeTxnFromChangeStreams: to.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 		IsolationLevel:              to.IsolationLevel,
 		BeginTransactionOption:      to.BeginTransactionOption,
+		ClientContext:               mergeClientContext(to.ClientContext, opts.ClientContext),
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -245,6 +252,9 @@ type ReadOptions struct {
 	// A lock hint mechanism to use for this request. This setting is only applicable for
 	// read-write transaction as as read-only transactions do not take locks.
 	LockHint sppb.ReadRequest_LockHint
+
+	// ClientContext contains client-owned context information to be passed with the read request.
+	ClientContext *sppb.RequestOptions_ClientContext
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
@@ -259,6 +269,7 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 		DirectedReadOptions: ro.DirectedReadOptions,
 		OrderBy:             ro.OrderBy,
 		LockHint:            ro.LockHint,
+		ClientContext:       mergeClientContext(ro.ClientContext, opts.ClientContext),
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -324,6 +335,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	directedReadOptions := t.ro.DirectedReadOptions
 	orderBy := t.ro.OrderBy
 	lockHint := t.ro.LockHint
+	clientContext := t.ro.ClientContext
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -343,7 +355,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		if opts.LockHint != sppb.ReadRequest_LOCK_HINT_UNSPECIFIED {
 			lockHint = opts.LockHint
 		}
-
+		clientContext = mergeClientContext(clientContext, opts.ClientContext)
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -366,7 +378,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					KeySet:              kset,
 					ResumeToken:         resumeToken,
 					Limit:               int64(limit),
-					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, clientContext)),
 					DataBoostEnabled:    dataBoostEnabled,
 					DirectedReadOptions: directedReadOptions,
 					OrderBy:             orderBy,
@@ -562,6 +574,9 @@ type QueryOptions struct {
 	// commit time (e.g. validation of unique constraints). Given this, successful execution of a DML
 	// statement should not be assumed until the transaction commits.
 	LastStatement bool
+
+	// ClientContext contains client-owned context information to be passed with the query.
+	ClientContext *sppb.RequestOptions_ClientContext
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -576,6 +591,7 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		DirectedReadOptions:         qo.DirectedReadOptions,
 		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 		LastStatement:               qo.LastStatement || opts.LastStatement,
+		ClientContext:               mergeClientContext(qo.ClientContext, opts.ClientContext),
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -597,7 +613,19 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	return merged
 }
 
-func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transactionTag string) (ro *sppb.RequestOptions) {
+func mergeClientContext(defaultCtx, specificCtx *sppb.RequestOptions_ClientContext) *sppb.RequestOptions_ClientContext {
+	if defaultCtx == nil {
+		return specificCtx
+	}
+	if specificCtx == nil {
+		return defaultCtx
+	}
+	merged := proto.Clone(defaultCtx).(*sppb.RequestOptions_ClientContext)
+	proto.Merge(merged, specificCtx)
+	return merged
+}
+
+func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transactionTag string, clientContext *sppb.RequestOptions_ClientContext) (ro *sppb.RequestOptions) {
 	ro = &sppb.RequestOptions{}
 	if prio != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		ro.Priority = prio
@@ -607,6 +635,9 @@ func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transac
 	}
 	if transactionTag != "" {
 		ro.TransactionTag = transactionTag
+	}
+	if clientContext != nil {
+		ro.ClientContext = clientContext
 	}
 	return ro
 }
@@ -760,7 +791,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		Params:              params,
 		ParamTypes:          paramTypes,
 		QueryOptions:        options.Options,
-		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, options.ClientContext)),
 		DataBoostEnabled:    options.DataBoostEnabled,
 		DirectedReadOptions: options.DirectedReadOptions,
 		LastStatement:       options.LastStatement,
@@ -904,6 +935,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 				ReadOnly: buildTransactionOptionsReadOnly(t.getTimestampBound(), true),
 			},
 		},
+		RequestOptions: createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", "", t.clientContext),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
@@ -1473,7 +1505,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		Transaction:    ts,
 		Statements:     sppbStmts,
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
-		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
+		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, opts.ClientContext)),
 		LastStatements: opts.LastStatement,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
@@ -1681,6 +1713,14 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 	if opts.txOptions.TransactionTag != "" {
 		request.RequestOptions = &sppb.RequestOptions{TransactionTag: opts.txOptions.TransactionTag}
 	}
+	ro := createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", opts.txOptions.TransactionTag, opts.txOptions.ClientContext)
+	if ro != nil {
+		if request.RequestOptions == nil {
+			request.RequestOptions = ro
+		} else {
+			request.RequestOptions.ClientContext = ro.ClientContext
+		}
+	}
 
 	res, err := opts.client.BeginTransaction(ctx, request)
 	if err != nil {
@@ -1844,7 +1884,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 				TransactionId: t.tx,
 			},
 			PrecommitToken:    t.precommitToken,
-			RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
+			RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag, mergeClientContext(t.clientContext, t.txOpts.ClientContext)),
 			ReturnCommitStats: options.ReturnCommitStats,
 			MaxCommitDelay:    maxCommitDelay,
 		}
@@ -2165,6 +2205,8 @@ type writeOnlyTransaction struct {
 	commitOptions CommitOptions
 	// isolationLevel is used to define the isolation for writeOnlyTransaction
 	isolationLevel sppb.TransactionOptions_IsolationLevel
+	// clientContext is the client context to use for the transaction.
+	clientContext *sppb.RequestOptions_ClientContext
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -2220,7 +2262,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					},
 				},
 				Mutations:      mPb,
-				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
+				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag, t.clientContext),
 				MaxCommitDelay: maxCommitDelay,
 			})
 			if err != nil && !isAbortedErr(err) {
