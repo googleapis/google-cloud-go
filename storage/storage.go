@@ -2502,8 +2502,9 @@ func (wb *withMaxAttempts) apply(config *retryConfig) {
 // error will be returned.
 // For example, if you set WithMaxRetryDuration(10*time.Second), retries will stop after
 // 10 seconds even if the maximum number of attempts hasn't been reached.
-// Without this setting, operations will continue retrying until either the passed context
-// is canceled or timedout, or the maximum number of attempts is exhausted.
+// Without this setting, operations will continue retrying until either the maximum
+// number of attempts is exhausted or the passed context is terminated by cancellation
+// or timeout.
 // A value of 0 allows infinite retries (subject to other constraints).
 //
 // Note: This does not apply to Writer operations. For Writer operations,
