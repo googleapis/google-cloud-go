@@ -34,9 +34,11 @@ export GOPROXY=https://proxy.golang.org
 
 # Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
+git config --global --add safe.directory $(pwd)
 git branch -lr
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
+git config --global --add safe.directory $(pwd)
 git branch -lr
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
