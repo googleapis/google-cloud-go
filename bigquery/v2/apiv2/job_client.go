@@ -28,7 +28,6 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -36,8 +35,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var newJobClientHook clientHook
@@ -277,7 +274,7 @@ type internalJobClient interface {
 	GetJob(context.Context, *bigquerypb.GetJobRequest, ...gax.CallOption) (*bigquerypb.Job, error)
 	InsertJob(context.Context, *bigquerypb.InsertJobRequest, ...gax.CallOption) (*bigquerypb.Job, error)
 	DeleteJob(context.Context, *bigquerypb.DeleteJobRequest, ...gax.CallOption) error
-	ListJobs(context.Context, *bigquerypb.ListJobsRequest, ...gax.CallOption) *ListFormatJobIterator
+	ListJobs(context.Context, *bigquerypb.ListJobsRequest, ...gax.CallOption) (*bigquerypb.JobList, error)
 	GetQueryResults(context.Context, *bigquerypb.GetQueryResultsRequest, ...gax.CallOption) (*bigquerypb.GetQueryResultsResponse, error)
 	Query(context.Context, *bigquerypb.PostQueryRequest, ...gax.CallOption) (*bigquerypb.QueryResponse, error)
 }
@@ -356,7 +353,7 @@ func (c *JobClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequ
 // in reverse chronological order, by job creation time. Requires the Can View
 // project role, or the Is Owner project role if you set the allUsers
 // property.
-func (c *JobClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) *ListFormatJobIterator {
+func (c *JobClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) (*bigquerypb.JobList, error) {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
@@ -588,52 +585,22 @@ func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJob
 	return err
 }
 
-func (c *jobGRPCClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) *ListFormatJobIterator {
+func (c *jobGRPCClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) (*bigquerypb.JobList, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
-	it := &ListFormatJobIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListJobsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatJob, string, error) {
-		resp := &bigquerypb.JobList{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.MaxResults = &wrapperspb.Int32Value{Value: math.MaxInt32}
-		} else if pageSize != 0 {
-			req.MaxResults = &wrapperspb.Int32Value{Value: int32(pageSize)}
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.jobClient.ListJobs, req, settings.GRPC, c.logger, "ListJobs")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetJobs(), resp.GetNextPageToken(), nil
+	var resp *bigquerypb.JobList
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.jobClient.ListJobs, req, settings.GRPC, c.logger, "ListJobs")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	if psVal := req.GetMaxResults(); psVal != nil {
-		it.pageInfo.MaxSize = int(psVal.GetValue())
-	}
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
+	return resp, nil
 }
 
 func (c *jobGRPCClient) GetQueryResults(ctx context.Context, req *bigquerypb.GetQueryResultsRequest, opts ...gax.CallOption) (*bigquerypb.GetQueryResultsResponse, error) {
@@ -886,110 +853,86 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJob
 // in reverse chronological order, by job creation time. Requires the Can View
 // project role, or the Is Owner project role if you set the allUsers
 // property.
-func (c *jobRESTClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) *ListFormatJobIterator {
-	it := &ListFormatJobIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListJobsRequest)
+func (c *jobRESTClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) (*bigquerypb.JobList, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/jobs", req.GetProjectId())
+
+	params := url.Values{}
+	if req.GetAllUsers() {
+		params.Add("allUsers", fmt.Sprintf("%v", req.GetAllUsers()))
+	}
+	if req.GetMaxCreationTime() != nil {
+		field, err := protojson.Marshal(req.GetMaxCreationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("maxCreationTime", string(field))
+	}
+	if req.GetMaxResults() != nil {
+		field, err := protojson.Marshal(req.GetMaxResults())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("maxResults", string(field))
+	}
+	if req.GetMinCreationTime() != 0 {
+		params.Add("minCreationTime", fmt.Sprintf("%v", req.GetMinCreationTime()))
+	}
+	if req.GetPageToken() != "" {
+		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+	}
+	if req.GetParentJobId() != "" {
+		params.Add("parentJobId", fmt.Sprintf("%v", req.GetParentJobId()))
+	}
+	if req.GetProjection() != 0 {
+		params.Add("projection", fmt.Sprintf("%v", req.GetProjection()))
+	}
+	if items := req.GetStateFilter(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("stateFilter", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatJob, string, error) {
-		resp := &bigquerypb.JobList{}
-		if pageToken != "" {
-			req.PageToken = pageToken
+	resp := &bigquerypb.JobList{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
 		}
-		if pageSize > math.MaxInt32 {
-			req.MaxResults = &wrapperspb.Int32Value{Value: math.MaxInt32}
-		} else if pageSize != 0 {
-			req.MaxResults = &wrapperspb.Int32Value{Value: int32(pageSize)}
-		}
-		baseUrl, err := url.Parse(c.endpoint)
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
-			return nil, "", err
+			return err
 		}
-		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/jobs", req.GetProjectId())
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-		params := url.Values{}
-		if req.GetAllUsers() {
-			params.Add("allUsers", fmt.Sprintf("%v", req.GetAllUsers()))
-		}
-		if req.GetMaxCreationTime() != nil {
-			field, err := protojson.Marshal(req.GetMaxCreationTime())
-			if err != nil {
-				return nil, "", err
-			}
-			params.Add("maxCreationTime", string(field))
-		}
-		if req.GetMaxResults() != nil {
-			field, err := protojson.Marshal(req.GetMaxResults())
-			if err != nil {
-				return nil, "", err
-			}
-			params.Add("maxResults", string(field))
-		}
-		if req.GetMinCreationTime() != 0 {
-			params.Add("minCreationTime", fmt.Sprintf("%v", req.GetMinCreationTime()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req.GetParentJobId() != "" {
-			params.Add("parentJobId", fmt.Sprintf("%v", req.GetParentJobId()))
-		}
-		if req.GetProjection() != 0 {
-			params.Add("projection", fmt.Sprintf("%v", req.GetProjection()))
-		}
-		if items := req.GetStateFilter(); len(items) > 0 {
-			for _, item := range items {
-				params.Add("stateFilter", fmt.Sprintf("%v", item))
-			}
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobs")
-			if err != nil {
-				return err
-			}
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetJobs(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobs")
 		if err != nil {
-			return "", err
+			return err
 		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
 
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	if psVal := req.GetMaxResults(); psVal != nil {
-		it.pageInfo.MaxSize = int(psVal.GetValue())
-	}
-	it.pageInfo.Token = req.GetPageToken()
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
 
-	return it
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetQueryResults rPC to get the results of a query job.

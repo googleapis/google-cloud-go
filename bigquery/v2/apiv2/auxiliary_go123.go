@@ -27,36 +27,6 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
-func (it *ListFormatDatasetIterator) All() iter.Seq2[*bigquerypb.ListFormatDataset, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *ListFormatJobIterator) All() iter.Seq2[*bigquerypb.ListFormatJob, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *ListFormatTableIterator) All() iter.Seq2[*bigquerypb.ListFormatTable, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *ModelIterator) All() iter.Seq2[*bigquerypb.Model, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *RoutineIterator) All() iter.Seq2[*bigquerypb.Routine, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
 func (it *RowAccessPolicyIterator) All() iter.Seq2[*bigquerypb.RowAccessPolicy, error] {
 	return iterator.RangeAdapter(it.Next)
 }

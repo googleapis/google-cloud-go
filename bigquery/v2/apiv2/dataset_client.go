@@ -28,7 +28,6 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -36,8 +35,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var newDatasetClientHook clientHook
@@ -278,7 +275,7 @@ type internalDatasetClient interface {
 	PatchDataset(context.Context, *bigquerypb.UpdateOrPatchDatasetRequest, ...gax.CallOption) (*bigquerypb.Dataset, error)
 	UpdateDataset(context.Context, *bigquerypb.UpdateOrPatchDatasetRequest, ...gax.CallOption) (*bigquerypb.Dataset, error)
 	DeleteDataset(context.Context, *bigquerypb.DeleteDatasetRequest, ...gax.CallOption) error
-	ListDatasets(context.Context, *bigquerypb.ListDatasetsRequest, ...gax.CallOption) *ListFormatDatasetIterator
+	ListDatasets(context.Context, *bigquerypb.ListDatasetsRequest, ...gax.CallOption) (*bigquerypb.DatasetList, error)
 	UndeleteDataset(context.Context, *bigquerypb.UndeleteDatasetRequest, ...gax.CallOption) (*bigquerypb.Dataset, error)
 }
 
@@ -352,7 +349,7 @@ func (c *DatasetClient) DeleteDataset(ctx context.Context, req *bigquerypb.Delet
 
 // ListDatasets lists all datasets in the specified project to which the user has been
 // granted the READER dataset role.
-func (c *DatasetClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
+func (c *DatasetClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) (*bigquerypb.DatasetList, error) {
 	return c.internalClient.ListDatasets(ctx, req, opts...)
 }
 
@@ -602,52 +599,22 @@ func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 	return err
 }
 
-func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
+func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) (*bigquerypb.DatasetList, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
-	it := &ListFormatDatasetIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListDatasetsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatDataset, string, error) {
-		resp := &bigquerypb.DatasetList{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(math.MaxInt32)}
-		} else if pageSize != 0 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(pageSize)}
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.datasetClient.ListDatasets, req, settings.GRPC, c.logger, "ListDatasets")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetDatasets(), resp.GetNextPageToken(), nil
+	var resp *bigquerypb.DatasetList
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.datasetClient.ListDatasets, req, settings.GRPC, c.logger, "ListDatasets")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	if psVal := req.GetMaxResults(); psVal != nil {
-		it.pageInfo.MaxSize = int(psVal.GetValue())
-	}
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
+	return resp, nil
 }
 
 func (c *datasetGRPCClient) UndeleteDataset(ctx context.Context, req *bigquerypb.UndeleteDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
@@ -953,92 +920,68 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 
 // ListDatasets lists all datasets in the specified project to which the user has been
 // granted the READER dataset role.
-func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
-	it := &ListFormatDatasetIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListDatasetsRequest)
+func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) (*bigquerypb.DatasetList, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets", req.GetProjectId())
+
+	params := url.Values{}
+	if req.GetAll() {
+		params.Add("all", fmt.Sprintf("%v", req.GetAll()))
+	}
+	if req.GetFilter() != "" {
+		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+	}
+	if req.GetMaxResults() != nil {
+		field, err := protojson.Marshal(req.GetMaxResults())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("maxResults", string(field))
+	}
+	if req.GetPageToken() != "" {
+		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatDataset, string, error) {
-		resp := &bigquerypb.DatasetList{}
-		if pageToken != "" {
-			req.PageToken = pageToken
+	resp := &bigquerypb.DatasetList{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
 		}
-		if pageSize > math.MaxInt32 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(math.MaxInt32)}
-		} else if pageSize != 0 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(pageSize)}
-		}
-		baseUrl, err := url.Parse(c.endpoint)
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
-			return nil, "", err
+			return err
 		}
-		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets", req.GetProjectId())
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-		params := url.Values{}
-		if req.GetAll() {
-			params.Add("all", fmt.Sprintf("%v", req.GetAll()))
-		}
-		if req.GetFilter() != "" {
-			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-		}
-		if req.GetMaxResults() != nil {
-			field, err := protojson.Marshal(req.GetMaxResults())
-			if err != nil {
-				return nil, "", err
-			}
-			params.Add("maxResults", string(field))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasets")
-			if err != nil {
-				return err
-			}
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetDatasets(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasets")
 		if err != nil {
-			return "", err
+			return err
 		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
 
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	if psVal := req.GetMaxResults(); psVal != nil {
-		it.pageInfo.MaxSize = int(psVal.GetValue())
-	}
-	it.pageInfo.Token = req.GetPageToken()
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
 
-	return it
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // UndeleteDataset undeletes a dataset which is within time travel window based on datasetId.

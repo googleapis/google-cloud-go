@@ -28,7 +28,6 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -36,8 +35,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var newModelClientHook clientHook
@@ -165,7 +162,7 @@ type internalModelClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	GetModel(context.Context, *bigquerypb.GetModelRequest, ...gax.CallOption) (*bigquerypb.Model, error)
-	ListModels(context.Context, *bigquerypb.ListModelsRequest, ...gax.CallOption) *ModelIterator
+	ListModels(context.Context, *bigquerypb.ListModelsRequest, ...gax.CallOption) (*bigquerypb.ListModelsResponse, error)
 	PatchModel(context.Context, *bigquerypb.PatchModelRequest, ...gax.CallOption) (*bigquerypb.Model, error)
 	DeleteModel(context.Context, *bigquerypb.DeleteModelRequest, ...gax.CallOption) error
 }
@@ -213,7 +210,7 @@ func (c *ModelClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequ
 // ListModels lists all models in the specified dataset. Requires the READER dataset
 // role. After retrieving the list of models, you can get information about a
 // particular model by calling the models.get method.
-func (c *ModelClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
+func (c *ModelClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) (*bigquerypb.ListModelsResponse, error) {
 	return c.internalClient.ListModels(ctx, req, opts...)
 }
 
@@ -398,52 +395,22 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 	return resp, nil
 }
 
-func (c *modelGRPCClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
+func (c *modelGRPCClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) (*bigquerypb.ListModelsResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "dataset_id", url.QueryEscape(req.GetDatasetId()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
-	it := &ModelIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListModelsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Model, string, error) {
-		resp := &bigquerypb.ListModelsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(math.MaxInt32)}
-		} else if pageSize != 0 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(pageSize)}
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.modelClient.ListModels, req, settings.GRPC, c.logger, "ListModels")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetModels(), resp.GetNextPageToken(), nil
+	var resp *bigquerypb.ListModelsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelClient.ListModels, req, settings.GRPC, c.logger, "ListModels")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	if psVal := req.GetMaxResults(); psVal != nil {
-		it.pageInfo.MaxSize = int(psVal.GetValue())
-	}
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
+	return resp, nil
 }
 
 func (c *modelGRPCClient) PatchModel(ctx context.Context, req *bigquerypb.PatchModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
@@ -526,86 +493,62 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 // ListModels lists all models in the specified dataset. Requires the READER dataset
 // role. After retrieving the list of models, you can get information about a
 // particular model by calling the models.get method.
-func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
-	it := &ModelIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListModelsRequest)
+func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) (*bigquerypb.ListModelsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/models", req.GetProjectId(), req.GetDatasetId())
+
+	params := url.Values{}
+	if req.GetMaxResults() != nil {
+		field, err := protojson.Marshal(req.GetMaxResults())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("maxResults", string(field))
+	}
+	if req.GetPageToken() != "" {
+		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "dataset_id", url.QueryEscape(req.GetDatasetId()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Model, string, error) {
-		resp := &bigquerypb.ListModelsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
+	resp := &bigquerypb.ListModelsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
 		}
-		if pageSize > math.MaxInt32 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(math.MaxInt32)}
-		} else if pageSize != 0 {
-			req.MaxResults = &wrapperspb.UInt32Value{Value: uint32(pageSize)}
-		}
-		baseUrl, err := url.Parse(c.endpoint)
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
-			return nil, "", err
+			return err
 		}
-		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/models", req.GetProjectId(), req.GetDatasetId())
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-		params := url.Values{}
-		if req.GetMaxResults() != nil {
-			field, err := protojson.Marshal(req.GetMaxResults())
-			if err != nil {
-				return nil, "", err
-			}
-			params.Add("maxResults", string(field))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListModels")
-			if err != nil {
-				return err
-			}
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetModels(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListModels")
 		if err != nil {
-			return "", err
+			return err
 		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
 
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	if psVal := req.GetMaxResults(); psVal != nil {
-		it.pageInfo.MaxSize = int(psVal.GetValue())
-	}
-	it.pageInfo.Token = req.GetPageToken()
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
 
-	return it
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // PatchModel patch specific fields in the specified model.
