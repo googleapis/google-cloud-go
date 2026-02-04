@@ -1,5 +1,7 @@
 # Changes
 
+## [1.13.2](https://github.com/googleapis/google-cloud-go/releases/tag/logging%2Fv1.13.2) (2026-02-04)
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/logging/v1.13.0...logging/v1.13.1) (2025-10-28)
 
 
