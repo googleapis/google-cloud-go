@@ -77,7 +77,7 @@ runPresubmitTests() {
   exit_code=$(($exit_code + $?))
 }
 
-SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go...$KOKORO_GIT_COMMIT_google_cloud_go |
+SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/$KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go...$KOKORO_GIT_COMMIT_google_cloud_go |
   grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' | xargs dirname | sort -u || true)
 
 if [ -z $SIGNIFICANT_CHANGES ]; then
