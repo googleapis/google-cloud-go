@@ -36,6 +36,10 @@ export GOPROXY=https://proxy.golang.org
 mkdir -p $GOCLOUD_HOME
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
+git st
+git log -3
+git branch -l
+git remote get-url origin
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
 
