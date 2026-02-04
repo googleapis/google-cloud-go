@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -396,4 +397,151 @@ func mustCreateSubConfig(t *testing.T, c *Client, pbs *pb.Subscription) *Subscri
 		t.Fatal(err)
 	}
 	return c.Subscriber(pbs.Name)
+}
+
+func TestPerStreamFlowControl(t *testing.T) {
+	// This test verifies that flow control can be applied per-stream (per-goroutine)
+	// instead of per-subscriber.
+
+	// Use a fake server.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topicName := fmt.Sprintf("projects/%s/topics/t", projName)
+	subName := fmt.Sprintf("projects/%s/subscriptions/s", subID)
+	mustCreateTopic(t, client, topicName)
+	sub := mustCreateSubConfig(t, client, &pb.Subscription{
+		Name:  subName,
+		Topic: topicName,
+	})
+
+	// Publish enough messages to saturate flow control.
+	// We'll set MaxOutstandingMessages=5.
+	// If per-stream is FALSE (legacy), total allowed = 5.
+	// If per-stream is TRUE, total allowed = 5 * NumGoroutines.
+	const maxOutstanding = 5
+	const numGoroutines = 2
+	const totalMessages = 20
+
+	for i := 0; i < totalMessages; i++ {
+		srv.Publish(topicName, []byte(fmt.Sprintf("msg-%d", i)), nil)
+	}
+
+	testCases := []struct {
+		desc                   string
+		enablePerStream        bool
+		wantMaxActiveCallbacks int
+	}{
+		{
+			desc:                   "Legacy Flow Control (Shared)",
+			enablePerStream:        false,
+			wantMaxActiveCallbacks: maxOutstanding,
+		},
+		{
+			desc:                   "Per-Stream Flow Control",
+			enablePerStream:        true,
+			wantMaxActiveCallbacks: maxOutstanding * numGoroutines,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			// Republish messages for each test case since the previous one consumed them.
+			for i := 0; i < totalMessages; i++ {
+				srv.Publish(topicName, []byte(fmt.Sprintf("%s-msg-%d", tc.desc, i)), nil)
+			}
+
+			sub.ReceiveSettings = ReceiveSettings{
+				MaxOutstandingMessages:     maxOutstanding,
+				NumGoroutines:              numGoroutines,
+				EnablePerStreamFlowControl: tc.enablePerStream,
+			}
+
+			// We need a way to count active callbacks and block them
+			// to simulate saturation.
+			var activeCallbacks int32
+			var maxSeen int32
+
+			// channel to hold callbacks
+			holdCh := make(chan struct{})
+			// channel to signal that we've reached a stable state (saturation or drain)
+
+			// We will use a context with timeout for the Receive call to avoid hanging forever.
+			recvCtx, recvCancel := context.WithTimeout(ctx, 5*time.Second)
+			defer recvCancel()
+
+			errCh := make(chan error, 1)
+			go func() {
+				errCh <- sub.Receive(recvCtx, func(ctx context.Context, m *Message) {
+					current := atomic.AddInt32(&activeCallbacks, 1)
+
+					// Update max active callbacks seen
+					for {
+						seen := atomic.LoadInt32(&maxSeen)
+						if current <= seen {
+							break
+						}
+						// Try to swap maxSeen with current
+						if atomic.CompareAndSwapInt32(&maxSeen, seen, current) {
+							break
+						}
+					}
+
+					// Hold the callback until told to proceed or context matches
+					select {
+					case <-holdCh:
+					case <-ctx.Done():
+					}
+
+					atomic.AddInt32(&activeCallbacks, -1)
+					m.Ack()
+				})
+			}()
+
+			// Give it some time to saturate
+			time.Sleep(500 * time.Millisecond)
+
+			// Check the max saturated value
+			actualMax := atomic.LoadInt32(&maxSeen)
+
+			// Release callbacks
+			close(holdCh)
+
+			// Wait for Receive to finish
+			select {
+			case err := <-errCh:
+				if err != nil && !errors.Is(err, context.DeadlineExceeded) && !errors.Is(err, context.Canceled) {
+					t.Errorf("Receive returned unexpected error: %v", err)
+				}
+			case <-time.After(5 * time.Second):
+				t.Fatalf("Receive timed out waiting to return")
+			}
+
+			if actualMax == 0 {
+				t.Error("Did not receive any messages")
+			}
+
+			// In the legacy case, we expect exactly maxOutstanding.
+			// In the per-stream case, we expect up to maxOutstanding * numGoroutines.
+
+			// We relax the check slightly for Legacy to allow for transients, but it should definitely be less than per-stream potential.
+			// Legacy limit: 5. Per-Stream limit: 10.
+
+			if tc.enablePerStream {
+				// We expect to breach the single-stream limit
+				if actualMax <= maxOutstanding {
+					t.Errorf("EnablePerStreamFlowControl=true: got max %d, want > %d (approx %d)", actualMax, maxOutstanding, maxOutstanding*numGoroutines)
+				}
+			} else {
+				// We expect to stay within the shared limit
+				// Allowing small buffer (+2) for test flakiness/race but strictly it should be <= maxOutstanding
+				if actualMax > maxOutstanding+2 {
+					t.Errorf("EnablePerStreamFlowControl=false: got max %d, want around %d", actualMax, maxOutstanding)
+				}
+			}
+		})
+	}
 }

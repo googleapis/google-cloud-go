@@ -278,7 +278,13 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 		})
 	}
 
-	sched := scheduler.NewReceiveScheduler(maxCount)
+	var schedulerLimit int
+	if s.ReceiveSettings.EnablePerStreamFlowControl {
+		schedulerLimit = maxCount * numGoroutines
+	} else {
+		schedulerLimit = maxCount
+	}
+	sched := scheduler.NewReceiveScheduler(schedulerLimit)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
