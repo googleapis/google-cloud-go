@@ -392,6 +392,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 	var exitSignal error
 
+	// TODO: Replace this logic with addConnections(...).
 	initialConns := make([]*connEntry, connPoolSize)
 	for i := 0; i < connPoolSize; i++ {
 		select {
