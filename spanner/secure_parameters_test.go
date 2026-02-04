@@ -23,6 +23,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/proto"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
@@ -591,5 +592,222 @@ func TestClientContext_BatchUpdate(t *testing.T) {
 	gotReq := batchDmlReqs[0]
 	if !proto.Equal(gotReq.RequestOptions.ClientContext, clientContext) {
 		t.Errorf("mismatch in ClientContext:\ngot:  %v\nwant: %v", gotReq.RequestOptions.ClientContext, clientContext)
+	}
+}
+
+func TestClientContext_RWTransaction_MultipleRPCs(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	clientContext := &sppb.RequestOptions_ClientContext{
+		SecureContext: map[string]*structpb.Value{
+			"tx-key": {Kind: &structpb.Value_StringValue{StringValue: "tx-value"}},
+		},
+	}
+
+	stmt := Statement{SQL: "SELECT 1"}
+	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
+		Type: StatementResultResultSet,
+		ResultSet: &sppb.ResultSet{
+			Metadata: &sppb.ResultSetMetadata{
+				RowType: &sppb.StructType{
+					Fields: []*sppb.StructType_Field{
+						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+					},
+				},
+			},
+			Rows: []*structpb.ListValue{
+				{Values: []*structpb.Value{{Kind: &structpb.Value_NumberValue{NumberValue: 1}}}},
+			},
+		},
+	})
+
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// 1. First ExecuteSql
+		iter := tx.Query(ctx, stmt)
+		if _, err := iter.Next(); err != nil && err != iterator.Done {
+			return err
+		}
+		iter.Stop()
+
+		// 2. A Read
+		if _, err := tx.ReadRow(ctx, "Table", Key{"key1"}, []string{"Col1"}); err != nil && ToSpannerError(err).(*Error).Code != codes.NotFound {
+			// ReadRow might return NotFound if not mocked, which is fine for request verification
+		}
+
+		// 3. Second ExecuteSql
+		iter2 := tx.Query(ctx, stmt)
+		if _, err := iter2.Next(); err != nil && err != iterator.Done {
+			return err
+		}
+		iter2.Stop()
+
+		return nil
+	}, TransactionOptions{ClientContext: clientContext})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	sqlCount := 0
+	readCount := 0
+	for _, req := range reqs {
+		switch r := req.(type) {
+		case *sppb.ExecuteSqlRequest:
+			sqlCount++
+			if !proto.Equal(r.RequestOptions.ClientContext, clientContext) {
+				t.Errorf("ExecuteSql %d: mismatch in ClientContext:\ngot:  %v\nwant: %v", sqlCount, r.RequestOptions.ClientContext, clientContext)
+			}
+		case *sppb.ReadRequest:
+			readCount++
+			if !proto.Equal(r.RequestOptions.ClientContext, clientContext) {
+				t.Errorf("ReadRequest %d: mismatch in ClientContext:\ngot:  %v\nwant: %v", readCount, r.RequestOptions.ClientContext, clientContext)
+			}
+		}
+	}
+	if sqlCount != 2 {
+		t.Errorf("expected 2 ExecuteSqlRequest, got %d", sqlCount)
+	}
+	if readCount != 1 {
+		t.Errorf("expected 1 ReadRequest, got %d", readCount)
+	}
+}
+
+func TestClientContext_EmptyMap(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	clientContext := &sppb.RequestOptions_ClientContext{
+		SecureContext: make(map[string]*structpb.Value),
+	}
+
+	stmt := Statement{SQL: "SELECT 1"}
+	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
+		Type: StatementResultResultSet,
+		ResultSet: &sppb.ResultSet{
+			Metadata: &sppb.ResultSetMetadata{
+				RowType: &sppb.StructType{
+					Fields: []*sppb.StructType_Field{
+						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+					},
+				},
+			},
+			Rows: []*structpb.ListValue{
+				{Values: []*structpb.Value{{Kind: &structpb.Value_NumberValue{NumberValue: 1}}}},
+			},
+		},
+	})
+
+	iter := client.Single().QueryWithOptions(ctx, stmt, QueryOptions{ClientContext: clientContext})
+	if _, err := iter.Next(); err != nil && err != iterator.Done {
+		t.Fatal(err)
+	}
+	iter.Stop()
+
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	found := false
+	for _, req := range reqs {
+		if r, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			found = true
+			if r.RequestOptions.ClientContext == nil {
+				t.Error("expected non-nil ClientContext for empty map")
+			} else if len(r.RequestOptions.ClientContext.SecureContext) != 0 {
+				t.Errorf("expected empty SecureContext map, got %v", r.RequestOptions.ClientContext.SecureContext)
+			}
+		}
+	}
+	if !found {
+		t.Error("ExecuteSqlRequest not found")
+	}
+}
+
+func TestClientContext_ComplexOverriding(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	globalCtx := &sppb.RequestOptions_ClientContext{
+		SecureContext: map[string]*structpb.Value{
+			"key1": {Kind: &structpb.Value_StringValue{StringValue: "global1"}},
+			"key2": {Kind: &structpb.Value_StringValue{StringValue: "global2"}},
+		},
+	}
+	txCtx := &sppb.RequestOptions_ClientContext{
+		SecureContext: map[string]*structpb.Value{
+			"key2": {Kind: &structpb.Value_StringValue{StringValue: "tx2"}},
+			"key3": {Kind: &structpb.Value_StringValue{StringValue: "tx3"}},
+		},
+	}
+	reqCtx := &sppb.RequestOptions_ClientContext{
+		SecureContext: map[string]*structpb.Value{
+			"key3": {Kind: &structpb.Value_StringValue{StringValue: "req3"}},
+			"key4": {Kind: &structpb.Value_StringValue{StringValue: "req4"}},
+		},
+	}
+
+	// Final merged result for the request:
+	// key1: from global
+	// key2: from tx (overrides global)
+	// key3: from req (overrides tx)
+	// key4: from req
+	expectedCtx := &sppb.RequestOptions_ClientContext{
+		SecureContext: map[string]*structpb.Value{
+			"key1": {Kind: &structpb.Value_StringValue{StringValue: "global1"}},
+			"key2": {Kind: &structpb.Value_StringValue{StringValue: "tx2"}},
+			"key3": {Kind: &structpb.Value_StringValue{StringValue: "req3"}},
+			"key4": {Kind: &structpb.Value_StringValue{StringValue: "req4"}},
+		},
+	}
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		ClientContext:        globalCtx,
+		DisableNativeMetrics: true,
+	})
+	defer teardown()
+
+	stmt := Statement{SQL: "SELECT 1"}
+	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
+		Type: StatementResultResultSet,
+		ResultSet: &sppb.ResultSet{
+			Metadata: &sppb.ResultSetMetadata{
+				RowType: &sppb.StructType{
+					Fields: []*sppb.StructType_Field{
+						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+					},
+				},
+			},
+			Rows: []*structpb.ListValue{
+				{Values: []*structpb.Value{{Kind: &structpb.Value_NumberValue{NumberValue: 1}}}},
+			},
+		},
+	})
+
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.QueryWithOptions(ctx, stmt, QueryOptions{ClientContext: reqCtx})
+		if _, err := iter.Next(); err != nil && err != iterator.Done {
+			return err
+		}
+		iter.Stop()
+		return nil
+	}, TransactionOptions{ClientContext: txCtx})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	found := false
+	for _, req := range reqs {
+		if r, ok := req.(*sppb.ExecuteSqlRequest); ok && r.Sql == stmt.SQL {
+			found = true
+			if !proto.Equal(r.RequestOptions.ClientContext, expectedCtx) {
+				t.Errorf("mismatch in Merged ClientContext:\ngot:  %v\nwant: %v", r.RequestOptions.ClientContext, expectedCtx)
+			}
+		}
+	}
+	if !found {
+		t.Error("ExecuteSqlRequest not found")
 	}
 }

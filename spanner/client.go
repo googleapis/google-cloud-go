@@ -1033,6 +1033,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t.txReadOnly.clientContext = c.clientContext
 			t.wb = []*Mutation{}
 			t.txOpts = c.txo.merge(options)
+			t.txReadOnly.clientContext = mergeClientContext(c.clientContext, t.txOpts.ClientContext)
 			t.ct = c.ct
 			t.otConfig = c.otConfig
 		}
