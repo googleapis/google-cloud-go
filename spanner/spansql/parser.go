@@ -3683,20 +3683,17 @@ func (p *parser) parseSelect() (Select, *parseError) {
 
 	var sel Select
 
-	// Check for AS STRUCT before DISTINCT/ALL
-	// because "DISTINCT AS STRUCT" is also valid
-	if p.sniff("AS") {
-		if p.eat("AS", "STRUCT") {
-			sel.AsStruct = true
-		}
-	} else if p.eat("ALL") {
-		// Nothing to do; this is the default.
-	} else if p.eat("DISTINCT") {
+	// Handle AS STRUCT, DISTINCT, and ALL, which can appear in flexible order.
+	if p.eat("AS", "STRUCT") {
+		sel.AsStruct = true
+	}
+	if p.eat("DISTINCT") {
 		sel.Distinct = true
-		// DISTINCT can be followed by AS STRUCT
-		if p.eat("AS", "STRUCT") {
-			sel.AsStruct = true
-		}
+	} else if p.eat("ALL") {
+		// This is the default, just consume the token.
+	}
+	if !sel.AsStruct && p.eat("AS", "STRUCT") {
+		sel.AsStruct = true
 	}
 
 	// Read expressions for the SELECT list.
