@@ -4803,7 +4803,7 @@ libraries:
       - internal/generated/snippets/retail/
     tag_format: '{id}/v{version}'
   - id: root-module
-    version: 0.123.0
+    version: 0.124.0
     last_generated_commit: 3990e05b25dcaf7ba8d6baa4255d9b012a3a6a4f
     apis: []
     source_roots:
