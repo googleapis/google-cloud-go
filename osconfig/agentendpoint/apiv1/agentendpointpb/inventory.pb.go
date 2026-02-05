@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -859,7 +859,7 @@ func (x *Inventory_WindowsApplication) GetHelpLink() string {
 	return ""
 }
 
-// Information related to the actuall source of the versioned package. This
+// Information related to the actual source of the versioned package. This
 // includes source package name and version if available.
 type Inventory_VersionedPackage_Source struct {
 	state         protoimpl.MessageState

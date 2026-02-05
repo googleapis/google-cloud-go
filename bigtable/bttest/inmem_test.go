@@ -111,13 +111,13 @@ func TestNewServer(t *testing.T) {
 			t.Fatalf("NewServerWithListener() error = %v", err)
 		}
 
+		// Clean up the real listener now that the test is done.
+		l.Close()
+
 		srv.Close() // This should NOT call the Close method on our spy.
 		if spy.closed {
 			t.Error("Listener was closed by the server, but it should not have been.")
 		}
-
-		// Clean up the real listener now that the test is done.
-		l.Close()
 
 		// Validate that the listener is now actually closed.
 		_, err = l.Accept()

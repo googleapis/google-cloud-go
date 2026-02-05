@@ -251,10 +251,6 @@ func TestPartitionQuery_Multiplexed(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{
-			enableMultiplexSession:                    true,
-			enableMultiplexedSessionForPartitionedOps: true,
-		},
 		DisableNativeMetrics: true,
 	})
 	defer teardown()
@@ -318,10 +314,6 @@ func TestPartitionRead_Multiplexed(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{
-			enableMultiplexSession:                    true,
-			enableMultiplexedSessionForPartitionedOps: true,
-		},
 		DisableNativeMetrics: true,
 	})
 	defer teardown()

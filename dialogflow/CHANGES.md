@@ -1,5 +1,11 @@
 # Changes
 
+## [1.75.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.75.0) (2026-02-05)
+
+### Features
+
+* added a new field StreamingAnalyzeContentRequest.output_multiple_utterances ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
 ## [1.74.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.74.0) (2026-01-22)
 
 ### Features

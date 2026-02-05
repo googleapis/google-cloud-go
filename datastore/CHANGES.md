@@ -1,5 +1,15 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/datastore%2Fv1.22.0) (2026-02-04)
+
+### Features
+
+* Enable new auth library (#13318) ([ea42700](https://github.com/googleapis/google-cloud-go/commit/ea4270000c158ad6b21ccc5b38c6b76e2218c037))
+
+### Bug Fixes
+
+* correct LoadKey documentation (#13375) ([106fc73](https://github.com/googleapis/google-cloud-go/commit/106fc737d0f7f7beb9984cc98b5978d23f9867ca))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.20.0...datastore/v1.21.0) (2025-10-20)
 
 

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.40.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.40.0) (2026-01-29)
+
+### Documentation
+
+* Fixed language issues in multiple message field descriptions ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Regenerated REST and RPC Document AI documentation to include missing changes from September 2024 to November 2025 ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.38.1...documentai/v1.39.0) (2025-10-09)
 
 
