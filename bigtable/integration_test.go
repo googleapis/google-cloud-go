@@ -188,6 +188,86 @@ func cleanup(c IntegrationTestConfig) error {
 	return nil
 }
 
+func TestIntegration_TieredStorage(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support TieredStorage")
+	}
+
+	tableName := tableNameSpace.New()
+	conf := &TableConf{
+		TableID: tableName,
+		TieredStorageConfig: &TieredStorageConfig{
+			InfrequentAccess: &TieredStorageIncludeIfOlderThan{
+				Duration: 30 * 24 * time.Hour,
+			},
+		},
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, conf); err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	defer adminClient.DeleteTable(ctx, tableName)
+
+	ti, err := adminClient.TableInfo(ctx, tableName)
+	if err != nil {
+		t.Fatalf("TableInfo failed: %v", err)
+	}
+
+	if ti.TieredStorageConfig == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	rule, ok := ti.TieredStorageConfig.InfrequentAccess.(*TieredStorageIncludeIfOlderThan)
+	if !ok {
+		t.Fatalf("Unexpected rule type: %T", ti.TieredStorageConfig.InfrequentAccess)
+	}
+	if optional.ToDuration(rule.Duration) != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", optional.ToDuration(rule.Duration), 30*24*time.Hour)
+	}
+
+	// Update tiered storage config
+	newDuration := 45 * 24 * time.Hour
+	newConfig := TieredStorageConfig{
+		InfrequentAccess: &TieredStorageIncludeIfOlderThan{
+			Duration: newDuration,
+		},
+	}
+	if err := adminClient.UpdateTableWithTieredStorageConfig(ctx, tableName, &newConfig); err != nil {
+		t.Fatalf("UpdateTableWithTieredStorageConfig failed: %v", err)
+	}
+
+	ti, err = adminClient.TableInfo(ctx, tableName)
+	if err != nil {
+		t.Fatalf("TableInfo failed after update: %v", err)
+	}
+	rule, ok = ti.TieredStorageConfig.InfrequentAccess.(*TieredStorageIncludeIfOlderThan)
+	if !ok {
+		t.Fatalf("Unexpected rule type after update: %T", ti.TieredStorageConfig.InfrequentAccess)
+	}
+	if optional.ToDuration(rule.Duration) != newDuration {
+		t.Errorf("Unexpected IncludeIfOlderThan after update: %v, expected %v", optional.ToDuration(rule.Duration), newDuration)
+	}
+
+	// Remove tiered storage config
+	if err := adminClient.UpdateTableRemoveTieredStorageConfig(ctx, tableName); err != nil {
+		t.Fatalf("UpdateTableRemoveTieredStorageConfig failed: %v", err)
+	}
+
+	ti, err = adminClient.TableInfo(ctx, tableName)
+	if err != nil {
+		t.Fatalf("TableInfo failed after removal: %v", err)
+	}
+	if ti.TieredStorageConfig != nil {
+		t.Errorf("TieredStorageConfig should be nil after removal, got %+v", ti.TieredStorageConfig)
+	}
+}
+
 func TestIntegration_Pinger(t *testing.T) {
 	ctx := context.Background()
 	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
