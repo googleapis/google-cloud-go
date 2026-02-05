@@ -278,6 +278,84 @@ type NewX struct {
 	j int
 }
 
+func TestIntegration_UpsertWithPropertyMask(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type Item struct {
+		Count       int
+		Name        string
+		Description string
+	}
+
+	t.Run("EmptyMask_TransformOnly", func(t *testing.T) {
+		key := NameKey("UpsertMask", "item1"+suffix, nil)
+		initial := &Item{Count: 1, Name: "Initial", Description: "Desc"}
+		if _, err := client.Put(ctx, key, initial); err != nil {
+			t.Fatalf("client.Put: %v", err)
+		}
+		defer client.Delete(ctx, key)
+
+		// Update ONLY the count (via transform) and implicitly preserve "Name" and "Description".
+		mut := NewUpsert(key, &Item{}).WithTransforms(Increment("Count", 5)).WithPropertyMask()
+		if _, err := client.Mutate(ctx, mut); err != nil {
+			t.Fatalf("client.Mutate: %v", err)
+		}
+
+		var got Item
+		if err := client.Get(ctx, key, &got); err != nil {
+			t.Fatalf("client.Get: %v", err)
+		}
+
+		if got.Name != "Initial" {
+			t.Errorf("Name mismatch: got %q, want %q", got.Name, "Initial")
+		}
+		if got.Description != "Desc" {
+			t.Errorf("Description mismatch: got %q, want %q", got.Description, "Desc")
+		}
+		if got.Count != 6 {
+			t.Errorf("Count mismatch: got %d, want 6", got.Count)
+		}
+	})
+
+	t.Run("SpecificMask_PartialUpdate", func(t *testing.T) {
+		key := NameKey("UpsertMask", "item2"+suffix, nil)
+		initial := &Item{Count: 10, Name: "Initial", Description: "InitialDesc"}
+		if _, err := client.Put(ctx, key, initial); err != nil {
+			t.Fatalf("client.Put: %v", err)
+		}
+		defer client.Delete(ctx, key)
+
+		// Update "Name" from payload, increment "Count", preserve "Description".
+		// Payload has "Name" = "NewName", "Description" = "NewDesc" (should be ignored).
+		updatePayload := &Item{Name: "NewName", Description: "ShouldBeIgnored"}
+
+		mut := NewUpsert(key, updatePayload).
+			WithTransforms(Increment("Count", 1)).
+			WithPropertyMask("Name") // Only "Name" should be taken from payload
+
+		if _, err := client.Mutate(ctx, mut); err != nil {
+			t.Fatalf("client.Mutate: %v", err)
+		}
+
+		var got Item
+		if err := client.Get(ctx, key, &got); err != nil {
+			t.Fatalf("client.Get: %v", err)
+		}
+
+		if got.Name != "NewName" {
+			t.Errorf("Name mismatch: got %q, want %q", got.Name, "NewName")
+		}
+		if got.Description != "InitialDesc" {
+			t.Errorf("Description mismatch: got %q, want %q", got.Description, "InitialDesc")
+		}
+		if got.Count != 11 {
+			t.Errorf("Count mismatch: got %d, want 11", got.Count)
+		}
+	})
+}
+
 func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t, WithIgnoreFieldMismatch())
