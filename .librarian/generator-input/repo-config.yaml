@@ -5,6 +5,8 @@ modules:
     apis:
       - path: google/cloud/bigquery/v2
         client_directory: v2/apiv2
+        enabled_generator_features:
+        - F_wrapper_types_for_page_size
 
   - name: bigtable
     apis:
@@ -50,6 +52,8 @@ modules:
         client_directory: apiv1beta1
 
   - name: firestore
+    enabled_generator_features:
+    - F_ordered_routing_headers
     apis:
       - path: google/firestore/admin/v1
         client_directory: apiv1/admin
