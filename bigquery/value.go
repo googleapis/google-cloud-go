@@ -919,7 +919,7 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 			}
 			v, err = convertRangeTableCell(cell, fs)
 		} else {
-			v, err = convertValue(cell.V, fs.Type, fs.Schema)
+			v, err = convertValue(cell.V, fs)
 		}
 		if err != nil {
 			return nil, err
@@ -929,28 +929,30 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 	return values, nil
 }
 
-func convertValue(val interface{}, typ FieldType, schema Schema) (Value, error) {
+func convertValue(val interface{}, fs *FieldSchema) (Value, error) {
+	if fs == nil {
+		return nil, fmt.Errorf("convertValue: no FieldSchema present")
+	}
 	switch val := val.(type) {
 	case nil:
 		return nil, nil
 	case []interface{}:
-		return convertRepeatedRecord(val, typ, schema)
+		return convertRepeatedRecord(val, fs)
 	case map[string]interface{}:
-		return convertNestedRecord(val, schema)
+		return convertNestedRecord(val, fs.Schema)
 	case string:
-		// TODO: fix convertValueSignature to propagate real type info
-		return convertBasicType(val, &FieldSchema{Type: typ})
+		return convertBasicType(val, fs)
 	default:
-		return nil, fmt.Errorf("got value %v; expected a value of type %s", val, typ)
+		return nil, fmt.Errorf("got value %v; expected a value of type %s", val, fs.Type)
 	}
 }
 
-func convertRepeatedRecord(vals []interface{}, typ FieldType, schema Schema) (Value, error) {
+func convertRepeatedRecord(vals []interface{}, fs *FieldSchema) (Value, error) {
 	var values []Value
 	for _, cell := range vals {
 		// each cell contains a single entry, keyed by "v"
 		val := cell.(map[string]interface{})["v"]
-		v, err := convertValue(val, typ, schema)
+		v, err := convertValue(val, fs)
 		if err != nil {
 			return nil, err
 		}
@@ -973,7 +975,7 @@ func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, erro
 		// each cell contains a single entry, keyed by "v"
 		val := cell.(map[string]interface{})["v"]
 		fs := schema[i]
-		v, err := convertValue(val, fs.Type, fs.Schema)
+		v, err := convertValue(val, fs)
 		if err != nil {
 			return nil, err
 		}
