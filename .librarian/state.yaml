@@ -909,7 +909,7 @@ libraries:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
   - id: bigquery
-    version: 1.73.0
+    version: 1.73.1
     last_generated_commit: 9a477cd3c26a704130e2a2fb44a40281d9312e4c
     apis:
       - path: google/cloud/bigquery/analyticshub/v1

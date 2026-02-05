@@ -3,6 +3,12 @@
 
 
 
+## [1.73.1](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.73.1) (2026-02-05)
+
+### Bug Fixes
+
+* revert to useInt64Timestamp for REST format options (#13789) ([bdcc2f8](https://github.com/googleapis/google-cloud-go/commit/bdcc2f8068e9faa92cb66b8b7f4371c19dacb473))
+
 ## [1.73.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.73.0) (2026-02-04)
 
 ### Features
