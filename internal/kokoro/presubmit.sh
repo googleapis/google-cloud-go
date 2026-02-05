@@ -34,6 +34,16 @@ export GOPROXY=https://proxy.golang.org
 
 # Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
+# git clone of a local repo only clones the local origin's branches
+# which means we need to explicitly setup a preview branch tracking the remote
+# preview before doing a local clone in order to ensure that evaluating a pull
+# request against preview can be properly diffed.
+if [[ $KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go == "preview" ]]; then
+  # This seems to be necessary in order to run git commands in this directory
+  # even though we have a similar command above.
+  git config --global --add safe.directory "$(pwd)"
+  git branch -f preview origin/preview
+fi
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
 
