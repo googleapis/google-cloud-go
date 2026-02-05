@@ -5,12 +5,12 @@
 
 /ai/                    @googleapis/go-vertexai @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /aiplatform/            @googleapis/go-vertexai @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/              @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/bttest        @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/datastore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/firestore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/              @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/bttest        @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/datastore/             @googleapis/cloud-native-db-dpes @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/firestore/             @googleapis/cloud-native-db-dpes @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /pubsub/                @googleapis/api-pubsub @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team @googleapis/cloud-native-db-dpes
 /pubsublite/            @googleapis/api-pubsub @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /spanner/               @googleapis/spanner-client-libraries-go @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
