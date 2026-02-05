@@ -3311,7 +3311,7 @@ libraries:
       - internal/generated/snippets/locationfinder/
     tag_format: '{id}/v{version}'
   - id: logging
-    version: 1.13.1
+    version: 1.13.2
     last_generated_commit: 0654a03c3f7a6cb46e36227d17cfcc6f4b71fa5a
     apis:
       - path: google/logging/v2
