@@ -40,6 +40,19 @@ func (m *Mutation) isDelete() bool {
 // It can be called multiple times to add more transforms.
 // The order of transforms is preserved, first by the order of calls to WithTransforms,
 // and then by the order of transforms within a single call.
+//
+// Usage with NewUpsert: By default, NewUpsert replaces the entire entity.
+// To apply transforms without replacing the existing entity (e.g. only incrementing a counter),
+// call WithPropertyMask on the mutation with an empty slice.
+//
+// Note: Transforms are applied *after* the Upsert/Update operation.
+// The PropertyMask controls what the Upsert/Update writes (the "base" for the transform).
+//
+// Transforms are applied to this base entity even if the property was excluded from
+// the mask.
+//
+// - nil mask: Base is the new entity (full replacement).
+// - empty mask: Base is the existing entity (no-op update).
 func (m *Mutation) WithTransforms(transforms ...PropertyTransform) *Mutation {
 	if m.err != nil {
 		return m
@@ -63,6 +76,36 @@ func (m *Mutation) WithTransforms(transforms ...PropertyTransform) *Mutation {
 	return m
 }
 
+// WithPropertyMask specifies which properties of the entity should be updated.
+//
+// If paths is empty, no properties will be updated (and the entity will not be replaced).
+// This is useful when performing a "transform-only" operation where you only want to
+// apply PropertyTransforms without modifying other parts of the entity.
+//
+// If WithPropertyMask is not called, the default behavior for Upsert and Update
+// is to replace the entire entity.
+func (m *Mutation) WithPropertyMask(paths ...string) *Mutation {
+	if m.err != nil {
+		return m
+	}
+	if m.mut == nil {
+		m.err = errors.New("datastore: WithPropertyMask called on uninitialized mutation")
+		return m
+	}
+	if _, isInsert := m.mut.GetOperation().(*pb.Mutation_Insert); isInsert || m.isDelete() {
+		m.err = errors.New("datastore: property mask can only be applied to update or upsert mutations")
+		return m
+	}
+
+	// We permit an empty slice for paths, which means "update no properties".
+	// However, we must ensure m.mut.PropertyMask is not nil in that case.
+	if m.mut.PropertyMask == nil {
+		m.mut.PropertyMask = &pb.PropertyMask{}
+	}
+	m.mut.PropertyMask.Paths = append(m.mut.PropertyMask.Paths, paths...)
+	return m
+}
+
 // NewInsert creates a Mutation that will save the entity src into the
 // datastore with key k. If k already exists, calling Mutate with the
 // Mutation will lead to a gRPC codes.AlreadyExists error.
@@ -82,6 +125,10 @@ func NewInsert(k *Key, src interface{}) *Mutation {
 
 // NewUpsert creates a Mutation that saves the entity src into the datastore with key
 // k, whether or not k exists. See Client.Put for valid values of src.
+//
+// By default, NewUpsert replaces the entire entity. To perform a partial update
+// or a "transform-only" operation (e.g. only incrementing a counter),
+// call WithPropertyMask on the returned Mutation.
 func NewUpsert(k *Key, src interface{}) *Mutation {
 	if !k.valid() {
 		return &Mutation{err: ErrInvalidKey}
