@@ -524,7 +524,7 @@ func (m *multiRangeDownloaderManager) addNewStream() {
 	m.sessionIDCounter++
 	id := int(m.sessionIDCounter)
 	go func(id int) {
-		newSession, err := m.createNewSession(id, m.readSpec, false)
+		newSession, err := m.createNewSession(id, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec), false)
 		if err != nil {
 			// If we can't create a stream, just reset the flag so we can try again later.
 			// We don't want to kill the whole manager for a single failed dynamic stream.
@@ -759,7 +759,6 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 	if handle := resp.GetReadHandle().GetHandle(); len(handle) > 0 {
 		m.lastReadHandle = handle
 	}
-	mrdStream := m.streams[result.id]
 	m.attrsOnce.Do(func() {
 		defer close(m.attrsReady)
 		if meta := resp.GetMetadata(); meta != nil {
@@ -775,6 +774,11 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 			}
 		}
 	})
+
+	mrdStream := m.streams[result.id]
+	if mrdStream == nil {
+		return
+	}
 
 	for _, dataRange := range resp.GetObjectDataRanges() {
 		readID := dataRange.GetReadRange().GetReadId()
