@@ -808,7 +808,7 @@ func TestTableAdmin_UpdateTableWithTieredStorageConfig(t *testing.T) {
 		InfrequentAccess: &TieredStorageIncludeIfOlderThan{Duration: 30 * 24 * time.Hour},
 	}
 
-	err := c.UpdateTableWithTieredStorageConfig(context.Background(), "My-table", tieredStorageConfig)
+	err := c.UpdateTableWithTieredStorageConfig(context.Background(), "My-table", &tieredStorageConfig)
 	if err != nil {
 		t.Fatalf("UpdateTableWithTieredStorageConfig failed: %v", err)
 	}

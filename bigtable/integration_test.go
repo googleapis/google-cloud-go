@@ -238,7 +238,7 @@ func TestIntegration_TieredStorage(t *testing.T) {
 			Duration: newDuration,
 		},
 	}
-	if err := adminClient.UpdateTableWithTieredStorageConfig(ctx, tableName, newConfig); err != nil {
+	if err := adminClient.UpdateTableWithTieredStorageConfig(ctx, tableName, &newConfig); err != nil {
 		t.Fatalf("UpdateTableWithTieredStorageConfig failed: %v", err)
 	}
 

@@ -411,11 +411,11 @@ type TableConf struct {
 	// set to protected to make the table protected against data loss
 	DeletionProtection    DeletionProtection
 	ChangeStreamRetention ChangeStreamRetention
-	// Configure an automated backup policy for the table
+	// AutomatedBackupConfig defines the automated backup policy for the table.
 	AutomatedBackupConfig TableAutomatedBackupConfig
-	// Configure a row key schema for the table
+	// RowKeySchema describes the structure of the row keys in the table.
 	RowKeySchema *StructType
-	// Configure tiered storage for the table
+	// TieredStorageConfig represents rules for the table to specify what data is stored in each storage tier.
 	TieredStorageConfig *TieredStorageConfig
 }
 
@@ -693,7 +693,7 @@ func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableI
 }
 
 // UpdateTableWithTieredStorageConfig updates a table with TieredStorageConfig.
-func (ac *AdminClient) UpdateTableWithTieredStorageConfig(ctx context.Context, tableID string, tieredStorageConfig TieredStorageConfig) error {
+func (ac *AdminClient) UpdateTableWithTieredStorageConfig(ctx context.Context, tableID string, tieredStorageConfig *TieredStorageConfig) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
 		return err
@@ -834,8 +834,11 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	if res.TieredStorageConfig != nil {
 		ti.TieredStorageConfig = &TieredStorageConfig{}
 		if res.TieredStorageConfig.InfrequentAccess != nil {
-			ti.TieredStorageConfig.InfrequentAccess = &TieredStorageIncludeIfOlderThan{
-				Duration: res.TieredStorageConfig.InfrequentAccess.GetIncludeIfOlderThan().AsDuration(),
+			switch rule := res.TieredStorageConfig.InfrequentAccess.Rule.(type) {
+			case *btapb.TieredStorageRule_IncludeIfOlderThan:
+				ti.TieredStorageConfig.InfrequentAccess = &TieredStorageIncludeIfOlderThan{
+					Duration: rule.IncludeIfOlderThan.AsDuration(),
+				}
 			}
 		}
 	}
