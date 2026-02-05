@@ -3,6 +3,16 @@
 
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudquotas%2Fv1.6.0) (2026-02-05)
+
+### Features
+
+* Hierarchical Quota Adjuster ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* Folder level and organization level support for the quota adjuster feature. ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudquotas%2Fv1.5.0) (2026-01-29)
 
 ### Documentation

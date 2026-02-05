@@ -3,6 +3,16 @@
 
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.8.0) (2026-02-05)
+
+### Features
+
+* Add support for AlloyDB backup and restore ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* A comment for field `log_retention_days` in message `.google.cloud.backupdr.v1.BackupPlan` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.7.0) (2026-01-15)
 
 ### Features
