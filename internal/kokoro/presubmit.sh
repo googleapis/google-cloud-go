@@ -42,7 +42,7 @@ if [[ $KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go == "preview" ]];
   # This seems to be necessary in order to run git commands in this directory
   # even though we have a similar command above.
   git config --global --add safe.directory "$(pwd)"
-  git branch preview origin/preview
+  git branch -f preview origin/preview
 fi
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
