@@ -760,7 +760,7 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.7.0
+    version: 1.8.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/backupdr/v1
@@ -1364,7 +1364,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.17.0
+    version: 0.18.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/chat/v1
@@ -1538,7 +1538,7 @@ libraries:
       - internal/generated/snippets/cloudprofiler/
     tag_format: '{id}/v{version}'
   - id: cloudquotas
-    version: 1.5.0
+    version: 1.6.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/api/cloudquotas/v1
@@ -2282,7 +2282,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.74.0
+    version: 1.75.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -2750,7 +2750,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.6.0
+    version: 0.7.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -4149,7 +4149,7 @@ libraries:
       - internal/generated/snippets/orgpolicy/
     tag_format: '{id}/v{version}'
   - id: osconfig
-    version: 1.15.1
+    version: 1.16.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/osconfig/agentendpoint/v1
@@ -6136,7 +6136,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/vectorsearch/v1beta

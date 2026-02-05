@@ -1,5 +1,15 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.7.0) (2026-02-05)
+
+### Features
+
+* add ClarificationMessage, thought-signature, formatted-data ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* A comment for enum value THOUGHT in enum TextType is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.6.0) (2026-01-15)
 
 ### Features
