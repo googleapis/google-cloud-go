@@ -34,6 +34,8 @@ export GOPROXY=https://proxy.golang.org
 
 # Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
+git config --global --add safe.directory "$(pwd)"
+git branch -rl
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
 # git clone of a local repo only clones the single branch and default branch
