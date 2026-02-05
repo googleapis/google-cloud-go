@@ -189,41 +189,41 @@ func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *FieldSchem
 	switch ft.(type) {
 	case *arrow.BooleanType:
 		v := col.(*array.Boolean).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v), fs)
 	case *arrow.Int8Type:
 		v := col.(*array.Int8).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v), fs)
 	case *arrow.Int16Type:
 		v := col.(*array.Int16).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v), fs)
 	case *arrow.Int32Type:
 		v := col.(*array.Int32).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v), fs)
 	case *arrow.Int64Type:
 		v := col.(*array.Int64).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v), fs)
 	case *arrow.Float16Type:
 		v := col.(*array.Float16).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v.Float32()), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v.Float32()), fs)
 	case *arrow.Float32Type:
 		v := col.(*array.Float32).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v), fs)
 	case *arrow.Float64Type:
 		v := col.(*array.Float64).Value(i)
-		return convertBasicType(fmt.Sprintf("%v", v), fs.Type)
+		return convertBasicType(fmt.Sprintf("%v", v), fs)
 	case *arrow.BinaryType:
 		v := col.(*array.Binary).Value(i)
 		encoded := base64.StdEncoding.EncodeToString(v)
-		return convertBasicType(encoded, fs.Type)
+		return convertBasicType(encoded, fs)
 	case *arrow.StringType:
 		v := col.(*array.String).Value(i)
-		return convertBasicType(v, fs.Type)
+		return convertBasicType(v, fs)
 	case *arrow.Date32Type:
 		v := col.(*array.Date32).Value(i)
-		return convertBasicType(v.FormattedString(), fs.Type)
+		return convertBasicType(v.FormattedString(), fs)
 	case *arrow.Date64Type:
 		v := col.(*array.Date64).Value(i)
-		return convertBasicType(v.FormattedString(), fs.Type)
+		return convertBasicType(v.FormattedString(), fs)
 	case *arrow.TimestampType:
 		v := col.(*array.Timestamp).Value(i)
 		dft := ft.(*arrow.TimestampType)
@@ -234,10 +234,10 @@ func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *FieldSchem
 		return Value(t.UTC()), nil // Timestamp
 	case *arrow.Time32Type:
 		v := col.(*array.Time32).Value(i)
-		return convertBasicType(v.FormattedString(arrow.Microsecond), fs.Type)
+		return convertBasicType(v.FormattedString(arrow.Microsecond), fs)
 	case *arrow.Time64Type:
 		v := col.(*array.Time64).Value(i)
-		return convertBasicType(v.FormattedString(arrow.Microsecond), fs.Type)
+		return convertBasicType(v.FormattedString(arrow.Microsecond), fs)
 	case *arrow.Decimal128Type:
 		dft := ft.(*arrow.Decimal128Type)
 		v := col.(*array.Decimal128).Value(i)

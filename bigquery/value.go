@@ -28,6 +28,8 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+const picoFormatString = "2006-01-02T15:04:05.999999999999Z"
+
 // Utility functions to deal with byproducts of wrapper types in discovery.
 func int64ptr(v int64) *int64 { return &v }
 
@@ -917,7 +919,7 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 			}
 			v, err = convertRangeTableCell(cell, fs)
 		} else {
-			v, err = convertValue(cell.V, fs.Type, fs.Schema)
+			v, err = convertValue(cell.V, fs)
 		}
 		if err != nil {
 			return nil, err
@@ -927,27 +929,30 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 	return values, nil
 }
 
-func convertValue(val interface{}, typ FieldType, schema Schema) (Value, error) {
+func convertValue(val interface{}, fs *FieldSchema) (Value, error) {
+	if fs == nil {
+		return nil, fmt.Errorf("convertValue: no FieldSchema present")
+	}
 	switch val := val.(type) {
 	case nil:
 		return nil, nil
 	case []interface{}:
-		return convertRepeatedRecord(val, typ, schema)
+		return convertRepeatedRecord(val, fs)
 	case map[string]interface{}:
-		return convertNestedRecord(val, schema)
+		return convertNestedRecord(val, fs.Schema)
 	case string:
-		return convertBasicType(val, typ)
+		return convertBasicType(val, fs)
 	default:
-		return nil, fmt.Errorf("got value %v; expected a value of type %s", val, typ)
+		return nil, fmt.Errorf("got value %v; expected a value of type %s", val, fs.Type)
 	}
 }
 
-func convertRepeatedRecord(vals []interface{}, typ FieldType, schema Schema) (Value, error) {
+func convertRepeatedRecord(vals []interface{}, fs *FieldSchema) (Value, error) {
 	var values []Value
 	for _, cell := range vals {
 		// each cell contains a single entry, keyed by "v"
 		val := cell.(map[string]interface{})["v"]
-		v, err := convertValue(val, typ, schema)
+		v, err := convertValue(val, fs)
 		if err != nil {
 			return nil, err
 		}
@@ -970,7 +975,7 @@ func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, erro
 		// each cell contains a single entry, keyed by "v"
 		val := cell.(map[string]interface{})["v"]
 		fs := schema[i]
-		v, err := convertValue(val, fs.Type, fs.Schema)
+		v, err := convertValue(val, fs)
 		if err != nil {
 			return nil, err
 		}
@@ -980,8 +985,11 @@ func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, erro
 }
 
 // convertBasicType returns val as an interface with a concrete type specified by typ.
-func convertBasicType(val string, typ FieldType) (Value, error) {
-	switch typ {
+func convertBasicType(val string, fs *FieldSchema) (Value, error) {
+	if fs == nil {
+		return nil, errors.New("No FieldSchema for convertBasicType")
+	}
+	switch fs.Type {
 	case StringFieldType:
 		return val, nil
 	case BytesFieldType:
@@ -993,11 +1001,10 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	case BooleanFieldType:
 		return strconv.ParseBool(val)
 	case TimestampFieldType:
-		i, err := strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			return nil, err
+		if fs.TimestampPrecision == 12 { // pico
+			return val, nil
 		}
-		return time.UnixMicro(i).UTC(), nil
+		return time.Parse(picoFormatString, val)
 	case DateFieldType:
 		return parseCivilDate(val)
 	case TimeFieldType:
@@ -1027,7 +1034,7 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		}
 		return Value(i), nil
 	default:
-		return nil, fmt.Errorf("unrecognized type: %s", typ)
+		return nil, fmt.Errorf("unrecognized type: %s", fs.Type)
 	}
 }
 
@@ -1061,15 +1068,18 @@ func convertRangeValue(cellVal interface{}, elementType FieldType) (Value, error
 		return nil, fmt.Errorf("bigquery: invalid RANGE value %q", val)
 	}
 	rv := &RangeValue{}
+	fsElementProxyType := &FieldSchema{
+		Type: elementType,
+	}
 	if parts[0] != unboundedRangeSentinel {
-		sv, err := convertBasicType(parts[0], elementType)
+		sv, err := convertBasicType(parts[0], fsElementProxyType)
 		if err != nil {
 			return nil, fmt.Errorf("bigquery: invalid RANGE start value %q", parts[0])
 		}
 		rv.Start = sv
 	}
 	if parts[1] != unboundedRangeSentinel {
-		ev, err := convertBasicType(parts[1], elementType)
+		ev, err := convertBasicType(parts[1], fsElementProxyType)
 		if err != nil {
 			return nil, fmt.Errorf("bigquery: invalid RANGE end value %q", parts[1])
 		}
