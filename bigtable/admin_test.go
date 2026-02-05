@@ -30,6 +30,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -51,6 +52,16 @@ type mockTableAdminClock struct {
 	createAuthorizedViewError error
 	updateAuthorizedViewReq   *btapb.UpdateAuthorizedViewRequest
 	updateAuthorizedViewError error
+
+	getTableReq  *btapb.GetTableRequest
+	getTableResp *btapb.Table
+}
+
+func (c *mockTableAdminClock) GetTable(
+	ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.getTableReq = in
+	return c.getTableResp, nil
 }
 
 func (c *mockTableAdminClock) CreateTable(
@@ -204,6 +215,37 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	}
 	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
 		t.Errorf("Unexpected table automated backup policy retention period: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, automatedBackupPolicy.Frequency.(time.Duration))
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_TieredStorageConfig_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	tieredStorageConfig := TieredStorageConfig{
+		InfrequentAccess: &TieredStorageIncludeIfOlderThan{Duration: 30 * 24 * time.Hour},
+	}
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{
+		TableID:             "My-table",
+		TieredStorageConfig: &tieredStorageConfig,
+	})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	got := createTableReq.Table.TieredStorageConfig
+	if got == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	if got.InfrequentAccess == nil {
+		t.Fatal("InfrequentAccess is nil")
+	}
+	if got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration() != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration(), 30*24*time.Hour)
 	}
 }
 
@@ -755,6 +797,88 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_ZeroFields_Invalid(t *t
 	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{time.Duration(0), time.Duration(0)})
 	if err == nil {
 		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithTieredStorageConfig(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	tieredStorageConfig := TieredStorageConfig{
+		InfrequentAccess: &TieredStorageIncludeIfOlderThan{Duration: 30 * 24 * time.Hour},
+	}
+
+	err := c.UpdateTableWithTieredStorageConfig(context.Background(), "My-table", tieredStorageConfig)
+	if err != nil {
+		t.Fatalf("UpdateTableWithTieredStorageConfig failed: %v", err)
+	}
+
+	updateTableReq := mock.updateTableReq
+	if updateTableReq.UpdateMask.Paths[0] != tieredStorageConfigFieldMask {
+		t.Errorf("Unexpected update mask: %v, expected %v", updateTableReq.UpdateMask.Paths[0], tieredStorageConfigFieldMask)
+	}
+	got := updateTableReq.Table.TieredStorageConfig
+	if got == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	if got.InfrequentAccess == nil {
+		t.Fatal("InfrequentAccess is nil")
+	}
+	if got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration() != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration(), 30*24*time.Hour)
+	}
+}
+
+func TestTableAdmin_TableInfo_TieredStorageConfig(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	mock.getTableResp = &btapb.Table{
+		Name: "projects/my-cool-project/instances/my-cool-instance/tables/My-table",
+		TieredStorageConfig: &btapb.TieredStorageConfig{
+			InfrequentAccess: &btapb.TieredStorageRule{
+				Rule: &btapb.TieredStorageRule_IncludeIfOlderThan{
+					IncludeIfOlderThan: durationpb.New(30 * 24 * time.Hour),
+				},
+			},
+		},
+	}
+
+	ti, err := c.TableInfo(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("TableInfo failed: %v", err)
+	}
+
+	if ti.TieredStorageConfig == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	if ti.TieredStorageConfig.InfrequentAccess == nil {
+		t.Fatal("InfrequentAccess is nil")
+	}
+	rule, ok := ti.TieredStorageConfig.InfrequentAccess.(*TieredStorageIncludeIfOlderThan)
+	if !ok {
+		t.Fatalf("Unexpected rule type: %T", ti.TieredStorageConfig.InfrequentAccess)
+	}
+	if optional.ToDuration(rule.Duration) != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", optional.ToDuration(rule.Duration), 30*24*time.Hour)
+	}
+}
+
+func TestTableAdmin_UpdateTableRemoveTieredStorageConfig(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableRemoveTieredStorageConfig(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("UpdateTableRemoveTieredStorageConfig failed: %v", err)
+	}
+
+	updateTableReq := mock.updateTableReq
+	if updateTableReq.UpdateMask.Paths[0] != tieredStorageConfigFieldMask {
+		t.Errorf("Unexpected update mask: %v, expected %v", updateTableReq.UpdateMask.Paths[0], tieredStorageConfigFieldMask)
+	}
+	if updateTableReq.Table.TieredStorageConfig != nil {
+		t.Errorf("TieredStorageConfig should be nil")
 	}
 }
 

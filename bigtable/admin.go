@@ -316,6 +316,26 @@ type TableAutomatedBackupPolicy struct {
 
 func (*TableAutomatedBackupPolicy) isTableAutomatedBackupConfig() {}
 
+// TieredStorageConfig defines a tiered storage configuration for a table.
+type TieredStorageConfig struct {
+	// Rule to specify what data is stored in the infrequent access(IA) tier.
+	// The IA tier allows storing more data per node with reduced performance.
+	InfrequentAccess TieredStorageRule
+}
+
+// TieredStorageRule defines a tiered storage rule for a table.
+type TieredStorageRule interface {
+	isTieredStorageRule()
+}
+
+// TieredStorageIncludeIfOlderThan defines a tiered storage rule that includes
+// cells older than the given age.
+type TieredStorageIncludeIfOlderThan struct {
+	Duration optional.Duration
+}
+
+func (*TieredStorageIncludeIfOlderThan) isTieredStorageRule() {}
+
 func toAutomatedBackupConfigProto(automatedBackupConfig TableAutomatedBackupConfig) (*btapb.Table_AutomatedBackupPolicy_, error) {
 	if automatedBackupConfig == nil {
 		return nil, nil
@@ -347,6 +367,26 @@ func (abp *TableAutomatedBackupPolicy) toProto() (*btapb.Table_AutomatedBackupPo
 	}, nil
 }
 
+func (tsc *TieredStorageConfig) toProto() (*btapb.TieredStorageConfig, error) {
+	if tsc == nil {
+		return nil, nil
+	}
+	pb := &btapb.TieredStorageConfig{}
+	if tsc.InfrequentAccess != nil {
+		switch rule := tsc.InfrequentAccess.(type) {
+		case *TieredStorageIncludeIfOlderThan:
+			pb.InfrequentAccess = &btapb.TieredStorageRule{
+				Rule: &btapb.TieredStorageRule_IncludeIfOlderThan{
+					IncludeIfOlderThan: durationpb.New(optional.ToDuration(rule.Duration)),
+				},
+			}
+		default:
+			return nil, fmt.Errorf("bigtable: unknown tiered storage rule type: %T", rule)
+		}
+	}
+	return pb, nil
+}
+
 // Family represents a column family with its optional GC policy and value type.
 type Family struct {
 	GCPolicy  GCPolicy
@@ -375,6 +415,8 @@ type TableConf struct {
 	AutomatedBackupConfig TableAutomatedBackupConfig
 	// Configure a row key schema for the table
 	RowKeySchema *StructType
+	// Configure tiered storage for the table
+	TieredStorageConfig *TieredStorageConfig
 }
 
 // CreateTable creates a new table in the instance.
@@ -425,6 +467,14 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 
 	if conf.RowKeySchema != nil {
 		tbl.RowKeySchema = conf.RowKeySchema.proto().GetStructType()
+	}
+
+	if conf.TieredStorageConfig != nil {
+		proto, err := conf.TieredStorageConfig.toProto()
+		if err != nil {
+			return err
+		}
+		tbl.TieredStorageConfig = proto
 	}
 
 	if conf.Families != nil && conf.ColumnFamilies != nil {
@@ -512,6 +562,7 @@ const (
 	retentionPeriodFieldMaskPath   = "retention_period"
 	frequencyFieldMaskPath         = "frequency"
 	rowKeySchemaMaskPath           = "row_key_schema"
+	tieredStorageConfigFieldMask   = "tiered_storage_config"
 )
 
 func (ac *AdminClient) newUpdateTableRequestProto(tableID string) (*btapb.UpdateTableRequest, error) {
@@ -641,6 +692,31 @@ func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableI
 	return ac.updateTableAndWait(ctx, req)
 }
 
+// UpdateTableWithTieredStorageConfig updates a table with TieredStorageConfig.
+func (ac *AdminClient) UpdateTableWithTieredStorageConfig(ctx context.Context, tableID string, tieredStorageConfig TieredStorageConfig) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	proto, err := tieredStorageConfig.toProto()
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, tieredStorageConfigFieldMask)
+	req.Table.TieredStorageConfig = proto
+	return ac.updateTableAndWait(ctx, req)
+}
+
+// UpdateTableRemoveTieredStorageConfig removes a TieredStorageConfig from a table.
+func (ac *AdminClient) UpdateTableRemoveTieredStorageConfig(ctx context.Context, tableID string) error {
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
+	}
+	req.UpdateMask.Paths = append(req.UpdateMask.Paths, tieredStorageConfigFieldMask)
+	return ac.updateTableAndWait(ctx, req)
+}
+
 // DeleteTable deletes a table and all of its data.
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -679,6 +755,7 @@ type TableInfo struct {
 	ChangeStreamRetention ChangeStreamRetention
 	AutomatedBackupConfig TableAutomatedBackupConfig
 	RowKeySchema          *StructType
+	TieredStorageConfig   *TieredStorageConfig
 }
 
 // FamilyInfo represents information about a column family.
@@ -753,6 +830,14 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	if res.RowKeySchema != nil {
 		structType := structProtoToType(res.RowKeySchema).(StructType)
 		ti.RowKeySchema = &structType
+	}
+	if res.TieredStorageConfig != nil {
+		ti.TieredStorageConfig = &TieredStorageConfig{}
+		if res.TieredStorageConfig.InfrequentAccess != nil {
+			ti.TieredStorageConfig.InfrequentAccess = &TieredStorageIncludeIfOlderThan{
+				Duration: res.TieredStorageConfig.InfrequentAccess.GetIncludeIfOlderThan().AsDuration(),
+			}
+		}
 	}
 
 	return ti, nil
