@@ -1045,3 +1045,40 @@ func TestValidateReadOptions(t *testing.T) {
 		}
 	}
 }
+func TestQueryFilterNil(t *testing.T) {
+	// Attempts to filter by a nil *Key
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Fatalf("Recovered from panic: %v", r)
+		}
+	}()
+
+	// Case 1: Untyped nil
+	t.Run("Untyped nil", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Fatalf("Recovered from panic: %v", r)
+			}
+		}()
+		q1 := NewQuery("Entity").Filter("Parent =", nil)
+		if q1.err != nil {
+			t.Logf("q1 error (untyped nil): %v", q1.err)
+		}
+		if _, err := q1.toProto(); err != nil {
+			t.Logf("q1.toProto() error: %v", err)
+		}
+	})
+
+	// Case 2: Typed nil *Key
+	t.Run("Typed nil *Key", func(t *testing.T) {
+		var k *Key = nil
+		q2 := NewQuery("Entity").Filter("Parent =", k)
+		if q2.err != nil {
+			t.Fatalf("q2 failed (typed nil *Key): %v", q2.err)
+		}
+		if _, err := q2.toProto(); err != nil {
+			t.Fatalf("q2.toProto() failed: %v", err)
+		}
+	})
+}
