@@ -16,6 +16,7 @@ package datastore
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -490,5 +491,34 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 				t.Fatalf("got - want +\n%s", diff)
 			}
 		})
+	}
+}
+
+type NestedNoIndexChild struct {
+	Value string `datastore:"v"`
+}
+
+type NestedNoIndexParent struct {
+	B []NestedNoIndexChild `datastore:"bs,noindex"`
+}
+
+func (b *NestedNoIndexChild) Load(ps []Property) error {
+	return LoadStruct(b, ps)
+}
+
+func (b *NestedNoIndexChild) Save() ([]Property, error) {
+	return SaveStruct(b)
+}
+
+func TestSaveNestedNoIndexPropertyLoadSaver(t *testing.T) {
+	m := &NestedNoIndexParent{
+		B: []NestedNoIndexChild{
+			{Value: strings.Repeat("a", 2000)},
+		},
+	}
+	key := NameKey("A", "test", nil)
+	_, err := saveEntity(key, m)
+	if err != nil {
+		t.Fatalf("saveEntity failed: %v", err)
 	}
 }

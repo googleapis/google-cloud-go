@@ -45,7 +45,7 @@ func saveEntity(key *Key, src interface{}) (*pb.Entity, error) {
 	if err != nil {
 		return nil, err
 	}
-	return propertiesToProto(key, props)
+	return propertiesToProto(key, props, false)
 }
 
 // reflectFieldSave extracts the underlying value of v by reflection,
@@ -358,7 +358,7 @@ func getField(v reflect.Value, index []int) reflect.Value {
 	return v
 }
 
-func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
+func propertiesToProto(key *Key, props []Property, noIndex bool) (*pb.Entity, error) {
 	e := &pb.Entity{
 		Key:        keyToProto(key),
 		Properties: map[string]*pb.Value{},
@@ -370,11 +370,11 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 			continue
 		}
 
-		val, err := interfaceToProto(p.Value, p.NoIndex)
+		val, err := interfaceToProto(p.Value, p.NoIndex || noIndex)
 		if err != nil {
 			return nil, fmt.Errorf("datastore: %v for a Property with Name %q", err, p.Name)
 		}
-		if !p.NoIndex {
+		if !(p.NoIndex || noIndex) {
 			rVal := reflect.ValueOf(p.Value)
 			if rVal.Kind() == reflect.Slice && rVal.Type().Elem().Kind() != reflect.Uint8 {
 				indexedProps += rVal.Len()
@@ -445,7 +445,7 @@ func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
 		}
 		val.ValueType = &pb.Value_BlobValue{BlobValue: v}
 	case *Entity:
-		e, err := propertiesToProto(v.Key, v.Properties)
+		e, err := propertiesToProto(v.Key, v.Properties, noIndex)
 		if err != nil {
 			return nil, err
 		}
