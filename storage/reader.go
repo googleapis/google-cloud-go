@@ -196,7 +196,7 @@ func (c targetPendingRanges) apply(params *newMultiRangeDownloaderParams) {
 // withTargetPendingRanges returns an mrdOption which sets target pending
 // ranges on the MRD to c. If number of connections in the MRD is less than
 // maximum connections, MRD will trigger creation of a new connection when
-// pending ranges on each of the existing stream exceed c.
+// pending ranges on all existing streams exceed c.
 //
 // Note: A new connection can be triggered by either the pending byte threshold
 // (withTargetPendingBytes) or the pending range threshold (withTargetPendingRanges).
@@ -213,7 +213,7 @@ func (c targetPendingBytes) apply(params *newMultiRangeDownloaderParams) {
 // withTargetPendingBytes returns an mrdOption that sets target pending
 // bytes on the MRD to c. If number of connections in the MRD is less than
 // maximum connections, MRD will trigger creation of a new connection when
-// outstanding bytes on each of the existing stream exceed c.
+// outstanding bytes on all existing streams exceed c.
 //
 // Note: A new connection can be triggered by either the pending byte threshold
 // (withTargetPendingBytes) or the pending range threshold (withTargetPendingRanges).
@@ -231,7 +231,7 @@ func withTargetPendingBytes(c int) mrdOption {
 
 // NewMultiRangeDownloader creates a multi-range reader for an object.
 // Must be called on a gRPC client created using [NewGRPCClient].
-func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...mrdOption) (mrd *MultiRangeDownloader, err error) {
+func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context) (mrd *MultiRangeDownloader, err error) {
 	// This span covers the life of the MRD. It is closed via the context
 	// in MultiRangeDownloader.Close.
 	var spanCtx context.Context
@@ -260,10 +260,6 @@ func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...mrdO
 		gen:           o.gen,
 		object:        o.object,
 		handle:        &o.readHandle,
-	}
-	// Process configured options
-	for _, opt := range opts {
-		opt.apply(params)
 	}
 
 	// This call will return the *MultiRangeDownloader with the .impl field set.

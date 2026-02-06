@@ -523,8 +523,8 @@ func (m *multiRangeDownloaderManager) addNewStream() {
 	m.streamCreating = true
 	m.sessionIDCounter++
 	id := int(m.sessionIDCounter)
-	go func(id int) {
-		newSession, err := m.createNewSession(id, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec), false)
+	go func(id int, readSpec *storagepb.BidiReadObjectSpec) {
+		newSession, err := m.createNewSession(id, readSpec, false)
 		if err != nil {
 			// If we can't create a stream, just reset the flag so we can try again later.
 			// We don't want to kill the whole manager for a single failed dynamic stream.
@@ -539,7 +539,7 @@ func (m *multiRangeDownloaderManager) addNewStream() {
 				pendingRanges: make(map[int64]*rangeRequest),
 			},
 		}
-	}(id)
+	}(id, proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec))
 }
 
 func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storagepb.BidiReadObjectSpec, waitForResult bool) (*bidiReadStreamSession, error) {
