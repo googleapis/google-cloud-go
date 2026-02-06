@@ -988,11 +988,9 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 // the checksum returned by the server.
 type httpInternalWriter struct {
 	*io.PipeWriter
-	chunkSize int
-
+	chunkSize          int
 	checksumDisabled   bool
 	fullObjectChecksum uint32
-
 	// In single-shot mode, the server-provided checksum is received on this
 	// channel for validation after the upload is complete.
 	serverChecksumChan chan uint32
