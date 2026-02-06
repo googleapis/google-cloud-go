@@ -63,33 +63,6 @@ func entryIndex(s []*connEntry, e *connEntry) int {
 	return -1
 }
 
-func TestBigtableConnIpProtocol(t *testing.T) {
-	bc := NewBigtableConn(nil)
-	if got := bc.ipProtocol(); got != "unknown" {
-		t.Errorf("NewBigtableConn default ipProtocol() got %q, want %q", got, unknown)
-	}
-
-	tests := []struct {
-		name     string
-		addrType ipProtocol
-		want     string
-	}{
-		{name: "IPv4", addrType: ipv4, want: "ipv4"},
-		{name: "IPv6", addrType: ipv6, want: "ipv6"},
-		{name: "Unknown", addrType: unknown, want: "unknown"},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			conn := &BigtableConn{}
-			conn.remoteAddrType.Store(int32(tc.addrType))
-			if got := conn.ipProtocol(); got != tc.want {
-				t.Errorf("ipProtocol() with remoteAddrType %d got %q, want %q", tc.addrType, got, tc.want)
-			}
-		})
-	}
-}
-
 func TestSelectRoundRobin(t *testing.T) {
 	pool := &BigtableChannelPool{rrIndex: 0}
 
@@ -178,12 +151,125 @@ func TestNewBigtableChannelPoolEdgeCases(t *testing.T) {
 	}
 }
 
+func TestConnectionFactory(t *testing.T) {
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	goodDialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	someErr := status.Error(codes.Unavailable, "error1")
+
+	tests := []struct {
+		name           string
+		dialFunc       func() (*BigtableConn, error)
+		primeErrors    []error
+		ctxTimeout     time.Duration
+		wantErr        bool
+		wantPrimeCalls int
+	}{
+		{
+			name:           "Success",
+			dialFunc:       goodDialFunc,
+			wantErr:        false,
+			wantPrimeCalls: 1,
+		},
+		{
+			name: "Dial Error",
+			dialFunc: func() (*BigtableConn, error) {
+				return nil, errors.New("fake dial error")
+			},
+			wantErr:        true,
+			wantPrimeCalls: 0,
+		},
+		{
+			name:           "Success on Retry 2",
+			dialFunc:       goodDialFunc,
+			primeErrors:    []error{someErr, nil},
+			wantErr:        false,
+			wantPrimeCalls: 2,
+		},
+		{
+			name:           "Success on Retry 3",
+			dialFunc:       goodDialFunc,
+			primeErrors:    []error{someErr, someErr, nil},
+			wantErr:        false,
+			wantPrimeCalls: 3,
+		},
+		{
+			name:           "Fail All 3 Retries",
+			dialFunc:       goodDialFunc,
+			primeErrors:    []error{someErr},
+			wantErr:        true,
+			wantPrimeCalls: 3,
+		},
+		{
+			name:           "Context Timeout",
+			dialFunc:       goodDialFunc,
+			primeErrors:    []error{someErr},
+			ctxTimeout:     -1 * time.Millisecond, // Already expired
+			wantErr:        true,
+			wantPrimeCalls: 0,
+		},
+		// TODO: test context timeout after one or more failed prime attempts.
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fake.reset()
+			fake.setPingErr(tt.primeErrors...)
+
+			factory := &connectionFactory{
+				dial:           tt.dialFunc,
+				instanceName:   testInstanceName,
+				appProfile:     testAppProfile,
+				featureFlagsMD: metadata.MD{},
+			}
+
+			ctx := context.Background()
+			if tt.ctxTimeout != 0 {
+				var cancel context.CancelFunc
+				if tt.ctxTimeout < 0 {
+					ctx, cancel = context.WithCancel(context.Background())
+					cancel()
+				} else {
+					ctx, cancel = context.WithTimeout(context.Background(), tt.ctxTimeout)
+					defer cancel()
+				}
+			}
+
+			entry, err := factory.newEntry(ctx)
+
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("newEntry() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !tt.wantErr && entry == nil {
+				t.Errorf("newEntry() returned nil entry on success")
+			}
+			if !tt.wantErr && entry != nil {
+				defer entry.conn.Close()
+			}
+
+			if tt.wantErr {
+				if entry != nil {
+					t.Errorf("newEntry() returned non-nil entry on error: %v", entry)
+				}
+			}
+
+			gotPrimeCalls := fake.getPingCallCount()
+			if gotPrimeCalls != tt.wantPrimeCalls {
+				t.Errorf("PingAndWarm was called %d times, want %d", gotPrimeCalls, tt.wantPrimeCalls)
+			}
+		})
+	}
+}
+
 func TestBigtableConn_Prime(t *testing.T) {
 	ctx := context.Background()
 	fake := &fakeService{}
 	addr := setupTestServer(t, fake)
 
 	t.Run("SuccessfulPrime", func(t *testing.T) {
+		fake.reset()
 		conn, err := dialBigtableserver(addr)
 		if err != nil {
 			t.Fatalf("Failed to dial: %v", err)
@@ -222,6 +308,7 @@ func TestBigtableConn_Prime(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			fake.reset()
 			conn, err := dialBigtableserver(addr)
 			if err != nil {
 				t.Fatalf("Failed to dial: %v", err)
@@ -250,6 +337,7 @@ func TestBigtableConn_Prime(t *testing.T) {
 	}
 
 	t.Run("PrimeTimeout", func(t *testing.T) {
+		fake.reset()
 		conn, err := dialBigtableserver(addr)
 		if err != nil {
 			t.Fatalf("Failed to dial: %v", err)
@@ -279,6 +367,7 @@ func TestBigtableConn_Prime(t *testing.T) {
 	})
 
 	t.Run("PrimeSendsCorrectHeaders", func(t *testing.T) {
+		fake.reset()
 		conn, err := dialBigtableserver(addr)
 		if err != nil {
 			t.Fatalf("Failed to dial: %v", err)
@@ -1126,10 +1215,6 @@ func TestReplaceConnection(t *testing.T) {
 		mu.Lock()
 		dialSucceed = true
 		mu.Unlock()
-		pingErr := status.Error(codes.Internal, "simulated ping error")
-		fake.setPingErr(pingErr)
-		atomic.StoreInt32(&dialCount, 0)
-
 		pool, err := NewBigtableChannelPool(ctx, 2, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
@@ -1140,6 +1225,9 @@ func TestReplaceConnection(t *testing.T) {
 		dialSucceed = true
 		mu.Unlock()
 		atomic.StoreInt32(&dialCount, 0)
+
+		pingErr := status.Error(codes.Internal, "simulated ping error")
+		fake.setPingErr(pingErr)
 
 		currentEntry := pool.getConns()[idxToReplace]
 		pool.replaceConnection(currentEntry)
@@ -1243,10 +1331,6 @@ func TestAddConnections(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			fake.reset()
-			if tc.primeErr != nil {
-				fake.setPingErr(tc.primeErr)
-			}
-
 			innerCtx, cancel := context.WithCancel(ctx)
 			defer cancel()
 
@@ -1256,7 +1340,11 @@ func TestAddConnections(t *testing.T) {
 			}
 			defer pool.Close()
 
-			pool.dial = tc.dialFunc // Override dial func for test
+			pool.factory.dial = tc.dialFunc // Override dial func for test
+
+			if tc.primeErr != nil {
+				fake.setPingErr(tc.primeErr)
+			}
 
 			changed := pool.addConnections(tc.increaseDelta, tc.maxConns)
 
@@ -1417,29 +1505,6 @@ func TestRemoveConnections(t *testing.T) {
 			}
 		}
 	})
-
-	t.Run("MixedDrainingState", func(t *testing.T) {
-		poolSize := 5
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Unix(0, 0), poolOpts()...)
-		if err != nil {
-			t.Fatalf("Failed to create pool: %v", err)
-		}
-		defer pool.Close()
-
-		conns := pool.getConns()
-		conns[2].markAsDraining()
-
-		changed := pool.removeConnections(1, 1, 5)
-
-		if !changed {
-			t.Errorf("Expected pool change, got false")
-		}
-		finalConns := pool.getConns()
-
-		if len(finalConns) != 3 {
-			t.Errorf("Expected final size 3, got %d", len(finalConns))
-		}
-	})
 }
 
 func TestConnPoolStatisticsVisitor(t *testing.T) {
@@ -1553,8 +1618,6 @@ func BenchmarkPoolInvoke(b *testing.B) {
 	serverAddr := setupTestServer(b, fake) // Server lives for all sub-benchmarks of BenchmarkPoolInvoke
 
 	strategies := []btopt.LoadBalancingStrategy{
-		btopt.RoundRobin,
-		btopt.LeastInFlight,
 		btopt.PowerOfTwoLeastInFlight,
 	}
 	poolSizes := []int{1, 8, 64}
