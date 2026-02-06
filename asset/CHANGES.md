@@ -1,5 +1,7 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/releases/tag/asset%2Fv1.22.1) (2026-02-06)
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/asset%2Fv1.22.0) (2025-10-10)
 
 ### Features
