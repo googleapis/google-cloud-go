@@ -374,7 +374,7 @@ func propertiesToProto(key *Key, props []Property, noIndex bool) (*pb.Entity, er
 		if err != nil {
 			return nil, fmt.Errorf("datastore: %v for a Property with Name %q", err, p.Name)
 		}
-                if !(p.NoIndex || noIndex) {
+		if !(p.NoIndex || noIndex) {
 			rVal := reflect.ValueOf(p.Value)
 			if rVal.Kind() == reflect.Slice && rVal.Type().Elem().Kind() != reflect.Uint8 {
 				indexedProps += rVal.Len()
