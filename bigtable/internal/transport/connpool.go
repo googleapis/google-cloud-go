@@ -31,6 +31,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -320,7 +321,10 @@ type BigtableChannelPool struct {
 	appProfile     string
 	instanceName   string
 	featureFlagsMD metadata.MD
-	meterProvider  metric.MeterProvider
+
+	factory *connectionFactory // Use the factory for connection creation
+
+	meterProvider metric.MeterProvider
 	// configs
 	metricsConfig btopt.MetricsReporterConfig
 
@@ -367,6 +371,15 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		opt(pool)
 	}
 
+	// Initialize the connectionFactory
+	pool.factory = &connectionFactory{
+		dial:           dial,
+		instanceName:   pool.instanceName,
+		appProfile:     pool.appProfile,
+		featureFlagsMD: pool.featureFlagsMD,
+		logger:         pool.logger,
+	}
+
 	// Set the selection function based on the strategy
 	switch strategy {
 	case btopt.LeastInFlight:
@@ -379,6 +392,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 	var exitSignal error
 
+	// TODO: Replace this logic with addConnections(...).
 	initialConns := make([]*connEntry, connPoolSize)
 	for i := 0; i < connPoolSize; i++ {
 		select {
@@ -391,21 +405,12 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 			break
 		}
 
-		conn, err := dial()
+		entry, err := pool.factory.newEntry(ctx)
 		if err != nil {
 			exitSignal = err
 			break
 		}
-
-		entry := &connEntry{conn: conn}
-		initialConns[i] = entry // Note, we keep non primed conns in conns
-		// Prime the new connection in a non-blocking goroutine to warm it up.
-		go func(e *connEntry) {
-			err := e.conn.Prime(ctx, pool.instanceName, pool.appProfile, pool.featureFlagsMD)
-			if err != nil {
-				btopt.Debugf(pool.logger, "bigtable_connpool: failed to prime initial connection: %v\n", err)
-			}
-		}(entry)
+		initialConns[i] = entry
 	}
 	if exitSignal != nil {
 		btopt.Debugf(pool.logger, "bigtable_connpool: error during initial connection creation: %v\n", exitSignal)
@@ -530,25 +535,13 @@ func (p *BigtableChannelPool) replaceConnection(oldEntry *connEntry) {
 		return
 	default:
 	}
-	newConn, err := p.dial()
+	newEntry, err := p.factory.newEntry(p.poolCtx)
 	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Failed to redial connection at index %d: %v\n", idx, err)
+		btopt.Debugf(p.logger, "bigtable_connpool: Failed to replace connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
 		return
 	}
 
-	err = newConn.Prime(p.poolCtx, p.instanceName, p.appProfile, p.featureFlagsMD)
-
-	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Failed to prime replacement connection at index %d: %v. Closing new conn. Old connection remains (draining).\n", idx, err)
-		newConn.Close() //
-		return          // Abort
-	}
-
 	btopt.Debugf(p.logger, "bigtable_connpool: Successfully primed new connection. Replacing connection at index %d\n", idx)
-	newEntry := &connEntry{
-		conn: newConn,
-	}
-
 	// Copy-on-write
 	newConns := make([]*connEntry, len(currentConns))
 	copy(newConns, currentConns)
@@ -785,20 +778,13 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 			default:
 			}
 
-			conn, err := p.dial()
+			entry, err := p.factory.newEntry(p.poolCtx)
 			if err != nil {
-				btopt.Debugf(p.logger, "bigtable_connpool: Failed to dial new connection for scale up: %v\n", err)
+				btopt.Debugf(p.logger, "bigtable_connpool: Failed to add new connection: %v. Connection will not be added.\n", err)
 				return
 			}
 
-			err = conn.Prime(p.poolCtx, p.instanceName, p.appProfile, p.featureFlagsMD)
-			if err != nil {
-				btopt.Debugf(p.logger, "bigtable_connpool: Failed to prime new connection: %v. Connection will not be added.\n", err)
-				conn.Close()
-				return
-			}
-
-			results <- &connEntry{conn: conn}
+			results <- entry
 		}()
 	}
 	// Goroutine to close the results channel once all workers are done.
@@ -901,6 +887,72 @@ func (p *BigtableChannelPool) removeConnections(decreaseDelta, minConns, maxRemo
 		go p.waitForDrainAndClose(entry)
 	}
 	return len(connsToDrain) > 0
+
+}
+
+// connectionFactory is responsible for creating and priming new Bigtable connections.
+// TODO remove these members from BigtableConnPool struct
+type connectionFactory struct {
+	dial           func() (*BigtableConn, error)
+	instanceName   string
+	appProfile     string
+	featureFlagsMD metadata.MD
+	logger         *log.Logger
+}
+
+// newEntry creates a new connection, primes it, and returns it as a connEntry.
+// Blocks until the connection is successfully primed, or returns an error.
+func (cf *connectionFactory) newEntry(ctx context.Context) (*connEntry, error) {
+	conn, err := cf.dial()
+	if err != nil {
+		return nil, fmt.Errorf("factory dial failed: %w", err)
+	}
+
+	if err := cf.primeWithRetry(ctx, conn); err != nil {
+		conn.Close()
+		return nil, fmt.Errorf("bigtable_connpool:  connection factory prime failed: %w", err)
+	}
+
+	return &connEntry{conn: conn}, nil
+}
+
+// primeWithRetry attempts to prime the connection, retrying with exponential backoff.
+func (cf *connectionFactory) primeWithRetry(ctx context.Context, conn *BigtableConn) error {
+	backoffPolicy := gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        2 * time.Second,
+		Multiplier: 1.2,
+	}
+	maxAttempts := 3
+	var lastErr error
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+
+		// ctx.Done() returns a error
+		if err := ctx.Err(); err != nil {
+			return fmt.Errorf("bigtable_connpool:  error before prime attempt %d: %w", attempt, err)
+		}
+
+		lastErr = conn.Prime(ctx, cf.instanceName, cf.appProfile, cf.featureFlagsMD)
+		if lastErr == nil {
+			return nil
+		}
+
+		if attempt == maxAttempts-1 {
+			// no need to pause(), short circuit
+			break
+		}
+
+		pause := backoffPolicy.Pause()
+		btopt.Debugf(cf.logger, "bigtable_connpool: Prime failed with  error on attempt %d, retrying in %v: %v", attempt+1, pause, lastErr)
+
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("context done while backing off for prime: %w", ctx.Err())
+		case <-time.After(pause):
+		}
+	}
+
+	return fmt.Errorf("factory prime failed after %d attempts: %w", maxAttempts, lastErr)
 
 }
 
