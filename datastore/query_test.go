@@ -505,12 +505,14 @@ type pfToProtoTestCase struct {
 
 func TestPropertyFilterToProto(t *testing.T) {
 
+	type CustomType int
 	testCases := []pfToProtoTestCase{
 		{PropertyFilter{FieldName: "x", Operator: "=", Value: 4}, ""},
 		{PropertyFilter{FieldName: "x ", Operator: "=", Value: 4}, ""},
 		{PropertyFilter{FieldName: "", Operator: "=", Value: 4}, "datastore: empty query filter field name"},
 		{PropertyFilter{FieldName: "x", Operator: "==", Value: 4}, "datastore: invalid operator \"==\" in filter"},
 		{PropertyFilter{FieldName: "x", Operator: "==", Value: struct{ x string }{x: "sample"}}, "datastore: bad query filter value type: invalid Value type struct { x string }"},
+		{PropertyFilter{FieldName: "x", Operator: "=", Value: CustomType(4)}, ""},
 	}
 
 	successFilterFieldTestCases := append(filterTestCases, filterFieldTestCases...)

@@ -467,13 +467,35 @@ func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
 		rv := reflect.ValueOf(iv)
 		if !rv.IsValid() {
 			val.ValueType = &pb.Value_NullValue{}
-		} else if rv.Kind() == reflect.Ptr { // non-nil pointer: dereference
+			return val, nil
+		}
+		if rv.Kind() == reflect.Ptr { // non-nil pointer: dereference
 			if rv.IsNil() {
 				val.ValueType = &pb.Value_NullValue{}
 				return val, nil
 			}
 			return interfaceToProto(rv.Elem().Interface(), noIndex)
-		} else {
+		}
+
+		// Check for custom types.
+		// logic adapted from reflectFieldSave
+		switch rv.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			val.ValueType = &pb.Value_IntegerValue{IntegerValue: rv.Int()}
+		case reflect.Bool:
+			val.ValueType = &pb.Value_BooleanValue{BooleanValue: rv.Bool()}
+		case reflect.String:
+			v := rv.String()
+			if len(v) > 1500 && !noIndex {
+				return nil, errors.New("string property too long to index")
+			}
+			if !utf8.ValidString(v) {
+				return nil, fmt.Errorf("string is not valid utf8: %q", v)
+			}
+			val.ValueType = &pb.Value_StringValue{StringValue: v}
+		case reflect.Float32, reflect.Float64:
+			val.ValueType = &pb.Value_DoubleValue{DoubleValue: rv.Float()}
+		default:
 			return nil, fmt.Errorf("invalid Value type %T", iv)
 		}
 	}
