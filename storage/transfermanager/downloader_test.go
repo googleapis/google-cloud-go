@@ -518,12 +518,13 @@ func TestGatherShards(t *testing.T) {
 	firstPieceCRC := crc32c([]byte(piece1))
 
 	for _, tc := range []struct {
-		desc     string
-		shards   int
-		outputs  []*DownloadOutput
-		checkCRC bool
-		wantErr  bool
-		errMsg   string
+		desc         string
+		shards       int
+		outputs      []*DownloadOutput
+		checkCRC     bool
+		wantErr      bool
+		errMsg       string
+		expectCancel bool
 	}{
 		{
 			desc:   "all shards succeed",
@@ -539,12 +540,13 @@ func TestGatherShards(t *testing.T) {
 			desc:   "one shard fails",
 			shards: 3,
 			outputs: []*DownloadOutput{
-				{shard: 1, Err: errors.New("shard failure")},
+				{shard: 0, Err: errors.New("shard failure")},
 				{shard: 2, crc32c: crc32c([]byte(piece3)), shardLength: int64(len(piece3))},
 			},
-			checkCRC: true,
-			wantErr:  true,
-			errMsg:   "shard failure",
+			checkCRC:     true,
+			wantErr:      true,
+			expectCancel: true,
+			errMsg:       "shard failure",
 		},
 		{
 			desc:   "checksum mismatch",
@@ -556,15 +558,6 @@ func TestGatherShards(t *testing.T) {
 			checkCRC: true,
 			wantErr:  true,
 			errMsg:   "bad CRC on read",
-		},
-		{
-			desc:   "invalid shard index 0",
-			shards: 2,
-			outputs: []*DownloadOutput{
-				{shard: 0, crc32c: crc32c([]byte(piece2)), shardLength: int64(len(piece2))},
-			},
-			checkCRC: false,
-			wantErr:  false,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -603,6 +596,16 @@ func TestGatherShards(t *testing.T) {
 			// WaitAndClose will wait for downloadsInProgress, including our gatherShards goroutine.
 			if _, err := d.WaitAndClose(); err != nil && !tc.wantErr {
 				t.Logf("WaitAndClose returned error: %v", err)
+			}
+			if tc.expectCancel {
+				select {
+				case <-ctx.Done():
+					if ctxErr := context.Cause(ctx); !errors.Is(ctxErr, errCancelAllShards) {
+						t.Errorf("context.Cause: error should be %q; instead got: %v", errCancelAllShards, ctxErr)
+					}
+				default:
+					t.Error("context was not cancelled for shard error")
+				}
 			}
 
 			if (out.Err != nil) != tc.wantErr {
