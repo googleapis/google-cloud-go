@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"reflect"
 	"testing"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -41,14 +42,8 @@ func makeClientContext(kv map[string]string) *sppb.RequestOptions_ClientContext 
 	return ctx
 }
 
-func TestClientContext_Query(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
-	defer teardown()
-
-	stmt := Statement{SQL: "SELECT 1"}
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
+func addSelect1Result(server *MockedSpannerInMemTestServer) {
+	_ = server.TestSpanner.PutStatementResult("SELECT 1", &StatementResult{
 		Type: StatementResultResultSet,
 		ResultSet: &sppb.ResultSet{
 			Metadata: &sppb.ResultSetMetadata{
@@ -63,7 +58,16 @@ func TestClientContext_Query(t *testing.T) {
 			},
 		},
 	})
+}
 
+func TestClientContext_Query(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	stmt := Statement{SQL: "SELECT 1"}
+	addSelect1Result(server)
 	cc := makeClientContext(map[string]string{"test-key": "test-value"})
 
 	// 1. Test propagation via QueryOptions
@@ -80,44 +84,30 @@ func TestClientContext_Query(t *testing.T) {
 	iter.Stop()
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var foundReq *sppb.ExecuteSqlRequest
-	for _, req := range reqs {
-		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok && sqlReq.Sql == stmt.SQL {
-			foundReq = sqlReq
-			break
-		}
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if foundReq == nil {
-		t.Fatal("ExecuteSqlRequest not found")
+	foundReq := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := foundReq.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch:\n Got: %v\nWant: %v", g, w)
 	}
-	if !proto.Equal(foundReq.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in ClientContext:\ngot:  %v\nwant: %v", foundReq.RequestOptions.ClientContext, cc)
-	}
+}
 
-	// 2. Test propagation via ClientConfig default
-	server2, clientWithDefault, teardown2 := setupMockedTestServerWithConfig(t, ClientConfig{
+func TestDefaultClientContext_Query(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	cc := makeClientContext(map[string]string{"test-key": "test-value"})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		ClientContext:        cc,
 		DisableNativeMetrics: true,
 	})
-	defer teardown2()
+	defer teardown()
 
-	server2.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
-		Type: StatementResultResultSet,
-		ResultSet: &sppb.ResultSet{
-			Metadata: &sppb.ResultSetMetadata{
-				RowType: &sppb.StructType{
-					Fields: []*sppb.StructType_Field{
-						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
-					},
-				},
-			},
-			Rows: []*structpb.ListValue{
-				{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "1"}}}},
-			},
-		},
-	})
+	stmt := Statement{SQL: "SELECT 1"}
+	addSelect1Result(server)
 
-	iter = clientWithDefault.Single().Query(ctx, stmt)
+	iter := client.Single().Query(ctx, stmt)
 	for {
 		_, err := iter.Next()
 		if err == iterator.Done {
@@ -129,18 +119,14 @@ func TestClientContext_Query(t *testing.T) {
 	}
 	iter.Stop()
 
-	reqs = drainRequestsFromServer(server2.TestSpanner)
-	found := false
-	for _, req := range reqs {
-		if r, ok := req.(*sppb.ExecuteSqlRequest); ok && r.Sql == stmt.SQL {
-			if !proto.Equal(r.RequestOptions.ClientContext, cc) {
-				t.Errorf("mismatch in ClientContext (default):\ngot:  %v\nwant: %v", r.RequestOptions.ClientContext, cc)
-			}
-			found = true
-		}
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if !found {
-		t.Error("ExecuteSqlRequest not found for stmt")
+	foundReq := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := foundReq.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch:\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -165,18 +151,13 @@ func TestClientContext_Read(t *testing.T) {
 	iter.Stop()
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var foundReq *sppb.ReadRequest
-	for _, req := range reqs {
-		if readReq, ok := req.(*sppb.ReadRequest); ok {
-			foundReq = readReq
-			break
-		}
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ReadRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if foundReq == nil {
-		t.Fatal("ReadRequest not found")
-	}
-	if !proto.Equal(foundReq.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in ClientContext:\ngot:  %v\nwant: %v", foundReq.RequestOptions.ClientContext, cc)
+	foundReq := executeRequests[0].(*sppb.ReadRequest)
+	if g, w := foundReq.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch:\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -196,29 +177,21 @@ func TestClientContext_ReadWriteTransaction(t *testing.T) {
 	}
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var gotBegin *sppb.BeginTransactionRequest
-	var gotCommit *sppb.CommitRequest
-	for _, req := range reqs {
-		switch r := req.(type) {
-		case *sppb.BeginTransactionRequest:
-			gotBegin = r
-		case *sppb.CommitRequest:
-			gotCommit = r
-		}
+	beginRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	commitRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.CommitRequest{}))
+	if g, w := len(beginRequests), 1; g != w {
+		t.Fatalf("num begin requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-
-	if gotBegin == nil {
-		t.Fatal("expected BeginTransactionRequest")
+	beginRequest := beginRequests[0].(*sppb.BeginTransactionRequest)
+	if g, w := beginRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	if !proto.Equal(gotBegin.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in BeginTransaction ClientContext:\ngot:  %v\nwant: %v", gotBegin.RequestOptions.ClientContext, cc)
+	if g, w := len(commitRequests), 1; g != w {
+		t.Fatalf("num commit requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-
-	if gotCommit == nil {
-		t.Fatal("expected CommitRequest")
-	}
-	if !proto.Equal(gotCommit.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in Commit ClientContext:\ngot:  %v\nwant: %v", gotCommit.RequestOptions.ClientContext, cc)
+	commitRequest := commitRequests[0].(*sppb.CommitRequest)
+	if g, w := commitRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -244,19 +217,13 @@ func TestClientContext_BatchWrite(t *testing.T) {
 	}
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var gotReq *sppb.BatchWriteRequest
-	for _, req := range reqs {
-		if bwReq, ok := req.(*sppb.BatchWriteRequest); ok {
-			gotReq = bwReq
-			break
-		}
+	batchRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.BatchWriteRequest{}))
+	if g, w := len(batchRequests), 1; g != w {
+		t.Fatalf("num BatchWrite requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-
-	if gotReq == nil {
-		t.Fatal("expected BatchWriteRequest")
-	}
-	if !proto.Equal(gotReq.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in ClientContext:\ngot:  %v\nwant: %v", gotReq.RequestOptions.ClientContext, cc)
+	batchRequest := batchRequests[0].(*sppb.BatchWriteRequest)
+	if g, w := batchRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -278,22 +245,7 @@ func TestClientContext_Merging(t *testing.T) {
 		DisableNativeMetrics: true,
 	})
 	defer teardown()
-
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
-		Type: StatementResultResultSet,
-		ResultSet: &sppb.ResultSet{
-			Metadata: &sppb.ResultSetMetadata{
-				RowType: &sppb.StructType{
-					Fields: []*sppb.StructType_Field{
-						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
-					},
-				},
-			},
-			Rows: []*structpb.ListValue{
-				{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "1"}}}},
-			},
-		},
-	})
+	addSelect1Result(server)
 
 	iter := client.Single().QueryWithOptions(ctx, stmt, QueryOptions{ClientContext: makeClientContext(requestKV)})
 	for {
@@ -308,19 +260,13 @@ func TestClientContext_Merging(t *testing.T) {
 	iter.Stop()
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var foundReq *sppb.ExecuteSqlRequest
-	for _, req := range reqs {
-		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok && sqlReq.Sql == stmt.SQL {
-			foundReq = sqlReq
-			break
-		}
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num execute requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if foundReq == nil {
-		t.Fatal("ExecuteSqlRequest not found")
-	}
-	expected := makeClientContext(expectedKV)
-	if !proto.Equal(foundReq.RequestOptions.ClientContext, expected) {
-		t.Errorf("mismatch in Merged ClientContext:\ngot:  %v\nwant: %v", foundReq.RequestOptions.ClientContext, expected)
+	executeRequest := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := executeRequest.RequestOptions.ClientContext, makeClientContext(expectedKV); !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -354,22 +300,7 @@ func TestClientContext_Hierarchy(t *testing.T) {
 		DisableNativeMetrics: true,
 	})
 	defer teardown()
-
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
-		Type: StatementResultResultSet,
-		ResultSet: &sppb.ResultSet{
-			Metadata: &sppb.ResultSetMetadata{
-				RowType: &sppb.StructType{
-					Fields: []*sppb.StructType_Field{
-						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
-					},
-				},
-			},
-			Rows: []*structpb.ListValue{
-				{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "1"}}}},
-			},
-		},
-	})
+	addSelect1Result(server)
 
 	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		iter := tx.QueryWithOptions(ctx, stmt, QueryOptions{ClientContext: makeClientContext(perQuery)})
@@ -384,18 +315,13 @@ func TestClientContext_Hierarchy(t *testing.T) {
 	}
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	found := false
-	for _, req := range reqs {
-		if r, ok := req.(*sppb.ExecuteSqlRequest); ok && r.Sql == stmt.SQL {
-			found = true
-			expected := makeClientContext(expectedKV)
-			if !proto.Equal(r.RequestOptions.ClientContext, expected) {
-				t.Errorf("mismatch in hierarchical ClientContext:\ngot:  %v\nwant: %v", r.RequestOptions.ClientContext, expected)
-			}
-		}
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num execute requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if !found {
-		t.Error("ExecuteSqlRequest not found")
+	executeRequest := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := executeRequest.RequestOptions.ClientContext, makeClientContext(expectedKV); !proto.Equal(g, w) {
+		t.Fatalf("Hierarchical ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -406,7 +332,7 @@ func TestClientContext_PDML(t *testing.T) {
 	defer teardown()
 
 	stmt := Statement{SQL: "UPDATE Table SET Col1=1 WHERE 1=1"}
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
+	_ = server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
 		Type:        StatementResultUpdateCount,
 		UpdateCount: 1,
 	})
@@ -419,26 +345,30 @@ func TestClientContext_PDML(t *testing.T) {
 	}
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var sqlReq *sppb.ExecuteSqlRequest
-	for _, req := range reqs {
-		if r, ok := req.(*sppb.ExecuteSqlRequest); ok && r.Sql == stmt.SQL {
-			sqlReq = r
-			break
-		}
+	beginRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(beginRequests), 1; g != w {
+		t.Fatalf("num begin requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if sqlReq == nil {
-		t.Fatal("ExecuteSqlRequest for PDML not found")
+	beginRequest := beginRequests[0].(*sppb.BeginTransactionRequest)
+	if g, w := beginRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch for Begin request\n Got: %v\nWant: %v", g, w)
 	}
-	if !proto.Equal(sqlReq.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in ClientContext:\ngot:  %v\nwant: %v", sqlReq.RequestOptions.ClientContext, cc)
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num execute requests mismatch\n Got: %d\nWant: %d", g, w)
+	}
+	executeRequest := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := executeRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("PDML ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
-func TestClientContext_BatchReadOnlyTransaction(t *testing.T) {
+func TestClientContext_BatchReadOnlyTransaction_Query(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
+	addSelect1Result(server)
 
 	cc := makeClientContext(map[string]string{"test-key": "test-value"})
 
@@ -449,44 +379,73 @@ func TestClientContext_BatchReadOnlyTransaction(t *testing.T) {
 	defer txn.Close()
 
 	stmt := Statement{SQL: "SELECT 1"}
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
-		Type: StatementResultResultSet,
-		ResultSet: &sppb.ResultSet{
-			Metadata: &sppb.ResultSetMetadata{
-				RowType: &sppb.StructType{
-					Fields: []*sppb.StructType_Field{
-						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
-					},
-				},
-			},
-			Rows: []*structpb.ListValue{
-				{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "1"}}}},
-			},
-		},
-	})
 
 	// Test PartitionQuery
 	partitions, err := txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{MaxPartitions: 1}, QueryOptions{ClientContext: cc})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(partitions) == 0 {
-		t.Fatal("expected at least 1 partition")
+	if g, w := len(partitions), 1; g != w {
+		t.Fatalf("num partitions mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if !proto.Equal(partitions[0].qreq.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in Partition.qreq ClientContext:\ngot:  %v\nwant: %v", partitions[0].qreq.RequestOptions.ClientContext, cc)
+	if g, w := partitions[0].qreq.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("mismatch in Partition.qreq ClientContext\nGot: %v\nWant: %v", g, w)
 	}
+	iter := txn.Execute(ctx, partitions[0])
+	// This fails, but that does not matter. We are only interested in inspecting the request that is sent.
+	_, _ = iter.Next()
+	iter.Stop()
 
-	// Test PartitionRead
-	partitions, err = txn.PartitionReadWithOptions(ctx, "Table", KeySets(Key{"key1"}), []string{"Col1"}, PartitionOptions{MaxPartitions: 1}, ReadOptions{ClientContext: cc})
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num execute requests mismatch\n Got: %d\nWant: %d", g, w)
+	}
+	executeRequest := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := executeRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClientContext_BatchReadOnlyTransaction_Read(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	addSelect1Result(server)
+
+	cc := makeClientContext(map[string]string{"test-key": "test-value"})
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(partitions) == 0 {
-		t.Fatal("expected at least 1 partition")
+	defer txn.Close()
+
+	// Test PartitionRead
+	partitions, err := txn.PartitionReadWithOptions(ctx, "Table", KeySets(Key{"key1"}), []string{"Col1"}, PartitionOptions{MaxPartitions: 1}, ReadOptions{ClientContext: cc})
+	if err != nil {
+		t.Fatal(err)
 	}
-	if !proto.Equal(partitions[0].rreq.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in Partition.rreq ClientContext:\ngot:  %v\nwant: %v", partitions[0].rreq.RequestOptions.ClientContext, cc)
+	if g, w := len(partitions), 1; g != w {
+		t.Fatalf("num partitions mismatch\n Got: %d\nWant: %d", g, w)
+	}
+	if g, w := partitions[0].rreq.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("mismatch in Partition.rreq ClientContext\nGot: %v\nWant: %v", g, w)
+	}
+	iter := txn.Execute(ctx, partitions[0])
+	// This fails, but that does not matter. We are only interested in inspecting the request that is sent.
+	_, _ = iter.Next()
+	iter.Stop()
+
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	readRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ReadRequest{}))
+	if g, w := len(readRequests), 1; g != w {
+		t.Fatalf("num read requests mismatch\n Got: %d\nWant: %d", g, w)
+	}
+	readRequest := readRequests[0].(*sppb.ReadRequest)
+	if g, w := readRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Fatalf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -507,19 +466,13 @@ func TestClientContext_ApplyAtLeastOnce(t *testing.T) {
 	}
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var gotReq *sppb.CommitRequest
-	for _, req := range reqs {
-		if commitReq, ok := req.(*sppb.CommitRequest); ok {
-			gotReq = commitReq
-			break
-		}
+	commitRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.CommitRequest{}))
+	if g, w := len(commitRequests), 1; g != w {
+		t.Fatalf("num commit requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-
-	if gotReq == nil {
-		t.Fatal("expected CommitRequest")
-	}
-	if !proto.Equal(gotReq.RequestOptions.ClientContext, cc) {
-		t.Errorf("mismatch in ClientContext:\ngot:  %v\nwant: %v", gotReq.RequestOptions.ClientContext, cc)
+	commitRequest := commitRequests[0].(*sppb.CommitRequest)
+	if g, w := commitRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -528,27 +481,12 @@ func TestClientContext_EmptyMap(t *testing.T) {
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
+	addSelect1Result(server)
 
 	cc := &sppb.RequestOptions_ClientContext{
 		SecureContext: make(map[string]*structpb.Value),
 	}
-
 	stmt := Statement{SQL: "SELECT 1"}
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
-		Type: StatementResultResultSet,
-		ResultSet: &sppb.ResultSet{
-			Metadata: &sppb.ResultSetMetadata{
-				RowType: &sppb.StructType{
-					Fields: []*sppb.StructType_Field{
-						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
-					},
-				},
-			},
-			Rows: []*structpb.ListValue{
-				{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "1"}}}},
-			},
-		},
-	})
 
 	iter := client.Single().QueryWithOptions(ctx, stmt, QueryOptions{ClientContext: cc})
 	if _, err := iter.Next(); err != nil && err != iterator.Done {
@@ -557,19 +495,13 @@ func TestClientContext_EmptyMap(t *testing.T) {
 	iter.Stop()
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	found := false
-	for _, req := range reqs {
-		if r, ok := req.(*sppb.ExecuteSqlRequest); ok && r.Sql == stmt.SQL {
-			found = true
-			if r.RequestOptions.ClientContext == nil {
-				t.Error("expected non-nil ClientContext for empty map")
-			} else if len(r.RequestOptions.ClientContext.SecureContext) != 0 {
-				t.Errorf("expected empty SecureContext map, got %v", r.RequestOptions.ClientContext.SecureContext)
-			}
-		}
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num execute requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if !found {
-		t.Error("ExecuteSqlRequest not found")
+	executeRequest := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := executeRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -585,7 +517,7 @@ func TestClientContext_PDML_Default(t *testing.T) {
 	defer teardown()
 
 	stmt := Statement{SQL: "UPDATE Table SET Col1=1 WHERE 1=1"}
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
+	_ = server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
 		Type:        StatementResultUpdateCount,
 		UpdateCount: 1,
 	})
@@ -596,18 +528,21 @@ func TestClientContext_PDML_Default(t *testing.T) {
 	}
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var sqlReq *sppb.ExecuteSqlRequest
-	for _, req := range reqs {
-		if r, ok := req.(*sppb.ExecuteSqlRequest); ok && r.Sql == stmt.SQL {
-			sqlReq = r
-			break
-		}
+	beginRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(beginRequests), 1; g != w {
+		t.Fatalf("num begin requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if sqlReq == nil {
-		t.Fatal("expected ExecuteSqlRequest for PDML")
+	beginRequest := beginRequests[0].(*sppb.BeginTransactionRequest)
+	if g, w := beginRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
-	if !proto.Equal(sqlReq.RequestOptions.ClientContext, cc) {
-		t.Errorf("PDML default: mismatch in ClientContext:\ngot:  %v\nwant: %v", sqlReq.RequestOptions.ClientContext, cc)
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num execute requests mismatch\n Got: %d\nWant: %d", g, w)
+	}
+	executeRequest := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := executeRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -621,6 +556,7 @@ func TestClientContext_Batch_Default(t *testing.T) {
 		DisableNativeMetrics: true,
 	})
 	defer teardown()
+	addSelect1Result(server)
 
 	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
 	if err != nil {
@@ -629,32 +565,39 @@ func TestClientContext_Batch_Default(t *testing.T) {
 	defer txn.Close()
 
 	stmt := Statement{SQL: "SELECT 1"}
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
-		Type: StatementResultResultSet,
-		ResultSet: &sppb.ResultSet{
-			Metadata: &sppb.ResultSetMetadata{
-				RowType: &sppb.StructType{
-					Fields: []*sppb.StructType_Field{
-						{Name: "Col1", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
-					},
-				},
-			},
-			Rows: []*structpb.ListValue{
-				{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "1"}}}},
-			},
-		},
-	})
 
 	// Test PartitionQuery (default)
 	partitions, err := txn.PartitionQuery(ctx, stmt, PartitionOptions{MaxPartitions: 1})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(partitions) == 0 {
-		t.Fatal("expected at least 1 partition")
+	if g, w := len(partitions), 1; g != w {
+		t.Fatalf("num partitions mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if !proto.Equal(partitions[0].qreq.RequestOptions.ClientContext, cc) {
-		t.Errorf("Batch default: mismatch in Partition.qreq ClientContext:\ngot:  %v\nwant: %v", partitions[0].qreq.RequestOptions.ClientContext, cc)
+	if g, w := partitions[0].qreq.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
+	}
+
+	iter := txn.Execute(ctx, partitions[0])
+	_, _ = iter.Next()
+	iter.Stop()
+
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	beginRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(beginRequests), 1; g != w {
+		t.Fatalf("num begin requests mismatch\n Got: %d\nWant: %d", g, w)
+	}
+	beginRequest := beginRequests[0].(*sppb.BeginTransactionRequest)
+	if g, w := beginRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	executeRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+	if g, w := len(executeRequests), 1; g != w {
+		t.Fatalf("num execute requests mismatch\n Got: %d\nWant: %d", g, w)
+	}
+	executeRequest := executeRequests[0].(*sppb.ExecuteSqlRequest)
+	if g, w := executeRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
 
@@ -677,87 +620,12 @@ func TestClientContext_BeginTransaction_Default(t *testing.T) {
 	defer txn.Rollback(ctx)
 
 	reqs := drainRequestsFromServer(server.TestSpanner)
-	var gotBegin *sppb.BeginTransactionRequest
-	for _, req := range reqs {
-		if br, ok := req.(*sppb.BeginTransactionRequest); ok {
-			gotBegin = br
-			break
-		}
+	beginRequests := requestsOfType(reqs, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(beginRequests), 1; g != w {
+		t.Fatalf("num begin requests mismatch\n Got: %d\nWant: %d", g, w)
 	}
-	if gotBegin == nil {
-		t.Fatal("expected BeginTransactionRequest")
-	}
-	if !proto.Equal(gotBegin.RequestOptions.ClientContext, cc) {
-		t.Errorf("BeginTransaction default: mismatch in ClientContext:\ngot:  %v\nwant: %v", gotBegin.RequestOptions.ClientContext, cc)
-	}
-}
-
-func TestClientContext_PDML_BeginTransaction(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	cc := makeClientContext(map[string]string{"test-key": "test-value"})
-
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		ClientContext:        cc,
-		DisableNativeMetrics: true,
-	})
-	defer teardown()
-
-	stmt := Statement{SQL: "UPDATE Table SET Col1=1 WHERE 1=1"}
-	server.TestSpanner.PutStatementResult(stmt.SQL, &StatementResult{
-		Type:        StatementResultUpdateCount,
-		UpdateCount: 1,
-	})
-
-	_, err := client.PartitionedUpdate(ctx, stmt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	reqs := drainRequestsFromServer(server.TestSpanner)
-	var gotBegin *sppb.BeginTransactionRequest
-	for _, req := range reqs {
-		if br, ok := req.(*sppb.BeginTransactionRequest); ok {
-			gotBegin = br
-			break
-		}
-	}
-	if gotBegin == nil {
-		t.Fatal("expected BeginTransactionRequest for PDML")
-	}
-	if !proto.Equal(gotBegin.RequestOptions.ClientContext, cc) {
-		t.Errorf("PDML BeginTransaction: mismatch in ClientContext:\ngot:  %v\nwant: %v", gotBegin.RequestOptions.ClientContext, cc)
-	}
-}
-
-func TestClientContext_Batch_BeginTransaction(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	cc := makeClientContext(map[string]string{"test-key": "test-value"})
-
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		ClientContext:        cc,
-		DisableNativeMetrics: true,
-	})
-	defer teardown()
-
-	_, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	reqs := drainRequestsFromServer(server.TestSpanner)
-	var gotBegin *sppb.BeginTransactionRequest
-	for _, req := range reqs {
-		if br, ok := req.(*sppb.BeginTransactionRequest); ok {
-			gotBegin = br
-			break
-		}
-	}
-	if gotBegin == nil {
-		t.Fatal("expected BeginTransactionRequest for Batch")
-	}
-	if !proto.Equal(gotBegin.RequestOptions.ClientContext, cc) {
-		t.Errorf("Batch BeginTransaction: mismatch in ClientContext:\ngot:  %v\nwant: %v", gotBegin.RequestOptions.ClientContext, cc)
+	beginRequest := beginRequests[0].(*sppb.BeginTransactionRequest)
+	if g, w := beginRequest.RequestOptions.ClientContext, cc; !proto.Equal(g, w) {
+		t.Errorf("ClientContext mismatch\n Got: %v\nWant: %v", g, w)
 	}
 }
