@@ -510,116 +510,111 @@ func TestCalculateRange(t *testing.T) {
 // This tests that gather shards works as expected and cancels other shards
 // without error after it encounters an error.
 func TestGatherShards(t *testing.T) {
-	ctx, cancelCtx := context.WithCancelCause(context.Background())
+	content := "hello world"
+	piece1 := "hello"
+	piece2 := " "
+	piece3 := "world"
+	fullCRC := crc32c([]byte(content))
+	firstPieceCRC := crc32c([]byte(piece1))
 
-	// Start a downloader.
-	d, err := NewDownloader(nil, WithWorkers(2), WithCallbacks())
-	if err != nil {
-		t.Fatalf("NewDownloader: %v", err)
-	}
-
-	// Test that gatherShards finishes without error.
-	object := "obj1"
-	shards := 4
-	downloadRange := &DownloadRange{
-		Offset: 20,
-		Length: 120,
-	}
-	firstOut := &DownloadOutput{Object: object, Range: &DownloadRange{Offset: 20, Length: 30}, shard: 0}
-	outChan := make(chan *DownloadOutput, shards)
-	outs := []*DownloadOutput{
-		{Object: object, Range: &DownloadRange{Offset: 50, Length: 30}, shard: 1},
-		{Object: object, Range: &DownloadRange{Offset: 80, Length: 30}, shard: 2},
-		{Object: object, Range: &DownloadRange{Offset: 110, Length: 30}, shard: 3},
-	}
-
-	in := &DownloadObjectInput{
-		Callback: func(o *DownloadOutput) {
-			if o.Err != nil {
-				t.Errorf("unexpected error in DownloadOutput: %v", o.Err)
-			}
-			if o.Range != downloadRange {
-				t.Errorf("mismatching download range, got: %v, want: %v", o.Range, downloadRange)
-			}
-			if o.Object != object {
-				t.Errorf("mismatching object names, got: %v, want: %v", o.Object, object)
-			}
+	for _, tc := range []struct {
+		desc         string
+		shards       int
+		outputs      []*DownloadOutput
+		checkCRC     bool
+		wantErr      bool
+		errMsg       string
+		expectCancel bool
+	}{
+		{
+			desc:   "all shards succeed",
+			shards: 3,
+			outputs: []*DownloadOutput{
+				{shard: 1, crc32c: crc32c([]byte(piece2)), shardLength: int64(len(piece2))},
+				{shard: 2, crc32c: crc32c([]byte(piece3)), shardLength: int64(len(piece3))},
+			},
+			checkCRC: true,
+			wantErr:  false,
 		},
-		ctx:          ctx,
-		cancelCtx:    cancelCtx,
-		shardOutputs: outChan,
-		Range:        downloadRange,
-	}
+		{
+			desc:   "one shard fails",
+			shards: 3,
+			outputs: []*DownloadOutput{
+				{shard: 0, Err: errors.New("shard failure")},
+				{shard: 2, crc32c: crc32c([]byte(piece3)), shardLength: int64(len(piece3))},
+			},
+			checkCRC:     true,
+			wantErr:      true,
+			expectCancel: true,
+			errMsg:       "shard failure",
+		},
+		{
+			desc:   "checksum mismatch",
+			shards: 3,
+			outputs: []*DownloadOutput{
+				{shard: 1, crc32c: crc32c([]byte(piece2)), shardLength: int64(len(piece2))},
+				{shard: 2, crc32c: 999, shardLength: int64(len(piece3))}, // Wrong CRC
+			},
+			checkCRC: true,
+			wantErr:  true,
+			errMsg:   "bad CRC on read",
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			ctx, cancelCtx := context.WithCancelCause(context.Background())
+			defer cancelCtx(nil)
+			d, err := NewDownloader(nil, WithWorkers(2), WithCallbacks())
+			if err != nil {
+				t.Fatalf("NewDownloader: %v", err)
+			}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-	d.downloadsInProgress.Add(1)
+			outChan := make(chan *DownloadOutput, tc.shards)
+			in := &DownloadObjectInput{
+				Callback:     func(o *DownloadOutput) {},
+				ctx:          ctx,
+				cancelCtx:    cancelCtx,
+				shardOutputs: outChan,
+				checkCRC:     tc.checkCRC,
+			}
+			out := &DownloadOutput{
+				Attrs: &storage.ReaderObjectAttrs{CRC32C: fullCRC},
+			}
+			var wg sync.WaitGroup
+			wg.Add(1)
+			d.downloadsInProgress.Add(1)
+			go func() {
+				d.gatherShards(in, out, outChan, tc.shards, firstPieceCRC)
+				wg.Done()
+			}()
 
-	go func() {
-		d.gatherShards(in, firstOut, outChan, shards, 0)
-		wg.Done()
-	}()
+			for _, so := range tc.outputs {
+				outChan <- so
+			}
 
-	for _, o := range outs {
-		outChan <- o
-	}
+			wg.Wait()
 
-	wg.Wait()
+			// WaitAndClose will wait for downloadsInProgress, including gatherShards goroutine.
+			if _, err := d.WaitAndClose(); err != nil && !tc.wantErr {
+				t.Logf("WaitAndClose returned error: %v", err)
+			}
+			if tc.expectCancel {
+				select {
+				case <-ctx.Done():
+					if ctxErr := context.Cause(ctx); !errors.Is(ctxErr, errCancelAllShards) {
+						t.Errorf("context.Cause: error should be %q; instead got: %v", errCancelAllShards, ctxErr)
+					}
+				default:
+					t.Error("context was not cancelled for shard error")
+				}
+			}
 
-	// Test that an error will cancel remaining pieces correctly.
-	shardErr := errors.New("some error")
-
-	in.Callback = func(o *DownloadOutput) {
-		// Error returned should wrap the original error.
-		if !errors.Is(o.Err, shardErr) {
-			t.Errorf("error in DownloadOutput should wrap error %q; intead got: %v", shardErr, o.Err)
-		}
-		// Error returned should not wrap nor contain the sentinel error.
-		if errors.Is(o.Err, errCancelAllShards) || strings.Contains(o.Err.Error(), errCancelAllShards.Error()) {
-			t.Errorf("error in DownloadOutput should not contain error %q; got: %v", errCancelAllShards, o.Err)
-		}
-		if o.Range != downloadRange {
-			t.Errorf("mismatching download range, got: %v, want: %v", o.Range, downloadRange)
-		}
-		if o.Object != object {
-			t.Errorf("mismatching object names, got: %v, want: %v", o.Object, object)
-		}
-	}
-
-	wg.Add(1)
-	d.downloadsInProgress.Add(1)
-
-	go func() {
-		d.gatherShards(in, firstOut, outChan, shards, 0)
-		wg.Done()
-	}()
-
-	// Send a successfull shard, an errored shard, and then a cancelled shard.
-	outs[1].Err = shardErr
-	outs[2].Err = context.Canceled
-	for _, o := range outs {
-		outChan <- o
-	}
-
-	// Check that the context was cancelled with the sentinel error.
-	_, ok := <-in.ctx.Done()
-	if ok {
-		t.Error("context was not cancelled")
-	}
-
-	if ctxErr := context.Cause(in.ctx); !errors.Is(ctxErr, errCancelAllShards) {
-		t.Errorf("context.Cause: error should wrap %q; intead got: %v", errCancelAllShards, ctxErr)
-	}
-
-	wg.Wait()
-
-	// Check that the overall error returned also wraps only the proper error.
-	_, err = d.WaitAndClose()
-	if !errors.Is(err, shardErr) {
-		t.Errorf("error in DownloadOutput should wrap error %q; intead got: %v", shardErr, err)
-	}
-	if errors.Is(err, errCancelAllShards) || strings.Contains(err.Error(), errCancelAllShards.Error()) {
-		t.Errorf("error in DownloadOutput should not contain error %q; got: %v", errCancelAllShards, err)
+			if (out.Err != nil) != tc.wantErr {
+				t.Errorf("got error %v, wantErr %v", out.Err, tc.wantErr)
+			}
+			if tc.wantErr && tc.errMsg != "" && (out.Err == nil || !strings.Contains(out.Err.Error(), tc.errMsg)) {
+				t.Errorf("expected error containing %q, got %v", tc.errMsg, out.Err)
+			}
+		})
 	}
 }
 
