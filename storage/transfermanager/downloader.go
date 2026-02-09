@@ -485,9 +485,11 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, out *DownloadOutput, 
 			// If a shard errored, track the error and cancel the shared ctx.
 			errs = append(errs, shardOut.Err)
 			in.cancelCtx(errCancelAllShards)
+			continue
 		}
-
-		orderedChecksums[shardOut.shard-1] = crc32cPiece{sum: shardOut.crc32c, length: shardOut.shardLength}
+		if shardOut.shard > 0 {
+			orderedChecksums[shardOut.shard-1] = crc32cPiece{sum: shardOut.crc32c, length: shardOut.shardLength}
+		}
 	}
 
 	// All pieces gathered.
