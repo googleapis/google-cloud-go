@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/datamanager/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.ads.datamanager.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "datamanager_v1_generated_IngestionService_IngestAudienceMembers_sync",
+      "title": "datamanager IngestAudienceMembers Sample",
+      "description": "IngestAudienceMembers uploads a list of\n[AudienceMember][google.ads.datamanager.v1.AudienceMember] resources to the\nprovided [Destination][google.ads.datamanager.v1.Destination].",
+      "file": "IngestionClient/IngestAudienceMembers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "IngestAudienceMembers",
+        "fullName": "google.ads.datamanager.v1.IngestionClient.IngestAudienceMembers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datamanagerpb.IngestAudienceMembersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datamanagerpb.IngestAudienceMembersResponse",
+        "client": {
+          "shortName": "IngestionClient",
+          "fullName": "google.ads.datamanager.v1.IngestionClient"
+        },
+        "method": {
+          "shortName": "IngestAudienceMembers",
+          "fullName": "google.ads.datamanager.v1.IngestionService.IngestAudienceMembers",
+          "service": {
+            "shortName": "IngestionService",
+            "fullName": "google.ads.datamanager.v1.IngestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamanager_v1_generated_IngestionService_IngestEvents_sync",
+      "title": "datamanager IngestEvents Sample",
+      "description": "IngestEvents uploads a list of\n[Event][google.ads.datamanager.v1.Event] resources from\nthe provided [Destination][google.ads.datamanager.v1.Destination].",
+      "file": "IngestionClient/IngestEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "IngestEvents",
+        "fullName": "google.ads.datamanager.v1.IngestionClient.IngestEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datamanagerpb.IngestEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datamanagerpb.IngestEventsResponse",
+        "client": {
+          "shortName": "IngestionClient",
+          "fullName": "google.ads.datamanager.v1.IngestionClient"
+        },
+        "method": {
+          "shortName": "IngestEvents",
+          "fullName": "google.ads.datamanager.v1.IngestionService.IngestEvents",
+          "service": {
+            "shortName": "IngestionService",
+            "fullName": "google.ads.datamanager.v1.IngestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamanager_v1_generated_IngestionService_RemoveAudienceMembers_sync",
+      "title": "datamanager RemoveAudienceMembers Sample",
+      "description": "RemoveAudienceMembers removes a list of\n[AudienceMember][google.ads.datamanager.v1.AudienceMember] resources from\nthe provided [Destination][google.ads.datamanager.v1.Destination].",
+      "file": "IngestionClient/RemoveAudienceMembers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveAudienceMembers",
+        "fullName": "google.ads.datamanager.v1.IngestionClient.RemoveAudienceMembers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datamanagerpb.RemoveAudienceMembersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datamanagerpb.RemoveAudienceMembersResponse",
+        "client": {
+          "shortName": "IngestionClient",
+          "fullName": "google.ads.datamanager.v1.IngestionClient"
+        },
+        "method": {
+          "shortName": "RemoveAudienceMembers",
+          "fullName": "google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers",
+          "service": {
+            "shortName": "IngestionService",
+            "fullName": "google.ads.datamanager.v1.IngestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamanager_v1_generated_IngestionService_RetrieveRequestStatus_sync",
+      "title": "datamanager RetrieveRequestStatus Sample",
+      "description": "RetrieveRequestStatus gets the status of a request given request id.",
+      "file": "IngestionClient/RetrieveRequestStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveRequestStatus",
+        "fullName": "google.ads.datamanager.v1.IngestionClient.RetrieveRequestStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datamanagerpb.RetrieveRequestStatusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datamanagerpb.RetrieveRequestStatusResponse",
+        "client": {
+          "shortName": "IngestionClient",
+          "fullName": "google.ads.datamanager.v1.IngestionClient"
+        },
+        "method": {
+          "shortName": "RetrieveRequestStatus",
+          "fullName": "google.ads.datamanager.v1.IngestionService.RetrieveRequestStatus",
+          "service": {
+            "shortName": "IngestionService",
+            "fullName": "google.ads.datamanager.v1.IngestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.24.0
 
 require (
-	cloud.google.com/go v0.123.0 // indirect
+	cloud.google.com/go v0.123.0
 	cloud.google.com/go/accessapproval v1.8.8
 	cloud.google.com/go/accesscontextmanager v1.9.7
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
