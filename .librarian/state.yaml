@@ -2056,6 +2056,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
+  - id: datamanager
+    version: 0.0.0
+    last_generated_commit: 725496d32a359a40dd773995d3fda0342b440e15
+    apis:
+      - path: google/ads/datamanager/v1
+        service_config: datamanager_v1.yaml
+    source_roots:
+      - datamanager
+      - internal/generated/snippets/datamanager
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/datamanager/
+      - ^datamanager/apiv1/[^/]*_client\.go$
+      - ^datamanager/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^datamanager/apiv1/[^/]*_client_example_test\.go$
+      - ^datamanager/apiv1/auxiliary\.go$
+      - ^datamanager/apiv1/auxiliary_go123\.go$
+      - ^datamanager/apiv1/doc\.go$
+      - ^datamanager/apiv1/gapic_metadata\.json$
+      - ^datamanager/apiv1/helpers\.go$
+      - ^datamanager/apiv1/\.repo-metadata\.json$
+      - ^datamanager/apiv1/datamanagerpb/.*$
+    tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.28.0
     last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677

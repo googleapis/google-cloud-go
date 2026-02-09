@@ -587,3 +587,5 @@ replace cloud.google.com/go/hypercomputecluster => ../../../hypercomputecluster
 replace cloud.google.com/go/apiregistry => ../../../apiregistry
 
 replace cloud.google.com/go/cloudsecuritycompliance => ../../../cloudsecuritycompliance
+
+replace cloud.google.com/go/datamanager => ../../../datamanager
