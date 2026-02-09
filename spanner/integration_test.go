@@ -108,8 +108,9 @@ var (
 	databaseAdmin *database.DatabaseAdminClient
 	instanceAdmin *instance.InstanceAdminClient
 
-	dpConfig directPathTestConfig
-	peerInfo *peer.Peer
+	dpConfig   directPathTestConfig
+	exphConfig experimentalHostTestConfig
+	peerInfo   *peer.Peer
 
 	singerDBPGStatements = []string{
 		`CREATE TABLE Singers (
@@ -403,11 +404,18 @@ func init() {
 	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
 	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
 	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
+	flag.StringVar(&exphConfig.experimentalHost, "it.experimental-host", "", "Experimental host integration test flag")
+	flag.BoolVar(&exphConfig.isPGDialect, "it.experimental-host-pg-dialect", false, "Use PG dialect with experimental host")
 }
 
 type directPathTestConfig struct {
 	attemptDirectPath  bool
 	directPathIPv4Only bool
+}
+
+type experimentalHostTestConfig struct {
+	experimentalHost string
+	isPGDialect      bool
 }
 
 func parseInstanceName(inst string) (project, instance string, err error) {
@@ -427,6 +435,10 @@ func getInstanceConfig() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
 }
 
+func getMultiplexEnableFlag() bool {
+	return exphConfig.experimentalHost != "" || os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
+}
+
 const (
 	str1 = "alice"
 	str2 = "a@example.com"
@@ -440,6 +452,16 @@ func TestMain(m *testing.M) {
 		if isEmulatorEnvSet() && dialect == adminpb.DatabaseDialect_POSTGRESQL {
 			// PG tests are not supported in emulator
 			continue
+		}
+		if exphConfig.experimentalHost != "" {
+			// Since IT against experimental host is ran against single server instance, we need to run tests
+			// separately for each dialect to avoid context deadlines due to resource limitations.
+			if exphConfig.isPGDialect && dialect != adminpb.DatabaseDialect_POSTGRESQL {
+				continue
+			}
+			if !exphConfig.isPGDialect && dialect != adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL {
+				continue
+			}
 		}
 		testDialect = dialect
 		res := m.Run()
@@ -462,6 +484,11 @@ func initIntegrationTests() (cleanup func()) {
 		return noop
 	}
 
+	if exphConfig.experimentalHost != "" {
+		testProjectID = "default"
+		testInstanceID = "default"
+	}
+
 	if testProjectID == "" {
 		log.Println("Integration tests skipped: GCLOUD_TESTS_GOLANG_PROJECT_ID is missing")
 		return noop
@@ -475,14 +502,25 @@ func initIntegrationTests() (cleanup func()) {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	var err error
-	// Create InstanceAdmin and DatabaseAdmin clients.
-	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
-	if err != nil {
-		log.Fatalf("cannot create instance databaseAdmin client: %v", err)
+
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
+	} else {
+		// Create InstanceAdmin and DatabaseAdmin clients.
+		instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
+		if err != nil {
+			log.Fatalf("cannot create instance databaseAdmin client: %v", err)
+		}
+		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	}
-	databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
+	}
+	if exphConfig.experimentalHost != "" {
+		return func() {
+			databaseAdmin.Close()
+		}
 	}
 	var configName string
 	if instanceConfig != "" {
@@ -1083,6 +1121,8 @@ func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 
 func TestIntegration_BatchWrite(t *testing.T) {
 	skipEmulatorTest(t)
+	// BatchWrite creates regular sessions, which cannot be used with experimental host.
+	skipExperimentalHostTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2027,6 +2067,7 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 func TestIntegration_CreateDBRetry(t *testing.T) {
 	t.Parallel()
 	skipUnsupportedPGTest(t)
+	skipExperimentalHostTest(t)
 
 	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
@@ -2074,6 +2115,8 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	t.Parallel()
+	// tracking the failure via b/441255724 for experimentalHost
+	skipExperimentalHostTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -3330,6 +3373,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 	// TODO(sakthivelmani): Enable the tests once b/422916293 is fixed
 	skipDirectPathTest(t)
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -3469,8 +3513,9 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 
 func TestIntegration_QueryWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -3603,8 +3648,9 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 
 func TestIntegration_ReadWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -3736,8 +3782,9 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 
 func TestIntegration_DMLWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -3900,8 +3947,9 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 
 func TestIntegration_MutationWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimental host
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -4054,8 +4102,9 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 
 func TestIntegration_ListDatabaseRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator
+	// Database roles are not currently available in emulator and experimental host
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -4141,7 +4190,9 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: true}); err != nil {
+	// DataBoost is not available for experimental host endpoints
+	dataBoostAvailable := exphConfig.experimentalHost == ""
+	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -4227,7 +4278,9 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: true}); err != nil {
+	// DataBoost is not available for experimental host endpoints
+	dataBoostAvailable := exphConfig.experimentalHost == ""
+	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -5343,6 +5396,7 @@ func compareErrors(got, want error) bool {
 
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -5629,6 +5683,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 
 func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	skipEmulatorTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -6302,6 +6357,10 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		config.IsExperimentalHost = true
+	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
@@ -6320,6 +6379,10 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		config.IsExperimentalHost = true
+	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
@@ -6336,7 +6399,12 @@ func createClientForProtoColumns(ctx context.Context, dbPath string, spc Session
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
+	config := ClientConfig{SessionPoolConfig: spc}
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		config.IsExperimentalHost = true
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -6483,6 +6551,20 @@ func isEmulatorEnvSet() bool {
 func skipEmulatorTest(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
+	}
+}
+
+func skipExperimentalHostTest(t *testing.T) {
+	if exphConfig.experimentalHost != "" {
+		t.Skip("Skipping experimental host tests.")
+	}
+}
+
+func experimentalHostOptions() []option.ClientOption {
+	return []option.ClientOption{
+		option.WithEndpoint(exphConfig.experimentalHost),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
 }
 
