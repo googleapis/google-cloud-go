@@ -1,6 +1,17 @@
 # Changes
 
 
+## [1.60.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.60.0) (2026-02-09)
+
+### Features
+
+* support checksum validation in resumable json uploads (#13573) ([1aa388c](https://github.com/googleapis/google-cloud-go/commit/1aa388c84ca2812902cdebfcf98eb600a14278e0))
+
+### Bug Fixes
+
+* change TestValidateChecksumFromServer error message (#13810) ([6eedc9c](https://github.com/googleapis/google-cloud-go/commit/6eedc9c103de64487c23bee483f5de16b91072d1))
+* fix panic error in transfermanager downloads (#13815) ([48876af](https://github.com/googleapis/google-cloud-go/commit/48876af2341763a0bdf86fba5648e7340f9f96d0))
+
 ## [1.59.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.2) (2026-01-28)
 
 ### Bug Fixes
