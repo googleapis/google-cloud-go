@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.ads.datamanager.v1",
+  "libraryPackage": "cloud.google.com/go/datamanager/apiv1",
+  "services": {
+    "IngestionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IngestionClient",
+          "rpcs": {
+            "IngestAudienceMembers": {
+              "methods": [
+                "IngestAudienceMembers"
+              ]
+            },
+            "IngestEvents": {
+              "methods": [
+                "IngestEvents"
+              ]
+            },
+            "RemoveAudienceMembers": {
+              "methods": [
+                "RemoveAudienceMembers"
+              ]
+            },
+            "RetrieveRequestStatus": {
+              "methods": [
+                "RetrieveRequestStatus"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "IngestionClient",
+          "rpcs": {
+            "IngestAudienceMembers": {
+              "methods": [
+                "IngestAudienceMembers"
+              ]
+            },
+            "IngestEvents": {
+              "methods": [
+                "IngestEvents"
+              ]
+            },
+            "RemoveAudienceMembers": {
+              "methods": [
+                "RemoveAudienceMembers"
+              ]
+            },
+            "RetrieveRequestStatus": {
+              "methods": [
+                "RetrieveRequestStatus"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
