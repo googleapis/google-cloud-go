@@ -593,7 +593,7 @@ func TestGatherShards(t *testing.T) {
 
 			wg.Wait()
 
-			// WaitAndClose will wait for downloadsInProgress, including our gatherShards goroutine.
+			// WaitAndClose will wait for downloadsInProgress, including gatherShards goroutine.
 			if _, err := d.WaitAndClose(); err != nil && !tc.wantErr {
 				t.Logf("WaitAndClose returned error: %v", err)
 			}
