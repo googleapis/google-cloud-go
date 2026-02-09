@@ -16,7 +16,6 @@ package bigquery
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -310,14 +309,12 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 		r.RemoteFunctionOptions = rm.RemoteFunctionOptions.toBQ()
 	}
 	if !rm.CreationTime.IsZero() {
-		return nil, errors.New("cannot set CreationTime on create")
+		r.CreationTime = rm.CreationTime.UnixMilli()
 	}
 	if !rm.LastModifiedTime.IsZero() {
-		return nil, errors.New("cannot set LastModifiedTime on create")
+		r.LastModifiedTime = rm.LastModifiedTime.UnixMilli()
 	}
-	if rm.ETag != "" {
-		return nil, errors.New("cannot set ETag on create")
-	}
+	r.Etag = rm.ETag
 	return r, nil
 }
 

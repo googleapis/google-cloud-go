@@ -1,9 +1,4 @@
 global_files_allowlist:
-  # Allow the container to read and write the root go.work file
-  # during the 'configure' step to add new modules.
-  - path: "go.work"
-    permissions: "read-write"
-
   # Allow the container to read a template.
   - path: "internal/README.md.template"
     permissions: "read-only"

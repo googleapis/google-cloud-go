@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,17 +153,22 @@ func (c *RegionAutoscalersClient) Get(ctx context.Context, req *computepb.GetReg
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an autoscaler in the specified project using the data included in the request.
+// Insert creates an autoscaler in the specified project using
+// the data included in the request.
 func (c *RegionAutoscalersClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of autoscalers contained within the specified region.
+// List retrieves a list of autoscalers contained within
+// the specified region.
 func (c *RegionAutoscalersClient) List(ctx context.Context, req *computepb.ListRegionAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates an autoscaler in the specified project using
+// the data included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *RegionAutoscalersClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -173,7 +178,8 @@ func (c *RegionAutoscalersClient) TestIamPermissions(ctx context.Context, req *c
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates an autoscaler in the specified project using the data included in the request.
+// Update updates an autoscaler in the specified project using
+// the data included in the request.
 func (c *RegionAutoscalersClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -376,7 +382,8 @@ func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates an autoscaler in the specified project using the data included in the request.
+// Insert creates an autoscaler in the specified project using
+// the data included in the request.
 func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
@@ -443,7 +450,8 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// List retrieves a list of autoscalers contained within the specified region.
+// List retrieves a list of autoscalers contained within
+// the specified region.
 func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.ListRegionAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	it := &AutoscalerIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionAutoscalersRequest)
@@ -529,7 +537,10 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates an autoscaler in the specified project using
+// the data included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
@@ -651,7 +662,8 @@ func (c *regionAutoscalersRESTClient) TestIamPermissions(ctx context.Context, re
 	return resp, nil
 }
 
-// Update updates an autoscaler in the specified project using the data included in the request.
+// Update updates an autoscaler in the specified project using
+// the data included in the request.
 func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()

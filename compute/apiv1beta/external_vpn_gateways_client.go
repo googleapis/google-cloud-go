@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -143,22 +143,27 @@ func (c *ExternalVpnGatewaysClient) Delete(ctx context.Context, req *computepb.D
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified externalVpnGateway. Get a list of available externalVpnGateways by making a list() request.
+// Get returns the specified externalVpnGateway. Get a list of available
+// externalVpnGateways by making a list() request.
 func (c *ExternalVpnGatewaysClient) Get(ctx context.Context, req *computepb.GetExternalVpnGatewayRequest, opts ...gax.CallOption) (*computepb.ExternalVpnGateway, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a ExternalVpnGateway in the specified project using the data included in the request.
+// Insert creates a ExternalVpnGateway in the specified project using
+// the data included in the request.
 func (c *ExternalVpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertExternalVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of ExternalVpnGateway available to the specified project.
+// List retrieves the list of ExternalVpnGateway available to the specified
+// project.
 func (c *ExternalVpnGatewaysClient) List(ctx context.Context, req *computepb.ListExternalVpnGatewaysRequest, opts ...gax.CallOption) *ExternalVpnGatewayIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on an ExternalVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an ExternalVpnGateway. To learn more about labels,
+// read the Labeling
+// Resources documentation.
 func (c *ExternalVpnGatewaysClient) SetLabels(ctx context.Context, req *computepb.SetLabelsExternalVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -320,7 +325,8 @@ func (c *externalVpnGatewaysRESTClient) Delete(ctx context.Context, req *compute
 	return op, nil
 }
 
-// Get returns the specified externalVpnGateway. Get a list of available externalVpnGateways by making a list() request.
+// Get returns the specified externalVpnGateway. Get a list of available
+// externalVpnGateways by making a list() request.
 func (c *externalVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetExternalVpnGatewayRequest, opts ...gax.CallOption) (*computepb.ExternalVpnGateway, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -365,7 +371,8 @@ func (c *externalVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.
 	return resp, nil
 }
 
-// Insert creates a ExternalVpnGateway in the specified project using the data included in the request.
+// Insert creates a ExternalVpnGateway in the specified project using
+// the data included in the request.
 func (c *externalVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertExternalVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetExternalVpnGatewayResource()
@@ -431,7 +438,8 @@ func (c *externalVpnGatewaysRESTClient) Insert(ctx context.Context, req *compute
 	return op, nil
 }
 
-// List retrieves the list of ExternalVpnGateway available to the specified project.
+// List retrieves the list of ExternalVpnGateway available to the specified
+// project.
 func (c *externalVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListExternalVpnGatewaysRequest, opts ...gax.CallOption) *ExternalVpnGatewayIterator {
 	it := &ExternalVpnGatewayIterator{}
 	req = proto.Clone(req).(*computepb.ListExternalVpnGatewaysRequest)
@@ -517,7 +525,9 @@ func (c *externalVpnGatewaysRESTClient) List(ctx context.Context, req *computepb
 	return it
 }
 
-// SetLabels sets the labels on an ExternalVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on an ExternalVpnGateway. To learn more about labels,
+// read the Labeling
+// Resources documentation.
 func (c *externalVpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsExternalVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()

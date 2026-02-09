@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.12.0) (2026-01-15)
+
+### Features
+
+* Update NetApp v1 API with Host Groups, Block Volumes, Cache Volumes, and Backup Restore This CL introduces several new features and enhancements to the NetApp API: - **Host Groups:** Added a new `HostGroup` resource to manage collections of hosts for Block Volume access. Includes full CRUD operations. - **Block Volumes:** Enhanced the `Volume` resource to support `ISCSI` protocol and `BlockDevice` configurations. - **Cache Volumes:** Added `CacheParameters` to the `Volume` resource to support FlexCache volumes. - **Backup Restore:** Introduced a new `RestoreBackupFiles` RPC to restore individual files from a backup. - **CMEK for Backup Vaults:** Added fields to `BackupVault` to support Customer Managed Encryption Keys (CMEK). - **Storage Pool Type:** Added a `type` field to `StoragePool` to specify support for FILE, UNIFIED, or UNIFIED_LARGE_CAPACITY volumes. -   **Location Metadata:** Added `has_ontap_proxy` flag. -   Updated copyright year to 2026. ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.11.0) (2025-12-04)
+
+### Features
+
+* Add Squash Mode to Export Policy This change introduces squash mode options to the export policy rules. Squash mode determines how user and group IDs are mapped for NFS volume access. The following squash modes are added: *   **NO_ROOT_SQUASH** Root user retains full access. *   **ROOT_SQUASH** Root user is mapped to the anonymous user ID. *   **ALL_SQUASH** All users are mapped to the anonymous user ID. A new field anon_uid is also added to specify the anonymous user ID when ALL_SQUASH is used. The squash_mode field takes precedence over the existing has_root_access field, which will be deprecated in the future. ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.10.0...netapp/v1.10.1) (2025-09-18)
 
 

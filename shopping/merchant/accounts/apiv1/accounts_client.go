@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -277,10 +277,13 @@ func (c *Client) CreateAndConfigureAccount(ctx context.Context, req *accountspb.
 
 // DeleteAccount deletes the specified account regardless of its type: standalone, advanced
 // account or sub-account. Deleting an advanced account leads to the deletion
-// of all of its sub-accounts. Executing this method requires admin access.
-// The deletion succeeds only if the account does not provide services
-// to any other account and has no processed offers. You can use the force
-// parameter to override this.
+// of all of its sub-accounts. This also deletes the account’s developer
+// registration
+// entity (at /merchant/api/reference/rest/accounts_v1/accounts.developerRegistration)
+// and any associated GCP project to the account. Executing this method
+// requires admin access. The deletion succeeds only if the account does not
+// provide services to any other account and has no processed offers. You can
+// use the force parameter to override this.
 func (c *Client) DeleteAccount(ctx context.Context, req *accountspb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAccount(ctx, req, opts...)
 }
@@ -724,10 +727,13 @@ func (c *restClient) CreateAndConfigureAccount(ctx context.Context, req *account
 
 // DeleteAccount deletes the specified account regardless of its type: standalone, advanced
 // account or sub-account. Deleting an advanced account leads to the deletion
-// of all of its sub-accounts. Executing this method requires admin access.
-// The deletion succeeds only if the account does not provide services
-// to any other account and has no processed offers. You can use the force
-// parameter to override this.
+// of all of its sub-accounts. This also deletes the account’s developer
+// registration
+// entity (at /merchant/api/reference/rest/accounts_v1/accounts.developerRegistration)
+// and any associated GCP project to the account. Executing this method
+// requires admin access. The deletion succeeds only if the account does not
+// provide services to any other account and has no processed offers. You can
+// use the force parameter to override this.
 func (c *restClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

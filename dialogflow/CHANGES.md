@@ -1,5 +1,46 @@
 # Changes
 
+## [1.75.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.75.0) (2026-02-05)
+
+### Features
+
+* added a new field StreamingAnalyzeContentRequest.output_multiple_utterances ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+## [1.74.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.74.0) (2026-01-22)
+
+### Features
+
+* updated v3 dialogflow client libraries ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+### Bug Fixes
+
+* An existing field `start_flow` is moved in to oneof in message `.google.cloud.dialogflow.cx.v3.Agent` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_display_names` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_ids` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_latencies` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_tags` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+## [1.73.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.73.0) (2025-12-18)
+
+### Features
+
+* updated v2 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v2beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v3beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+## [1.72.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.72.0) (2025-12-04)
+
+### Features
+
+* Service Account Auth in Tools and Webhooks ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add agentDesktopSource field to the Participant object ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add support for defining custom actions in code. See https://cloud.google.com/dialogflow/cx/docs/concept/playbook/code-block for more information ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* Add further clarification for when the event Type CONVERSATION_FINISHED is fired ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Update evaluator version from output only to optional. ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.71.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.71.0) (2025-11-06)
 
 ### Features

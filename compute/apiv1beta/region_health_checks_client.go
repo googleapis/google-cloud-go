@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,17 +153,22 @@ func (c *RegionHealthChecksClient) Get(ctx context.Context, req *computepb.GetRe
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a HealthCheck resource in the specified project using the data included in the request.
+// Insert creates a HealthCheck resource in the specified project using the data
+// included in the request.
 func (c *RegionHealthChecksClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of HealthCheck resources available to the specified project.
+// List retrieves the list of HealthCheck resources available to the specified
+// project.
 func (c *RegionHealthChecksClient) List(ctx context.Context, req *computepb.ListRegionHealthChecksRequest, opts ...gax.CallOption) *HealthCheckIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates a HealthCheck resource in the specified project using the data
+// included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *RegionHealthChecksClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -173,7 +178,8 @@ func (c *RegionHealthChecksClient) TestIamPermissions(ctx context.Context, req *
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates a HealthCheck resource in the specified project using the data included in the request.
+// Update updates a HealthCheck resource in the specified project using the data
+// included in the request.
 func (c *RegionHealthChecksClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -376,7 +382,8 @@ func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.G
 	return resp, nil
 }
 
-// Insert creates a HealthCheck resource in the specified project using the data included in the request.
+// Insert creates a HealthCheck resource in the specified project using the data
+// included in the request.
 func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
@@ -443,7 +450,8 @@ func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computep
 	return op, nil
 }
 
-// List retrieves the list of HealthCheck resources available to the specified project.
+// List retrieves the list of HealthCheck resources available to the specified
+// project.
 func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.ListRegionHealthChecksRequest, opts ...gax.CallOption) *HealthCheckIterator {
 	it := &HealthCheckIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionHealthChecksRequest)
@@ -529,7 +537,10 @@ func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.
 	return it
 }
 
-// Patch updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates a HealthCheck resource in the specified project using the data
+// included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
@@ -648,7 +659,8 @@ func (c *regionHealthChecksRESTClient) TestIamPermissions(ctx context.Context, r
 	return resp, nil
 }
 
-// Update updates a HealthCheck resource in the specified project using the data included in the request.
+// Update updates a HealthCheck resource in the specified project using the data
+// included in the request.
 func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()

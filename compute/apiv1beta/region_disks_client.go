@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -202,7 +202,9 @@ func (c *RegionDisksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one
+// policy which will be applied to this disk for scheduling snapshot
+// creation.
 func (c *RegionDisksClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
@@ -212,12 +214,19 @@ func (c *RegionDisksClient) BulkInsert(ctx context.Context, req *computepb.BulkI
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot
+// creation, consider using snapshots.insert
+// instead, as that method supports more features, such as creating snapshots
+// in a project different from the source disk project.
 func (c *RegionDisksClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
 
-// Delete deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+// Delete deletes the specified regional persistent disk. Deleting a regional disk
+// removes all the replicas of its data permanently and is irreversible.
+// However, deleting a disk does not delete anysnapshots
+// previously made from the disk. You must separatelydelete
+// snapshots.
 func (c *RegionDisksClient) Delete(ctx context.Context, req *computepb.DeleteRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -227,17 +236,20 @@ func (c *RegionDisksClient) Get(ctx context.Context, req *computepb.GetRegionDis
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *RegionDisksClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a persistent regional disk in the specified project using the data included in the request.
+// Insert creates a persistent regional disk in the specified project using the data
+// included in the request.
 func (c *RegionDisksClient) Insert(ctx context.Context, req *computepb.InsertRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of persistent disks contained within the specified region.
+// List retrieves the list of persistent disks contained within
+// the specified region.
 func (c *RegionDisksClient) List(ctx context.Context, req *computepb.ListRegionDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -252,7 +264,8 @@ func (c *RegionDisksClient) Resize(ctx context.Context, req *computepb.ResizeReg
 	return c.internalClient.Resize(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *RegionDisksClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -262,17 +275,20 @@ func (c *RegionDisksClient) SetLabels(ctx context.Context, req *computepb.SetLab
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
-// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+// StartAsyncReplication starts asynchronous replication.
+// Must be invoked on the primary disk.
 func (c *RegionDisksClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StartAsyncReplication(ctx, req, opts...)
 }
 
-// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+// StopAsyncReplication stops asynchronous replication.
+// Can be invoked either on the primary or on the secondary disk.
 func (c *RegionDisksClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StopAsyncReplication(ctx, req, opts...)
 }
 
-// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks.
+// Can be invoked either in the primary or secondary scope.
 func (c *RegionDisksClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StopGroupAsyncReplication(ctx, req, opts...)
 }
@@ -282,7 +298,9 @@ func (c *RegionDisksClient) TestIamPermissions(ctx context.Context, req *compute
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+// Update update the specified disk with the data included in the request. Update is
+// performed only on selected fields included as part of update-mask. Only the
+// following fields can be modified: user_license.
 func (c *RegionDisksClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -380,7 +398,9 @@ func (c *regionDisksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one
+// policy which will be applied to this disk for scheduling snapshot
+// creation.
 func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionDisksAddResourcePoliciesRequestResource()
@@ -514,7 +534,10 @@ func (c *regionDisksRESTClient) BulkInsert(ctx context.Context, req *computepb.B
 	return op, nil
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot
+// creation, consider using snapshots.insert
+// instead, as that method supports more features, such as creating snapshots
+// in a project different from the source disk project.
 func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
@@ -581,7 +604,11 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 	return op, nil
 }
 
-// Delete deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+// Delete deletes the specified regional persistent disk. Deleting a regional disk
+// removes all the replicas of its data permanently and is irreversible.
+// However, deleting a disk does not delete anysnapshots
+// previously made from the disk. You must separatelydelete
+// snapshots.
 func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -686,7 +713,8 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -738,7 +766,8 @@ func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// Insert creates a persistent regional disk in the specified project using the data included in the request.
+// Insert creates a persistent regional disk in the specified project using the data
+// included in the request.
 func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()
@@ -808,7 +837,8 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List retrieves the list of persistent disks contained within the specified region.
+// List retrieves the list of persistent disks contained within
+// the specified region.
 func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListRegionDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	it := &DiskIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionDisksRequest)
@@ -1028,7 +1058,8 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
@@ -1147,7 +1178,8 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	return op, nil
 }
 
-// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+// StartAsyncReplication starts asynchronous replication.
+// Must be invoked on the primary disk.
 func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionDisksStartAsyncReplicationRequestResource()
@@ -1214,7 +1246,8 @@ func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *
 	return op, nil
 }
 
-// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+// StopAsyncReplication stops asynchronous replication.
+// Can be invoked either on the primary or on the secondary disk.
 func (c *regionDisksRESTClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1274,7 +1307,8 @@ func (c *regionDisksRESTClient) StopAsyncReplication(ctx context.Context, req *c
 	return op, nil
 }
 
-// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks.
+// Can be invoked either in the primary or secondary scope.
 func (c *regionDisksRESTClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksStopGroupAsyncReplicationResourceResource()
@@ -1393,7 +1427,9 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 	return resp, nil
 }
 
-// Update update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+// Update update the specified disk with the data included in the request. Update is
+// performed only on selected fields included as part of update-mask. Only the
+// following fields can be modified: user_license.
 func (c *regionDisksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()

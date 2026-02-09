@@ -59,7 +59,10 @@ const (
 // AzureClustersClient is the client API for AzureClusters service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Deprecated: Do not use.
 type AzureClustersClient interface {
+	// Deprecated: Do not use.
 	// Creates a new [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
 	// resource on a given Google Cloud project and region.
 	//
@@ -71,12 +74,15 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureClient(ctx context.Context, in *CreateAzureClientRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
 	GetAzureClient(ctx context.Context, in *GetAzureClientRequest, opts ...grpc.CallOption) (*AzureClient, error)
+	// Deprecated: Do not use.
 	// Lists all [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
 	// resources on a given Google Cloud project and region.
 	ListAzureClients(ctx context.Context, in *ListAzureClientsRequest, opts ...grpc.CallOption) (*ListAzureClientsResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
 	// resource.
 	//
@@ -87,6 +93,7 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureClient(ctx context.Context, in *DeleteAzureClientRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Creates a new [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
 	// resource on a given Google Cloud Platform project and region.
 	//
@@ -94,14 +101,18 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureCluster(ctx context.Context, in *CreateAzureClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	UpdateAzureCluster(ctx context.Context, in *UpdateAzureClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GetAzureCluster(ctx context.Context, in *GetAzureClusterRequest, opts ...grpc.CallOption) (*AzureCluster, error)
+	// Deprecated: Do not use.
 	// Lists all [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
 	// resources on a given Google Cloud project and region.
 	ListAzureClusters(ctx context.Context, in *ListAzureClustersRequest, opts ...grpc.CallOption) (*ListAzureClustersResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	//
@@ -112,11 +123,14 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureCluster(ctx context.Context, in *DeleteAzureClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Generates an access token for a cluster agent.
 	GenerateAzureClusterAgentToken(ctx context.Context, in *GenerateAzureClusterAgentTokenRequest, opts ...grpc.CallOption) (*GenerateAzureClusterAgentTokenResponse, error)
+	// Deprecated: Do not use.
 	// Generates a short-lived access token to authenticate to a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GenerateAzureAccessToken(ctx context.Context, in *GenerateAzureAccessTokenRequest, opts ...grpc.CallOption) (*GenerateAzureAccessTokenResponse, error)
+	// Deprecated: Do not use.
 	// Creates a new [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool],
 	// attached to a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
@@ -125,15 +139,19 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureNodePool(ctx context.Context, in *CreateAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool].
 	UpdateAzureNodePool(ctx context.Context, in *UpdateAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	GetAzureNodePool(ctx context.Context, in *GetAzureNodePoolRequest, opts ...grpc.CallOption) (*AzureNodePool, error)
+	// Deprecated: Do not use.
 	// Lists all [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
 	// resources on a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	ListAzureNodePools(ctx context.Context, in *ListAzureNodePoolsRequest, opts ...grpc.CallOption) (*ListAzureNodePoolsResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific
 	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	//
@@ -141,15 +159,18 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureNodePool(ctx context.Context, in *DeleteAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Gets the OIDC discovery document for the cluster.
 	// See the
 	// [OpenID Connect Discovery 1.0
 	// specification](https://openid.net/specs/openid-connect-discovery-1_0.html)
 	// for details.
 	GetAzureOpenIdConfig(ctx context.Context, in *GetAzureOpenIdConfigRequest, opts ...grpc.CallOption) (*AzureOpenIdConfig, error)
+	// Deprecated: Do not use.
 	// Gets the public component of the cluster signing keys in
 	// JSON Web Key format.
 	GetAzureJsonWebKeys(ctx context.Context, in *GetAzureJsonWebKeysRequest, opts ...grpc.CallOption) (*AzureJsonWebKeys, error)
+	// Deprecated: Do not use.
 	// Returns information, such as supported Azure regions and Kubernetes
 	// versions, on a given Google Cloud location.
 	GetAzureServerConfig(ctx context.Context, in *GetAzureServerConfigRequest, opts ...grpc.CallOption) (*AzureServerConfig, error)
@@ -159,10 +180,12 @@ type azureClustersClient struct {
 	cc grpc.ClientConnInterface
 }
 
+// Deprecated: Do not use.
 func NewAzureClustersClient(cc grpc.ClientConnInterface) AzureClustersClient {
 	return &azureClustersClient{cc}
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) CreateAzureClient(ctx context.Context, in *CreateAzureClientRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_CreateAzureClient_FullMethodName, in, out, opts...)
@@ -172,6 +195,7 @@ func (c *azureClustersClient) CreateAzureClient(ctx context.Context, in *CreateA
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GetAzureClient(ctx context.Context, in *GetAzureClientRequest, opts ...grpc.CallOption) (*AzureClient, error) {
 	out := new(AzureClient)
 	err := c.cc.Invoke(ctx, AzureClusters_GetAzureClient_FullMethodName, in, out, opts...)
@@ -181,6 +205,7 @@ func (c *azureClustersClient) GetAzureClient(ctx context.Context, in *GetAzureCl
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) ListAzureClients(ctx context.Context, in *ListAzureClientsRequest, opts ...grpc.CallOption) (*ListAzureClientsResponse, error) {
 	out := new(ListAzureClientsResponse)
 	err := c.cc.Invoke(ctx, AzureClusters_ListAzureClients_FullMethodName, in, out, opts...)
@@ -190,6 +215,7 @@ func (c *azureClustersClient) ListAzureClients(ctx context.Context, in *ListAzur
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) DeleteAzureClient(ctx context.Context, in *DeleteAzureClientRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_DeleteAzureClient_FullMethodName, in, out, opts...)
@@ -199,6 +225,7 @@ func (c *azureClustersClient) DeleteAzureClient(ctx context.Context, in *DeleteA
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) CreateAzureCluster(ctx context.Context, in *CreateAzureClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_CreateAzureCluster_FullMethodName, in, out, opts...)
@@ -208,6 +235,7 @@ func (c *azureClustersClient) CreateAzureCluster(ctx context.Context, in *Create
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) UpdateAzureCluster(ctx context.Context, in *UpdateAzureClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_UpdateAzureCluster_FullMethodName, in, out, opts...)
@@ -217,6 +245,7 @@ func (c *azureClustersClient) UpdateAzureCluster(ctx context.Context, in *Update
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GetAzureCluster(ctx context.Context, in *GetAzureClusterRequest, opts ...grpc.CallOption) (*AzureCluster, error) {
 	out := new(AzureCluster)
 	err := c.cc.Invoke(ctx, AzureClusters_GetAzureCluster_FullMethodName, in, out, opts...)
@@ -226,6 +255,7 @@ func (c *azureClustersClient) GetAzureCluster(ctx context.Context, in *GetAzureC
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) ListAzureClusters(ctx context.Context, in *ListAzureClustersRequest, opts ...grpc.CallOption) (*ListAzureClustersResponse, error) {
 	out := new(ListAzureClustersResponse)
 	err := c.cc.Invoke(ctx, AzureClusters_ListAzureClusters_FullMethodName, in, out, opts...)
@@ -235,6 +265,7 @@ func (c *azureClustersClient) ListAzureClusters(ctx context.Context, in *ListAzu
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) DeleteAzureCluster(ctx context.Context, in *DeleteAzureClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_DeleteAzureCluster_FullMethodName, in, out, opts...)
@@ -244,6 +275,7 @@ func (c *azureClustersClient) DeleteAzureCluster(ctx context.Context, in *Delete
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GenerateAzureClusterAgentToken(ctx context.Context, in *GenerateAzureClusterAgentTokenRequest, opts ...grpc.CallOption) (*GenerateAzureClusterAgentTokenResponse, error) {
 	out := new(GenerateAzureClusterAgentTokenResponse)
 	err := c.cc.Invoke(ctx, AzureClusters_GenerateAzureClusterAgentToken_FullMethodName, in, out, opts...)
@@ -253,6 +285,7 @@ func (c *azureClustersClient) GenerateAzureClusterAgentToken(ctx context.Context
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GenerateAzureAccessToken(ctx context.Context, in *GenerateAzureAccessTokenRequest, opts ...grpc.CallOption) (*GenerateAzureAccessTokenResponse, error) {
 	out := new(GenerateAzureAccessTokenResponse)
 	err := c.cc.Invoke(ctx, AzureClusters_GenerateAzureAccessToken_FullMethodName, in, out, opts...)
@@ -262,6 +295,7 @@ func (c *azureClustersClient) GenerateAzureAccessToken(ctx context.Context, in *
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) CreateAzureNodePool(ctx context.Context, in *CreateAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_CreateAzureNodePool_FullMethodName, in, out, opts...)
@@ -271,6 +305,7 @@ func (c *azureClustersClient) CreateAzureNodePool(ctx context.Context, in *Creat
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) UpdateAzureNodePool(ctx context.Context, in *UpdateAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_UpdateAzureNodePool_FullMethodName, in, out, opts...)
@@ -280,6 +315,7 @@ func (c *azureClustersClient) UpdateAzureNodePool(ctx context.Context, in *Updat
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GetAzureNodePool(ctx context.Context, in *GetAzureNodePoolRequest, opts ...grpc.CallOption) (*AzureNodePool, error) {
 	out := new(AzureNodePool)
 	err := c.cc.Invoke(ctx, AzureClusters_GetAzureNodePool_FullMethodName, in, out, opts...)
@@ -289,6 +325,7 @@ func (c *azureClustersClient) GetAzureNodePool(ctx context.Context, in *GetAzure
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) ListAzureNodePools(ctx context.Context, in *ListAzureNodePoolsRequest, opts ...grpc.CallOption) (*ListAzureNodePoolsResponse, error) {
 	out := new(ListAzureNodePoolsResponse)
 	err := c.cc.Invoke(ctx, AzureClusters_ListAzureNodePools_FullMethodName, in, out, opts...)
@@ -298,6 +335,7 @@ func (c *azureClustersClient) ListAzureNodePools(ctx context.Context, in *ListAz
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) DeleteAzureNodePool(ctx context.Context, in *DeleteAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AzureClusters_DeleteAzureNodePool_FullMethodName, in, out, opts...)
@@ -307,6 +345,7 @@ func (c *azureClustersClient) DeleteAzureNodePool(ctx context.Context, in *Delet
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GetAzureOpenIdConfig(ctx context.Context, in *GetAzureOpenIdConfigRequest, opts ...grpc.CallOption) (*AzureOpenIdConfig, error) {
 	out := new(AzureOpenIdConfig)
 	err := c.cc.Invoke(ctx, AzureClusters_GetAzureOpenIdConfig_FullMethodName, in, out, opts...)
@@ -316,6 +355,7 @@ func (c *azureClustersClient) GetAzureOpenIdConfig(ctx context.Context, in *GetA
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GetAzureJsonWebKeys(ctx context.Context, in *GetAzureJsonWebKeysRequest, opts ...grpc.CallOption) (*AzureJsonWebKeys, error) {
 	out := new(AzureJsonWebKeys)
 	err := c.cc.Invoke(ctx, AzureClusters_GetAzureJsonWebKeys_FullMethodName, in, out, opts...)
@@ -325,6 +365,7 @@ func (c *azureClustersClient) GetAzureJsonWebKeys(ctx context.Context, in *GetAz
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *azureClustersClient) GetAzureServerConfig(ctx context.Context, in *GetAzureServerConfigRequest, opts ...grpc.CallOption) (*AzureServerConfig, error) {
 	out := new(AzureServerConfig)
 	err := c.cc.Invoke(ctx, AzureClusters_GetAzureServerConfig_FullMethodName, in, out, opts...)
@@ -337,7 +378,10 @@ func (c *azureClustersClient) GetAzureServerConfig(ctx context.Context, in *GetA
 // AzureClustersServer is the server API for AzureClusters service.
 // All implementations should embed UnimplementedAzureClustersServer
 // for forward compatibility
+//
+// Deprecated: Do not use.
 type AzureClustersServer interface {
+	// Deprecated: Do not use.
 	// Creates a new [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
 	// resource on a given Google Cloud project and region.
 	//
@@ -349,12 +393,15 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureClient(context.Context, *CreateAzureClientRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
 	GetAzureClient(context.Context, *GetAzureClientRequest) (*AzureClient, error)
+	// Deprecated: Do not use.
 	// Lists all [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
 	// resources on a given Google Cloud project and region.
 	ListAzureClients(context.Context, *ListAzureClientsRequest) (*ListAzureClientsResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
 	// resource.
 	//
@@ -365,6 +412,7 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureClient(context.Context, *DeleteAzureClientRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Creates a new [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
 	// resource on a given Google Cloud Platform project and region.
 	//
@@ -372,14 +420,18 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureCluster(context.Context, *CreateAzureClusterRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	UpdateAzureCluster(context.Context, *UpdateAzureClusterRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GetAzureCluster(context.Context, *GetAzureClusterRequest) (*AzureCluster, error)
+	// Deprecated: Do not use.
 	// Lists all [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
 	// resources on a given Google Cloud project and region.
 	ListAzureClusters(context.Context, *ListAzureClustersRequest) (*ListAzureClustersResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	//
@@ -390,11 +442,14 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureCluster(context.Context, *DeleteAzureClusterRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Generates an access token for a cluster agent.
 	GenerateAzureClusterAgentToken(context.Context, *GenerateAzureClusterAgentTokenRequest) (*GenerateAzureClusterAgentTokenResponse, error)
+	// Deprecated: Do not use.
 	// Generates a short-lived access token to authenticate to a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GenerateAzureAccessToken(context.Context, *GenerateAzureAccessTokenRequest) (*GenerateAzureAccessTokenResponse, error)
+	// Deprecated: Do not use.
 	// Creates a new [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool],
 	// attached to a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
@@ -403,15 +458,19 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureNodePool(context.Context, *CreateAzureNodePoolRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates an [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool].
 	UpdateAzureNodePool(context.Context, *UpdateAzureNodePoolRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Describes a specific
 	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	GetAzureNodePool(context.Context, *GetAzureNodePoolRequest) (*AzureNodePool, error)
+	// Deprecated: Do not use.
 	// Lists all [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
 	// resources on a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	ListAzureNodePools(context.Context, *ListAzureNodePoolsRequest) (*ListAzureNodePoolsResponse, error)
+	// Deprecated: Do not use.
 	// Deletes a specific
 	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	//
@@ -419,15 +478,18 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureNodePool(context.Context, *DeleteAzureNodePoolRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Gets the OIDC discovery document for the cluster.
 	// See the
 	// [OpenID Connect Discovery 1.0
 	// specification](https://openid.net/specs/openid-connect-discovery-1_0.html)
 	// for details.
 	GetAzureOpenIdConfig(context.Context, *GetAzureOpenIdConfigRequest) (*AzureOpenIdConfig, error)
+	// Deprecated: Do not use.
 	// Gets the public component of the cluster signing keys in
 	// JSON Web Key format.
 	GetAzureJsonWebKeys(context.Context, *GetAzureJsonWebKeysRequest) (*AzureJsonWebKeys, error)
+	// Deprecated: Do not use.
 	// Returns information, such as supported Azure regions and Kubernetes
 	// versions, on a given Google Cloud location.
 	GetAzureServerConfig(context.Context, *GetAzureServerConfigRequest) (*AzureServerConfig, error)
@@ -502,6 +564,7 @@ type UnsafeAzureClustersServer interface {
 	mustEmbedUnimplementedAzureClustersServer()
 }
 
+// Deprecated: Do not use.
 func RegisterAzureClustersServer(s grpc.ServiceRegistrar, srv AzureClustersServer) {
 	s.RegisterService(&AzureClusters_ServiceDesc, srv)
 }

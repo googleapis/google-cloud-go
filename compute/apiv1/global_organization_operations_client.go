@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -127,12 +127,14 @@ func (c *GlobalOrganizationOperationsClient) Delete(ctx context.Context, req *co
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
+// Get retrieves the specified Operations resource. Gets a list of operations
+// by making a list() request.
 func (c *GlobalOrganizationOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of Operation resources contained within the specified organization.
+// List retrieves a list of Operation resources contained within the specified
+// organization.
 func (c *GlobalOrganizationOperationsClient) List(ctx context.Context, req *computepb.ListGlobalOrganizationOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -266,7 +268,8 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	return resp, nil
 }
 
-// Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
+// Get retrieves the specified Operations resource. Gets a list of operations
+// by making a list() request.
 func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -318,7 +321,8 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	return resp, nil
 }
 
-// List retrieves a list of Operation resources contained within the specified organization.
+// List retrieves a list of Operation resources contained within the specified
+// organization.
 func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *computepb.ListGlobalOrganizationOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*computepb.ListGlobalOrganizationOperationsRequest)

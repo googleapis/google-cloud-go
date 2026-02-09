@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -158,7 +158,11 @@ func (c *PublicDelegatedPrefixesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project
+// across all scopes.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *PublicDelegatedPrefixesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -178,7 +182,8 @@ func (c *PublicDelegatedPrefixesClient) Get(ctx context.Context, req *computepb.
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a PublicDelegatedPrefix in the specified project in the given region using the parameters that are included in the request.
+// Insert creates a PublicDelegatedPrefix in the specified project in the given
+// region using the parameters that are included in the request.
 func (c *PublicDelegatedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -188,7 +193,10 @@ func (c *PublicDelegatedPrefixesClient) List(ctx context.Context, req *computepb
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified PublicDelegatedPrefix resource with the data included
+// in the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *PublicDelegatedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -291,7 +299,11 @@ func (c *publicDelegatedPrefixesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project
+// across all scopes.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *publicDelegatedPrefixesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixesScopedListPairIterator {
 	it := &PublicDelegatedPrefixesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListPublicDelegatedPrefixesRequest)
@@ -555,7 +567,8 @@ func (c *publicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates a PublicDelegatedPrefix in the specified project in the given region using the parameters that are included in the request.
+// Insert creates a PublicDelegatedPrefix in the specified project in the given
+// region using the parameters that are included in the request.
 func (c *publicDelegatedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
@@ -708,7 +721,10 @@ func (c *publicDelegatedPrefixesRESTClient) List(ctx context.Context, req *compu
 	return it
 }
 
-// Patch patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified PublicDelegatedPrefix resource with the data included
+// in the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *publicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()

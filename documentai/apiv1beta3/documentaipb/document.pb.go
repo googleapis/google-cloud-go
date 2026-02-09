@@ -564,8 +564,9 @@ type Document struct {
 	// Document chunked based on chunking config.
 	ChunkedDocument *Document_ChunkedDocument `protobuf:"bytes,18,opt,name=chunked_document,json=chunkedDocument,proto3" json:"chunked_document,omitempty"`
 	// Optional. The blob assets in this document. This is used to store the
-	// content of the inline blobs in this document, e.g. image bytes, such that
-	// it can be referenced by other fields in the document via asset id.
+	// content of the inline blobs in this document, for example, image bytes,
+	// such that it can be referenced by other fields in the document via asset
+	// id.
 	BlobAssets []*Document_BlobAsset `protobuf:"bytes,19,rep,name=blob_assets,json=blobAssets,proto3" json:"blob_assets,omitempty"`
 	// The entity validation output for the document. This is the validation
 	// output for `document.entities` field.
@@ -574,10 +575,10 @@ type Document struct {
 	// document in the processing order. This field can be used for comparing the
 	// entity extraction results at different stages of the processing.
 	EntitiesRevisions []*Document_EntitiesRevision `protobuf:"bytes,22,rep,name=entities_revisions,json=entitiesRevisions,proto3" json:"entities_revisions,omitempty"`
-	// The entity revision id that `document.entities` field is based on.
+	// The entity revision ID that `document.entities` field is based on.
 	// If this field is set and `entities_revisions` is not empty, the entities in
 	// `document.entities` field are the entities in the entity revision with this
-	// id and `document.entity_validation_output` field is the
+	// ID and `document.entity_validation_output` field is the
 	// `entity_validation_output` field in this entity revision.
 	EntitiesRevisionId string `protobuf:"bytes,23,opt,name=entities_revision_id,json=entitiesRevisionId,proto3" json:"entities_revision_id,omitempty"`
 }
@@ -860,7 +861,7 @@ type RevisionRef_RevisionCase_ struct {
 }
 
 type RevisionRef_RevisionId struct {
-	// Reads the revision given by the id.
+	// Reads the revision given by the ID.
 	RevisionId string `protobuf:"bytes,2,opt,name=revision_id,json=revisionId,proto3,oneof"`
 }
 
@@ -1103,7 +1104,7 @@ type Document_Page struct {
 	Lines []*Document_Page_Line `protobuf:"bytes,7,rep,name=lines,proto3" json:"lines,omitempty"`
 	// A list of visually detected tokens on the page.
 	Tokens []*Document_Page_Token `protobuf:"bytes,8,rep,name=tokens,proto3" json:"tokens,omitempty"`
-	// A list of detected non-text visual elements e.g. checkbox,
+	// A list of detected non-text visual elements for example, checkbox,
 	// signature etc. on the page.
 	VisualElements []*Document_Page_VisualElement `protobuf:"bytes,9,rep,name=visual_elements,json=visualElements,proto3" json:"visual_elements,omitempty"`
 	// A list of visually detected tables on the page.
@@ -1284,9 +1285,9 @@ type Document_Entity struct {
 	// Text anchor indexing into the
 	// [Document.text][google.cloud.documentai.v1beta3.Document.text].
 	TextAnchor *Document_TextAnchor `protobuf:"bytes,1,opt,name=text_anchor,json=textAnchor,proto3" json:"text_anchor,omitempty"`
-	// Required. Entity type from a schema e.g. `Address`.
+	// Required. Entity type from a schema for example, `Address`.
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	// Optional. Text value of the entity e.g. `1600 Amphitheatre Pkwy`.
+	// Optional. Text value of the entity for example, `1600 Amphitheatre Pkwy`.
 	MentionText string `protobuf:"bytes,3,opt,name=mention_text,json=mentionText,proto3" json:"mention_text,omitempty"`
 	// Optional. Deprecated.  Use `id` field instead.
 	MentionId string `protobuf:"bytes,4,opt,name=mention_id,json=mentionId,proto3" json:"mention_id,omitempty"`
@@ -1295,13 +1296,13 @@ type Document_Entity struct {
 	// Optional. Represents the provenance of this entity wrt. the location on
 	// the page where it was found.
 	PageAnchor *Document_PageAnchor `protobuf:"bytes,6,opt,name=page_anchor,json=pageAnchor,proto3" json:"page_anchor,omitempty"`
-	// Optional. Canonical id. This will be a unique value in the entity list
+	// Optional. Canonical ID. This will be a unique value in the entity list
 	// for this document.
 	Id string `protobuf:"bytes,7,opt,name=id,proto3" json:"id,omitempty"`
 	// Optional. Normalized entity value. Absent if the extracted value could
-	// not be converted or the type (e.g. address) is not supported for certain
-	// parsers. This field is also only populated for certain supported document
-	// types.
+	// not be converted or the type (for example, address) is not supported for
+	// certain parsers. This field is also only populated for certain supported
+	// document types.
 	NormalizedValue *Document_Entity_NormalizedValue `protobuf:"bytes,9,opt,name=normalized_value,json=normalizedValue,proto3" json:"normalized_value,omitempty"`
 	// Optional. Entities can be nested to form a hierarchical data structure
 	// representing the content in the document.
@@ -1436,9 +1437,9 @@ type Document_EntityRelation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Subject entity id.
+	// Subject entity ID.
 	SubjectId string `protobuf:"bytes,1,opt,name=subject_id,json=subjectId,proto3" json:"subject_id,omitempty"`
-	// Object entity id.
+	// Object entity ID.
 	ObjectId string `protobuf:"bytes,2,opt,name=object_id,json=objectId,proto3" json:"object_id,omitempty"`
 	// Relationship description.
 	Relation string `protobuf:"bytes,3,opt,name=relation,proto3" json:"relation,omitempty"`
@@ -1616,7 +1617,7 @@ type Document_Provenance struct {
 	//
 	// Deprecated: Marked as deprecated in google/cloud/documentai/v1beta3/document.proto.
 	Revision int32 `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
-	// The Id of this operation.  Needs to be unique within the scope of the
+	// The ID of this operation.  Needs to be unique within the scope of the
 	// revision.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/documentai/v1beta3/document.proto.
@@ -1700,7 +1701,7 @@ type Document_Revision struct {
 	//	*Document_Revision_Agent
 	//	*Document_Revision_Processor
 	Source isDocument_Revision_Source `protobuf_oneof:"source"`
-	// Id of the revision, internally generated by doc proto storage.
+	// ID of the revision, internally generated by doc proto storage.
 	// Unique within the context of the document.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The revisions that this revision is based on.  This can include one or
@@ -1709,7 +1710,7 @@ type Document_Revision struct {
 	//
 	// Deprecated: Marked as deprecated in google/cloud/documentai/v1beta3/document.proto.
 	Parent []int32 `protobuf:"varint,2,rep,packed,name=parent,proto3" json:"parent,omitempty"`
-	// The revisions that this revision is based on. Must include all the ids
+	// The revisions that this revision is based on. Must include all the IDs
 	// that have anything to do with this revision - eg. there are
 	// `provenance.parent.revision` fields that index into this field.
 	ParentIds []string `protobuf:"bytes,7,rep,name=parent_ids,json=parentIds,proto3" json:"parent_ids,omitempty"`
@@ -1812,7 +1813,7 @@ type isDocument_Revision_Source interface {
 }
 
 type Document_Revision_Agent struct {
-	// If the change was made by a person specify the name or id of that
+	// If the change was made by a person specify the name or ID of that
 	// person.
 	Agent string `protobuf:"bytes,4,opt,name=agent,proto3,oneof"`
 }
@@ -2043,16 +2044,16 @@ func (x *Document_ChunkedDocument) GetChunks() []*Document_ChunkedDocument_Chunk
 }
 
 // Represents a blob asset. It's used to store the content of the inline blob
-// in this document, e.g. image bytes, such that it can be referenced by
-// other fields in the document via asset id.
+// in this document, for example, image bytes, such that it can be referenced
+// by other fields in the document via asset ID.
 type Document_BlobAsset struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The id of the blob asset.
+	// Optional. The ID of the blob asset.
 	AssetId string `protobuf:"bytes,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
-	// Optional. The content of the blob asset, e.g. image bytes.
+	// Optional. The content of the blob asset, for example, image bytes.
 	Content []byte `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
 	// The mime type of the blob asset.
 	// An IANA published [media type (MIME
@@ -2174,7 +2175,7 @@ type Document_EntitiesRevision struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The revision id.
+	// The revision ID.
 	RevisionId string `protobuf:"bytes,1,opt,name=revision_id,json=revisionId,proto3" json:"revision_id,omitempty"`
 	// The entities in this revision.
 	Entities []*Document_Entity `protobuf:"bytes,2,rep,name=entities,proto3" json:"entities,omitempty"`
@@ -2520,9 +2521,9 @@ type Document_Page_Layout struct {
 	TextAnchor *Document_TextAnchor `protobuf:"bytes,1,opt,name=text_anchor,json=textAnchor,proto3" json:"text_anchor,omitempty"`
 	// Confidence of the current
 	// [Layout][google.cloud.documentai.v1beta3.Document.Page.Layout] within
-	// context of the object this layout is for. e.g. confidence can be for a
-	// single token, a table, a visual element, etc. depending on context.
-	// Range `[0, 1]`.
+	// context of the object this layout is for. For example, confidence can
+	// be for a single token, a table, a visual element, etc. depending on
+	// context. Range `[0, 1]`.
 	Confidence float32 `protobuf:"fixed32,2,opt,name=confidence,proto3" json:"confidence,omitempty"`
 	// The bounding polygon for the
 	// [Layout][google.cloud.documentai.v1beta3.Document.Page.Layout].
@@ -2944,8 +2945,8 @@ func (x *Document_Page_Symbol) GetDetectedLanguages() []*Document_Page_DetectedL
 	return nil
 }
 
-// Detected non-text visual elements e.g. checkbox, signature etc. on the
-// page.
+// Detected non-text visual elements, for example, checkbox, signature, etc.
+// on the page.
 type Document_Page_VisualElement struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3107,7 +3108,8 @@ type Document_Page_FormField struct {
 
 	// [Layout][google.cloud.documentai.v1beta3.Document.Page.Layout] for the
 	// [FormField][google.cloud.documentai.v1beta3.Document.Page.FormField]
-	// name. e.g. `Address`, `Email`, `Grand total`, `Phone number`, etc.
+	// name. For example, `Address`, `Email`, `Grand total`, `Phone number`,
+	// etc.
 	FieldName *Document_Page_Layout `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
 	// [Layout][google.cloud.documentai.v1beta3.Document.Page.Layout] for the
 	// [FormField][google.cloud.documentai.v1beta3.Document.Page.FormField]
@@ -4191,7 +4193,7 @@ type Document_Provenance_Parent struct {
 	// The index of the parent item in the corresponding item list (eg. list
 	// of entities, properties within entities, etc.) in the parent revision.
 	Index int32 `protobuf:"varint,3,opt,name=index,proto3" json:"index,omitempty"`
-	// The id of the parent provenance.
+	// The ID of the parent provenance.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/documentai/v1beta3/document.proto.
 	Id int32 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -4255,7 +4257,7 @@ type Document_Revision_HumanReview struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Human review state. e.g. `requested`, `succeeded`, `rejected`.
+	// Human review state. For example, `requested`, `succeeded`, `rejected`.
 	State string `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
 	// A message providing more details about the current state of processing.
 	// For example, the rejection reason when the state is `rejected`.
@@ -4983,22 +4985,22 @@ type isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource 
 }
 
 type Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_BlobAssetId struct {
-	// Optional. Asset id of the inline image. If set, find the image
+	// Optional. Asset ID of the inline image. If set, find the image
 	// content in the blob_assets field.
 	BlobAssetId string `protobuf:"bytes,4,opt,name=blob_asset_id,json=blobAssetId,proto3,oneof"`
 }
 
 type Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_GcsUri struct {
-	// Optional. Google Cloud Storage uri of the image.
+	// Optional. Google Cloud Storage URI of the image.
 	GcsUri string `protobuf:"bytes,5,opt,name=gcs_uri,json=gcsUri,proto3,oneof"`
 }
 
 type Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_DataUri struct {
-	// Optional. Data uri of the image.
+	// Optional. Data URI of the image.
 	// It is composed of four parts: a prefix (data:), a MIME type
 	// indicating the type of data, an optional base64 token if
 	// non-textual, and the data itself:
-	// data:[<mediatype>][;base64],<data>
+	// data:[<mediatype>][;base64],<data>.
 	DataUri string `protobuf:"bytes,6,opt,name=data_uri,json=dataUri,proto3,oneof"`
 }
 
@@ -5368,22 +5370,22 @@ type isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource interface {
 }
 
 type Document_ChunkedDocument_Chunk_ImageChunkField_BlobAssetId struct {
-	// Optional. Asset id of the inline image. If set, find the image
+	// Optional. Asset ID of the inline image. If set, find the image
 	// content in the blob_assets field.
 	BlobAssetId string `protobuf:"bytes,1,opt,name=blob_asset_id,json=blobAssetId,proto3,oneof"`
 }
 
 type Document_ChunkedDocument_Chunk_ImageChunkField_GcsUri struct {
-	// Optional. Google Cloud Storage uri of the image.
+	// Optional. Google Cloud Storage URI of the image.
 	GcsUri string `protobuf:"bytes,2,opt,name=gcs_uri,json=gcsUri,proto3,oneof"`
 }
 
 type Document_ChunkedDocument_Chunk_ImageChunkField_DataUri struct {
-	// Optional. Data uri of the image.
+	// Optional. Data URI of the image.
 	// It is composed of four parts: a prefix (data:), a MIME type
 	// indicating the type of data, an optional base64 token if
 	// non-textual, and the data itself:
-	// data:[<mediatype>][;base64],<data>
+	// data:[<mediatype>][;base64],<data>.
 	DataUri string `protobuf:"bytes,3,opt,name=data_uri,json=dataUri,proto3,oneof"`
 }
 
@@ -5444,7 +5446,7 @@ func (x *Document_ChunkedDocument_Chunk_TableChunkField) GetAnnotations() *Docum
 }
 
 // The chunk field in the chunk. A chunk field could be one of the various
-// types (e.g. image, table) supported.
+// types (for example, image, table) supported.
 type Document_ChunkedDocument_Chunk_ChunkField struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

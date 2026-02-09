@@ -21,6 +21,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"regexp"
 	"time"
 
 	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
@@ -66,6 +67,7 @@ const DefaultDatabaseID = ""
 var (
 	gtransportDialPoolFn = gtransport.DialPool
 	detectProjectIDFn    = detectProjectID
+	schemeRegexp         = regexp.MustCompile("^(http://|https://|passthrough:///)")
 )
 
 // Client is a client for reading and writing data in a datastore dataset.
@@ -106,8 +108,9 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	// https://cloud.google.com/datastore/docs/tools/datastore-emulator
 	// If the emulator is available, dial it without passing any credentials.
 	if addr := os.Getenv("DATASTORE_EMULATOR_HOST"); addr != "" {
+		addr = schemeRegexp.ReplaceAllString(addr, "")
 		o = []option.ClientOption{
-			option.WithEndpoint(addr),
+			option.WithEndpoint("passthrough:///" + addr),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		}

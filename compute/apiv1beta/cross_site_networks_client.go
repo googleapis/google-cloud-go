@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -143,7 +143,8 @@ func (c *CrossSiteNetworksClient) Get(ctx context.Context, req *computepb.GetCro
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a cross-site network in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a cross-site network in the specified project in the given scope
+// using the parameters that are included in the request.
 func (c *CrossSiteNetworksClient) Insert(ctx context.Context, req *computepb.InsertCrossSiteNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -153,7 +154,10 @@ func (c *CrossSiteNetworksClient) List(ctx context.Context, req *computepb.ListC
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified cross-site network with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified cross-site network with the data included in
+// the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *CrossSiteNetworksClient) Patch(ctx context.Context, req *computepb.PatchCrossSiteNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -355,7 +359,8 @@ func (c *crossSiteNetworksRESTClient) Get(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates a cross-site network in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a cross-site network in the specified project in the given scope
+// using the parameters that are included in the request.
 func (c *crossSiteNetworksRESTClient) Insert(ctx context.Context, req *computepb.InsertCrossSiteNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCrossSiteNetworkResource()
@@ -510,7 +515,10 @@ func (c *crossSiteNetworksRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// Patch updates the specified cross-site network with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified cross-site network with the data included in
+// the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *crossSiteNetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchCrossSiteNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCrossSiteNetworkResource()

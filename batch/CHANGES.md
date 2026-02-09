@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/batch%2Fv1.14.0) (2025-12-04)
+
+### Features
+
+* added new provisioning models ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/batch%2Fv1.13.0) (2025-10-10)
 
 ### Features

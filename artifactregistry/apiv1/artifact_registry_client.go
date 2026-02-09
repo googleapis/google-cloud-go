@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,6 +96,7 @@ type CallOptions struct {
 	GetAttachment         []gax.CallOption
 	CreateAttachment      []gax.CallOption
 	DeleteAttachment      []gax.CallOption
+	ExportArtifact        []gax.CallOption
 	GetLocation           []gax.CallOption
 	ListLocations         []gax.CallOption
 	GetOperation          []gax.CallOption
@@ -265,6 +266,9 @@ func defaultCallOptions() *CallOptions {
 		DeleteAttachment: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ExportArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
 		GetOperation:  []gax.CallOption{},
@@ -420,6 +424,9 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteAttachment: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ExportArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
 		GetOperation:  []gax.CallOption{},
@@ -490,6 +497,8 @@ type internalClient interface {
 	CreateAttachmentOperation(name string) *CreateAttachmentOperation
 	DeleteAttachment(context.Context, *artifactregistrypb.DeleteAttachmentRequest, ...gax.CallOption) (*DeleteAttachmentOperation, error)
 	DeleteAttachmentOperation(name string) *DeleteAttachmentOperation
+	ExportArtifact(context.Context, *artifactregistrypb.ExportArtifactRequest, ...gax.CallOption) (*ExportArtifactOperation, error)
+	ExportArtifactOperation(name string) *ExportArtifactOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -871,6 +880,17 @@ func (c *Client) DeleteAttachment(ctx context.Context, req *artifactregistrypb.D
 // The name must be that of a previously created DeleteAttachmentOperation, possibly from a different process.
 func (c *Client) DeleteAttachmentOperation(name string) *DeleteAttachmentOperation {
 	return c.internalClient.DeleteAttachmentOperation(name)
+}
+
+// ExportArtifact exports an artifact to a Cloud Storage bucket.
+func (c *Client) ExportArtifact(ctx context.Context, req *artifactregistrypb.ExportArtifactRequest, opts ...gax.CallOption) (*ExportArtifactOperation, error) {
+	return c.internalClient.ExportArtifact(ctx, req, opts...)
+}
+
+// ExportArtifactOperation returns a new ExportArtifactOperation from a given name.
+// The name must be that of a previously created ExportArtifactOperation, possibly from a different process.
+func (c *Client) ExportArtifactOperation(name string) *ExportArtifactOperation {
+	return c.internalClient.ExportArtifactOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -2308,6 +2328,26 @@ func (c *gRPCClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 		return nil, err
 	}
 	return &DeleteAttachmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ExportArtifact(ctx context.Context, req *artifactregistrypb.ExportArtifactRequest, opts ...gax.CallOption) (*ExportArtifactOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportArtifact[0:len((*c.CallOptions).ExportArtifact):len((*c.CallOptions).ExportArtifact)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExportArtifact, req, settings.GRPC, c.logger, "ExportArtifact")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportArtifactOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -5392,6 +5432,65 @@ func (c *restClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 	}, nil
 }
 
+// ExportArtifact exports an artifact to a Cloud Storage bucket.
+func (c *restClient) ExportArtifact(ctx context.Context, req *artifactregistrypb.ExportArtifactRequest, opts ...gax.CallOption) (*ExportArtifactOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:exportArtifact", req.GetRepository())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportArtifact")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ExportArtifactOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -5712,6 +5811,24 @@ func (c *gRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation
 func (c *restClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportArtifactOperation returns a new ExportArtifactOperation from a given name.
+// The name must be that of a previously created ExportArtifactOperation, possibly from a different process.
+func (c *gRPCClient) ExportArtifactOperation(name string) *ExportArtifactOperation {
+	return &ExportArtifactOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportArtifactOperation returns a new ExportArtifactOperation from a given name.
+// The name must be that of a previously created ExportArtifactOperation, possibly from a different process.
+func (c *restClient) ExportArtifactOperation(name string) *ExportArtifactOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ExportArtifactOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

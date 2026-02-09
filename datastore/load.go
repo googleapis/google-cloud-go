@@ -78,13 +78,16 @@ func (l *propertyLoader) load(codec fields.List, structValue reflect.Value, p Pr
 	if !ok {
 		return l.loadOneElement(codec, structValue, p, prev)
 	}
+	var firstErr string
 	for _, val := range sl {
 		p.Value = val
 		if errStr := l.loadOneElement(codec, structValue, p, prev); errStr != "" {
-			return errStr
+			if firstErr == "" {
+				firstErr = errStr
+			}
 		}
 	}
-	return ""
+	return firstErr
 }
 
 // loadOneElement loads the value of Property p into structValue based on the provided

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,12 @@ import (
 	quotapb "cloud.google.com/go/shopping/merchant/quota/apiv1/quotapb"
 	"github.com/googleapis/gax-go/v2/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountLimitIterator) All() iter.Seq2[*quotapb.AccountLimit, error] {
+	return iterator.RangeAdapter(it.Next)
+}
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.

@@ -550,15 +550,15 @@ items:
             const (
             	// ScopeFullControl grants permissions to manage your
             	// data and permissions in Google Cloud Storage.
-            	ScopeFullControl = <a href="https://pkg.go.dev/google.golang.org/api/storage/v1">raw</a>.<a href="https://pkg.go.dev/google.golang.org/api/storage/v1#DevstorageFullControlScope">DevstorageFullControlScope</a>
+            	ScopeFullControl = raw.DevstorageFullControlScope
 
             	// ScopeReadOnly grants permissions to
             	// view your data in Google Cloud Storage.
-            	ScopeReadOnly = <a href="https://pkg.go.dev/google.golang.org/api/storage/v1">raw</a>.<a href="https://pkg.go.dev/google.golang.org/api/storage/v1#DevstorageReadOnlyScope">DevstorageReadOnlyScope</a>
+            	ScopeReadOnly = raw.DevstorageReadOnlyScope
 
             	// ScopeReadWrite grants permissions to manage your
             	// data in Google Cloud Storage.
-            	ScopeReadWrite = <a href="https://pkg.go.dev/google.golang.org/api/storage/v1">raw</a>.<a href="https://pkg.go.dev/google.golang.org/api/storage/v1#DevstorageReadWriteScope">DevstorageReadWriteScope</a>
+            	ScopeReadWrite = raw.DevstorageReadWriteScope
             )
     - uid: cloud.google.com/go/storage.ErrBucketNotExist,ErrObjectNotExist
       name: ErrBucketNotExist, ErrObjectNotExist
@@ -571,9 +571,9 @@ items:
         content: |-
             var (
             	// ErrBucketNotExist indicates that the bucket does not exist.
-            	ErrBucketNotExist = <a href="https://pkg.go.dev/errors">errors</a>.<a href="https://pkg.go.dev/errors#New">New</a>("storage: bucket doesn't exist")
+            	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
             	// ErrObjectNotExist indicates that the object does not exist.
-            	ErrObjectNotExist = <a href="https://pkg.go.dev/errors">errors</a>.<a href="https://pkg.go.dev/errors#New">New</a>("storage: object doesn't exist")
+            	ErrObjectNotExist = errors.New("storage: object doesn't exist")
             )
     - uid: cloud.google.com/go/storage.ACLEntity
       name: ACLEntity
@@ -791,7 +791,7 @@ items:
             	// ToggleTime is the time from which Autoclass was last toggled.
             	// If Autoclass is enabled when the bucket is created, the ToggleTime
             	// is set to the bucket creation time. This field is read-only.
-            	ToggleTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	ToggleTime time.Time
             }
     - uid: cloud.google.com/go/storage.BucketAttrs
       name: BucketAttrs
@@ -811,7 +811,7 @@ items:
             	Name <a href="https://pkg.go.dev/builtin#string">string</a>
 
             	// ACL is the list of access control rules on the bucket.
-            	ACL []<a href="#cloud_google_com_go_storage_ACLRule">ACLRule</a>
+            	ACL []ACLRule
 
             	// BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of
             	// UniformBucketLevelAccess is recommended above the use of this field.
@@ -834,7 +834,7 @@ items:
 
             	// DefaultObjectACL is the list of access controls to
             	// apply to new objects when no object ACL is provided.
-            	DefaultObjectACL []<a href="#cloud_google_com_go_storage_ACLRule">ACLRule</a>
+            	DefaultObjectACL []ACLRule
 
             	// DefaultEventBasedHold is the default value for event-based hold on
             	// newly created objects in this bucket. It defaults to false.
@@ -876,7 +876,7 @@ items:
 
             	// Created is the creation time of the bucket.
             	// This field is read-only.
-            	Created <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	Created time.Time
 
             	// VersioningEnabled reports whether this bucket has versioning enabled.
             	VersioningEnabled <a href="https://pkg.go.dev/builtin#bool">bool</a>
@@ -951,14 +951,14 @@ items:
         content: |-
             type BucketAttrsToUpdate struct {
             	// If set, updates whether the bucket uses versioning.
-            	VersioningEnabled <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool">Bool</a>
+            	VersioningEnabled optional.Bool
 
             	// If set, updates whether the bucket is a Requester Pays bucket.
-            	RequesterPays <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool">Bool</a>
+            	RequesterPays optional.Bool
 
             	// DefaultEventBasedHold is the default value for event-based hold on
             	// newly created objects in this bucket.
-            	DefaultEventBasedHold <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool">Bool</a>
+            	DefaultEventBasedHold optional.Bool
 
             	// BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of
             	// UniformBucketLevelAccess is recommended above the use of this field.
@@ -1792,7 +1792,7 @@ items:
             	Enabled <a href="https://pkg.go.dev/builtin#bool">bool</a>
             	// LockedTime specifies the deadline for changing Enabled from true to
             	// false.
-            	LockedTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	LockedTime time.Time
             }
     - uid: cloud.google.com/go/storage.BucketWebsite
       name: BucketWebsite
@@ -1833,7 +1833,7 @@ items:
             type CORS struct {
             	// MaxAge is the value to return in the Access-Control-Max-Age
             	// header used in preflight responses.
-            	MaxAge <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Duration">Duration</a>
+            	MaxAge time.Duration
 
             	// Methods is the list of HTTP methods on which to include CORS response
             	// headers, (GET, OPTIONS, POST, etc) Note: "*" is permitted in the list
@@ -2228,7 +2228,7 @@ items:
             	// ObjectAttrs are optional attributes to set on the destination object.
             	// Any attributes must be initialized before any calls on the Composer. Nil
             	// or zero-valued attributes are ignored.
-            	<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>
+            	ObjectAttrs
 
             	// SendCRC specifies whether to transmit a CRC32C field. It should be set
             	// to true in addition to setting the Composer's CRC32C field, because zero
@@ -2357,7 +2357,7 @@ items:
             	// ObjectAttrs are optional attributes to set on the destination object.
             	// Any attributes must be initialized before any calls on the Copier. Nil
             	// or zero-valued attributes are ignored.
-            	<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>
+            	ObjectAttrs
 
             	// RewriteToken can be set before calling Run to resume a copy
             	// operation. After Run returns a non-nil error, RewriteToken will
@@ -2520,10 +2520,10 @@ items:
             	ServiceAccountEmail <a href="https://pkg.go.dev/builtin#string">string</a>
 
             	// CreatedTime is the creation time of the HMAC key.
-            	CreatedTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	CreatedTime time.Time
 
             	// UpdatedTime is the last modification time of the HMAC key metadata.
-            	UpdatedTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	UpdatedTime time.Time
 
             	// State is the state of the HMAC key.
             	// It can be one of StateActive, StateInactive or StateDeleted.
@@ -2877,14 +2877,14 @@ items:
             	//
             	// This condition is satisfied when an object is created before midnight of
             	// the specified date in UTC.
-            	CreatedBefore <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	CreatedBefore time.Time
 
             	// CustomTimeBefore is the CustomTime metadata field of the object. This
             	// condition is satisfied when an object's CustomTime timestamp is before
             	// midnight of the specified date in UTC.
             	//
             	// This condition can only be satisfied if CustomTime has been set.
-            	CustomTimeBefore <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	CustomTimeBefore time.Time
 
             	// DaysSinceCustomTime is the days elapsed since the CustomTime date of the
             	// object. This condition can only be satisfied if CustomTime has been set.
@@ -2918,7 +2918,7 @@ items:
             	// midnight of the specified date in UTC.
             	//
             	// This condition is relevant only for versioned objects.
-            	NoncurrentTimeBefore <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	NoncurrentTimeBefore time.Time
 
             	// NumNewerVersions is the condition matching objects with a number of newer versions.
             	//
@@ -3061,10 +3061,10 @@ items:
             	// RetentionExpirationTime is a server-determined value that specifies the
             	// earliest time that the object's retention period expires.
             	// This is a read-only field.
-            	RetentionExpirationTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	RetentionExpirationTime time.Time
 
             	// ACL is the list of access control rules for the object.
-            	ACL []<a href="#cloud_google_com_go_storage_ACLRule">ACLRule</a>
+            	ACL []ACLRule
 
             	// If not empty, applies a predefined set of access controls. It should be set
             	// only when writing, copying or composing an object. When copying or composing,
@@ -3135,16 +3135,16 @@ items:
             	StorageClass <a href="https://pkg.go.dev/builtin#string">string</a>
 
             	// Created is the time the object was created. This field is read-only.
-            	Created <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	Created time.Time
 
             	// Deleted is the time the object was deleted.
             	// If not deleted, it is the zero value. This field is read-only.
-            	Deleted <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	Deleted time.Time
 
             	// Updated is the creation or modification time of the object.
             	// For buckets with versioning enabled, changing an object's
             	// metadata does not change this property. This field is read-only.
-            	Updated <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	Updated time.Time
 
             	// CustomerKeySHA256 is the base64-encoded SHA-256 hash of the
             	// customer-supplied encryption key for the object. It is empty if there is
@@ -3178,7 +3178,7 @@ items:
             	// CustomTime cannot be removed once set on an object. It can be updated to a
             	// later value but not to an earlier one. For more information see
             	// https://cloud.google.com/storage/docs/metadata#custom-time .
-            	CustomTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	CustomTime time.Time
 
             	// ComponentCount is the number of objects contained within a composite object.
             	// For non-composite objects, the value will be zero.
@@ -3209,16 +3209,16 @@ items:
       syntax:
         content: |-
             type ObjectAttrsToUpdate struct {
-            	EventBasedHold     <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool">Bool</a>
-            	TemporaryHold      <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool">Bool</a>
-            	ContentType        <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#String">String</a>
-            	ContentLanguage    <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#String">String</a>
-            	ContentEncoding    <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#String">String</a>
-            	ContentDisposition <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#String">String</a>
-            	CacheControl       <a href="https://pkg.go.dev/cloud.google.com/go/internal/optional">optional</a>.<a href="https://pkg.go.dev/cloud.google.com/go/internal/optional#String">String</a>
-            	CustomTime         <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>         // Cannot be deleted or backdated from its current value.
+            	EventBasedHold     optional.Bool
+            	TemporaryHold      optional.Bool
+            	ContentType        optional.String
+            	ContentLanguage    optional.String
+            	ContentEncoding    optional.String
+            	ContentDisposition optional.String
+            	CacheControl       optional.String
+            	CustomTime         time.Time         // Cannot be deleted or backdated from its current value.
             	Metadata           map[<a href="https://pkg.go.dev/builtin#string">string</a>]<a href="https://pkg.go.dev/builtin#string">string</a> // Set to map[string]string{} to delete.
-            	ACL                []<a href="#cloud_google_com_go_storage_ACLRule">ACLRule</a>
+            	ACL                []ACLRule
 
             	// If not empty, applies a predefined set of access controls. ACL must be nil.
             	// See https://cloud.google.com/storage/docs/json_api/v1/objects/patch.
@@ -4173,7 +4173,7 @@ items:
       syntax:
         content: |-
             type PostPolicyV4Condition interface {
-            	<a href="https://pkg.go.dev/encoding/json">json</a>.<a href="https://pkg.go.dev/encoding/json#Marshaler">Marshaler</a>
+            	json.Marshaler
             	// contains filtered or unexported methods
             }
     - uid: cloud.google.com/go/storage.PostPolicyV4Condition.ConditionContentLengthRange
@@ -4272,13 +4272,13 @@ items:
             	// Expires is the expiration time on the signed post policy.
             	// It must be a time in the future.
             	// Required.
-            	Expires <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	Expires time.Time
 
             	// Style provides options for the type of URL to use. Options are
             	// PathStyle (default), BucketBoundHostname, and VirtualHostedStyle. See
             	// https://cloud.google.com/storage/docs/request-endpoints for details.
             	// Optional.
-            	Style <a href="#cloud_google_com_go_storage_URLStyle">URLStyle</a>
+            	Style URLStyle
 
             	// Insecure when set indicates that the generated URL's scheme
             	// will use "http" instead of "https" (default).
@@ -4703,7 +4703,7 @@ items:
             	CacheControl <a href="https://pkg.go.dev/builtin#string">string</a>
 
             	// LastModified is the time that the object was last modified.
-            	LastModified <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	LastModified time.Time
 
             	// Generation is the generation number of the object's content.
             	Generation <a href="https://pkg.go.dev/builtin#int64">int64</a>
@@ -4743,11 +4743,11 @@ items:
             	// 100 years. Note that enforcement of retention periods less than a day
             	// is not guaranteed. Such periods should only be used for testing
             	// purposes.
-            	RetentionPeriod <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Duration">Duration</a>
+            	RetentionPeriod time.Duration
 
             	// EffectiveTime is the time from which the policy was enforced and
             	// effective. This field is read-only.
-            	EffectiveTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	EffectiveTime time.Time
 
             	// IsLocked describes whether the bucket is locked. Once locked, an
             	// object retention policy cannot be modified.
@@ -4920,7 +4920,7 @@ items:
             	// a datetime in the future. For SigningSchemeV4, the expiration may be no
             	// more than seven days in the future.
             	// Required.
-            	Expires <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	Expires time.Time
 
             	// ContentType is the content type header the client must provide
             	// to use the generated signed URL.
@@ -4938,7 +4938,7 @@ items:
             	// client must use the same query parameters when using the generated signed
             	// URL.
             	// Optional.
-            	QueryParameters <a href="https://pkg.go.dev/net/url">url</a>.<a href="https://pkg.go.dev/net/url#Values">Values</a>
+            	QueryParameters url.Values
 
             	// MD5 is the base64 encoded MD5 checksum of the file.
             	// If provided, the client should provide the exact value on the request
@@ -5081,7 +5081,7 @@ items:
             	Enabled <a href="https://pkg.go.dev/builtin#bool">bool</a>
             	// LockedTime specifies the deadline for changing Enabled from true to
             	// false.
-            	LockedTime <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>
+            	LockedTime time.Time
             }
     - uid: cloud.google.com/go/storage.Writer
       name: Writer
@@ -5098,7 +5098,7 @@ items:
             	// ObjectAttrs are optional attributes to set on the object. Any attributes
             	// must be initialized before the first Write call. Nil or zero-valued
             	// attributes are ignored.
-            	<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>
+            	ObjectAttrs
 
             	// SendCRC32C specifies whether to transmit a CRC32C field. It should be set
             	// to true in addition to setting the Writer's CRC32C field, because zero
@@ -5153,7 +5153,7 @@ items:
             	//
             	// To set a deadline on the entire upload, use context timeout or
             	// cancellation.
-            	ChunkRetryDeadline <a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Duration">Duration</a>
+            	ChunkRetryDeadline time.Duration
 
             	// ProgressFunc can be used to monitor the progress of a large write
             	// operation. If ProgressFunc is not nil and writing requires multiple

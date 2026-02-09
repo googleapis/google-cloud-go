@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -168,12 +168,14 @@ func (c *TargetSslProxiesClient) Get(ctx context.Context, req *computepb.GetTarg
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetSslProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetSslProxy resource in the specified project using
+// the data included in the request.
 func (c *TargetSslProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetSslProxy resources available to the specified project.
+// List retrieves the list of TargetSslProxy resources
+// available to the specified project.
 func (c *TargetSslProxiesClient) List(ctx context.Context, req *computepb.ListTargetSslProxiesRequest, opts ...gax.CallOption) *TargetSslProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -198,7 +200,10 @@ func (c *TargetSslProxiesClient) SetSslCertificates(ctx context.Context, req *co
 	return c.internalClient.SetSslCertificates(ctx, req, opts...)
 }
 
-// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *TargetSslProxiesClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslPolicy(ctx, req, opts...)
 }
@@ -405,7 +410,8 @@ func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// Insert creates a TargetSslProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetSslProxy resource in the specified project using
+// the data included in the request.
 func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetSslProxyResource()
@@ -471,7 +477,8 @@ func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves the list of TargetSslProxy resources available to the specified project.
+// List retrieves the list of TargetSslProxy resources
+// available to the specified project.
 func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetSslProxiesRequest, opts ...gax.CallOption) *TargetSslProxyIterator {
 	it := &TargetSslProxyIterator{}
 	req = proto.Clone(req).(*computepb.ListTargetSslProxiesRequest)
@@ -821,7 +828,10 @@ func (c *targetSslProxiesRESTClient) SetSslCertificates(ctx context.Context, req
 	return op, nil
 }
 
-// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyReferenceResource()

@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:718167d5c23ed389b41f617b3a00ac839bdd938a6bd2d48ae0c2f1fa51ab1c3d
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:19bb93e8f1f916c61b597db2bad65dc432f79baaabb210499d7d0e4ad1dffe29
 libraries:
   - id: accessapproval
     version: 1.8.8
@@ -76,8 +76,8 @@ libraries:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
   - id: ai
-    version: 0.14.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.15.0
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/ai/generativelanguage/v1
         service_config: generativelanguage_v1.yaml
@@ -137,8 +137,8 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.109.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    version: 1.115.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -174,8 +174,8 @@ libraries:
       - internal/generated/snippets/aiplatform/
     tag_format: '{id}/v{version}'
   - id: alloydb
-    version: 1.19.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.20.0
+    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -408,6 +408,41 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/apikeys/
     tag_format: '{id}/v{version}'
+  - id: apiregistry
+    version: 0.2.0
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
+    apis:
+      - path: google/cloud/apiregistry/v1beta
+        service_config: cloudapiregistry_v1beta.yaml
+      - path: google/cloud/apiregistry/v1
+        service_config: cloudapiregistry_v1.yaml
+    source_roots:
+      - apiregistry
+      - internal/generated/snippets/apiregistry
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/apiregistry/
+      - ^apiregistry/apiv1beta/[^/]*_client\.go$
+      - ^apiregistry/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^apiregistry/apiv1beta/[^/]*_client_example_test\.go$
+      - ^apiregistry/apiv1beta/auxiliary\.go$
+      - ^apiregistry/apiv1beta/auxiliary_go123\.go$
+      - ^apiregistry/apiv1beta/doc\.go$
+      - ^apiregistry/apiv1beta/gapic_metadata\.json$
+      - ^apiregistry/apiv1beta/helpers\.go$
+      - ^apiregistry/apiv1beta/\.repo-metadata\.json$
+      - ^apiregistry/apiv1beta/apiregistrypb/.*$
+      - ^apiregistry/apiv1/[^/]*_client\.go$
+      - ^apiregistry/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^apiregistry/apiv1/[^/]*_client_example_test\.go$
+      - ^apiregistry/apiv1/auxiliary\.go$
+      - ^apiregistry/apiv1/auxiliary_go123\.go$
+      - ^apiregistry/apiv1/doc\.go$
+      - ^apiregistry/apiv1/gapic_metadata\.json$
+      - ^apiregistry/apiv1/helpers\.go$
+      - ^apiregistry/apiv1/\.repo-metadata\.json$
+      - ^apiregistry/apiv1/apiregistrypb/.*$
+    tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.9.7
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -545,8 +580,8 @@ libraries:
       - internal/generated/snippets/area120/
     tag_format: '{id}/v{version}'
   - id: artifactregistry
-    version: 1.17.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.19.0
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/devtools/artifactregistry/v1
         service_config: artifactregistry_v1.yaml
@@ -668,7 +703,7 @@ libraries:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
   - id: auth
-    version: 0.17.0
+    version: 0.18.1
     last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
     apis: []
     source_roots:
@@ -725,8 +760,8 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.5.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    version: 1.8.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/backupdr/v1
         service_config: backupdr_v1.yaml
@@ -775,8 +810,8 @@ libraries:
       - internal/generated/snippets/baremetalsolution/
     tag_format: '{id}/v{version}'
   - id: batch
-    version: 1.13.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.14.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/batch/v1
         service_config: batch_v1.yaml
@@ -874,8 +909,8 @@ libraries:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
   - id: bigquery
-    version: 1.72.0
-    last_generated_commit: 97763d6efb2d35474e0363c254ee6994837a08fa
+    version: 1.73.1
+    last_generated_commit: 9a477cd3c26a704130e2a2fb44a40281d9312e4c
     apis:
       - path: google/cloud/bigquery/analyticshub/v1
         service_config: analyticshub_v1.yaml
@@ -1120,7 +1155,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: bigquery/v2
     version: 0.0.0
-    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    last_generated_commit: 9a477cd3c26a704130e2a2fb44a40281d9312e4c
     apis:
       - path: google/cloud/bigquery/v2
         service_config: bigquery_v2.yaml
@@ -1147,8 +1182,8 @@ libraries:
       - internal/generated/snippets/bigquery/v2
     tag_format: bigquery/v{version}
   - id: bigtable
-    version: 1.40.1
-    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    version: 1.42.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/bigtable/admin/v2
         service_config: bigtableadmin_v2.yaml
@@ -1304,8 +1339,8 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: channel
-    version: 1.20.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.21.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/channel/v1
         service_config: cloudchannel_v1.yaml
@@ -1329,8 +1364,8 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.16.0
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    version: 0.18.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/chat/v1
         service_config: chat_v1.yaml
@@ -1379,8 +1414,8 @@ libraries:
       - internal/generated/snippets/chronicle/
     tag_format: '{id}/v{version}'
   - id: cloudbuild
-    version: 1.23.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.25.0
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/devtools/cloudbuild/v1
         service_config: cloudbuild_v1.yaml
@@ -1503,8 +1538,8 @@ libraries:
       - internal/generated/snippets/cloudprofiler/
     tag_format: '{id}/v{version}'
   - id: cloudquotas
-    version: 1.4.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.6.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/api/cloudquotas/v1
         service_config: cloudquotas_v1.yaml
@@ -1538,6 +1573,29 @@ libraries:
       - ^cloudquotas/apiv1beta/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/cloudquotas/
+    tag_format: '{id}/v{version}'
+  - id: cloudsecuritycompliance
+    version: 0.1.0
+    last_generated_commit: 64f78809d70ea0d49f6ffbc7e6858eb37e350947
+    apis:
+      - path: google/cloud/cloudsecuritycompliance/v1
+        service_config: cloudsecuritycompliance_v1.yaml
+    source_roots:
+      - cloudsecuritycompliance
+      - internal/generated/snippets/cloudsecuritycompliance
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/cloudsecuritycompliance/
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client\.go$
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^cloudsecuritycompliance/apiv1/[^/]*_client_example_test\.go$
+      - ^cloudsecuritycompliance/apiv1/auxiliary\.go$
+      - ^cloudsecuritycompliance/apiv1/auxiliary_go123\.go$
+      - ^cloudsecuritycompliance/apiv1/doc\.go$
+      - ^cloudsecuritycompliance/apiv1/gapic_metadata\.json$
+      - ^cloudsecuritycompliance/apiv1/helpers\.go$
+      - ^cloudsecuritycompliance/apiv1/\.repo-metadata\.json$
+      - ^cloudsecuritycompliance/apiv1/cloudsecuritycompliancepb/.*$
     tag_format: '{id}/v{version}'
   - id: cloudtasks
     version: 1.13.7
@@ -1614,8 +1672,8 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.49.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.54.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -1700,8 +1758,8 @@ libraries:
       - internal/generated/snippets/confidentialcomputing/
     tag_format: '{id}/v{version}'
   - id: config
-    version: 1.5.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.6.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/config/v1
         service_config: config_v1.yaml
@@ -1787,8 +1845,8 @@ libraries:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
   - id: container
-    version: 1.45.0
-    last_generated_commit: 94ccdfe4519e0ba817bd33aa22eb9c64f88a6874
+    version: 1.46.0
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/container/v1
         service_config: container_v1.yaml
@@ -2074,7 +2132,7 @@ libraries:
       - internal/generated/snippets/dataqna/
     tag_format: '{id}/v{version}'
   - id: datastore
-    version: 1.21.0
+    version: 1.22.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/datastore/admin/v1
@@ -2109,6 +2167,7 @@ libraries:
       - ^datastore/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/datastore/
+    tag_format: '{id}/v{version}'
   - id: datastream
     version: 1.15.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
@@ -2223,8 +2282,8 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.71.0
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    version: 1.75.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -2333,8 +2392,8 @@ libraries:
       - internal/generated/snippets/discoveryengine/
     tag_format: '{id}/v{version}'
   - id: dlp
-    version: 1.27.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.28.0
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/privacy/dlp/v2
         service_config: dlp_v2.yaml
@@ -2356,8 +2415,8 @@ libraries:
       - ^dlp/apiv2/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: documentai
-    version: 1.39.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.40.0
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/documentai/v1
         service_config: documentai_v1.yaml
@@ -2468,7 +2527,7 @@ libraries:
       - internal/generated/snippets/edgenetwork/
     tag_format: '{id}/v{version}'
   - id: errorreporting
-    version: 0.3.2
+    version: 0.4.0
     last_generated_commit: 72e7439c8e7e9986cf1865e337fc7c64ca5bda1f
     apis:
       - path: google/devtools/clouderrorreporting/v1beta1
@@ -2518,8 +2577,8 @@ libraries:
       - internal/generated/snippets/essentialcontacts/
     tag_format: '{id}/v{version}'
   - id: eventarc
-    version: 1.17.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.18.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/eventarc/v1
         service_config: eventarc_v1.yaml
@@ -2605,8 +2664,8 @@ libraries:
       - internal/generated/snippets/financialservices/
     tag_format: '{id}/v{version}'
   - id: firestore
-    version: 1.20.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.21.0
+    last_generated_commit: effe5c4fa816021e724ca856d5640f2e55b14a8b
     apis:
       - path: google/firestore/admin/v1
         service_config: firestore_v1.yaml
@@ -2691,8 +2750,8 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.2.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.7.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
         service_config: geminidataanalytics_v1beta.yaml
@@ -2803,8 +2862,8 @@ libraries:
       - internal/generated/snippets/gkehub/
     tag_format: '{id}/v{version}'
   - id: gkemulticloud
-    version: 1.5.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.6.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/gkemulticloud/v1
         service_config: gkemulticloud_v1.yaml
@@ -2893,6 +2952,29 @@ libraries:
       - ^gsuiteaddons/apiv1/\.repo-metadata\.json$
     release_exclude_paths:
       - internal/generated/snippets/gsuiteaddons/
+    tag_format: '{id}/v{version}'
+  - id: hypercomputecluster
+    version: 0.1.0
+    last_generated_commit: 53af3b727f84acc34e31c23f3b6e7b8aa4b7e837
+    apis:
+      - path: google/cloud/hypercomputecluster/v1beta
+        service_config: hypercomputecluster_v1beta.yaml
+    source_roots:
+      - hypercomputecluster
+      - internal/generated/snippets/hypercomputecluster
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/hypercomputecluster/
+      - ^hypercomputecluster/apiv1beta/[^/]*_client\.go$
+      - ^hypercomputecluster/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^hypercomputecluster/apiv1beta/[^/]*_client_example_test\.go$
+      - ^hypercomputecluster/apiv1beta/auxiliary\.go$
+      - ^hypercomputecluster/apiv1beta/auxiliary_go123\.go$
+      - ^hypercomputecluster/apiv1beta/doc\.go$
+      - ^hypercomputecluster/apiv1beta/gapic_metadata\.json$
+      - ^hypercomputecluster/apiv1beta/helpers\.go$
+      - ^hypercomputecluster/apiv1beta/\.repo-metadata\.json$
+      - ^hypercomputecluster/apiv1beta/hypercomputeclusterpb/.*$
     tag_format: '{id}/v{version}'
   - id: iam
     version: 1.5.3
@@ -3068,8 +3150,8 @@ libraries:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
   - id: kms
-    version: 1.23.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.25.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/kms/v1
         service_config: cloudkms_v1.yaml
@@ -3229,7 +3311,7 @@ libraries:
       - internal/generated/snippets/locationfinder/
     tag_format: '{id}/v{version}'
   - id: logging
-    version: 1.13.1
+    version: 1.13.2
     last_generated_commit: 0654a03c3f7a6cb46e36227d17cfcc6f4b71fa5a
     apis:
       - path: google/logging/v2
@@ -3254,8 +3336,8 @@ libraries:
       - internal/generated/snippets/logging/
     tag_format: '{id}/v{version}'
   - id: longrunning
-    version: 0.7.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.8.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/longrunning
         service_config: longrunning.yaml
@@ -3304,11 +3386,13 @@ libraries:
       - internal/generated/snippets/lustre/
     tag_format: '{id}/v{version}'
   - id: maintenance
-    version: 0.1.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.3.0
+    last_generated_commit: ef6a532bfd9ab7a944bdedd64c69a2b4042db58b
     apis:
       - path: google/cloud/maintenance/api/v1beta
         service_config: maintenance_v1beta.yaml
+      - path: google/cloud/maintenance/api/v1
+        service_config: maintenance_v1.yaml
     source_roots:
       - maintenance
       - internal/generated/snippets/maintenance
@@ -3325,8 +3409,16 @@ libraries:
       - ^maintenance/api/apiv1beta/helpers\.go$
       - ^maintenance/api/apiv1beta/apipb/.*$
       - ^maintenance/api/apiv1beta/\.repo-metadata\.json$
-    release_exclude_paths:
-      - internal/generated/snippets/maintenance/
+      - ^maintenance/api/apiv1/[^/]*_client\.go$
+      - ^maintenance/api/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^maintenance/api/apiv1/[^/]*_client_example_test\.go$
+      - ^maintenance/api/apiv1/auxiliary\.go$
+      - ^maintenance/api/apiv1/auxiliary_go123\.go$
+      - ^maintenance/api/apiv1/doc\.go$
+      - ^maintenance/api/apiv1/gapic_metadata\.json$
+      - ^maintenance/api/apiv1/helpers\.go$
+      - ^maintenance/api/apiv1/\.repo-metadata\.json$
+      - ^maintenance/api/apiv1/apipb/.*$
     tag_format: '{id}/v{version}'
   - id: managedidentities
     version: 1.7.7
@@ -3562,8 +3654,8 @@ libraries:
       - internal/generated/snippets/memcache/
     tag_format: '{id}/v{version}'
   - id: memorystore
-    version: 0.3.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.4.0
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/memorystore/v1
         service_config: memorystore_v1.yaml
@@ -3759,8 +3851,8 @@ libraries:
       - internal/generated/snippets/monitoring/
     tag_format: '{id}/v{version}'
   - id: netapp
-    version: 1.10.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.12.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/cloud/netapp/v1
         service_config: netapp_v1.yaml
@@ -3784,8 +3876,8 @@ libraries:
       - internal/generated/snippets/netapp/
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
-    version: 1.19.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.20.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/networkconnectivity/v1
         service_config: networkconnectivity_v1.yaml
@@ -3821,8 +3913,8 @@ libraries:
       - internal/generated/snippets/networkconnectivity/
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.21.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    version: 1.22.0
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/networkmanagement/v1
         service_config: networkmanagement_v1.yaml
@@ -3846,8 +3938,8 @@ libraries:
       - internal/generated/snippets/networkmanagement/
     tag_format: '{id}/v{version}'
   - id: networksecurity
-    version: 0.10.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.11.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/networksecurity/v1beta1
         service_config: networksecurity_v1beta1.yaml
@@ -4057,8 +4149,8 @@ libraries:
       - internal/generated/snippets/orgpolicy/
     tag_format: '{id}/v{version}'
   - id: osconfig
-    version: 1.15.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.16.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/cloud/osconfig/agentendpoint/v1
         service_config: osconfig_v1.yaml
@@ -4171,8 +4263,8 @@ libraries:
       - internal/generated/snippets/oslogin/
     tag_format: '{id}/v{version}'
   - id: parallelstore
-    version: 0.11.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.12.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/parallelstore/v1
         service_config: parallelstore_v1.yaml
@@ -4403,8 +4495,8 @@ libraries:
       - internal/generated/snippets/pubsub/
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
-    version: 2.3.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    version: 2.4.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/pubsub/v1
         service_config: pubsub_v1.yaml
@@ -4478,8 +4570,8 @@ libraries:
       - internal/generated/snippets/rapidmigrationassessment/
     tag_format: '{id}/v{version}'
   - id: recaptchaenterprise
-    version: 2.20.5
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 2.21.0
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/recaptchaenterprise/v1
         service_config: recaptchaenterprise_v1.yaml
@@ -4663,8 +4755,8 @@ libraries:
       - internal/generated/snippets/resourcemanager/
     tag_format: '{id}/v{version}'
   - id: retail
-    version: 1.25.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.26.0
+    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
     apis:
       - path: google/cloud/retail/v2
         service_config: retail_v2.yaml
@@ -4735,7 +4827,6 @@ libraries:
       - internal/kokoro
       - internal/leakcheck
       - internal/librariangen
-      - internal/postprocessor
       - internal/pretty
       - internal/protoveneer
       - internal/testutil
@@ -4743,8 +4834,8 @@ libraries:
       - internal/version
     tag_format: v{version}
   - id: run
-    version: 1.12.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.15.0
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/run/v2
         service_config: run_v2.yaml
@@ -5225,8 +5316,8 @@ libraries:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.3.0
-    last_generated_commit: 53f97391f3451398f7b53c7f86dabd325d205677
+    version: 1.4.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/shopping/css/v1
         service_config: css_v1.yaml
@@ -5566,8 +5657,8 @@ libraries:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
   - id: spanner
-    version: 1.86.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.87.0
+    last_generated_commit: 94aa4f5ae672addf00e7970ecc47699e34989e90
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
@@ -5646,8 +5737,8 @@ libraries:
       - spanner/testdata
     tag_format: '{id}/v{version}'
   - id: speech
-    version: 1.28.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.29.0
+    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
     apis:
       - path: google/cloud/speech/v1
         service_config: speech_v1.yaml
@@ -5695,8 +5786,8 @@ libraries:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
-    version: 1.57.2
-    last_generated_commit: 9fcfbea0aa5b50fa22e190faceb073d74504172b
+    version: 1.59.1
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
     apis:
       - path: google/storage/control/v2
         service_config: storage_v2.yaml
@@ -5734,8 +5825,8 @@ libraries:
       - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
-    version: 0.1.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 0.2.0
+    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
     apis:
       - path: google/cloud/storagebatchoperations/v1
         service_config: storagebatchoperations_v1.yaml
@@ -6044,6 +6135,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
+  - id: vectorsearch
+    version: 0.2.0
+    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
+    apis:
+      - path: google/cloud/vectorsearch/v1beta
+        service_config: vectorsearch_v1beta.yaml
+    source_roots:
+      - vectorsearch
+      - internal/generated/snippets/vectorsearch
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/vectorsearch/
+      - ^vectorsearch/apiv1beta/[^/]*_client\.go$
+      - ^vectorsearch/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^vectorsearch/apiv1beta/[^/]*_client_example_test\.go$
+      - ^vectorsearch/apiv1beta/auxiliary\.go$
+      - ^vectorsearch/apiv1beta/auxiliary_go123\.go$
+      - ^vectorsearch/apiv1beta/doc\.go$
+      - ^vectorsearch/apiv1beta/gapic_metadata\.json$
+      - ^vectorsearch/apiv1beta/helpers\.go$
+      - ^vectorsearch/apiv1beta/\.repo-metadata\.json$
+      - ^vectorsearch/apiv1beta/vectorsearchpb/.*$
+    tag_format: '{id}/v{version}'
   - id: vertexai
     version: 0.15.0
     last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
@@ -6214,8 +6328,8 @@ libraries:
       - internal/generated/snippets/visionai/
     tag_format: '{id}/v{version}'
   - id: vmmigration
-    version: 1.9.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    version: 1.10.0
+    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
     apis:
       - path: google/cloud/vmmigration/v1
         service_config: vmmigration_v1.yaml
@@ -6353,7 +6467,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: workflows
     version: 1.14.3
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
     apis:
       - path: google/cloud/workflows/executions/v1
         service_config: workflowexecutions_v1.yaml

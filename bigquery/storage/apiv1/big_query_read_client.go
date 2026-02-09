@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -170,9 +170,9 @@ func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storage
 }
 
 // ReadRows reads rows from the stream in the format prescribed by the ReadSession.
-// Each response contains one or more table rows, up to a maximum of 100 MiB
+// Each response contains one or more table rows, up to a maximum of 128 MB
 // per response; read requests which attempt to read individual rows larger
-// than 100 MiB will fail.
+// than 128 MB will fail.
 //
 // Each request also returns a set of stream statistics reflecting the current
 // state of the stream.

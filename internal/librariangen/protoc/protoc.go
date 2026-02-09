@@ -18,9 +18,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/request"
 )
+
+// All generator features have a known prefix.
+const featurePrefix = "F_" // Defined in gapic-generator-go
 
 // ConfigProvider is an interface that describes the configuration needed
 // by the Build function. This allows the protoc package to be decoupled
@@ -36,11 +40,10 @@ type ConfigProvider interface {
 	HasRESTNumericEnums() bool
 	HasGoGRPC() bool
 	HasGAPIC() bool
-	HasLegacyGRPC() bool
 }
 
 // Build constructs the full protoc command arguments for a given API.
-func Build(lib *request.Library, api *request.API, config ConfigProvider, sourceDir, outputDir string, nestedProtos []string) ([]string, error) {
+func Build(lib *request.Library, api *request.API, config ConfigProvider, sourceDir, outputDir string, nestedProtos []string, generatorFeatures []string) ([]string, error) {
 	// Gather all .proto files in the API's source directory (but not in subdirectories).
 	apiServiceDir := filepath.Join(sourceDir, api.Path)
 	entries, err := os.ReadDir(apiServiceDir)
@@ -90,22 +93,22 @@ func Build(lib *request.Library, api *request.API, config ConfigProvider, source
 		}
 	}
 
+	// Propagate requested generator features.
+	// Provide minimal validation by checking for a valid feature prefix.
+	for _, f := range generatorFeatures {
+		if !strings.HasPrefix(f, featurePrefix) {
+			return nil, fmt.Errorf("Build: invalid feature string %q", f)
+		}
+		gapicOpts = append(gapicOpts, f)
+	}
 	args := []string{
 		"protoc",
 		"--experimental_allow_proto3_optional",
 	}
 	// All generated files are written to the /output directory.
-	// Which plugin(s) we use depends on whether the Bazel rule was go_grpc_library
-	// or go_proto_library:
-	// - If we're using go_rpc, we use the newer go plugin and the go-grpc plugin
-	// - Otherwise, use the "old" plugin (built explicitly in the Dockerfile)
+	args = append(args, "--go_out="+outputDir)
 	if config.HasGoGRPC() {
-		args = append(args, "--go_out="+outputDir, "--go-grpc_out="+outputDir, "--go-grpc_opt=require_unimplemented_servers=false")
-	} else {
-		args = append(args, "--go_v1_out="+outputDir)
-		if config.HasLegacyGRPC() {
-			args = append(args, "--go_v1_opt=plugins=grpc")
-		}
+		args = append(args, "--go-grpc_out="+outputDir, "--go-grpc_opt=require_unimplemented_servers=false")
 	}
 	if config.HasGAPIC() {
 		args = append(args, "--go_gapic_out="+outputDir)

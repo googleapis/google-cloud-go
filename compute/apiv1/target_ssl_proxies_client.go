@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ type TargetSslProxiesCallOptions struct {
 	SetProxyHeader     []gax.CallOption
 	SetSslCertificates []gax.CallOption
 	SetSslPolicy       []gax.CallOption
+	TestIamPermissions []gax.CallOption
 }
 
 func defaultTargetSslProxiesRESTCallOptions() *TargetSslProxiesCallOptions {
@@ -99,6 +100,9 @@ func defaultTargetSslProxiesRESTCallOptions() *TargetSslProxiesCallOptions {
 		SetSslPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -116,6 +120,7 @@ type internalTargetSslProxiesClient interface {
 	SetProxyHeader(context.Context, *computepb.SetProxyHeaderTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
 	SetSslCertificates(context.Context, *computepb.SetSslCertificatesTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
 	SetSslPolicy(context.Context, *computepb.SetSslPolicyTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsTargetSslProxyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
 // TargetSslProxiesClient is a client for interacting with Google Compute Engine API.
@@ -163,12 +168,14 @@ func (c *TargetSslProxiesClient) Get(ctx context.Context, req *computepb.GetTarg
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetSslProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetSslProxy resource in the specified project using
+// the data included in the request.
 func (c *TargetSslProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetSslProxy resources available to the specified project.
+// List retrieves the list of TargetSslProxy resources
+// available to the specified project.
 func (c *TargetSslProxiesClient) List(ctx context.Context, req *computepb.ListTargetSslProxiesRequest, opts ...gax.CallOption) *TargetSslProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -193,9 +200,17 @@ func (c *TargetSslProxiesClient) SetSslCertificates(ctx context.Context, req *co
 	return c.internalClient.SetSslCertificates(ctx, req, opts...)
 }
 
-// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *TargetSslProxiesClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *TargetSslProxiesClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -395,7 +410,8 @@ func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// Insert creates a TargetSslProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetSslProxy resource in the specified project using
+// the data included in the request.
 func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetSslProxyResource()
@@ -461,7 +477,8 @@ func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves the list of TargetSslProxy resources available to the specified project.
+// List retrieves the list of TargetSslProxy resources
+// available to the specified project.
 func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetSslProxiesRequest, opts ...gax.CallOption) *TargetSslProxyIterator {
 	it := &TargetSslProxyIterator{}
 	req = proto.Clone(req).(*computepb.ListTargetSslProxiesRequest)
@@ -811,7 +828,10 @@ func (c *targetSslProxiesRESTClient) SetSslCertificates(ctx context.Context, req
 	return op, nil
 }
 
-// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyReferenceResource()
@@ -875,4 +895,56 @@ func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *comp
 		},
 	}
 	return op, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *targetSslProxiesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/testIamPermissions", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

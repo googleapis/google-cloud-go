@@ -73,6 +73,7 @@ const (
 	fkdcDDLStatements                 = "FKDC_DDL_STATEMENTS"
 	intervalDDLStatements             = "INTERVAL_DDL_STATEMENTS"
 	testTableBitReversedSeqStatements = "TEST_TABLE_BIT_REVERSED_SEQUENCE_STATEMENTS"
+	queueDDLStatements                = "QUEUE_DDL_STATEMENTS"
 )
 
 var (
@@ -92,7 +93,8 @@ var (
 	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
 	instanceConfig = getInstanceConfig()
 
-	isMultiplexEnabled = getMultiplexEnableFlag()
+	// Multiplexed sessions are always enabled as session pool has been removed.
+	isMultiplexEnabled = true
 
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
@@ -346,6 +348,19 @@ var (
 		    interval_array_len bigint GENERATED ALWAYS AS (ARRAY_LENGTH(ARRAY[INTERVAL '1-2 3 4:5:6'], 1)) STORED
     	)`,
 	}
+	queueDBStatements = []string{
+		`CREATE QUEUE TestQueue (
+			Id INT64 NOT NULL,
+			Payload BYTES(MAX) NOT NULL,
+		) PRIMARY KEY (Id),
+		OPTIONS(receive_mode="PULL")`,
+	}
+	queueDBPGStatements = []string{
+		`CREATE QUEUE TestQueue (
+			Id BIGINT PRIMARY KEY,
+			"Payload" BYTEA NOT NULL
+		) WITH (receive_mode = 'PULL')`,
+	}
 
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
@@ -357,6 +372,7 @@ var (
 			fkdcDDLStatements:                 fkdcDBStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBStatments,
 			intervalDDLStatements:             intervalDBStatements,
+			queueDDLStatements:                queueDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:               singerDBPGStatements,
@@ -367,6 +383,7 @@ var (
 			fkdcDDLStatements:                 fkdcDBPGStatements,
 			testTableBitReversedSeqStatements: bitReverseSeqDBPGStatments,
 			intervalDDLStatements:             intervalDBPGStatements,
+			queueDDLStatements:                queueDBPGStatements,
 		},
 	}
 
@@ -537,6 +554,8 @@ func initIntegrationTests() (cleanup func()) {
 			Config:      configName,
 			DisplayName: testInstanceID,
 			NodeCount:   1,
+			// Set Edition to ENTERPRISE to enable Queue support.
+			Edition: instancepb.Instance_ENTERPRISE_PLUS,
 		},
 	})
 	if err != nil {
@@ -560,68 +579,6 @@ func initIntegrationTests() (cleanup func()) {
 		cleanupInstances()
 		databaseAdmin.Close()
 		instanceAdmin.Close()
-	}
-}
-
-func TestIntegration_InitSessionPool(t *testing.T) {
-	if isMultiplexEnabled {
-		t.Skip("Skipping session pool test in multiplex session tests")
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
-	// Set up an empty testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, []string{})
-	defer cleanup()
-	sp := client.idleSessions
-	sp.mu.Lock()
-	want := sp.MinOpened
-	sp.mu.Unlock()
-	var numOpened int
-loop:
-	for {
-		select {
-		case <-ctx.Done():
-			t.Fatalf("timed out, got %d session(s), want %d", numOpened, want)
-		default:
-			sp.mu.Lock()
-			numOpened = sp.idleList.Len()
-			sp.mu.Unlock()
-			if uint64(numOpened) == want {
-				break loop
-			}
-		}
-	}
-	// Delete all sessions in the pool on the backend and then try to execute a
-	// simple query. The 'Session not found' error should cause an automatic
-	// retry of the read-only transaction.
-	sp.mu.Lock()
-	s := sp.idleList.Front()
-	for {
-		if s == nil {
-			break
-		}
-		// This will delete the session on the backend without removing it
-		// from the pool.
-		s.Value.(*session).delete(context.Background())
-		s = s.Next()
-	}
-	sp.mu.Unlock()
-	sql := "SELECT 1, 'FOO', 'BAR'"
-	tx := client.ReadOnlyTransaction()
-	defer tx.Close()
-	iter := tx.Query(context.Background(), NewStatement(sql))
-	rows, err := readAll(iter)
-	if err != nil {
-		t.Fatalf("Unexpected error for query %q: %v", sql, err)
-	}
-	if got, want := len(rows), 1; got != want {
-		t.Fatalf("Row count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
-	}
-	if got, want := len(rows[0]), 3; got != want {
-		t.Fatalf("Column count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
-	}
-	if got, want := rows[0][0].(int64), int64(1); got != want {
-		t.Fatalf("Column value mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
 	}
 }
 
@@ -2171,18 +2128,18 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 		// TODO: confirm that this is the valid scenario for multiplexed sessions, and what's expected behavior.
 		// wait for the multiplexed session to be created.
 		waitFor(t, func() error {
-			client.idleSessions.mu.Lock()
-			defer client.idleSessions.mu.Unlock()
-			if client.idleSessions.multiplexedSession == nil {
-				return errInvalidSessionPool
+			client.sm.mu.Lock()
+			defer client.sm.mu.Unlock()
+			if client.sm.multiplexedSession == nil {
+				return errInvalidSession
 			}
 			return nil
 		})
 		// Close the multiplexed session to prevent the session pool maintainer
 		// from repeatedly trying to use sessions for the invalid database.
-		client.idleSessions.mu.Lock()
-		client.idleSessions.multiplexedSession = nil
-		client.idleSessions.mu.Unlock()
+		client.sm.mu.Lock()
+		client.sm.multiplexedSession = nil
+		client.sm.mu.Unlock()
 	}
 
 	// Drop the testing database.
@@ -2257,314 +2214,6 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 func TestIntegration_BasicTypes(t *testing.T) {
 	t.Parallel()
 	skipUnsupportedPGTest(t)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
-	stmts := []string{
-		`CREATE TABLE Singers (
-					SingerId	INT64 NOT NULL,
-					FirstName	STRING(1024),
-					LastName	STRING(1024),
-					SingerInfo	BYTES(MAX)
-				) PRIMARY KEY (SingerId)`,
-		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-		`CREATE TABLE Accounts (
-					AccountId	INT64 NOT NULL,
-					Nickname	STRING(100),
-					Balance		INT64 NOT NULL,
-				) PRIMARY KEY (AccountId)`,
-		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-		`CREATE TABLE Types (
-					RowID		INT64 NOT NULL,
-					String		STRING(MAX),
-					StringArray	ARRAY<STRING(MAX)>,
-					Bytes		BYTES(MAX),
-					BytesArray	ARRAY<BYTES(MAX)>,
-					Int64a		INT64,
-					Int64Array	ARRAY<INT64>,
-					Bool		BOOL,
-					BoolArray	ARRAY<BOOL>,
-					Float64		FLOAT64,
-					Float64Array	ARRAY<FLOAT64>,
-					Date		DATE,
-					DateArray	ARRAY<DATE>,
-					Timestamp	TIMESTAMP,
-					TimestampArray	ARRAY<TIMESTAMP>,
-					Numeric		NUMERIC,
-					NumericArray	ARRAY<NUMERIC>,
-					JSON		JSON,
-					JSONArray	ARRAY<JSON>,
-				) PRIMARY KEY (RowID)`,
-	}
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
-	defer cleanup()
-
-	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
-	// Boundaries
-	t2, _ := time.Parse(time.RFC3339Nano, "0001-01-01T00:00:00.000000000Z")
-	t3, _ := time.Parse(time.RFC3339Nano, "9999-12-31T23:59:59.999999999Z")
-	d1, _ := civil.ParseDate("2016-11-15")
-	// Boundaries
-	d2, _ := civil.ParseDate("0001-01-01")
-	d3, _ := civil.ParseDate("9999-12-31")
-
-	n0 := big.Rat{}
-	n1p, _ := (&big.Rat{}).SetString("123456789")
-	n2p, _ := (&big.Rat{}).SetString("123456789/1000000000")
-	n1 := *n1p
-	n2 := *n2p
-
-	type Message struct {
-		Name       string
-		Body       string
-		Time       int64
-		FloatValue interface{}
-	}
-	msg := Message{"Alice", "Hello", 145688415796432520, json.Number("0.39240506000000003")}
-	unmarshalledJSONStructUsingNumber := map[string]interface{}{
-		"Name":       "Alice",
-		"Body":       "Hello",
-		"Time":       json.Number("145688415796432520"),
-		"FloatValue": json.Number("0.39240506000000003"),
-	}
-	unmarshalledJSONStruct := map[string]interface{}{
-		"Name":       "Alice",
-		"Body":       "Hello",
-		"Time":       1.456884157964325e+17,
-		"FloatValue": 0.39240506,
-	}
-
-	tests := []struct {
-		col                   string
-		val                   interface{}
-		wantWithDefaultConfig interface{}
-		wantWithNumber        interface{}
-	}{
-		{col: "String", val: ""},
-		{col: "String", val: "", wantWithDefaultConfig: NullString{"", true}, wantWithNumber: NullString{"", true}},
-		{col: "String", val: "foo"},
-		{col: "String", val: "foo", wantWithDefaultConfig: NullString{"foo", true}, wantWithNumber: NullString{"foo", true}},
-		{col: "String", val: NullString{"bar", true}, wantWithDefaultConfig: "bar", wantWithNumber: "bar"},
-		{col: "String", val: NullString{"bar", false}, wantWithDefaultConfig: NullString{"", false}, wantWithNumber: NullString{"", false}},
-		{col: "StringArray", val: []string(nil), wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
-		{col: "StringArray", val: []string{}, wantWithDefaultConfig: []NullString{}, wantWithNumber: []NullString{}},
-		{col: "StringArray", val: []string{"foo", "bar"}, wantWithDefaultConfig: []NullString{{"foo", true}, {"bar", true}}, wantWithNumber: []NullString{{"foo", true}, {"bar", true}}},
-		{col: "StringArray", val: []NullString(nil)},
-		{col: "StringArray", val: []NullString{}},
-		{col: "StringArray", val: []NullString{{"foo", true}, {}}},
-		{col: "Bytes", val: []byte{}},
-		{col: "Bytes", val: []byte{1, 2, 3}},
-		{col: "Bytes", val: []byte(nil)},
-		{col: "BytesArray", val: [][]byte(nil)},
-		{col: "BytesArray", val: [][]byte{}},
-		{col: "BytesArray", val: [][]byte{{1}, {2, 3}}},
-		{col: "Int64a", val: 0, wantWithDefaultConfig: int64(0), wantWithNumber: int64(0)},
-		{col: "Int64a", val: -1, wantWithDefaultConfig: int64(-1), wantWithNumber: int64(-1)},
-		{col: "Int64a", val: 2, wantWithDefaultConfig: int64(2), wantWithNumber: int64(2)},
-		{col: "Int64a", val: int64(3)},
-		{col: "Int64a", val: 4, wantWithDefaultConfig: NullInt64{4, true}, wantWithNumber: NullInt64{4, true}},
-		{col: "Int64a", val: NullInt64{5, true}, wantWithDefaultConfig: int64(5), wantWithNumber: int64(5)},
-		{col: "Int64a", val: NullInt64{6, true}, wantWithDefaultConfig: int64(6), wantWithNumber: int64(6)},
-		{col: "Int64a", val: NullInt64{7, false}, wantWithDefaultConfig: NullInt64{0, false}, wantWithNumber: NullInt64{0, false}},
-		{col: "Int64Array", val: []int(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
-		{col: "Int64Array", val: []int{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
-		{col: "Int64Array", val: []int{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
-		{col: "Int64Array", val: []int64(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
-		{col: "Int64Array", val: []int64{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
-		{col: "Int64Array", val: []int64{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
-		{col: "Int64Array", val: []NullInt64(nil)},
-		{col: "Int64Array", val: []NullInt64{}},
-		{col: "Int64Array", val: []NullInt64{{1, true}, {}}},
-		{col: "Bool", val: false},
-		{col: "Bool", val: true},
-		{col: "Bool", val: false, wantWithDefaultConfig: NullBool{false, true}, wantWithNumber: NullBool{false, true}},
-		{col: "Bool", val: true, wantWithDefaultConfig: NullBool{true, true}, wantWithNumber: NullBool{true, true}},
-		{col: "Bool", val: NullBool{true, true}},
-		{col: "Bool", val: NullBool{false, false}},
-		{col: "BoolArray", val: []bool(nil), wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
-		{col: "BoolArray", val: []bool{}, wantWithDefaultConfig: []NullBool{}, wantWithNumber: []NullBool{}},
-		{col: "BoolArray", val: []bool{true, false}, wantWithDefaultConfig: []NullBool{{true, true}, {false, true}}, wantWithNumber: []NullBool{{true, true}, {false, true}}},
-		{col: "BoolArray", val: []NullBool(nil)},
-		{col: "BoolArray", val: []NullBool{}},
-		{col: "BoolArray", val: []NullBool{{false, true}, {true, true}, {}}},
-		{col: "Float64", val: 0.0},
-		{col: "Float64", val: 3.14},
-		{col: "Float64", val: math.NaN()},
-		{col: "Float64", val: math.Inf(1)},
-		{col: "Float64", val: math.Inf(-1)},
-		{col: "Float64", val: 2.78, wantWithDefaultConfig: NullFloat64{2.78, true}, wantWithNumber: NullFloat64{2.78, true}},
-		{col: "Float64", val: NullFloat64{2.71, true}, wantWithDefaultConfig: 2.71, wantWithNumber: 2.71},
-		{col: "Float64", val: NullFloat64{1.41, true}, wantWithDefaultConfig: NullFloat64{1.41, true}, wantWithNumber: NullFloat64{1.41, true}},
-		{col: "Float64", val: NullFloat64{0, false}},
-		{col: "Float64Array", val: []float64(nil), wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
-		{col: "Float64Array", val: []float64{}, wantWithDefaultConfig: []NullFloat64{}, wantWithNumber: []NullFloat64{}},
-		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, wantWithDefaultConfig: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}, wantWithNumber: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
-		{col: "Float64Array", val: []NullFloat64(nil)},
-		{col: "Float64Array", val: []NullFloat64{}},
-		{col: "Float64Array", val: []NullFloat64{{2.72, true}, {math.Inf(1), true}, {}}},
-		{col: "Date", val: d1},
-		{col: "Date", val: d1, wantWithDefaultConfig: NullDate{d1, true}, wantWithNumber: NullDate{d1, true}},
-		{col: "Date", val: NullDate{d1, true}},
-		{col: "Date", val: NullDate{d1, true}, wantWithDefaultConfig: d1, wantWithNumber: d1},
-		{col: "Date", val: NullDate{civil.Date{}, false}},
-		{col: "DateArray", val: []civil.Date(nil), wantWithDefaultConfig: []NullDate(nil), wantWithNumber: []NullDate(nil)},
-		{col: "DateArray", val: []civil.Date{}, wantWithDefaultConfig: []NullDate{}, wantWithNumber: []NullDate{}},
-		{col: "DateArray", val: []civil.Date{d1, d2, d3}, wantWithDefaultConfig: []NullDate{{d1, true}, {d2, true}, {d3, true}}, wantWithNumber: []NullDate{{d1, true}, {d2, true}, {d3, true}}},
-		{col: "Timestamp", val: t1},
-		{col: "Timestamp", val: t1, wantWithDefaultConfig: NullTime{t1, true}, wantWithNumber: NullTime{t1, true}},
-		{col: "Timestamp", val: NullTime{t1, true}},
-		{col: "Timestamp", val: NullTime{t1, true}, wantWithDefaultConfig: t1, wantWithNumber: t1},
-		{col: "Timestamp", val: NullTime{}},
-		{col: "TimestampArray", val: []time.Time(nil), wantWithDefaultConfig: []NullTime(nil), wantWithNumber: []NullTime(nil)},
-		{col: "TimestampArray", val: []time.Time{}, wantWithDefaultConfig: []NullTime{}, wantWithNumber: []NullTime{}},
-		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, wantWithDefaultConfig: []NullTime{{t1, true}, {t2, true}, {t3, true}}, wantWithNumber: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
-		{col: "Numeric", val: n1},
-		{col: "Numeric", val: n2},
-		{col: "Numeric", val: n1, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
-		{col: "Numeric", val: n2, wantWithDefaultConfig: NullNumeric{n2, true}, wantWithNumber: NullNumeric{n2, true}},
-		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: n1, wantWithNumber: n1},
-		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
-		{col: "Numeric", val: NullNumeric{n0, false}},
-		{col: "NumericArray", val: []big.Rat(nil), wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
-		{col: "NumericArray", val: []big.Rat{}, wantWithDefaultConfig: []NullNumeric{}, wantWithNumber: []NullNumeric{}},
-		{col: "NumericArray", val: []big.Rat{n1, n2}, wantWithDefaultConfig: []NullNumeric{{n1, true}, {n2, true}}, wantWithNumber: []NullNumeric{{n1, true}, {n2, true}}},
-		{col: "NumericArray", val: []NullNumeric(nil)},
-		{col: "NumericArray", val: []NullNumeric{}},
-		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
-		{col: "JSON", val: NullJSON{msg, true}, wantWithDefaultConfig: NullJSON{unmarshalledJSONStruct, true}, wantWithNumber: NullJSON{unmarshalledJSONStructUsingNumber, true}},
-		{col: "JSON", val: NullJSON{msg, false}, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
-		{col: "JSONArray", val: []NullJSON(nil)},
-		{col: "JSONArray", val: []NullJSON{}},
-		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, wantWithDefaultConfig: []NullJSON{{unmarshalledJSONStruct, true}, {unmarshalledJSONStruct, true}, {}}, wantWithNumber: []NullJSON{{unmarshalledJSONStructUsingNumber, true}, {unmarshalledJSONStructUsingNumber, true}, {}}},
-		{col: "String", val: nil, wantWithDefaultConfig: NullString{}, wantWithNumber: NullString{}},
-		{col: "StringArray", val: nil, wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
-		{col: "Bytes", val: nil, wantWithDefaultConfig: []byte(nil), wantWithNumber: []byte(nil)},
-		{col: "BytesArray", val: nil, wantWithDefaultConfig: [][]byte(nil), wantWithNumber: [][]byte(nil)},
-		{col: "Int64a", val: nil, wantWithDefaultConfig: NullInt64{}, wantWithNumber: NullInt64{}},
-		{col: "Int64Array", val: nil, wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
-		{col: "Bool", val: nil, wantWithDefaultConfig: NullBool{}, wantWithNumber: NullBool{}},
-		{col: "BoolArray", val: nil, wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
-		{col: "Float64", val: nil, wantWithDefaultConfig: NullFloat64{}, wantWithNumber: NullFloat64{}},
-		{col: "Float64Array", val: nil, wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
-		{col: "Numeric", val: nil, wantWithDefaultConfig: NullNumeric{}, wantWithNumber: NullNumeric{}},
-		{col: "NumericArray", val: nil, wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
-		{col: "JSON", val: nil, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
-		{col: "JSONArray", val: nil, wantWithDefaultConfig: []NullJSON(nil), wantWithNumber: []NullJSON(nil)},
-	}
-
-	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
-	if !isEmulatorEnvSet() {
-		tests = append(tests, []struct {
-			col                   string
-			val                   interface{}
-			wantWithDefaultConfig interface{}
-			wantWithNumber        interface{}
-		}{
-			{col: "Date", val: nil, wantWithDefaultConfig: NullDate{}, wantWithNumber: NullDate{}},
-			{col: "Timestamp", val: nil, wantWithDefaultConfig: NullTime{}, wantWithNumber: NullTime{}},
-		}...)
-	}
-
-	for _, withNumberConfigOption := range []bool{false, true} {
-		name := "without_number_option"
-		if withNumberConfigOption {
-			name = "with_number_option"
-		}
-		t.Run(name, func(t *testing.T) {
-			if withNumberConfigOption {
-				UseNumberWithJSONDecoderEncoder(withNumberConfigOption)
-				defer UseNumberWithJSONDecoderEncoder(!withNumberConfigOption)
-			}
-			// Write rows into table first using DML.
-			statements := make([]Statement, 0)
-			for i, test := range tests {
-				stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
-				// Note: We are not setting the parameter type here to ensure that it
-				// can be automatically recognized when it is actually needed.
-				stmt.Params["id"] = i
-				stmt.Params["value"] = test.val
-				statements = append(statements, stmt)
-			}
-			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-				rowCounts, err := tx.BatchUpdate(ctx, statements)
-				if err != nil {
-					return err
-				}
-				if len(rowCounts) != len(tests) {
-					return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
-				}
-				for i, c := range rowCounts {
-					if c != 1 {
-						return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
-					}
-				}
-				return nil
-			})
-			if err != nil {
-				t.Fatalf("failed to insert values using DML: %v", err)
-			}
-			// Delete all the rows so we can insert them using mutations as well.
-			_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-			if err != nil {
-				t.Fatalf("failed to delete all rows: %v", err)
-			}
-
-			// Verify that we can insert the rows using mutations.
-			var muts []*Mutation
-			for i, test := range tests {
-				muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
-			}
-			if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
-				t.Fatal(err)
-			}
-
-			for i, test := range tests {
-				row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
-				if err != nil {
-					t.Fatalf("Unable to fetch row %v: %v", i, err)
-				}
-				verifyDirectPathRemoteAddress(t)
-				want := test.wantWithDefaultConfig
-				if withNumberConfigOption {
-					want = test.wantWithNumber
-				}
-				if want == nil {
-					want = test.val
-				}
-				gotp := reflect.New(reflect.TypeOf(want))
-				if err := row.Column(0, gotp.Interface()); err != nil {
-					t.Errorf("%v-%d: col:%v val:%#v, %v", withNumberConfigOption, i, test.col, test.val, err)
-					continue
-				}
-				got := reflect.Indirect(gotp).Interface()
-
-				// One of the test cases is checking NaN handling.  Given
-				// NaN!=NaN, we can't use reflect to test for it.
-				if isNaN(got) && isNaN(want) {
-					continue
-				}
-
-				// Check non-NaN cases.
-				if !testEqual(got, want) {
-					t.Errorf("%v-%d: col:%v val:%#v, got %#v, want %#v", withNumberConfigOption, i, test.col, test.val, got, want)
-					continue
-				}
-			}
-			// cleanup
-			_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-			if err != nil {
-				t.Fatal(err)
-			}
-		})
-	}
-}
-
-// TODO: Rename it to `TestIntegration_BasicTypes` and remove the current one once UUID is enabled in production.
-// Test encoding/decoding non-struct Cloud Spanner types.
-func TestIntegration_UUID(t *testing.T) {
-	t.Parallel()
-	skipUnsupportedPGTest(t)
-	onlyRunOnCloudDevel(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -4794,8 +4443,7 @@ func TestIntegration_CommitTimestamp(t *testing.T) {
 }
 
 func TestIntegration_DML(t *testing.T) {
-	//t.Parallel()
-	fmt.Printf("Starting the test")
+	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -6378,6 +6026,70 @@ func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowErr
 	}
 	if msg, ok := matchError(err, codes.InvalidArgument, "Directed reads can only be performed in a read-only transaction"); !ok {
 		t.Fatal(msg)
+	}
+}
+
+func TestIntegration_QueueMutations(t *testing.T) {
+	// Run in cloud-devel only since this queue feature is not fully enabled yet.
+	onlyRunOnCloudDevel(t)
+	// DDL not fully enabled for PG yet.
+	skipUnsupportedPGTest(t)
+	// Queue not supported in emulator yet.
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	// Set up testing environment with the queue DDL.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][queueDDLStatements])
+	defer cleanup()
+
+	// 1. Test Send Mutation
+	payload := []byte("Hello Queue")
+	_, err := client.Apply(ctx, []*Mutation{
+		Send("TestQueue", Key{1}, payload, WithDeliveryTime(time.Now())),
+	})
+	if err != nil {
+		t.Fatalf("Failed to apply Send mutation: %v", err)
+	}
+	// Verify the message exists in the queue table.
+	// Spanner Queues can be queried like normal tables.
+	stmt := Statement{SQL: "SELECT Id, Payload FROM TestQueue WHERE Id = 1"}
+	row, err := client.Single().Query(ctx, stmt).Next()
+	if err != nil {
+		t.Fatalf("Failed to read sent message: %v", err)
+	}
+	var val []byte
+	err = row.ColumnByName("Payload", &val)
+	if err != nil {
+		t.Fatalf("Failed to read message payload bytes: %v", err)
+	}
+	if !testEqual(val, payload) {
+		t.Errorf("Send verification failed. Got payload: %v, want payload: %v", val, payload)
+	}
+
+	// 2. Test Ack Mutation
+	if _, err := client.Apply(ctx, []*Mutation{Ack("TestQueue", Key{1})}); err != nil {
+		t.Fatalf("Failed to apply Ack mutation: %v", err)
+	}
+	// Verify message is deleted.
+	row, err = client.Single().Query(ctx, stmt).Next()
+	if err == nil || err != iterator.Done {
+		t.Error("Ack failed: message still exists in queue")
+	}
+
+	// 3. Test Ack with IgnoreNotFound.
+	// Acknowledge a non-existent key (Id=99) with IgnoreNotFound.
+	if _, err := client.Apply(ctx, []*Mutation{Ack("TestQueue", Key{99}, WithIgnoreNotFound(true))}); err != nil {
+		t.Errorf("Ack with IgnoreNotFound should succeed for missing keys, but got: %v", err)
+	}
+
+	// 4. Test Ack without IgnoreNotFound (Should Fail).
+	// The spec says Ack returns an error if the message doesn't exist.
+	_, err = client.Apply(ctx, []*Mutation{Ack("TestQueue", Key{100})})
+	if err == nil {
+		t.Error("Ack without IgnoreNotFound should have failed for non-existent message")
 	}
 }
 

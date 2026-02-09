@@ -194,7 +194,7 @@ type CustomerEvent struct {
 	// Resource name of the customer.
 	// Format: accounts/{account_id}/customers/{customer_id}
 	Customer string `protobuf:"bytes,1,opt,name=customer,proto3" json:"customer,omitempty"`
-	// Type of event which happened on the customer.
+	// Type of event which happened for the customer.
 	EventType CustomerEvent_Type `protobuf:"varint,2,opt,name=event_type,json=eventType,proto3,enum=google.cloud.channel.v1.CustomerEvent_Type" json:"event_type,omitempty"`
 }
 
@@ -251,7 +251,7 @@ type EntitlementEvent struct {
 	// Resource name of an entitlement of the form:
 	// accounts/{account_id}/customers/{customer_id}/entitlements/{entitlement_id}
 	Entitlement string `protobuf:"bytes,1,opt,name=entitlement,proto3" json:"entitlement,omitempty"`
-	// Type of event which happened on the entitlement.
+	// Type of event which happened for the entitlement.
 	EventType EntitlementEvent_Type `protobuf:"varint,2,opt,name=event_type,json=eventType,proto3,enum=google.cloud.channel.v1.EntitlementEvent_Type" json:"event_type,omitempty"`
 }
 

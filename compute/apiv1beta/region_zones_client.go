@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -103,7 +103,8 @@ func (c *RegionZonesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// List retrieves the list of Zone resources under the specific region available to the specified project.
+// List retrieves the list of Zone resources under the specific region available to
+// the specified project.
 func (c *RegionZonesClient) List(ctx context.Context, req *computepb.ListRegionZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -185,7 +186,8 @@ func (c *regionZonesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// List retrieves the list of Zone resources under the specific region available to the specified project.
+// List retrieves the list of Zone resources under the specific region available to
+// the specified project.
 func (c *regionZonesRESTClient) List(ctx context.Context, req *computepb.ListRegionZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	it := &ZoneIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionZonesRequest)

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,6 +63,8 @@ const (
 	Config_GetResourceChange_FullMethodName         = "/google.cloud.config.v1.Config/GetResourceChange"
 	Config_ListResourceDrifts_FullMethodName        = "/google.cloud.config.v1.Config/ListResourceDrifts"
 	Config_GetResourceDrift_FullMethodName          = "/google.cloud.config.v1.Config/GetResourceDrift"
+	Config_GetAutoMigrationConfig_FullMethodName    = "/google.cloud.config.v1.Config/GetAutoMigrationConfig"
+	Config_UpdateAutoMigrationConfig_FullMethodName = "/google.cloud.config.v1.Config/UpdateAutoMigrationConfig"
 )
 
 // ConfigClient is the client API for Config service.
@@ -129,6 +131,10 @@ type ConfigClient interface {
 	ListResourceDrifts(ctx context.Context, in *ListResourceDriftsRequest, opts ...grpc.CallOption) (*ListResourceDriftsResponse, error)
 	// Get a ResourceDrift for a given preview.
 	GetResourceDrift(ctx context.Context, in *GetResourceDriftRequest, opts ...grpc.CallOption) (*ResourceDrift, error)
+	// Get the AutoMigrationConfig for a given project and location.
+	GetAutoMigrationConfig(ctx context.Context, in *GetAutoMigrationConfigRequest, opts ...grpc.CallOption) (*AutoMigrationConfig, error)
+	// Updates the AutoMigrationConfig for a given project and location.
+	UpdateAutoMigrationConfig(ctx context.Context, in *UpdateAutoMigrationConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type configClient struct {
@@ -382,6 +388,24 @@ func (c *configClient) GetResourceDrift(ctx context.Context, in *GetResourceDrif
 	return out, nil
 }
 
+func (c *configClient) GetAutoMigrationConfig(ctx context.Context, in *GetAutoMigrationConfigRequest, opts ...grpc.CallOption) (*AutoMigrationConfig, error) {
+	out := new(AutoMigrationConfig)
+	err := c.cc.Invoke(ctx, Config_GetAutoMigrationConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) UpdateAutoMigrationConfig(ctx context.Context, in *UpdateAutoMigrationConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Config_UpdateAutoMigrationConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConfigServer is the server API for Config service.
 // All implementations should embed UnimplementedConfigServer
 // for forward compatibility
@@ -446,6 +470,10 @@ type ConfigServer interface {
 	ListResourceDrifts(context.Context, *ListResourceDriftsRequest) (*ListResourceDriftsResponse, error)
 	// Get a ResourceDrift for a given preview.
 	GetResourceDrift(context.Context, *GetResourceDriftRequest) (*ResourceDrift, error)
+	// Get the AutoMigrationConfig for a given project and location.
+	GetAutoMigrationConfig(context.Context, *GetAutoMigrationConfigRequest) (*AutoMigrationConfig, error)
+	// Updates the AutoMigrationConfig for a given project and location.
+	UpdateAutoMigrationConfig(context.Context, *UpdateAutoMigrationConfigRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedConfigServer should be embedded to have forward compatible implementations.
@@ -532,6 +560,12 @@ func (UnimplementedConfigServer) ListResourceDrifts(context.Context, *ListResour
 }
 func (UnimplementedConfigServer) GetResourceDrift(context.Context, *GetResourceDriftRequest) (*ResourceDrift, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetResourceDrift not implemented")
+}
+func (UnimplementedConfigServer) GetAutoMigrationConfig(context.Context, *GetAutoMigrationConfigRequest) (*AutoMigrationConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAutoMigrationConfig not implemented")
+}
+func (UnimplementedConfigServer) UpdateAutoMigrationConfig(context.Context, *UpdateAutoMigrationConfigRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAutoMigrationConfig not implemented")
 }
 
 // UnsafeConfigServer may be embedded to opt out of forward compatibility for this service.
@@ -1031,6 +1065,42 @@ func _Config_GetResourceDrift_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Config_GetAutoMigrationConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAutoMigrationConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).GetAutoMigrationConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_GetAutoMigrationConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).GetAutoMigrationConfig(ctx, req.(*GetAutoMigrationConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_UpdateAutoMigrationConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAutoMigrationConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).UpdateAutoMigrationConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_UpdateAutoMigrationConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).UpdateAutoMigrationConfig(ctx, req.(*UpdateAutoMigrationConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Config_ServiceDesc is the grpc.ServiceDesc for Config service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1145,6 +1215,14 @@ var Config_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetResourceDrift",
 			Handler:    _Config_GetResourceDrift_Handler,
+		},
+		{
+			MethodName: "GetAutoMigrationConfig",
+			Handler:    _Config_GetAutoMigrationConfig_Handler,
+		},
+		{
+			MethodName: "UpdateAutoMigrationConfig",
+			Handler:    _Config_UpdateAutoMigrationConfig_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

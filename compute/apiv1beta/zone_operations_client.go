@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -137,12 +137,19 @@ func (c *ZoneOperationsClient) Get(ctx context.Context, req *computepb.GetZoneOp
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of Operation resources contained within the specified zone.
+// List retrieves a list of Operation resources contained within
+// the specified zone.
 func (c *ZoneOperationsClient) List(ctx context.Context, req *computepb.ListZoneOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method waits for no more than the 2 minutes and then returns the current state of the operation, which might be DONE or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+// Wait waits for the specified Operation resource to return as DONE
+// or for the request to approach the 2 minute deadline, and retrieves the
+// specified Operation resource. This method waits for no more than the
+// 2 minutes and then returns the current state of the
+// operation, which might be DONE or still in progress.
+//
+// This method is called on a best-effort basis. Specifically:
 func (c *ZoneOperationsClient) Wait(ctx context.Context, req *computepb.WaitZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Wait(ctx, req, opts...)
 }
@@ -314,7 +321,8 @@ func (c *zoneOperationsRESTClient) Get(ctx context.Context, req *computepb.GetZo
 	return resp, nil
 }
 
-// List retrieves a list of Operation resources contained within the specified zone.
+// List retrieves a list of Operation resources contained within
+// the specified zone.
 func (c *zoneOperationsRESTClient) List(ctx context.Context, req *computepb.ListZoneOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*computepb.ListZoneOperationsRequest)
@@ -400,7 +408,13 @@ func (c *zoneOperationsRESTClient) List(ctx context.Context, req *computepb.List
 	return it
 }
 
-// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method waits for no more than the 2 minutes and then returns the current state of the operation, which might be DONE or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+// Wait waits for the specified Operation resource to return as DONE
+// or for the request to approach the 2 minute deadline, and retrieves the
+// specified Operation resource. This method waits for no more than the
+// 2 minutes and then returns the current state of the
+// operation, which might be DONE or still in progress.
+//
+// This method is called on a best-effort basis. Specifically:
 func (c *zoneOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

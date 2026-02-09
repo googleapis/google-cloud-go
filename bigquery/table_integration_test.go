@@ -95,6 +95,7 @@ func TestIntegration_TableCreateWithConstraints(t *testing.T) {
 		{Name: "bytes_col", Type: BytesFieldType, MaxLength: 150},
 		{Name: "num_col", Type: NumericFieldType, Precision: 20},
 		{Name: "bignumeric_col", Type: BigNumericFieldType, Precision: 30, Scale: 5},
+		{Name: "timestamp_col", Type: TimestampFieldType, TimestampPrecision: 12},
 	}
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema:         schema,
@@ -429,6 +430,7 @@ func TestIntegration_TableIAM(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
@@ -607,21 +609,14 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	table := newTable(t, schema)
-	defer table.Delete(ctx)
-	for i, test := range useLegacySQLTests {
+	for i, isLegacy := range []bool{true, false} {
 		view := dataset.Table(fmt.Sprintf("t_view_%d", i))
 		tm := &TableMetadata{
-			ViewQuery:      fmt.Sprintf("SELECT word from %s", test.t),
-			UseStandardSQL: test.std,
-			UseLegacySQL:   test.legacy,
+			ViewQuery:    "SELECT 17 as foo",
+			UseLegacySQL: isLegacy,
 		}
-		err := view.Create(ctx, tm)
-		gotErr := err != nil
-		if gotErr && !test.err {
-			t.Errorf("%+v:\nunexpected error: %v", test, err)
-		} else if !gotErr && test.err {
-			t.Errorf("%+v:\nsucceeded, but want error", test)
+		if err := view.Create(ctx, tm); err != nil {
+			t.Errorf("view creation for %q failed with legacy %t", view.FullyQualifiedName(), isLegacy)
 		}
 		_ = view.Delete(ctx)
 	}

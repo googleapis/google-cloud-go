@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -264,7 +264,8 @@ func (c *RegionNetworkFirewallPoliciesClient) GetEffectiveFirewalls(ctx context.
 	return c.internalClient.GetEffectiveFirewalls(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *RegionNetworkFirewallPoliciesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -279,7 +280,8 @@ func (c *RegionNetworkFirewallPoliciesClient) Insert(ctx context.Context, req *c
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the network firewall policies that have been configured for the specified project in the given region.
+// List lists all the network firewall policies that have been configured
+// for the specified project in the given region.
 func (c *RegionNetworkFirewallPoliciesClient) List(ctx context.Context, req *computepb.ListRegionNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -304,7 +306,8 @@ func (c *RegionNetworkFirewallPoliciesClient) RemoveRule(ctx context.Context, re
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *RegionNetworkFirewallPoliciesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -820,7 +823,8 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetEffectiveFirewalls(ctx cont
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *regionNetworkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -991,7 +995,8 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Insert(ctx context.Context, re
 	return op, nil
 }
 
-// List lists all the network firewall policies that have been configured for the specified project in the given region.
+// List lists all the network firewall policies that have been configured
+// for the specified project in the given region.
 func (c *regionNetworkFirewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	it := &FirewallPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionNetworkFirewallPoliciesRequest)
@@ -1340,7 +1345,8 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveRule(ctx context.Context
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *regionNetworkFirewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()

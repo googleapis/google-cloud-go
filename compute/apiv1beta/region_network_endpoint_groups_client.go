@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,7 +148,8 @@ func (c *RegionNetworkEndpointGroupsClient) AttachNetworkEndpoints(ctx context.C
 	return c.internalClient.AttachNetworkEndpoints(ctx, req, opts...)
 }
 
-// Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
+// Delete deletes the specified network endpoint group. Note that the NEG cannot be
+// deleted if it is configured as a backend of a backend service.
 func (c *RegionNetworkEndpointGroupsClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -163,12 +164,14 @@ func (c *RegionNetworkEndpointGroupsClient) Get(ctx context.Context, req *comput
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
+// Insert creates a network endpoint group in the specified project using the
+// parameters that are included in the request.
 func (c *RegionNetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of regional network endpoint groups available to the specified project in the given region.
+// List retrieves the list of regional network endpoint groups available to the
+// specified project in the given region.
 func (c *RegionNetworkEndpointGroupsClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -338,7 +341,8 @@ func (c *regionNetworkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx conte
 	return op, nil
 }
 
-// Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
+// Delete deletes the specified network endpoint group. Note that the NEG cannot be
+// deleted if it is configured as a backend of a backend service.
 func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -510,7 +514,8 @@ func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
+// Insert creates a network endpoint group in the specified project using the
+// parameters that are included in the request.
 func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()
@@ -577,7 +582,8 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 	return op, nil
 }
 
-// List retrieves the list of regional network endpoint groups available to the specified project in the given region.
+// List retrieves the list of regional network endpoint groups available to the
+// specified project in the given region.
 func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupIterator {
 	it := &NetworkEndpointGroupIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionNetworkEndpointGroupsRequest)

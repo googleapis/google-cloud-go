@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -489,27 +489,42 @@ func (c *InstancesClient) AddNetworkInterface(ctx context.Context, req *computep
 	return c.internalClient.AddNetworkInterface(ctx, req, opts...)
 }
 
-// AddResourcePolicies adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
+// AddResourcePolicies adds existing resource policies to an instance. You can only add one
+// policy right now which will be applied to this instance for scheduling live
+// migrations.
 func (c *InstancesClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of all of the instances in your project
+// across all regions and zones.
+//
+// The performance of this method degrades when a filter is specified on a
+// project that has a very large number of instances.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *InstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// AttachDisk attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
+// AttachDisk attaches an existing Disk resource to an instance. You must first
+// create the disk before you can attach it. It is not possible to create
+// and attach a disk at the same time. For more information, readAdding a
+// persistent disk to your instance.
 func (c *InstancesClient) AttachDisk(ctx context.Context, req *computepb.AttachDiskInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AttachDisk(ctx, req, opts...)
 }
 
-// BulkInsert creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.
+// BulkInsert creates multiple instances. Count specifies the number of instances to
+// create. For more information, seeAbout bulk
+// creation of VMs.
 func (c *InstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
-// Delete deletes the specified Instance resource. For more information, see Deleting an instance.
+// Delete deletes the specified Instance resource. For more information, seeDeleting
+// an instance.
 func (c *InstancesClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -519,7 +534,13 @@ func (c *InstancesClient) DeleteAccessConfig(ctx context.Context, req *computepb
 	return c.internalClient.DeleteAccessConfig(ctx, req, opts...)
 }
 
-// DeleteNetworkInterface deletes one dynamic network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - dynamic network interface to be deleted, using network_interface_name field;
+// DeleteNetworkInterface deletes one dynamic network interface from an active instance.
+// InstancesDeleteNetworkInterfaceRequest indicates:
+//
+//	instance from which to delete, using project+zone+resource_id fields;
+//
+//	dynamic network interface to be deleted, using network_interface_name
+//	field;
 func (c *InstancesClient) DeleteNetworkInterface(ctx context.Context, req *computepb.DeleteNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteNetworkInterface(ctx, req, opts...)
 }
@@ -544,7 +565,8 @@ func (c *InstancesClient) GetGuestAttributes(ctx context.Context, req *computepb
 	return c.internalClient.GetGuestAttributes(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *InstancesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -574,17 +596,23 @@ func (c *InstancesClient) GetShieldedVmIdentity(ctx context.Context, req *comput
 	return c.internalClient.GetShieldedVmIdentity(ctx, req, opts...)
 }
 
-// Insert creates an instance resource in the specified project using the data included in the request.
+// Insert creates an instance resource in the specified project using the data
+// included in the request.
 func (c *InstancesClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of instances contained within the specified zone.
+// List retrieves the list of instances contained within
+// the specified zone.
 func (c *InstancesClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListReferrers retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
+// ListReferrers retrieves a list of resources that refer to the VM instance specified in
+// the request. For example, if the VM instance is part of a managed or
+// unmanaged instance group, the referrers list includes the instance group.
+// For more information, readViewing
+// referrers to VM instances.
 func (c *InstancesClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) *ReferenceIterator {
 	return c.internalClient.ListReferrers(ctx, req, opts...)
 }
@@ -609,12 +637,15 @@ func (c *InstancesClient) ReportHostAsFaulty(ctx context.Context, req *computepb
 	return c.internalClient.ReportHostAsFaulty(ctx, req, opts...)
 }
 
-// Reset performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.
+// Reset performs a reset on the instance. This is a hard reset. The VM
+// does not do a graceful shutdown. For more information, seeResetting
+// an instance.
 func (c *InstancesClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Reset(ctx, req, opts...)
 }
 
-// Resume resumes an instance that was suspended using the instances().suspend method.
+// Resume resumes an instance that was suspended using theinstances().suspend
+// method.
 func (c *InstancesClient) Resume(ctx context.Context, req *computepb.ResumeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Resume(ctx, req, opts...)
 }
@@ -634,32 +665,40 @@ func (c *InstancesClient) SetDiskAutoDelete(ctx context.Context, req *computepb.
 	return c.internalClient.SetDiskAutoDelete(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *InstancesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets labels on an instance.  To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *InstancesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
-// SetMachineResources changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
+// SetMachineResources changes the number and/or type of accelerator for a stopped instance to the
+// values specified in the request.
 func (c *InstancesClient) SetMachineResources(ctx context.Context, req *computepb.SetMachineResourcesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMachineResources(ctx, req, opts...)
 }
 
-// SetMachineType changes the machine type for a stopped instance to the machine type specified in the request.
+// SetMachineType changes the machine type for a stopped instance to the machine
+// type specified in the request.
 func (c *InstancesClient) SetMachineType(ctx context.Context, req *computepb.SetMachineTypeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMachineType(ctx, req, opts...)
 }
 
-// SetMetadata sets metadata for the specified instance to the data included in the request.
+// SetMetadata sets metadata for the specified instance to the data included
+// in the request.
 func (c *InstancesClient) SetMetadata(ctx context.Context, req *computepb.SetMetadataInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMetadata(ctx, req, opts...)
 }
 
-// SetMinCpuPlatform changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
+// SetMinCpuPlatform changes the minimum CPU platform that this instance should use.
+// This method can only
+// be called on a stopped instance. For more information, readSpecifying a
+// Minimum CPU Platform.
 func (c *InstancesClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMinCpuPlatform(ctx, req, opts...)
 }
@@ -669,57 +708,89 @@ func (c *InstancesClient) SetName(ctx context.Context, req *computepb.SetNameIns
 	return c.internalClient.SetName(ctx, req, opts...)
 }
 
-// SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
+// SetScheduling sets an instance’s scheduling options. You can only call this method on astopped instance,
+// that is, a VM instance that is in a TERMINATED state. SeeInstance Life
+// Cycle for more information on the possible instance states.
+// For more information about setting scheduling options for a VM, seeSet
+// VM host maintenance policy.
 func (c *InstancesClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetScheduling(ctx, req, opts...)
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance.
+// For more information, seeGoogle
+// Cloud Armor Overview
 func (c *InstancesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
 
-// SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
+// SetServiceAccount sets the service account on the instance. For more information,
+// readChanging
+// the service account and access scopes for an instance.
 func (c *InstancesClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetServiceAccount(ctx, req, opts...)
 }
 
-// SetShieldedInstanceIntegrityPolicy sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// SetShieldedInstanceIntegrityPolicy sets the Shielded Instance integrity policy for an instance. You can
+// only use this method on a running instance. This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *InstancesClient) SetShieldedInstanceIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetShieldedInstanceIntegrityPolicy(ctx, req, opts...)
 }
 
-// SetShieldedVmIntegrityPolicy sets the Shielded VM integrity policy for a VM instance. You can only use this method on a running VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// SetShieldedVmIntegrityPolicy sets the Shielded VM integrity policy for a VM instance. You can
+// only use this method on a running VM instance. This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *InstancesClient) SetShieldedVmIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedVmIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetShieldedVmIntegrityPolicy(ctx, req, opts...)
 }
 
-// SetTags sets network tags for the specified instance to the data included in the request.
+// SetTags sets network tags
+// for the specified instance to the data included in the request.
 func (c *InstancesClient) SetTags(ctx context.Context, req *computepb.SetTagsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetTags(ctx, req, opts...)
 }
 
-// SimulateMaintenanceEvent simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
+// SimulateMaintenanceEvent simulates a host maintenance event on a VM. For more information, see
+// Simulate a host maintenance event.
 func (c *InstancesClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SimulateMaintenanceEvent(ctx, req, opts...)
 }
 
-// Start starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
+// Start starts an instance that was stopped using theinstances().stop
+// method. For more information, seeRestart an
+// instance.
 func (c *InstancesClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Start(ctx, req, opts...)
 }
 
-// StartWithEncryptionKey starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
+// StartWithEncryptionKey starts an instance that was stopped using theinstances().stop
+// method. For more information, seeRestart an
+// instance.
 func (c *InstancesClient) StartWithEncryptionKey(ctx context.Context, req *computepb.StartWithEncryptionKeyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StartWithEncryptionKey(ctx, req, opts...)
 }
 
-// Stop stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
+// Stop stops a running instance, shutting it down cleanly, and allows
+// you to restart the instance at a later time. Stopped instances do not incur
+// VM usage charges while they are stopped. However, resources that the VM is
+// using, such as persistent disks and static IP addresses, will continue to
+// be charged until they are deleted. For more information, seeStopping
+// an instance.
 func (c *InstancesClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Stop(ctx, req, opts...)
 }
 
-// Suspend this method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances have no compute costs (cores or RAM), and incur only storage charges for the saved VM memory and localSSD data. Any charged resources the virtual machine was using, such as persistent disks and static IP addresses, will continue to be charged while the instance is suspended. For more information, see Suspending and resuming an instance.
+// Suspend this method suspends a running instance, saving its state to persistent
+// storage, and allows you to resume the instance at a later time. Suspended
+// instances have no compute costs (cores or RAM), and incur only storage
+// charges for the saved VM memory and localSSD data. Any charged resources
+// the virtual machine was using, such as persistent disks and static IP
+// addresses, will continue to be charged while the instance is suspended.
+// For more information, see
+// Suspending and resuming an instance.
 func (c *InstancesClient) Suspend(ctx context.Context, req *computepb.SuspendInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Suspend(ctx, req, opts...)
 }
@@ -729,32 +800,52 @@ func (c *InstancesClient) TestIamPermissions(ctx context.Context, req *computepb
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See Updating a running instance for a list of updatable instance properties.
+// Update updates an instance only if the necessary resources are available. This
+// method can update only a specific set of instance properties. See
+// Updating a running instance for a list of updatable instance
+// properties.
 func (c *InstancesClient) Update(ctx context.Context, req *computepb.UpdateInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
-// UpdateAccessConfig updates the specified access config from an instance’s network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateAccessConfig updates the specified access config from an instance’s network interface
+// with the data included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *InstancesClient) UpdateAccessConfig(ctx context.Context, req *computepb.UpdateAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateAccessConfig(ctx, req, opts...)
 }
 
-// UpdateDisplayDevice updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateDisplayDevice updates the Display config for a VM instance. You can
+// only use this method on a stopped VM instance. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *InstancesClient) UpdateDisplayDevice(ctx context.Context, req *computepb.UpdateDisplayDeviceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateDisplayDevice(ctx, req, opts...)
 }
 
-// UpdateNetworkInterface updates an instance’s network interface. This method can only update an interface’s alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.
+// UpdateNetworkInterface updates an instance’s network interface. This method can only update an
+// interface’s alias IP range and attached network. See Modifying
+// alias IP ranges for an existing instance for instructions on
+// changing alias IP ranges. See Migrating
+// a VM between networks for instructions on migrating an interface.
+// This method follows PATCH semantics.
 func (c *InstancesClient) UpdateNetworkInterface(ctx context.Context, req *computepb.UpdateNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateNetworkInterface(ctx, req, opts...)
 }
 
-// UpdateShieldedInstanceConfig updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateShieldedInstanceConfig updates the Shielded Instance config for an instance. You can
+// only use this method on a stopped instance. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *InstancesClient) UpdateShieldedInstanceConfig(ctx context.Context, req *computepb.UpdateShieldedInstanceConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateShieldedInstanceConfig(ctx, req, opts...)
 }
 
-// UpdateShieldedVmConfig updates the Shielded VM config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateShieldedVmConfig updates the Shielded VM config for a VM instance. You can
+// only use this method on a stopped VM instance. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *InstancesClient) UpdateShieldedVmConfig(ctx context.Context, req *computepb.UpdateShieldedVmConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateShieldedVmConfig(ctx, req, opts...)
 }
@@ -987,7 +1078,9 @@ func (c *instancesRESTClient) AddNetworkInterface(ctx context.Context, req *comp
 	return op, nil
 }
 
-// AddResourcePolicies adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
+// AddResourcePolicies adds existing resource policies to an instance. You can only add one
+// policy right now which will be applied to this instance for scheduling live
+// migrations.
 func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesAddResourcePoliciesRequestResource()
@@ -1054,7 +1147,14 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of all of the instances in your project
+// across all regions and zones.
+//
+// The performance of this method degrades when a filter is specified on a
+// project that has a very large number of instances.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	it := &InstancesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstancesRequest)
@@ -1153,7 +1253,10 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 	return it
 }
 
-// AttachDisk attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
+// AttachDisk attaches an existing Disk resource to an instance. You must first
+// create the disk before you can attach it. It is not possible to create
+// and attach a disk at the same time. For more information, readAdding a
+// persistent disk to your instance.
 func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.AttachDiskInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAttachedDiskResource()
@@ -1223,7 +1326,9 @@ func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.Att
 	return op, nil
 }
 
-// BulkInsert creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.
+// BulkInsert creates multiple instances. Count specifies the number of instances to
+// create. For more information, seeAbout bulk
+// creation of VMs.
 func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()
@@ -1290,7 +1395,8 @@ func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.Bul
 	return op, nil
 }
 
-// Delete deletes the specified Instance resource. For more information, see Deleting an instance.
+// Delete deletes the specified Instance resource. For more information, seeDeleting
+// an instance.
 func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1415,7 +1521,13 @@ func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *compu
 	return op, nil
 }
 
-// DeleteNetworkInterface deletes one dynamic network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - dynamic network interface to be deleted, using network_interface_name field;
+// DeleteNetworkInterface deletes one dynamic network interface from an active instance.
+// InstancesDeleteNetworkInterfaceRequest indicates:
+//
+//	instance from which to delete, using project+zone+resource_id fields;
+//
+//	dynamic network interface to be deleted, using network_interface_name
+//	field;
 func (c *instancesRESTClient) DeleteNetworkInterface(ctx context.Context, req *computepb.DeleteNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1694,7 +1806,8 @@ func (c *instancesRESTClient) GetGuestAttributes(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *instancesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1988,7 +2101,8 @@ func (c *instancesRESTClient) GetShieldedVmIdentity(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Insert creates an instance resource in the specified project using the data included in the request.
+// Insert creates an instance resource in the specified project using the data
+// included in the request.
 func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceResource()
@@ -2061,7 +2175,8 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 	return op, nil
 }
 
-// List retrieves the list of instances contained within the specified zone.
+// List retrieves the list of instances contained within
+// the specified zone.
 func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*computepb.ListInstancesRequest)
@@ -2150,7 +2265,11 @@ func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInsta
 	return it
 }
 
-// ListReferrers retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
+// ListReferrers retrieves a list of resources that refer to the VM instance specified in
+// the request. For example, if the VM instance is part of a managed or
+// unmanaged instance group, the referrers list includes the instance group.
+// For more information, readViewing
+// referrers to VM instances.
 func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) *ReferenceIterator {
 	it := &ReferenceIterator{}
 	req = proto.Clone(req).(*computepb.ListReferrersInstancesRequest)
@@ -2497,7 +2616,9 @@ func (c *instancesRESTClient) ReportHostAsFaulty(ctx context.Context, req *compu
 	return op, nil
 }
 
-// Reset performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.
+// Reset performs a reset on the instance. This is a hard reset. The VM
+// does not do a graceful shutdown. For more information, seeResetting
+// an instance.
 func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2557,7 +2678,8 @@ func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetIns
 	return op, nil
 }
 
-// Resume resumes an instance that was suspended using the instances().suspend method.
+// Resume resumes an instance that was suspended using theinstances().suspend
+// method.
 func (c *instancesRESTClient) Resume(ctx context.Context, req *computepb.ResumeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesResumeRequestResource()
@@ -2794,7 +2916,8 @@ func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *instancesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
@@ -2846,7 +2969,8 @@ func (c *instancesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 	return resp, nil
 }
 
-// SetLabels sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets labels on an instance.  To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetLabelsRequestResource()
@@ -2913,7 +3037,8 @@ func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 	return op, nil
 }
 
-// SetMachineResources changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
+// SetMachineResources changes the number and/or type of accelerator for a stopped instance to the
+// values specified in the request.
 func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *computepb.SetMachineResourcesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMachineResourcesRequestResource()
@@ -2980,7 +3105,8 @@ func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *comp
 	return op, nil
 }
 
-// SetMachineType changes the machine type for a stopped instance to the machine type specified in the request.
+// SetMachineType changes the machine type for a stopped instance to the machine
+// type specified in the request.
 func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb.SetMachineTypeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMachineTypeRequestResource()
@@ -3047,7 +3173,8 @@ func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// SetMetadata sets metadata for the specified instance to the data included in the request.
+// SetMetadata sets metadata for the specified instance to the data included
+// in the request.
 func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.SetMetadataInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
@@ -3114,7 +3241,10 @@ func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.Se
 	return op, nil
 }
 
-// SetMinCpuPlatform changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
+// SetMinCpuPlatform changes the minimum CPU platform that this instance should use.
+// This method can only
+// be called on a stopped instance. For more information, readSpecifying a
+// Minimum CPU Platform.
 func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMinCpuPlatformRequestResource()
@@ -3248,7 +3378,11 @@ func (c *instancesRESTClient) SetName(ctx context.Context, req *computepb.SetNam
 	return op, nil
 }
 
-// SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
+// SetScheduling sets an instance’s scheduling options. You can only call this method on astopped instance,
+// that is, a VM instance that is in a TERMINATED state. SeeInstance Life
+// Cycle for more information on the possible instance states.
+// For more information about setting scheduling options for a VM, seeSet
+// VM host maintenance policy.
 func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSchedulingResource()
@@ -3315,7 +3449,9 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance.
+// For more information, seeGoogle
+// Cloud Armor Overview
 func (c *instancesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetSecurityPolicyRequestResource()
@@ -3382,7 +3518,9 @@ func (c *instancesRESTClient) SetSecurityPolicy(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
+// SetServiceAccount sets the service account on the instance. For more information,
+// readChanging
+// the service account and access scopes for an instance.
 func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetServiceAccountRequestResource()
@@ -3449,7 +3587,10 @@ func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetShieldedInstanceIntegrityPolicy sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// SetShieldedInstanceIntegrityPolicy sets the Shielded Instance integrity policy for an instance. You can
+// only use this method on a running instance. This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedInstanceIntegrityPolicyResource()
@@ -3516,7 +3657,10 @@ func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Con
 	return op, nil
 }
 
-// SetShieldedVmIntegrityPolicy sets the Shielded VM integrity policy for a VM instance. You can only use this method on a running VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// SetShieldedVmIntegrityPolicy sets the Shielded VM integrity policy for a VM instance. You can
+// only use this method on a running VM instance. This method
+// supports PATCH semantics and uses the JSON merge
+// patch format and processing rules.
 func (c *instancesRESTClient) SetShieldedVmIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedVmIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedVmIntegrityPolicyResource()
@@ -3583,7 +3727,8 @@ func (c *instancesRESTClient) SetShieldedVmIntegrityPolicy(ctx context.Context, 
 	return op, nil
 }
 
-// SetTags sets network tags for the specified instance to the data included in the request.
+// SetTags sets network tags
+// for the specified instance to the data included in the request.
 func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTagsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTagsResource()
@@ -3650,7 +3795,8 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 	return op, nil
 }
 
-// SimulateMaintenanceEvent simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
+// SimulateMaintenanceEvent simulates a host maintenance event on a VM. For more information, see
+// Simulate a host maintenance event.
 func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3713,7 +3859,9 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 	return op, nil
 }
 
-// Start starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
+// Start starts an instance that was stopped using theinstances().stop
+// method. For more information, seeRestart an
+// instance.
 func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3773,7 +3921,9 @@ func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartIns
 	return op, nil
 }
 
-// StartWithEncryptionKey starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
+// StartWithEncryptionKey starts an instance that was stopped using theinstances().stop
+// method. For more information, seeRestart an
+// instance.
 func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *computepb.StartWithEncryptionKeyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesStartWithEncryptionKeyRequestResource()
@@ -3840,7 +3990,12 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 	return op, nil
 }
 
-// Stop stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
+// Stop stops a running instance, shutting it down cleanly, and allows
+// you to restart the instance at a later time. Stopped instances do not incur
+// VM usage charges while they are stopped. However, resources that the VM is
+// using, such as persistent disks and static IP addresses, will continue to
+// be charged until they are deleted. For more information, seeStopping
+// an instance.
 func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3906,7 +4061,14 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 	return op, nil
 }
 
-// Suspend this method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances have no compute costs (cores or RAM), and incur only storage charges for the saved VM memory and localSSD data. Any charged resources the virtual machine was using, such as persistent disks and static IP addresses, will continue to be charged while the instance is suspended. For more information, see Suspending and resuming an instance.
+// Suspend this method suspends a running instance, saving its state to persistent
+// storage, and allows you to resume the instance at a later time. Suspended
+// instances have no compute costs (cores or RAM), and incur only storage
+// charges for the saved VM memory and localSSD data. Any charged resources
+// the virtual machine was using, such as persistent disks and static IP
+// addresses, will continue to be charged while the instance is suspended.
+// For more information, see
+// Suspending and resuming an instance.
 func (c *instancesRESTClient) Suspend(ctx context.Context, req *computepb.SuspendInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4021,7 +4183,10 @@ func (c *instancesRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Update updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See Updating a running instance for a list of updatable instance properties.
+// Update updates an instance only if the necessary resources are available. This
+// method can update only a specific set of instance properties. See
+// Updating a running instance for a list of updatable instance
+// properties.
 func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceResource()
@@ -4094,7 +4259,10 @@ func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateI
 	return op, nil
 }
 
-// UpdateAccessConfig updates the specified access config from an instance’s network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateAccessConfig updates the specified access config from an instance’s network interface
+// with the data included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *computepb.UpdateAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAccessConfigResource()
@@ -4162,7 +4330,10 @@ func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *compu
 	return op, nil
 }
 
-// UpdateDisplayDevice updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateDisplayDevice updates the Display config for a VM instance. You can
+// only use this method on a stopped VM instance. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *computepb.UpdateDisplayDeviceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisplayDeviceResource()
@@ -4229,7 +4400,12 @@ func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *comp
 	return op, nil
 }
 
-// UpdateNetworkInterface updates an instance’s network interface. This method can only update an interface’s alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.
+// UpdateNetworkInterface updates an instance’s network interface. This method can only update an
+// interface’s alias IP range and attached network. See Modifying
+// alias IP ranges for an existing instance for instructions on
+// changing alias IP ranges. See Migrating
+// a VM between networks for instructions on migrating an interface.
+// This method follows PATCH semantics.
 func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *computepb.UpdateNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkInterfaceResource()
@@ -4297,7 +4473,10 @@ func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *c
 	return op, nil
 }
 
-// UpdateShieldedInstanceConfig updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateShieldedInstanceConfig updates the Shielded Instance config for an instance. You can
+// only use this method on a stopped instance. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, req *computepb.UpdateShieldedInstanceConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedInstanceConfigResource()
@@ -4364,7 +4543,10 @@ func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, 
 	return op, nil
 }
 
-// UpdateShieldedVmConfig updates the Shielded VM config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// UpdateShieldedVmConfig updates the Shielded VM config for a VM instance. You can
+// only use this method on a stopped VM instance. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *instancesRESTClient) UpdateShieldedVmConfig(ctx context.Context, req *computepb.UpdateShieldedVmConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedVmConfigResource()

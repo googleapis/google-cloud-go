@@ -28,6 +28,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/protobuf/proto"
@@ -1120,6 +1121,7 @@ func TestBucketRetryer(t *testing.T) {
 					}),
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
+					WithMaxRetryDuration(120*time.Second),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
@@ -1128,9 +1130,10 @@ func TestBucketRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				policy:      RetryAlways,
-				maxAttempts: intPointer(5),
-				shouldRetry: func(err error) bool { return false },
+				policy:           RetryAlways,
+				maxAttempts:      intPointer(5),
+				maxRetryDuration: 120 * time.Second,
+				shouldRetry:      func(err error) bool { return false },
 			},
 		},
 		{
@@ -1172,6 +1175,15 @@ func TestBucketRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set max retry duration only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMaxRetryDuration(75 * time.Second))
+			},
+			want: &retryConfig{
+				maxRetryDuration: 75 * time.Second,
 			},
 		},
 	}
@@ -1672,5 +1684,109 @@ func TestDefaultSignBlobRetry(t *testing.T) {
 		GoogleAccessID: "example@example.com",
 	}); err != nil {
 		t.Fatalf("BucketHandle.SignedURL: %v", err)
+	}
+}
+
+func TestBucketIterator_PartialSuccess(t *testing.T) {
+	ctx := context.Background()
+	const projectID = "test-project"
+
+	// Mocked JSON responses from the GCS API.
+	partialSuccessListBucketsResponse := `{
+		"kind": "storage#buckets",
+		"nextPageToken": "",
+		"items": [
+			{
+				"kind": "storage#bucket",
+				"id": "bucket-1",
+				"name": "bucket-1"
+			},
+			{
+				"kind": "storage#bucket",
+				"id": "bucket-2",
+				"name": "bucket-2"
+			}
+		],
+		"unreachable": [
+			"projects/_/buckets/unreachable-1",
+			"projects/_/buckets/unreachable-2"
+		]
+	}`
+
+	listBucketsResponse := `{
+		"kind": "storage#buckets",
+		"nextPageToken": "",
+		"items": [
+			{
+				"kind": "storage#bucket",
+				"id": "bucket-1",
+				"name": "bucket-1"
+			},
+			{
+				"kind": "storage#bucket",
+				"id": "bucket-2",
+				"name": "bucket-2"
+			}
+		]
+	}`
+
+	testCases := []struct {
+		name                 string
+		returnPartialSuccess bool
+		jsonResponse         string
+		wantUnreachable      []string
+	}{
+		{
+			name:                 "ReturnPartialSuccess is true",
+			returnPartialSuccess: true,
+			jsonResponse:         partialSuccessListBucketsResponse,
+			wantUnreachable:      []string{"projects/_/buckets/unreachable-1", "projects/_/buckets/unreachable-2"},
+		},
+		{
+			name:                 "ReturnPartialSuccess is false",
+			returnPartialSuccess: false,
+			jsonResponse:         listBucketsResponse,
+			wantUnreachable:      nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mt := mockTransport{}
+			mt.addResult(&http.Response{
+				StatusCode: 200,
+				Body:       bodyReader(tc.jsonResponse),
+				Header:     http.Header{"Content-Type": []string{"application/json"}},
+			}, nil)
+
+			client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: &mt}))
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+
+			it := client.Buckets(ctx, projectID)
+			it.ReturnPartialSuccess = tc.returnPartialSuccess
+
+			var buckets []*BucketAttrs
+			for {
+				b, err := it.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatalf("it.Next() got err: %v", err)
+				}
+				buckets = append(buckets, b)
+			}
+
+			if got, want := len(buckets), 2; got != want {
+				t.Errorf("got %d buckets, want %d", got, want)
+			}
+
+			unreachable := it.Unreachable()
+			if diff := cmp.Diff(unreachable, tc.wantUnreachable); diff != "" {
+				t.Errorf("Unreachable() mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
 }

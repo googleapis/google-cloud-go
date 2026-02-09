@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ type RoutineCallOptions struct {
 	GetRoutine    []gax.CallOption
 	InsertRoutine []gax.CallOption
 	UpdateRoutine []gax.CallOption
-	PatchRoutine  []gax.CallOption
 	DeleteRoutine []gax.CallOption
 	ListRoutines  []gax.CallOption
 }
@@ -61,7 +60,6 @@ func defaultRoutineGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://bigquery.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -99,20 +97,6 @@ func defaultRoutineCallOptions() *RoutineCallOptions {
 			}),
 		},
 		UpdateRoutine: []gax.CallOption{
-			gax.WithTimeout(240000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-					codes.ResourceExhausted,
-				}, gax.Backoff{
-					Initial:    400 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
-				})
-			}),
-		},
-		PatchRoutine: []gax.CallOption{
 			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -198,19 +182,6 @@ func defaultRoutineRESTCallOptions() *RoutineCallOptions {
 					http.StatusTooManyRequests)
 			}),
 		},
-		PatchRoutine: []gax.CallOption{
-			gax.WithTimeout(240000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    400 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
-				},
-					http.StatusGatewayTimeout,
-					http.StatusServiceUnavailable,
-					http.StatusTooManyRequests)
-			}),
-		},
 		DeleteRoutine: []gax.CallOption{
 			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -248,7 +219,6 @@ type internalRoutineClient interface {
 	GetRoutine(context.Context, *bigquerypb.GetRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
 	InsertRoutine(context.Context, *bigquerypb.InsertRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
 	UpdateRoutine(context.Context, *bigquerypb.UpdateRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
-	PatchRoutine(context.Context, *bigquerypb.PatchRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
 	DeleteRoutine(context.Context, *bigquerypb.DeleteRoutineRequest, ...gax.CallOption) error
 	ListRoutines(context.Context, *bigquerypb.ListRoutinesRequest, ...gax.CallOption) *RoutineIterator
 }
@@ -302,12 +272,6 @@ func (c *RoutineClient) InsertRoutine(ctx context.Context, req *bigquerypb.Inser
 // entire Routine resource.
 func (c *RoutineClient) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return c.internalClient.UpdateRoutine(ctx, req, opts...)
-}
-
-// PatchRoutine patches information in an existing routine. The patch method does a partial
-// update to an existing Routine resource.
-func (c *RoutineClient) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
-	return c.internalClient.PatchRoutine(ctx, req, opts...)
 }
 
 // DeleteRoutine deletes the routine specified by routineId from the dataset.
@@ -528,21 +492,6 @@ func (c *routineGRPCClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 	return resp, nil
 }
 
-func (c *routineGRPCClient) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).PatchRoutine[0:len((*c.CallOptions).PatchRoutine):len((*c.CallOptions).PatchRoutine)], opts...)
-	var resp *bigquerypb.Routine
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.routineClient.PatchRoutine, req, settings.GRPC, c.logger, "PatchRoutine")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *routineGRPCClient) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "dataset_id", url.QueryEscape(req.GetDatasetId()), "routine_id", url.QueryEscape(req.GetRoutineId()))}
 
@@ -739,176 +688,6 @@ func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRoutine")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// PatchRoutine patches information in an existing routine. The patch method does a partial
-// update to an existing Routine resource.
-func (c *routineRESTClient) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("")
-
-	params := url.Values{}
-	params.Add("datasetId", fmt.Sprintf("%v", req.GetDatasetId()))
-	if req.GetFieldMask() != nil {
-		field, err := protojson.Marshal(req.GetFieldMask())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("fieldMask", string(field[1:len(field)-1]))
-	}
-	params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
-	if req.GetRoutine().GetCreationTime() != 0 {
-		params.Add("routine.creationTime", fmt.Sprintf("%v", req.GetRoutine().GetCreationTime()))
-	}
-	if req.GetRoutine().GetDataGovernanceType() != 0 {
-		params.Add("routine.dataGovernanceType", fmt.Sprintf("%v", req.GetRoutine().GetDataGovernanceType()))
-	}
-	if req.GetRoutine().GetDefinitionBody() != "" {
-		params.Add("routine.definitionBody", fmt.Sprintf("%v", req.GetRoutine().GetDefinitionBody()))
-	}
-	if req.GetRoutine().GetDescription() != "" {
-		params.Add("routine.description", fmt.Sprintf("%v", req.GetRoutine().GetDescription()))
-	}
-	if req.GetRoutine().GetDeterminismLevel() != 0 {
-		params.Add("routine.determinismLevel", fmt.Sprintf("%v", req.GetRoutine().GetDeterminismLevel()))
-	}
-	if req.GetRoutine().GetEtag() != "" {
-		params.Add("routine.etag", fmt.Sprintf("%v", req.GetRoutine().GetEtag()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetContainerCpu() != 0 {
-		params.Add("routine.externalRuntimeOptions.containerCpu", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetContainerCpu()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetContainerMemory() != "" {
-		params.Add("routine.externalRuntimeOptions.containerMemory", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetContainerMemory()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetMaxBatchingRows() != 0 {
-		params.Add("routine.externalRuntimeOptions.maxBatchingRows", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetMaxBatchingRows()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeConnection() != "" {
-		params.Add("routine.externalRuntimeOptions.runtimeConnection", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeConnection()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeVersion() != "" {
-		params.Add("routine.externalRuntimeOptions.runtimeVersion", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeVersion()))
-	}
-	if items := req.GetRoutine().GetImportedLibraries(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.importedLibraries", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetLanguage() != 0 {
-		params.Add("routine.language", fmt.Sprintf("%v", req.GetRoutine().GetLanguage()))
-	}
-	if req.GetRoutine().GetLastModifiedTime() != 0 {
-		params.Add("routine.lastModifiedTime", fmt.Sprintf("%v", req.GetRoutine().GetLastModifiedTime()))
-	}
-	params.Add("routine.pythonOptions.entryPoint", fmt.Sprintf("%v", req.GetRoutine().GetPythonOptions().GetEntryPoint()))
-	if items := req.GetRoutine().GetPythonOptions().GetPackages(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.pythonOptions.packages", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetRemoteFunctionOptions().GetConnection() != "" {
-		params.Add("routine.remoteFunctionOptions.connection", fmt.Sprintf("%v", req.GetRoutine().GetRemoteFunctionOptions().GetConnection()))
-	}
-	if req.GetRoutine().GetRemoteFunctionOptions().GetEndpoint() != "" {
-		params.Add("routine.remoteFunctionOptions.endpoint", fmt.Sprintf("%v", req.GetRoutine().GetRemoteFunctionOptions().GetEndpoint()))
-	}
-	if req.GetRoutine().GetRemoteFunctionOptions().GetMaxBatchingRows() != 0 {
-		params.Add("routine.remoteFunctionOptions.maxBatchingRows", fmt.Sprintf("%v", req.GetRoutine().GetRemoteFunctionOptions().GetMaxBatchingRows()))
-	}
-	params.Add("routine.returnType.arrayElementType.rangeElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetArrayElementType().GetRangeElementType().GetTypeKind()))
-	params.Add("routine.returnType.arrayElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetArrayElementType().GetTypeKind()))
-	params.Add("routine.returnType.rangeElementType.arrayElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetRangeElementType().GetArrayElementType().GetTypeKind()))
-	params.Add("routine.returnType.rangeElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetRangeElementType().GetTypeKind()))
-	params.Add("routine.returnType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetTypeKind()))
-	params.Add("routine.routineReference.datasetId", fmt.Sprintf("%v", req.GetRoutine().GetRoutineReference().GetDatasetId()))
-	params.Add("routine.routineReference.projectId", fmt.Sprintf("%v", req.GetRoutine().GetRoutineReference().GetProjectId()))
-	params.Add("routine.routineReference.routineId", fmt.Sprintf("%v", req.GetRoutine().GetRoutineReference().GetRoutineId()))
-	params.Add("routine.routineType", fmt.Sprintf("%v", req.GetRoutine().GetRoutineType()))
-	if req.GetRoutine().GetSecurityMode() != 0 {
-		params.Add("routine.securityMode", fmt.Sprintf("%v", req.GetRoutine().GetSecurityMode()))
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetArchiveUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.archiveUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetSparkOptions().GetConnection() != "" {
-		params.Add("routine.sparkOptions.connection", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetConnection()))
-	}
-	if req.GetRoutine().GetSparkOptions().GetContainerImage() != "" {
-		params.Add("routine.sparkOptions.containerImage", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetContainerImage()))
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetFileUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.fileUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetJarUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.jarUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetSparkOptions().GetMainClass() != "" {
-		params.Add("routine.sparkOptions.mainClass", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetMainClass()))
-	}
-	if req.GetRoutine().GetSparkOptions().GetMainFileUri() != "" {
-		params.Add("routine.sparkOptions.mainFileUri", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetMainFileUri()))
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetPyFileUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.pyFileUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetSparkOptions().GetRuntimeVersion() != "" {
-		params.Add("routine.sparkOptions.runtimeVersion", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetRuntimeVersion()))
-	}
-	if req.GetRoutine().GetStrictMode() != nil {
-		field, err := protojson.Marshal(req.GetRoutine().GetStrictMode())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("routine.strictMode", string(field))
-	}
-	params.Add("routineId", fmt.Sprintf("%v", req.GetRoutineId()))
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).PatchRoutine[0:len((*c.CallOptions).PatchRoutine):len((*c.CallOptions).PatchRoutine)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &bigquerypb.Routine{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "PatchRoutine")
 		if err != nil {
 			return err
 		}

@@ -1,5 +1,11 @@
 # Changes
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/networksecurity%2Fv0.11.0) (2025-12-04)
+
+### Features
+
+* publish networksecurity v1beta1 api ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [0.10.7](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.10.6...networksecurity/v0.10.7) (2025-09-18)
 
 

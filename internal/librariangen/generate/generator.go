@@ -149,13 +149,14 @@ func invokeProtoc(ctx context.Context, cfg *Config, generateReq *request.Library
 		slog.Info("processing api", "service_dir", apiServiceDir)
 		bazelConfig, err := bazelParse(apiServiceDir)
 		apiConfig := moduleConfig.GetAPIConfig(api.Path)
+		features := apiConfig.ResolvedGeneratorFeatures()
 		if apiConfig.HasDisableGAPIC() {
 			bazelConfig.DisableGAPIC()
 		}
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to parse BUILD.bazel for %s: %w", apiServiceDir, err)
 		}
-		args, err := protoc.Build(generateReq, &api, bazelConfig, cfg.SourceDir, cfg.OutputDir, apiConfig.NestedProtos)
+		args, err := protoc.Build(generateReq, &api, bazelConfig, cfg.SourceDir, cfg.OutputDir, apiConfig.NestedProtos, features)
 		if err != nil {
 			return fmt.Errorf("librariangen: failed to build protoc command for api %q in library %q: %w", api.Path, generateReq.ID, err)
 		}
@@ -204,6 +205,9 @@ func fixPermissions(dir string) error {
 
 // flattenOutput moves the contents of /output/cloud.google.com/go/ to the top
 // level of /output.
+//
+// Failure here may be indicative that input artifacts did NOT generate artifacts
+// in the expected location (e.g. wrong go_package path, etc).
 func flattenOutput(outputDir string) error {
 	slog.Debug("librariangen: flattening output directory", "dir", outputDir)
 	goDir := filepath.Join(outputDir, "cloud.google.com", "go")

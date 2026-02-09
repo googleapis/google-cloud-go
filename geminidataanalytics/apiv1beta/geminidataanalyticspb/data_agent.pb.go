@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ type DataAgent struct {
 	// must match the format described in
 	// https://google.aip.dev/122#resource-id-segments
 	//
-	// Example: `projects/1234567890/locations/us-central1/dataAgents/my-agent`.
+	// Example: `projects/1234567890/locations/global/dataAgents/my-agent`.
 	//
 	// It is recommended to skip setting this field during agent creation as it
 	// will be inferred automatically and overwritten with the

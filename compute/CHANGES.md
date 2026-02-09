@@ -1,5 +1,38 @@
 # Changes
 
+## [1.54.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.54.0) (2026-01-22)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20251230 (#1144) ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* Update Compute Engine v1beta API to revision 20251230 (#1143) ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+## [1.53.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.53.0) (2026-01-08)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20251210 (#1137) ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* Update Compute Engine v1beta API to revision 20251210 (#1138) ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+
+## [1.52.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.52.0) (2025-12-18)
+
+### Features
+
+* Update Compute Engine v1beta API to revision 20251202 ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+## [1.51.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.51.0) (2025-12-11)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20251031 ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+* Update Compute Engine v1beta API to revision 20251031 ([21c9dbf](https://github.com/googleapis/google-cloud-go/commit/21c9dbfbf9061b29b1c64e5ca24273ec97078f25))
+
+## [1.50.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.50.0) (2025-12-04)
+
+### Features
+
+* Update Compute Engine v1beta API to revision 20251019 ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.49.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.49.0...compute/v1.49.1) (2025-10-16)
 
 

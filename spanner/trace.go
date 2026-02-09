@@ -31,6 +31,8 @@ const (
 	defaultTracerName = "cloud.google.com/go/spanner"
 	gcpClientRepo     = "googleapis/google-cloud-go"
 	gcpClientArtifact = "cloud.google.com/go/spanner"
+	// GcpResourceNamePrefix is the prefix for Spanner GCP resource names span attribute.
+	GcpResourceNamePrefix = "//spanner.googleapis.com/"
 )
 
 func tracer() trace.Tracer {

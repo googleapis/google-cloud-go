@@ -255,23 +255,23 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.StorageBillingModel = string(dm.StorageBillingModel)
 	ds.IsCaseInsensitive = dm.IsCaseInsensitive
 	ds.Labels = dm.Labels
+	// These fields are read-only, but we'll populate them should there be a change in the service behavior.
+	if !dm.CreationTime.IsZero() {
+		ds.CreationTime = dm.CreationTime.UnixMilli()
+	}
+	if !dm.LastModifiedTime.IsZero() {
+		ds.LastModifiedTime = dm.LastModifiedTime.UnixMilli()
+	}
+	ds.Etag = dm.ETag
+	ds.Id = dm.FullID
+
+	// access list
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
 	if err != nil {
 		return nil, err
 	}
-	if !dm.CreationTime.IsZero() {
-		return nil, errors.New("bigquery: Dataset.CreationTime is not writable")
-	}
-	if !dm.LastModifiedTime.IsZero() {
-		return nil, errors.New("bigquery: Dataset.LastModifiedTime is not writable")
-	}
-	if dm.FullID != "" {
-		return nil, errors.New("bigquery: Dataset.FullID is not writable")
-	}
-	if dm.ETag != "" {
-		return nil, errors.New("bigquery: Dataset.ETag is not writable")
-	}
+
 	if dm.DefaultEncryptionConfig != nil {
 		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()
 	}

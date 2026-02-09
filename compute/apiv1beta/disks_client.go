@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -222,12 +222,17 @@ func (c *DisksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddResourcePolicies adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+// AddResourcePolicies adds existing resource policies to a disk. You can only add one
+// policy which will be applied to this disk for scheduling snapshot
+// creation.
 func (c *DisksClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of persistent disks.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *DisksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -237,17 +242,25 @@ func (c *DisksClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertD
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
-// BulkSetLabels sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+// BulkSetLabels sets the labels on many disks at once. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *DisksClient) BulkSetLabels(ctx context.Context, req *computepb.BulkSetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkSetLabels(ctx, req, opts...)
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot
+// creation, consider using snapshots.insert
+// instead, as that method supports more features, such as creating snapshots
+// in a project different from the source disk project.
 func (c *DisksClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
 
-// Delete deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+// Delete deletes the specified persistent disk. Deleting a disk removes its data
+// permanently and is irreversible. However, deleting a disk does not
+// delete any snapshots
+// previously made from the disk. You must separatelydelete
+// snapshots.
 func (c *DisksClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -257,17 +270,23 @@ func (c *DisksClient) Get(ctx context.Context, req *computepb.GetDiskRequest, op
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *DisksClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a persistent disk in the specified project using the data in the request. You can create a disk from a source (sourceImage, sourceSnapshot, or sourceDisk) or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
+// Insert creates a persistent disk in the specified project using the data
+// in the request. You can create a disk from a source
+// (sourceImage, sourceSnapshot, orsourceDisk) or create an empty 500 GB data disk by
+// omitting all properties. You can also create a disk that is larger than
+// the default size by specifying the sizeGb property.
 func (c *DisksClient) Insert(ctx context.Context, req *computepb.InsertDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of persistent disks contained within the specified zone.
+// List retrieves a list of persistent disks contained within
+// the specified zone.
 func (c *DisksClient) List(ctx context.Context, req *computepb.ListDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -277,32 +296,38 @@ func (c *DisksClient) RemoveResourcePolicies(ctx context.Context, req *computepb
 	return c.internalClient.RemoveResourcePolicies(ctx, req, opts...)
 }
 
-// Resize resizes the specified persistent disk. You can only increase the size of the disk.
+// Resize resizes the specified persistent disk.
+// You can only increase the size of the disk.
 func (c *DisksClient) Resize(ctx context.Context, req *computepb.ResizeDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Resize(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *DisksClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a disk. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *DisksClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
-// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+// StartAsyncReplication starts asynchronous replication.
+// Must be invoked on the primary disk.
 func (c *DisksClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StartAsyncReplication(ctx, req, opts...)
 }
 
-// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+// StopAsyncReplication stops asynchronous replication.
+// Can be invoked either on the primary or on the secondary disk.
 func (c *DisksClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StopAsyncReplication(ctx, req, opts...)
 }
 
-// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks.
+// Can be invoked either in the primary or secondary scope.
 func (c *DisksClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StopGroupAsyncReplication(ctx, req, opts...)
 }
@@ -312,7 +337,9 @@ func (c *DisksClient) TestIamPermissions(ctx context.Context, req *computepb.Tes
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+// Update updates the specified disk with the data included in the request.
+// The update is performed only on selected fields included as part
+// of update-mask. Only the following fields can be modified: user_license.
 func (c *DisksClient) Update(ctx context.Context, req *computepb.UpdateDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -410,7 +437,9 @@ func (c *disksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddResourcePolicies adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+// AddResourcePolicies adds existing resource policies to a disk. You can only add one
+// policy which will be applied to this disk for scheduling snapshot
+// creation.
 func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksAddResourcePoliciesRequestResource()
@@ -477,7 +506,10 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of persistent disks.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	it := &DisksScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListDisksRequest)
@@ -643,7 +675,8 @@ func (c *disksRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkIns
 	return op, nil
 }
 
-// BulkSetLabels sets the labels on many disks at once. To learn more about labels, read the Labeling Resources documentation.
+// BulkSetLabels sets the labels on many disks at once. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *disksRESTClient) BulkSetLabels(ctx context.Context, req *computepb.BulkSetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkZoneSetLabelsRequestResource()
@@ -713,7 +746,10 @@ func (c *disksRESTClient) BulkSetLabels(ctx context.Context, req *computepb.Bulk
 	return op, nil
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot
+// creation, consider using snapshots.insert
+// instead, as that method supports more features, such as creating snapshots
+// in a project different from the source disk project.
 func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
@@ -783,7 +819,11 @@ func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.Cre
 	return op, nil
 }
 
-// Delete deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+// Delete deletes the specified persistent disk. Deleting a disk removes its data
+// permanently and is irreversible. However, deleting a disk does not
+// delete any snapshots
+// previously made from the disk. You must separatelydelete
+// snapshots.
 func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -888,7 +928,8 @@ func (c *disksRESTClient) Get(ctx context.Context, req *computepb.GetDiskRequest
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -940,7 +981,11 @@ func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIa
 	return resp, nil
 }
 
-// Insert creates a persistent disk in the specified project using the data in the request. You can create a disk from a source (sourceImage, sourceSnapshot, or sourceDisk) or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
+// Insert creates a persistent disk in the specified project using the data
+// in the request. You can create a disk from a source
+// (sourceImage, sourceSnapshot, orsourceDisk) or create an empty 500 GB data disk by
+// omitting all properties. You can also create a disk that is larger than
+// the default size by specifying the sizeGb property.
 func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()
@@ -1010,7 +1055,8 @@ func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskR
 	return op, nil
 }
 
-// List retrieves a list of persistent disks contained within the specified zone.
+// List retrieves a list of persistent disks contained within
+// the specified zone.
 func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	it := &DiskIterator{}
 	req = proto.Clone(req).(*computepb.ListDisksRequest)
@@ -1163,7 +1209,8 @@ func (c *disksRESTClient) RemoveResourcePolicies(ctx context.Context, req *compu
 	return op, nil
 }
 
-// Resize resizes the specified persistent disk. You can only increase the size of the disk.
+// Resize resizes the specified persistent disk.
+// You can only increase the size of the disk.
 func (c *disksRESTClient) Resize(ctx context.Context, req *computepb.ResizeDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksResizeRequestResource()
@@ -1230,7 +1277,8 @@ func (c *disksRESTClient) Resize(ctx context.Context, req *computepb.ResizeDiskR
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *disksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
@@ -1282,7 +1330,8 @@ func (c *disksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIa
 	return resp, nil
 }
 
-// SetLabels sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a disk. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetLabelsRequestResource()
@@ -1349,7 +1398,8 @@ func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabel
 	return op, nil
 }
 
-// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+// StartAsyncReplication starts asynchronous replication.
+// Must be invoked on the primary disk.
 func (c *disksRESTClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksStartAsyncReplicationRequestResource()
@@ -1416,7 +1466,8 @@ func (c *disksRESTClient) StartAsyncReplication(ctx context.Context, req *comput
 	return op, nil
 }
 
-// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+// StopAsyncReplication stops asynchronous replication.
+// Can be invoked either on the primary or on the secondary disk.
 func (c *disksRESTClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1476,7 +1527,8 @@ func (c *disksRESTClient) StopAsyncReplication(ctx context.Context, req *compute
 	return op, nil
 }
 
-// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks.
+// Can be invoked either in the primary or secondary scope.
 func (c *disksRESTClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksStopGroupAsyncReplicationResourceResource()
@@ -1595,7 +1647,9 @@ func (c *disksRESTClient) TestIamPermissions(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// Update updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+// Update updates the specified disk with the data included in the request.
+// The update is performed only on selected fields included as part
+// of update-mask. Only the following fields can be modified: user_license.
 func (c *disksRESTClient) Update(ctx context.Context, req *computepb.UpdateDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()

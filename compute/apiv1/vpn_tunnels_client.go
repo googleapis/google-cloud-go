@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,7 +148,10 @@ func (c *VpnTunnelsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of VPN tunnels.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *VpnTunnelsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -163,17 +166,20 @@ func (c *VpnTunnelsClient) Get(ctx context.Context, req *computepb.GetVpnTunnelR
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a VpnTunnel resource in the specified project and region using the data included in the request.
+// Insert creates a VpnTunnel resource in the specified project and region using
+// the data included in the request.
 func (c *VpnTunnelsClient) Insert(ctx context.Context, req *computepb.InsertVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of VpnTunnel resources contained in the specified project and region.
+// List retrieves a list of VpnTunnel resources contained in the specified
+// project and region.
 func (c *VpnTunnelsClient) List(ctx context.Context, req *computepb.ListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a VpnTunnel. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *VpnTunnelsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -271,7 +277,10 @@ func (c *vpnTunnelsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of VPN tunnels.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelsScopedListPairIterator {
 	it := &VpnTunnelsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListVpnTunnelsRequest)
@@ -475,7 +484,8 @@ func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTun
 	return resp, nil
 }
 
-// Insert creates a VpnTunnel resource in the specified project and region using the data included in the request.
+// Insert creates a VpnTunnel resource in the specified project and region using
+// the data included in the request.
 func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetVpnTunnelResource()
@@ -542,7 +552,8 @@ func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	return op, nil
 }
 
-// List retrieves a list of VpnTunnel resources contained in the specified project and region.
+// List retrieves a list of VpnTunnel resources contained in the specified
+// project and region.
 func (c *vpnTunnelsRESTClient) List(ctx context.Context, req *computepb.ListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelIterator {
 	it := &VpnTunnelIterator{}
 	req = proto.Clone(req).(*computepb.ListVpnTunnelsRequest)
@@ -628,7 +639,8 @@ func (c *vpnTunnelsRESTClient) List(ctx context.Context, req *computepb.ListVpnT
 	return it
 }
 
-// SetLabels sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a VpnTunnel. To learn more about labels, read theLabeling
+// Resources documentation.
 func (c *vpnTunnelsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()

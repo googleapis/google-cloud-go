@@ -3,6 +3,44 @@
 
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.8.0) (2026-02-05)
+
+### Features
+
+* Add support for AlloyDB backup and restore ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* A comment for field `log_retention_days` in message `.google.cloud.backupdr.v1.BackupPlan` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.7.0) (2026-01-15)
+
+### Features
+
+* A new message `BackupConfigDetails` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `BackupDrPlanConfig` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `BackupDrPlanRule` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `BackupDrTemplateConfig` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `BackupLocation` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `ListResourceBackupConfigsRequest` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `ListResourceBackupConfigsResponse` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `PitrSettings` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new message `ResourceBackupConfig` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new resource_definition `backupdr.googleapis.com/ResourceBackupConfig` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* A new service `BackupDrProtectionSummary` is added ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.6.0) (2025-12-04)
+
+### Features
+
+* Adding `unreachable` field to `ListDataSourceReferences` API ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* Adding new fields for CMEK and Retention Inheritance features ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.5.0) (2025-11-06)
 
 ### Features

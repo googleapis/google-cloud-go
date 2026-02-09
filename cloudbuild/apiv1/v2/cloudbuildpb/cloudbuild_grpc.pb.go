@@ -36,24 +36,25 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CloudBuild_CreateBuild_FullMethodName           = "/google.devtools.cloudbuild.v1.CloudBuild/CreateBuild"
-	CloudBuild_GetBuild_FullMethodName              = "/google.devtools.cloudbuild.v1.CloudBuild/GetBuild"
-	CloudBuild_ListBuilds_FullMethodName            = "/google.devtools.cloudbuild.v1.CloudBuild/ListBuilds"
-	CloudBuild_CancelBuild_FullMethodName           = "/google.devtools.cloudbuild.v1.CloudBuild/CancelBuild"
-	CloudBuild_RetryBuild_FullMethodName            = "/google.devtools.cloudbuild.v1.CloudBuild/RetryBuild"
-	CloudBuild_ApproveBuild_FullMethodName          = "/google.devtools.cloudbuild.v1.CloudBuild/ApproveBuild"
-	CloudBuild_CreateBuildTrigger_FullMethodName    = "/google.devtools.cloudbuild.v1.CloudBuild/CreateBuildTrigger"
-	CloudBuild_GetBuildTrigger_FullMethodName       = "/google.devtools.cloudbuild.v1.CloudBuild/GetBuildTrigger"
-	CloudBuild_ListBuildTriggers_FullMethodName     = "/google.devtools.cloudbuild.v1.CloudBuild/ListBuildTriggers"
-	CloudBuild_DeleteBuildTrigger_FullMethodName    = "/google.devtools.cloudbuild.v1.CloudBuild/DeleteBuildTrigger"
-	CloudBuild_UpdateBuildTrigger_FullMethodName    = "/google.devtools.cloudbuild.v1.CloudBuild/UpdateBuildTrigger"
-	CloudBuild_RunBuildTrigger_FullMethodName       = "/google.devtools.cloudbuild.v1.CloudBuild/RunBuildTrigger"
-	CloudBuild_ReceiveTriggerWebhook_FullMethodName = "/google.devtools.cloudbuild.v1.CloudBuild/ReceiveTriggerWebhook"
-	CloudBuild_CreateWorkerPool_FullMethodName      = "/google.devtools.cloudbuild.v1.CloudBuild/CreateWorkerPool"
-	CloudBuild_GetWorkerPool_FullMethodName         = "/google.devtools.cloudbuild.v1.CloudBuild/GetWorkerPool"
-	CloudBuild_DeleteWorkerPool_FullMethodName      = "/google.devtools.cloudbuild.v1.CloudBuild/DeleteWorkerPool"
-	CloudBuild_UpdateWorkerPool_FullMethodName      = "/google.devtools.cloudbuild.v1.CloudBuild/UpdateWorkerPool"
-	CloudBuild_ListWorkerPools_FullMethodName       = "/google.devtools.cloudbuild.v1.CloudBuild/ListWorkerPools"
+	CloudBuild_CreateBuild_FullMethodName              = "/google.devtools.cloudbuild.v1.CloudBuild/CreateBuild"
+	CloudBuild_GetBuild_FullMethodName                 = "/google.devtools.cloudbuild.v1.CloudBuild/GetBuild"
+	CloudBuild_ListBuilds_FullMethodName               = "/google.devtools.cloudbuild.v1.CloudBuild/ListBuilds"
+	CloudBuild_CancelBuild_FullMethodName              = "/google.devtools.cloudbuild.v1.CloudBuild/CancelBuild"
+	CloudBuild_RetryBuild_FullMethodName               = "/google.devtools.cloudbuild.v1.CloudBuild/RetryBuild"
+	CloudBuild_ApproveBuild_FullMethodName             = "/google.devtools.cloudbuild.v1.CloudBuild/ApproveBuild"
+	CloudBuild_CreateBuildTrigger_FullMethodName       = "/google.devtools.cloudbuild.v1.CloudBuild/CreateBuildTrigger"
+	CloudBuild_GetBuildTrigger_FullMethodName          = "/google.devtools.cloudbuild.v1.CloudBuild/GetBuildTrigger"
+	CloudBuild_ListBuildTriggers_FullMethodName        = "/google.devtools.cloudbuild.v1.CloudBuild/ListBuildTriggers"
+	CloudBuild_DeleteBuildTrigger_FullMethodName       = "/google.devtools.cloudbuild.v1.CloudBuild/DeleteBuildTrigger"
+	CloudBuild_UpdateBuildTrigger_FullMethodName       = "/google.devtools.cloudbuild.v1.CloudBuild/UpdateBuildTrigger"
+	CloudBuild_RunBuildTrigger_FullMethodName          = "/google.devtools.cloudbuild.v1.CloudBuild/RunBuildTrigger"
+	CloudBuild_ReceiveTriggerWebhook_FullMethodName    = "/google.devtools.cloudbuild.v1.CloudBuild/ReceiveTriggerWebhook"
+	CloudBuild_CreateWorkerPool_FullMethodName         = "/google.devtools.cloudbuild.v1.CloudBuild/CreateWorkerPool"
+	CloudBuild_GetWorkerPool_FullMethodName            = "/google.devtools.cloudbuild.v1.CloudBuild/GetWorkerPool"
+	CloudBuild_DeleteWorkerPool_FullMethodName         = "/google.devtools.cloudbuild.v1.CloudBuild/DeleteWorkerPool"
+	CloudBuild_UpdateWorkerPool_FullMethodName         = "/google.devtools.cloudbuild.v1.CloudBuild/UpdateWorkerPool"
+	CloudBuild_ListWorkerPools_FullMethodName          = "/google.devtools.cloudbuild.v1.CloudBuild/ListWorkerPools"
+	CloudBuild_GetDefaultServiceAccount_FullMethodName = "/google.devtools.cloudbuild.v1.CloudBuild/GetDefaultServiceAccount"
 )
 
 // CloudBuildClient is the client API for CloudBuild service.
@@ -108,30 +109,20 @@ type CloudBuildClient interface {
 	RetryBuild(ctx context.Context, in *RetryBuildRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Approves or rejects a pending build.
 	//
-	// If approved, the returned LRO will be analogous to the LRO returned from
-	// a CreateBuild call.
+	// If approved, the returned long-running operation (LRO) will be analogous to
+	// the LRO returned from a CreateBuild call.
 	//
 	// If rejected, the returned LRO will be immediately done.
 	ApproveBuild(ctx context.Context, in *ApproveBuildRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new `BuildTrigger`.
-	//
-	// This API is experimental.
 	CreateBuildTrigger(ctx context.Context, in *CreateBuildTriggerRequest, opts ...grpc.CallOption) (*BuildTrigger, error)
 	// Returns information about a `BuildTrigger`.
-	//
-	// This API is experimental.
 	GetBuildTrigger(ctx context.Context, in *GetBuildTriggerRequest, opts ...grpc.CallOption) (*BuildTrigger, error)
 	// Lists existing `BuildTrigger`s.
-	//
-	// This API is experimental.
 	ListBuildTriggers(ctx context.Context, in *ListBuildTriggersRequest, opts ...grpc.CallOption) (*ListBuildTriggersResponse, error)
 	// Deletes a `BuildTrigger` by its project ID and trigger ID.
-	//
-	// This API is experimental.
 	DeleteBuildTrigger(ctx context.Context, in *DeleteBuildTriggerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Updates a `BuildTrigger` by its project ID and trigger ID.
-	//
-	// This API is experimental.
 	UpdateBuildTrigger(ctx context.Context, in *UpdateBuildTriggerRequest, opts ...grpc.CallOption) (*BuildTrigger, error)
 	// Runs a `BuildTrigger` at a particular source revision.
 	//
@@ -154,6 +145,8 @@ type CloudBuildClient interface {
 	UpdateWorkerPool(ctx context.Context, in *UpdateWorkerPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists `WorkerPool`s.
 	ListWorkerPools(ctx context.Context, in *ListWorkerPoolsRequest, opts ...grpc.CallOption) (*ListWorkerPoolsResponse, error)
+	// Returns the `DefaultServiceAccount` used by the project.
+	GetDefaultServiceAccount(ctx context.Context, in *GetDefaultServiceAccountRequest, opts ...grpc.CallOption) (*DefaultServiceAccount, error)
 }
 
 type cloudBuildClient struct {
@@ -326,6 +319,15 @@ func (c *cloudBuildClient) ListWorkerPools(ctx context.Context, in *ListWorkerPo
 	return out, nil
 }
 
+func (c *cloudBuildClient) GetDefaultServiceAccount(ctx context.Context, in *GetDefaultServiceAccountRequest, opts ...grpc.CallOption) (*DefaultServiceAccount, error) {
+	out := new(DefaultServiceAccount)
+	err := c.cc.Invoke(ctx, CloudBuild_GetDefaultServiceAccount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CloudBuildServer is the server API for CloudBuild service.
 // All implementations should embed UnimplementedCloudBuildServer
 // for forward compatibility
@@ -378,30 +380,20 @@ type CloudBuildServer interface {
 	RetryBuild(context.Context, *RetryBuildRequest) (*longrunningpb.Operation, error)
 	// Approves or rejects a pending build.
 	//
-	// If approved, the returned LRO will be analogous to the LRO returned from
-	// a CreateBuild call.
+	// If approved, the returned long-running operation (LRO) will be analogous to
+	// the LRO returned from a CreateBuild call.
 	//
 	// If rejected, the returned LRO will be immediately done.
 	ApproveBuild(context.Context, *ApproveBuildRequest) (*longrunningpb.Operation, error)
 	// Creates a new `BuildTrigger`.
-	//
-	// This API is experimental.
 	CreateBuildTrigger(context.Context, *CreateBuildTriggerRequest) (*BuildTrigger, error)
 	// Returns information about a `BuildTrigger`.
-	//
-	// This API is experimental.
 	GetBuildTrigger(context.Context, *GetBuildTriggerRequest) (*BuildTrigger, error)
 	// Lists existing `BuildTrigger`s.
-	//
-	// This API is experimental.
 	ListBuildTriggers(context.Context, *ListBuildTriggersRequest) (*ListBuildTriggersResponse, error)
 	// Deletes a `BuildTrigger` by its project ID and trigger ID.
-	//
-	// This API is experimental.
 	DeleteBuildTrigger(context.Context, *DeleteBuildTriggerRequest) (*emptypb.Empty, error)
 	// Updates a `BuildTrigger` by its project ID and trigger ID.
-	//
-	// This API is experimental.
 	UpdateBuildTrigger(context.Context, *UpdateBuildTriggerRequest) (*BuildTrigger, error)
 	// Runs a `BuildTrigger` at a particular source revision.
 	//
@@ -424,6 +416,8 @@ type CloudBuildServer interface {
 	UpdateWorkerPool(context.Context, *UpdateWorkerPoolRequest) (*longrunningpb.Operation, error)
 	// Lists `WorkerPool`s.
 	ListWorkerPools(context.Context, *ListWorkerPoolsRequest) (*ListWorkerPoolsResponse, error)
+	// Returns the `DefaultServiceAccount` used by the project.
+	GetDefaultServiceAccount(context.Context, *GetDefaultServiceAccountRequest) (*DefaultServiceAccount, error)
 }
 
 // UnimplementedCloudBuildServer should be embedded to have forward compatible implementations.
@@ -483,6 +477,9 @@ func (UnimplementedCloudBuildServer) UpdateWorkerPool(context.Context, *UpdateWo
 }
 func (UnimplementedCloudBuildServer) ListWorkerPools(context.Context, *ListWorkerPoolsRequest) (*ListWorkerPoolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWorkerPools not implemented")
+}
+func (UnimplementedCloudBuildServer) GetDefaultServiceAccount(context.Context, *GetDefaultServiceAccountRequest) (*DefaultServiceAccount, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDefaultServiceAccount not implemented")
 }
 
 // UnsafeCloudBuildServer may be embedded to opt out of forward compatibility for this service.
@@ -820,6 +817,24 @@ func _CloudBuild_ListWorkerPools_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CloudBuild_GetDefaultServiceAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDefaultServiceAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CloudBuildServer).GetDefaultServiceAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CloudBuild_GetDefaultServiceAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CloudBuildServer).GetDefaultServiceAccount(ctx, req.(*GetDefaultServiceAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CloudBuild_ServiceDesc is the grpc.ServiceDesc for CloudBuild service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -898,6 +913,10 @@ var CloudBuild_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListWorkerPools",
 			Handler:    _CloudBuild_ListWorkerPools_Handler,
+		},
+		{
+			MethodName: "GetDefaultServiceAccount",
+			Handler:    _CloudBuild_GetDefaultServiceAccount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

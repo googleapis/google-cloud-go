@@ -20,9 +20,19 @@
                 "CreateDataAgent"
               ]
             },
+            "CreateDataAgentSync": {
+              "methods": [
+                "CreateDataAgentSync"
+              ]
+            },
             "DeleteDataAgent": {
               "methods": [
                 "DeleteDataAgent"
+              ]
+            },
+            "DeleteDataAgentSync": {
+              "methods": [
+                "DeleteDataAgentSync"
               ]
             },
             "DeleteOperation": {
@@ -78,6 +88,11 @@
             "UpdateDataAgent": {
               "methods": [
                 "UpdateDataAgent"
+              ]
+            },
+            "UpdateDataAgentSync": {
+              "methods": [
+                "UpdateDataAgentSync"
               ]
             }
           }
@@ -95,9 +110,19 @@
                 "CreateDataAgent"
               ]
             },
+            "CreateDataAgentSync": {
+              "methods": [
+                "CreateDataAgentSync"
+              ]
+            },
             "DeleteDataAgent": {
               "methods": [
                 "DeleteDataAgent"
+              ]
+            },
+            "DeleteDataAgentSync": {
+              "methods": [
+                "DeleteDataAgentSync"
               ]
             },
             "DeleteOperation": {
@@ -153,6 +178,11 @@
             "UpdateDataAgent": {
               "methods": [
                 "UpdateDataAgent"
+              ]
+            },
+            "UpdateDataAgentSync": {
+              "methods": [
+                "UpdateDataAgentSync"
               ]
             }
           }
@@ -179,6 +209,11 @@
                 "CreateConversation"
               ]
             },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -217,6 +252,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
               ]
             }
           }
@@ -239,6 +279,11 @@
                 "CreateConversation"
               ]
             },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -277,6 +322,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
               ]
             }
           }

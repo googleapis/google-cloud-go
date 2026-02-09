@@ -34,6 +34,16 @@ export GOPROXY=https://proxy.golang.org
 
 # Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
+# git clone of a local repo only clones the local origin's branches
+# which means we need to explicitly setup a preview branch tracking the remote
+# preview before doing a local clone in order to ensure that evaluating a pull
+# request against preview can be properly diffed.
+if [[ $KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go == "preview" ]]; then
+  # This seems to be necessary in order to run git commands in this directory
+  # even though we have a similar command above.
+  git config --global --add safe.directory "$(pwd)"
+  git branch -f preview origin/preview
+fi
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
 
@@ -45,8 +55,8 @@ try3 go mod download
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
-# Run tests in the current directory and tee output to log file,
-# to be pushed to GCS as artifact.
+# Run tests in the current directory, and retain log files which will
+# be pushed as build artifacts.
 runPresubmitTests() {
   if [[ $PWD == *"/internal/"* ]] ||
     [[ $PWD == *"/third_party/"* ]]; then
@@ -54,31 +64,30 @@ runPresubmitTests() {
     return
   fi
 
+  go_test_args=("-race")
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    GOWORK=off go test -race -v -timeout 15m -short ./... 2>&1 |
-      tee sponge_log.log
+    go_test_args+=("--short" "--timeout" "15m")
   else
-    GOWORK=off go test -race -v -timeout 45m ./... 2>&1 |
-      tee sponge_log.log
+    go_test_args+=("--timeout" "45m")
   fi
+  gotestsum --packages="./..." \
+    --junitfile sponge_log.xml \
+    --format standard-verbose \
+    -- "${go_test_args[@]}" 2>&1 | tee sponge_log.log
 
   # Run integration tests against an emulator.
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
   fi
-  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-  # xUnit XML file.
-  cat sponge_log.log |
-    go-junit-report -set-exit-code >sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
   if [[ $PWD != *"/internal/"* ]]; then
-    GOWORK=off go build ./...
+    go build ./...
   fi
   exit_code=$(($exit_code + $?))
 }
 
-SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/main...$KOKORO_GIT_COMMIT_google_cloud_go |
+SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/$KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go...$KOKORO_GIT_COMMIT_google_cloud_go |
   grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' | xargs dirname | sort -u || true)
 
 if [ -z $SIGNIFICANT_CHANGES ]; then

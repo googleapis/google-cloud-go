@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -123,5 +124,50 @@ func TestAppendableWriteUnsupported(t *testing.T) {
 	_, err = c.OpenWriter(params)
 	if err == nil {
 		t.Errorf("OpenWriter: got ok; want error")
+	}
+}
+
+func TestValidateChecksumFromServer(t *testing.T) {
+	correctChecksum := 1
+	tests := []struct {
+		name          string
+		wrongChecksum bool
+		wantErr       error
+	}{
+		{
+			name:          "correct checksum",
+			wrongChecksum: false,
+		},
+		{
+			name:          "wrong checksum",
+			wrongChecksum: true,
+			wantErr:       fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(2), encodeUint32(1)),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			serverChecksumChan := make(chan uint32, 1)
+			checksum := correctChecksum
+			if test.wrongChecksum {
+				checksum = 2
+			}
+			hiw := &httpInternalWriter{
+				serverChecksumChan: serverChecksumChan,
+				fullObjectChecksum: uint32(checksum),
+			}
+			go func() {
+				serverChecksumChan <- uint32(correctChecksum)
+			}()
+			err := hiw.validateChecksumFromServer()
+			if test.wantErr == nil {
+				if err != nil {
+					t.Fatalf("Unexpected error: %v", err)
+				}
+				return
+			}
+			if err.Error() != test.wantErr.Error() {
+				t.Errorf("Want err: %v, got err: %v", err, test.wantErr)
+			}
+		})
 	}
 }

@@ -188,52 +188,83 @@ func cleanup(c IntegrationTestConfig) error {
 	return nil
 }
 
-func TestIntegration_ConditionalMutations(t *testing.T) {
+func TestIntegration_TieredStorage(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	if err := populatePresidentsGraph(table); err != nil {
-		t.Fatal(err)
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support TieredStorage")
 	}
 
-	// Do a conditional mutation with a complex filter.
-	mutTrue := NewMutation()
-	mutTrue.Set("follows", "wmckinley", 1000, []byte("1"))
-	filter := ChainFilters(ColumnFilter("gwash[iz].*"), ValueFilter("."))
-	mut := NewCondMutation(filter, mutTrue, nil)
-	if err := table.Apply(ctx, "tjefferson", mut); err != nil {
-		t.Fatalf("Conditionally mutating row: %v", err)
-	}
-	verifyDirectPathRemoteAddress(testEnv, t)
-	// Do a second condition mutation with a filter that does not match,
-	// and thus no changes should be made.
-	mutTrue = NewMutation()
-	mutTrue.DeleteRow()
-	filter = ColumnFilter("snoop.dogg")
-	mut = NewCondMutation(filter, mutTrue, nil)
-	if err := table.Apply(ctx, "tjefferson", mut); err != nil {
-		t.Fatalf("Conditionally mutating row: %v", err)
-	}
-	verifyDirectPathRemoteAddress(testEnv, t)
-
-	// Fetch a row.
-	row, err := table.ReadRow(ctx, "j§adams")
-	if err != nil {
-		t.Fatalf("Reading a row: %v", err)
-	}
-	verifyDirectPathRemoteAddress(testEnv, t)
-	wantRow := Row{
-		"follows": []ReadItem{
-			{Row: "j§adams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
-			{Row: "j§adams", Column: "follows:tjefferson", Timestamp: 1000, Value: []byte("1")},
+	tableName := tableNameSpace.New()
+	conf := &TableConf{
+		TableID: tableName,
+		TieredStorageConfig: &TieredStorageConfig{
+			InfrequentAccess: &TieredStorageIncludeIfOlderThan{
+				Duration: 30 * 24 * time.Hour,
+			},
 		},
 	}
-	if !testutil.Equal(row, wantRow) {
-		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+
+	if err := adminClient.CreateTableFromConf(ctx, conf); err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	defer adminClient.DeleteTable(ctx, tableName)
+
+	ti, err := adminClient.TableInfo(ctx, tableName)
+	if err != nil {
+		t.Fatalf("TableInfo failed: %v", err)
+	}
+
+	if ti.TieredStorageConfig == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	rule, ok := ti.TieredStorageConfig.InfrequentAccess.(*TieredStorageIncludeIfOlderThan)
+	if !ok {
+		t.Fatalf("Unexpected rule type: %T", ti.TieredStorageConfig.InfrequentAccess)
+	}
+	if optional.ToDuration(rule.Duration) != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", optional.ToDuration(rule.Duration), 30*24*time.Hour)
+	}
+
+	// Update tiered storage config
+	newDuration := 45 * 24 * time.Hour
+	newConfig := TieredStorageConfig{
+		InfrequentAccess: &TieredStorageIncludeIfOlderThan{
+			Duration: newDuration,
+		},
+	}
+	if err := adminClient.UpdateTableWithTieredStorageConfig(ctx, tableName, &newConfig); err != nil {
+		t.Fatalf("UpdateTableWithTieredStorageConfig failed: %v", err)
+	}
+
+	ti, err = adminClient.TableInfo(ctx, tableName)
+	if err != nil {
+		t.Fatalf("TableInfo failed after update: %v", err)
+	}
+	rule, ok = ti.TieredStorageConfig.InfrequentAccess.(*TieredStorageIncludeIfOlderThan)
+	if !ok {
+		t.Fatalf("Unexpected rule type after update: %T", ti.TieredStorageConfig.InfrequentAccess)
+	}
+	if optional.ToDuration(rule.Duration) != newDuration {
+		t.Errorf("Unexpected IncludeIfOlderThan after update: %v, expected %v", optional.ToDuration(rule.Duration), newDuration)
+	}
+
+	// Remove tiered storage config
+	if err := adminClient.UpdateTableRemoveTieredStorageConfig(ctx, tableName); err != nil {
+		t.Fatalf("UpdateTableRemoveTieredStorageConfig failed: %v", err)
+	}
+
+	ti, err = adminClient.TableInfo(ctx, tableName)
+	if err != nil {
+		t.Fatalf("TableInfo failed after removal: %v", err)
+	}
+	if ti.TieredStorageConfig != nil {
+		t.Errorf("TieredStorageConfig should be nil after removal, got %+v", ti.TieredStorageConfig)
 	}
 }
 
@@ -251,70 +282,6 @@ func TestIntegration_Pinger(t *testing.T) {
 		t.Fatalf("pinger failed. got %v, want %v", err, nil)
 	}
 
-}
-
-func TestIntegration_PartialReadRows(t *testing.T) {
-	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanup()
-
-	if err := populatePresidentsGraph(table); err != nil {
-		t.Fatal(err)
-	}
-
-	// Do a scan and stop part way through.
-	// Verify that the ReadRows callback doesn't keep running.
-	stopped := false
-	err = table.ReadRows(ctx, RowRange{}, func(r Row) bool {
-		if r.Key() < "h" {
-			return true
-		}
-		if !stopped {
-			stopped = true
-			return false
-		}
-		t.Fatalf("ReadRows kept scanning to row %q after being told to stop", r.Key())
-		return false
-	})
-	if err != nil {
-		t.Fatalf("Partial ReadRows: %v", err)
-	}
-}
-
-func TestIntegration_ReadRowList(t *testing.T) {
-	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanup()
-
-	if err := populatePresidentsGraph(table); err != nil {
-		t.Fatal(err)
-	}
-
-	// Read a RowList
-	var elt []string
-	keys := RowList{"wmckinley", "gwashington", "j§adams"}
-	want := "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,wmckinley-tjefferson-1"
-	err = table.ReadRows(ctx, keys, func(r Row) bool {
-		for _, ris := range r {
-			for _, ri := range ris {
-				elt = append(elt, formatReadItem(ri))
-			}
-		}
-		return true
-	})
-	if err != nil {
-		t.Fatalf("read RowList: %v", err)
-	}
-
-	if got := strings.Join(elt, ","); got != want {
-		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
-	}
 }
 
 func TestIntegration_UpdateFamilyValueType(t *testing.T) {
@@ -437,436 +404,6 @@ func TestIntegration_Aggregates(t *testing.T) {
 	}
 }
 
-func TestIntegration_ReadRowListReverse(t *testing.T) {
-	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanup()
-
-	if err := populatePresidentsGraph(table); err != nil {
-		t.Fatal(err)
-	}
-
-	// Read a RowList
-	var elt []string
-	rowRange := NewOpenClosedRange("gwashington", "wmckinley")
-	want := "wmckinley-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1"
-	err = table.ReadRows(ctx, rowRange, func(r Row) bool {
-		for _, ris := range r {
-			for _, ri := range ris {
-				elt = append(elt, formatReadItem(ri))
-			}
-		}
-		return true
-	}, ReverseScan())
-
-	if err != nil {
-		t.Fatalf("read RowList: %v", err)
-	}
-
-	if got := strings.Join(elt, ","); got != want {
-		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
-	}
-}
-
-func TestIntegration_DeleteRow(t *testing.T) {
-	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanup()
-
-	if err := populatePresidentsGraph(table); err != nil {
-		t.Fatal(err)
-	}
-
-	// Delete a row and check it goes away.
-	mut := NewMutation()
-	mut.DeleteRow()
-	if err := table.Apply(ctx, "wmckinley", mut); err != nil {
-		t.Fatalf("Apply DeleteRow: %v", err)
-	}
-	row, err := table.ReadRow(ctx, "wmckinley")
-	if err != nil {
-		t.Fatalf("Reading a row after DeleteRow: %v", err)
-	}
-	if len(row) != 0 {
-		t.Fatalf("Read non-zero row after DeleteRow: %v", row)
-	}
-}
-
-func TestIntegration_ReadModifyWrite(t *testing.T) {
-	ctx := context.Background()
-	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanup()
-
-	if err := populatePresidentsGraph(table); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := createColumnFamily(ctx, t, adminClient, tableName, "counter", nil); err != nil {
-		t.Fatalf("Creating column family: %v", err)
-	}
-
-	appendRMW := func(b []byte) *ReadModifyWrite {
-		rmw := NewReadModifyWrite()
-		rmw.AppendValue("counter", "likes", b)
-		return rmw
-	}
-	incRMW := func(n int64) *ReadModifyWrite {
-		rmw := NewReadModifyWrite()
-		rmw.Increment("counter", "likes", n)
-		return rmw
-	}
-	rmwSeq := []struct {
-		desc string
-		rmw  *ReadModifyWrite
-		want []byte
-	}{
-		{
-			desc: "append #1",
-			rmw:  appendRMW([]byte{0, 0, 0}),
-			want: []byte{0, 0, 0},
-		},
-		{
-			desc: "append #2",
-			rmw:  appendRMW([]byte{0, 0, 0, 0, 17}), // the remaining 40 bits to make a big-endian 17
-			want: []byte{0, 0, 0, 0, 0, 0, 0, 17},
-		},
-		{
-			desc: "increment",
-			rmw:  incRMW(8),
-			want: []byte{0, 0, 0, 0, 0, 0, 0, 25},
-		},
-	}
-	for _, step := range rmwSeq {
-		row, err := table.ApplyReadModifyWrite(ctx, "gwashington", step.rmw)
-		if err != nil {
-			t.Fatalf("ApplyReadModifyWrite %+v: %v", step.rmw, err)
-		}
-		verifyDirectPathRemoteAddress(testEnv, t)
-		// Make sure the modified cell returned by the RMW operation has a timestamp.
-		if row["counter"][0].Timestamp == 0 {
-			t.Fatalf("RMW returned cell timestamp: got %v, want > 0", row["counter"][0].Timestamp)
-		}
-		clearTimestamps(row)
-		wantRow := Row{"counter": []ReadItem{{Row: "gwashington", Column: "counter:likes", Value: step.want}}}
-		if !testutil.Equal(row, wantRow) {
-			t.Fatalf("After %s,\n got %v\nwant %v", step.desc, row, wantRow)
-		}
-	}
-
-	// Check for google-cloud-go/issues/723. RMWs that insert new rows should keep row order sorted in the emulator.
-	_, err = table.ApplyReadModifyWrite(ctx, "issue-723-2", appendRMW([]byte{0}))
-	if err != nil {
-		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
-	}
-	verifyDirectPathRemoteAddress(testEnv, t)
-	_, err = table.ApplyReadModifyWrite(ctx, "issue-723-1", appendRMW([]byte{0}))
-	if err != nil {
-		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
-	}
-	verifyDirectPathRemoteAddress(testEnv, t)
-	// Get only the correct row back on read.
-	r, err := table.ReadRow(ctx, "issue-723-1")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	verifyDirectPathRemoteAddress(testEnv, t)
-	if r.Key() != "issue-723-1" {
-		t.Fatalf("ApplyReadModifyWrite: incorrect read after RMW,\n got %v\nwant %v", r.Key(), "issue-723-1")
-	}
-}
-
-func TestIntegration_ArbitraryTimestamps(t *testing.T) {
-	ctx := context.Background()
-	_, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanup()
-
-	// Test arbitrary timestamps more thoroughly.
-	if err := createColumnFamily(ctx, t, adminClient, tableName, "ts", nil); err != nil {
-		t.Fatalf("Creating column family: %v", err)
-	}
-	const numVersions = 4
-	mut := NewMutation()
-	for i := 1; i < numVersions; i++ {
-		// Timestamps are used in thousands because the server
-		// only permits that granularity.
-		mut.Set("ts", "col", Timestamp(i*1000), []byte(fmt.Sprintf("val-%d", i)))
-		mut.Set("ts", "col2", Timestamp(i*1000), []byte(fmt.Sprintf("val-%d", i)))
-	}
-	if err := table.Apply(ctx, "testrow", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-	r, err := table.ReadRow(ctx, "testrow")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow := Row{"ts": []ReadItem{
-		// These should be returned in descending timestamp order.
-		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 1000, Value: []byte("val-1")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 1000, Value: []byte("val-1")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell with multiple versions,\n got %v\nwant %v", r, wantRow)
-	}
-
-	// Do the same read, but filter to the latest two versions.
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(2)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{"ts": []ReadItem{
-		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 2000, Value: []byte("val-2")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell with multiple versions and LatestNFilter(2),\n got %v\nwant %v", r, wantRow)
-	}
-	// Check cell offset / end
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(CellsPerRowLimitFilter(3)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{"ts": []ReadItem{
-		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 1000, Value: []byte("val-1")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell with multiple versions and CellsPerRowLimitFilter(3),\n got %v\nwant %v", r, wantRow)
-	}
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(CellsPerRowOffsetFilter(3)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{"ts": []ReadItem{
-		{Row: "testrow", Column: "ts:col2", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 1000, Value: []byte("val-1")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell with multiple versions and CellsPerRowOffsetFilter(3),\n got %v\nwant %v", r, wantRow)
-	}
-	// Check timestamp range filtering (with truncation)
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(TimestampRangeFilterMicros(1001, 3000)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{"ts": []ReadItem{
-		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 1000, Value: []byte("val-1")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 1000, Value: []byte("val-1")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell with multiple versions and TimestampRangeFilter(1000, 3000),\n got %v\nwant %v", r, wantRow)
-	}
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(TimestampRangeFilterMicros(1000, 0)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{"ts": []ReadItem{
-		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 1000, Value: []byte("val-1")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 2000, Value: []byte("val-2")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 1000, Value: []byte("val-1")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell with multiple versions and TimestampRangeFilter(1000, 0),\n got %v\nwant %v", r, wantRow)
-	}
-	// Delete non-existing cells, no such column family in this row
-	// Should not delete anything
-
-	if err := createColumnFamily(ctx, t, adminClient, tableName, "non-existing", nil); err != nil {
-		t.Fatalf("Creating column family: %v", err)
-	}
-	mut = NewMutation()
-	mut.DeleteTimestampRange("non-existing", "col", 2000, 3000) // half-open interval
-	if err := table.Apply(ctx, "testrow", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(3)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell was deleted unexpectly,\n got %v\nwant %v", r, wantRow)
-	}
-	// Delete non-existing cells, no such column in this column family
-	// Should not delete anything
-	mut = NewMutation()
-	mut.DeleteTimestampRange("ts", "non-existing", 2000, 3000) // half-open interval
-	if err := table.Apply(ctx, "testrow", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(3)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell was deleted unexpectly,\n got %v\nwant %v", r, wantRow)
-	}
-	// Delete the cell with timestamp 2000 and repeat the last read,
-	// checking that we get ts 3000 and ts 1000.
-	mut = NewMutation()
-	mut.DeleteTimestampRange("ts", "col", 2001, 3000) // half-open interval
-	if err := table.Apply(ctx, "testrow", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-	r, err = table.ReadRow(ctx, "testrow", RowFilter(LatestNFilter(2)))
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{"ts": []ReadItem{
-		{Row: "testrow", Column: "ts:col", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col", Timestamp: 1000, Value: []byte("val-1")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 3000, Value: []byte("val-3")},
-		{Row: "testrow", Column: "ts:col2", Timestamp: 2000, Value: []byte("val-2")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Cell with multiple versions and LatestNFilter(2), after deleting timestamp 2000,\n got %v\nwant %v", r, wantRow)
-	}
-
-	// Check DeleteCellsInFamily
-	if err := createColumnFamily(ctx, t, adminClient, tableName, "status", nil); err != nil {
-		t.Fatalf("Creating column family: %v", err)
-	}
-
-	mut = NewMutation()
-	mut.Set("status", "start", 2000, []byte("2"))
-	mut.Set("status", "end", 3000, []byte("3"))
-	mut.Set("ts", "col", 1000, []byte("1"))
-	if err := table.Apply(ctx, "row1", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-	if err := table.Apply(ctx, "row2", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-
-	mut = NewMutation()
-	mut.DeleteCellsInFamily("status")
-	if err := table.Apply(ctx, "row1", mut); err != nil {
-		t.Fatalf("Delete cf: %v", err)
-	}
-
-	// ColumnFamily removed
-	r, err = table.ReadRow(ctx, "row1")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{"ts": []ReadItem{
-		{Row: "row1", Column: "ts:col", Timestamp: 1000, Value: []byte("1")},
-	}}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("column family was not deleted.\n got %v\n want %v", r, wantRow)
-	}
-
-	// ColumnFamily not removed
-	r, err = table.ReadRow(ctx, "row2")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{
-		"ts": []ReadItem{
-			{Row: "row2", Column: "ts:col", Timestamp: 1000, Value: []byte("1")},
-		},
-		"status": []ReadItem{
-			{Row: "row2", Column: "status:end", Timestamp: 3000, Value: []byte("3")},
-			{Row: "row2", Column: "status:start", Timestamp: 2000, Value: []byte("2")},
-		},
-	}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Column family was deleted unexpectedly.\n got %v\n want %v", r, wantRow)
-	}
-
-	// Check DeleteCellsInColumn
-	mut = NewMutation()
-	mut.Set("status", "start", 2000, []byte("2"))
-	mut.Set("status", "middle", 3000, []byte("3"))
-	mut.Set("status", "end", 1000, []byte("1"))
-	if err := table.Apply(ctx, "row3", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-	mut = NewMutation()
-	mut.DeleteCellsInColumn("status", "middle")
-	if err := table.Apply(ctx, "row3", mut); err != nil {
-		t.Fatalf("Delete column: %v", err)
-	}
-	r, err = table.ReadRow(ctx, "row3")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{
-		"status": []ReadItem{
-			{Row: "row3", Column: "status:end", Timestamp: 1000, Value: []byte("1")},
-			{Row: "row3", Column: "status:start", Timestamp: 2000, Value: []byte("2")},
-		},
-	}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Column was not deleted.\n got %v\n want %v", r, wantRow)
-	}
-	mut = NewMutation()
-	mut.DeleteCellsInColumn("status", "start")
-	if err := table.Apply(ctx, "row3", mut); err != nil {
-		t.Fatalf("Delete column: %v", err)
-	}
-	r, err = table.ReadRow(ctx, "row3")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	wantRow = Row{
-		"status": []ReadItem{
-			{Row: "row3", Column: "status:end", Timestamp: 1000, Value: []byte("1")},
-		},
-	}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Column was not deleted.\n got %v\n want %v", r, wantRow)
-	}
-	mut = NewMutation()
-	mut.DeleteCellsInColumn("status", "end")
-	if err := table.Apply(ctx, "row3", mut); err != nil {
-		t.Fatalf("Delete column: %v", err)
-	}
-	r, err = table.ReadRow(ctx, "row3")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	if len(r) != 0 {
-		t.Fatalf("Delete column: got %v, want empty row", r)
-	}
-	// Add same cell after delete
-	mut = NewMutation()
-	mut.Set("status", "end", 1000, []byte("1"))
-	if err := table.Apply(ctx, "row3", mut); err != nil {
-		t.Fatalf("Mutating row: %v", err)
-	}
-	r, err = table.ReadRow(ctx, "row3")
-	if err != nil {
-		t.Fatalf("Reading row: %v", err)
-	}
-	if !testutil.Equal(r, wantRow) {
-		t.Fatalf("Column was not deleted correctly.\n got %v\n want %v", r, wantRow)
-	}
-}
-
 func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	ctx := context.Background()
 	_, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
@@ -957,6 +494,12 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		Nanos:   int32(testStartTime.Nanosecond()),
 	}
 
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 10 * time.Second
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
 	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
@@ -996,7 +539,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	}
 
 	// Sleep some more
-	time.Sleep(30 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	monitoringClient, err := monitoring.NewMetricClient(ctx, testEnv.Config().ClientOpts...)
 	if err != nil {
@@ -1010,7 +553,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	}
 
 	// Try for 5m with 10s sleep between retries
-	testutil.Retry(t, 10, 30*time.Second, func(r *testutil.R) {
+	testutil.Retry(t, 10, 5*time.Second, func(r *testutil.R) {
 		for _, metricName := range metricNamesValidate {
 			timeListEnd := time.Now()
 			tsListEnd := &timestamppb.Timestamp{
@@ -1193,259 +736,211 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 }
 
-func TestIntegration_Read(t *testing.T) {
+func TestIntegration_Presidents(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	// Insert some data.
-	initialData := map[string][]string{
-		"wmckinley":   {"tjefferson"},
-		"gwashington": {"j§adams"},
-		"tjefferson":  {"gwashington", "j§adams", "wmckinley"},
-		"j§adams":     {"gwashington", "tjefferson"},
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
 	}
-	for row, ss := range initialData {
-		mut := NewMutation()
-		for _, name := range ss {
-			mut.Set("follows", name, 1000, []byte("1"))
+
+	t.Run("PartialReadRows", func(t *testing.T) {
+		// Do a scan and stop part way through.
+		// Verify that the ReadRows callback doesn't keep running.
+		stopped := false
+		err = table.ReadRows(ctx, RowRange{}, func(r Row) bool {
+			if r.Key() < "h" {
+				return true
+			}
+			if !stopped {
+				stopped = true
+				return false
+			}
+			t.Fatalf("ReadRows kept scanning to row %q after being told to stop", r.Key())
+			return false
+		})
+		if err != nil {
+			t.Fatalf("Partial ReadRows: %v", err)
 		}
-		if err := table.Apply(ctx, row, mut); err != nil {
-			t.Fatalf("Mutating row %q: %v", row, err)
+	})
+
+	t.Run("ReadRowList", func(t *testing.T) {
+		// Read a RowList
+		var elt []string
+		keys := RowList{"wmckinley", "gwashington", "j§adams"}
+		want := "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,wmckinley-tjefferson-1"
+		err = table.ReadRows(ctx, keys, func(r Row) bool {
+			for _, ris := range r {
+				for _, ri := range ris {
+					elt = append(elt, formatReadItem(ri))
+				}
+			}
+			return true
+		})
+		if err != nil {
+			t.Fatalf("read RowList: %v", err)
+		}
+
+		if got := strings.Join(elt, ","); got != want {
+			t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
+		}
+	})
+
+	t.Run("ReadRowListReverse", func(t *testing.T) {
+		// Read a RowList
+		var elt []string
+		rowRange := NewOpenClosedRange("gwashington", "wmckinley")
+		want := "wmckinley-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1"
+		err = table.ReadRows(ctx, rowRange, func(r Row) bool {
+			for _, ris := range r {
+				for _, ri := range ris {
+					elt = append(elt, formatReadItem(ri))
+				}
+			}
+			return true
+		}, ReverseScan())
+
+		if err != nil {
+			t.Fatalf("read RowList: %v", err)
+		}
+
+		if got := strings.Join(elt, ","); got != want {
+			t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
+		}
+	})
+
+	t.Run("ConditionalMutations", func(t *testing.T) {
+		// Do a conditional mutation with a complex filter.
+		mutTrue := NewMutation()
+		mutTrue.Set("follows", "wmckinley", 1000, []byte("1"))
+		filter := ChainFilters(ColumnFilter("gwash[iz].*"), ValueFilter("."))
+		mut := NewCondMutation(filter, mutTrue, nil)
+		if err := table.Apply(ctx, "tjefferson", mut); err != nil {
+			t.Fatalf("Conditionally mutating row: %v", err)
 		}
 		verifyDirectPathRemoteAddress(testEnv, t)
-	}
+		// Do a second condition mutation with a filter that does not match,
+		// and thus no changes should be made.
+		mutTrue = NewMutation()
+		mutTrue.DeleteRow()
+		filter = ColumnFilter("snoop.dogg")
+		mut = NewCondMutation(filter, mutTrue, nil)
+		if err := table.Apply(ctx, "tjefferson", mut); err != nil {
+			t.Fatalf("Conditionally mutating row: %v", err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
 
-	for _, test := range []struct {
-		desc   string
-		rr     RowSet
-		filter Filter     // may be nil
-		limit  ReadOption // may be nil
+		// Fetch a row.
+		row, err := table.ReadRow(ctx, "j§adams")
+		if err != nil {
+			t.Fatalf("Reading a row: %v", err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
+		wantRow := Row{
+			"follows": []ReadItem{
+				{Row: "j§adams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
+				{Row: "j§adams", Column: "follows:tjefferson", Timestamp: 1000, Value: []byte("1")},
+			},
+		}
+		if !testutil.Equal(row, wantRow) {
+			t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+		}
+	})
 
-		// We do the read, grab all the cells, turn them into "<row>-<col>-<val>",
-		// and join with a comma.
-		want       string
-		wantLabels []string
-	}{
-		{
-			desc: "read all, unfiltered",
-			rr:   RowRange{},
-			want: "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
-		},
-		{
-			desc: "read with InfiniteRange, unfiltered",
-			rr:   InfiniteRange("tjefferson"),
-			want: "tjefferson-gwashington-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
-		},
-		{
-			desc: "read with NewRange, unfiltered",
-			rr:   NewRange("gargamel", "hubbard"),
-			want: "gwashington-j§adams-1",
-		},
-		{
-			desc: "read with PrefixRange, unfiltered",
-			rr:   PrefixRange("j§ad"),
-			want: "j§adams-gwashington-1,j§adams-tjefferson-1",
-		},
-		{
-			desc: "read with SingleRow, unfiltered",
-			rr:   SingleRow("wmckinley"),
-			want: "wmckinley-tjefferson-1",
-		},
-		{
-			desc:   "read all, with ColumnFilter",
-			rr:     RowRange{},
-			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
-			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
-		},
-		{
-			desc:   "read all, with ColumnFilter, prefix",
-			rr:     RowRange{},
-			filter: ColumnFilter("j"), // no matches
-			want:   "",
-		},
-		{
-			desc:   "read range, with ColumnRangeFilter",
-			rr:     RowRange{},
-			filter: ColumnRangeFilter("follows", "h", "k"),
-			want:   "gwashington-j§adams-1,tjefferson-j§adams-1",
-		},
-		{
-			desc:   "read range from empty, with ColumnRangeFilter",
-			rr:     RowRange{},
-			filter: ColumnRangeFilter("follows", "", "u"),
-			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
-		},
-		{
-			desc:   "read range from start to empty, with ColumnRangeFilter",
-			rr:     RowRange{},
-			filter: ColumnRangeFilter("follows", "h", ""),
-			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
-		},
-		{
-			desc:   "read with RowKeyFilter",
-			rr:     RowRange{},
-			filter: RowKeyFilter(".*wash.*"),
-			want:   "gwashington-j§adams-1",
-		},
-		{
-			desc:   "read with RowKeyFilter unicode",
-			rr:     RowRange{},
-			filter: RowKeyFilter(".*j§.*"),
-			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
-		},
-		{
-			desc:   "read with RowKeyFilter escaped",
-			rr:     RowRange{},
-			filter: RowKeyFilter(`.*j\xC2\xA7.*`),
-			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
-		},
-		{
-			desc:   "read with RowKeyFilter, prefix",
-			rr:     RowRange{},
-			filter: RowKeyFilter("gwash"),
-			want:   "",
-		},
-		{
-			desc:   "read with RowKeyFilter, no matches",
-			rr:     RowRange{},
-			filter: RowKeyFilter(".*xxx.*"),
-			want:   "",
-		},
-		{
-			desc:   "read with FamilyFilter, no matches",
-			rr:     RowRange{},
-			filter: FamilyFilter(".*xxx.*"),
-			want:   "",
-		},
-		{
-			desc:   "read with ColumnFilter + row end",
-			rr:     RowRange{},
-			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
-			limit:  LimitRows(2),
-			want:   "gwashington-j§adams-1,j§adams-tjefferson-1",
-		},
-		{
-			desc:       "apply labels to the result rows",
-			rr:         RowRange{},
-			filter:     LabelFilter("test-label"),
-			limit:      LimitRows(2),
-			want:       "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
-			wantLabels: []string{"test-label", "test-label", "test-label"},
-		},
-		{
-			desc:   "read all, strip values",
-			rr:     RowRange{},
-			filter: StripValueFilter(),
-			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
-		},
-		{
-			desc:   "read with ColumnFilter + row end + strip values",
-			rr:     RowRange{},
-			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
-			limit:  LimitRows(2),
-			want:   "gwashington-j§adams-,j§adams-tjefferson-",
-		},
-		{
-			desc:   "read with condition, strip values on true",
-			rr:     RowRange{},
-			filter: ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
-			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
-		},
-		{
-			desc:   "read with condition, strip values on false",
-			rr:     RowRange{},
-			filter: ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
-			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
-		},
-		{
-			desc:   "read with ValueRangeFilter + row end",
-			rr:     RowRange{},
-			filter: ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
-			limit:  LimitRows(2),
-			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
-		},
-		{
-			desc:   "read with ValueRangeFilter, no match on exclusive end",
-			rr:     RowRange{},
-			filter: ValueRangeFilter([]byte("0"), []byte("1")), // no match
-			want:   "",
-		},
-		{
-			desc:   "read with ValueRangeFilter, no matches",
-			rr:     RowRange{},
-			filter: ValueRangeFilter([]byte("3"), []byte("5")), // matches nothing
-			want:   "",
-		},
-		{
-			desc:   "read with InterleaveFilter, no matches on all filters",
-			rr:     RowRange{},
-			filter: InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*")),
-			want:   "",
-		},
-		{
-			desc:   "read with InterleaveFilter, no duplicate cells",
-			rr:     RowRange{},
-			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
-			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
-		},
-		{
-			desc:   "read with InterleaveFilter, with duplicate cells",
-			rr:     RowRange{},
-			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
-			want:   "j§adams-gwashington-1,j§adams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
-		},
-		{
-			desc: "read with a RowRangeList and no filter",
-			rr:   RowRangeList{NewRange("gargamel", "hubbard"), InfiniteRange("wmckinley")},
-			want: "gwashington-j§adams-1,wmckinley-tjefferson-1",
-		},
-		{
-			desc:   "chain that excludes rows and matches nothing, in a condition",
-			rr:     RowRange{},
-			filter: ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), ColumnFilter(".*mckinley.*")), StripValueFilter(), nil),
-			want:   "",
-		},
-		{
-			desc:   "chain that ends with an interleave that has no match. covers #804",
-			rr:     RowRange{},
-			filter: ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*"))), StripValueFilter(), nil),
-			want:   "",
-		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			var opts []ReadOption
-			if test.filter != nil {
-				opts = append(opts, RowFilter(test.filter))
-			}
-			if test.limit != nil {
-				opts = append(opts, test.limit)
-			}
-			var elt, labels []string
-			err := table.ReadRows(ctx, test.rr, func(r Row) bool {
-				for _, ris := range r {
-					for _, ri := range ris {
-						labels = append(labels, ri.Labels...)
-						elt = append(elt, formatReadItem(ri))
-					}
-				}
-				return true
-			}, opts...)
+	t.Run("ReadModifyWrite", func(t *testing.T) {
+		if err := createColumnFamily(ctx, t, adminClient, tableName, "counter", nil); err != nil {
+			t.Fatalf("Creating column family: %v", err)
+		}
+
+		appendRMW := func(b []byte) *ReadModifyWrite {
+			rmw := NewReadModifyWrite()
+			rmw.AppendValue("counter", "likes", b)
+			return rmw
+		}
+		incRMW := func(n int64) *ReadModifyWrite {
+			rmw := NewReadModifyWrite()
+			rmw.Increment("counter", "likes", n)
+			return rmw
+		}
+		rmwSeq := []struct {
+			desc string
+			rmw  *ReadModifyWrite
+			want []byte
+		}{
+			{
+				desc: "append #1",
+				rmw:  appendRMW([]byte{0, 0, 0}),
+				want: []byte{0, 0, 0},
+			},
+			{
+				desc: "append #2",
+				rmw:  appendRMW([]byte{0, 0, 0, 0, 17}), // the remaining 40 bits to make a big-endian 17
+				want: []byte{0, 0, 0, 0, 0, 0, 0, 17},
+			},
+			{
+				desc: "increment",
+				rmw:  incRMW(8),
+				want: []byte{0, 0, 0, 0, 0, 0, 0, 25},
+			},
+		}
+		for _, step := range rmwSeq {
+			row, err := table.ApplyReadModifyWrite(ctx, "gwashington", step.rmw)
 			if err != nil {
-				t.Fatal(err)
+				t.Fatalf("ApplyReadModifyWrite %+v: %v", step.rmw, err)
 			}
 			verifyDirectPathRemoteAddress(testEnv, t)
-			if got := strings.Join(elt, ","); got != test.want {
-				t.Fatalf("got %q\nwant %q", got, test.want)
+			// Make sure the modified cell returned by the RMW operation has a timestamp.
+			if row["counter"][0].Timestamp == 0 {
+				t.Fatalf("RMW returned cell timestamp: got %v, want > 0", row["counter"][0].Timestamp)
 			}
-			if got, want := labels, test.wantLabels; !reflect.DeepEqual(got, want) {
-				t.Fatalf("got %q\nwant %q", got, want)
+			clearTimestamps(row)
+			wantRow := Row{"counter": []ReadItem{{Row: "gwashington", Column: "counter:likes", Value: step.want}}}
+			if !testutil.Equal(row, wantRow) {
+				t.Fatalf("After %s,\n got %v\nwant %v", step.desc, row, wantRow)
 			}
-		})
-	}
+		}
+
+		// Check for google-cloud-go/issues/723. RMWs that insert new rows should keep row order sorted in the emulator.
+		_, err = table.ApplyReadModifyWrite(ctx, "issue-723-2", appendRMW([]byte{0}))
+		if err != nil {
+			t.Fatalf("ApplyReadModifyWrite null string: %v", err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
+		_, err = table.ApplyReadModifyWrite(ctx, "issue-723-1", appendRMW([]byte{0}))
+		if err != nil {
+			t.Fatalf("ApplyReadModifyWrite null string: %v", err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
+		// Get only the correct row back on read.
+		r, err := table.ReadRow(ctx, "issue-723-1")
+		if err != nil {
+			t.Fatalf("Reading row: %v", err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
+		if r.Key() != "issue-723-1" {
+			t.Fatalf("ApplyReadModifyWrite: incorrect read after RMW,\n got %v\nwant %v", r.Key(), "issue-723-1")
+		}
+	})
+
+	t.Run("DeleteRow", func(t *testing.T) {
+		// Delete a row and check it goes away.
+		mut := NewMutation()
+		mut.DeleteRow()
+		if err := table.Apply(ctx, "wmckinley", mut); err != nil {
+			t.Fatalf("Apply DeleteRow: %v", err)
+		}
+		row, err := table.ReadRow(ctx, "wmckinley")
+		if err != nil {
+			t.Fatalf("Reading a row after DeleteRow: %v", err)
+		}
+		if len(row) != 0 {
+			t.Fatalf("Read non-zero row after DeleteRow: %v", row)
+		}
+	})
 }
 
 func TestIntegration_FullReadStats(t *testing.T) {
@@ -1902,7 +1397,6 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 // stream and disable change stream on existing table and delete fails if change
 // stream is enabled.
 func TestIntegration_EnableChangeStream(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/8266")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -2665,6 +2159,7 @@ func TestIntegration_BackupIAM(t *testing.T) {
 }
 
 func TestIntegration_AuthorizedViewIAM(t *testing.T) {
+	t.Parallel()
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -2684,7 +2179,7 @@ func TestIntegration_AuthorizedViewIAM(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	table := testEnv.Config().Table
+	table := tableNameSpace.New()
 
 	defer deleteTable(ctx, t, adminClient, table)
 	if err := createTable(ctx, adminClient, table); err != nil {
@@ -2935,7 +2430,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 			break
 		}
 
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 2)
 	}
 	if encryptionKeyVersion == "" {
 		t.Fatalf("Encryption Key not created within allotted time end")
@@ -4199,7 +3694,6 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	destProj1 := testEnv.Config().Project
 	destProj1Inst1 := testEnv.Config().Instance // 1st instance in 1st destination project
 	destProj1Inst1Cl1 := srcCluster             // 1st cluster in 1st instance in 1st destination project
-	destIAdminClient1 := srcIAdminClient
 
 	type testcase struct {
 		desc         string
@@ -4214,70 +3708,6 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 			destInstance: destProj1Inst1,
 			destCluster:  destProj1Inst1Cl1,
 		},
-	}
-
-	// testEnv.Config().Cluster2 will be non-empty if 'it.cluster2' flag is passed
-	// or 'GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER' environment variable is set
-	// Add more testcases if Cluster2 is non-empty string
-	if testEnv.Config().Cluster2 != "" {
-		testcases = append(testcases, testcase{
-			desc:         "Copy backup to same project, same instance, different cluster",
-			destProject:  destProj1,
-			destInstance: destProj1Inst1,
-			destCluster:  testEnv.Config().Cluster2,
-		})
-	}
-
-	// If 'it.run-create-instance-tests' flag is set while running the tests,
-	// instanceToCreate will be non-empty string.
-	// Add more testcases if instanceToCreate is non-empty string
-	if instanceToCreate != "" {
-		// Create a 2nd instance in 1st destination project
-		destProj1Inst2, destProj1Inst2Cl1, err := createRandomInstance(ctx, destIAdminClient1)
-		if err != nil {
-			t.Fatalf("CreateInstance: %v", err)
-		}
-		defer destIAdminClient1.DeleteInstance(ctx, destProj1Inst2)
-		testcases = append(testcases, testcase{
-			desc:         "Copy backup to same project, different instance",
-			destProject:  destProj1,
-			destInstance: destProj1Inst2,
-			destCluster:  destProj1Inst2Cl1,
-		})
-	} else {
-		t.Logf("WARNING: run-create-instance-tests not set, skipping tests that require instance creation")
-	}
-
-	// testEnv.Config().Project2 will be non-empty if 'it.project2' flag is passed
-	// or 'GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID' environment variable is set
-	// Add more testcases if Project2 is non-empty string
-	if testEnv.Config().Project2 != "" {
-		// Create admin client for 2nd project in test environment
-		destProj2 := testEnv.Config().Project2
-		ctx, options, err := testEnv.AdminClientOptions()
-		if err != nil {
-			t.Fatalf("AdminClientOptions: %v", err)
-		}
-		destIAdminClient2, err := NewInstanceAdminClient(ctx, destProj2, options...)
-		if err != nil {
-			t.Fatalf("NewInstanceAdminClient: %v", err)
-		}
-		defer destIAdminClient2.Close()
-
-		// Create instance in 2nd project
-		destProj2Inst1, destProj2Inst1Cl1, err := createRandomInstance(ctx, destIAdminClient2)
-		if err != nil {
-			t.Fatalf("CreateInstance: %v", err)
-		}
-		defer destIAdminClient2.DeleteInstance(ctx, destProj2Inst1)
-		testcases = append(testcases, testcase{
-			desc:         "Copy backup to different project",
-			destProject:  destProj2,
-			destInstance: destProj2Inst1,
-			destCluster:  destProj2Inst1Cl1,
-		})
-	} else {
-		t.Logf("WARNING: Secondary project not set, skipping copy backup to different project testing")
 	}
 
 	for _, testcase := range testcases {
@@ -4647,6 +4077,7 @@ func TestIntegration_AdminUpdateBackupHotToStandardTime(t *testing.T) {
 }
 
 func TestIntegration_AdminAuthorizedView(t *testing.T) {
+	t.Skip("flaky https://github.com/googleapis/google-cloud-go/issues/13398")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -5099,6 +4530,7 @@ func TestIntegration_AdminSchemaBundle(t *testing.T) {
 }
 
 func TestIntegration_DataMaterializedView(t *testing.T) {
+	t.Skip("flaky https://github.com/googleapis/google-cloud-go/issues/12686")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -5342,6 +4774,7 @@ func TestIntegration_AdminLogicalView(t *testing.T) {
 }
 
 func TestIntegration_AdminMaterializedView(t *testing.T) {
+	t.Skip("broken https://github.com/googleapis/google-cloud-go/issues/12415")
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)

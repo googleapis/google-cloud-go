@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -50,6 +51,7 @@ import (
 )
 
 const replayFilename = "bigquery.replay"
+const defaultTestLocation = "us-east7"
 
 var record = flag.Bool("record", false, "record RPCs")
 
@@ -206,9 +208,6 @@ func initIntegrationTest() func() {
 			// We can't check universally because option.WithHTTPClient is
 			// incompatible with gRPC options.
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
-			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
-			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
-			connOpts = append(connOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
@@ -264,10 +263,10 @@ func initTestState(client *Client, t time.Time) func() {
 	dataset = client.Dataset(datasetIDs.New())
 	otherDataset = client.Dataset(datasetIDs.New())
 
-	if err := dataset.Create(ctx, nil); err != nil {
+	if err := dataset.Create(ctx, &DatasetMetadata{Location: defaultTestLocation}); err != nil {
 		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
 	}
-	if err := otherDataset.Create(ctx, nil); err != nil {
+	if err := otherDataset.Create(ctx, &DatasetMetadata{Location: defaultTestLocation}); err != nil {
 		log.Fatalf("creating other dataset %s: %v", dataset.DatasetID, err)
 	}
 
@@ -278,6 +277,37 @@ func initTestState(client *Client, t time.Time) func() {
 		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
 		}
+	}
+}
+
+// features we use for skipping tests.
+const skipBigQueryPrefix string = "GCLOUD_TESTS_GOLANG_BIGQUERY"
+const skipBigQueryPublicIAMTestEnv string = "GCLOUD_TESTS_GOLANG_BIGQUERY_SKIP_PUBLIC_IAM_TESTS"
+
+var (
+	envEnabledOnce sync.Once
+	// populated on first check via envEnabledOnce.
+	envEnablementResults map[string]bool
+)
+
+// a utility method for skipping tests based on env variable enablement.
+func skipOnEnvEnabled(t *testing.T, envID string) {
+	t.Helper()
+	envEnabledOnce.Do(func() {
+		envEnablementResults = make(map[string]bool)
+		for _, env := range os.Environ() {
+			if strings.HasPrefix(env, skipBigQueryPrefix) {
+
+				kv := strings.SplitN(env, "=", 2)
+				if len(kv) == 2 && strings.ToLower(kv[1]) == "true" {
+					envEnablementResults[envID] = true
+				}
+
+			}
+		}
+	})
+	if envEnablementResults[envID] {
+		t.Skipf("skipping test due to env enablement: %s", envID)
 	}
 }
 
@@ -718,9 +748,8 @@ func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 //
 // It returns a string for a policy tag identifier and a cleanup function, or an error.
 func setupPolicyTag(ctx context.Context) (string, func(), error) {
-	location := "us"
 	req := &datacatalogpb.CreateTaxonomyRequest{
-		Parent: fmt.Sprintf("projects/%s/locations/%s", testutil.ProjID(), location),
+		Parent: fmt.Sprintf("projects/%s/locations/%s", testutil.ProjID(), defaultTestLocation),
 		Taxonomy: &datacatalogpb.Taxonomy{
 			// DisplayName must be unique across org.
 			DisplayName: fmt.Sprintf("google-cloud-go bigquery testing taxonomy %d", time.Now().UnixNano()),
@@ -1108,7 +1137,7 @@ func TestIntegration_InsertAndRead(t *testing.T) {
 	if job1.LastStatus() == nil {
 		t.Error("no LastStatus")
 	}
-	job2, err := client.JobFromID(ctx, job1.ID())
+	job2, err := client.JobFromIDLocation(ctx, job1.ID(), job1.Location())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -3202,7 +3231,7 @@ func TestIntegration_DeleteJob(t *testing.T) {
 	ctx := context.Background()
 
 	q := client.Query("SELECT 17 as foo")
-	q.Location = "us-east1"
+	q.Location = defaultTestLocation
 
 	job, err := q.Run(ctx)
 	if err != nil {

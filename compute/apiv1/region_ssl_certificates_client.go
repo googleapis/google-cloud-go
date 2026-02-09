@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -133,17 +133,21 @@ func (c *RegionSslCertificatesClient) Delete(ctx context.Context, req *computepb
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
+// Get returns the specified SslCertificate resource in the specified region. Get
+// a list of available SSL certificates by making a list()
+// request.
 func (c *RegionSslCertificatesClient) Get(ctx context.Context, req *computepb.GetRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a SslCertificate resource in the specified project and region using the data included in the request
+// Insert creates a SslCertificate resource in the specified project and region using
+// the data included in the request
 func (c *RegionSslCertificatesClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of SslCertificate resources available to the specified project in the specified region.
+// List retrieves the list of SslCertificate resources available to the specified
+// project in the specified region.
 func (c *RegionSslCertificatesClient) List(ctx context.Context, req *computepb.ListRegionSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -301,7 +305,9 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	return op, nil
 }
 
-// Get returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
+// Get returns the specified SslCertificate resource in the specified region. Get
+// a list of available SSL certificates by making a list()
+// request.
 func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -346,7 +352,8 @@ func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// Insert creates a SslCertificate resource in the specified project and region using the data included in the request
+// Insert creates a SslCertificate resource in the specified project and region using
+// the data included in the request
 func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
@@ -413,7 +420,8 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 	return op, nil
 }
 
-// List retrieves the list of SslCertificate resources available to the specified project in the specified region.
+// List retrieves the list of SslCertificate resources available to the specified
+// project in the specified region.
 func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *computepb.ListRegionSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	it := &SslCertificateIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionSslCertificatesRequest)

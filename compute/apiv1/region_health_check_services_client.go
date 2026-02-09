@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -143,17 +143,22 @@ func (c *RegionHealthCheckServicesClient) Get(ctx context.Context, req *computep
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a regional HealthCheckService resource in the specified project and region using the data included in the request.
+// Insert creates a regional HealthCheckService resource in the
+// specified project and region using the data included in the request.
 func (c *RegionHealthCheckServicesClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the HealthCheckService resources that have been configured for the specified project in the given region.
+// List lists all the HealthCheckService resources that have been
+// configured for the specified project in the given region.
 func (c *RegionHealthCheckServicesClient) List(ctx context.Context, req *computepb.ListRegionHealthCheckServicesRequest, opts ...gax.CallOption) *HealthCheckServiceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified regional HealthCheckService resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional HealthCheckService resource
+// with the data included in the request.  This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *RegionHealthCheckServicesClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -356,7 +361,8 @@ func (c *regionHealthCheckServicesRESTClient) Get(ctx context.Context, req *comp
 	return resp, nil
 }
 
-// Insert creates a regional HealthCheckService resource in the specified project and region using the data included in the request.
+// Insert creates a regional HealthCheckService resource in the
+// specified project and region using the data included in the request.
 func (c *regionHealthCheckServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckServiceResource()
@@ -423,7 +429,8 @@ func (c *regionHealthCheckServicesRESTClient) Insert(ctx context.Context, req *c
 	return op, nil
 }
 
-// List lists all the HealthCheckService resources that have been configured for the specified project in the given region.
+// List lists all the HealthCheckService resources that have been
+// configured for the specified project in the given region.
 func (c *regionHealthCheckServicesRESTClient) List(ctx context.Context, req *computepb.ListRegionHealthCheckServicesRequest, opts ...gax.CallOption) *HealthCheckServiceIterator {
 	it := &HealthCheckServiceIterator{}
 	req = proto.Clone(req).(*computepb.ListRegionHealthCheckServicesRequest)
@@ -509,7 +516,10 @@ func (c *regionHealthCheckServicesRESTClient) List(ctx context.Context, req *com
 	return it
 }
 
-// Patch updates the specified regional HealthCheckService resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional HealthCheckService resource
+// with the data included in the request.  This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *regionHealthCheckServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckServiceResource()

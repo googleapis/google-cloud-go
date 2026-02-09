@@ -81,7 +81,7 @@ type Client struct {
 	executeQueryRetryOption gax.CallOption
 	enableDirectAccess      bool
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
-
+	dynamicScaleMonitor     *btransport.DynamicScaleMonitor
 }
 
 // ClientConfig has configurations for the client.
@@ -96,6 +96,9 @@ type ClientConfig struct {
 	//
 	// TODO: support user provided meter provider
 	MetricsProvider MetricsProvider
+
+	// If true, enable dynamic channel pool
+	EnableDynamicChannelPool bool
 }
 
 // MetricsProvider is a wrapper for built in metrics meter provider
@@ -116,6 +119,7 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
+	clientCreationTimestamp := time.Now()
 	metricsProvider := config.MetricsProvider
 	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
 		// Do not emit metrics when emulator is being used
@@ -181,11 +185,46 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	var connPool gtransport.ConnPool
 	var connPoolErr error
+	var dsm *btransport.DynamicScaleMonitor
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	if enableBigtableConnPool {
-		connPool, connPoolErr = btransport.NewBigtableChannelPool(defaultBigtableConnPoolSize, btopt.BigtableLoadBalancingStrategy(), func() (*grpc.ClientConn, error) {
-			return gtransport.Dial(ctx, o...)
-		})
+		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
+
+		btPool, err := btransport.NewBigtableChannelPool(ctx,
+			defaultBigtableConnPoolSize,
+			btopt.BigtableLoadBalancingStrategy(),
+			func() (*btransport.BigtableConn, error) {
+				grpcConn, err := gtransport.Dial(ctx, o...)
+				if err != nil {
+					return nil, err
+				}
+				return btransport.NewBigtableConn(grpcConn), nil
+			},
+			clientCreationTimestamp,
+			// options
+			btransport.WithInstanceName(fullInstanceName),
+			btransport.WithAppProfile(config.AppProfile),
+			btransport.WithFeatureFlagsMetadata(ffMD),
+			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+			btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
+		)
+
+		if err != nil {
+			connPoolErr = err
+		} else {
+			connPool = btPool
+
+			// Validate dynamic config early if enabled
+			if config.EnableDynamicChannelPool {
+				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
+					return nil, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
+				}
+
+				dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), btPool)
+				dsm.Start(ctx) // Start the monitor's background goroutine
+			}
+		}
+
 	} else {
 		// use to regular ConnPool
 		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
@@ -207,11 +246,15 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		executeQueryRetryOption: executeQueryRetryOption,
 		enableDirectAccess:      enableDirectAccess,
 		featureFlagsMD:          ffMD,
+		dynamicScaleMonitor:     dsm,
 	}, nil
 }
 
 // Close closes the Client.
 func (c *Client) Close() error {
+	if c.dynamicScaleMonitor != nil {
+		c.dynamicScaleMonitor.Stop()
+	}
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.shutdown()
 	}
@@ -562,7 +605,7 @@ func (c *Client) prepareStatementWithMetadata(ctx context.Context, query string,
 
 	preparedStatement, err = c.prepareStatement(ctx, mt, query, paramTypes, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return preparedStatement, statusErr
 }
 
@@ -741,7 +784,7 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 
 	err = bs.execute(ctx, f, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -1033,7 +1076,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 	err = t.readRows(ctx, arg, f, mt, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -1219,7 +1262,8 @@ func decodeFamilyProto(r Row, row string, f *btpb.Family) {
 }
 
 // RowSet is a set of rows to be read. It is satisfied by RowList, RowRange and RowRangeList.
-// The serialized size of the RowSet must be no larger than 1MiB.
+// The serialized size of the ReadRowsRequest that uses this RowSet must be no larger than 512KB.
+// See https://docs.cloud.google.com/bigtable/docs/reads#large-rows for more information.
 type RowSet interface {
 	proto() *btpb.RowSet
 
@@ -1713,7 +1757,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 
 	err = t.apply(ctx, mt, row, m, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -2008,7 +2052,7 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 	}, t.c.retryOption)
 
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
@@ -2153,7 +2197,7 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 
 	updatedRow, err := t.applyReadModifyWrite(ctx, mt, row, m)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return updatedRow, statusErr
 }
 
@@ -2234,7 +2278,7 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 
 	rowKeys, err := t.sampleRowKeys(ctx, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.setCurrOpStatus(statusCode.String())
+	mt.setCurrOpStatus(statusCode)
 	return rowKeys, statusErr
 }
 

@@ -1,5 +1,31 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.19.0) (2026-01-08)
+
+### Features
+
+* add Fingerprint to Artifact Registry Version resource ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+### Documentation
+
+* update the description of ExportArtifact ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.18.0) (2025-12-04)
+
+### Features
+
+* add ExportArtifact API ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add Ruby format in VulnerabilityScanningConfig ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add artifact_type field in DockerImage ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add image_manifest field in DockerImage ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* A comment for enum value `ENABLEMENT_CONFIG_UNSPECIFIED` in enum `EnablementConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `name` in message `.google.devtools.artifactregistry.v1.DockerImage` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `satisfies_pzi` in message `.google.devtools.artifactregistry.v1.Repository` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `satisfies_pzs` in message `.google.devtools.artifactregistry.v1.Repository` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.17.1...artifactregistry/v1.17.2) (2025-10-07)
 
 

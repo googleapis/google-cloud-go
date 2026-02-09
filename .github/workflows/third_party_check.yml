@@ -15,16 +15,16 @@ jobs:
   changed_gomods:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 2
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@v6
       with:
         go-version: 1.25.x
     - name: Find modified go.mod files
       id: modfiles
       run: |
-        dirs=$(go run ./internal/actions/cmd/changefinder -q -internal --base=HEAD~1 --diff-filter=d --path-filter='*go.mod')
+        dirs=$(cd internal/actions; go run ./cmd/changefinder -q -internal --base=HEAD~1 --diff-filter=d --path-filter='*go.mod' --dir=${{ github.workspace }})
         if [ -z "$dirs" ]
         then
           echo "skip=1" >> "$GITHUB_OUTPUT"
@@ -45,5 +45,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.changed_gomods.outputs.mods) }}
     steps:
-    - uses: actions/checkout@v4
-    - run: go run ./internal/actions/cmd/thirdpartycheck -q -mod ${{ matrix.mods }}/go.mod
+    - uses: actions/checkout@v6
+    - run: |
+        cd internal/actions
+        go run ./internal/actions/cmd/thirdpartycheck -q --dir=${{ github.workspace }} -mod ${{ matrix.mods }}/go.mod
