@@ -487,7 +487,8 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, out *DownloadOutput, 
 			in.cancelCtx(errCancelAllShards)
 			continue
 		}
-		if shardOut.shard > 0 {
+		// Collect remaining checksums starting from second shard.
+		if shardOut.shard > 0 && shardOut.shard < shards {
 			orderedChecksums[shardOut.shard-1] = crc32cPiece{sum: shardOut.crc32c, length: shardOut.shardLength}
 		}
 	}
