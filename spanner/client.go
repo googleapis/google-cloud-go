@@ -877,6 +877,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 				ReadOnly: buildTransactionOptionsReadOnly(tb, true),
 			},
 		},
+		RequestOptions: createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", "", c.clientContext),
 	})
 	if err != nil {
 		return nil, ToSpannerError(err)

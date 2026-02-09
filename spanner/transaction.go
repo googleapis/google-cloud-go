@@ -1713,7 +1713,7 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 	if opts.txOptions.TransactionTag != "" {
 		request.RequestOptions = &sppb.RequestOptions{TransactionTag: opts.txOptions.TransactionTag}
 	}
-	ro := createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", opts.txOptions.TransactionTag, opts.txOptions.ClientContext)
+	ro := createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", opts.txOptions.TransactionTag, mergeClientContext(opts.clientContext, opts.txOptions.ClientContext))
 	if ro != nil {
 		if request.RequestOptions == nil {
 			request.RequestOptions = ro
@@ -1790,11 +1790,12 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		t.txOpts = t.txOpts.merge(t.getTransactionOptionsCallback())
 	}
 	tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
-		sessionID:  sh.getID(),
-		client:     sh.getClient(),
-		txOptions:  t.txOpts,
-		mutation:   mutation,
-		previousTx: previousTx,
+		sessionID:     sh.getID(),
+		client:        sh.getClient(),
+		txOptions:     t.txOpts,
+		mutation:      mutation,
+		previousTx:    previousTx,
+		clientContext: t.clientContext,
 	})
 	if err != nil {
 		err = ToSpannerError(err)
@@ -2103,6 +2104,7 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 	}
 
 	t.txOpts = c.txo.merge(options)
+	t.txReadOnly.clientContext = mergeClientContext(c.clientContext, t.txOpts.ClientContext)
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 
@@ -2298,9 +2300,10 @@ func isAbortedErr(err error) bool {
 
 // transactionBeginOptions holds the parameters for beginning a transaction.
 type transactionBeginOptions struct {
-	sessionID  string
-	client     spannerClient
-	txOptions  TransactionOptions
-	previousTx transactionID
-	mutation   *sppb.Mutation
+	sessionID     string
+	client        spannerClient
+	txOptions     TransactionOptions
+	previousTx    transactionID
+	mutation      *sppb.Mutation
+	clientContext *sppb.RequestOptions_ClientContext
 }
