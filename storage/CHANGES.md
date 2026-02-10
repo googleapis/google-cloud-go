@@ -6,6 +6,7 @@
 ### Features
 
 * support checksum validation in resumable json uploads (#13573) ([1aa388c](https://github.com/googleapis/google-cloud-go/commit/1aa388c84ca2812902cdebfcf98eb600a14278e0))
+* perform checksum for single shot and single chunk uploads (#13733) ([892c5d3](https://github.com/googleapis/google-cloud-go/commit/892c5d32bd14dfbd3a1a7d3fa5894331f41392a1))
 
 ### Bug Fixes
 
