@@ -291,6 +291,76 @@ func TestSaveEmptySlice(t *testing.T) {
 	}
 }
 
+func TestSaveSliceOmitempty(t *testing.T) {
+
+	type S struct {
+		G []string `datastore:",noindex,omitempty"`
+	}
+	testCases := []struct {
+		desc string
+		in   []string
+		want []string // Expected values in the saved property
+	}{
+		{
+			desc: "1st-item-is-empty-string",
+			in:   []string{"", "s1", "s2"},
+			want: []string{"s1", "s2"},
+		},
+		{
+			desc: "2nd-item-is-empty-string",
+			in:   []string{"s0", "", "s2"},
+			want: []string{"s0", "s2"},
+		},
+		{
+			desc: "all-empty-strings",
+			in:   []string{"", "", ""},
+			want: nil, // Should not save the property at all
+		},
+	}
+
+	for _, tc := range testCases {
+		got, err := SaveStruct(&S{G: tc.in})
+		if err != nil {
+			t.Errorf("%s: SaveStruct failed: %v", tc.desc, err)
+			continue
+		}
+
+		if len(tc.want) == 0 {
+			if len(got) != 0 {
+				t.Errorf("%s: got %d properties, wanted zero", tc.desc, len(got))
+			}
+			continue
+		}
+
+		if len(got) != 1 {
+			t.Errorf("%s: got %d properties, wanted 1", tc.desc, len(got))
+			continue
+		}
+
+		prop := got[0]
+		if prop.Name != "G" {
+			t.Errorf("%s: got property name %q, want %q", tc.desc, prop.Name, "G")
+		}
+
+		gotVals, ok := prop.Value.([]interface{})
+		if !ok {
+			t.Errorf("%s: got value type %T, want []interface{}", tc.desc, prop.Value)
+			continue
+		}
+
+		if len(gotVals) != len(tc.want) {
+			t.Errorf("%s: got %d values, want %d", tc.desc, len(gotVals), len(tc.want))
+			continue
+		}
+
+		for i, wantVal := range tc.want {
+			if gotVals[i] != wantVal {
+				t.Errorf("%s: value[%d] got %v, want %v", tc.desc, i, gotVals[i], wantVal)
+			}
+		}
+	}
+}
+
 // Map is used by TestSaveFieldsWithInterface
 // to test a custom type property save.
 type Map map[int]int
