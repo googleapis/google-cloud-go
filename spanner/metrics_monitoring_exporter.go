@@ -358,11 +358,10 @@ func toNonemptyTimeIntervalpb(start, end time.Time, isGauge bool) (*monitoringpb
 	// The end time of a new interval must be at least a millisecond after the end time of the
 	// previous interval, for all non-gauge types.
 	// https://cloud.google.com/monitoring/api/ref_v3/rpc/google.monitoring.v3#timeinterval
-	if end.Sub(start).Milliseconds() <= 1 {
-		end = start.Add(time.Millisecond)
-	}
 	if isGauge {
 		end = start
+	} else if end.Sub(start).Milliseconds() <= 1 {
+		end = start.Add(time.Millisecond)
 	}
 	startpb := timestamppb.New(start)
 	endpb := timestamppb.New(end)
