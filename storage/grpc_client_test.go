@@ -443,20 +443,19 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			want:     "force_direct_connectivity=ENFORCED",
 		},
 		{
-			desc:     "DirectPath target with FALLBACK_ALLOWED",
+			desc:     "DirectPath target with NOT ENFORCED",
 			enforced: false,
 			target:   "google-c2p:///storage.googleapis.com",
-			want:     "force_direct_connectivity=FALLBACK_ALLOWED",
+			want:     "",
 		},
 		{
 			desc:     "CloudPath target with ENFORCED",
 			enforced: true,
 			target:   "dns:///storage.googleapis.com",
-			// This currently downgrades to OPTED_OUT instead of rejecting.
-			want: "force_direct_connectivity=OPTED_OUT",
+			want:     "force_direct_connectivity=OPTED_OUT",
 		},
 		{
-			desc:     "CloudPath target with FALLBACK_ALLOWED",
+			desc:     "CloudPath target with NOT ENFORCED",
 			enforced: false,
 			target:   "dns:///storage.googleapis.com",
 			want:     "force_direct_connectivity=OPTED_OUT",
@@ -492,10 +491,10 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 
 			got := md.Get(requestParamsHeaderKey)
 			if len(got) == 0 {
-				t.Fatal("request params header not found")
-			}
-
-			if got[0] != tc.want {
+				if tc.want != "" {
+					t.Fatal("request params header not found")
+				}
+			} else if got[0] != tc.want {
 				t.Errorf("got metadata %q, want %q", got[0], tc.want)
 			}
 		})
