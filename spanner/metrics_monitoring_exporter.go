@@ -67,6 +67,9 @@ var (
 		metricLabelKeyGRPCLBPickResult:      true,
 		metricLabelKeyGRPCLBDataPlaneTarget: true,
 		metricLabelKeyGRPCXDSResourceType:   true,
+		metricLabelKeyGRPCLBLocality:        true,
+		metricLabelKeyGRPCLBBackendService:  true,
+		metricLabelKeyGRPCDisconnectError:   true,
 		metricLabelKeyClientUID:             true,
 		metricLabelKeyClientName:            true,
 		metricLabelKeyDatabase:              true,
@@ -290,7 +293,10 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
 			var ts *monitoringpb.TimeSeries
 			var err error
-			ts, err = sumToTimeSeries[int64](point, m, mr)
+			// Int64UpDownCounter contains Sum data with IsMonotonic = false.
+			// See https://tinyurl.com/yzks9ene.
+			isGauge := !a.IsMonotonic
+			ts, err = sumToTimeSeries[int64](point, m, mr, isGauge)
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -304,16 +310,20 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 	return tss, errors.Join(errs...)
 }
 
-func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
-	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time)
+func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource, isGauge bool) (*monitoringpb.TimeSeries, error) {
+	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time, isGauge)
 	if err != nil {
 		return nil, err
 	}
 	value, valueType := numberDataPointToValue[N](point)
+	metricKind := googlemetricpb.MetricDescriptor_CUMULATIVE
+	if isGauge {
+		metricKind = googlemetricpb.MetricDescriptor_GAUGE
+	}
 	return &monitoringpb.TimeSeries{
 		Resource:   mr,
 		Unit:       string(metrics.Unit),
-		MetricKind: googlemetricpb.MetricDescriptor_CUMULATIVE,
+		MetricKind: metricKind,
 		ValueType:  valueType,
 		Points: []*monitoringpb.Point{{
 			Interval: interval,
@@ -323,7 +333,7 @@ func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metri
 }
 
 func histogramToTimeSeries[N int64 | float64](point otelmetricdata.HistogramDataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
-	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time)
+	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time, false)
 	if err != nil {
 		return nil, err
 	}
@@ -344,12 +354,15 @@ func histogramToTimeSeries[N int64 | float64](point otelmetricdata.HistogramData
 	}, nil
 }
 
-func toNonemptyTimeIntervalpb(start, end time.Time) (*monitoringpb.TimeInterval, error) {
+func toNonemptyTimeIntervalpb(start, end time.Time, isGauge bool) (*monitoringpb.TimeInterval, error) {
 	// The end time of a new interval must be at least a millisecond after the end time of the
 	// previous interval, for all non-gauge types.
 	// https://cloud.google.com/monitoring/api/ref_v3/rpc/google.monitoring.v3#timeinterval
 	if end.Sub(start).Milliseconds() <= 1 {
 		end = start.Add(time.Millisecond)
+	}
+	if isGauge {
+		end = start
 	}
 	startpb := timestamppb.New(start)
 	endpb := timestamppb.New(end)
