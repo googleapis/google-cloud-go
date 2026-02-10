@@ -16,6 +16,7 @@ package datastore
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -319,45 +320,42 @@ func TestSaveSliceOmitempty(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		got, err := SaveStruct(&S{G: tc.in})
-		if err != nil {
-			t.Errorf("%s: SaveStruct failed: %v", tc.desc, err)
-			continue
-		}
-
-		if len(tc.want) == 0 {
-			if len(got) != 0 {
-				t.Errorf("%s: got %d properties, wanted zero", tc.desc, len(got))
+		t.Run(tc.desc, func(t *testing.T) {
+			got, err := SaveStruct(&S{G: tc.in})
+			if err != nil {
+				t.Fatalf("SaveStruct failed: %v", err)
 			}
-			continue
-		}
 
-		if len(got) != 1 {
-			t.Errorf("%s: got %d properties, wanted 1", tc.desc, len(got))
-			continue
-		}
-
-		prop := got[0]
-		if prop.Name != "G" {
-			t.Errorf("%s: got property name %q, want %q", tc.desc, prop.Name, "G")
-		}
-
-		gotVals, ok := prop.Value.([]interface{})
-		if !ok {
-			t.Errorf("%s: got value type %T, want []interface{}", tc.desc, prop.Value)
-			continue
-		}
-
-		if len(gotVals) != len(tc.want) {
-			t.Errorf("%s: got %d values, want %d", tc.desc, len(gotVals), len(tc.want))
-			continue
-		}
-
-		for i, wantVal := range tc.want {
-			if gotVals[i] != wantVal {
-				t.Errorf("%s: value[%d] got %v, want %v", tc.desc, i, gotVals[i], wantVal)
+			if len(tc.want) == 0 {
+				if len(got) != 0 {
+					t.Errorf("got %d properties, wanted zero", len(got))
+				}
+				return
 			}
-		}
+
+			if len(got) != 1 {
+				t.Fatalf("got %d properties, wanted 1", len(got))
+			}
+
+			prop := got[0]
+			if prop.Name != "G" {
+				t.Errorf("got property name %q, want %q", prop.Name, "G")
+			}
+
+			gotVals, ok := prop.Value.([]interface{})
+			if !ok {
+				t.Fatalf("got value type %T, want []interface{}", prop.Value)
+			}
+
+			wantVals := make([]interface{}, len(tc.want))
+			for i, v := range tc.want {
+				wantVals[i] = v
+			}
+
+			if !reflect.DeepEqual(gotVals, wantVals) {
+				t.Errorf("values do not match:\ngot:  %v\nwant: %v", gotVals, wantVals)
+			}
+		})
 	}
 }
 
