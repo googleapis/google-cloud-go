@@ -1,6 +1,24 @@
 # Changes
 
 
+## [1.60.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.60.0) (2026-02-10)
+
+### Features
+
+* Added a new field `ComposeObjectRequest.delete_source_objects` field ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* adding support for max-retry-duration for all api other than resumable-upload (#13749) ([31c352b](https://github.com/googleapis/google-cloud-go/commit/31c352bd672637813ec251c2f48ad1c38ea13922))
+* support checksum validation in resumable json uploads (#13573) ([337ca07](https://github.com/googleapis/google-cloud-go/commit/337ca078a09d687aa758ed3982f2047bee3da57a))
+
+### Bug Fixes
+
+* change TestValidateChecksumFromServer error message (#13810) ([0741414](https://github.com/googleapis/google-cloud-go/commit/07414143ceba31ac97f8e2d083fcc95b11a2579e))
+* deadlock in event loop while coordinating channels (#13652) ([7d9d00c](https://github.com/googleapis/google-cloud-go/commit/7d9d00c6d0fcdb7a966c868b549ea103bb781e1b))
+* fix panic error in transfermanager downloads (#13815) ([4272271](https://github.com/googleapis/google-cloud-go/commit/427227197f79dfee7edf7bf5d66e33276e9eee52))
+
+### Documentation
+
+* Updated documentation for `BidiReadObject`, `ReadObjectRequest`, and `ObjectContexts` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
 ## [1.59.1](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.1) (2026-01-14)
 
 ### Bug Fixes
