@@ -27,7 +27,8 @@
 # a single owner.  This allows multiple teams to interact with librarian operations that cause
 # changes to librarian state.
 /.librarian/state.yaml
-# Similarly, we mark the internal/generated/snippets directory unowned to avoid tracking granular ownership in the snippets
-# directories, and to avoid chasing code owners approvals for things like snippet metadata versioning bumps which happen
-# naturally as part of release activities.
+# Similarly, we mark the internal/generated/snippets directory unowned to avoid
+# tracking granular ownership in the snippets directories, and to avoid chasing
+# code owners approvals for things like snippet metadata versioning bumps which
+# happen naturally as part of release activities.
 /internal/generated/snippets/*
