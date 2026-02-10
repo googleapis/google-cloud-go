@@ -72,7 +72,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		Params:         params,
 		ParamTypes:     paramTypes,
 		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, ""),
+		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, "", mergeClientContext(c.clientContext, options.ClientContext)),
 	}
 
 	// Make a retryer for Aborted and certain Internal errors.
@@ -80,7 +80,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	// Execute the PDML and retry if the transaction is aborted.
 	executePdmlWithRetry := func(ctx context.Context) (int64, error) {
 		for {
-			count, err := executePdml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), c.disableRouteToLeader), sh, req, options)
+			count, err := executePdml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), c.disableRouteToLeader), sh, req, options, c.clientContext)
 			if err == nil {
 				return count, nil
 			}
@@ -102,7 +102,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 // 3. Execute the update statement on the PDML transaction
 //
 // Note that PDML transactions cannot be committed or rolled back.
-func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlRequest, options QueryOptions) (count int64, err error) {
+func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlRequest, options QueryOptions, clientContext *sppb.RequestOptions_ClientContext) (count int64, err error) {
 	var md metadata.MD
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(ctx, &sppb.BeginTransactionRequest{
@@ -111,6 +111,7 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 			Mode:                        &sppb.TransactionOptions_PartitionedDml_{PartitionedDml: &sppb.TransactionOptions_PartitionedDml{}},
 			ExcludeTxnFromChangeStreams: options.ExcludeTxnFromChangeStreams,
 		},
+		RequestOptions: createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", "", mergeClientContext(clientContext, options.ClientContext)),
 	})
 	if err != nil {
 		return 0, ToSpannerError(err)

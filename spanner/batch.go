@@ -158,7 +158,7 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		Index:               index,
 		Columns:             columns,
 		KeySet:              kset,
-		RequestOptions:      createRequestOptions(readOptions.Priority, readOptions.RequestTag, ""),
+		RequestOptions:      createRequestOptions(readOptions.Priority, readOptions.RequestTag, "", mergeClientContext(t.txReadOnly.clientContext, readOptions.ClientContext)),
 		DataBoostEnabled:    readOptions.DataBoostEnabled,
 		DirectedReadOptions: readOptions.DirectedReadOptions,
 	}
@@ -225,7 +225,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		Params:              params,
 		ParamTypes:          paramTypes,
 		QueryOptions:        qOpts.Options,
-		RequestOptions:      createRequestOptions(qOpts.Priority, qOpts.RequestTag, ""),
+		RequestOptions:      createRequestOptions(qOpts.Priority, qOpts.RequestTag, "", mergeClientContext(t.txReadOnly.clientContext, qOpts.ClientContext)),
 		DataBoostEnabled:    qOpts.DataBoostEnabled,
 		DirectedReadOptions: qOpts.DirectedReadOptions,
 	}
