@@ -1,4 +1,4 @@
-image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:f9f9065a893591ad505df3384f409e9d404132d8c83b5d4bcbb8ae1650553b3b
+image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:19bb93e8f1f916c61b597db2bad65dc432f79baaabb210499d7d0e4ad1dffe29
 libraries:
   - id: compute
     version: 1.54.0
