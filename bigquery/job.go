@@ -524,6 +524,10 @@ type QueryStatistics struct {
 	// Slot-milliseconds consumed by this query job.
 	SlotMillis int64
 
+	// Total slot milliseconds for the job that runs on external services and is
+	// billed on the services SKU.
+	TotalServicesSkuSlotMillis int64
+
 	// Standard SQL: list of undeclared query parameter names detected during a
 	// dry run validation.
 	UndeclaredQueryParameterNames []string
@@ -1307,6 +1311,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
 			SlotMillis:                    s.Query.TotalSlotMs,
+			TotalServicesSkuSlotMillis:    s.Query.TotalServicesSkuSlotMs,
 			Timeline:                      timelineFromProto(s.Query.Timeline),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
