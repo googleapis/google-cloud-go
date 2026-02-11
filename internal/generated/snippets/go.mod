@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.24.0
 
 require (
-	cloud.google.com/go v0.123.0
+	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/accessapproval v1.8.8
 	cloud.google.com/go/accesscontextmanager v1.9.7
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
@@ -42,6 +42,7 @@ require (
 	cloud.google.com/go/dataform v0.12.1
 	cloud.google.com/go/datafusion v1.8.7
 	cloud.google.com/go/datalabeling v0.9.7
+	cloud.google.com/go/datamanager v0.0.0
 	cloud.google.com/go/dataplex v1.28.0
 	cloud.google.com/go/dataproc/v2 v2.15.0
 	cloud.google.com/go/dataqna v0.9.8
@@ -129,7 +130,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.7
 	cloud.google.com/go/workflows v1.14.3
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.265.0
+	google.golang.org/api v0.266.0
 	google.golang.org/genproto v0.0.0-20260128011058-8636f8732409
 )
 
@@ -215,7 +216,7 @@ require (
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260203192932-546029d2fa20 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260209200024-4cfbd4190f57 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260203192932-546029d2fa20 // indirect
 	google.golang.org/grpc v1.78.0 // indirect
 )
@@ -587,3 +588,5 @@ replace cloud.google.com/go/hypercomputecluster => ../../../hypercomputecluster
 replace cloud.google.com/go/apiregistry => ../../../apiregistry
 
 replace cloud.google.com/go/cloudsecuritycompliance => ../../../cloudsecuritycompliance
+
+replace cloud.google.com/go/datamanager => ../../../datamanager
