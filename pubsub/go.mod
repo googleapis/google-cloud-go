@@ -1,5 +1,5 @@
 // Deprecated: use cloud.google.com/go/pubsub/v2 instead.
-// This version will be supported until December 31st, 2026.
+// This version will be supported with bug fixes and security patches until December 31st, 2026.
 // For migration, see https://github.com/googleapis/google-cloud-go/blob/main/pubsub/MIGRATING.md
 module cloud.google.com/go/pubsub
 

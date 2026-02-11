@@ -17,7 +17,7 @@ Package pubsub provides an easy way to publish and receive Google Cloud Pub/Sub
 messages, hiding the details of the underlying server RPCs.
 
 This package is **deprecated**. All users should use cloud.google.com/go/pubsub/v2 instead.
-This version will supported with bug fixes until the deprecation date of December 31st 2026.
+This version will be supported with bug fixes and security patches until the deprecation date of December 31st, 2026.
 For more information about migrating, see https://github.com/googleapis/google-cloud-go/blob/main/pubsub/MIGRATING.md
 
 Pub/Sub is a many-to-many, asynchronous messaging system that decouples senders

@@ -6,7 +6,7 @@ Note: The code snippets in this guide are meant to be a quick way of comparing t
 
 In line with Google's [OSS Library Breaking Change Policy](https://opensource.google/documentation/policies/library-breaking-change), support for the Go PubSub client library v1 version will continue until December 31st, 2026. This includes continued bug fixes and security patches for v1 version, but no new features would be introduced. We encourage all users to migrate to the Go PubSub client library v2 version before support expires for the earlier v1 version.
 
-Note: We had previously set the end of support date to July 31st, 2026. This was extended in February to December 31st instead.
+Note: The end of support date has been extended to December 31st, 2026 from the previously announced July 31st, 2026.
 
 ## New imports
 
