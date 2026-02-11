@@ -357,21 +357,15 @@ func TestRoutingInterceptors(t *testing.T) {
 			want:     "force_direct_connectivity=ENFORCED",
 		},
 		{
-			desc:     "default new header",
+			desc:     "default when not enforced",
 			enforced: false,
-			want:     "force_direct_connectivity=FALLBACK_ALLOWED",
+			want:     "",
 		},
 		{
 			desc:          "enforced append to existing",
 			enforced:      true,
 			initialParams: "bucket=my-bucket",
 			want:          "bucket=my-bucket&force_direct_connectivity=ENFORCED",
-		},
-		{
-			desc:          "default append to existing",
-			enforced:      false,
-			initialParams: "bucket=my-bucket",
-			want:          "bucket=my-bucket&force_direct_connectivity=FALLBACK_ALLOWED",
 		},
 	}
 
@@ -490,12 +484,12 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			}
 
 			got := md.Get(requestParamsHeaderKey)
-			if len(got) == 0 {
-				if tc.want != "" {
-					t.Fatal("request params header not found")
-				}
-			} else if got[0] != tc.want {
-				t.Errorf("got metadata %q, want %q", got[0], tc.want)
+			var headerValue string
+			if len(got) > 0 {
+				headerValue = got[0]
+			}
+			if headerValue != tc.want {
+				t.Errorf("got metadata %q, want %q", headerValue, tc.want)
 			}
 		})
 	}
