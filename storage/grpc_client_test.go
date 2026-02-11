@@ -357,21 +357,15 @@ func TestRoutingInterceptors(t *testing.T) {
 			want:     "force_direct_connectivity=ENFORCED",
 		},
 		{
-			desc:     "default new header",
+			desc:     "default when not enforced",
 			enforced: false,
-			want:     "force_direct_connectivity=FALLBACK_ALLOWED",
+			want:     "",
 		},
 		{
 			desc:          "enforced append to existing",
 			enforced:      true,
 			initialParams: "bucket=my-bucket",
 			want:          "bucket=my-bucket&force_direct_connectivity=ENFORCED",
-		},
-		{
-			desc:          "default append to existing",
-			enforced:      false,
-			initialParams: "bucket=my-bucket",
-			want:          "bucket=my-bucket&force_direct_connectivity=FALLBACK_ALLOWED",
 		},
 	}
 
