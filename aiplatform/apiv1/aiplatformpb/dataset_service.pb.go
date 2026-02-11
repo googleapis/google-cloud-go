@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -147,7 +147,6 @@ func (x *CreateDatasetOperationMetadata) GetGenericMetadata() *GenericOperationM
 
 // Request message for
 // [DatasetService.GetDataset][google.cloud.aiplatform.v1.DatasetService.GetDataset].
-// Next ID: 4
 type GetDatasetRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1033,7 +1032,6 @@ func (x *DeleteDatasetVersionRequest) GetName() string {
 
 // Request message for
 // [DatasetService.GetDatasetVersion][google.cloud.aiplatform.v1.DatasetService.GetDatasetVersion].
-// Next ID: 4
 type GetDatasetVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

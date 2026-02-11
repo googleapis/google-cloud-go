@@ -231,6 +231,15 @@ func (SolarPanelOrientation) EnumDescriptor() ([]byte, []int) {
 }
 
 // Specifies pre-GA experiments that can be enabled in the API.
+//
+// Requests using this field are classified as a pre-GA offering
+// under the [Google Maps Platform Service Specific
+// Terms](https://cloud.google.com/maps-platform/terms/maps-service-terms). See
+// [launch stage
+// descriptions](https://cloud.google.com/maps-platform/terms/launch-stages) for
+// more details.
+//
+// New values may be added to this enum in the future.
 type Experiment int32
 
 const (
@@ -1947,7 +1956,7 @@ type DataLayers struct {
 	// Values are in meters above EGM96 geoid (i.e., sea level). Invalid locations
 	// (where we don't have data) are stored as -9999.
 	DsmUrl string `protobuf:"bytes,3,opt,name=dsm_url,json=dsmUrl,proto3" json:"dsm_url,omitempty"`
-	// The URL for an image of RGB data (aerial photo) of the region.
+	// The URL for an image of RGB data (aerial or satellite photo) of the region.
 	RgbUrl string `protobuf:"bytes,4,opt,name=rgb_url,json=rgbUrl,proto3" json:"rgb_url,omitempty"`
 	// The URL for the building mask image: one bit per pixel saying whether that
 	// pixel is considered to be part of a rooftop or not.

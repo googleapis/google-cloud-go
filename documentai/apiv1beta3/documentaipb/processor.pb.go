@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -821,10 +821,10 @@ type ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Whether finetuning is allowed for this base processor version.
+	// Whether fine tuning is allowed for this base processor version.
 	FinetuningAllowed bool `protobuf:"varint,1,opt,name=finetuning_allowed,json=finetuningAllowed,proto3" json:"finetuning_allowed,omitempty"`
 	// The minimum number of labeled documents in the training dataset
-	// required for finetuning.
+	// required for fine tuning.
 	MinTrainLabeledDocuments int32 `protobuf:"varint,2,opt,name=min_train_labeled_documents,json=minTrainLabeledDocuments,proto3" json:"min_train_labeled_documents,omitempty"`
 }
 
