@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/datamanager.svg)](https://pkg.go.dev/cloud.google.com/go/datamanager)
 
-Go Client Library for Cloud Quotas API.
+Go Client Library for Data Manager API.
 
 ## Install
 
