@@ -1206,7 +1206,7 @@
     {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListAnnotations_sync",
       "title": "aiplatform ListAnnotations Sample",
-      "description": "ListAnnotations lists Annotations belongs to a dataitem\nThis RPC is only available in InternalDatasetService. It is only used for\nexporting conversation data to CCAI Insights.",
+      "description": "ListAnnotations lists Annotations belongs to a dataitem.",
       "file": "DatasetClient/ListAnnotations/main.go",
       "language": "GO",
       "clientMethod": {

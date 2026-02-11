@@ -195,6 +195,52 @@
       ]
     },
     {
+      "regionTag": "storage_v2_generated_StorageControl_DeleteFolderRecursive_sync",
+      "title": "storage DeleteFolderRecursive Sample",
+      "description": "DeleteFolderRecursive deletes a folder recursively. This operation is only applicable to a\nhierarchical namespace enabled bucket.",
+      "file": "StorageControlClient/DeleteFolderRecursive/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFolderRecursive",
+        "fullName": "google.storage.control.v2.StorageControlClient.DeleteFolderRecursive",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.DeleteFolderRecursiveRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFolderRecursiveOperation",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "DeleteFolderRecursive",
+          "fullName": "google.storage.control.v2.StorageControl.DeleteFolderRecursive",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "storage_v2_generated_StorageControl_DeleteManagedFolder_sync",
       "title": "storage DeleteManagedFolder Sample",
       "description": "DeleteManagedFolder permanently deletes an empty managed folder.",

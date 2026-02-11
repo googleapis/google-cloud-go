@@ -55,6 +55,7 @@ type StorageControlCallOptions struct {
 	GetFolder                            []gax.CallOption
 	ListFolders                          []gax.CallOption
 	RenameFolder                         []gax.CallOption
+	DeleteFolderRecursive                []gax.CallOption
 	GetStorageLayout                     []gax.CallOption
 	CreateManagedFolder                  []gax.CallOption
 	DeleteManagedFolder                  []gax.CallOption
@@ -147,6 +148,22 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 			}),
 		},
 		RenameFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		DeleteFolderRecursive: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -501,6 +518,21 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		DeleteFolderRecursive: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				},
+					http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout,
+					http.StatusInternalServerError,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetStorageLayout: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -770,6 +802,8 @@ type internalStorageControlClient interface {
 	ListFolders(context.Context, *controlpb.ListFoldersRequest, ...gax.CallOption) *FolderIterator
 	RenameFolder(context.Context, *controlpb.RenameFolderRequest, ...gax.CallOption) (*RenameFolderOperation, error)
 	RenameFolderOperation(name string) *RenameFolderOperation
+	DeleteFolderRecursive(context.Context, *controlpb.DeleteFolderRecursiveRequest, ...gax.CallOption) (*DeleteFolderRecursiveOperation, error)
+	DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation
 	GetStorageLayout(context.Context, *controlpb.GetStorageLayoutRequest, ...gax.CallOption) (*controlpb.StorageLayout, error)
 	CreateManagedFolder(context.Context, *controlpb.CreateManagedFolderRequest, ...gax.CallOption) (*controlpb.ManagedFolder, error)
 	DeleteManagedFolder(context.Context, *controlpb.DeleteManagedFolderRequest, ...gax.CallOption) error
@@ -871,6 +905,18 @@ func (c *StorageControlClient) RenameFolder(ctx context.Context, req *controlpb.
 // The name must be that of a previously created RenameFolderOperation, possibly from a different process.
 func (c *StorageControlClient) RenameFolderOperation(name string) *RenameFolderOperation {
 	return c.internalClient.RenameFolderOperation(name)
+}
+
+// DeleteFolderRecursive deletes a folder recursively. This operation is only applicable to a
+// hierarchical namespace enabled bucket.
+func (c *StorageControlClient) DeleteFolderRecursive(ctx context.Context, req *controlpb.DeleteFolderRecursiveRequest, opts ...gax.CallOption) (*DeleteFolderRecursiveOperation, error) {
+	return c.internalClient.DeleteFolderRecursive(ctx, req, opts...)
+}
+
+// DeleteFolderRecursiveOperation returns a new DeleteFolderRecursiveOperation from a given name.
+// The name must be that of a previously created DeleteFolderRecursiveOperation, possibly from a different process.
+func (c *StorageControlClient) DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation {
+	return c.internalClient.DeleteFolderRecursiveOperation(name)
 }
 
 // GetStorageLayout returns the storage layout configuration for a given bucket.
@@ -1361,6 +1407,38 @@ func (c *storageControlGRPCClient) RenameFolder(ctx context.Context, req *contro
 		return nil, err
 	}
 	return &RenameFolderOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *storageControlGRPCClient) DeleteFolderRecursive(ctx context.Context, req *controlpb.DeleteFolderRecursiveRequest, opts ...gax.CallOption) (*DeleteFolderRecursiveOperation, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
+	opts = append((*c.CallOptions).DeleteFolderRecursive[0:len((*c.CallOptions).DeleteFolderRecursive):len((*c.CallOptions).DeleteFolderRecursive)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.DeleteFolderRecursive, req, settings.GRPC, c.logger, "DeleteFolderRecursive")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteFolderRecursiveOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2370,6 +2448,82 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &RenameFolderOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteFolderRecursive deletes a folder recursively. This operation is only applicable to a
+// hierarchical namespace enabled bucket.
+func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, req *controlpb.DeleteFolderRecursiveRequest, opts ...gax.CallOption) (*DeleteFolderRecursiveOperation, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.IfMetagenerationMatch != nil {
+		params.Add("ifMetagenerationMatch", fmt.Sprintf("%v", req.GetIfMetagenerationMatch()))
+	}
+	if req != nil && req.IfMetagenerationNotMatch != nil {
+		params.Add("ifMetagenerationNotMatch", fmt.Sprintf("%v", req.GetIfMetagenerationNotMatch()))
+	}
+	params.Add("name", fmt.Sprintf("%v", req.GetName()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFolderRecursive")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &DeleteFolderRecursiveOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3905,6 +4059,24 @@ func (c *storageControlGRPCClient) CreateAnywhereCacheOperation(name string) *Cr
 func (c *storageControlRESTClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateAnywhereCacheOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteFolderRecursiveOperation returns a new DeleteFolderRecursiveOperation from a given name.
+// The name must be that of a previously created DeleteFolderRecursiveOperation, possibly from a different process.
+func (c *storageControlGRPCClient) DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation {
+	return &DeleteFolderRecursiveOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteFolderRecursiveOperation returns a new DeleteFolderRecursiveOperation from a given name.
+// The name must be that of a previously created DeleteFolderRecursiveOperation, possibly from a different process.
+func (c *storageControlRESTClient) DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &DeleteFolderRecursiveOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
