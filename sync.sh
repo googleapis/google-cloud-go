@@ -24,3 +24,5 @@ git checkout main -- \
     LICENSE \
     README.md \
     SECURITY.md
+
+sed -i '1c\'"$(git show origin/main:.librarian/state.yaml | head -n 1)" .librarian/state.yaml
