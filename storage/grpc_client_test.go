@@ -484,12 +484,12 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			}
 
 			got := md.Get(requestParamsHeaderKey)
-			if len(got) == 0 {
-				if tc.want != "" {
-					t.Fatal("request params header not found")
-				}
-			} else if got[0] != tc.want {
-				t.Errorf("got metadata %q, want %q", got[0], tc.want)
+			var headerValue string
+			if len(got) > 0 {
+				headerValue = got[0]
+			}
+			if headerValue != tc.want {
+				t.Errorf("got metadata %q, want %q", headerValue, tc.want)
 			}
 		})
 	}
