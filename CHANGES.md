@@ -2,6 +2,18 @@
 
 
 
+## [0.124.0](https://github.com/googleapis/google-cloud-go/releases/tag/v0.124.0) (2026-02-04)
+
+### Features
+
+* populate release_exclude_paths for snippets (#12942) ([b25be45](https://github.com/googleapis/google-cloud-go/commit/b25be45eb7bf565b491586749de00ed9aa0fbdab))
+
+### Bug Fixes
+
+* be more conservative about removing OwlBot lines (#13106) ([7663fdc](https://github.com/googleapis/google-cloud-go/commit/7663fdce3663478cf9fe02f265c4abdb27775b61))
+* match input directories more carefully in OwlBot (#13057) ([f9efee1](https://github.com/googleapis/google-cloud-go/commit/f9efee1c2f3e7a1cf3ab9d8cd3c2fd5cd2a53325))
+* write state.yaml with the same code as librarian CLI (#12955) ([0464d0b](https://github.com/googleapis/google-cloud-go/commit/0464d0beed74e91c158f08672f8742d453a62320))
+
 ## [0.123.0](https://github.com/googleapis/google-cloud-go/compare/v0.122.0...v0.123.0) (2025-09-18)
 
 
