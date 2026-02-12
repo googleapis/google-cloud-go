@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.41.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.41.0) (2026-02-12)
+
+### Features
+
+* A new field `document_prompt` is added to message `.google.cloud.documentai.v1beta3.DocumentSchema` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* A new field `document_type` is added to message `.google.cloud.documentai.v1beta3.ImportDocumentsRequest` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* A new field `enable_table_split` is added to message `.google.cloud.documentai.v1beta3.OcrConfig.LayoutParsingParams` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* A new field `revisions` is added to message `.google.cloud.documentai.v1beta3.Evaluation` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* Added new messages `Documents` and `RawDocuments` for inline document input ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* The field `skip_human_review` in messages `.google.cloud.documentai.v1beta3.ProcessRequest` and `.google.cloud.documentai.v1beta3.BatchProcessRequest` is deprecated ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* The method `ReviewDocument` in `.google.cloud.documentai.v1beta3.DocumentProcessorService` is deprecated ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+### Bug Fixes
+
+* Removed the `SpannerIndexingConfig` message and the `spanner_indexing_config` field from `.google.cloud.documentai.v1beta3.Dataset` BREAKING CHANGE: The `SpannerIndexingConfig` message and the `spanner_indexing_config` field within the `Dataset` message have been removed. Client code referencing these will need to stop referencing these in case of an error ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+### Documentation
+
+* Updated comments for various fields and messages ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.40.0) (2026-01-29)
 
 ### Documentation

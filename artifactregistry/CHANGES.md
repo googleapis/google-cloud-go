@@ -1,5 +1,11 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.20.0) (2026-02-12)
+
+### Features
+
+* add DIRSUM_SHA256 hash type ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.19.0) (2026-01-08)
 
 ### Features

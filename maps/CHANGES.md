@@ -2,6 +2,13 @@
 
 
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.27.0) (2026-02-12)
+
+### Documentation
+
+* Add pre-GA details for Experiments enum ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* Add satellite imagery to `rgb_url` description ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.26.0) (2025-11-06)
 
 ### Features

@@ -2,6 +2,19 @@
 
 
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.23.0) (2026-02-12)
+
+### Features
+
+* add CrowdingSpec to SearchRequest to set crowding settings ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* add Natural Language Query Understanding fields and messages to DiscoveryEngine request, response, and datastore messages ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* add output-only field SemanticState to SearchResponse. ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+### Documentation
+
+* other misc documentation updates Clients can specify Natural Language Query Understanding-related fields, as well as CrowdingSpec. These features are available in the V1 APIs. ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* update documentation for search and data store NLQ features ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.22.0) (2025-10-22)
 
 ### Bug Fixes

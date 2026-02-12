@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.115.0
+    version: 1.116.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/cloud/aiplatform/v1
@@ -580,7 +580,7 @@ libraries:
       - internal/generated/snippets/area120/
     tag_format: '{id}/v{version}'
   - id: artifactregistry
-    version: 1.19.0
+    version: 1.20.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/devtools/artifactregistry/v1
@@ -1721,7 +1721,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: confidentialcomputing
-    version: 1.10.1
+    version: 1.11.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/cloud/confidentialcomputing/v1
@@ -2057,7 +2057,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 21faf440e089d06f66243c77792f37ac86c01115
     apis:
       - path: google/ads/datamanager/v1
@@ -2366,7 +2366,7 @@ libraries:
       - internal/generated/snippets/dialogflow/
     tag_format: '{id}/v{version}'
   - id: discoveryengine
-    version: 1.22.0
+    version: 1.23.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/cloud/discoveryengine/v1
@@ -2438,7 +2438,7 @@ libraries:
       - ^dlp/apiv2/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: documentai
-    version: 1.40.0
+    version: 1.41.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/cloud/documentai/v1
@@ -3506,7 +3506,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.26.0
+    version: 1.27.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/maps/addressvalidation/v1
@@ -5948,7 +5948,7 @@ libraries:
       - internal/generated/snippets/streetview/
     tag_format: '{id}/v{version}'
   - id: support
-    version: 1.4.1
+    version: 1.5.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/cloud/support/v2
@@ -6326,7 +6326,7 @@ libraries:
       - internal/generated/snippets/vision/
     tag_format: '{id}/v{version}'
   - id: visionai
-    version: 0.4.6
+    version: 0.5.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/cloud/visionai/v1
