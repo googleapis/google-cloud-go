@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	cloud.google.com/go/iam v1.5.3
+	cloud.google.com/go/longrunning v0.8.0
 	github.com/googleapis/gax-go/v2 v2.17.0
 	google.golang.org/api v0.265.0
 	google.golang.org/genproto v0.0.0-20260128011058-8636f8732409
@@ -14,6 +15,7 @@ require (
 )
 
 require (
+	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/auth v0.18.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
