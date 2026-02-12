@@ -552,8 +552,8 @@ func TestPCUState_Write(t *testing.T) {
 	tests := []struct {
 		name           string
 		inputData      string
-		expectDispatch int   // Tasks sent to uploadCh
-		expectBuffered int64 // Remaining bytes in state
+		expectDispatch int   // Tasks sent to uploadCh.
+		expectBuffered int64 // Remaining bytes in state.
 	}{
 		{
 			name:           "Buffer partial part",
@@ -569,7 +569,7 @@ func TestPCUState_Write(t *testing.T) {
 		},
 		{
 			name:           "Multi-part overflow",
-			inputData:      "0123456789extra", // 15 bytes
+			inputData:      "0123456789extra", // 15 bytes.
 			expectDispatch: 1,
 			expectBuffered: 5,
 		},
@@ -592,15 +592,15 @@ func TestPCUState_Write(t *testing.T) {
 				config:   &parallelUploadConfig{partSize: partSize},
 			}
 
-			// Pre-fill buffer pool
+			// Pre-fill buffer pool.
 			for i := 0; i < 5; i++ {
 				state.bufferCh <- make([]byte, partSize)
 			}
 
-			// Execute
+			// Execute.
 			n, err := state.write([]byte(tc.inputData))
 
-			// Assertions
+			// Assertions.
 			if err != nil {
 				t.Fatalf("write failed: %v", err)
 			}
@@ -618,14 +618,18 @@ func TestPCUState_Write(t *testing.T) {
 }
 
 func TestPCUState_WriteStopsOnError(t *testing.T) {
+	writeErr := errors.New("simulated write error")
 	state := &pcuState{
 		started:  true,
-		firstErr: fmt.Errorf("background failure"),
+		firstErr: writeErr,
 	}
 
 	n, err := state.write([]byte("payload"))
 	if n != 0 || err == nil {
-		t.Errorf("expected 0 bytes and error; got n=%d, err=%v", n, err)
+		t.Fatalf("expected 0 bytes and error; got n=%v, err=%v", n, err)
+	}
+	if !errors.Is(err, writeErr) {
+		t.Errorf("expected error %v; got %v", writeErr, err)
 	}
 }
 
@@ -634,7 +638,7 @@ func TestPCUState_FlushCurrentBuffer(t *testing.T) {
 
 	testCases := []struct {
 		name              string
-		setup             func() *pcuState // A function to create the specific state for the test case
+		setup             func() *pcuState // A function to create the specific state for the test case.
 		expectTask        bool
 		expectedPartNum   int
 		expectedSize      int64
@@ -676,7 +680,7 @@ func TestPCUState_FlushCurrentBuffer(t *testing.T) {
 					ctx:           ctx,
 					bytesBuffered: 50,
 					currentBuffer: baseBuffer,
-					uploadCh:      make(chan uploadTask), // Unbuffered
+					uploadCh:      make(chan uploadTask),
 					bufferCh:      make(chan []byte, 1),
 				}
 			},
@@ -690,10 +694,10 @@ func TestPCUState_FlushCurrentBuffer(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			s := tc.setup()
 
-			// Execute
+			// Execute.
 			err := s.flushCurrentBuffer()
 
-			// Assertions
+			// Assertions.
 			if !errors.Is(err, tc.expectErr) {
 				t.Fatalf("Expected error '%v', but got '%v'", tc.expectErr, err)
 			}
@@ -752,24 +756,6 @@ func TestPCUState_GetSortedParts(t *testing.T) {
 			expectedOrder: []*ObjectHandle{handle1},
 		},
 		{
-			name: "Map with items already in order",
-			partMap: map[int]*ObjectHandle{
-				1: handle1,
-				2: handle2,
-				3: handle3,
-			},
-			expectedOrder: []*ObjectHandle{handle1, handle2, handle3},
-		},
-		{
-			name: "Map with items in reverse order",
-			partMap: map[int]*ObjectHandle{
-				3: handle3,
-				2: handle2,
-				1: handle1,
-			},
-			expectedOrder: []*ObjectHandle{handle1, handle2, handle3},
-		},
-		{
 			name: "Map with items in random order",
 			partMap: map[int]*ObjectHandle{
 				4: handle4,
@@ -787,10 +773,10 @@ func TestPCUState_GetSortedParts(t *testing.T) {
 				partMap: tc.partMap,
 			}
 
-			// Execute
+			// Execute.
 			sortedParts := s.getSortedParts()
 
-			// Assertions
+			// Assertions.
 			if len(sortedParts) != len(tc.expectedOrder) {
 				t.Fatalf("Expected slice of length %d, but got %d", len(tc.expectedOrder), len(sortedParts))
 			}
@@ -816,17 +802,17 @@ func TestPCUState_ComposeParts(t *testing.T) {
 		{
 			name:              "Under limit (Single Level)",
 			numParts:          10,
-			wantIntermediates: 0, // 10 < 32, direct to final
+			wantIntermediates: 0, // 10 < 32, direct to final.
 		},
 		{
 			name:              "Exactly limit (Single Level)",
 			numParts:          32,
-			wantIntermediates: 0, // 32 = 32, direct to final
+			wantIntermediates: 0, // 32 = 32, direct to final.
 		},
 		{
 			name:              "Over limit (Multi Level)",
 			numParts:          46,
-			wantIntermediates: 2, // 2 intermediate groups (32+14) merged in final
+			wantIntermediates: 2, // 2 intermediate groups (32+14) merged in final.
 		},
 	}
 
@@ -856,22 +842,22 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				mu.Lock()
 				defer mu.Unlock()
 
-				// If the destination isn't the final object, it's an intermediate
+				// If the destination isn't the final object, it's an intermediate.
 				if c.dst.object != "final-dest" {
 					intermediateCount++
 				}
 
-				// Return the name of the destination object as the "attribute"
+				// Return the name of the destination object as the "attribute".
 				return &ObjectAttrs{Name: c.dst.object}, nil
 			}
 
-			// Execute
+			// Execute.
 			err := state.composeParts()
 			if err != nil {
 				t.Fatalf("composeParts failed: %v", err)
 			}
 
-			// Assertions
+			// Assertions.
 			if intermediateCount != tc.wantIntermediates {
 				t.Errorf("expected %d intermediate composes, got %d", tc.wantIntermediates, intermediateCount)
 			}
@@ -983,22 +969,19 @@ func TestPCUState_DoCleanup(t *testing.T) {
 		firstErr          error
 		partsToCreate     int
 		interimsToCreate  int
-		failDeletesFor    map[string]bool // Dummy object names that should fail deletion
+		failDeletesFor    map[string]bool
 		expectDeleteCalls int
-		expectFailedCount int
 	}{
 		{
-			name:              "CleanupNever should do nothing",
-			strategy:          cleanupNever,
-			partsToCreate:     2,
-			expectDeleteCalls: 0,
+			name:          "CleanupNever should do nothing",
+			strategy:      cleanupNever,
+			partsToCreate: 2,
 		},
 		{
-			name:              "CleanupOnSuccess with error should do nothing",
-			strategy:          cleanupOnSuccess,
-			firstErr:          errors.New("upload failed"),
-			partsToCreate:     2,
-			expectDeleteCalls: 0,
+			name:          "CleanupOnSuccess with error should do nothing",
+			strategy:      cleanupOnSuccess,
+			firstErr:      errors.New("upload failed"),
+			partsToCreate: 2,
 		},
 		{
 			name:              "CleanupAlways should clean up all",
@@ -1007,19 +990,17 @@ func TestPCUState_DoCleanup(t *testing.T) {
 			partsToCreate:     2,
 			interimsToCreate:  1,
 			expectDeleteCalls: 3,
-			expectFailedCount: 0,
 		},
 		{
-			name:             "CleanupAlways with failing deletes should record failures",
+			name:             "CleanupAlways with failing deletes",
 			strategy:         cleanupAlways,
 			partsToCreate:    2,
 			interimsToCreate: 2,
 			failDeletesFor: map[string]bool{
-				"part-1":    true, // This part will fail
-				"interim-0": true, // This interim object will fail
+				"part-1":    true,
+				"interim-0": true,
 			},
 			expectDeleteCalls: 4,
-			expectFailedCount: 2,
 		},
 	}
 
@@ -1029,7 +1010,7 @@ func TestPCUState_DoCleanup(t *testing.T) {
 			var mu sync.Mutex
 			deleteCalls := 0
 
-			// Prepare the pcuState for the test
+			// Prepare the pcuState for the test.
 			state := &pcuState{
 				ctx:             pCtx,
 				cancel:          cancel,
@@ -1044,7 +1025,7 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				deleteCalls++
 				mu.Unlock()
 
-				// Simulate failure based on the object's dummy name
+				// Simulate failure based on the object's dummy name.
 				if shouldFail, ok := tc.failDeletesFor[h.object]; ok && shouldFail {
 					return errors.New("mock delete error")
 				}
@@ -1061,16 +1042,12 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				state.intermediateMap[name] = &ObjectHandle{object: name}
 			}
 
-			// Execute
+			// Execute.
 			state.doCleanup()
 
-			// Assertions
+			// Assertions.
 			if deleteCalls != tc.expectDeleteCalls {
 				t.Errorf("Expected %d delete calls, but got %d", tc.expectDeleteCalls, deleteCalls)
-			}
-
-			if len(state.failedDeletes) != tc.expectFailedCount {
-				t.Errorf("Expected %d failed deletes, but got %d", tc.expectFailedCount, len(state.failedDeletes))
 			}
 		})
 	}
@@ -1133,7 +1110,7 @@ func TestPCUState_Close(t *testing.T) {
 				},
 			}
 
-			// Pre-populate handles if testing success/failure
+			// Pre-populate handles if testing success/failure.
 			if tc.numParts > 0 {
 				for i := 1; i <= tc.numParts; i++ {
 					state.partMap[i] = &ObjectHandle{object: "tmp"}
@@ -1144,10 +1121,10 @@ func TestPCUState_Close(t *testing.T) {
 				state.firstErr = tc.mockErr
 			}
 
-			// Execute
+			// Execute.
 			err := state.close()
 
-			// Assertions
+			// Assertions.
 			if (err != nil) != tc.expectError {
 				t.Errorf("expectError %v, got err: %v", tc.expectError, err)
 			}

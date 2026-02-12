@@ -181,7 +181,6 @@ type pcuState struct {
 	partMap map[int]*ObjectHandle
 	// Handles to intermediate composite objects, keyed by their object name.
 	intermediateMap map[string]*ObjectHandle
-	failedDeletes   []*ObjectHandle
 	errOnce         sync.Once
 	firstErr        error
 	errors          []error
@@ -199,10 +198,13 @@ type pcuState struct {
 	// Function to upload a part; can be overridden for testing.
 	uploadPartFn func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error)
 	// Function to delete an object; can be overridden for testing.
-	deleteFn       func(ctx context.Context, h *ObjectHandle) error
-	doCleanupFn    func(s *pcuState)
+	deleteFn func(ctx context.Context, h *ObjectHandle) error
+	// Function to perform cleanup; can be overridden for testing.
+	doCleanupFn func(s *pcuState)
+	// Function to compose parts; can be overridden for testing.
 	composePartsFn func(s *pcuState) error
-	composeFn      func(ctx context.Context, composer *Composer) (*ObjectAttrs, error)
+	// Function to run the compose operation; can be overridden for testing.
+	composeFn func(ctx context.Context, composer *Composer) (*ObjectAttrs, error)
 }
 
 type uploadTask struct {
@@ -315,10 +317,9 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	pw := partHandle.NewWriter(s.ctx)
 	pw.ObjectAttrs.Name = partName
 	pw.ObjectAttrs.Size = task.size
-	pw.SendCRC32C = s.w.SendCRC32C
+	pw.DisableAutoChecksum = s.w.DisableAutoChecksum
 	pw.ChunkSize = 0 // Force single-shot upload for parts.
 	// Clear fields not applicable to parts or that are set by compose.
-	pw.ObjectAttrs.CRC32C = 0
 	pw.ObjectAttrs.MD5 = nil
 	setPartMetadata(pw, s, task)
 
@@ -497,7 +498,11 @@ func (s *pcuState) close() error {
 	}
 
 	// Perform the recursive composition of parts.
-	return s.composePartsFn(s)
+	if err := s.composePartsFn(s); err != nil {
+		s.setError(err)
+		return err
+	}
+	return nil
 }
 
 // getSortedParts returns the uploaded parts sorted by part number.
@@ -544,7 +549,6 @@ func (s *pcuState) composeParts() error {
 
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
 				composer := interHandle.ComposerFrom(finalComps[start:end]...)
-				// composer.SendCRC32C = s.w.SendCRC32C
 
 				attrs, err := s.composeFn(s.ctx, composer)
 				if err != nil {
@@ -591,7 +595,6 @@ func (s *pcuState) doCleanup() {
 
 	// Semaphore to avoid spawning too many goroutines for deletion.
 	sem := make(chan struct{}, s.config.numWorkers)
-	failedCh := make(chan *ObjectHandle, len(s.partMap)+len(s.intermediateMap))
 
 	runDelete := func(h *ObjectHandle) {
 		defer wg.Done()
@@ -599,9 +602,9 @@ func (s *pcuState) doCleanup() {
 		defer func() { <-sem }()
 
 		// Use WithoutCancel to ensure cleanup isn't killed by parent context cancellation
-		if err := s.deleteFn(context.WithoutCancel(s.ctx), h); err != nil {
-			failedCh <- h
-		}
+		// Ignore cleanup errors here since its best effort and will rely on bucket
+		// lifecycle policies if cleanup fails.
+		_ = s.deleteFn(context.WithoutCancel(s.ctx), h)
 	}
 
 	for _, h := range s.partMap {
@@ -612,19 +615,7 @@ func (s *pcuState) doCleanup() {
 		wg.Add(1)
 		go runDelete(h)
 	}
-
-	go func() {
-		wg.Wait()
-		close(failedCh)
-	}()
-
-	for h := range failedCh {
-		s.failedDeletes = append(s.failedDeletes, h)
-	}
-
-	if n := len(s.failedDeletes); n > 0 {
-		fmt.Printf("Warning: failed to delete %d temporary objects. Use FailedCleanupHandles() for manual retry.\n", n)
-	}
+	wg.Wait()
 }
 
 // Generates size random bytes.
