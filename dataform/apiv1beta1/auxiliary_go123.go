@@ -22,6 +22,7 @@ import (
 	"iter"
 
 	dataformpb "cloud.google.com/go/dataform/apiv1beta1/dataformpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/googleapis/gax-go/v2/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -58,6 +59,30 @@ func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueryFolderContentsResponse_FolderContentsEntryIterator) All() iter.Seq2[*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator) All() iter.Seq2[*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueryUserRootContentsResponse_RootContentsEntryIterator) All() iter.Seq2[*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ReleaseConfigIterator) All() iter.Seq2[*dataformpb.ReleaseConfig, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -71,6 +96,12 @@ func (it *RepositoryIterator) All() iter.Seq2[*dataformpb.Repository, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *SearchResultIterator) All() iter.Seq2[*dataformpb.SearchResult, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchTeamFoldersResponse_TeamFolderSearchResultIterator) All() iter.Seq2[*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

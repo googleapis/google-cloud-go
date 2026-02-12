@@ -1971,7 +1971,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataform
     version: 0.12.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: fb371addb34b049d340ac5801c387237b415a810
     apis:
       - path: google/cloud/dataform/v1
         service_config: dataform_v1.yaml
