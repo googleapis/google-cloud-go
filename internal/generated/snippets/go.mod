@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.24.0
 
 require (
-	cloud.google.com/go v0.123.0
+	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/accessapproval v1.8.8
 	cloud.google.com/go/accesscontextmanager v1.9.7
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
@@ -42,6 +42,7 @@ require (
 	cloud.google.com/go/dataform v0.12.1
 	cloud.google.com/go/datafusion v1.8.7
 	cloud.google.com/go/datalabeling v0.9.7
+	cloud.google.com/go/datamanager v0.0.0
 	cloud.google.com/go/dataplex v1.28.0
 	cloud.google.com/go/dataproc/v2 v2.15.0
 	cloud.google.com/go/dataqna v0.9.8
@@ -590,3 +591,5 @@ replace cloud.google.com/go/apiregistry => ../../../apiregistry
 replace cloud.google.com/go/cloudsecuritycompliance => ../../../cloudsecuritycompliance
 
 replace cloud.google.com/go/auditmanager => ../../../auditmanager
+
+replace cloud.google.com/go/datamanager => ../../../datamanager
