@@ -1,0 +1,10 @@
+{
+  "api_shortname": "auditmanager",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/auditmanager/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Audit Manager API",
+  "distribution_name": "cloud.google.com/go/auditmanager/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}
