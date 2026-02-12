@@ -194,6 +194,7 @@ type pcuState struct {
 	workerWG    sync.WaitGroup
 	collectorWG sync.WaitGroup
 	started     bool
+	closeOnce   sync.Once
 
 	// Function to upload a part; can be overridden for testing.
 	uploadPartFn func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error)
@@ -462,47 +463,52 @@ func (s *pcuState) close() error {
 	if !s.started {
 		return nil
 	}
+	var err error
+	s.closeOnce.Do(func() {
 
-	// Flush the final partial buffer if it exists.
-	if err := s.flushCurrentBuffer(); err != nil {
-		s.setError(err)
-	}
-
-	// Wait for workers, then close resultCh.
-	// This prevents "send on closed channel" panics.
-	close(s.uploadCh)
-	s.workerWG.Wait()
-	close(s.resultCh)
-	s.collectorWG.Wait()
-
-	// Cleanup is always attempted.
-	defer s.doCleanupFn(s)
-
-	s.mu.Lock()
-	err := s.firstErr
-	s.mu.Unlock()
-
-	if err != nil {
-		return err
-	}
-
-	// If no parts were actually uploaded (e.g. empty file),
-	// fall back to a standard empty object creation.
-	if len(s.partMap) == 0 {
-		ow := s.w.o.NewWriter(s.w.ctx)
-		if ow == nil {
-			return fmt.Errorf("failed to create writer for empty object")
+		// Flush the final partial buffer if it exists.
+		if err := s.flushCurrentBuffer(); err != nil {
+			s.setError(err)
 		}
-		ow.ObjectAttrs = s.w.ObjectAttrs
-		return ow.Close()
-	}
 
-	// Perform the recursive composition of parts.
-	if err := s.composePartsFn(s); err != nil {
-		s.setError(err)
-		return err
-	}
-	return nil
+		// Wait for workers, then close resultCh.
+		// This prevents "send on closed channel" panics.
+		close(s.uploadCh)
+		s.workerWG.Wait()
+		close(s.resultCh)
+		s.collectorWG.Wait()
+
+		// Cleanup is always attempted.
+		defer s.doCleanupFn(s)
+
+		s.mu.Lock()
+		err = s.firstErr
+		s.mu.Unlock()
+
+		if err != nil {
+			return
+		}
+
+		// If no parts were actually uploaded (e.g. empty file),
+		// fall back to a standard empty object creation.
+		if len(s.partMap) == 0 {
+			ow := s.w.o.NewWriter(s.w.ctx)
+			if ow == nil {
+				err = fmt.Errorf("failed to create writer for empty object")
+				return
+			}
+			ow.ObjectAttrs = s.w.ObjectAttrs
+			err = ow.Close()
+			return
+		}
+
+		// Perform the recursive composition of parts.
+		if err = s.composePartsFn(s); err != nil {
+			s.setError(err)
+			return
+		}
+	})
+	return err
 }
 
 // getSortedParts returns the uploaded parts sorted by part number.
