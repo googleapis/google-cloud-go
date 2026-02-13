@@ -5390,7 +5390,7 @@ func compareErrors(got, want error) bool {
 		wantStr = wantStr[:idx]
 	}
 	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
-	wantStr = strings.ReplaceAll(gotStr, `",`, ``)
+	wantStr = strings.ReplaceAll(wantStr, `",`, ``)
 	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
 }
 

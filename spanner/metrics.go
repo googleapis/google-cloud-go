@@ -426,12 +426,18 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The number of attempts made for the operation, including the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	tf.gfeErrorCount, err = meter.Int64Counter(
 		nativeMetricsPrefix+metricNameGFEConnectivityErrorCount,
 		metric.WithDescription("Number of requests that failed to reach the Google network."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	tf.afeErrorCount, err = meter.Int64Counter(
 		nativeMetricsPrefix+metricNameAFEConnectivityErrorCount,
