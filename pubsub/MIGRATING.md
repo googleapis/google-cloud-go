@@ -4,7 +4,9 @@ This guide shows how to migrate from the Go PubSub client library v1 version clo
 
 Note: The code snippets in this guide are meant to be a quick way of comparing the differences between the v1 and v2 packages and **don’t compile as-is**. For a list of all the samples, see the [updated samples](https://cloud.google.com/pubsub/docs/samples).
 
-In line with Google's [OSS Library Breaking Change Policy](https://opensource.google/documentation/policies/library-breaking-change), support for the Go PubSub client library v1 version will continue until July 31st, 2026. This includes continued bug fixes and security patches for v1 version, but no new features would be introduced. We encourage all users to migrate to the Go PubSub client library v2 version before support expires for the earlier v1 version.
+In line with Google's [OSS Library Breaking Change Policy](https://opensource.google/documentation/policies/library-breaking-change), support for the Go PubSub client library v1 version will continue until December 31st, 2026. This includes continued bug fixes and security patches for v1 version, but no new features would be introduced. We encourage all users to migrate to the Go PubSub client library v2 version before support expires for the earlier v1 version.
+
+Note: The end of support date has been extended to December 31st, 2026 from the previously announced July 31st, 2026.
 
 ## New imports
 
