@@ -495,10 +495,14 @@ func (s *pcuState) close() error {
 			ow := s.w.o.NewWriter(s.w.ctx)
 			if ow == nil {
 				err = fmt.Errorf("failed to create writer for empty object")
+				s.setError(err)
 				return
 			}
 			ow.ObjectAttrs = s.w.ObjectAttrs
 			err = ow.Close()
+			if err != nil {
+				s.setError(err)
+			}
 			return
 		}
 
