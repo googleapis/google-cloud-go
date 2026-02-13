@@ -57,11 +57,11 @@ type Subscriber struct {
 // Subscriber creates a subscriber client which references a single subscription.
 func (c *Client) Subscriber(nameOrID string) *Subscriber {
 	s := strings.Split(nameOrID, "/")
-	// The string looks like a properly formatted topic name, use it directly.
+	// The string looks like a properly formatted subscription name, use it directly.
 	if len(s) == 4 {
 		return newSubscriber(c, nameOrID)
 	}
-	// In all other cases, treat the arg as the topicID, even if misformatted.
+	// In all other cases, treat the arg as the subscriptionID, even if misformatted.
 	return newSubscriber(c, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, nameOrID))
 }
 
