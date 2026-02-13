@@ -726,7 +726,7 @@ libraries:
       - ^auditmanager/apiv1/auditmanagerpb/.*$
     tag_format: '{id}/v{version}'
   - id: auth
-    version: 0.18.1
+    version: 0.18.2
     last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
     apis: []
     source_roots:
