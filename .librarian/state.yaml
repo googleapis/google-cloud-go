@@ -4517,7 +4517,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: pubsub
-    version: 1.50.1
+    version: 2.3.1
     last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
     apis: []
     source_roots:
