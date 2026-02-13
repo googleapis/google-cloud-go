@@ -1,0 +1,841 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/workloadmanager/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.workloadmanager.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_CancelOperation_sync",
+      "title": "workloadmanager CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_CreateEvaluation_sync",
+      "title": "workloadmanager CreateEvaluation Sample",
+      "description": "CreateEvaluation creates a new Evaluation in a given project and location.",
+      "file": "Client/CreateEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEvaluation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.CreateEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.CreateEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEvaluationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateEvaluation",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.CreateEvaluation",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_DeleteEvaluation_sync",
+      "title": "workloadmanager DeleteEvaluation Sample",
+      "description": "DeleteEvaluation deletes a single Evaluation.",
+      "file": "Client/DeleteEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEvaluation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.DeleteEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.DeleteEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEvaluationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteEvaluation",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.DeleteEvaluation",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_DeleteExecution_sync",
+      "title": "workloadmanager DeleteExecution Sample",
+      "description": "DeleteExecution deletes a single Execution.",
+      "file": "Client/DeleteExecution/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExecution",
+        "fullName": "google.cloud.workloadmanager.v1.Client.DeleteExecution",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.DeleteExecutionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExecutionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteExecution",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.DeleteExecution",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_DeleteOperation_sync",
+      "title": "workloadmanager DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_GetEvaluation_sync",
+      "title": "workloadmanager GetEvaluation Sample",
+      "description": "GetEvaluation gets details of a single Evaluation.",
+      "file": "Client/GetEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEvaluation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.GetEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.GetEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workloadmanagerpb.Evaluation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEvaluation",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.GetEvaluation",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_GetExecution_sync",
+      "title": "workloadmanager GetExecution Sample",
+      "description": "GetExecution gets details of a single Execution.",
+      "file": "Client/GetExecution/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExecution",
+        "fullName": "google.cloud.workloadmanager.v1.Client.GetExecution",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.GetExecutionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workloadmanagerpb.Execution",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetExecution",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.GetExecution",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_GetLocation_sync",
+      "title": "workloadmanager GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_GetOperation_sync",
+      "title": "workloadmanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_ListEvaluations_sync",
+      "title": "workloadmanager ListEvaluations Sample",
+      "description": "ListEvaluations lists Evaluations in a given project and location.",
+      "file": "Client/ListEvaluations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEvaluations",
+        "fullName": "google.cloud.workloadmanager.v1.Client.ListEvaluations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.ListEvaluationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EvaluationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEvaluations",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.ListEvaluations",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_ListExecutionResults_sync",
+      "title": "workloadmanager ListExecutionResults Sample",
+      "description": "ListExecutionResults lists the result of a single evaluation.",
+      "file": "Client/ListExecutionResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExecutionResults",
+        "fullName": "google.cloud.workloadmanager.v1.Client.ListExecutionResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.ListExecutionResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExecutionResultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListExecutionResults",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.ListExecutionResults",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_ListExecutions_sync",
+      "title": "workloadmanager ListExecutions Sample",
+      "description": "ListExecutions lists Executions in a given project and location.",
+      "file": "Client/ListExecutions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExecutions",
+        "fullName": "google.cloud.workloadmanager.v1.Client.ListExecutions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.ListExecutionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExecutionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListExecutions",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.ListExecutions",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_ListLocations_sync",
+      "title": "workloadmanager ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.workloadmanager.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_ListOperations_sync",
+      "title": "workloadmanager ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.workloadmanager.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_ListRules_sync",
+      "title": "workloadmanager ListRules Sample",
+      "description": "ListRules lists rules in a given project.",
+      "file": "Client/ListRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRules",
+        "fullName": "google.cloud.workloadmanager.v1.Client.ListRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.ListRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workloadmanagerpb.ListRulesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRules",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.ListRules",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_ListScannedResources_sync",
+      "title": "workloadmanager ListScannedResources Sample",
+      "description": "ListScannedResources list all scanned resources for a single Execution.",
+      "file": "Client/ListScannedResources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListScannedResources",
+        "fullName": "google.cloud.workloadmanager.v1.Client.ListScannedResources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.ListScannedResourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ScannedResourceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListScannedResources",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.ListScannedResources",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_RunEvaluation_sync",
+      "title": "workloadmanager RunEvaluation Sample",
+      "description": "RunEvaluation creates a new Execution in a given project and location.",
+      "file": "Client/RunEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunEvaluation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.RunEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.RunEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunEvaluationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "RunEvaluation",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.RunEvaluation",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workloadmanager_v1_generated_WorkloadManager_UpdateEvaluation_sync",
+      "title": "workloadmanager UpdateEvaluation Sample",
+      "description": "UpdateEvaluation updates the parameters of a single Evaluation.",
+      "file": "Client/UpdateEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEvaluation",
+        "fullName": "google.cloud.workloadmanager.v1.Client.UpdateEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workloadmanagerpb.UpdateEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEvaluationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workloadmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateEvaluation",
+          "fullName": "google.cloud.workloadmanager.v1.WorkloadManager.UpdateEvaluation",
+          "service": {
+            "shortName": "WorkloadManager",
+            "fullName": "google.cloud.workloadmanager.v1.WorkloadManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

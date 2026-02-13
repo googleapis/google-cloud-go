@@ -6572,6 +6572,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/workflows/
     tag_format: '{id}/v{version}'
+  - id: workloadmanager
+    version: 0.0.0
+    last_generated_commit: 055f92c9384689eb0bb32d035d3bc6d98c8347c0
+    apis:
+      - path: google/cloud/workloadmanager/v1
+        service_config: workloadmanager_v1.yaml
+    source_roots:
+      - workloadmanager
+      - internal/generated/snippets/workloadmanager
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/workloadmanager/
+      - ^workloadmanager/apiv1/[^/]*_client\.go$
+      - ^workloadmanager/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^workloadmanager/apiv1/[^/]*_client_example_test\.go$
+      - ^workloadmanager/apiv1/auxiliary\.go$
+      - ^workloadmanager/apiv1/auxiliary_go123\.go$
+      - ^workloadmanager/apiv1/doc\.go$
+      - ^workloadmanager/apiv1/gapic_metadata\.json$
+      - ^workloadmanager/apiv1/helpers\.go$
+      - ^workloadmanager/apiv1/\.repo-metadata\.json$
+      - ^workloadmanager/apiv1/workloadmanagerpb/.*$
+    tag_format: '{id}/v{version}'
   - id: workstations
     version: 1.1.6
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
