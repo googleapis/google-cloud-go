@@ -1055,6 +1055,9 @@ type Iterator struct {
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
 
+	// more results
+	moreResults pb.QueryResultBatch_MoreResultsType
+
 	// Query explain metrics. This is only present when ExplainOptions is used.
 	ExplainMetrics *ExplainMetrics
 
@@ -1182,6 +1185,7 @@ func (t *Iterator) nextBatch() error {
 
 	// If there are no more results available, set limit to zero to prevent
 	// further fetches. Otherwise, check that there is a next page cursor available.
+	t.moreResults = resp.Batch.MoreResults
 	if resp.Batch.MoreResults != pb.QueryResultBatch_NOT_FINISHED {
 		t.limit = 0
 	} else if resp.Batch.EndCursor == nil {
@@ -1260,6 +1264,9 @@ func (t *Iterator) Cursor() (c Cursor, err error) {
 
 	if t.err != nil && t.err != iterator.Done {
 		return Cursor{}, t.err
+	}
+	if t.err == iterator.Done && t.moreResults == pb.QueryResultBatch_NO_MORE_RESULTS {
+		return Cursor{}, nil
 	}
 
 	return Cursor{t.entityCursor}, nil
