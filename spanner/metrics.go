@@ -69,6 +69,9 @@ const (
 	metricLabelKeyGRPCLBPickResult      = "grpc.lb.pick_result"
 	metricLabelKeyGRPCLBDataPlaneTarget = "grpc.lb.rls.data_plane_target"
 	metricLabelKeyGRPCXDSResourceType   = "grpc.xds.resource_type"
+	metricLabelKeyGRPCLBLocality        = "grpc.lb.locality"
+	metricLabelKeyGRPCLBBackendService  = "grpc.lb.backend_service"
+	metricLabelKeyGRPCDisconnectError   = "grpc.disconnect_error"
 
 	// Metric names
 	metricNameOperationLatencies        = "operation_latencies"
@@ -222,11 +225,22 @@ var (
 	}
 
 	grpcMetricsToEnable = []string{
+		"grpc.client.attempt.started",
+		"grpc.subchannel.open_connections",
+		"grpc.subchannel.disconnections",
+		"grpc.subchannel.connection_attempts_succeeded",
+		"grpc.subchannel.connection_attempts_failed",
 		"grpc.lb.rls.default_target_picks",
 		"grpc.lb.rls.target_picks",
 		"grpc.xds_client.server_failure",
 		"grpc.xds_client.resource_updates_invalid",
 		"grpc.xds_client.resource_updates_valid",
+	}
+
+	grpcOptionalLabels = []string{
+		"grpc.disconnect_error",
+		"grpc.lb.backend_service",
+		"grpc.lb.locality",
 	}
 )
 
@@ -301,6 +315,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 			mo := opentelemetry.MetricsOptions{
 				MeterProvider: meterProvider,
 				Metrics:       stats.NewMetrics(grpcMetricsToEnable...),
+				OptionalLabels: grpcOptionalLabels,
 			}
 
 			// Configure gRPC dial options to enable gRPC metrics collection and static method call option.
