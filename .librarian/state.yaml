@@ -617,7 +617,7 @@ libraries:
       - internal/generated/snippets/artifactregistry/
     tag_format: '{id}/v{version}'
   - id: asset
-    version: 1.22.0
+    version: 1.22.1
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/asset/v1
