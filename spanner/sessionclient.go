@@ -271,7 +271,9 @@ func (sc *sessionClient) nextClient() (spannerClient, error) {
 	if _, ok := sc.connPool.(*gmeWrapper); ok {
 		// Pass GCPMultiEndpoint as a pool.
 		clientOpt = gtransport.WithConnPool(sc.connPool)
-	} else {
+    } else if _, ok := sc.connPool.(*fallbackWrapper); ok {
+        clientOpt = gtransport.WithConnPool(sc.connPool)
+    } else {
 		// Pick a grpc.ClientConn from a regular pool.
 		conn := sc.connPool.Conn()
 
