@@ -127,6 +127,15 @@ func (c *Client) isStorageReadAvailable() bool {
 	return c.rc != nil
 }
 
+// maxRetries returns the configured maximum number of retries for this client.
+// Returns 0 if no limit is configured (infinite retries until context cancellation).
+func (c *Client) maxRetries() int {
+	if c.customConfig == nil {
+		return 0
+	}
+	return c.customConfig.maxRetries
+}
+
 // Project returns the project ID or number for this instance of the client, which may have
 // either been explicitly specified or autodetected.
 func (c *Client) Project() string {
@@ -168,7 +177,8 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader, me
 	// TODO(jba): Look into retrying if media != nil.
 	if job.JobReference != nil && media == nil {
 		// We deviate from default retries due to BigQuery wanting to retry structured internal job errors.
-		err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
+		// Use client's maxRetries configuration (0 = infinite retries for backward compatibility).
+		err = runWithRetryExplicitN(ctx, invoke, jobRetryReasons, c.maxRetries())
 	} else {
 		err = invoke()
 	}
@@ -195,7 +205,8 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 	}
 
 	// We control request ID, so we can always runWithRetry.
-	err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
+	// Use client's maxRetries configuration (0 = infinite retries for backward compatibility).
+	err = runWithRetryExplicitN(ctx, invoke, jobRetryReasons, c.maxRetries())
 	if err != nil {
 		return nil, err
 	}
@@ -221,13 +232,17 @@ func runWithRetry(ctx context.Context, call func() error) error {
 }
 
 func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons []string) error {
+	return runWithRetryExplicitN(ctx, call, allowedReasons, 0)
+}
+
+func runWithRetryExplicitN(ctx context.Context, call func() error, allowedReasons []string, maxRetries int) error {
 	// These parameters match the suggestions in https://cloud.google.com/bigquery/sla.
 	backoff := gax.Backoff{
 		Initial:    1 * time.Second,
 		Max:        32 * time.Second,
 		Multiplier: 2,
 	}
-	return cloudinternal.Retry(ctx, backoff, func() (stop bool, err error) {
+	return cloudinternal.RetryN(ctx, backoff, maxRetries, func() (stop bool, err error) {
 		err = call()
 		if err == nil {
 			return true, nil
