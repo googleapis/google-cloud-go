@@ -1418,7 +1418,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	beforeCreate := time.Now().Truncate(time.Millisecond)
+	beforeCreate := time.Now().Add(-5 * time.Minute).Truncate(time.Millisecond)
 
 	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
