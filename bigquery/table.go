@@ -116,6 +116,31 @@ type TableMetadata struct {
 	// for more information.
 	NumLongTermBytes int64
 
+	// Number of physical bytes used by time travel storage (deleted or changed data).
+	// This data is not kept in real time, and might be delayed by a few seconds to a few minutes.
+	NumTimeTravelPhysicalBytes int64
+
+	// Total number of logical bytes in the table or materialized view.
+	NumTotalLogicalBytes int64
+
+	// Number of logical bytes that are less than 90 days old.
+	NumActiveLogicalBytes int64
+
+	// Number of logical bytes that are more than 90 days old.
+	NumLongTermLogicalBytes int64
+
+	// The physical size of this table in bytes. This also includes storage used for time travel.
+	// This data is not kept in real time, and might be delayed by a few seconds to a few minutes.
+	NumTotalPhysicalBytes int64
+
+	// Number of physical bytes less than 90 days old.
+	// This data is not kept in real time, and might be delayed by a few seconds to a few minutes.
+	NumActivePhysicalBytes int64
+
+	// Number of physical bytes more than 90 days old.
+	// This data is not kept in real time, and might be delayed by a few seconds to a few minutes.
+	NumLongTermPhysicalBytes int64
+
 	// The number of rows of data in this table.
 	// This does not include data that is being buffered during a streaming insert.
 	NumRows uint64
@@ -454,7 +479,6 @@ func bqToBigLakeConfiguration(in *bq.BigLakeConfiguration) *BigLakeConfiguration
 
 // SnapshotDefinition provides metadata related to the origin of a snapshot.
 type SnapshotDefinition struct {
-
 	// BaseTableReference describes the ID of the table that this snapshot
 	// came from.
 	BaseTableReference *Table
@@ -490,7 +514,6 @@ func bqToSnapshotDefinition(q *bq.SnapshotDefinition, c *Client) *SnapshotDefini
 
 // CloneDefinition provides metadata related to the origin of a clone.
 type CloneDefinition struct {
-
 	// BaseTableReference describes the ID of the table that this clone
 	// came from.
 	BaseTableReference *Table
@@ -958,25 +981,32 @@ func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *
 
 func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 	md := &TableMetadata{
-		Description:            t.Description,
-		Name:                   t.FriendlyName,
-		Location:               t.Location,
-		Type:                   TableType(t.Type),
-		FullID:                 t.Id,
-		Labels:                 t.Labels,
-		NumBytes:               t.NumBytes,
-		NumLongTermBytes:       t.NumLongTermBytes,
-		NumRows:                t.NumRows,
-		ExpirationTime:         unixMillisToTime(t.ExpirationTime),
-		CreationTime:           unixMillisToTime(t.CreationTime),
-		LastModifiedTime:       unixMillisToTime(int64(t.LastModifiedTime)),
-		ETag:                   t.Etag,
-		DefaultCollation:       t.DefaultCollation,
-		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
-		RequirePartitionFilter: t.RequirePartitionFilter,
-		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
-		CloneDefinition:        bqToCloneDefinition(t.CloneDefinition, c),
-		BigLakeConfiguration:   bqToBigLakeConfiguration(t.BiglakeConfiguration),
+		Description:                t.Description,
+		Name:                       t.FriendlyName,
+		Location:                   t.Location,
+		Type:                       TableType(t.Type),
+		FullID:                     t.Id,
+		Labels:                     t.Labels,
+		NumBytes:                   t.NumBytes,
+		NumLongTermBytes:           t.NumLongTermBytes,
+		NumTimeTravelPhysicalBytes: t.NumTimeTravelPhysicalBytes,
+		NumTotalLogicalBytes:       t.NumTotalLogicalBytes,
+		NumActiveLogicalBytes:      t.NumActiveLogicalBytes,
+		NumLongTermLogicalBytes:    t.NumLongTermLogicalBytes,
+		NumTotalPhysicalBytes:      t.NumTotalPhysicalBytes,
+		NumActivePhysicalBytes:     t.NumActivePhysicalBytes,
+		NumLongTermPhysicalBytes:   t.NumLongTermPhysicalBytes,
+		NumRows:                    t.NumRows,
+		ExpirationTime:             unixMillisToTime(t.ExpirationTime),
+		CreationTime:               unixMillisToTime(t.CreationTime),
+		LastModifiedTime:           unixMillisToTime(int64(t.LastModifiedTime)),
+		ETag:                       t.Etag,
+		DefaultCollation:           t.DefaultCollation,
+		EncryptionConfig:           bqToEncryptionConfig(t.EncryptionConfiguration),
+		RequirePartitionFilter:     t.RequirePartitionFilter,
+		SnapshotDefinition:         bqToSnapshotDefinition(t.SnapshotDefinition, c),
+		CloneDefinition:            bqToCloneDefinition(t.CloneDefinition, c),
+		BigLakeConfiguration:       bqToBigLakeConfiguration(t.BiglakeConfiguration),
 	}
 	if t.MaterializedView != nil {
 		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
