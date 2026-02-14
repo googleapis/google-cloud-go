@@ -44,7 +44,6 @@ import (
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type firestoreEdition int
@@ -2914,14 +2913,16 @@ func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
 			r.Errorf("aggResultsEquals: key %q not found in m2", k)
 			return false
 		}
-		pbVal1, ok1 := v1.(*pb.Value)
-		pbVal2, ok2 := v2.(*pb.Value)
-		if !ok1 || !ok2 {
-			r.Errorf("aggResultsEquals: type assertion to *pb.Value failed for key %q (ok1=%t, ok2=%t)", k, ok1, ok2)
+		// Ensure only native Go types (int64, float64, nil) are returned
+		switch v1.(type) {
+		case int64, float64, nil:
+			// expected types
+		default:
+			r.Errorf("aggResultsEquals: unexpected type %T for key %q (expected int64, float64, or nil)", v1, k)
 			return false
 		}
-		if diff := testutil.Diff(pbVal1, pbVal2, cmpopts.IgnoreUnexported(pb.Value{})); diff != "" {
-			r.Errorf("aggResultsEquals: failed for key %q\nv1=%v\nv2=%v\ndiff: got=-, want=+\n%v", k, pbVal1, pbVal2, diff)
+		if diff := testutil.Diff(v1, v2); diff != "" {
+			r.Errorf("aggResultsEquals: mismatch for key %q (-want +got):\n%s", k, diff)
 			return false
 		}
 	}
@@ -2989,11 +2990,11 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("volume", "height_avg1").WithSum("weight", "weight_sum1").WithSum("volume", "height_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
-				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
-				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				"count1":      int64(8),
+				"weight_sum1": float64(39.8),
+				"height_sum1": int64(765),
+				"weight_avg1": float64(4.975),
+				"height_avg1": float64(95.625),
 			},
 		},
 		{
@@ -3002,11 +3003,11 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			wantErr:          false,
 			runInTransaction: true,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
-				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
-				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				"count1":      int64(8),
+				"weight_sum1": float64(39.8),
+				"height_sum1": int64(765),
+				"weight_avg1": float64(4.975),
+				"height_avg1": float64(95.625),
 			},
 		},
 		{
@@ -3014,7 +3015,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: query.NewAggregationQuery().WithSum("weight", ""),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"field_1": float64(39.8),
 			},
 		},
 		{
@@ -3022,7 +3023,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: query.NewAggregationQuery().WithSumPath([]string{"weight"}, ""),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"field_1": float64(39.8),
 			},
 		},
 		{
@@ -3030,7 +3031,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: query.NewAggregationQuery().WithAvg("weight", ""),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"field_1": float64(4.975),
 			},
 		},
 		{
@@ -3038,7 +3039,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: query.NewAggregationQuery().WithAvgPath([]string{"weight"}, ""),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"field_1": float64(4.975),
 			},
 		},
 		{
@@ -3046,9 +3047,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: (&limitQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
+				"count1":      int64(4),
+				"weight_sum1": float64(12.6),
+				"weight_avg1": float64(3.15),
 			},
 		},
 		{
@@ -3056,9 +3057,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: (&startAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
+				"count1":      int64(6),
+				"weight_sum1": float64(35.7),
+				"weight_avg1": float64(5.95),
 			},
 		},
 		{
@@ -3066,9 +3067,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: (&startAfterQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
+				"count1":      int64(5),
+				"weight_sum1": float64(32),
+				"weight_avg1": float64(6.4),
 			},
 		},
 		{
@@ -3076,9 +3077,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: (&endAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
+				"count1":      int64(6),
+				"weight_sum1": float64(30.1),
+				"weight_avg1": float64(5.016666666666667),
 			},
 		},
 		{
@@ -3086,9 +3087,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: (&endBeforeQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
+				"count1":      int64(5),
+				"weight_sum1": float64(23),
+				"weight_avg1": float64(4.6),
 			},
 		},
 		{
@@ -3096,9 +3097,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: (&limitToLastQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
+				"count1":      int64(4),
+				"weight_sum1": float64(27.2),
+				"weight_avg1": float64(6.8),
 			},
 		},
 		{
@@ -3106,9 +3107,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithSum("weight", "weight_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				"count1":      int64(0),
+				"weight_sum1": int64(0),
+				"weight_avg1": nil,
 			},
 		},
 		{
@@ -3116,8 +3117,8 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: query.NewAggregationQuery().WithAvg("model", "model_avg1").WithSum("model", "model_sum1"),
 			wantErr:          false,
 			wantResult: map[string]interface{}{
-				"model_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"model_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				"model_sum1": int64(0),
+				"model_avg1": nil,
 			},
 		},
 		{
@@ -3360,9 +3361,12 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	if !ok {
 		t.Errorf("key %s not in response %v", alias, ar)
 	}
-	cv := count.(*pb.Value)
-	if cv.GetIntegerValue() != 2 {
-		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
+	cv, ok := count.(int64)
+	if !ok {
+		t.Fatalf("expected int64, got %T", count)
+	}
+	if cv != 2 {
+		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv, 2)
 	}
 
 	t.Cleanup(func() {
