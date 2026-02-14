@@ -1050,6 +1050,78 @@ func TestTagInferenceErrors(t *testing.T) {
 	}
 }
 
+func defaultField(name, typ string, defaultValueExpression string, required bool) *FieldSchema {
+	return &FieldSchema{
+		Name:                   name,
+		Type:                   FieldType(typ),
+		Required:               required,
+		DefaultValueExpression: defaultValueExpression,
+	}
+
+}
+
+func TestTagDefaultInference(t *testing.T) {
+	type withDefaults struct {
+		Bytes         []byte         `bigquery:",nullable,default=b'hey now'"`
+		Rat           *big.Rat       `bigquery:",nullable,default=3.1415"`
+		RequiredBytes []byte         `bigquery:",default=b'hey now'"`
+		RequiredRat   *big.Rat       `bigquery:",default=3.1415"`
+		NullInt64     NullInt64      `bigquery:",default=77"`
+		NullFloat64   NullFloat64    `bigquery:",default=77.24"`
+		NullBool      NullBool       `bigquery:",default=false"`
+		NullString    NullString     `bigquery:",default='hey now'"`
+		NullJSON      NullJSON       `bigquery:",default='{}'"`
+		NullTimestamp NullTimestamp  `bigquery:",default=CURRENT_TIMESTAMP()"`
+		NullDate      NullDate       `bigquery:",default=CURRENT_DATE()"`
+		NullTime      NullTime       `bigquery:",default=CURRENT_TIME()"`
+		NullDateTime  NullDateTime   `bigquery:",default=CURRENT_DATETIME()"`
+		GoTime        time.Time      `bigquery:",default=CURRENT_DATETIME()"`
+		Time          civil.Time     `bigquery:",default=CURRENT_TIME()"`
+		Date          civil.Date     `bigquery:",default=CURRENT_DATE()"`
+		DateTime      civil.DateTime `bigquery:",default=CURRENT_DATETIME()"`
+		String        string         `bigquery:",default='hey now'"`
+		Bool          bool           `bigquery:",default=true"`
+		Float32       float32        `bigquery:",default=3.14"`
+		Float64       float64        `bigquery:",default=3.1415"`
+		Int32         int32          `bigquery:",default=77"`
+		Int64         int64          `bigquery:",default=7777"`
+	}
+
+	expectedWithTagsSchema := Schema{
+		defaultField("Bytes", "BYTES", "b'hey now'", false),
+		defaultField("Rat", "NUMERIC", "3.1415", false),
+		defaultField("RequiredBytes", "BYTES", "b'hey now'", true),
+		defaultField("RequiredRat", "NUMERIC", "3.1415", true),
+		defaultField("NullInt64", "INTEGER", "77", false),
+		defaultField("NullFloat64", "FLOAT", "77.24", false),
+		defaultField("NullBool", "BOOLEAN", "false", false),
+		defaultField("NullString", "STRING", "'hey now'", false),
+		defaultField("NullJSON", "JSON", "'{}'", false),
+		defaultField("NullTimestamp", "TIMESTAMP", "CURRENT_TIMESTAMP()", false),
+		defaultField("NullDate", "DATE", "CURRENT_DATE()", false),
+		defaultField("NullTime", "TIME", "CURRENT_TIME()", false),
+		defaultField("NullDateTime", "DATETIME", "CURRENT_DATETIME()", false),
+		defaultField("GoTime", "TIMESTAMP", "CURRENT_DATETIME()", true),
+		defaultField("Time", "TIME", "CURRENT_TIME()", true),
+		defaultField("Date", "DATE", "CURRENT_DATE()", true),
+		defaultField("DateTime", "DATETIME", "CURRENT_DATETIME()", true),
+		defaultField("String", "STRING", "'hey now'", true),
+		defaultField("Bool", "BOOLEAN", "true", true),
+		defaultField("Float32", "FLOAT", "3.14", true),
+		defaultField("Float64", "FLOAT", "3.1415", true),
+		defaultField("Int32", "INTEGER", "77", true),
+		defaultField("Int64", "INTEGER", "7777", true),
+	}
+	inferredSchema, err := InferSchema(withDefaults{})
+	if err != nil {
+		t.Fatalf("expected no errors from InferSchema, got %v", err)
+	}
+	if !testutil.Equal(inferredSchema, expectedWithTagsSchema) {
+		diff := testutil.Diff(expectedWithTagsSchema, inferredSchema)
+		t.Errorf("inferred schema differs from expected schema:\n%v", diff)
+	}
+}
+
 func TestSchemaErrors(t *testing.T) {
 	testCases := []struct {
 		in   interface{}
@@ -1160,6 +1232,48 @@ func TestSchemaErrors(t *testing.T) {
 		{
 			in:   struct{ X map[struct{}]interface{} }{},
 			want: unsupportedFieldTypeError{},
+		},
+		{
+			in: struct {
+				X []int `bigquery:",default=x"`
+			}{},
+			want: unsupportedDefaultError{},
+		},
+		{
+			in: struct {
+				X struct{ x string } `bigquery:",default=x"`
+			}{},
+			want: unsupportedDefaultError{},
+		},
+		{
+			in: struct {
+				X NullGeography `bigquery:",default=lat-long"`
+			}{},
+			want: unsupportedDefaultError{},
+		},
+		{
+			in: struct {
+				X []string `bigquery:",default=x"`
+			}{},
+			want: unsupportedDefaultError{},
+		},
+		{
+			in: struct {
+				X RangeValue `bigquery:",default=x"`
+			}{},
+			want: unsupportedDefaultError{},
+		},
+		{
+			in: struct {
+				X IntervalValue `bigquery:",default=x"`
+			}{},
+			want: unsupportedDefaultError{},
+		},
+		{
+			in: struct {
+				X IntervalValue `bigquery:",default=x,default=y"`
+			}{},
+			want: fmt.Errorf(""),
 		},
 	}
 	for _, tc := range testCases {
