@@ -21,8 +21,8 @@ import (
 )
 
 const (
-	workloadAllowedLocationsEndpoint  = "https://iamcredentials.%s/v1/projects/%s/locations/global/workloadIdentityPools/%s/allowedLocations"
-	workforceAllowedLocationsEndpoint = "https://iamcredentials.%s/v1/locations/global/workforcePools/%s/allowedLocations"
+	workloadAllowedLocationsEndpoint  = "https://iamcredentials.googleapis.com/v1/projects/%s/locations/global/workloadIdentityPools/%s/allowedLocations"
+	workforceAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/locations/global/workforcePools/%s/allowedLocations"
 )
 
 var (
@@ -78,7 +78,7 @@ type workforcePoolConfigProvider struct {
 }
 
 func (p *workforcePoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
-	return fmt.Sprintf(workforceAllowedLocationsEndpoint, p.universeDomain, p.poolID), nil
+	return fmt.Sprintf(workforceAllowedLocationsEndpoint, p.poolID), nil
 }
 
 func (p *workforcePoolConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
@@ -92,7 +92,7 @@ type workloadIdentityPoolConfigProvider struct {
 }
 
 func (p *workloadIdentityPoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
-	return fmt.Sprintf(workloadAllowedLocationsEndpoint, p.universeDomain, p.projectNumber, p.poolID), nil
+	return fmt.Sprintf(workloadAllowedLocationsEndpoint, p.projectNumber, p.poolID), nil
 }
 
 func (p *workloadIdentityPoolConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {

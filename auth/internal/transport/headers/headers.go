@@ -15,11 +15,17 @@
 package headers
 
 import (
+	"context"
 	"net/http"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/regionalaccessboundary"
 )
+
+type regionalAccessBoundaryProvider interface {
+	GetHeaderValue(ctx context.Context, reqURL string, token *auth.Token) string
+}
 
 // SetAuthHeader uses the provided token to set the Authorization and regional
 // access boundary headers on a request. If the token.Type is empty, the type is
@@ -31,31 +37,26 @@ func SetAuthHeader(token *auth.Token, req *http.Request) {
 	}
 	req.Header.Set("Authorization", typ+" "+token.Value)
 
-	if headerVal, setHeader := getRegionalAccessBoundaryHeader(token); setHeader {
-		req.Header.Set("x-allowed-locations", headerVal)
+	if provider, ok := token.Metadata[regionalaccessboundary.ProviderKey].(regionalAccessBoundaryProvider); ok {
+		if headerVal := provider.GetHeaderValue(req.Context(), req.URL.String(), token); headerVal != "" {
+			req.Header.Set("x-allowed-locations", headerVal)
+		}
 	}
 }
 
 // SetAuthMetadata uses the provided token to set the Authorization and regional
 // access boundary metadata. If the token.Type is empty, the type is assumed to be
 // Bearer.
-func SetAuthMetadata(token *auth.Token, m map[string]string) {
+func SetAuthMetadata(token *auth.Token, reqURL string, m map[string]string) {
 	typ := token.Type
 	if typ == "" {
 		typ = internal.TokenTypeBearer
 	}
 	m["authorization"] = typ + " " + token.Value
 
-	if headerVal, setHeader := getRegionalAccessBoundaryHeader(token); setHeader {
-		m["x-allowed-locations"] = headerVal
-	}
-}
-
-func getRegionalAccessBoundaryHeader(token *auth.Token) (val string, present bool) {
-	if data, ok := token.Metadata[internal.RegionalAccessBoundaryDataKey]; ok {
-		if tbd, ok := data.(internal.RegionalAccessBoundaryData); ok {
-			return tbd.RegionalAccessBoundaryHeader()
+	if provider, ok := token.Metadata[regionalaccessboundary.ProviderKey].(regionalAccessBoundaryProvider); ok {
+		if headerVal := provider.GetHeaderValue(context.Background(), reqURL, token); headerVal != "" {
+			m["x-allowed-locations"] = headerVal
 		}
 	}
-	return "", false
 }

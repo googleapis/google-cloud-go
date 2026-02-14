@@ -25,17 +25,20 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/retry"
-	"cloud.google.com/go/auth/internal/transport/headers"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
+// ProviderKey is the key to fetch the DataProvider from Token Metadata.
+const ProviderKey = "regionalaccessboundary.ProviderKey"
+
 const (
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
-	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.%s/v1/projects/-/serviceAccounts/%s/allowedLocations"
+	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
 )
 
 // isEnabled wraps isRegionalAccessBoundaryEnabled with sync.OnceValues to ensure it's
@@ -121,7 +124,11 @@ func fetchRegionalAccessBoundaryData(ctx context.Context, client *http.Client, u
 	if token == nil || token.Value == "" {
 		return nil, errors.New("regionalaccessboundary: access token required for lookup API authentication")
 	}
-	headers.SetAuthHeader(token, req)
+	typ := token.Type
+	if typ == "" {
+		typ = internal.TokenTypeBearer
+	}
+	req.Header.Set("Authorization", typ+" "+token.Value)
 	logger.DebugContext(ctx, "Regional Access Boundary request", "request", internallog.HTTPRequest(req, nil))
 
 	retryer := retry.New()
@@ -178,6 +185,147 @@ func fetchRegionalAccessBoundaryData(ctx context.Context, client *http.Client, u
 	return internal.NewRegionalAccessBoundaryData(apiResponse.Locations, apiResponse.EncodedLocations), nil
 }
 
+// DataProvider fetches and caches Regional Access Boundary Data.
+// It implements the auth.TokenProvider interface and uses a ConfigProvider
+// to get type-specific details for the lookup.
+type DataProvider struct {
+	client         *http.Client
+	configProvider ConfigProvider
+	logger         *slog.Logger
+	base           auth.TokenProvider
+
+	mu               sync.RWMutex
+	data             *internal.RegionalAccessBoundaryData
+	dataExpiry       time.Time
+	isFetching       bool
+	cooldownExpiry   time.Time
+	cooldownDuration time.Duration // tracks the current cooldown duration for exponential backoff
+}
+
+// NewProvider wraps the provided base [auth.TokenProvider] and returns a new
+// provider that fetches and caches the Regional Access Boundary data. It uses
+// the provided HTTP client and configProvider.
+func NewProvider(client *http.Client, configProvider ConfigProvider, logger *slog.Logger, base auth.TokenProvider) (*DataProvider, error) {
+	if client == nil {
+		return nil, errors.New("regionalaccessboundary: HTTP client cannot be nil for DataProvider")
+	}
+	if configProvider == nil {
+		return nil, errors.New("regionalaccessboundary: ConfigProvider cannot be nil for DataProvider")
+	}
+	p := &DataProvider{
+		client:           client,
+		configProvider:   configProvider,
+		logger:           internallog.New(logger),
+		base:             base,
+		cooldownDuration: 15 * time.Minute,
+	}
+	return p, nil
+}
+
+// Token retrieves a token from the base provider and injects the DataProvider
+// instance into its metadata.
+func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
+	token, err := p.base.Token(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if token.Metadata == nil {
+		token.Metadata = make(map[string]interface{})
+	}
+
+	token.Metadata[ProviderKey] = p
+	return token, nil
+}
+
+// It immediately returns a valid header if it's cached, or kicks off a background fetch
+// if it is unpopulated or expired.
+func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, accessToken *auth.Token) string {
+	// Skip lookup for regional endpoints.
+	if strings.Contains(reqURL, "rep.googleapis.com") || strings.Contains(reqURL, "rep.sandbox.googleapis.com") {
+		return ""
+	}
+
+	// Skip lookup for non-default universe domains.
+	uniDomain, err := p.configProvider.GetUniverseDomain(ctx)
+	if err == nil && uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
+		return ""
+	}
+
+	// Return the cached data if present and not expired.
+	p.mu.RLock()
+	data := p.data
+	dataExpiry := p.dataExpiry
+	p.mu.RUnlock()
+
+	now := time.Now()
+	if data != nil && now.Before(dataExpiry) {
+		val, _ := data.RegionalAccessBoundaryHeader()
+		return val
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	// Skip lookup if in cooldown or another process is already fetching.
+	if p.isFetching || time.Now().Before(p.cooldownExpiry) {
+		return ""
+	}
+
+	// Start async RAB lookup and return empty header.
+	p.isFetching = true
+	go p.fetchAsync(context.Background(), accessToken)
+	return ""
+}
+
+func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) {
+	defer func() {
+		p.mu.Lock()
+		p.isFetching = false
+		p.mu.Unlock()
+	}()
+
+	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
+	if err != nil {
+		p.logger.ErrorContext(ctx, "regionalaccessboundary: error getting the lookup endpoint", "error", err)
+		return
+	}
+
+	newData, fetchErr := fetchRegionalAccessBoundaryData(ctx, p.client, url, accessToken, p.logger)
+
+	if fetchErr != nil {
+		p.logger.ErrorContext(ctx, "regionalaccessboundary: async fetch failed", "error", fetchErr)
+		p.handleFetchFailure(ctx)
+		return
+	}
+
+	p.handleFetchSuccess(newData)
+}
+
+func (p *DataProvider) handleFetchSuccess(newData *internal.RegionalAccessBoundaryData) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.data = newData
+	p.dataExpiry = time.Now().Add(6 * time.Hour) // 6 hour TTL
+	p.cooldownExpiry = time.Time{}               // reset cooldown
+	p.cooldownDuration = 15 * time.Minute        // reset cooldown multiplier
+}
+
+func (p *DataProvider) handleFetchFailure(ctx context.Context) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.cooldownExpiry = time.Now().Add(p.cooldownDuration)
+
+	// Exponential backoff for cooldown, up to 6 hours max
+	nextCooldown := p.cooldownDuration * 2
+	maxCooldown := 6 * time.Hour
+	if nextCooldown > maxCooldown {
+		nextCooldown = maxCooldown
+	}
+	p.cooldownDuration = nextCooldown
+}
+
 // serviceAccountConfig holds configuration for SA Regional Access Boundary lookups.
 // It implements the ConfigProvider interface.
 type serviceAccountConfig struct {
@@ -194,16 +342,12 @@ func NewServiceAccountConfigProvider(saEmail, universeDomain string) ConfigProvi
 }
 
 // GetRegionalAccessBoundaryEndpoint returns the formatted URL for fetching allowed locations
-// for the configured service account and universe domain.
+// for the configured service account.
 func (sac *serviceAccountConfig) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (url string, err error) {
 	if sac.ServiceAccountEmail == "" {
 		return "", errors.New("regionalaccessboundary: service account email cannot be empty for config")
 	}
-	ud := sac.UniverseDomain
-	if ud == "" {
-		ud = internal.DefaultUniverseDomain
-	}
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, ud, sac.ServiceAccountEmail), nil
+	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, sac.ServiceAccountEmail), nil
 }
 
 // GetUniverseDomain returns the configured universe domain, defaulting to
@@ -215,102 +359,8 @@ func (sac *serviceAccountConfig) GetUniverseDomain(ctx context.Context) (string,
 	return sac.UniverseDomain, nil
 }
 
-// DataProvider fetches and caches Regional Access Boundary Data.
-// It implements the DataProvider interface and uses a ConfigProvider
-// to get type-specific details for the lookup.
-type DataProvider struct {
-	client         *http.Client
-	configProvider ConfigProvider
-	data           *internal.RegionalAccessBoundaryData
-	logger         *slog.Logger
-	base           auth.TokenProvider
-}
-
-// NewProvider wraps the provided base [auth.TokenProvider] to create a new
-// provider that injects tokens with Regional Access Boundary data. It uses the provided
-// HTTP client and configProvider to fetch the data and attach it to the token's
-// metadata.
-func NewProvider(client *http.Client, configProvider ConfigProvider, logger *slog.Logger, base auth.TokenProvider) (*DataProvider, error) {
-	if client == nil {
-		return nil, errors.New("regionalaccessboundary: HTTP client cannot be nil for DataProvider")
-	}
-	if configProvider == nil {
-		return nil, errors.New("regionalaccessboundary: ConfigProvider cannot be nil for DataProvider")
-	}
-	p := &DataProvider{
-		client:         client,
-		configProvider: configProvider,
-		logger:         internallog.New(logger),
-		base:           base,
-	}
-	return p, nil
-}
-
-// Token retrieves a token from the base provider and injects it with trust
-// boundary data.
-func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
-	// Get the original token.
-	token, err := p.base.Token(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	tbData, err := p.GetRegionalAccessBoundaryData(ctx, token)
-	if err != nil {
-		return nil, fmt.Errorf("regionalaccessboundary: error fetching the Regional Access Boundary data: %w", err)
-	}
-	if tbData != nil {
-		if token.Metadata == nil {
-			token.Metadata = make(map[string]interface{})
-		}
-		token.Metadata[internal.RegionalAccessBoundaryDataKey] = *tbData
-	}
-	return token, nil
-}
-
-// GetRegionalAccessBoundaryData retrieves the Regional Access Boundary data.
-// It first checks the universe domain: if it's non-default, nil is returned.
-// It fetches new data from the endpoint provided by its ConfigProvider,
-// using the given accessToken for authentication. Results are cached.
-// If fetching fails, it returns previously cached data if available, otherwise the fetch error.
-func (p *DataProvider) GetRegionalAccessBoundaryData(ctx context.Context, token *auth.Token) (*internal.RegionalAccessBoundaryData, error) {
-	uniDomain, err := p.configProvider.GetUniverseDomain(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("regionalaccessboundary: error getting universe domain: %w", err)
-	}
-	if uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
-		return nil, nil
-	}
-
-	// Check cache for results from a previous API call.
-	cachedData := p.data
-
-	// Get the endpoint
-	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("regionalaccessboundary: error getting the lookup endpoint: %w", err)
-	}
-
-	// Proceed to fetch new data.
-	newData, fetchErr := fetchRegionalAccessBoundaryData(ctx, p.client, url, token, p.logger)
-
-	if fetchErr != nil {
-		// Fetch failed. Fallback to cachedData if available.
-		if cachedData != nil {
-			return cachedData, nil // Successful fallback
-		}
-		// No cache to fallback to.
-		return nil, fmt.Errorf("regionalaccessboundary: failed to fetch Regional Access Boundary data for endpoint %s and no cache available: %w", url, fetchErr)
-	}
-
-	// Fetch successful. Update cache.
-	p.data = newData
-	return newData, nil
-}
-
 // GCEConfigProvider implements ConfigProvider for GCE environments.
 // It lazily fetches and caches the necessary metadata (service account email, universe domain)
-// from the GCE metadata server.
 type GCEConfigProvider struct {
 	// universeDomainProvider provides the universe domain and underlying metadata client.
 	universeDomainProvider *internal.ComputeUniverseDomainProvider
@@ -377,7 +427,7 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	if g.udErr != nil {
 		return "", g.udErr
 	}
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, g.ud, g.saEmail), nil
+	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, g.saEmail), nil
 }
 
 // GetUniverseDomain retrieves the universe domain from the GCE metadata server.
