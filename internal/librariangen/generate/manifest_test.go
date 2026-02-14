@@ -15,7 +15,6 @@
 package generate
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -147,9 +146,6 @@ func TestGenerateRepoMetadata(t *testing.T) {
 				SourceDir: sourceDir,
 				OutputDir: outputDir,
 			}
-			lib := &request.Library{
-				ID: "testlib",
-			}
 			api := &request.API{
 				Path:          "google/cloud/testlib/v1",
 				ServiceConfig: tc.serviceConfig,
@@ -162,7 +158,7 @@ func TestGenerateRepoMetadata(t *testing.T) {
 				t.Fatalf("bazel.Parse() failed: %v", err)
 			}
 
-			if err := generateRepoMetadata(context.Background(), cfg, lib, api, moduleConfig, bazelConfig); err != nil {
+			if err := generateRepoMetadata(cfg, api, moduleConfig, bazelConfig); err != nil {
 				t.Fatalf("generateRepoMetadata() failed: %v", err)
 			}
 
