@@ -189,6 +189,7 @@ require (
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/vectorsearch v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/workloadmanager v0.0.0-00010101000000-000000000000
 	google.golang.org/protobuf v1.36.11
 )
 
@@ -219,7 +220,7 @@ require (
 	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260209200024-4cfbd4190f57 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260203192932-546029d2fa20 // indirect
-	google.golang.org/grpc v1.78.0 // indirect
+	google.golang.org/grpc v1.79.1 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
@@ -593,3 +594,5 @@ replace cloud.google.com/go/cloudsecuritycompliance => ../../../cloudsecuritycom
 replace cloud.google.com/go/auditmanager => ../../../auditmanager
 
 replace cloud.google.com/go/datamanager => ../../../datamanager
+
+replace cloud.google.com/go/workloadmanager => ../../../workloadmanager
