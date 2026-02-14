@@ -16,10 +16,12 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 	"runtime"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -539,6 +541,598 @@ func TestSetPartMetadata(t *testing.T) {
 			// Verify.
 			if !reflect.DeepEqual(partWriter.ObjectAttrs.Metadata, tc.expectedMetadata) {
 				t.Errorf("Metadata mismatch:\ngot:  %v\nwant: %v", partWriter.ObjectAttrs.Metadata, tc.expectedMetadata)
+			}
+		})
+	}
+}
+
+func TestPCUState_Write(t *testing.T) {
+	partSize := 10 // bytes
+
+	tests := []struct {
+		name           string
+		inputData      string
+		expectDispatch int   // Tasks sent to uploadCh.
+		expectBuffered int64 // Remaining bytes in state.
+	}{
+		{
+			name:           "Buffer partial part",
+			inputData:      "abc",
+			expectDispatch: 0,
+			expectBuffered: 3,
+		},
+		{
+			name:           "Full part dispatch",
+			inputData:      "0123456789",
+			expectDispatch: 1,
+			expectBuffered: 0,
+		},
+		{
+			name:           "Multi-part overflow",
+			inputData:      "0123456789extra", // 15 bytes.
+			expectDispatch: 1,
+			expectBuffered: 5,
+		},
+		{
+			name:           "Exactly two parts",
+			inputData:      "01234567890123456789",
+			expectDispatch: 2,
+			expectBuffered: 0,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			state := &pcuState{
+				ctx:      ctx,
+				started:  true,
+				bufferCh: make(chan []byte, 5),
+				uploadCh: make(chan uploadTask, 5),
+				config:   &parallelUploadConfig{partSize: partSize},
+			}
+
+			// Pre-fill buffer pool.
+			for i := 0; i < 5; i++ {
+				state.bufferCh <- make([]byte, partSize)
+			}
+
+			// Execute.
+			n, err := state.write([]byte(tc.inputData))
+
+			// Assertions.
+			if err != nil {
+				t.Fatalf("write failed: %v", err)
+			}
+			if n != len(tc.inputData) {
+				t.Errorf("n = %d; want %d", n, len(tc.inputData))
+			}
+			if len(state.uploadCh) != tc.expectDispatch {
+				t.Errorf("dispatched %d tasks; want %d", len(state.uploadCh), tc.expectDispatch)
+			}
+			if state.bytesBuffered != tc.expectBuffered {
+				t.Errorf("bytesBuffered = %d; want %d", state.bytesBuffered, tc.expectBuffered)
+			}
+		})
+	}
+}
+
+func TestPCUState_WriteStopsOnError(t *testing.T) {
+	writeErr := errors.New("simulated write error")
+	state := &pcuState{
+		started:  true,
+		firstErr: writeErr,
+	}
+
+	n, err := state.write([]byte("payload"))
+	if n != 0 || err == nil {
+		t.Fatalf("expected 0 bytes and error; got n=%v, err=%v", n, err)
+	}
+	if !errors.Is(err, writeErr) {
+		t.Errorf("expected error %v; got %v", writeErr, err)
+	}
+}
+
+func TestPCUState_FlushCurrentBuffer(t *testing.T) {
+	baseBuffer := make([]byte, 100)
+
+	testCases := []struct {
+		name              string
+		setup             func() *pcuState // A function to create the specific state for the test case.
+		expectTask        bool
+		expectedPartNum   int
+		expectedSize      int64
+		expectErr         error
+		checkBufferReturn bool
+	}{
+		{
+			name: "should send task when buffer has data",
+			setup: func() *pcuState {
+				return &pcuState{
+					ctx:           context.Background(),
+					partNum:       0,
+					bytesBuffered: 50,
+					currentBuffer: baseBuffer,
+					uploadCh:      make(chan uploadTask, 1),
+					bufferCh:      make(chan []byte, 1),
+					mu:            sync.Mutex{},
+				}
+			},
+			expectTask:      true,
+			expectedPartNum: 1,
+			expectedSize:    50,
+			expectErr:       nil,
+		},
+		{
+			name: "should do nothing when buffer is empty",
+			setup: func() *pcuState {
+				return &pcuState{bytesBuffered: 0}
+			},
+			expectTask: false,
+			expectErr:  nil,
+		},
+		{
+			name: "should return error and buffer when context is canceled",
+			setup: func() *pcuState {
+				ctx, cancel := context.WithCancel(context.Background())
+				cancel()
+				return &pcuState{
+					ctx:           ctx,
+					bytesBuffered: 50,
+					currentBuffer: baseBuffer,
+					uploadCh:      make(chan uploadTask),
+					bufferCh:      make(chan []byte, 1),
+				}
+			},
+			expectTask:        false,
+			expectErr:         context.Canceled,
+			checkBufferReturn: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := tc.setup()
+
+			// Execute.
+			err := s.flushCurrentBuffer()
+
+			// Assertions.
+			if !errors.Is(err, tc.expectErr) {
+				t.Fatalf("Expected error '%v', but got '%v'", tc.expectErr, err)
+			}
+
+			if tc.expectTask {
+				select {
+				case task := <-s.uploadCh:
+					if task.partNumber != tc.expectedPartNum {
+						t.Errorf("Expected part number %d, got %d", tc.expectedPartNum, task.partNumber)
+					}
+					if task.size != tc.expectedSize {
+						t.Errorf("Expected size %d, got %d", tc.expectedSize, task.size)
+					}
+					if s.currentBuffer != nil {
+						t.Error("Expected currentBuffer to be nil after flush")
+					}
+				default:
+					t.Fatal("Expected an uploadTask to be sent to uploadCh")
+				}
+			}
+
+			if tc.checkBufferReturn {
+				select {
+				case <-s.bufferCh:
+					// Success: buffer was correctly returned to the pool.
+				default:
+					t.Fatal("Expected buffer to be returned to bufferCh on cancellation")
+				}
+			}
+		})
+	}
+}
+
+func TestPCUState_GetSortedParts(t *testing.T) {
+	// Create dummy handles for testing. We can use the object name to identify them.
+	handle1 := &ObjectHandle{object: "part-1"}
+	handle2 := &ObjectHandle{object: "part-2"}
+	handle3 := &ObjectHandle{object: "part-3"}
+	handle4 := &ObjectHandle{object: "part-4"}
+
+	testCases := []struct {
+		name          string
+		partMap       map[int]*ObjectHandle
+		expectedOrder []*ObjectHandle
+	}{
+		{
+			name:          "Empty map should return empty slice",
+			partMap:       map[int]*ObjectHandle{},
+			expectedOrder: []*ObjectHandle{},
+		},
+		{
+			name: "Map with one item",
+			partMap: map[int]*ObjectHandle{
+				10: handle1,
+			},
+			expectedOrder: []*ObjectHandle{handle1},
+		},
+		{
+			name: "Map with items in random order",
+			partMap: map[int]*ObjectHandle{
+				4: handle4,
+				1: handle1,
+				3: handle3,
+				2: handle2,
+			},
+			expectedOrder: []*ObjectHandle{handle1, handle2, handle3, handle4},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := &pcuState{
+				partMap: tc.partMap,
+			}
+
+			// Execute.
+			sortedParts := s.getSortedParts()
+
+			// Assertions.
+			if len(sortedParts) != len(tc.expectedOrder) {
+				t.Fatalf("Expected slice of length %d, but got %d", len(tc.expectedOrder), len(sortedParts))
+			}
+
+			for i, expectedHandle := range tc.expectedOrder {
+				// We compare the pointers directly since they are unique dummy handles.
+				if sortedParts[i] != expectedHandle {
+					t.Errorf("At index %d: expected handle for object %q, but got %q",
+						i, expectedHandle.object, sortedParts[i].object)
+				}
+			}
+		})
+	}
+}
+
+func TestPCUState_ComposeParts(t *testing.T) {
+	tests := []struct {
+		name     string
+		numParts int
+		// We'll simulate maxComposeComponents by checking how many calls occur.
+		wantIntermediates int
+	}{
+		{
+			name:              "Under limit (Single Level)",
+			numParts:          10,
+			wantIntermediates: 0, // 10 < 32, direct to final.
+		},
+		{
+			name:              "Exactly limit (Single Level)",
+			numParts:          32,
+			wantIntermediates: 0, // 32 = 32, direct to final.
+		},
+		{
+			name:              "Over limit (Multi Level)",
+			numParts:          46,
+			wantIntermediates: 2, // 2 intermediate groups (32+14) merged in final.
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var mu sync.Mutex
+			intermediateCount := 0
+
+			partMap := make(map[int]*ObjectHandle)
+			for i := 1; i <= tc.numParts; i++ {
+				partMap[i] = &ObjectHandle{object: fmt.Sprintf("part-%03d", i)}
+			}
+			dummyClient := &Client{}
+			state := &pcuState{
+				ctx:             context.Background(),
+				partMap:         partMap,
+				intermediateMap: make(map[string]*ObjectHandle),
+				w: &Writer{
+					o: &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b"},
+				},
+				config: &parallelUploadConfig{
+					namingStrategy: &defaultNamingStrategy{},
+				},
+			}
+
+			state.composeFn = func(ctx context.Context, c *Composer) (*ObjectAttrs, error) {
+				mu.Lock()
+				defer mu.Unlock()
+
+				// If the destination isn't the final object, it's an intermediate.
+				if c.dst.object != "final-dest" {
+					intermediateCount++
+				}
+
+				// Return the name of the destination object as the "attribute".
+				return &ObjectAttrs{Name: c.dst.object}, nil
+			}
+
+			// Execute.
+			err := state.composeParts()
+			if err != nil {
+				t.Fatalf("composeParts failed: %v", err)
+			}
+
+			// Assertions.
+			if intermediateCount != tc.wantIntermediates {
+				t.Errorf("expected %d intermediate composes, got %d", tc.wantIntermediates, intermediateCount)
+			}
+
+			if state.w.obj.Name != "final-dest" {
+				t.Errorf("final object name mismatch: got %s, want final-dest", state.w.obj.Name)
+			}
+
+			if len(state.intermediateMap) != intermediateCount {
+				t.Errorf("intermediate map count mismatch: got %d, want %d", len(state.intermediateMap), intermediateCount)
+			}
+		})
+	}
+}
+
+func TestPCUState_ComposePartsIntegrity(t *testing.T) {
+	const manualHash uint32 = 0xDEADBEEF
+
+	tests := []struct {
+		name           string
+		userSendCRC    bool
+		userCRCValue   uint32
+		expectSendCRC  bool
+		expectCRCValue uint32
+	}{
+		{
+			name:           "Default/Enabled (SDK calculates and verifies)",
+			userSendCRC:    true,
+			userCRCValue:   0,
+			expectSendCRC:  true,
+			expectCRCValue: 0,
+		},
+		{
+			name:           "Explicit Bypass (No transport or server verification)",
+			userSendCRC:    false,
+			userCRCValue:   0,
+			expectSendCRC:  false,
+			expectCRCValue: 0,
+		},
+		{
+			name:           "Manual Hash (Bypass transport, verify final object on GCS)",
+			userSendCRC:    false,
+			userCRCValue:   manualHash,
+			expectSendCRC:  false,
+			expectCRCValue: manualHash,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// Setup dummy handles for parts.
+			partMap := make(map[int]*ObjectHandle)
+			for i := 1; i <= 3; i++ {
+				partMap[i] = &ObjectHandle{object: fmt.Sprintf("part-%d", i)}
+			}
+
+			state := &pcuState{
+				ctx:     context.Background(),
+				partMap: partMap,
+				w: &Writer{
+					SendCRC32C: tc.userSendCRC,
+					ObjectAttrs: ObjectAttrs{
+						CRC32C: tc.userCRCValue,
+					},
+					o: &ObjectHandle{
+						bucket: "test-bucket",
+						object: "final-object",
+						c:      &Client{},
+					},
+				},
+				config: &parallelUploadConfig{
+					namingStrategy: &defaultNamingStrategy{},
+				},
+			}
+
+			// Capture data from the final compose call.
+			var capturedSendCRC bool
+			var capturedCRCValue uint32
+
+			state.composeFn = func(ctx context.Context, c *Composer) (*ObjectAttrs, error) {
+				// We only verify the attributes on the final destination object.
+				if c.dst.object == "final-object" {
+					capturedSendCRC = c.SendCRC32C
+					capturedCRCValue = c.ObjectAttrs.CRC32C
+				}
+				return &ObjectAttrs{Name: c.dst.object}, nil
+			}
+
+			// Execute.
+			if err := state.composeParts(); err != nil {
+				t.Fatalf("composeParts failed: %v", err)
+			}
+
+			// Assertions.
+			if capturedSendCRC != tc.expectSendCRC {
+				t.Errorf("SendCRC32C = %v; want %v", capturedSendCRC, tc.expectSendCRC)
+			}
+			if capturedCRCValue != tc.expectCRCValue {
+				t.Errorf("CRC32C value = %v; want %v", capturedCRCValue, tc.expectCRCValue)
+			}
+		})
+	}
+}
+
+func TestPCUState_DoCleanup(t *testing.T) {
+	testCases := []struct {
+		name              string
+		strategy          partCleanupStrategy
+		firstErr          error
+		partsToCreate     int
+		interimsToCreate  int
+		failDeletesFor    map[string]bool
+		expectDeleteCalls int
+	}{
+		{
+			name:          "CleanupNever should do nothing",
+			strategy:      cleanupNever,
+			partsToCreate: 2,
+		},
+		{
+			name:          "CleanupOnSuccess with error should do nothing",
+			strategy:      cleanupOnSuccess,
+			firstErr:      errors.New("upload failed"),
+			partsToCreate: 2,
+		},
+		{
+			name:              "CleanupAlways should clean up all",
+			strategy:          cleanupAlways,
+			firstErr:          errors.New("upload failed"),
+			partsToCreate:     2,
+			interimsToCreate:  1,
+			expectDeleteCalls: 3,
+		},
+		{
+			name:             "CleanupAlways with failing deletes",
+			strategy:         cleanupAlways,
+			partsToCreate:    2,
+			interimsToCreate: 2,
+			failDeletesFor: map[string]bool{
+				"part-1":    true,
+				"interim-0": true,
+			},
+			expectDeleteCalls: 4,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			pCtx, cancel := context.WithCancel(context.Background())
+			var mu sync.Mutex
+			deleteCalls := 0
+
+			// Prepare the pcuState for the test.
+			state := &pcuState{
+				ctx:             pCtx,
+				cancel:          cancel,
+				config:          &parallelUploadConfig{cleanupStrategy: tc.strategy, numWorkers: 4},
+				firstErr:        tc.firstErr,
+				partMap:         make(map[int]*ObjectHandle),
+				intermediateMap: make(map[string]*ObjectHandle),
+			}
+
+			state.deleteFn = func(ctx context.Context, h *ObjectHandle) error {
+				mu.Lock()
+				deleteCalls++
+				mu.Unlock()
+
+				// Simulate failure based on the object's dummy name.
+				if shouldFail, ok := tc.failDeletesFor[h.object]; ok && shouldFail {
+					return errors.New("mock delete error")
+				}
+				return nil
+			}
+
+			// Populate state with dummy object handles.
+			// The pointers can be simple because our mock deleteFn doesn't use them.
+			for i := 0; i < tc.partsToCreate; i++ {
+				state.partMap[i] = &ObjectHandle{object: fmt.Sprintf("part-%d", i)}
+			}
+			for i := 0; i < tc.interimsToCreate; i++ {
+				name := fmt.Sprintf("interim-%d", i)
+				state.intermediateMap[name] = &ObjectHandle{object: name}
+			}
+
+			// Execute.
+			state.doCleanup()
+
+			// Assertions.
+			if deleteCalls != tc.expectDeleteCalls {
+				t.Errorf("Expected %d delete calls, but got %d", tc.expectDeleteCalls, deleteCalls)
+			}
+		})
+	}
+}
+
+func TestPCUState_Close(t *testing.T) {
+	tests := []struct {
+		name          string
+		numParts      int
+		mockErr       error
+		expectCompose bool
+		expectError   bool
+	}{
+		{
+			name:          "Successful Upload",
+			numParts:      2,
+			mockErr:       nil,
+			expectCompose: true,
+			expectError:   false,
+		},
+		{
+			name:          "Worker Error - Aborts Compose",
+			numParts:      2,
+			mockErr:       fmt.Errorf("upload failed"),
+			expectCompose: false,
+			expectError:   true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			composeCalled := false
+			cleanupCalled := false
+			ctx := context.Background()
+			objName := "test-object"
+
+			state := &pcuState{
+				ctx:      ctx,
+				started:  true,
+				uploadCh: make(chan uploadTask, 10),
+				resultCh: make(chan uploadResult, 10),
+				partMap:  make(map[int]*ObjectHandle),
+				w: &Writer{
+					ctx: ctx,
+					ObjectAttrs: ObjectAttrs{
+						Name: objName,
+					},
+					o: &ObjectHandle{
+						bucket: "b",
+						object: objName,
+						c:      &Client{},
+					},
+				},
+				composePartsFn: func(s *pcuState) error {
+					composeCalled = true
+					return nil
+				},
+				doCleanupFn: func(s *pcuState) {
+					cleanupCalled = true
+				},
+			}
+
+			// Pre-populate handles if testing success/failure.
+			if tc.numParts > 0 {
+				for i := 1; i <= tc.numParts; i++ {
+					state.partMap[i] = &ObjectHandle{object: "tmp"}
+				}
+			}
+
+			if tc.mockErr != nil {
+				state.firstErr = tc.mockErr
+			}
+
+			// Execute.
+			err := state.close()
+
+			// Assertions.
+			if (err != nil) != tc.expectError {
+				t.Errorf("expectError %v, got err: %v", tc.expectError, err)
+			}
+			if composeCalled != tc.expectCompose {
+				t.Errorf("expectCompose %v, but composeCalled was %v", tc.expectCompose, composeCalled)
+			}
+			if !cleanupCalled {
+				t.Errorf("cleanup logic was not executed")
 			}
 		})
 	}
