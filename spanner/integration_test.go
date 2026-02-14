@@ -5381,16 +5381,11 @@ func compareErrors(got, want error) bool {
 	if got == nil || want == nil {
 		return got == want
 	}
-	gotStr := got.Error()
-	wantStr := want.Error()
-	if idx := strings.Index(gotStr, "requestID"); idx != -1 {
-		gotStr = gotStr[:idx]
-	}
-	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
-		wantStr = wantStr[:idx]
-	}
+
+	gotStr, _, _ := strings.Cut(got.Error(), "requestID")
+	wantStr, _, _ := strings.Cut(want.Error(), "requestID")
 	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
-	wantStr = strings.ReplaceAll(gotStr, `",`, ``)
+wantStr = strings.ReplaceAll(wantStr, `",`, ``)
 	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
 }
 

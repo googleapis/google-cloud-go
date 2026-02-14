@@ -69,10 +69,7 @@ func generateRepoMetadata(ctx context.Context, cfg *Config, lib *request.Library
 		return fmt.Errorf("librariangen: failed to decode service YAML: %w", err)
 	}
 
-	importPath := bazelConfig.GAPICImportPath()
-	if i := strings.Index(importPath, ";"); i != -1 {
-		importPath = importPath[:i]
-	}
+	importPath, _, _ := strings.Cut(bazelConfig.GAPICImportPath(), ";")
 
 	docURL, err := docURL(moduleConfig.GetModulePath(), importPath)
 	if err != nil {

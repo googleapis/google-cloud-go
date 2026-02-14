@@ -5756,7 +5756,10 @@ func createColumnFamilyWithConfig(ctx context.Context, t *testing.T, adminClient
 
 func formatReadItem(ri ReadItem) string {
 	// Use the column qualifier only to make the test data briefer.
-	col := ri.Column[strings.Index(ri.Column, ":")+1:]
+	col := ri.Column
+	if _, after, exists := strings.Cut(ri.Column, ":"); exists {
+		col = after
+	}
 	return fmt.Sprintf("%s-%s-%s", ri.Row, col, ri.Value)
 }
 
