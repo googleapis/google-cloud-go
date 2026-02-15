@@ -59,9 +59,10 @@ type Config struct {
 
 // Entry holds information about the reported error.
 type Entry struct {
-	Error error
-	Req   *http.Request // if error is associated with a request.
-	User  string        // an identifier for the user affected by the error
+	Error              error
+	Req                *http.Request // if error is associated with a request.
+	User               string        // an identifier for the user affected by the error
+	ResponseStatusCode int32         // Response status code when an error occurs
 
 	// Stack specifies the stacktrace and call sequence correlated with
 	// the error. Stack's content must match the format specified by
@@ -190,6 +191,10 @@ func (c *Client) newRequest(e Entry) *pb.ReportErrorEventRequest {
 				RemoteIp:  r.RemoteAddr,
 			},
 		}
+		if e.ResponseStatusCode > 0 {
+			errorContext.HttpRequest.ResponseStatusCode = e.ResponseStatusCode
+		}
+
 	}
 	if e.User != "" {
 		if errorContext == nil {
