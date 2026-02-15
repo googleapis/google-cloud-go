@@ -300,9 +300,6 @@ func TestReadOnlyTransactionClose(t *testing.T) {
 }
 
 func TestClient_MultiEndpoint(t *testing.T) {
-	if !useGRPCgcp {
-		t.Skip("gRPC-GCP only test")
-	}
 	t.Parallel()
 
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:0")
@@ -408,7 +405,8 @@ func TestClient_MultiEndpoint(t *testing.T) {
 
 	// Let both endpoints connect.
 	for atomic.LoadUint32(&connCount) < numChannels*2 {
-		time.Sleep(time.Millisecond * 5)
+		t.Logf("Channels connected: %d/%d", connCount, numChannels*2)
+		time.Sleep(time.Second * 5)
 	}
 
 	// Works via mirror.
@@ -491,6 +489,38 @@ func TestClient_MultiEndpoint(t *testing.T) {
 	err = executeSingerQueryWithTimeout(ctx, client.Single(), time.Second*3)
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestClient_MultiEndpointConcurrent(t *testing.T) {
+	t.Parallel()
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:0")
+	defer serverTeardown()
+
+	gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+		MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+			"default": {
+				Endpoints: []string{
+					server.ServerAddress,
+				},
+			},
+		},
+		Default: "default",
+	}
+
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+
+	// Create multiple clients concurrently.
+	// Should not raise data race when tested with '-race'.
+	for i := 0; i < 50; i++ {
+		go func() {
+			_, _, err := NewMultiEndpointClient(ctx, formattedDatabase, gmeCfg, opts...)
+			if err != nil {
+				t.Error(err)
+			}
+		}()
 	}
 }
 

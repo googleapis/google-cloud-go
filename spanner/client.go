@@ -31,6 +31,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	grpcgcppb "github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -48,6 +49,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
@@ -144,7 +146,35 @@ func (c *Client) ClientID() string {
 	return c.sc.id
 }
 
-func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
+func copyGCPMultiEndpointConfig(cfg *grpcgcp.GCPMultiEndpointOptions) *grpcgcp.GCPMultiEndpointOptions {
+	if cfg == nil {
+		return nil
+	}
+
+	config := grpcgcp.GCPMultiEndpointOptions{
+		GRPCgcpConfig:  proto.Clone(cfg.GRPCgcpConfig).(*grpcgcppb.ApiConfig),
+		MultiEndpoints: make(map[string]*multiendpoint.MultiEndpointOptions),
+		Default:        cfg.Default,
+		DialFunc:       cfg.DialFunc,
+	}
+
+	for k, v := range cfg.MultiEndpoints {
+		config.MultiEndpoints[k] = &multiendpoint.MultiEndpointOptions{
+			Endpoints:       make([]string, len(v.Endpoints)),
+			RecoveryTimeout: v.RecoveryTimeout,
+			SwitchingDelay:  v.SwitchingDelay,
+		}
+		copy(config.MultiEndpoints[k].Endpoints, v.Endpoints)
+	}
+
+	return &config
+}
+
+func createGCPMultiEndpoint(meConfig *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
+	cfg := copyGCPMultiEndpointConfig(meConfig)
+	options := make([]option.ClientOption, len(opts))
+	copy(options, opts)
+
 	if cfg.GRPCgcpConfig == nil {
 		cfg.GRPCgcpConfig = &grpcgcppb.ApiConfig{}
 	}
@@ -207,7 +237,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
 		}
-		opts = append(opts, emulatorOpts...)
+		options = append(options, emulatorOpts...)
 		// Replace all endpoints with emulator target.
 		for _, meo := range cfg.MultiEndpoints {
 			meo.Endpoints = []string{emulatorAddr}
@@ -227,7 +257,8 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	cfg.GRPCgcpConfig.ChannelPool.BindPickStrategy = grpcgcppb.ChannelPoolConfig_ROUND_ROBIN
 
 	cfg.DialFunc = func(ctx context.Context, target string, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
-		copts := opts
+		copts := make([]option.ClientOption, len(options))
+		copy(copts, options)
 
 		for _, do := range dopts {
 			copts = append(copts, option.WithGRPCDialOption(do))
