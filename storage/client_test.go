@@ -2792,6 +2792,40 @@ func TestRetryDeadlineExceededEmulated(t *testing.T) {
 	})
 }
 
+// Test that backoff is applied in retries.
+func TestRetryBackoffEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		backoffs := []time.Duration{
+			1 * time.Nanosecond,
+			100 * time.Millisecond,
+		}
+		var durations [2]time.Duration
+
+		for i, backoff := range backoffs {
+			ctx := context.Background()
+
+			bucket, _, err := createBucket(ctx, project)
+			if err != nil {
+				t.Fatalf("creating bucket: %v", err)
+			}
+			instructions := map[string][]string{"storage.buckets.get": {"return-503"}}
+			testID := createRetryTest(t, client, instructions)
+			ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+			config := &retryConfig{backoff: &gax.Backoff{Initial: backoff}}
+			start := time.Now()
+			if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
+				t.Fatalf("GetBucket with backoff %v: got unexpected error %v, want nil", backoff, err)
+			}
+			durations[i] = time.Since(start)
+		}
+		// Test that extended backoff is applied and results in longer duration.
+		if durations[1] <= durations[0] {
+			t.Fatalf("GetRetryBackoff: Expected longer durations[1] %v with backoffs[1] %v than durations[0] %v with backoffs[0] %v", durations[1], backoffs[1], durations[0], backoffs[0])
+		}
+	})
+}
+
 // Test validates the retry for stalled read-request, when client is created with
 // WithReadStallTimeout.
 func TestRetryReadStallEmulated(t *testing.T) {
