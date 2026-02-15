@@ -252,7 +252,8 @@ func goPkg(fileName string) (string, error) {
 func (g *GenprotoGenerator) protoc(fileNames []string) error {
 	args := []string{
 		"--experimental_allow_proto3_optional",
-		fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir),
+		fmt.Sprintf("--go_out=%s/generated", g.genprotoDir),
+		fmt.Sprintf("--go-grpc_out=%s/generated", g.genprotoDir),
 		"-I", g.googleapisDir,
 		"-I", g.protoSrcDir,
 	}
