@@ -63,6 +63,7 @@ func TestOTMetrics_InstrumentationScope(t *testing.T) {
 }
 
 func TestOTMetrics_SessionPool(t *testing.T) {
+	t.Skip("flaky - https://github.com/googleapis/google-cloud-go/issues/13756")
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -198,6 +199,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 }
 
 func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
+	t.Skip("flaky - https://github.com/googleapis/google-cloud-go/issues/13757")
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
