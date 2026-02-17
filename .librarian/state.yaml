@@ -6183,10 +6183,12 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vectorsearch
     version: 0.2.0
-    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
+    last_generated_commit: 27ffde22e73154260f8eaa6115420b7bd895db2f
     apis:
       - path: google/cloud/vectorsearch/v1beta
         service_config: vectorsearch_v1beta.yaml
+      - path: google/cloud/vectorsearch/v1
+        service_config: vectorsearch_v1.yaml
     source_roots:
       - vectorsearch
       - internal/generated/snippets/vectorsearch
@@ -6203,6 +6205,16 @@ libraries:
       - ^vectorsearch/apiv1beta/helpers\.go$
       - ^vectorsearch/apiv1beta/\.repo-metadata\.json$
       - ^vectorsearch/apiv1beta/vectorsearchpb/.*$
+      - ^vectorsearch/apiv1/[^/]*_client\.go$
+      - ^vectorsearch/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^vectorsearch/apiv1/[^/]*_client_example_test\.go$
+      - ^vectorsearch/apiv1/auxiliary\.go$
+      - ^vectorsearch/apiv1/auxiliary_go123\.go$
+      - ^vectorsearch/apiv1/doc\.go$
+      - ^vectorsearch/apiv1/gapic_metadata\.json$
+      - ^vectorsearch/apiv1/helpers\.go$
+      - ^vectorsearch/apiv1/\.repo-metadata\.json$
+      - ^vectorsearch/apiv1/vectorsearchpb/.*$
     tag_format: '{id}/v{version}'
   - id: vertexai
     version: 0.15.0

@@ -1,0 +1,441 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.vectorsearch.v1",
+  "libraryPackage": "cloud.google.com/go/vectorsearch/apiv1",
+  "services": {
+    "DataObjectSearchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataObjectSearchClient",
+          "rpcs": {
+            "AggregateDataObjects": {
+              "methods": [
+                "AggregateDataObjects"
+              ]
+            },
+            "BatchSearchDataObjects": {
+              "methods": [
+                "BatchSearchDataObjects"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "QueryDataObjects": {
+              "methods": [
+                "QueryDataObjects"
+              ]
+            },
+            "SearchDataObjects": {
+              "methods": [
+                "SearchDataObjects"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataObjectSearchClient",
+          "rpcs": {
+            "AggregateDataObjects": {
+              "methods": [
+                "AggregateDataObjects"
+              ]
+            },
+            "BatchSearchDataObjects": {
+              "methods": [
+                "BatchSearchDataObjects"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "QueryDataObjects": {
+              "methods": [
+                "QueryDataObjects"
+              ]
+            },
+            "SearchDataObjects": {
+              "methods": [
+                "SearchDataObjects"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DataObjectService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataObjectClient",
+          "rpcs": {
+            "BatchCreateDataObjects": {
+              "methods": [
+                "BatchCreateDataObjects"
+              ]
+            },
+            "BatchDeleteDataObjects": {
+              "methods": [
+                "BatchDeleteDataObjects"
+              ]
+            },
+            "BatchUpdateDataObjects": {
+              "methods": [
+                "BatchUpdateDataObjects"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataObject": {
+              "methods": [
+                "CreateDataObject"
+              ]
+            },
+            "DeleteDataObject": {
+              "methods": [
+                "DeleteDataObject"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataObject": {
+              "methods": [
+                "GetDataObject"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataObject": {
+              "methods": [
+                "UpdateDataObject"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataObjectClient",
+          "rpcs": {
+            "BatchCreateDataObjects": {
+              "methods": [
+                "BatchCreateDataObjects"
+              ]
+            },
+            "BatchDeleteDataObjects": {
+              "methods": [
+                "BatchDeleteDataObjects"
+              ]
+            },
+            "BatchUpdateDataObjects": {
+              "methods": [
+                "BatchUpdateDataObjects"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataObject": {
+              "methods": [
+                "CreateDataObject"
+              ]
+            },
+            "DeleteDataObject": {
+              "methods": [
+                "DeleteDataObject"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataObject": {
+              "methods": [
+                "GetDataObject"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataObject": {
+              "methods": [
+                "UpdateDataObject"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "VectorSearchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCollection": {
+              "methods": [
+                "CreateCollection"
+              ]
+            },
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "DeleteCollection": {
+              "methods": [
+                "DeleteCollection"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCollection": {
+              "methods": [
+                "GetCollection"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportDataObjects": {
+              "methods": [
+                "ImportDataObjects"
+              ]
+            },
+            "ListCollections": {
+              "methods": [
+                "ListCollections"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCollection": {
+              "methods": [
+                "UpdateCollection"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCollection": {
+              "methods": [
+                "CreateCollection"
+              ]
+            },
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "DeleteCollection": {
+              "methods": [
+                "DeleteCollection"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCollection": {
+              "methods": [
+                "GetCollection"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportDataObjects": {
+              "methods": [
+                "ImportDataObjects"
+              ]
+            },
+            "ListCollections": {
+              "methods": [
+                "ListCollections"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCollection": {
+              "methods": [
+                "UpdateCollection"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
