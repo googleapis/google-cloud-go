@@ -131,6 +131,7 @@ type Client struct {
 	otConfig             *openTelemetryConfig
 	metricsTracerFactory *builtinMetricsTracerFactory
 	clientContext        *sppb.RequestOptions_ClientContext
+	locationRouter       *locationRouter
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -568,6 +569,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.metricsTracerFactory = metricsTracerFactory
 	sc.mu.Unlock()
 
+	var locationRouter *locationRouter
+	if isExperimentalLocationAPIEnabled() {
+		locationRouter = newLocationRouter()
+	}
+
 	// Create a session manager.
 	sp, err := newSessionManager(sc, config.SessionPoolConfig)
 	if err != nil {
@@ -606,6 +612,7 @@ Multiplexed session enabled: true
 		otConfig:             otConfig,
 		metricsTracerFactory: metricsTracerFactory,
 		clientContext:        config.ClientContext,
+		locationRouter:       locationRouter,
 	}
 	return c, nil
 }
@@ -811,6 +818,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	t.txReadOnly.locationRouter = c.locationRouter
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -839,6 +847,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	t.txReadOnly.locationRouter = c.locationRouter
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -911,6 +920,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	t.txReadOnly.locationRouter = c.locationRouter
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t, nil
@@ -948,6 +958,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	t.txReadOnly.locationRouter = c.locationRouter
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -1035,6 +1046,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t.wb = []*Mutation{}
 			t.txOpts = c.txo.merge(options)
 			t.txReadOnly.clientContext = mergeClientContext(c.clientContext, t.txOpts.ClientContext)
+			t.txReadOnly.locationRouter = c.locationRouter
 			t.ct = c.ct
 			t.otConfig = c.otConfig
 		}
