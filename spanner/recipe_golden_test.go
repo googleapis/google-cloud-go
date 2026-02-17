@@ -25,13 +25,8 @@ import (
 	"testing"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	locationpb "cloud.google.com/go/spanner/test/proto/locationpb"
 	"google.golang.org/protobuf/encoding/prototext"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protodesc"
-	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/reflect/protoregistry"
-	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/dynamicpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -133,227 +128,38 @@ func evaluateRecipeGoldenTest(recipe *keyRecipe, testItem recipeGoldenTest) *tar
 func parseRecipeGoldenCases(content string) ([]recipeGoldenCase, error) {
 	content = stripFinderGoldenComments(content)
 	content = normalizeRecipeGoldenTextproto(content)
-	descriptor, err := buildRecipeGoldenDescriptor()
-	if err != nil {
-		return nil, err
-	}
-
-	root := dynamicpb.NewMessage(descriptor)
+	root := &locationpb.RecipeTestCases{}
 	if err := prototext.Unmarshal([]byte(content), root); err != nil {
 		return nil, fmt.Errorf("unmarshal recipe goldens as proto: %w", err)
 	}
 
-	casesField := descriptor.Fields().ByName("test_case")
-	casesList := root.Get(casesField).List()
-	cases := make([]recipeGoldenCase, 0, casesList.Len())
-	for i := 0; i < casesList.Len(); i++ {
-		caseMsg := casesList.Get(i).Message()
-		caseFields := caseMsg.Descriptor().Fields()
-		nameField := caseFields.ByName("name")
-		recipesField := caseFields.ByName("recipes")
-		testsField := caseFields.ByName("test")
-
-		parsedCase := recipeGoldenCase{name: caseMsg.Get(nameField).String()}
-		if caseMsg.Has(recipesField) {
-			recipes := &sppb.RecipeList{}
-			if err := convertDynamicMessage(caseMsg.Get(recipesField).Message(), recipes); err != nil {
-				return nil, fmt.Errorf("case[%d] recipes: %w", i, err)
-			}
-			parsedCase.recipes = recipes
+	cases := make([]recipeGoldenCase, 0, len(root.GetTestCase()))
+	for i, c := range root.GetTestCase() {
+		if c == nil {
+			return nil, fmt.Errorf("test_case[%d]: nil", i)
 		}
-
-		testsList := caseMsg.Get(testsField).List()
-		parsedCase.tests = make([]recipeGoldenTest, 0, testsList.Len())
-		for testIdx := 0; testIdx < testsList.Len(); testIdx++ {
-			testMsg := testsList.Get(testIdx).Message()
-			testFields := testMsg.Descriptor().Fields()
-			keyField := testFields.ByName("key")
-			keyRangeField := testFields.ByName("key_range")
-			keySetField := testFields.ByName("key_set")
-			mutationField := testFields.ByName("mutation")
-			queryParamsField := testFields.ByName("query_params")
-			startField := testFields.ByName("start")
-			limitField := testFields.ByName("limit")
-			approximateField := testFields.ByName("approximate")
-
-			parsedTest := recipeGoldenTest{
-				start:       append([]byte(nil), testMsg.Get(startField).Bytes()...),
-				limit:       append([]byte(nil), testMsg.Get(limitField).Bytes()...),
-				approximate: testMsg.Get(approximateField).Bool(),
+		parsed := recipeGoldenCase{name: c.GetName(), recipes: c.GetRecipes()}
+		parsed.tests = make([]recipeGoldenTest, 0, len(c.GetTest()))
+		for j, tc := range c.GetTest() {
+			if tc == nil {
+				return nil, fmt.Errorf("test_case[%d] (%q) test[%d]: nil", i, parsed.name, j)
 			}
-			if testMsg.Has(keyField) {
-				key := &structpb.ListValue{}
-				if err := convertDynamicMessage(testMsg.Get(keyField).Message(), key); err != nil {
-					return nil, fmt.Errorf("case[%d] test[%d] key: %w", i, testIdx, err)
-				}
-				parsedTest.key = key
-			}
-			if testMsg.Has(keyRangeField) {
-				keyRange := &sppb.KeyRange{}
-				if err := convertDynamicMessage(testMsg.Get(keyRangeField).Message(), keyRange); err != nil {
-					return nil, fmt.Errorf("case[%d] test[%d] key_range: %w", i, testIdx, err)
-				}
-				parsedTest.keyRange = keyRange
-			}
-			if testMsg.Has(keySetField) {
-				keySet := &sppb.KeySet{}
-				if err := convertDynamicMessage(testMsg.Get(keySetField).Message(), keySet); err != nil {
-					return nil, fmt.Errorf("case[%d] test[%d] key_set: %w", i, testIdx, err)
-				}
-				parsedTest.keySet = keySet
-			}
-			if testMsg.Has(mutationField) {
-				mutation := &sppb.Mutation{}
-				if err := convertDynamicMessage(testMsg.Get(mutationField).Message(), mutation); err != nil {
-					return nil, fmt.Errorf("case[%d] test[%d] mutation: %w", i, testIdx, err)
-				}
-				parsedTest.mutation = mutation
-			}
-			if testMsg.Has(queryParamsField) {
-				queryParams := &structpb.Struct{}
-				if err := convertDynamicMessage(testMsg.Get(queryParamsField).Message(), queryParams); err != nil {
-					return nil, fmt.Errorf("case[%d] test[%d] query_params: %w", i, testIdx, err)
-				}
-				parsedTest.queryParams = queryParams
-			}
-			parsedCase.tests = append(parsedCase.tests, parsedTest)
+			parsed.tests = append(parsed.tests, recipeGoldenTest{
+				key:         tc.GetKey(),
+				keyRange:    tc.GetKeyRange(),
+				keySet:      tc.GetKeySet(),
+				mutation:    tc.GetMutation(),
+				queryParams: tc.GetQueryParams(),
+				start:       append([]byte(nil), tc.GetStart()...),
+				limit:       append([]byte(nil), tc.GetLimit()...),
+				approximate: tc.GetApproximate(),
+			})
 		}
-		cases = append(cases, parsedCase)
+		cases = append(cases, parsed)
 	}
 	return cases, nil
 }
 
 func normalizeRecipeGoldenTextproto(content string) string {
 	return strings.ReplaceAll(content, "code: TOKENLIST", "code: 99999")
-}
-
-func buildRecipeGoldenDescriptor() (protoreflect.MessageDescriptor, error) {
-	fileProto := &descriptorpb.FileDescriptorProto{
-		Name:    proto.String("recipe_test_dynamic.proto"),
-		Package: proto.String("spanner.cloud.location"),
-		Syntax:  proto.String("proto3"),
-		Dependency: []string{
-			"google/protobuf/struct.proto",
-			"google/spanner/v1/keys.proto",
-			"google/spanner/v1/location.proto",
-			"google/spanner/v1/mutation.proto",
-		},
-		MessageType: []*descriptorpb.DescriptorProto{
-			{
-				Name: proto.String("RecipeTestCases"),
-				Field: []*descriptorpb.FieldDescriptorProto{
-					{
-						Name:     proto.String("test_case"),
-						Number:   proto.Int32(1),
-						Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-						Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-						TypeName: proto.String(".spanner.cloud.location.RecipeTestCase"),
-					},
-				},
-			},
-			{
-				Name: proto.String("RecipeTestCase"),
-				Field: []*descriptorpb.FieldDescriptorProto{
-					{
-						Name:   proto.String("name"),
-						Number: proto.Int32(1),
-						Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-						Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_STRING),
-					},
-					{
-						Name:     proto.String("recipes"),
-						Number:   proto.Int32(2),
-						Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-						Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-						TypeName: proto.String(".google.spanner.v1.RecipeList"),
-					},
-					{
-						Name:     proto.String("test"),
-						Number:   proto.Int32(3),
-						Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-						Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-						TypeName: proto.String(".spanner.cloud.location.RecipeTestCase.Test"),
-					},
-				},
-				NestedType: []*descriptorpb.DescriptorProto{
-					{
-						Name: proto.String("Test"),
-						Field: []*descriptorpb.FieldDescriptorProto{
-							{
-								Name:       proto.String("key"),
-								Number:     proto.Int32(1),
-								Label:      finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:       finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName:   proto.String(".google.protobuf.ListValue"),
-								OneofIndex: proto.Int32(0),
-							},
-							{
-								Name:       proto.String("key_range"),
-								Number:     proto.Int32(2),
-								Label:      finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:       finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName:   proto.String(".google.spanner.v1.KeyRange"),
-								OneofIndex: proto.Int32(0),
-							},
-							{
-								Name:       proto.String("key_set"),
-								Number:     proto.Int32(3),
-								Label:      finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:       finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName:   proto.String(".google.spanner.v1.KeySet"),
-								OneofIndex: proto.Int32(0),
-							},
-							{
-								Name:       proto.String("mutation"),
-								Number:     proto.Int32(4),
-								Label:      finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:       finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName:   proto.String(".google.spanner.v1.Mutation"),
-								OneofIndex: proto.Int32(0),
-							},
-							{
-								Name:       proto.String("query_params"),
-								Number:     proto.Int32(5),
-								Label:      finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:       finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName:   proto.String(".google.protobuf.Struct"),
-								OneofIndex: proto.Int32(0),
-							},
-							{
-								Name:   proto.String("start"),
-								Number: proto.Int32(6),
-								Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_BYTES),
-							},
-							{
-								Name:   proto.String("limit"),
-								Number: proto.Int32(7),
-								Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_BYTES),
-							},
-							{
-								Name:   proto.String("approximate"),
-								Number: proto.Int32(8),
-								Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_BOOL),
-							},
-						},
-						OneofDecl: []*descriptorpb.OneofDescriptorProto{
-							{Name: proto.String("operation")},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	fileDesc, err := protodesc.NewFile(fileProto, protoregistry.GlobalFiles)
-	if err != nil {
-		return nil, fmt.Errorf("create recipe golden descriptor: %w", err)
-	}
-	rootDesc := fileDesc.Messages().ByName("RecipeTestCases")
-	if rootDesc == nil {
-		return nil, fmt.Errorf("missing RecipeTestCases descriptor")
-	}
-	return rootDesc, nil
 }

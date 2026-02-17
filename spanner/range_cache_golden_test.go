@@ -23,15 +23,10 @@ import (
 	"testing"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	locationpb "cloud.google.com/go/spanner/test/proto/locationpb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/encoding/prototext"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protodesc"
-	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/dynamicpb"
 )
 
 type rangeCacheGoldenTest struct {
@@ -131,89 +126,48 @@ func assertRangeCacheGoldenHint(t *testing.T, caseName string, stepIdx, testIdx 
 
 func parseRangeCacheGoldenCases(content string) ([]rangeCacheGoldenCase, error) {
 	content = stripFinderGoldenComments(content)
-	descriptor, err := buildRangeCacheGoldenDescriptor()
-	if err != nil {
-		return nil, err
-	}
-
-	root := dynamicpb.NewMessage(descriptor)
+	root := &locationpb.RangeCacheTestCases{}
 	if err := prototext.Unmarshal([]byte(content), root); err != nil {
 		return nil, fmt.Errorf("unmarshal range cache goldens as proto: %w", err)
 	}
 
-	casesField := descriptor.Fields().ByName("test_case")
-	casesList := root.Get(casesField).List()
-	cases := make([]rangeCacheGoldenCase, 0, casesList.Len())
-	for i := 0; i < casesList.Len(); i++ {
-		caseMsg := casesList.Get(i).Message()
-		caseFields := caseMsg.Descriptor().Fields()
-		nameField := caseFields.ByName("name")
-		stepsField := caseFields.ByName("step")
+	cases := make([]rangeCacheGoldenCase, 0, len(root.GetTestCase()))
+	for i, c := range root.GetTestCase() {
+		if c == nil {
+			return nil, fmt.Errorf("test_case[%d]: nil", i)
+		}
+		testCase := rangeCacheGoldenCase{name: c.GetName()}
+		testCase.steps = make([]rangeCacheGoldenStep, 0, len(c.GetStep()))
 
-		testCase := rangeCacheGoldenCase{name: caseMsg.Get(nameField).String()}
-		stepsList := caseMsg.Get(stepsField).List()
-		testCase.steps = make([]rangeCacheGoldenStep, 0, stepsList.Len())
-
-		for stepIdx := 0; stepIdx < stepsList.Len(); stepIdx++ {
-			stepMsg := stepsList.Get(stepIdx).Message()
-			stepFields := stepMsg.Descriptor().Fields()
-			updateField := stepFields.ByName("update")
-			testsField := stepFields.ByName("test")
-
-			step := rangeCacheGoldenStep{}
-			if stepMsg.Has(updateField) {
-				update := &sppb.CacheUpdate{}
-				if err := convertDynamicMessage(stepMsg.Get(updateField).Message(), update); err != nil {
-					return nil, fmt.Errorf("case[%d] step[%d] update: %w", i, stepIdx, err)
-				}
-				step.update = update
+		for stepIdx, s := range c.GetStep() {
+			if s == nil {
+				return nil, fmt.Errorf("case[%d] step[%d]: nil", i, stepIdx)
 			}
-
-			testsList := stepMsg.Get(testsField).List()
-			step.tests = make([]rangeCacheGoldenTest, 0, testsList.Len())
-			for testIdx := 0; testIdx < testsList.Len(); testIdx++ {
-				testMsg := testsList.Get(testIdx).Message()
-				testFields := testMsg.Descriptor().Fields()
-				leaderField := testFields.ByName("leader")
-				droField := testFields.ByName("directed_read_options")
-				keyField := testFields.ByName("key")
-				limitField := testFields.ByName("limit_key")
-				rangeModeField := testFields.ByName("range_mode")
-				minEntriesField := testFields.ByName("min_cache_entries_for_random_pick")
-				resultField := testFields.ByName("result")
-				serverField := testFields.ByName("server")
-
+			step := rangeCacheGoldenStep{update: s.GetUpdate()}
+			step.tests = make([]rangeCacheGoldenTest, 0, len(s.GetTest()))
+			for testIdx, tc := range s.GetTest() {
+				if tc == nil {
+					return nil, fmt.Errorf("case[%d] step[%d] test[%d]: nil", i, stepIdx, testIdx)
+				}
 				parsed := rangeCacheGoldenTest{
-					leader:   testMsg.Get(leaderField).Bool(),
-					key:      append([]byte(nil), testMsg.Get(keyField).Bytes()...),
-					limitKey: append([]byte(nil), testMsg.Get(limitField).Bytes()...),
-					server:   testMsg.Get(serverField).String(),
+					leader:       tc.GetLeader(),
+					directedRead: tc.GetDirectedReadOptions(),
+					key:          append([]byte(nil), tc.GetKey()...),
+					limitKey:     append([]byte(nil), tc.GetLimitKey()...),
+					result:       tc.GetResult(),
+					server:       tc.GetServer(),
 				}
-				if testMsg.Has(droField) {
-					dro := &sppb.DirectedReadOptions{}
-					if err := convertDynamicMessage(testMsg.Get(droField).Message(), dro); err != nil {
-						return nil, fmt.Errorf("case[%d] step[%d] test[%d] directed_read_options: %w", i, stepIdx, testIdx, err)
-					}
-					parsed.directedRead = dro
-				}
-				switch testMsg.Get(rangeModeField).Enum() {
-				case 0:
+				switch tc.GetRangeMode() {
+				case locationpb.RangeCacheTestCase_Step_Test_COVERING_SPLIT:
 					parsed.mode = rangeModeCoveringSplit
-				case 1:
+				case locationpb.RangeCacheTestCase_Step_Test_PICK_RANDOM:
 					parsed.mode = rangeModePickRandom
 				default:
-					return nil, fmt.Errorf("case[%d] step[%d] test[%d]: unknown range_mode %d", i, stepIdx, testIdx, testMsg.Get(rangeModeField).Enum())
+					return nil, fmt.Errorf("case[%d] step[%d] test[%d]: unknown range_mode %d", i, stepIdx, testIdx, tc.GetRangeMode())
 				}
-				if testMsg.Has(minEntriesField) {
-					min := int(testMsg.Get(minEntriesField).Int())
+				if tc.GetMinCacheEntriesForRandomPick() != 0 {
+					min := int(tc.GetMinCacheEntriesForRandomPick())
 					parsed.minEntries = &min
-				}
-				if testMsg.Has(resultField) {
-					result := &sppb.RoutingHint{}
-					if err := convertDynamicMessage(testMsg.Get(resultField).Message(), result); err != nil {
-						return nil, fmt.Errorf("case[%d] step[%d] test[%d] result: %w", i, stepIdx, testIdx, err)
-					}
-					parsed.result = result
 				}
 				step.tests = append(step.tests, parsed)
 			}
@@ -222,143 +176,4 @@ func parseRangeCacheGoldenCases(content string) ([]rangeCacheGoldenCase, error) 
 		cases = append(cases, testCase)
 	}
 	return cases, nil
-}
-
-func buildRangeCacheGoldenDescriptor() (protoreflect.MessageDescriptor, error) {
-	fileProto := &descriptorpb.FileDescriptorProto{
-		Name:       proto.String("range_cache_test_dynamic.proto"),
-		Package:    proto.String("spanner.cloud.location"),
-		Syntax:     proto.String("proto3"),
-		Dependency: []string{"google/spanner/v1/location.proto", "google/spanner/v1/spanner.proto"},
-		MessageType: []*descriptorpb.DescriptorProto{
-			{
-				Name: proto.String("RangeCacheTestCases"),
-				Field: []*descriptorpb.FieldDescriptorProto{
-					{
-						Name:     proto.String("test_case"),
-						Number:   proto.Int32(1),
-						Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-						Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-						TypeName: proto.String(".spanner.cloud.location.RangeCacheTestCase"),
-					},
-				},
-			},
-			{
-				Name: proto.String("RangeCacheTestCase"),
-				Field: []*descriptorpb.FieldDescriptorProto{
-					{
-						Name:   proto.String("name"),
-						Number: proto.Int32(1),
-						Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-						Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_STRING),
-					},
-					{
-						Name:     proto.String("step"),
-						Number:   proto.Int32(2),
-						Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-						Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-						TypeName: proto.String(".spanner.cloud.location.RangeCacheTestCase.Step"),
-					},
-				},
-				NestedType: []*descriptorpb.DescriptorProto{
-					{
-						Name: proto.String("Step"),
-						Field: []*descriptorpb.FieldDescriptorProto{
-							{
-								Name:     proto.String("update"),
-								Number:   proto.Int32(1),
-								Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName: proto.String(".google.spanner.v1.CacheUpdate"),
-							},
-							{
-								Name:     proto.String("test"),
-								Number:   proto.Int32(2),
-								Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-								Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName: proto.String(".spanner.cloud.location.RangeCacheTestCase.Step.Test"),
-							},
-						},
-						NestedType: []*descriptorpb.DescriptorProto{
-							{
-								Name: proto.String("Test"),
-								Field: []*descriptorpb.FieldDescriptorProto{
-									{
-										Name:   proto.String("leader"),
-										Number: proto.Int32(1),
-										Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_BOOL),
-									},
-									{
-										Name:     proto.String("directed_read_options"),
-										Number:   proto.Int32(2),
-										Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-										TypeName: proto.String(".google.spanner.v1.DirectedReadOptions"),
-									},
-									{
-										Name:   proto.String("key"),
-										Number: proto.Int32(3),
-										Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_BYTES),
-									},
-									{
-										Name:   proto.String("limit_key"),
-										Number: proto.Int32(4),
-										Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_BYTES),
-									},
-									{
-										Name:     proto.String("range_mode"),
-										Number:   proto.Int32(5),
-										Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_ENUM),
-										TypeName: proto.String(".spanner.cloud.location.RangeCacheTestCase.Step.Test.RangeMode"),
-									},
-									{
-										Name:   proto.String("min_cache_entries_for_random_pick"),
-										Number: proto.Int32(6),
-										Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_INT32),
-									},
-									{
-										Name:     proto.String("result"),
-										Number:   proto.Int32(7),
-										Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-										TypeName: proto.String(".google.spanner.v1.RoutingHint"),
-									},
-									{
-										Name:   proto.String("server"),
-										Number: proto.Int32(8),
-										Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-										Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_STRING),
-									},
-								},
-								EnumType: []*descriptorpb.EnumDescriptorProto{
-									{
-										Name: proto.String("RangeMode"),
-										Value: []*descriptorpb.EnumValueDescriptorProto{
-											{Name: proto.String("COVERING_SPLIT"), Number: proto.Int32(0)},
-											{Name: proto.String("PICK_RANDOM"), Number: proto.Int32(1)},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	fileDesc, err := protodesc.NewFile(fileProto, protoregistry.GlobalFiles)
-	if err != nil {
-		return nil, fmt.Errorf("create range cache golden descriptor: %w", err)
-	}
-	rootDesc := fileDesc.Messages().ByName("RangeCacheTestCases")
-	if rootDesc == nil {
-		return nil, fmt.Errorf("missing RangeCacheTestCases descriptor")
-	}
-	return rootDesc, nil
 }

@@ -25,15 +25,11 @@ import (
 	"testing"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	locationpb "cloud.google.com/go/spanner/test/proto/locationpb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protodesc"
-	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/dynamicpb"
 )
 
 type finderGoldenEvent struct {
@@ -176,33 +172,30 @@ func assertFinderGoldenHint(t *testing.T, caseName, eventName string, expected, 
 
 func parseFinderGoldenTestCases(content string) ([]finderGoldenTestCase, error) {
 	content = stripFinderGoldenComments(content)
-	descriptor, err := buildFinderGoldenDescriptor()
-	if err != nil {
-		return nil, err
-	}
-	casesMessage := dynamicpb.NewMessage(descriptor)
-	if err := prototext.Unmarshal([]byte(content), casesMessage); err != nil {
+	root := &locationpb.FinderTestCases{}
+	if err := prototext.Unmarshal([]byte(content), root); err != nil {
 		return nil, fmt.Errorf("unmarshal finder goldens as proto: %w", err)
 	}
 
-	casesField := descriptor.Fields().ByName("test_case")
-	casesList := casesMessage.Get(casesField).List()
-
-	testCases := make([]finderGoldenTestCase, 0, casesList.Len())
-	for i := 0; i < casesList.Len(); i++ {
-		caseMsg := casesList.Get(i).Message()
-		nameField := caseMsg.Descriptor().Fields().ByName("name")
-		eventField := caseMsg.Descriptor().Fields().ByName("event")
-
-		testCase := finderGoldenTestCase{name: caseMsg.Get(nameField).String()}
-		events := caseMsg.Get(eventField).List()
-		testCase.events = make([]finderGoldenEvent, 0, events.Len())
-
-		for j := 0; j < events.Len(); j++ {
-			eventMsg := events.Get(j).Message()
-			event, err := parseFinderGoldenEventMessage(eventMsg)
-			if err != nil {
-				return nil, fmt.Errorf("test_case[%d] (%q) event[%d]: %w", i, testCase.name, j, err)
+	testCases := make([]finderGoldenTestCase, 0, len(root.GetTestCase()))
+	for i, c := range root.GetTestCase() {
+		if c == nil {
+			return nil, fmt.Errorf("test_case[%d]: nil", i)
+		}
+		testCase := finderGoldenTestCase{name: c.GetName()}
+		testCase.events = make([]finderGoldenEvent, 0, len(c.GetEvent()))
+		for j, e := range c.GetEvent() {
+			if e == nil {
+				return nil, fmt.Errorf("test_case[%d] (%q) event[%d]: nil", i, testCase.name, j)
+			}
+			event := finderGoldenEvent{
+				name:             e.GetName(),
+				unhealthyServers: append([]string(nil), e.GetUnhealthyServers()...),
+				cacheUpdate:      e.GetCacheUpdate(),
+				read:             e.GetRead(),
+				sql:              e.GetSql(),
+				server:           e.GetServer(),
+				hint:             e.GetHint(),
 			}
 			testCase.events = append(testCase.events, event)
 		}
@@ -222,182 +215,4 @@ func stripFinderGoldenComments(content string) string {
 		filtered = append(filtered, line)
 	}
 	return strings.Join(filtered, "\n")
-}
-
-func parseFinderGoldenEventMessage(eventMsg protoreflect.Message) (finderGoldenEvent, error) {
-	fields := eventMsg.Descriptor().Fields()
-	nameField := fields.ByName("name")
-	unhealthyField := fields.ByName("unhealthy_servers")
-	cacheUpdateField := fields.ByName("cache_update")
-	readField := fields.ByName("read")
-	sqlField := fields.ByName("sql")
-	serverField := fields.ByName("server")
-	hintField := fields.ByName("hint")
-
-	event := finderGoldenEvent{
-		name:   eventMsg.Get(nameField).String(),
-		server: eventMsg.Get(serverField).String(),
-	}
-
-	unhealthy := eventMsg.Get(unhealthyField).List()
-	event.unhealthyServers = make([]string, 0, unhealthy.Len())
-	for i := 0; i < unhealthy.Len(); i++ {
-		event.unhealthyServers = append(event.unhealthyServers, unhealthy.Get(i).String())
-	}
-
-	if eventMsg.Has(cacheUpdateField) {
-		cacheUpdate := &sppb.CacheUpdate{}
-		if err := convertDynamicMessage(eventMsg.Get(cacheUpdateField).Message(), cacheUpdate); err != nil {
-			return event, fmt.Errorf("cache_update: %w", err)
-		}
-		event.cacheUpdate = cacheUpdate
-	}
-	if eventMsg.Has(readField) {
-		read := &sppb.ReadRequest{}
-		if err := convertDynamicMessage(eventMsg.Get(readField).Message(), read); err != nil {
-			return event, fmt.Errorf("read: %w", err)
-		}
-		event.read = read
-	}
-	if eventMsg.Has(sqlField) {
-		sql := &sppb.ExecuteSqlRequest{}
-		if err := convertDynamicMessage(eventMsg.Get(sqlField).Message(), sql); err != nil {
-			return event, fmt.Errorf("sql: %w", err)
-		}
-		event.sql = sql
-	}
-	if eventMsg.Has(hintField) {
-		hint := &sppb.RoutingHint{}
-		if err := convertDynamicMessage(eventMsg.Get(hintField).Message(), hint); err != nil {
-			return event, fmt.Errorf("hint: %w", err)
-		}
-		event.hint = hint
-	}
-
-	return event, nil
-}
-
-func convertDynamicMessage(src protoreflect.Message, dst proto.Message) error {
-	serialized, err := proto.Marshal(src.Interface())
-	if err != nil {
-		return err
-	}
-	return proto.Unmarshal(serialized, dst)
-}
-
-func buildFinderGoldenDescriptor() (protoreflect.MessageDescriptor, error) {
-	fileProto := &descriptorpb.FileDescriptorProto{
-		Name:       proto.String("finder_test_dynamic.proto"),
-		Package:    proto.String("spanner.cloud.location"),
-		Syntax:     proto.String("proto3"),
-		Dependency: []string{"google/spanner/v1/location.proto", "google/spanner/v1/spanner.proto"},
-		MessageType: []*descriptorpb.DescriptorProto{
-			{
-				Name: proto.String("FinderTestCase"),
-				Field: []*descriptorpb.FieldDescriptorProto{
-					{
-						Name:   proto.String("name"),
-						Number: proto.Int32(1),
-						Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-						Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_STRING),
-					},
-					{
-						Name:     proto.String("event"),
-						Number:   proto.Int32(2),
-						Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-						Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-						TypeName: proto.String(".spanner.cloud.location.FinderTestCase.Event"),
-					},
-				},
-				NestedType: []*descriptorpb.DescriptorProto{
-					{
-						Name: proto.String("Event"),
-						Field: []*descriptorpb.FieldDescriptorProto{
-							{
-								Name:   proto.String("name"),
-								Number: proto.Int32(1),
-								Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_STRING),
-							},
-							{
-								Name:     proto.String("cache_update"),
-								Number:   proto.Int32(2),
-								Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName: proto.String(".google.spanner.v1.CacheUpdate"),
-							},
-							{
-								Name:   proto.String("unhealthy_servers"),
-								Number: proto.Int32(3),
-								Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-								Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_STRING),
-							},
-							{
-								Name:       proto.String("read"),
-								Number:     proto.Int32(4),
-								Label:      finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:       finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName:   proto.String(".google.spanner.v1.ReadRequest"),
-								OneofIndex: proto.Int32(0),
-							},
-							{
-								Name:       proto.String("sql"),
-								Number:     proto.Int32(5),
-								Label:      finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:       finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName:   proto.String(".google.spanner.v1.ExecuteSqlRequest"),
-								OneofIndex: proto.Int32(0),
-							},
-							{
-								Name:   proto.String("server"),
-								Number: proto.Int32(6),
-								Label:  finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:   finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_STRING),
-							},
-							{
-								Name:     proto.String("hint"),
-								Number:   proto.Int32(7),
-								Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL),
-								Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-								TypeName: proto.String(".google.spanner.v1.RoutingHint"),
-							},
-						},
-						OneofDecl: []*descriptorpb.OneofDescriptorProto{
-							{Name: proto.String("request")},
-						},
-					},
-				},
-			},
-			{
-				Name: proto.String("FinderTestCases"),
-				Field: []*descriptorpb.FieldDescriptorProto{
-					{
-						Name:     proto.String("test_case"),
-						Number:   proto.Int32(2),
-						Label:    finderGoldenFieldLabel(descriptorpb.FieldDescriptorProto_LABEL_REPEATED),
-						Type:     finderGoldenFieldType(descriptorpb.FieldDescriptorProto_TYPE_MESSAGE),
-						TypeName: proto.String(".spanner.cloud.location.FinderTestCase"),
-					},
-				},
-			},
-		},
-	}
-
-	fileDesc, err := protodesc.NewFile(fileProto, protoregistry.GlobalFiles)
-	if err != nil {
-		return nil, fmt.Errorf("create finder golden descriptor: %w", err)
-	}
-	casesDesc := fileDesc.Messages().ByName("FinderTestCases")
-	if casesDesc == nil {
-		return nil, fmt.Errorf("missing FinderTestCases descriptor")
-	}
-	return casesDesc, nil
-}
-
-func finderGoldenFieldLabel(label descriptorpb.FieldDescriptorProto_Label) *descriptorpb.FieldDescriptorProto_Label {
-	return &label
-}
-
-func finderGoldenFieldType(fieldType descriptorpb.FieldDescriptorProto_Type) *descriptorpb.FieldDescriptorProto_Type {
-	return &fieldType
 }
