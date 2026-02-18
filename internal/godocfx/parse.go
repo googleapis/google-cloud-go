@@ -715,13 +715,14 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.M
 			metaFile := filepath.Join(currDir, ".repo-metadata.json")
 			b, err := os.ReadFile(metaFile)
 			if err == nil {
-				if err := json.Unmarshal(b, &meta); err == nil {
-					d.mu.Lock()
-					d.metadata[currDir] = meta
-					d.mu.Unlock()
-					found = true
-					break
+				if err := json.Unmarshal(b, &meta); err != nil {
+					return "", fmt.Errorf("failed to decode repo metadata in %s: %v", metaFile, err)
 				}
+				d.mu.Lock()
+				d.metadata[currDir] = meta
+				d.mu.Unlock()
+				found = true
+				break
 			}
 
 			if currDir == module.Dir || currDir == "." || currDir == "/" {
@@ -743,7 +744,7 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.M
 	}
 
 	if description == "" {
-		return "", nil
+		return "", fmt.Errorf("no description found for %q and no fallback provided", importPath)
 	}
 
 	if apiV := vNumberRE.FindString(importPath); apiV != "" {

@@ -298,12 +298,18 @@ func TestFriendlyAPIName(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	badDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(badDir, ".repo-metadata.json"), []byte("invalid json"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
 	namer := &friendlyAPINamer{}
 
 	tests := []struct {
 		importPath string
 		module     *packages.Module
 		want       string
+		wantErr    bool
 	}{
 		{
 			importPath: "cloud.google.com/go/storage",
@@ -330,16 +336,24 @@ func TestFriendlyAPIName(t *testing.T) {
 			want: "Storage API v1beta1",
 		},
 		{
+			importPath: "cloud.google.com/go/bad",
+			module: &packages.Module{
+				Path: "cloud.google.com/go/bad",
+				Dir:  badDir,
+			},
+			wantErr: true,
+		},
+		{
 			importPath: "not found",
 			module:     nil,
-			want:       "",
+			wantErr:    true,
 		},
 	}
 
 	for _, test := range tests {
 		got, err := namer.friendlyAPIName(test.importPath, test.module)
-		if err != nil {
-			t.Errorf("friendlyAPIName(%q) got err: %v", test.importPath, err)
+		if (err != nil) != test.wantErr {
+			t.Errorf("friendlyAPIName(%q) got err: %v, wantErr %v", test.importPath, err, test.wantErr)
 			continue
 		}
 		if got != test.want {
