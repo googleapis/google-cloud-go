@@ -48,4 +48,6 @@ jobs:
     - uses: actions/checkout@v6
     - run: |
         cd internal/actions
-        go run ./internal/actions/cmd/thirdpartycheck -q --dir=${{ github.workspace }} -mod ${{ matrix.mods }}/go.mod
+        go run ./internal/actions/cmd/thirdpartycheck -q --dir=${{ github.workspace }} -mod ${MATRIX_MODS}/go.mod
+      env:
+        MATRIX_MODS: ${{ matrix.mods }}
