@@ -94,7 +94,7 @@ func TestPacemakerExporting(t *testing.T) {
 	}
 
 	if totalCount < 1 {
-		t.Errorf("Expected at least 2 recorded data points, got %d", totalCount)
+		t.Errorf("Expected at least 1 recorded data points, got %d", totalCount)
 	}
 
 	// 10. Cleanup

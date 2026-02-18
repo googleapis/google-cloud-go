@@ -82,7 +82,7 @@ func (p *Pacemaker) Start(ctx context.Context) {
 			select {
 			case t := <-ticker.C:
 				// Current Time - Scheduled Time (t)
-				delay := float64(time.Since(t).Nanoseconds()) / 1e3 // Convert ns to ms
+				delay := float64(time.Since(t).Nanoseconds()) / 1e3 // Convert ns to us
 				p.histogram.Record(ctx, delay, p.attrs)
 			case <-ctx.Done():
 				return
