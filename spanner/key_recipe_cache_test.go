@@ -186,6 +186,60 @@ func TestPreparedQuery_MatchesOnKindsAndTypes(t *testing.T) {
 	}
 }
 
+func TestFingerprintExecuteSQLRequest_NullParamKind(t *testing.T) {
+	reqNull := executeSQLForTest(
+		"SELECT * FROM T WHERE p1=@p1",
+		map[string]*structpb.Value{"p1": structpb.NewNullValue()},
+		nil,
+		nil,
+	)
+	reqNullSameKind := executeSQLForTest(
+		"SELECT * FROM T WHERE p1=@p1",
+		map[string]*structpb.Value{"p1": structpb.NewNullValue()},
+		nil,
+		nil,
+	)
+	if got, want := fingerprintExecuteSQLRequest(reqNull), fingerprintExecuteSQLRequest(reqNullSameKind); got != want {
+		t.Fatalf("expected same fingerprint for same NULL param kind, got %d and %d", got, want)
+	}
+
+	reqString := executeSQLForTest(
+		"SELECT * FROM T WHERE p1=@p1",
+		map[string]*structpb.Value{"p1": structpb.NewStringValue("x")},
+		nil,
+		nil,
+	)
+	if got, want := fingerprintExecuteSQLRequest(reqNull), fingerprintExecuteSQLRequest(reqString); got == want {
+		t.Fatalf("expected different fingerprints for NULL vs STRING kinds, got %d", got)
+	}
+}
+
+func TestPreparedQuery_MatchesWithNullParamKind(t *testing.T) {
+	nullReq := executeSQLForTest(
+		"SELECT * FROM T WHERE p1=@p1",
+		map[string]*structpb.Value{"p1": structpb.NewNullValue()},
+		nil,
+		nil,
+	)
+	prepared := newPreparedQuery(nullReq)
+	if !prepared.matches(executeSQLForTest(
+		"SELECT * FROM T WHERE p1=@p1",
+		map[string]*structpb.Value{"p1": structpb.NewNullValue()},
+		nil,
+		nil,
+	)) {
+		t.Fatal("expected untyped NULL param query to match")
+	}
+	if prepared.matches(executeSQLForTest(
+		"SELECT * FROM T WHERE p1=@p1",
+		map[string]*structpb.Value{"p1": structpb.NewBoolValue(true)},
+		nil,
+		nil,
+	)) {
+		t.Fatal("expected NULL param kind to mismatch BOOL kind")
+	}
+}
+
 func TestComputeReadKeys_SetsRoutingHint(t *testing.T) {
 	cache := newKeyRecipeCache()
 	cache.addRecipes(&sppb.RecipeList{
@@ -229,5 +283,73 @@ func TestComputeReadKeys_SetsRoutingHint(t *testing.T) {
 	}
 	if len(hint.GetKey()) == 0 {
 		t.Fatal("expected key bytes to be set")
+	}
+}
+
+func TestMutationToTargetRange(t *testing.T) {
+	cache := newKeyRecipeCache()
+
+	if got := cache.mutationToTargetRange(nil); got != nil {
+		t.Fatalf("expected nil for nil mutation, got %#v", got)
+	}
+
+	missingRecipeMutation := &sppb.Mutation{
+		Operation: &sppb.Mutation_Insert{
+			Insert: &sppb.Mutation_Write{
+				Table:   "Missing",
+				Columns: []string{"k"},
+				Values: []*structpb.ListValue{
+					{Values: []*structpb.Value{structpb.NewStringValue("foo")}},
+				},
+			},
+		},
+	}
+	if got := cache.mutationToTargetRange(missingRecipeMutation); got != nil {
+		t.Fatalf("expected nil when recipe is missing, got %#v", got)
+	}
+
+	cache.addRecipes(&sppb.RecipeList{
+		SchemaGeneration: []byte("1"),
+		Recipe: []*sppb.KeyRecipe{
+			{
+				Target: &sppb.KeyRecipe_TableName{TableName: "T"},
+				Part: []*sppb.KeyRecipe_Part{
+					{Tag: 1},
+					{
+						Order:     sppb.KeyRecipe_Part_ASCENDING,
+						NullOrder: sppb.KeyRecipe_Part_NULLS_FIRST,
+						Type:      &sppb.Type{Code: sppb.TypeCode_STRING},
+						ValueType: &sppb.KeyRecipe_Part_Identifier{Identifier: "k"},
+					},
+				},
+			},
+		},
+	})
+
+	mutation := &sppb.Mutation{
+		Operation: &sppb.Mutation_Insert{
+			Insert: &sppb.Mutation_Write{
+				Table:   "T",
+				Columns: []string{"k"},
+				Values: []*structpb.ListValue{
+					{Values: []*structpb.Value{structpb.NewStringValue("foo")}},
+				},
+			},
+		},
+	}
+	got := cache.mutationToTargetRange(mutation)
+	if got == nil {
+		t.Fatal("expected non-nil target range for matching mutation recipe")
+	}
+	wantStart := expectedKeyForStringValue(t, "foo")
+	if !bytes.Equal(got.start, wantStart) {
+		t.Fatalf("unexpected start key: got %q want %q", got.start, wantStart)
+	}
+	wantLimit := makePrefixSuccessor(wantStart)
+	if !bytes.Equal(got.limit, wantLimit) {
+		t.Fatalf("unexpected limit key: got %q want %q", got.limit, wantLimit)
+	}
+	if got.approximate {
+		t.Fatal("expected exact target range for matching mutation")
 	}
 }

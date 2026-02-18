@@ -370,3 +370,119 @@ func TestPartitionRead_Multiplexed(t *testing.T) {
 		t.Errorf("TestPartitionQuery_Multiplexed: expected 2 requests to be handled, got: %d", handled)
 	}
 }
+
+func TestBatchExecute_Query_PreparesRoutingHint(t *testing.T) {
+	t.Setenv(experimentalLocationAPIEnvVar, "true")
+
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+	if txn.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+	txn.locationRouter.observePartialResultSet(&sppb.PartialResultSet{
+		CacheUpdate: &sppb.CacheUpdate{DatabaseId: 7},
+	})
+
+	partitions, err := txn.PartitionQuery(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), PartitionOptions{MaxPartitions: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(partitions) == 0 {
+		t.Fatal("expected at least one partition")
+	}
+	if err := server.TestSpanner.PutPartitionResult(partitions[0].pt, server.CreateSingleRowSingersResult(0)); err != nil {
+		t.Fatal(err)
+	}
+
+	iter := txn.Execute(ctx, partitions[0])
+	defer iter.Stop()
+	if err := iter.Do(func(*Row) error { return nil }); err != nil {
+		t.Fatal(err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	var executeReq *sppb.ExecuteSqlRequest
+	for _, req := range requests {
+		if r, ok := req.(*sppb.ExecuteSqlRequest); ok && len(r.GetPartitionToken()) > 0 {
+			executeReq = r
+			break
+		}
+	}
+	if executeReq == nil {
+		t.Fatal("expected an ExecuteSqlRequest with partition token")
+	}
+	if executeReq.GetRoutingHint() == nil {
+		t.Fatal("expected routing hint on ExecuteSqlRequest")
+	}
+	if got := executeReq.GetRoutingHint().GetDatabaseId(); got != 7 {
+		t.Fatalf("unexpected routing hint database id: got %d, want 7", got)
+	}
+	if executeReq.GetRoutingHint().GetOperationUid() == 0 {
+		t.Fatal("expected operation uid to be set on routing hint")
+	}
+}
+
+func TestBatchExecute_Read_PreparesRoutingHint(t *testing.T) {
+	t.Setenv(experimentalLocationAPIEnvVar, "true")
+
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+	if txn.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+	txn.locationRouter.observePartialResultSet(&sppb.PartialResultSet{
+		CacheUpdate: &sppb.CacheUpdate{DatabaseId: 9},
+	})
+
+	partitions, err := txn.PartitionRead(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{MaxPartitions: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(partitions) == 0 {
+		t.Fatal("expected at least one partition")
+	}
+	if err := server.TestSpanner.PutPartitionResult(partitions[0].pt, server.CreateSingleRowSingersResult(0)); err != nil {
+		t.Fatal(err)
+	}
+
+	iter := txn.Execute(ctx, partitions[0])
+	defer iter.Stop()
+	if err := iter.Do(func(*Row) error { return nil }); err != nil {
+		t.Fatal(err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	var readReq *sppb.ReadRequest
+	for _, req := range requests {
+		if r, ok := req.(*sppb.ReadRequest); ok && len(r.GetPartitionToken()) > 0 {
+			readReq = r
+			break
+		}
+	}
+	if readReq == nil {
+		t.Fatal("expected a ReadRequest with partition token")
+	}
+	if readReq.GetRoutingHint() == nil {
+		t.Fatal("expected routing hint on ReadRequest")
+	}
+	if got := readReq.GetRoutingHint().GetDatabaseId(); got != 9 {
+		t.Fatalf("unexpected routing hint database id: got %d, want 9", got)
+	}
+	if readReq.GetRoutingHint().GetOperationUid() == 0 {
+		t.Fatal("expected operation uid to be set on routing hint")
+	}
+}

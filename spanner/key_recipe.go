@@ -412,9 +412,14 @@ func (r *keyRecipe) encodeKeyInternal(finder valueFinder, keyType keyType) *targ
 			}
 			value, lookupStatus := r.resolvePartValue(part, finder, lookupIndex)
 			switch lookupStatus {
+			case valueLookupFound:
+				// Continue with encoding for the found value.
 			case valueLookupMissing:
 				state = encodeStateEndOfKeys
 			case valueLookupFailed:
+				state = encodeStateFailed
+			default:
+				// Defensive fallback if valueLookupStatus grows in the future.
 				state = encodeStateFailed
 			}
 			if lookupStatus != valueLookupFound {
@@ -432,10 +437,10 @@ func (r *keyRecipe) encodeKeyInternal(finder valueFinder, keyType keyType) *targ
 	}
 
 	if partIndex == len(r.parts) || (keyType != keyTypeFull && state == encodeStateEndOfKeys) {
-		switch keyType {
-		case keyTypePrefixSuccessor:
+		if keyType == keyTypePrefixSuccessor {
 			target.start = makePrefixSuccessor(target.start)
-		case keyTypeIndex:
+		}
+		if keyType == keyTypeIndex {
 			target.limit = makePrefixSuccessor(target.start)
 		}
 		return target

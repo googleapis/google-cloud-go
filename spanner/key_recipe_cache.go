@@ -103,8 +103,12 @@ func fingerprintExecuteSQLRequest(req *sppb.ExecuteSqlRequest) uint64 {
 	for _, name := range paramNames {
 		hashString(h, name)
 		if typ, ok := req.GetParamTypes()[name]; ok {
-			bytes, _ := proto.MarshalOptions{Deterministic: true}.Marshal(typ)
-			hashBytes(h, bytes)
+			typeBytes, err := proto.MarshalOptions{Deterministic: true}.Marshal(typ)
+			if err != nil {
+				hashBytes(h, nil)
+				continue
+			}
+			hashBytes(h, typeBytes)
 		} else {
 			hashUint64(h, uint64(valueKindCase(req.GetParams().GetFields()[name])))
 		}
@@ -391,6 +395,8 @@ func valueKindCase(value *structpb.Value) int32 {
 	}
 }
 
+// lruCache is a non-thread-safe fixed-size LRU map.
+// Callers must provide external synchronization for all operations.
 type lruCache[K comparable, V any] struct {
 	maxSize int
 	items   map[K]*list.Element
