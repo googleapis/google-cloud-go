@@ -434,6 +434,11 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	} else {
 		btopt.Debugf(pool.logger, "bigtable_connpool: failed to create metrics reporter: %v\n", err)
 	}
+
+	// Initialize and register the Pacemaker
+	pacemaker := NewPacemaker(pool.meterProvider, pool.logger)
+	pool.monitors = append(pool.monitors, pacemaker)
+
 	pool.startMonitors()
 
 	// record the client startup time
