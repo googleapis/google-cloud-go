@@ -3,7 +3,7 @@
 // For migration, see https://github.com/googleapis/google-cloud-go/blob/main/pubsub/MIGRATING.md
 module cloud.google.com/go/pubsub
 
-go 1.24.0
+go 1.25.0
 
 require (
 	cloud.google.com/go v0.123.0
