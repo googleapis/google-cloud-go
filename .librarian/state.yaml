@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.116.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -2129,7 +2129,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataproc
     version: 2.15.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/dataproc/v1
         service_config: dataproc_v1.yaml
@@ -2329,7 +2329,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dialogflow
     version: 1.75.0
-    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/dialogflow/cx/v3
         service_config: dialogflow_v3.yaml
@@ -3197,7 +3197,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: kms
     version: 1.25.0
-    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/kms/v1
         service_config: cloudkms_v1.yaml
@@ -3530,7 +3530,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maps
     version: 1.27.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/maps/addressvalidation/v1
         service_config: addressvalidation_v1.yaml
@@ -3923,7 +3923,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
     version: 1.20.0
-    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/networkconnectivity/v1
         service_config: networkconnectivity_v1.yaml
@@ -4907,7 +4907,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: saasplatform
     version: 0.1.0
-    last_generated_commit: 53af3b727f84acc34e31c23f3b6e7b8aa4b7e837
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
         service_config: saasservicemgmt_v1beta1.yaml
@@ -5288,7 +5288,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: servicemanagement
     version: 1.10.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/api/servicemanagement/v1
         service_config: servicemanagement_v1.yaml
@@ -5704,7 +5704,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.88.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
@@ -5872,7 +5872,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
     version: 0.2.0
-    last_generated_commit: 1496716325adf01af70ffca9161dd62d7bebbd50
+    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/storagebatchoperations/v1
         service_config: storagebatchoperations_v1.yaml

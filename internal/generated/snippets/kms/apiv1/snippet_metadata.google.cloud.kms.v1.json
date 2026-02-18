@@ -290,7 +290,7 @@
     {
       "regionTag": "cloudkms_v1_generated_Autokey_ListLocations_sync",
       "title": "cloudkms ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "AutokeyClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -428,7 +428,7 @@
     {
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetAutokeyConfig_sync",
       "title": "cloudkms GetAutokeyConfig Sample",
-      "description": "GetAutokeyConfig returns the [AutokeyConfig][google.cloud.kms.v1.AutokeyConfig] for a\nfolder.",
+      "description": "GetAutokeyConfig returns the [AutokeyConfig][google.cloud.kms.v1.AutokeyConfig] for a folder\nor project.",
       "file": "AutokeyAdminClient/GetAutokeyConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -612,7 +612,7 @@
     {
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_ListLocations_sync",
       "title": "cloudkms ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "AutokeyAdminClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -796,7 +796,7 @@
     {
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_UpdateAutokeyConfig_sync",
       "title": "cloudkms UpdateAutokeyConfig Sample",
-      "description": "UpdateAutokeyConfig updates the [AutokeyConfig][google.cloud.kms.v1.AutokeyConfig] for a\nfolder. The caller must have both `cloudkms.autokeyConfigs.update`\npermission on the parent folder and `cloudkms.cryptoKeys.setIamPolicy`\npermission on the provided key project. A\n[KeyHandle][google.cloud.kms.v1.KeyHandle] creation in the folder's\ndescendant projects will use this configuration to determine where to\ncreate the resulting [CryptoKey][google.cloud.kms.v1.CryptoKey].",
+      "description": "UpdateAutokeyConfig updates the [AutokeyConfig][google.cloud.kms.v1.AutokeyConfig] for a folder\nor a project. The caller must have both `cloudkms.autokeyConfigs.update`\npermission on the parent folder and `cloudkms.cryptoKeys.setIamPolicy`\npermission on the provided key project. A\n[KeyHandle][google.cloud.kms.v1.KeyHandle] creation in the folder's\ndescendant projects will use this configuration to determine where to\ncreate the resulting [CryptoKey][google.cloud.kms.v1.CryptoKey].",
       "file": "AutokeyAdminClient/UpdateAutokeyConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1164,7 +1164,7 @@
     {
       "regionTag": "cloudkms_v1_generated_EkmService_ListLocations_sync",
       "title": "cloudkms ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "EkmClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1899,7 +1899,7 @@
     {
       "regionTag": "cloudkms_v1_generated_HsmManagement_ListLocations_sync",
       "title": "cloudkms ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "HsmManagementClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2495,6 +2495,98 @@
       ]
     },
     {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_DeleteCryptoKey_sync",
+      "title": "cloudkms DeleteCryptoKey Sample",
+      "description": "DeleteCryptoKey permanently deletes the given [CryptoKey][google.cloud.kms.v1.CryptoKey].\nAll child [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion] must\nhave been previously deleted using\n[KeyManagementService.DeleteCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.DeleteCryptoKeyVersion].\nThe specified crypto key will be immediately and permanently deleted upon\ncalling this method. This action cannot be undone.",
+      "file": "KeyManagementClient/DeleteCryptoKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCryptoKey",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.DeleteCryptoKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.DeleteCryptoKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCryptoKeyOperation",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "DeleteCryptoKey",
+          "fullName": "google.cloud.kms.v1.KeyManagementService.DeleteCryptoKey",
+          "service": {
+            "shortName": "KeyManagementService",
+            "fullName": "google.cloud.kms.v1.KeyManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_DeleteCryptoKeyVersion_sync",
+      "title": "cloudkms DeleteCryptoKeyVersion Sample",
+      "description": "DeleteCryptoKeyVersion permanently deletes the given\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]. Only possible if\nthe version has not been previously imported and if its\n[state][google.cloud.kms.v1.CryptoKeyVersion.state] is one of\n[DESTROYED][CryptoKeyVersionState.DESTROYED],\n[IMPORT_FAILED][CryptoKeyVersionState.IMPORT_FAILED], or\n[GENERATION_FAILED][CryptoKeyVersionState.GENERATION_FAILED].\nSuccessfully imported\n[CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion] cannot be deleted\nat this time. The specified version will be immediately and permanently\ndeleted upon calling this method. This action cannot be undone.",
+      "file": "KeyManagementClient/DeleteCryptoKeyVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCryptoKeyVersion",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.DeleteCryptoKeyVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.DeleteCryptoKeyVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCryptoKeyVersionOperation",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "DeleteCryptoKeyVersion",
+          "fullName": "google.cloud.kms.v1.KeyManagementService.DeleteCryptoKeyVersion",
+          "service": {
+            "shortName": "KeyManagementService",
+            "fullName": "google.cloud.kms.v1.KeyManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_DestroyCryptoKeyVersion_sync",
       "title": "cloudkms DestroyCryptoKeyVersion Sample",
       "description": "DestroyCryptoKeyVersion schedule a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] for\ndestruction.\n\nUpon calling this method,\n[CryptoKeyVersion.state][google.cloud.kms.v1.CryptoKeyVersion.state] will\nbe set to\n[DESTROY_SCHEDULED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROY_SCHEDULED],\nand [destroy_time][google.cloud.kms.v1.CryptoKeyVersion.destroy_time] will\nbe set to the time\n[destroy_scheduled_duration][google.cloud.kms.v1.CryptoKey.destroy_scheduled_duration]\nin the future. At that time, the\n[state][google.cloud.kms.v1.CryptoKeyVersion.state] will automatically\nchange to\n[DESTROYED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROYED],\nand the key material will be irrevocably destroyed.\n\nBefore the\n[destroy_time][google.cloud.kms.v1.CryptoKeyVersion.destroy_time] is\nreached,\n[RestoreCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion]\nmay be called to reverse the process.",
@@ -3001,6 +3093,52 @@
       ]
     },
     {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_GetRetiredResource_sync",
+      "title": "cloudkms GetRetiredResource Sample",
+      "description": "GetRetiredResource retrieves a specific [RetiredResource][google.cloud.kms.v1.RetiredResource]\nresource, which represents the record of a deleted\n[CryptoKey][google.cloud.kms.v1.CryptoKey].",
+      "file": "KeyManagementClient/GetRetiredResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRetiredResource",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.GetRetiredResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.GetRetiredResourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.RetiredResource",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "GetRetiredResource",
+          "fullName": "google.cloud.kms.v1.KeyManagementService.GetRetiredResource",
+          "service": {
+            "shortName": "KeyManagementService",
+            "fullName": "google.cloud.kms.v1.KeyManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ImportCryptoKeyVersion_sync",
       "title": "cloudkms ImportCryptoKeyVersion Sample",
       "description": "ImportCryptoKeyVersion import wrapped key material into a\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].\n\nAll requests must specify a [CryptoKey][google.cloud.kms.v1.CryptoKey]. If\na [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] is additionally\nspecified in the request, key material will be reimported into that\nversion. Otherwise, a new version will be created, and will be assigned the\nnext sequential id within the [CryptoKey][google.cloud.kms.v1.CryptoKey].",
@@ -3233,7 +3371,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListLocations_sync",
       "title": "cloudkms ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "KeyManagementClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3264,6 +3402,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_ListRetiredResources_sync",
+      "title": "cloudkms ListRetiredResources Sample",
+      "description": "ListRetiredResources lists the [RetiredResources][google.cloud.kms.v1.RetiredResource] which are\nthe records of deleted [CryptoKeys][google.cloud.kms.v1.CryptoKey].\nRetiredResources prevent the reuse of these resource names after deletion.",
+      "file": "KeyManagementClient/ListRetiredResources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRetiredResources",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.ListRetiredResources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.ListRetiredResourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RetiredResourceIterator",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "ListRetiredResources",
+          "fullName": "google.cloud.kms.v1.KeyManagementService.ListRetiredResources",
+          "service": {
+            "shortName": "KeyManagementService",
+            "fullName": "google.cloud.kms.v1.KeyManagementService"
           }
         }
       },

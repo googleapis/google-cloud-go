@@ -60,7 +60,7 @@
     {
       "regionTag": "kmsinventory_v1_generated_KeyTrackingService_GetProtectedResourcesSummary_sync",
       "title": "kmsinventory GetProtectedResourcesSummary Sample",
-      "description": "GetProtectedResourcesSummary returns aggregate information about the resources protected by the given\nCloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. Only resources within\nthe same Cloud organization as the key will be returned. The project that\nholds the key must be part of an organization in order for this call to\nsucceed.",
+      "description": "GetProtectedResourcesSummary returns aggregate information about the resources protected by the given\nCloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. By default,\nsummary of resources within the same Cloud organization as the key will be\nreturned, which requires the KMS organization service account to be\nconfigured(refer\nhttps: //docs.cloud.google.com/kms/docs/view-key-usage#required-roles).\nIf the KMS organization service account is not configured or key's project\nis not part of an organization, set\n[fallback_scope][google.cloud.kms.inventory.v1.GetProtectedResourcesSummaryRequest.fallback_scope]\nto `FALLBACK_SCOPE_PROJECT` to retrieve a summary of protected resources\nwithin the key's project.",
       "file": "KeyTrackingClient/GetProtectedResourcesSummary/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "kmsinventory_v1_generated_KeyTrackingService_SearchProtectedResources_sync",
       "title": "kmsinventory SearchProtectedResources Sample",
-      "description": "SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS\n[CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud organization.",
+      "description": "SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS\n[CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud\norganization/project.",
       "file": "KeyTrackingClient/SearchProtectedResources/main.go",
       "language": "GO",
       "clientMethod": {

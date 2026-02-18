@@ -472,7 +472,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Agents_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "AgentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -977,7 +977,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Changelogs_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "ChangelogsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1343,7 +1343,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "ConversationHistoryClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1664,7 +1664,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Deployments_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "DeploymentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2168,7 +2168,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_EntityTypes_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "EntityTypesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2718,7 +2718,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "EnvironmentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3268,7 +3268,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Examples_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "ExamplesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3726,7 +3726,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "ExperimentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4414,7 +4414,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "FlowsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4964,7 +4964,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Generators_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "GeneratorsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5514,7 +5514,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Intents_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "IntentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5926,7 +5926,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Pages_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "PagesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6613,7 +6613,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Playbooks_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "PlaybooksClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7163,7 +7163,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_SecuritySettingsService_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "SecuritySettingsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7621,7 +7621,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_SessionEntityTypes_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "SessionEntityTypesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8034,7 +8034,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Sessions_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "SessionsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8764,7 +8764,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "TestCasesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9497,7 +9497,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Tools_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "ToolsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10047,7 +10047,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TransitionRouteGroups_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "TransitionRouteGroupsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10551,7 +10551,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "VersionsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11055,7 +11055,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Webhooks_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "WebhooksClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
