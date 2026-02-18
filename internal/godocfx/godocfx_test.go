@@ -20,8 +20,6 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -40,28 +38,13 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func fakeMetaServer() *httptest.Server {
-	meta := repoMetadata{
-		"cloud.google.com/go/storage": repoMetadataItem{
-			Description: "Storage API",
-		},
-		"cloud.google.com/iam/apiv1beta1": repoMetadataItem{
-			Description: "IAM",
-		},
-		"cloud.google.com/go/cloudbuild/apiv1/v2": repoMetadataItem{
-			Description: "Cloud Build API",
-		},
-	}
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(meta)
-	}))
-}
-
 func TestParse(t *testing.T) {
 	mod := "cloud.google.com/go/bigquery"
-	metaServer := fakeMetaServer()
-	defer metaServer.Close()
-	r, err := parse(mod+"/...", ".", []string{"README.md"}, nil, &friendlyAPINamer{metaURL: metaServer.URL})
+	r, err := parse(mod+"/...", ".", []string{"README.md"}, nil, &friendlyAPINamer{
+		Fallbacks: map[string]string{
+			"cloud.google.com/go/bigquery": "BigQuery API",
+		},
+	})
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
@@ -132,9 +115,11 @@ func TestGoldens(t *testing.T) {
 	extraFiles := []string{"README.md"}
 
 	testMod := indexEntry{Path: "cloud.google.com/go/storage", Version: "v1.33.0"}
-	metaServer := fakeMetaServer()
-	defer metaServer.Close()
-	namer := &friendlyAPINamer{metaURL: metaServer.URL}
+	namer := &friendlyAPINamer{
+		Fallbacks: map[string]string{
+			"cloud.google.com/go/storage": "Storage API",
+		},
+	}
 	ok := processMods([]indexEntry{testMod}, gotDir, namer, extraFiles, false)
 	if !ok {
 		t.Fatalf("failed to process modules")
@@ -304,34 +289,55 @@ Deprecated: use Reader.Attrs.Size.`,
 }
 
 func TestFriendlyAPIName(t *testing.T) {
-	metaServer := fakeMetaServer()
-	defer metaServer.Close()
-	namer := &friendlyAPINamer{metaURL: metaServer.URL}
+	tmpDir := t.TempDir()
+	meta := repoMetadata{
+		Description: "Storage API",
+	}
+	b, _ := json.Marshal(meta)
+	if err := os.WriteFile(filepath.Join(tmpDir, ".repo-metadata.json"), b, 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	namer := &friendlyAPINamer{}
 
 	tests := []struct {
 		importPath string
+		module     *packages.Module
 		want       string
 	}{
 		{
 			importPath: "cloud.google.com/go/storage",
-			want:       "Storage API",
+			module: &packages.Module{
+				Path: "cloud.google.com/go/storage",
+				Dir:  tmpDir,
+			},
+			want: "Storage API",
 		},
 		{
-			importPath: "cloud.google.com/iam/apiv1beta1",
-			want:       "IAM v1beta1",
+			importPath: "cloud.google.com/go/storage/apiv1",
+			module: &packages.Module{
+				Path: "cloud.google.com/go/storage",
+				Dir:  tmpDir,
+			},
+			want: "Storage API v1",
 		},
 		{
-			importPath: "cloud.google.com/go/cloudbuild/apiv1/v2",
-			want:       "Cloud Build API v1",
+			importPath: "cloud.google.com/go/storage/apiv1beta1",
+			module: &packages.Module{
+				Path: "cloud.google.com/go/storage",
+				Dir:  tmpDir,
+			},
+			want: "Storage API v1beta1",
 		},
 		{
 			importPath: "not found",
+			module:     nil,
 			want:       "",
 		},
 	}
 
 	for _, test := range tests {
-		got, err := namer.friendlyAPIName(test.importPath)
+		got, err := namer.friendlyAPIName(test.importPath, test.module)
 		if err != nil {
 			t.Errorf("friendlyAPIName(%q) got err: %v", test.importPath, err)
 			continue
