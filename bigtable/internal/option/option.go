@@ -272,7 +272,6 @@ func DefaultMetricsReporterConfig() MetricsReporterConfig {
 	}
 }
 
-
 // ConnectionRecycleConfig controls the behavior of the connection recycler.
 type ConnectionRecycleConfig struct {
 	// MaxAge is the base lifespan of a connection.
