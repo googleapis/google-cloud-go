@@ -232,7 +232,7 @@ func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return token, nil
 }
 
-// It immediately returns a valid header if it's cached, or kicks off a background fetch
+// GetHeaderValue immediately returns a valid header if it's cached, or kicks off a background fetch
 // if it is unpopulated or expired.
 func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, accessToken *auth.Token) string {
 	// Skip lookup for regional endpoints.
@@ -295,6 +295,7 @@ func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) 
 	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
 	if err != nil {
 		p.logger.ErrorContext(ctx, "regionalaccessboundary: error getting the lookup endpoint", "error", err)
+		p.handleFetchFailure(ctx)
 		return
 	}
 
@@ -423,15 +424,11 @@ func (g *GCEConfigProvider) fetchUD(ctx context.Context) {
 }
 
 // GetRegionalAccessBoundaryEndpoint constructs the Regional Access Boundary lookup URL for a GCE environment.
-// It uses cached metadata (service account email, universe domain) after the first call.
+// It uses cached service account email after the first call.
 func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
 	g.saOnce.Do(func() { g.fetchSA(ctx) })
 	if g.saEmailErr != nil {
 		return "", g.saEmailErr
-	}
-	g.udOnce.Do(func() { g.fetchUD(ctx) })
-	if g.udErr != nil {
-		return "", g.udErr
 	}
 	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, g.saEmail), nil
 }

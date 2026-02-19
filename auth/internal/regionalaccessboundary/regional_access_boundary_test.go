@@ -16,6 +16,7 @@ package regionalaccessboundary
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -425,8 +426,8 @@ func TestGCEConfigProvider(t *testing.T) {
 					http.NotFound(w, r)
 				}
 			},
-			wantErrEndpoint: "regionalaccessboundary: GCE config: failed to get universe domain",
-			wantErrUD:       "regionalaccessboundary: GCE config: failed to get universe domain",
+			expectedEndpoint: defaultExpectedEndpoint,
+			wantErrUD:        "regionalaccessboundary: GCE config: failed to get universe domain",
 		},
 		{
 			name:                    "Nil ComputeUniverseDomainProvider",
@@ -679,6 +680,41 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 			t.Errorf("Second call did not return cached header within timeout")
 		} else if val2 != "0xABC" {
 			t.Errorf("Second call returned %q, expected %q", val2, "0xABC")
+		}
+	})
+
+	t.Run("Endpoint_fetch_failure_sets_cooldown", func(t *testing.T) {
+		configProvider := &mockConfigProvider{
+			endpointErrToReturn: errors.New("endpoint error"),
+		}
+		provider, err := NewProvider(http.DefaultClient, configProvider, nil, nil)
+		if err != nil {
+			t.Fatalf("NewProvider() unexpected error: %v", err)
+		}
+
+		// First call should trigger async fetch (which fails).
+		val := provider.GetHeaderValue(context.Background(), "https://example.com", nil)
+		if val != "" {
+			t.Errorf("First call expected empty string, got %q", val)
+		}
+
+		// Wait for the async fetch to complete and set cooldown.
+		// Since there is no direct channel to signal completion, we poll the cooldown status.
+		deadline := time.Now().Add(1 * time.Second)
+		cooldownSet := false
+		for time.Now().Before(deadline) {
+			provider.mu.Lock()
+			if !provider.cooldownExpiry.IsZero() {
+				cooldownSet = true
+				provider.mu.Unlock()
+				break
+			}
+			provider.mu.Unlock()
+			time.Sleep(10 * time.Millisecond)
+		}
+
+		if !cooldownSet {
+			t.Errorf("Cooldown expiry was not set after endpoint failure")
 		}
 	})
 }

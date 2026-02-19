@@ -251,7 +251,7 @@ func NewRegionalAccessBoundaryData(locations []string, encodedLocations string) 
 	}
 }
 
-// TrustBoundaryHeader returns the value for the x-allowed-locations header and a bool
+// RegionalAccessBoundaryHeader returns the value for the x-allowed-locations header and a bool
 // indicating if the header should be set. If EncodedLocations is empty, the header
 // should not be present. Otherwise, it should be present with the value of EncodedLocations.
 func (t RegionalAccessBoundaryData) RegionalAccessBoundaryHeader() (value string, present bool) {
