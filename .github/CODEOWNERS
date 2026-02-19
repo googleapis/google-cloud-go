@@ -3,23 +3,23 @@
 # generation/releasing PRs are in the purview of the librarian team.
 *                       @googleapis/cloud-sdk-librarian-team @googleapis/cloud-sdk-go-team
 
-/ai/                    @googleapis/go-vertexai @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/aiplatform/            @googleapis/go-vertexai @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/              @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/bttest        @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/ai/                    @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/aiplatform/            @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/              @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/bttest        @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /datastore/             @googleapis/cloud-native-db-dpes @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /firestore/             @googleapis/cloud-native-db-dpes @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/pubsub/                @googleapis/api-pubsub @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team @googleapis/cloud-native-db-dpes
-/pubsublite/            @googleapis/api-pubsub @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/spanner/               @googleapis/spanner-client-libraries-go @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/storage/               @googleapis/gcs-sdk-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/httpreplay/            @googleapis/gcs-sdk-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/pubsub/                @googleapis/pubsub-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team @googleapis/cloud-native-db-dpes
+/pubsublite/            @googleapis/pubsub-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/spanner/               @googleapis/spanner-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/storage/               @googleapis/gcs-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/httpreplay/            @googleapis/gcs-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /errorreporting/        @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /logging/               @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/profiler/              @googleapis/api-profiler @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/vertexai/              @googleapis/go-vertexai @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/profiler/              @googleapis/cloud-profiler-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/vertexai/              @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /internal/protoveneer/  @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team @jba
 
 
