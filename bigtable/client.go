@@ -240,6 +240,9 @@ func (c *Client) Close() error {
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.shutdown()
 	}
+	if c.connsRecycler != nil {
+		c.connsRecycler.Stop()
+	}
 	return c.connPool.Close()
 }
 

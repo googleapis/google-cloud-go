@@ -80,9 +80,7 @@ func (cr *ConnectionRecycler) Start(ctx context.Context) {
 // Stop terminates the ConnectionRecycler.
 func (cr *ConnectionRecycler) Stop() {
 	cr.stopOnce.Do(func() {
-		if cr.config.Enabled {
-			close(cr.done)
-		}
+		close(cr.done)
 	})
 }
 

@@ -291,6 +291,5 @@ func DefaultConnectionRecycleConfig() ConnectionRecycleConfig {
 		MaxAge:       45 * time.Minute,
 		MaxJitter:    5 * time.Minute,
 		RunFrequency: 1 * time.Minute,
-		Enabled:      true,
 	}
 }
