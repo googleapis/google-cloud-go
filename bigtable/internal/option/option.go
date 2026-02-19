@@ -277,7 +277,7 @@ type ConnectionRecycleConfig struct {
 	// MaxAge is the base lifespan of a connection.
 	MaxAge time.Duration
 	// Jitter is the random buffer added to MaxAge which can allow for connection to be recycled.
-	Jitter time.Duration
+	MaxJitter time.Duration
 	// RunFrequency determines how often the recycler checks for expired connections.
 	RunFrequency time.Duration
 	// Enabled determines if the recycler is active.
@@ -289,7 +289,7 @@ type ConnectionRecycleConfig struct {
 func DefaultConnectionRecycleConfig() ConnectionRecycleConfig {
 	return ConnectionRecycleConfig{
 		MaxAge:       45 * time.Minute,
-		Jitter:       5 * time.Minute,
+		MaxJitter:    5 * time.Minute,
 		RunFrequency: 1 * time.Minute,
 		Enabled:      true,
 	}

@@ -50,13 +50,15 @@ func NewConnectionRecycler(config btopt.ConnectionRecycleConfig, pool *BigtableC
 func (cr *ConnectionRecycler) Start(ctx context.Context) {
 	btopt.Debugf(cr.pool.logger, "bigtable_connpool: ConnectionRecyler starting...")
 
-	if !cr.config.Enabled {
-		return
-	}
 	// default to 1 minute
 	freq := cr.config.RunFrequency
 	if freq < 1*time.Minute {
 		freq = 1 * time.Minute
+	}
+
+	// at least once per MaxAge interval.
+	if cr.config.MaxAge > 0 && freq > cr.config.MaxAge {
+		freq = cr.config.MaxAge
 	}
 
 	cr.ticker = time.NewTicker(freq)
@@ -89,8 +91,8 @@ func (cr *ConnectionRecycler) checkRecycle() {
 	conns := cr.pool.getConns()
 	recycledCount := 0
 
-	hasJitter := cr.config.Jitter > 0
-	jitterVal := int64(cr.config.Jitter)
+	hasJitter := cr.config.MaxJitter > 0
+	jitterVal := int64(cr.config.MaxJitter)
 
 	for _, entry := range conns {
 		if recycledCount >= maxRecyclePerBatch {

@@ -34,9 +34,9 @@ func TestConnectionRecycler_CheckRecycle(t *testing.T) {
 
 	t.Run("RecycleOldConnection", func(t *testing.T) {
 		config := btopt.ConnectionRecycleConfig{
-			MaxAge:  10 * time.Minute,
-			Jitter:  0,
-			Enabled: true,
+			MaxAge:    10 * time.Minute,
+			MaxJitter: 0,
+			Enabled:   true,
 		}
 
 		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, time.Now())
@@ -67,9 +67,9 @@ func TestConnectionRecycler_CheckRecycle(t *testing.T) {
 
 	t.Run("DoesNotReplaceIfConnWithinMaxAge", func(t *testing.T) {
 		config := btopt.ConnectionRecycleConfig{
-			MaxAge:  10 * time.Minute,
-			Jitter:  0,
-			Enabled: true,
+			MaxAge:    10 * time.Minute,
+			MaxJitter: 0,
+			Enabled:   true,
 		}
 
 		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, time.Now())
@@ -96,9 +96,9 @@ func TestConnectionRecycler_CheckRecycle(t *testing.T) {
 
 	t.Run("RespectsMaxRecyclePerBatch", func(t *testing.T) {
 		config := btopt.ConnectionRecycleConfig{
-			MaxAge:  10 * time.Minute,
-			Jitter:  0,
-			Enabled: true,
+			MaxAge:    10 * time.Minute,
+			MaxJitter: 0,
+			Enabled:   true,
 		}
 		// 5 conns
 		poolSize := 5
