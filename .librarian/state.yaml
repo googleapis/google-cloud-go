@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.116.0
+    version: 1.117.0
     last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/aiplatform/v1
@@ -703,7 +703,7 @@ libraries:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
   - id: auditmanager
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: c99e8a29e1b568d183445adccde5bf9d6437cf00
     apis:
       - path: google/cloud/auditmanager/v1
@@ -1993,7 +1993,7 @@ libraries:
       - internal/generated/snippets/dataflow/
     tag_format: '{id}/v{version}'
   - id: dataform
-    version: 0.12.1
+    version: 0.13.0
     last_generated_commit: fb371addb34b049d340ac5801c387237b415a810
     apis:
       - path: google/cloud/dataform/v1
@@ -2128,7 +2128,7 @@ libraries:
       - internal/generated/snippets/dataplex/
     tag_format: '{id}/v{version}'
   - id: dataproc
-    version: 2.15.0
+    version: 2.16.0
     last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/dataproc/v1
@@ -2328,7 +2328,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.75.0
+    version: 1.76.0
     last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -3196,7 +3196,7 @@ libraries:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
   - id: kms
-    version: 1.25.0
+    version: 1.26.0
     last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/kms/v1
@@ -3529,7 +3529,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.27.0
+    version: 1.28.0
     last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/maps/addressvalidation/v1
@@ -4906,7 +4906,7 @@ libraries:
       - internal/generated/snippets/run/
     tag_format: '{id}/v{version}'
   - id: saasplatform
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
@@ -5871,7 +5871,7 @@ libraries:
       - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
     apis:
       - path: google/cloud/storagebatchoperations/v1
@@ -6182,7 +6182,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: 27ffde22e73154260f8eaa6115420b7bd895db2f
     apis:
       - path: google/cloud/vectorsearch/v1beta
@@ -6585,7 +6585,7 @@ libraries:
       - internal/generated/snippets/workflows/
     tag_format: '{id}/v{version}'
   - id: workloadmanager
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 055f92c9384689eb0bb32d035d3bc6d98c8347c0
     apis:
       - path: google/cloud/workloadmanager/v1

@@ -1,5 +1,11 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.3.0) (2026-02-19)
+
+### Features
+
+* add new clients (#13853) ([822ac7e](https://github.com/googleapis/google-cloud-go/commit/822ac7e478cc5ad0db2bffeda3563dd09aef5278))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.2.0) (2026-02-05)
 
 ### Features

@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.117.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.117.0) (2026-02-19)
+
+### Features
+
+* Add `traffic_type, tool_use_prompt_tokens_details` to message `GenerateContentResponse.UsageMetadata` ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
 ## [1.116.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.116.0) (2026-02-12)
 
 ### Features

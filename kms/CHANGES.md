@@ -1,6 +1,22 @@
 # Changes
 
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.26.0) (2026-02-19)
+
+### Features
+
+* Add KeyProjectResolutionMode to AutokeyConfig to support project-level configurations ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Add more post-quantum (PQ) signature algorithms to CryptoKeyVersion ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Add support for project level key usage tracking ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Added DeleteCryptoKey and DeleteCryptoKeyVersion RPCs to permanently remove resources ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Added ListRetiredResources and GetRetiredResource RPCs to manage and view these records ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Introduced the RetiredResource resource to track records of deleted keys and prevent the reuse of their resource names ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+### Documentation
+
+* Clarify supported resources for the crypto_key_backend field in ImportJob ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Update documentation for AutokeyAdmin service and messages to support folder and project-level configurations ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.25.0) (2026-01-22)
 
 ### Features

@@ -1,5 +1,15 @@
 # Changes
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.13.0) (2026-02-19)
+
+### Features
+
+* Update GCP Client Libraries in v1beta1 to support Folders, TeamFolders, and other relevant APIs The v1beta1 API now includes support for Folders and TeamFolders, allowing users to organize repositories and files hierarchically and manage access controls. New Features: - Added TeamFolder resource and methods: CreateTeamFolder, GetTeamFolder, UpdateTeamFolder, DeleteTeamFolder QueryTeamFolderContents to list folder contents. SearchTeamFolders to search for TeamFolders. - Added Folder resource and methods: CreateFolder, GetFolder, UpdateFolder, DeleteFolder QueryFolderContents to list folder contents. Added MoveFolder to move Folders between TeamFolders, other Folders, or the user root folder. - Added MoveRepository to move Repositories between TeamFolders, Folders, or the user root folder. - Added QueryUserRootContents to list contents of a user&#39;s root folder. Repository resource now includes containing_folder and team_folder_name fields to indicate its location within the folder hierarchy. - IAM methods (GetIamPolicy, SetIamPolicy, TestIamPermissions) now support Folder and TeamFolder resources for access control management ([cc0ef5a](https://github.com/googleapis/google-cloud-go/commit/cc0ef5a91ba73f591f63beffb1a9026cf9a3fb8c))
+
+### Documentation
+
+* A comment for field `force` in message `.google.cloud.dataform.v1beta1.DeleteRepositoryRequest` is changed PiperOrigin-RevId: 868182714 ([cc0ef5a](https://github.com/googleapis/google-cloud-go/commit/cc0ef5a91ba73f591f63beffb1a9026cf9a3fb8c))
+
 ## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.12.0...dataform/v0.12.1) (2025-09-16)
 
 
