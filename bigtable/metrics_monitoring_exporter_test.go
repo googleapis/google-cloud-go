@@ -430,7 +430,7 @@ func TestRecordToMpb(t *testing.T) {
 func TestTimeIntervalStaggering(t *testing.T) {
 	var tm time.Time
 
-	interval, err := toNonemptyTimeIntervalpb(tm, tm)
+	interval, err := toTimeIntervalPb(tm, tm, googlemetricpb.MetricDescriptor_CUMULATIVE)
 	if err != nil {
 		t.Fatalf("conversion to PB failed: %v", err)
 	}
@@ -450,10 +450,29 @@ func TestTimeIntervalStaggering(t *testing.T) {
 	}
 }
 
+func TestTimeIntervalGauge(t *testing.T) {
+	startTime := time.Now()
+	endTime := startTime.Add(time.Second)
+
+	interval, err := toTimeIntervalPb(startTime, endTime, googlemetricpb.MetricDescriptor_GAUGE)
+	if err != nil {
+		t.Fatalf("conversion to PB failed: %v", err)
+	}
+
+	start := interval.StartTime.AsTime()
+	end := interval.EndTime.AsTime()
+
+	if !start.Equal(end) {
+		t.Errorf("Expected StartTime == EndTime for GAUGE, got StartTime=%v, EndTime=%v", start, end)
+	}
+	if !start.Equal(endTime) {
+		t.Errorf("Expected StartTime to be reset to EndTime for GAUGE, got StartTime=%v, expected %v", start, endTime)
+	}
+}
 func TestTimeIntervalPassthru(t *testing.T) {
 	var tm time.Time
 
-	interval, err := toNonemptyTimeIntervalpb(tm, tm.Add(time.Second))
+	interval, err := toTimeIntervalPb(tm, tm.Add(time.Second), googlemetricpb.MetricDescriptor_CUMULATIVE)
 	if err != nil {
 		t.Fatalf("conversion to PB failed: %v", err)
 	}
