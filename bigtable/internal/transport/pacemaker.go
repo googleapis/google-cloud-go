@@ -75,16 +75,27 @@ func (p *Pacemaker) Start(ctx context.Context) {
 	}
 
 	go func() {
-		// Tick every 100ms
-		ticker := time.NewTicker(100 * time.Millisecond)
+		interval := 100 * time.Millisecond
+		ticker := time.NewTicker(interval)
 		defer ticker.Stop()
+
+		lastTick := time.Now()
 
 		for {
 			select {
 			case t := <-ticker.C:
-				// Current Time - Scheduled Time (t)
-				delay := float64(time.Since(t).Nanoseconds()) / 1e3 // Convert ns to us
-				p.histogram.Record(ctx, delay, p.attrs)
+				actualInterval := t.Sub(lastTick)
+
+				delay := actualInterval - interval
+				if delay < 0 {
+					delay = 0
+				}
+
+				delayUs := float64(delay.Nanoseconds()) / 1e3
+				p.histogram.Record(ctx, delayUs, p.attrs)
+
+				lastTick = t
+
 			case <-ctx.Done():
 				return
 			}
