@@ -280,8 +280,6 @@ type ConnectionRecycleConfig struct {
 	MaxJitter time.Duration
 	// RunFrequency determines how often the recycler checks for expired connections.
 	RunFrequency time.Duration
-	// Enabled determines if the recycler is active.
-	Enabled bool
 }
 
 // DefaultConnectionRecycleConfig returns the default configuration:
