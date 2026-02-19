@@ -39,7 +39,7 @@ const ProviderKey = "regionalaccessboundary.ProviderKey"
 const (
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
-	
+
 	// cacheTTL is the duration cached RAB data remains valid before hard expiry.
 	cacheTTL = 6 * time.Hour
 	// cacheSoftExpiry is the threshold before hard expiry where a background refresh is triggered.
@@ -128,7 +128,7 @@ func fetchRegionalAccessBoundaryData(ctx context.Context, client *http.Client, u
 			statusCode = response.StatusCode
 		}
 		pause, shouldRetry := retryer.Retry(statusCode, err)
-		
+
 		// Enforce a maximum 1 minute retry window for specific server errors.
 		if shouldRetry && (statusCode == 500 || statusCode == 502 || statusCode == 503 || statusCode == 504) {
 			if time.Since(startTime)+pause > 1*time.Minute {
@@ -255,7 +255,7 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 	now := time.Now()
 	if data != nil && now.Before(dataExpiry) {
 		val, _ := data.RegionalAccessBoundaryHeader()
-		
+
 		// Soft Expiry: if the cached data is within the soft expiration window,
 		// initiate a non-blocking background refresh to proactively fetch new data
 		// while continuing to serve the current valid cache block.
@@ -267,7 +267,7 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 			}
 			p.mu.Unlock()
 		}
-		
+
 		return val
 	}
 
