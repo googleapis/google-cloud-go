@@ -20,7 +20,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"reflect"
 	"strings"
 	"sync"
@@ -217,108 +216,52 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 }
 
 func TestIsRegionalAccessBoundaryEnabled(t *testing.T) {
-	newEnvVar := "GOOGLE_AUTH_REGIONAL_ACCESS_BOUNDARY_ENABLE_EXPERIMENT"
-	oldEnvVar := "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
+	envVar := "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
 
 	tests := []struct {
-		name      string
-		newEnvVal string
-		oldEnvVal string
-		setNewEnv bool
-		setOldEnv bool
-		want      bool
+		name   string
+		envVal string
+		want   bool
 	}{
 		{
-			name:      "new env unset, old env unset",
-			setNewEnv: false,
-			setOldEnv: false,
-			want:      false,
+			name:   "env empty/unset",
+			envVal: "",
+			want:   false,
 		},
 		{
-			name:      "new env empty, old env unset",
-			newEnvVal: "",
-			setNewEnv: true,
-			setOldEnv: false,
-			want:      false,
+			name:   "env true",
+			envVal: "true",
+			want:   true,
 		},
 		{
-			name:      "new env true, old env unset",
-			newEnvVal: "true",
-			setNewEnv: true,
-			setOldEnv: false,
-			want:      true,
+			name:   "env 1",
+			envVal: "1",
+			want:   true,
 		},
 		{
-			name:      "new env 1, old env unset",
-			newEnvVal: "1",
-			setNewEnv: true,
-			setOldEnv: false,
-			want:      true,
+			name:   "env false",
+			envVal: "false",
+			want:   false,
 		},
 		{
-			name:      "new env false, old env unset",
-			newEnvVal: "false",
-			setNewEnv: true,
-			setOldEnv: false,
-			want:      false,
+			name:   "env 0",
+			envVal: "0",
+			want:   false,
 		},
 		{
-			name:      "new env 0, old env unset",
-			newEnvVal: "0",
-			setNewEnv: true,
-			setOldEnv: false,
-			want:      false,
+			name:   "env invalid",
+			envVal: "invalid",
+			want:   false,
 		},
 		{
-			name:      "new env invalid, old env unset",
-			newEnvVal: "invalid",
-			setNewEnv: true,
-			setOldEnv: false,
-			want:      false,
-		},
-		{
-			name:      "new env unset, old env true",
-			setNewEnv: false,
-			oldEnvVal: "true",
-			setOldEnv: true,
-			want:      true,
-		},
-		{
-			name:      "new env unset, old env invalid",
-			setNewEnv: false,
-			oldEnvVal: "invalid",
-			setOldEnv: true,
-			want:      false,
-		},
-		{
-			name:      "new env true, old env false (new takes precedence)",
-			newEnvVal: "true",
-			setNewEnv: true,
-			oldEnvVal: "false",
-			setOldEnv: true,
-			want:      true,
-		},
-		{
-			name:      "new env false, old env true (new takes precedence)",
-			newEnvVal: "false",
-			setNewEnv: true,
-			oldEnvVal: "true",
-			setOldEnv: true,
-			want:      false,
+			name:   "env uppercase TRUE",
+			envVal: "TRUE",
+			want:   true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.setNewEnv {
-				t.Setenv(newEnvVar, tt.newEnvVal)
-			} else {
-				os.Unsetenv(newEnvVar)
-			}
-			if tt.setOldEnv {
-				t.Setenv(oldEnvVar, tt.oldEnvVal)
-			} else {
-				os.Unsetenv(oldEnvVar)
-			}
+			t.Setenv(envVar, tt.envVal)
 
 			got, err := isRegionalAccessBoundaryEnabled()
 			if err != nil {
@@ -421,9 +364,6 @@ func TestGCEConfigProvider(t *testing.T) {
 	defaultTestEmail := "test-sa@example.iam.gserviceaccount.com"
 	defaultTestUD := "example.com"
 	defaultExpectedEndpoint := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, defaultTestEmail)
-
-	originalGCEHost := os.Getenv("GCE_METADATA_HOST")
-	defer os.Setenv("GCE_METADATA_HOST", originalGCEHost)
 
 	tests := []struct {
 		name                    string
@@ -554,14 +494,14 @@ func TestGCEConfigProvider(t *testing.T) {
 				if err != nil {
 					t.Fatalf("Failed to parse server URL: %v", err)
 				}
-				os.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+				t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
 				mdClient := metadata.NewClient(server.Client())
 				udp := &internal.ComputeUniverseDomainProvider{
 					MetadataClient: mdClient,
 				}
 				provider = NewGCEConfigProvider(udp)
 			} else {
-				os.Unsetenv("GCE_METADATA_HOST")
+				t.Setenv("GCE_METADATA_HOST", "")
 				provider = NewGCEConfigProvider(tt.gceUDP)
 			}
 
@@ -595,8 +535,6 @@ func TestGCEConfigProvider(t *testing.T) {
 }
 
 func TestGCEConfigProvider_CachesResults(t *testing.T) {
-	originalGCEHost := os.Getenv("GCE_METADATA_HOST")
-	defer os.Setenv("GCE_METADATA_HOST", originalGCEHost)
 
 	var requestCount int
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -613,7 +551,7 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 	defer server.Close()
 
 	parsedURL, _ := url.Parse(server.URL)
-	os.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
 	mdClient := metadata.NewClient(server.Client())
 	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
 	provider := NewGCEConfigProvider(udp)
@@ -726,12 +664,19 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 
 		wg.Wait() // Wait for server to receive request
 
-		// Wait an extra beat for HandleFetchSuccess to write the cache locally in the goroutine
-		time.Sleep(50 * time.Millisecond)
+		// Wait for background fetch to complete and populate cache.
+		var val2 string
+		deadline := time.Now().Add(1 * time.Second)
+		for time.Now().Before(deadline) {
+			val2 = provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+			if val2 != "" {
+				break
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
 
-		val2 := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
 		if val2 == "" {
-			t.Errorf("Second call did not return cached header")
+			t.Errorf("Second call did not return cached header within timeout")
 		} else if val2 != "0xABC" {
 			t.Errorf("Second call returned %q, expected %q", val2, "0xABC")
 		}

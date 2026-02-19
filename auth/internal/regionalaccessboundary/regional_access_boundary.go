@@ -39,6 +39,13 @@ const ProviderKey = "regionalaccessboundary.ProviderKey"
 const (
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
+	
+	// cacheTTL is the duration cached RAB data remains valid before hard expiry.
+	cacheTTL = 6 * time.Hour
+	// cacheSoftExpiry is the threshold before hard expiry where a background refresh is triggered.
+	cacheSoftExpiry = 1 * time.Hour
+	// baseCooldownDuration is the initial delay after a failed background fetch.
+	baseCooldownDuration = 15 * time.Minute
 )
 
 // isEnabled wraps isRegionalAccessBoundaryEnabled with sync.OnceValues to ensure it's
@@ -51,39 +58,18 @@ func IsEnabled() (bool, error) {
 	return isEnabled()
 }
 
-// isRegionalAccessBoundaryEnabled checks if the Regional Access Boundary feature is enabled via
-// GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
+// isRegionalAccessBoundaryEnabled checks if the Regional Access Boundary feature
+// is enabled via the GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
 //
-// If the environment variable is not set, it is considered false.
+// If the environment variable is not set or empty, it is considered false.
 //
 // The environment variable is interpreted as a boolean with the following
 // (case-insensitive) rules:
 //   - "true", "1" are considered true.
-//   - "false", "0" are considered false.
-//
-// Any other values will return an error.
+//   - All other values (including "false", "0", or invalid strings) are considered false.
 func isRegionalAccessBoundaryEnabled() (bool, error) {
-	newEnvVar := "GOOGLE_AUTH_REGIONAL_ACCESS_BOUNDARY_ENABLE_EXPERIMENT"
-	oldEnvVar := "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
-
-	// Check new environment variable first.
-	if val, ok := os.LookupEnv(newEnvVar); ok {
-		val = strings.ToLower(val)
-		if val == "true" || val == "1" {
-			return true, nil
-		}
-		return false, nil // Ignore other values, default to false
-	}
-
-	// Fallback to old environment variable.
-	if val, ok := os.LookupEnv(oldEnvVar); ok {
-		val = strings.ToLower(val)
-		if val == "true" || val == "1" {
-			return true, nil
-		}
-		return false, nil // Ignore other values, default to false
-	}
-	return false, nil
+	val := strings.ToLower(os.Getenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"))
+	return val == "true" || val == "1", nil
 }
 
 // ConfigProvider provides specific configuration for Regional Access Boundary lookups.
@@ -132,6 +118,7 @@ func fetchRegionalAccessBoundaryData(ctx context.Context, client *http.Client, u
 	logger.DebugContext(ctx, "Regional Access Boundary request", "request", internallog.HTTPRequest(req, nil))
 
 	retryer := retry.New()
+	startTime := time.Now()
 	var response *http.Response
 	for {
 		response, err = client.Do(req)
@@ -141,6 +128,13 @@ func fetchRegionalAccessBoundaryData(ctx context.Context, client *http.Client, u
 			statusCode = response.StatusCode
 		}
 		pause, shouldRetry := retryer.Retry(statusCode, err)
+		
+		// Enforce a maximum 1 minute retry window for specific server errors.
+		if shouldRetry && (statusCode == 500 || statusCode == 502 || statusCode == 503 || statusCode == 504) {
+			if time.Since(startTime)+pause > 1*time.Minute {
+				shouldRetry = false
+			}
+		}
 
 		if !shouldRetry {
 			break
@@ -261,6 +255,19 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 	now := time.Now()
 	if data != nil && now.Before(dataExpiry) {
 		val, _ := data.RegionalAccessBoundaryHeader()
+		
+		// Soft Expiry: if the cached data is within the soft expiration window,
+		// initiate a non-blocking background refresh to proactively fetch new data
+		// while continuing to serve the current valid cache block.
+		if now.After(dataExpiry.Add(-cacheSoftExpiry)) {
+			p.mu.Lock()
+			if !p.isFetching && now.After(p.cooldownExpiry) {
+				p.isFetching = true
+				go p.fetchAsync(context.Background(), accessToken)
+			}
+			p.mu.Unlock()
+		}
+		
 		return val
 	}
 
@@ -306,9 +313,9 @@ func (p *DataProvider) handleFetchSuccess(newData *internal.RegionalAccessBounda
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.data = newData
-	p.dataExpiry = time.Now().Add(6 * time.Hour) // 6 hour TTL
-	p.cooldownExpiry = time.Time{}               // reset cooldown
-	p.cooldownDuration = 15 * time.Minute        // reset cooldown multiplier
+	p.dataExpiry = time.Now().Add(cacheTTL)
+	p.cooldownExpiry = time.Time{}
+	p.cooldownDuration = baseCooldownDuration
 }
 
 func (p *DataProvider) handleFetchFailure(ctx context.Context) {
@@ -317,11 +324,10 @@ func (p *DataProvider) handleFetchFailure(ctx context.Context) {
 
 	p.cooldownExpiry = time.Now().Add(p.cooldownDuration)
 
-	// Exponential backoff for cooldown, up to 6 hours max
+	// Exponential backoff for cooldown, up to cacheTTL max (6 hours)
 	nextCooldown := p.cooldownDuration * 2
-	maxCooldown := 6 * time.Hour
-	if nextCooldown > maxCooldown {
-		nextCooldown = maxCooldown
+	if nextCooldown > cacheTTL {
+		nextCooldown = cacheTTL
 	}
 	p.cooldownDuration = nextCooldown
 }
