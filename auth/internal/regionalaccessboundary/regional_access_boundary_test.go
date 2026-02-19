@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -221,12 +221,12 @@ func TestIsRegionalAccessBoundaryEnabled(t *testing.T) {
 	oldEnvVar := "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
 
 	tests := []struct {
-		name              string
-		newEnvVal         string
-		oldEnvVal         string
-		setNewEnv         bool
-		setOldEnv         bool
-		want              bool
+		name      string
+		newEnvVal string
+		oldEnvVal string
+		setNewEnv bool
+		setOldEnv bool
+		want      bool
 	}{
 		{
 			name:      "new env unset, old env unset",
@@ -486,7 +486,7 @@ func TestGCEConfigProvider(t *testing.T) {
 				}
 			},
 			wantErrEndpoint: "regionalaccessboundary: GCE config: failed to get universe domain",
-			wantErrUD: "regionalaccessboundary: GCE config: failed to get universe domain",
+			wantErrUD:       "regionalaccessboundary: GCE config: failed to get universe domain",
 		},
 		{
 			name:                    "Nil ComputeUniverseDomainProvider",
@@ -718,14 +718,14 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 
 		token := &auth.Token{Value: "base"}
 		provider, _ := NewProvider(server.Client(), mockConfig, nil, &mockTokenProvider{TokenToReturn: token})
-		
+
 		val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
 		if val != "" {
 			t.Errorf("First call should return empty while fetching async")
 		}
 
 		wg.Wait() // Wait for server to receive request
-		
+
 		// Wait an extra beat for HandleFetchSuccess to write the cache locally in the goroutine
 		time.Sleep(50 * time.Millisecond)
 
