@@ -1,0 +1,3943 @@
+test_case {
+  name: "DataTypeTest_BOOL"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_BOOL"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: BOOL
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        bool_value: false
+      }
+    }
+    start: "A\206\310\002\234\200\000"
+  }
+  test {
+    key {
+      values {
+        bool_value: true
+      }
+    }
+    start: "A\206\310\002\234\200\002"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "true"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        number_value: 0
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          bool_value: false
+        }
+      }
+      end_open {
+        values {
+          bool_value: true
+        }
+      }
+    }
+    start: "A\206\310\002\234\200\000"
+    limit: "A\206\310\002\234\200\002"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          bool_value: false
+        }
+      }
+      end_closed {
+        values {
+          bool_value: true
+        }
+      }
+    }
+    start: "A\206\310\002\234\200\001"
+    limit: "A\206\310\002\234\200\003"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          bool_value: false
+        }
+      }
+      end_closed {
+        values {
+          bool_value: true
+        }
+      }
+    }
+    start: "A\206\310\002\234\200\000"
+    limit: "A\206\310\002\234\200\003"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          bool_value: false
+        }
+      }
+      end_open {
+        values {
+          bool_value: true
+        }
+      }
+    }
+    start: "A\206\310\002\234\200\001"
+    limit: "A\206\310\002\234\200\002"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_BOOL_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_BOOL_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: BOOL
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        bool_value: true
+      }
+    }
+    start: "A\206\310\002\273\250\374"
+  }
+  test {
+    key {
+      values {
+        bool_value: false
+      }
+    }
+    start: "A\206\310\002\273\250\376"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          bool_value: true
+        }
+      }
+      end_open {
+        values {
+          bool_value: false
+        }
+      }
+    }
+    start: "A\206\310\002\273\250\374"
+    limit: "A\206\310\002\273\250\376"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          bool_value: true
+        }
+      }
+      end_closed {
+        values {
+          bool_value: false
+        }
+      }
+    }
+    start: "A\206\310\002\273\250\375"
+    limit: "A\206\310\002\273\250\377"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          bool_value: true
+        }
+      }
+      end_closed {
+        values {
+          bool_value: false
+        }
+      }
+    }
+    start: "A\206\310\002\273\250\374"
+    limit: "A\206\310\002\273\250\377"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          bool_value: true
+        }
+      }
+      end_open {
+        values {
+          bool_value: false
+        }
+      }
+    }
+    start: "A\206\310\002\273\250\375"
+    limit: "A\206\310\002\273\250\376"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_ENUM"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_ENUM"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: ENUM
+          proto_type_fqn: "spanner.test.TestEnum"
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "1"
+      }
+    }
+    start: "A\206\310\002\234\221\002"
+  }
+  test {
+    key {
+      values {
+        string_value: "2"
+      }
+    }
+    start: "A\206\310\002\234\221\004"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "NUMBER_ONE"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        number_value: 0
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "1"
+        }
+      }
+      end_open {
+        values {
+          string_value: "2"
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\002"
+    limit: "A\206\310\002\234\221\004"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "1"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "2"
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\003"
+    limit: "A\206\310\002\234\221\005"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "1"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "2"
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\002"
+    limit: "A\206\310\002\234\221\005"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "1"
+        }
+      }
+      end_open {
+        values {
+          string_value: "2"
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\003"
+    limit: "A\206\310\002\234\221\004"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_ENUM_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_ENUM_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: ENUM
+          proto_type_fqn: "spanner.test.TestEnum"
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "2"
+      }
+    }
+    start: "A\206\310\002\273\260\372"
+  }
+  test {
+    key {
+      values {
+        string_value: "1"
+      }
+    }
+    start: "A\206\310\002\273\260\374"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "2"
+        }
+      }
+      end_open {
+        values {
+          string_value: "1"
+        }
+      }
+    }
+    start: "A\206\310\002\273\260\372"
+    limit: "A\206\310\002\273\260\374"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "2"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "1"
+        }
+      }
+    }
+    start: "A\206\310\002\273\260\373"
+    limit: "A\206\310\002\273\260\375"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "2"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "1"
+        }
+      }
+    }
+    start: "A\206\310\002\273\260\372"
+    limit: "A\206\310\002\273\260\375"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "2"
+        }
+      }
+      end_open {
+        values {
+          string_value: "1"
+        }
+      }
+    }
+    start: "A\206\310\002\273\260\373"
+    limit: "A\206\310\002\273\260\374"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_INT64"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_INT64"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "-9223372036854775808"
+      }
+    }
+    start: "A\206\310\002\234\211\000\000\000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "9223372036854775807"
+      }
+    }
+    start: "A\206\310\002\234\230\377\377\377\377\377\377\377\376"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "0"
+      }
+    }
+    start: "A\206\310\002\234\221\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "-1"
+      }
+    }
+    start: "A\206\310\002\234\220\376"
+  }
+  test {
+    key {
+      values {
+        string_value: "1"
+      }
+    }
+    start: "A\206\310\002\234\221\002"
+  }
+  test {
+    key {
+      values {
+        number_value: 1
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "Infinity"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+      end_open {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+    }
+    start: "A\206\310\002\234\211\000\000\000\000\000\000\000\000"
+    limit: "A\206\310\002\234\230\377\377\377\377\377\377\377\376"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+    }
+    start: "A\206\310\002\234\211\000\000\000\000\000\000\000\001"
+    limit: "A\206\310\002\234\230\377\377\377\377\377\377\377\377"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+    }
+    start: "A\206\310\002\234\211\000\000\000\000\000\000\000\000"
+    limit: "A\206\310\002\234\230\377\377\377\377\377\377\377\377"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+      end_open {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+    }
+    start: "A\206\310\002\234\211\000\000\000\000\000\000\000\001"
+    limit: "A\206\310\002\234\230\377\377\377\377\377\377\377\376"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_INT64_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_INT64_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: INT64
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "9223372036854775807"
+      }
+    }
+    start: "A\206\310\002\273\251\000\000\000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "-9223372036854775808"
+      }
+    }
+    start: "A\206\310\002\273\270\377\377\377\377\377\377\377\376"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+      end_open {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+    }
+    start: "A\206\310\002\273\251\000\000\000\000\000\000\000\000"
+    limit: "A\206\310\002\273\270\377\377\377\377\377\377\377\376"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+    }
+    start: "A\206\310\002\273\251\000\000\000\000\000\000\000\001"
+    limit: "A\206\310\002\273\270\377\377\377\377\377\377\377\377"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+    }
+    start: "A\206\310\002\273\251\000\000\000\000\000\000\000\000"
+    limit: "A\206\310\002\273\270\377\377\377\377\377\377\377\377"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "9223372036854775807"
+        }
+      }
+      end_open {
+        values {
+          string_value: "-9223372036854775808"
+        }
+      }
+    }
+    start: "A\206\310\002\273\251\000\000\000\000\000\000\000\001"
+    limit: "A\206\310\002\273\270\377\377\377\377\377\377\377\376"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_FLOAT64"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_FLOAT64"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: FLOAT64
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        number_value: -1.7976931348623157e+308
+      }
+    }
+    start: "A\206\310\002\234\302\000 \000\000\000\000\000\002"
+  }
+  test {
+    key {
+      values {
+        number_value: 1.7976931348623157e+308
+      }
+    }
+    start: "A\206\310\002\234\321\377\337\377\377\377\377\377\376"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        number_value: 0
+      }
+    }
+    start: "A\206\310\002\234\312\000"
+  }
+  test {
+    key {
+      values {
+        number_value: -1
+      }
+    }
+    start: "A\206\310\002\234\302\200 \000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        number_value: 1
+      }
+    }
+    start: "A\206\310\002\234\321\177\340\000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "Infinity"
+      }
+    }
+    start: "A\206\310\002\234\321\377\340\000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "-Infinity"
+      }
+    }
+    start: "A\206\310\002\234\302\000 \000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "NaN"
+      }
+    }
+    start: "A\206\310\002\234\321\377\360\000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "UnexpectedString"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        bool_value: true
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+      end_open {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\234\302\000 \000\000\000\000\000\002"
+    limit: "A\206\310\002\234\321\377\337\377\377\377\377\377\376"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+      end_closed {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\234\302\000 \000\000\000\000\000\003"
+    limit: "A\206\310\002\234\321\377\337\377\377\377\377\377\377"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+      end_closed {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\234\302\000 \000\000\000\000\000\002"
+    limit: "A\206\310\002\234\321\377\337\377\377\377\377\377\377"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+      end_open {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\234\302\000 \000\000\000\000\000\003"
+    limit: "A\206\310\002\234\321\377\337\377\377\377\377\377\376"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_FLOAT64_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_FLOAT64_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: FLOAT64
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        number_value: 1.7976931348623157e+308
+      }
+    }
+    start: "A\206\310\002\273\322\000 \000\000\000\000\000\000"
+  }
+  test {
+    key {
+      values {
+        number_value: -1.7976931348623157e+308
+      }
+    }
+    start: "A\206\310\002\273\341\377\337\377\377\377\377\377\374"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+      end_open {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\273\322\000 \000\000\000\000\000\000"
+    limit: "A\206\310\002\273\341\377\337\377\377\377\377\377\374"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+      end_closed {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\273\322\000 \000\000\000\000\000\001"
+    limit: "A\206\310\002\273\341\377\337\377\377\377\377\377\375"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+      end_closed {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\273\322\000 \000\000\000\000\000\000"
+    limit: "A\206\310\002\273\341\377\337\377\377\377\377\377\375"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          number_value: 1.7976931348623157e+308
+        }
+      }
+      end_open {
+        values {
+          number_value: -1.7976931348623157e+308
+        }
+      }
+    }
+    start: "A\206\310\002\273\322\000 \000\000\000\000\000\001"
+    limit: "A\206\310\002\273\341\377\337\377\377\377\377\377\374"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_TIMESTAMP"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_TIMESTAMP"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: TIMESTAMP
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "0001-01-01T00:00:00Z"
+      }
+    }
+    start: "A\206\310\002\234\231\177\377\020\377\020\361\210n\t\000\360\000\360\000\360\000\360\000\360\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "9999-12-31T23:59:59.999999999Z"
+      }
+    }
+    start: "A\206\310\002\234\231\200\000\360\000\360:\377\020\364A\177;\232\311\377\020\000x"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "1970-01-01T00:00:00Z"
+      }
+    }
+    start: "A\206\310\002\234\231\200\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:00Z"
+      }
+    }
+    start: "A\206\310\002\234\231\200\000\360\000\360\000\360e:8\240\000\360\000\360\000\360\000\360\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:00.1234567890Z"
+      }
+    }
+    start: "A\206\310\002\234\231\200\000\360\000\360\000\360e:8\240\007[\315\025\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:00.1234567891Z"
+      }
+    }
+    start: "A\206\310\002\234\231\200\000\360\000\360\000\360e:8\240\007[\315\025\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:00.1234567899Z"
+      }
+    }
+    start: "A\206\310\002\234\231\200\000\360\000\360\000\360e:8\240\007[\315\025\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "0000-10-26T10:00:00Z"
+      }
+    }
+    start: "A\206\310\002\234\231\177\377\020\377\020\361\210\026A \000\360\000\360\000\360\000\360\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "NOT A TIMESTAMP"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        number_value: 0
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:00"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:00z"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:00+07:00"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-13-26T10:00:00Z"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26T10:00:61Z"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26 10:00:00Z"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "10000-10-26T10:00:00Z"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+      end_open {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\177\377\020\377\020\361\210n\t\000\360\000\360\000\360\000\360\000\360\000x"
+    limit: "A\206\310\002\234\231\200\000\360\000\360:\377\020\364A\177;\232\311\377\020\000x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\177\377\020\377\020\361\210n\t\000\360\000\360\000\360\000\360\000\360\000y"
+    limit: "A\206\310\002\234\231\200\000\360\000\360:\377\020\364A\177;\232\311\377\020\000y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\177\377\020\377\020\361\210n\t\000\360\000\360\000\360\000\360\000\360\000x"
+    limit: "A\206\310\002\234\231\200\000\360\000\360:\377\020\364A\177;\232\311\377\020\000y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+      end_open {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\177\377\020\377\020\361\210n\t\000\360\000\360\000\360\000\360\000\360\000y"
+    limit: "A\206\310\002\234\231\200\000\360\000\360:\377\020\364A\177;\232\311\377\020\000x"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_TIMESTAMP_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_TIMESTAMP_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: TIMESTAMP
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "9999-12-31T23:59:59.999999999Z"
+      }
+    }
+    start: "A\206\310\002\273\271\177\377\020\377\020\305\000\360\013\276\200\304e6\000\360\377x"
+  }
+  test {
+    key {
+      values {
+        string_value: "0001-01-01T00:00:00Z"
+      }
+    }
+    start: "A\206\310\002\273\271\200\000\360\000\360\016w\221\366\377\020\377\020\377\020\377\020\377\020\377x"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+      end_open {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\177\377\020\377\020\305\000\360\013\276\200\304e6\000\360\377x"
+    limit: "A\206\310\002\273\271\200\000\360\000\360\016w\221\366\377\020\377\020\377\020\377\020\377\020\377x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\177\377\020\377\020\305\000\360\013\276\200\304e6\000\360\377y"
+    limit: "A\206\310\002\273\271\200\000\360\000\360\016w\221\366\377\020\377\020\377\020\377\020\377\020\377y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\177\377\020\377\020\305\000\360\013\276\200\304e6\000\360\377x"
+    limit: "A\206\310\002\273\271\200\000\360\000\360\016w\221\366\377\020\377\020\377\020\377\020\377\020\377y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "9999-12-31T23:59:59.999999999Z"
+        }
+      }
+      end_open {
+        values {
+          string_value: "0001-01-01T00:00:00Z"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\177\377\020\377\020\305\000\360\013\276\200\304e6\000\360\377y"
+    limit: "A\206\310\002\273\271\200\000\360\000\360\016w\221\366\377\020\377\020\377\020\377\020\377\020\377x"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_DATE"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_DATE"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: DATE
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "0000-01-01"
+      }
+    }
+    start: "A\206\310\002\234\216\352\n\260"
+  }
+  test {
+    key {
+      values {
+        string_value: "9999-12-31"
+      }
+    }
+    start: "A\206\310\002\234\223Y\201@"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "1970-01-01"
+      }
+    }
+    start: "A\206\310\002\234\221\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-10-26"
+      }
+    }
+    start: "A\206\310\002\234\222\231\220"
+  }
+  test {
+    key {
+      values {
+        string_value: "NOT A DATE"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        number_value: 0
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-13-01"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-12-32"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "10000-01-01"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-1-1"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-01-001"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023/01/01"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "2023-01-01T10:00:00Z"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+      end_open {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+    }
+    start: "A\206\310\002\234\216\352\n\260"
+    limit: "A\206\310\002\234\223Y\201@"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+    }
+    start: "A\206\310\002\234\216\352\n\261"
+    limit: "A\206\310\002\234\223Y\201A"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+    }
+    start: "A\206\310\002\234\216\352\n\260"
+    limit: "A\206\310\002\234\223Y\201A"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+      end_open {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+    }
+    start: "A\206\310\002\234\216\352\n\261"
+    limit: "A\206\310\002\234\223Y\201@"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_DATE_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_DATE_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: DATE
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "9999-12-31"
+      }
+    }
+    start: "A\206\310\002\273\256\246~\276"
+  }
+  test {
+    key {
+      values {
+        string_value: "0000-01-01"
+      }
+    }
+    start: "A\206\310\002\273\263\025\365N"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+      end_open {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+    }
+    start: "A\206\310\002\273\256\246~\276"
+    limit: "A\206\310\002\273\263\025\365N"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+    }
+    start: "A\206\310\002\273\256\246~\277"
+    limit: "A\206\310\002\273\263\025\365O"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+    }
+    start: "A\206\310\002\273\256\246~\276"
+    limit: "A\206\310\002\273\263\025\365O"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "9999-12-31"
+        }
+      }
+      end_open {
+        values {
+          string_value: "0000-01-01"
+        }
+      }
+    }
+    start: "A\206\310\002\273\256\246~\277"
+    limit: "A\206\310\002\273\263\025\365N"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_STRING"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_STRING"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: ""
+      }
+    }
+    start: "A\206\310\002\234\231\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "ZZZZZZZ"
+      }
+    }
+    start: "A\206\310\002\234\231ZZZZZZZ\000x"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: ""
+        }
+      }
+      end_open {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000x"
+    limit: "A\206\310\002\234\231ZZZZZZZ\000x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: ""
+        }
+      }
+      end_closed {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000y"
+    limit: "A\206\310\002\234\231ZZZZZZZ\000y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: ""
+        }
+      }
+      end_closed {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000x"
+    limit: "A\206\310\002\234\231ZZZZZZZ\000y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: ""
+        }
+      }
+      end_open {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000y"
+    limit: "A\206\310\002\234\231ZZZZZZZ\000x"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_STRING_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_STRING_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "ZZZZZZZ"
+      }
+    }
+    start: "A\206\310\002\273\271\245\245\245\245\245\245\245\377x"
+  }
+  test {
+    key {
+      values {
+        string_value: ""
+      }
+    }
+    start: "A\206\310\002\273\271\377x"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+      end_open {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\245\245\245\245\245\245\245\377x"
+    limit: "A\206\310\002\273\271\377x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+      end_closed {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\245\245\245\245\245\245\245\377y"
+    limit: "A\206\310\002\273\271\377y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+      end_closed {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\245\245\245\245\245\245\245\377x"
+    limit: "A\206\310\002\273\271\377y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "ZZZZZZZ"
+        }
+      }
+      end_open {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\245\245\245\245\245\245\245\377y"
+    limit: "A\206\310\002\273\271\377x"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_BYTES"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_BYTES"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: BYTES
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: ""
+      }
+    }
+    start: "A\206\310\002\234\231\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "/////w=="
+      }
+    }
+    start: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\000x"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        string_value: ""
+      }
+    }
+    start: "A\206\310\002\234\231\000x"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: ""
+        }
+      }
+      end_open {
+        values {
+          string_value: "/////w=="
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000x"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\000x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: ""
+        }
+      }
+      end_closed {
+        values {
+          string_value: "/////w=="
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000y"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\000y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: ""
+        }
+      }
+      end_closed {
+        values {
+          string_value: "/////w=="
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000x"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\000y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: ""
+        }
+      }
+      end_open {
+        values {
+          string_value: "/////w=="
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000y"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\000x"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_BYTES_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_BYTES_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: BYTES
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "/////w=="
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\377x"
+  }
+  test {
+    key {
+      values {
+        string_value: ""
+      }
+    }
+    start: "A\206\310\002\273\271\377x"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "/////w=="
+        }
+      }
+      end_open {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\377x"
+    limit: "A\206\310\002\273\271\377x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "/////w=="
+        }
+      }
+      end_closed {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\377y"
+    limit: "A\206\310\002\273\271\377y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "/////w=="
+        }
+      }
+      end_closed {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\377x"
+    limit: "A\206\310\002\273\271\377y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "/////w=="
+        }
+      }
+      end_open {
+        values {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\377y"
+    limit: "A\206\310\002\273\271\377x"
+  }
+}
+
+test_case {
+  name: "NumericBasic"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "NumericBasic"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: NUMERIC
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "123"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        number_value: 123
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "NumericMultiPart"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "NumericMultiPart"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "user_id"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: NUMERIC
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "123"
+      }
+      values {
+        string_value: "456"
+      }
+    }
+    start: "A\206\310\002\234\221\366"
+    limit: "A\206\310\002\234\221\367"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "DataTypeTest_UUID"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_UUID"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: UUID
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "00000000-0000-0000-0000-000000000000"
+      }
+    }
+    start: "A\206\310\002\234\231\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+      }
+    }
+    start: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\000x"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000"
+  }
+  test {
+    key {
+      values {
+        string_value: "00000000-0000-0000-0000-000000000000"
+      }
+    }
+    start: "A\206\310\002\234\231\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+      }
+    }
+    start: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-1234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002\234\231\0224Vx\0224\0224\0224\0224Vx\220\253\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-1234-1234567890AB"
+      }
+    }
+    start: "A\206\310\002\234\231\0224Vx\0224\0224\0224\0224Vx\220\253\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "{12345678-1234-1234-1234-1234567890ad}"
+      }
+    }
+    start: "A\206\310\002\234\231\0224Vx\0224\0224\0224\0224Vx\220\255\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}"
+      }
+    }
+    start: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "NOT A UUID"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        number_value: 0
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678x1234-1234-1234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-1234-1234567890a"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-1234-1234567890abc"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-1234-1234567890ag"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "123456781234-1234-1234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-12341234-1234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-12341234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-12341234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "-12345678-1234-1234-1234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-1234-1234567890ab-"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678--1234-1234-1234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "{12345678-1234-1234-1234-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-1234-1234-1234-1234567890ab}"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "{{12345678-1234-1234-1234-1234567890ab}}"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key {
+      values {
+        string_value: "12345678-{1234-1234-1234}-1234567890ab"
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+      end_open {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000x"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\000x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000y"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\000y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000x"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\000y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+      end_open {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000y"
+    limit: "A\206\310\002\234\231\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\000x"
+  }
+}
+
+test_case {
+  name: "DataTypeTest_UUID_Desc"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "DataTypeTest_UUID_Desc"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: DESCENDING
+        null_order: NULLS_LAST
+        type {
+          code: UUID
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\377x"
+  }
+  test {
+    key {
+      values {
+        string_value: "00000000-0000-0000-0000-000000000000"
+      }
+    }
+    start: "A\206\310\002\273\271\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377x"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+      end_open {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\377x"
+    limit: "A\206\310\002\273\271\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377x"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\377y"
+    limit: "A\206\310\002\273\271\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\377x"
+    limit: "A\206\310\002\273\271\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377y"
+  }
+  test {
+    key_range {
+      start_open {
+        values {
+          string_value: "ffffffff-ffff-ffff-ffff-ffffffffffff"
+        }
+      }
+      end_open {
+        values {
+          string_value: "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    }
+    start: "A\206\310\002\273\271\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\000\360\377y"
+    limit: "A\206\310\002\273\271\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377\020\377x"
+  }
+}
+
+test_case {
+  name: "NotNull"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "NotNull"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NOT_NULL
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: ""
+      }
+    }
+    start: "A\206\310\002\231\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+    }
+    start: "A\206\310\002\231foo\000x"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "NullsLast"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "NullsLast"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_LAST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: ""
+      }
+    }
+    start: "A\206\310\002\273\231\000x"
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+    }
+    start: "A\206\310\002\273\231foo\000x"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\274\000"
+  }
+}
+
+test_case {
+  name: "MultiPart"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "MultiPart"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k1"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k2"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        string_value: "8"
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\234\221\020"
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\233\000"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+      values {
+        string_value: "8"
+      }
+    }
+    start: "A\206\310\002\233\000\234\221\020"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000\233\000"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "A"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "Z"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231A\000x"
+    limit: "A\206\310\002\234\231Z\000y"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "A"
+        }
+        values {
+          string_value: "4"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "A"
+        }
+        values {
+          string_value: "7"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231A\000x\234\221\010"
+    limit: "A\206\310\002\234\231A\000x\234\221\017"
+  }
+}
+
+test_case {
+  name: "Interleaved"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "C"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+      part {
+        tag: 2
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k2"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        string_value: "99"
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\004\234\221\306"
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\004\233\000"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+      values {
+        string_value: "99"
+      }
+    }
+    start: "A\206\310\002\233\000\004\234\221\306"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000\004\233\000"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "A"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "Z"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231A\000x\004"
+    limit: "A\206\310\002\234\231Z\000x\005"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "A"
+        }
+        values {
+          string_value: "4"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "A"
+        }
+        values {
+          string_value: "7"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231A\000x\004\234\221\010"
+    limit: "A\206\310\002\234\231A\000x\004\234\221\017"
+  }
+}
+
+test_case {
+  name: "GeneratedKeyColumns"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "T"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k3"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        string_value: "99"
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\234\221\306"
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\233\000"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+      values {
+        string_value: "99"
+      }
+    }
+    start: "A\206\310\002\233\000\234\221\306"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\233\000\233\000"
+  }
+  test {
+    key_range {
+      start_closed {
+        values {
+          string_value: "A"
+        }
+        values {
+          string_value: "4"
+        }
+      }
+      end_closed {
+        values {
+          string_value: "A"
+        }
+        values {
+          string_value: "7"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231A\000x\234\221\010"
+    limit: "A\206\310\002\234\231A\000x\234\221\017"
+  }
+}
+
+test_case {
+  name: "GlobalIndex"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      index_name: "I"
+      part {
+        tag: 1
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k2"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "8"
+      }
+    }
+    start: "\002\002\234\221\020"
+    limit: "\002\002\234\221\021"
+  }
+  test {
+    key {
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "\002\002\233\000"
+    limit: "\002\002\233\001"
+  }
+}
+
+test_case {
+  name: "LocalIndex"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      index_name: "I"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+      part {
+        tag: 3
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k3"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k2"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        string_value: "8"
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\006\234\221\020"
+    limit: "A\206\310\002\234\231foo\000x\006\234\221\021"
+  }
+  test {
+    key {
+      values {
+        string_value: "foo"
+      }
+      values {
+        null_value: NULL_VALUE
+      }
+    }
+    start: "A\206\310\002\234\231foo\000x\006\233\000"
+    limit: "A\206\310\002\234\231foo\000x\006\233\001"
+  }
+}
+
+test_case {
+  name: "KeySet"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "KeySet"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key_set {
+      keys {
+        values {
+          string_value: "99"
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\306"
+  }
+  test {
+    key_set {
+      ranges {
+        start_closed {
+          values {
+            string_value: "1"
+          }
+        }
+        end_open {
+          values {
+            string_value: "10"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\002"
+    limit: "A\206\310\002\234\221\024"
+  }
+  test {
+    key_set {
+      keys {
+        values {
+          string_value: "99"
+        }
+      }
+      keys {
+        values {
+          string_value: "101"
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\306"
+    limit: "A\206\310\002\234\221\313"
+  }
+  test {
+    key_set {
+      ranges {
+        start_closed {
+          values {
+            string_value: "1"
+          }
+        }
+        end_open {
+          values {
+            string_value: "10"
+          }
+        }
+      }
+      ranges {
+        start_closed {
+          values {
+            string_value: "20"
+          }
+        }
+        end_open {
+          values {
+            string_value: "30"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\002"
+    limit: "A\206\310\002\234\221<"
+  }
+  test {
+    key_set {
+      keys {
+        values {
+          string_value: "1"
+        }
+      }
+      ranges {
+        start_closed {
+          values {
+            string_value: "5"
+          }
+        }
+        end_open {
+          values {
+            string_value: "10"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\002"
+    limit: "A\206\310\002\234\221\024"
+  }
+  test {
+    key_set {
+      keys {
+        values {
+          string_value: "10"
+        }
+      }
+      ranges {
+        start_closed {
+          values {
+            string_value: "5"
+          }
+        }
+        end_open {
+          values {
+            string_value: "10"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\n"
+    limit: "A\206\310\002\234\221\025"
+  }
+}
+
+test_case {
+  name: "KeySet_All"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "T"
+      part {
+        tag: 50020
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key_set {
+      all: true
+    }
+    start: "A\206\310"
+    limit: "A\206\311"
+  }
+}
+
+test_case {
+  name: "InvalidRecipe_EmptyPart"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "BadRecipe"
+      part {
+        tag: 50020
+      }
+      part {
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "A"
+      }
+    }
+    start: "A\206\310"
+    limit: "A\206\311"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "InvalidRecipe_BadOrder"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "BadRecipe"
+      part {
+        tag: 50020
+      }
+      part {
+        order: 99
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k1"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "A"
+      }
+    }
+    start: "A\206\310"
+    limit: "A\206\311"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "InvalidRecipe_BadNullOrder"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "BadRecipe"
+      part {
+        tag: 50020
+      }
+      part {
+        order: ASCENDING
+        null_order: 99
+        type {
+          code: STRING
+        }
+        identifier: "k1"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "A"
+      }
+    }
+    start: "A\206\310"
+    limit: "A\206\311"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "InvalidRecipe_BadType"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "BadRecipe"
+      part {
+        tag: 50020
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: TOKENLIST
+        }
+        identifier: "k1"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    key {
+      values {
+        string_value: "A"
+      }
+    }
+    start: "A\206\310"
+    limit: "A\206\311"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "SimpleMutations"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "SimpleMutations"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    mutation {
+      insert {
+        table: "SimpleMutations"
+        columns: "k"
+        values {
+          values {
+            string_value: "80"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\241"
+  }
+  test {
+    mutation {
+      update {
+        table: "SimpleMutations"
+        columns: "k"
+        values {
+          values {
+            string_value: "80"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\241"
+  }
+  test {
+    mutation {
+      insert_or_update {
+        table: "SimpleMutations"
+        columns: "k"
+        values {
+          values {
+            string_value: "80"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\241"
+  }
+  test {
+    mutation {
+      replace {
+        table: "SimpleMutations"
+        columns: "k"
+        values {
+          values {
+            string_value: "80"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\241"
+  }
+  test {
+    mutation {
+      delete {
+        table: "SimpleMutations"
+        key_set {
+          keys {
+            values {
+              string_value: "80"
+            }
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\241"
+  }
+  test {
+    mutation {
+      delete {
+        table: "SimpleMutations"
+        key_set {
+          ranges {
+            start_closed {
+              values {
+                string_value: "80"
+              }
+            }
+            end_open {
+              values {
+                string_value: "100"
+              }
+            }
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\310"
+  }
+}
+
+test_case {
+  name: "QueueMutations"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "Q"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: INT64
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    mutation {
+      send {
+        queue: "Q"
+        key {
+          values {
+            string_value: "80"
+          }
+        }
+        payload {
+          string_value: ""
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\241"
+  }
+  test {
+    mutation {
+      ack {
+        queue: "Q"
+        key {
+          values {
+            string_value: "80"
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\221\240"
+    limit: "A\206\310\002\234\221\241"
+  }
+}
+
+test_case {
+  name: "CustomMutationCases"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      table_name: "T"
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "k"
+      }
+    }
+  }
+  test {
+    mutation {
+    }
+    start: ""
+    limit: "\377"
+    approximate: true
+  }
+  test {
+    mutation {
+      delete {
+        key_set {
+          all: true
+        }
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+  }
+  test {
+    mutation {
+      delete {
+        key_set {
+          keys {
+            values {
+              string_value: "123"
+            }
+          }
+          keys {
+            values {
+              string_value: "456"
+            }
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\231123\000x"
+    limit: "A\206\310\002\234\231456\000y"
+  }
+  test {
+    mutation {
+      delete {
+        key_set {
+          ranges {
+            start_closed {
+              values {
+                string_value: "123"
+              }
+            }
+            end_open {
+              values {
+                string_value: "456"
+              }
+            }
+          }
+          ranges {
+            start_closed {
+              values {
+                string_value: "100"
+              }
+            }
+            end_open {
+              values {
+                string_value: "200"
+              }
+            }
+          }
+          ranges {
+            start_closed {
+              values {
+                string_value: "150"
+              }
+            }
+            end_open {
+              values {
+                string_value: "500"
+              }
+            }
+          }
+        }
+      }
+    }
+    start: "A\206\310\002\234\231100\000x"
+    limit: "A\206\310\002\234\231500\000x"
+  }
+  test {
+    mutation {
+      delete {
+        key_set {
+          ranges {
+            start_closed {
+              values {
+                string_value: "123"
+              }
+            }
+            end_open {
+              values {
+                string_value: "456"
+              }
+            }
+          }
+          all: true
+        }
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+  }
+  test {
+    mutation {
+      delete {
+        key_set {
+          keys {
+            values {
+              string_value: "123"
+            }
+          }
+          keys {
+            values {
+              number_value: 456
+            }
+          }
+        }
+      }
+    }
+    start: "A\206\310\002"
+    limit: "A\206\310\003"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "QueryEncoding"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      operation_uid: 6
+      part {
+        tag: 50020
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "p1"
+      }
+      part {
+        order: ASCENDING
+        null_order: NULLS_FIRST
+        type {
+          code: STRING
+        }
+        identifier: "p0"
+      }
+    }
+  }
+  test {
+    query_params {
+      fields {
+        key: "p0"
+        value {
+          string_value: "foo"
+        }
+      }
+      fields {
+        key: "p1"
+        value {
+          string_value: "bar"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231bar\000x\234\231foo\000x"
+  }
+  test {
+    query_params {
+      fields {
+        key: "p1"
+        value {
+          string_value: "bar"
+        }
+      }
+    }
+    start: "A\206\310\002\234\231bar\000x"
+    limit: "A\206\310\002\234\231bar\000y"
+    approximate: true
+  }
+}
+
+test_case {
+  name: "RandomQueryroot"
+  recipes {
+    schema_generation: "\001\001"
+    recipe {
+      operation_uid: 7
+      part {
+        tag: 50016
+      }
+      part {
+        tag: 1
+      }
+      part {
+        order: ASCENDING
+        null_order: NOT_NULL
+        type {
+          code: INT64
+        }
+        random: true
+      }
+    }
+  }
+  test {
+    query_params {
+    }
+    start: "A\206\300\002\230\327\342\351\276\316\214%$"
+  }
+}

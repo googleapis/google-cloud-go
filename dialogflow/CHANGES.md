@@ -1,5 +1,15 @@
 # Changes
 
+## [1.76.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.76.0) (2026-02-19)
+
+### Features
+
+* Add new value `DETECT_INTENT_RESPONSE_VIEW_DEFAULT` to enum `DetectIntentResponseView` ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+### Documentation
+
+* Add comment for enum value `DETECT_INTENT_RESPONSE_VIEW_UNSPECIFIED` in enum `DetectIntentResponseView` ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
 ## [1.75.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.75.0) (2026-02-05)
 
 ### Features

@@ -129,16 +129,23 @@ func (c *KeyTrackingClient) Connection() *grpc.ClientConn {
 }
 
 // GetProtectedResourcesSummary returns aggregate information about the resources protected by the given
-// Cloud KMS CryptoKey. Only resources within
-// the same Cloud organization as the key will be returned. The project that
-// holds the key must be part of an organization in order for this call to
-// succeed.
+// Cloud KMS CryptoKey. By default,
+// summary of resources within the same Cloud organization as the key will be
+// returned, which requires the KMS organization service account to be
+// configured(refer
+// https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles (at https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles)).
+// If the KMS organization service account is not configured or key’s project
+// is not part of an organization, set
+// fallback_scope
+// to FALLBACK_SCOPE_PROJECT to retrieve a summary of protected resources
+// within the key’s project.
 func (c *KeyTrackingClient) GetProtectedResourcesSummary(ctx context.Context, req *inventorypb.GetProtectedResourcesSummaryRequest, opts ...gax.CallOption) (*inventorypb.ProtectedResourcesSummary, error) {
 	return c.internalClient.GetProtectedResourcesSummary(ctx, req, opts...)
 }
 
 // SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS
-// CryptoKey in the given Cloud organization.
+// CryptoKey in the given Cloud
+// organization/project.
 func (c *KeyTrackingClient) SearchProtectedResources(ctx context.Context, req *inventorypb.SearchProtectedResourcesRequest, opts ...gax.CallOption) *ProtectedResourceIterator {
 	return c.internalClient.SearchProtectedResources(ctx, req, opts...)
 }
@@ -363,10 +370,16 @@ func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, re
 }
 
 // GetProtectedResourcesSummary returns aggregate information about the resources protected by the given
-// Cloud KMS CryptoKey. Only resources within
-// the same Cloud organization as the key will be returned. The project that
-// holds the key must be part of an organization in order for this call to
-// succeed.
+// Cloud KMS CryptoKey. By default,
+// summary of resources within the same Cloud organization as the key will be
+// returned, which requires the KMS organization service account to be
+// configured(refer
+// https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles (at https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles)).
+// If the KMS organization service account is not configured or key’s project
+// is not part of an organization, set
+// fallback_scope
+// to FALLBACK_SCOPE_PROJECT to retrieve a summary of protected resources
+// within the key’s project.
 func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context, req *inventorypb.GetProtectedResourcesSummaryRequest, opts ...gax.CallOption) (*inventorypb.ProtectedResourcesSummary, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -376,6 +389,9 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFallbackScope() != 0 {
+		params.Add("fallbackScope", fmt.Sprintf("%v", req.GetFallbackScope()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -417,7 +433,8 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 }
 
 // SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS
-// CryptoKey in the given Cloud organization.
+// CryptoKey in the given Cloud
+// organization/project.
 func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, req *inventorypb.SearchProtectedResourcesRequest, opts ...gax.CallOption) *ProtectedResourceIterator {
 	it := &ProtectedResourceIterator{}
 	req = proto.Clone(req).(*inventorypb.SearchProtectedResourcesRequest)

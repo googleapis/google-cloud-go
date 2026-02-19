@@ -103,6 +103,8 @@ type txReadOnly struct {
 	clientContext *sppb.RequestOptions_ClientContext
 
 	otConfig *openTelemetryConfig
+
+	locationRouter *locationRouter
 }
 
 func (t *txReadOnly) isDefaultInlinedBegin() bool {
@@ -368,22 +370,25 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		sh.session.logger,
 		t.sm.sc.metricsTracerFactory,
 		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
-			client, err := client.StreamingRead(ctx,
-				&sppb.ReadRequest{
-					Session:             t.sh.getID(),
-					Transaction:         t.getTransactionSelector(),
-					Table:               table,
-					Index:               index,
-					Columns:             columns,
-					KeySet:              kset,
-					ResumeToken:         resumeToken,
-					Limit:               int64(limit),
-					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, clientContext)),
-					DataBoostEnabled:    dataBoostEnabled,
-					DirectedReadOptions: directedReadOptions,
-					OrderBy:             orderBy,
-					LockHint:            lockHint,
-				}, opts...)
+			req := &sppb.ReadRequest{
+				Session:             t.sh.getID(),
+				Transaction:         t.getTransactionSelector(),
+				Table:               table,
+				Index:               index,
+				Columns:             columns,
+				KeySet:              kset,
+				ResumeToken:         resumeToken,
+				Limit:               int64(limit),
+				RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, clientContext)),
+				DataBoostEnabled:    dataBoostEnabled,
+				DirectedReadOptions: directedReadOptions,
+				OrderBy:             orderBy,
+				LockHint:            lockHint,
+			}
+			if t.locationRouter != nil {
+				t.locationRouter.prepareReadRequest(req)
+			}
+			client, err := client.StreamingRead(ctx, req, opts...)
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
@@ -410,6 +415,11 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.setTimestamp,
 		t.release,
 		client.(*grpcSpannerClient),
+		func(prs *sppb.PartialResultSet) {
+			if t.locationRouter != nil {
+				t.locationRouter.observePartialResultSet(prs)
+			}
+		},
 	)
 }
 
@@ -734,6 +744,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
 			req.Transaction = t.getTransactionSelector()
+			if t.locationRouter != nil {
+				t.locationRouter.prepareExecuteSQLRequest(req)
+			}
 			client, err := client.ExecuteStreamingSql(ctx, req, opts...)
 			if err != nil {
 				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -760,7 +773,12 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		client.(*grpcSpannerClient))
+		client.(*grpcSpannerClient),
+		func(prs *sppb.PartialResultSet) {
+			if t.locationRouter != nil {
+				t.locationRouter.observePartialResultSet(prs)
+			}
+		})
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
@@ -1396,6 +1414,9 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	if _, ok := req.GetTransaction().GetSelector().(*sppb.TransactionSelector_Begin); ok {
 		hasInlineBeginTransaction = true
 	}
+	if t.locationRouter != nil {
+		t.locationRouter.prepareExecuteSQLRequest(req)
+	}
 
 	var md metadata.MD
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
@@ -1424,6 +1445,9 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 			t.setTransactionID(nil)
 			return 0, errInlineBeginTransactionFailed(nil)
 		}
+	}
+	if t.locationRouter != nil {
+		t.locationRouter.observeResultSet(resultSet)
 	}
 	t.updatePrecommitToken(resultSet.GetPrecommitToken())
 	if resultSet.Stats == nil {
@@ -1721,6 +1745,9 @@ func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transa
 			request.RequestOptions.ClientContext = ro.ClientContext
 		}
 	}
+	if opts.locationRouter != nil {
+		opts.locationRouter.prepareBeginTransactionRequest(request)
+	}
 
 	res, err := opts.client.BeginTransaction(ctx, request)
 	if err != nil {
@@ -1790,12 +1817,13 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		t.txOpts = t.txOpts.merge(t.getTransactionOptionsCallback())
 	}
 	tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
-		sessionID:     sh.getID(),
-		client:        sh.getClient(),
-		txOptions:     t.txOpts,
-		mutation:      mutation,
-		previousTx:    previousTx,
-		clientContext: t.clientContext,
+		sessionID:      sh.getID(),
+		client:         sh.getClient(),
+		txOptions:      t.txOpts,
+		mutation:       mutation,
+		previousTx:     previousTx,
+		clientContext:  t.clientContext,
+		locationRouter: t.locationRouter,
 	})
 	if err != nil {
 		err = ToSpannerError(err)
@@ -2300,10 +2328,11 @@ func isAbortedErr(err error) bool {
 
 // transactionBeginOptions holds the parameters for beginning a transaction.
 type transactionBeginOptions struct {
-	sessionID     string
-	client        spannerClient
-	txOptions     TransactionOptions
-	previousTx    transactionID
-	mutation      *sppb.Mutation
-	clientContext *sppb.RequestOptions_ClientContext
+	sessionID      string
+	client         spannerClient
+	txOptions      TransactionOptions
+	previousTx     transactionID
+	mutation       *sppb.Mutation
+	clientContext  *sppb.RequestOptions_ClientContext
+	locationRouter *locationRouter
 }

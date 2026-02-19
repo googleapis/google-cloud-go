@@ -1,5 +1,11 @@
 # Changes
 
+## [2.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataproc%2Fv2.16.0) (2026-02-19)
+
+### Features
+
+* Add `ClusterType` to support creating Zero-Scale clusters ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
 ## [2.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataproc%2Fv2.15.0) (2025-10-10)
 
 ### Features

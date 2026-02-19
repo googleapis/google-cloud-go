@@ -2,6 +2,23 @@
 
 
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.28.0) (2026-02-19)
+
+### Features
+
+* Add `googleMapsLinks` field for links to different actions on Google Maps ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Add `googleMapsTypeLabel` field to show type information on Google Maps ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+### Bug Fixes
+
+* An existing field `references` is removed from message `.google.maps.places.v1.ContentBlock` ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* An existing field `topic` is removed from message `.google.maps.places.v1.ContentBlock` ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+### Documentation
+
+* A comment for field `photos` in message `.google.maps.places.v1.ContextualContent` is changed ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* A comment for field `reviews` in message `.google.maps.places.v1.ContextualContent` is changed ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.27.0) (2026-02-12)
 
 ### Documentation

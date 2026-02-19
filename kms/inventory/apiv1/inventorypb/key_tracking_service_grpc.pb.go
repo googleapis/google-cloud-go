@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,13 +43,20 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KeyTrackingServiceClient interface {
 	// Returns aggregate information about the resources protected by the given
-	// Cloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. Only resources within
-	// the same Cloud organization as the key will be returned. The project that
-	// holds the key must be part of an organization in order for this call to
-	// succeed.
+	// Cloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. By default,
+	// summary of resources within the same Cloud organization as the key will be
+	// returned, which requires the KMS organization service account to be
+	// configured(refer
+	// https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles).
+	// If the KMS organization service account is not configured or key's project
+	// is not part of an organization, set
+	// [fallback_scope][google.cloud.kms.inventory.v1.GetProtectedResourcesSummaryRequest.fallback_scope]
+	// to `FALLBACK_SCOPE_PROJECT` to retrieve a summary of protected resources
+	// within the key's project.
 	GetProtectedResourcesSummary(ctx context.Context, in *GetProtectedResourcesSummaryRequest, opts ...grpc.CallOption) (*ProtectedResourcesSummary, error)
 	// Returns metadata about the resources protected by the given Cloud KMS
-	// [CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud organization.
+	// [CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud
+	// organization/project.
 	SearchProtectedResources(ctx context.Context, in *SearchProtectedResourcesRequest, opts ...grpc.CallOption) (*SearchProtectedResourcesResponse, error)
 }
 
@@ -84,13 +91,20 @@ func (c *keyTrackingServiceClient) SearchProtectedResources(ctx context.Context,
 // for forward compatibility
 type KeyTrackingServiceServer interface {
 	// Returns aggregate information about the resources protected by the given
-	// Cloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. Only resources within
-	// the same Cloud organization as the key will be returned. The project that
-	// holds the key must be part of an organization in order for this call to
-	// succeed.
+	// Cloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. By default,
+	// summary of resources within the same Cloud organization as the key will be
+	// returned, which requires the KMS organization service account to be
+	// configured(refer
+	// https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles).
+	// If the KMS organization service account is not configured or key's project
+	// is not part of an organization, set
+	// [fallback_scope][google.cloud.kms.inventory.v1.GetProtectedResourcesSummaryRequest.fallback_scope]
+	// to `FALLBACK_SCOPE_PROJECT` to retrieve a summary of protected resources
+	// within the key's project.
 	GetProtectedResourcesSummary(context.Context, *GetProtectedResourcesSummaryRequest) (*ProtectedResourcesSummary, error)
 	// Returns metadata about the resources protected by the given Cloud KMS
-	// [CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud organization.
+	// [CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud
+	// organization/project.
 	SearchProtectedResources(context.Context, *SearchProtectedResourcesRequest) (*SearchProtectedResourcesResponse, error)
 }
 
