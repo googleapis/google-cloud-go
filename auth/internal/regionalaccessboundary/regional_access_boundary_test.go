@@ -16,7 +16,6 @@ package regionalaccessboundary
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -24,7 +23,9 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
@@ -355,7 +356,7 @@ func TestServiceAccountConfig(t *testing.T) {
 				name:    "Valid SA Email",
 				ud:      "example.com",
 				saEmail: "test-sa@example.iam.gserviceaccount.com",
-				wantURL: fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, "example.com", "test-sa@example.iam.gserviceaccount.com"),
+				wantURL: fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, "test-sa@example.iam.gserviceaccount.com"),
 			},
 			{
 				name:    "Empty SA Email",
@@ -366,7 +367,7 @@ func TestServiceAccountConfig(t *testing.T) {
 				name:    "Empty UD defaults to googleapis.com",
 				ud:      "",
 				saEmail: "test-sa@example.iam.gserviceaccount.com",
-				wantURL: fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, internal.DefaultUniverseDomain, "test-sa@example.iam.gserviceaccount.com"),
+				wantURL: fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, "test-sa@example.iam.gserviceaccount.com"),
 			},
 		}
 		for _, tt := range tests {
@@ -419,7 +420,7 @@ func TestServiceAccountConfig(t *testing.T) {
 func TestGCEConfigProvider(t *testing.T) {
 	defaultTestEmail := "test-sa@example.iam.gserviceaccount.com"
 	defaultTestUD := "example.com"
-	defaultExpectedEndpoint := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, defaultTestUD, defaultTestEmail)
+	defaultExpectedEndpoint := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, defaultTestEmail)
 
 	originalGCEHost := os.Getenv("GCE_METADATA_HOST")
 	defer os.Setenv("GCE_METADATA_HOST", originalGCEHost)
@@ -535,7 +536,7 @@ func TestGCEConfigProvider(t *testing.T) {
 					}
 				}
 			},
-			expectedEndpoint: fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, internal.DefaultUniverseDomain, defaultTestEmail),
+			expectedEndpoint: fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, defaultTestEmail),
 			expectedUD:       internal.DefaultUniverseDomain,
 		},
 	}
@@ -664,241 +665,75 @@ func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 
 func TestDataProvider_Token(t *testing.T) {
 	ctx := context.Background()
+	baseToken := &auth.Token{Value: "base-token"}
+	baseProvider := &mockTokenProvider{TokenToReturn: baseToken}
 
-	type serverResponse struct {
-		status int
-		body   string
+	provider, err := NewProvider(http.DefaultClient, &mockConfigProvider{}, nil, baseProvider)
+	if err != nil {
+		t.Fatalf("NewProvider() failed: %v", err)
 	}
 
-	tests := []struct {
-		name                  string
-		mockConfig            *mockConfigProvider
-		serverResponse        *serverResponse // for fetchRegionalAccessBoundaryData
-		baseProvider          *mockTokenProvider
-		wantDataOnToken       *internal.RegionalAccessBoundaryData
-		wantErr               string
-		wantUniverseCallCount int
-		wantEndpointCallCount int
-		// secondRun allows testing caching behavior by running the same hook again
-		// with a different server/mock configuration.
-		secondRun *struct {
-			serverResponse        *serverResponse
-			wantDataOnToken       *internal.RegionalAccessBoundaryData
-			wantErr               string
-			wantUniverseCallCount int
-			wantEndpointCallCount int
+	token, err := provider.Token(ctx)
+	if err != nil {
+		t.Fatalf("provider.Token() unexpected error: %v", err)
+	}
+
+	if token.Value != baseToken.Value {
+		t.Errorf("provider.Token() value = %q, want %q", token.Value, baseToken.Value)
+	}
+
+	if p, ok := token.Metadata[ProviderKey]; !ok || p != provider {
+		t.Errorf("provider.Token() metadata missing ProviderKey or incorrect provider reference")
+	}
+}
+
+func TestDataProvider_GetHeaderValue(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("Regional endpoint skip", func(t *testing.T) {
+		token := &auth.Token{Value: "base"}
+		provider, _ := NewProvider(http.DefaultClient, &mockConfigProvider{}, nil, &mockTokenProvider{TokenToReturn: token})
+		val := provider.GetHeaderValue(ctx, "https://us-central1.rep.googleapis.com/v1/...", token)
+		if val != "" {
+			t.Errorf("Expected empty header for regional endpoint, got %q", val)
 		}
-	}{
-		{
-			name: "Non-default universe domain returns nil",
-			mockConfig: &mockConfigProvider{
-				universeToReturn: "example.com",
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			wantDataOnToken:       nil,
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 0,
-		},
-		{
-			name: "Default universe, no cache, successful fetch",
-			mockConfig: &mockConfigProvider{
-				universeToReturn: internal.DefaultUniverseDomain,
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			serverResponse: &serverResponse{
-				status: http.StatusOK,
-				body:   `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`,
-			},
-			wantDataOnToken:       internal.NewRegionalAccessBoundaryData([]string{"us-east1"}, "0xABC"),
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 1,
-		},
-		{
-			name: "Default universe, fetch fails, no cache, returns error",
-			mockConfig: &mockConfigProvider{
-				universeToReturn: internal.DefaultUniverseDomain,
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			serverResponse: &serverResponse{
-				status: http.StatusInternalServerError,
-				body:   "server error",
-			},
-			wantDataOnToken:       &internal.RegionalAccessBoundaryData{},
-			wantErr:               "and no cache available",
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 1,
-		},
-		{
-			name: "Error from GetUniverseDomain",
-			mockConfig: &mockConfigProvider{
-				universeErrToReturn: errors.New("universe domain error"),
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			wantDataOnToken:       &internal.RegionalAccessBoundaryData{},
-			wantErr:               "error getting universe domain",
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 0,
-		},
-		{
-			name: "Error from GetRegionalAccessBoundaryEndpoint",
-			mockConfig: &mockConfigProvider{
-				universeToReturn:    internal.DefaultUniverseDomain,
-				endpointErrToReturn: errors.New("endpoint error"),
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			wantDataOnToken:       &internal.RegionalAccessBoundaryData{},
-			wantErr:               "error getting the lookup endpoint",
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 1,
-		},
-		{
-			name: "Cache fallback on second call",
-			mockConfig: &mockConfigProvider{
-				universeToReturn: internal.DefaultUniverseDomain,
-			},
-			baseProvider: &mockTokenProvider{
-				TokenToReturn: &auth.Token{Value: "base-token"},
-			},
-			serverResponse: &serverResponse{ // First call is successful
-				status: http.StatusOK,
-				body:   `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`,
-			},
-			wantDataOnToken:       internal.NewRegionalAccessBoundaryData([]string{"us-east1"}, "0xABC"),
-			wantUniverseCallCount: 1,
-			wantEndpointCallCount: 1,
-			secondRun: &struct {
-				serverResponse        *serverResponse
-				wantDataOnToken       *internal.RegionalAccessBoundaryData
-				wantErr               string
-				wantUniverseCallCount int
-				wantEndpointCallCount int
-			}{
-				serverResponse: &serverResponse{ // Second call fails
-					status: http.StatusInternalServerError,
-					body:   "server error",
-				},
-				wantDataOnToken: internal.NewRegionalAccessBoundaryData([]string{"us-east1"}, "0xABC"), // Should get cached data
-				wantErr:         "",                                                           // No error due to fallback
-				// It tries to fetch again, but falls back to cache.
-				wantUniverseCallCount: 1,
-				wantEndpointCallCount: 1,
-			},
-		},
-	}
+	})
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tt.mockConfig.Reset()
-			var server *httptest.Server
-			client := http.DefaultClient
+	t.Run("Async fetch success", func(t *testing.T) {
+		var wg sync.WaitGroup
+		wg.Add(1)
 
-			if tt.serverResponse != nil { // Indicates a fetch is expected
-				server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					w.Header().Set("Content-Type", "application/json")
-					w.WriteHeader(tt.serverResponse.status)
-					fmt.Fprintln(w, tt.serverResponse.body)
-				}))
-				defer server.Close()
-				tt.mockConfig.endpointToReturn = server.URL
-				client = server.Client() // Use the test server's client
-			}
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer wg.Done()
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintln(w, `{"locations": ["us-east1"], "encodedLocations": "0xABC"}`)
+		}))
+		defer server.Close()
 
-			provider, err := NewProvider(client, tt.mockConfig, nil, tt.baseProvider)
-			if err != nil {
-				t.Fatalf("NewProvider() failed: %v", err)
-			}
+		mockConfig := &mockConfigProvider{
+			universeToReturn: internal.DefaultUniverseDomain,
+			endpointToReturn: server.URL,
+		}
 
-			// First run
-			token, err := provider.Token(ctx)
+		token := &auth.Token{Value: "base"}
+		provider, _ := NewProvider(server.Client(), mockConfig, nil, &mockTokenProvider{TokenToReturn: token})
+		
+		val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+		if val != "" {
+			t.Errorf("First call should return empty while fetching async")
+		}
 
-			if tt.wantErr != "" {
-				if err == nil {
-					t.Fatalf("provider.Token() error = nil, want %q", tt.wantErr)
-				}
-				if !strings.Contains(err.Error(), tt.wantErr) {
-					t.Errorf("provider.Token() error = %q, want %q", err.Error(), tt.wantErr)
-				}
-			} else if err != nil {
-				t.Fatalf("provider.Token() unexpected error: %v", err)
-			} else {
-				if token.Value != tt.baseProvider.TokenToReturn.Value {
-					t.Errorf("provider.Token() value = %q, want %q", token.Value, tt.baseProvider.TokenToReturn.Value)
-				}
-				var gotData internal.RegionalAccessBoundaryData
-				data, ok := token.Metadata[internal.RegionalAccessBoundaryDataKey]
-				if tt.wantDataOnToken == nil {
-					if ok {
-						t.Errorf("provider.Token() data on token = %+v, want nil", data)
-					}
-				} else {
-					if ok {
-						gotData, _ = data.(internal.RegionalAccessBoundaryData)
-					}
-					if !reflect.DeepEqual(gotData, *tt.wantDataOnToken) {
-						t.Errorf("provider.Token() data on token = %+v, want %+v", gotData, *tt.wantDataOnToken)
-					}
-				}
-			}
+		wg.Wait() // Wait for server to receive request
+		
+		// Wait an extra beat for HandleFetchSuccess to write the cache locally in the goroutine
+		time.Sleep(50 * time.Millisecond)
 
-			if tt.mockConfig.universeCallCount != tt.wantUniverseCallCount {
-				t.Errorf("GetUniverseDomain call count = %d, want %d", tt.mockConfig.universeCallCount, tt.wantUniverseCallCount)
-			}
-			if tt.mockConfig.endpointCallCount != tt.wantEndpointCallCount {
-				t.Errorf("GetRegionalAccessBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.wantEndpointCallCount)
-			}
-
-			// Second run, if configured
-			if tt.secondRun != nil {
-				// Reset server if needed
-				if tt.secondRun.serverResponse != nil {
-					server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						w.Header().Set("Content-Type", "application/json")
-						w.WriteHeader(tt.secondRun.serverResponse.status)
-						fmt.Fprintln(w, tt.secondRun.serverResponse.body)
-					})
-				}
-
-				// Reset mock call counts for the second run
-				tt.mockConfig.Reset()
-
-				secondToken, err := provider.Token(ctx)
-
-				if tt.secondRun.wantErr != "" {
-					if err == nil {
-						t.Fatalf("provider.Token() second run error = nil, want %q", tt.secondRun.wantErr)
-					}
-					if !strings.Contains(err.Error(), tt.secondRun.wantErr) {
-						t.Errorf("provider.Token() second run error = %q, want %q", err.Error(), tt.secondRun.wantErr)
-					}
-				} else if err != nil {
-					t.Fatalf("provider.Token() second run unexpected error: %v", err)
-				} else {
-					var gotData internal.RegionalAccessBoundaryData
-					if data, ok := secondToken.Metadata[internal.RegionalAccessBoundaryDataKey]; ok {
-						gotData, _ = data.(internal.RegionalAccessBoundaryData)
-					}
-					if !reflect.DeepEqual(gotData, *tt.secondRun.wantDataOnToken) {
-						t.Errorf("provider.Token() second run data on token = %+v, want %+v", gotData, *tt.secondRun.wantDataOnToken)
-					}
-				}
-
-				if tt.mockConfig.universeCallCount != tt.secondRun.wantUniverseCallCount {
-					t.Errorf("second run GetUniverseDomain call count = %d, want %d", tt.mockConfig.universeCallCount, tt.secondRun.wantUniverseCallCount)
-				}
-				if tt.mockConfig.endpointCallCount != tt.secondRun.wantEndpointCallCount {
-					t.Errorf("second run GetRegionalAccessBoundaryEndpoint call count = %d, want %d", tt.mockConfig.endpointCallCount, tt.secondRun.wantEndpointCallCount)
-				}
-			}
-		})
-	}
+		val2 := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+		if val2 == "" {
+			t.Errorf("Second call did not return cached header")
+		} else if val2 != "0xABC" {
+			t.Errorf("Second call returned %q, expected %q", val2, "0xABC")
+		}
+	})
 }
