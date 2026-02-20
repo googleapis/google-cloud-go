@@ -22,7 +22,7 @@ import (
 	"context"
 
 	auditmanager "cloud.google.com/go/auditmanager/apiv1"
-	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb"
+	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1/auditmanagerpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &auditmanagerpb.GetAuditReportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb#GetAuditReportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#GetAuditReportRequest.
 	}
 	resp, err := c.GetAuditReport(ctx, req)
 	if err != nil {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	auditmanager "cloud.google.com/go/auditmanager/apiv1"
-	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb"
+	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1/auditmanagerpb"
 	"google.golang.org/api/iterator"
 )
 
@@ -41,7 +41,7 @@ func main() {
 
 	req := &auditmanagerpb.ListControlsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb#ListControlsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#ListControlsRequest.
 	}
 	it := c.ListControls(ctx, req)
 	for {
