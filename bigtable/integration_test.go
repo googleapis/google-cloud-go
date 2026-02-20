@@ -2269,6 +2269,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
+		Tags:         map[string]string{"tagKeys/12345": "tagValues/6789"},
 	}
 
 	// CreateInstance can be flaky; retry before marking as failing.
@@ -2297,6 +2298,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
 		Labels:       map[string]string{"new-label-key": "new-label-value"},
+		Tags:         map[string]string{"tagKeys/12345": "tagValues/6789"},
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID, NumNodes: 5},
 		},
