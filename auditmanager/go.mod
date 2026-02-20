@@ -2,6 +2,8 @@ module cloud.google.com/go/auditmanager
 
 go 1.24.0
 
+retract v0.1.0 // Contains incorrectly generated go proto code. 
+
 require (
 	cloud.google.com/go/longrunning v0.8.0
 	github.com/googleapis/gax-go/v2 v2.17.0
