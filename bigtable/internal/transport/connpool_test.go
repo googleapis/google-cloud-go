@@ -1558,6 +1558,146 @@ func TestRemoveConnections(t *testing.T) {
 	})
 }
 
+func TestDirectAccessLogic(t *testing.T) {
+	ctx := context.Background()
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+	baseDialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	t.Run("DirectAccessAvailable_ReuseConnection", func(t *testing.T) {
+		fake.reset()
+		// Mock direct access dialer
+		daDialCalled := false
+		var daConn *BigtableConn
+		daDial := func() (*BigtableConn, error) {
+			c, err := baseDialFunc()
+			if err != nil {
+				return nil, err
+			}
+			if !daDialCalled {
+				daConn = c
+				daDialCalled = true
+			}
+			// poor man's direct access
+			c.isALTSConn.Store(true)
+			return c, nil
+		}
+
+		poolSize := 3
+		fake.setPingCount(0)
+		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
+
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		if !daDialCalled {
+			t.Error("Direct Access dialer was not called")
+		}
+
+		conns := pool.getConns()
+		if len(conns) != poolSize {
+			t.Errorf("Pool size got %d, want %d", len(conns), poolSize)
+		}
+
+		// Verify reuse: the first connection should be the one from daDial
+		if conns[0].conn != daConn {
+			t.Error("Pool did not reuse the Direct Access connection as the first entry")
+		}
+
+		// Verify the first connection is ALTS
+		if !conns[0].isALTSUsed() {
+			t.Error("Reused connection does not report ALTS usage")
+		}
+	})
+
+	t.Run("DirectAccess_NotAlts", func(t *testing.T) {
+		fake.reset()
+		var daConn *BigtableConn
+		daDial := func() (*BigtableConn, error) {
+			c, err := baseDialFunc()
+			if err != nil {
+				return nil, err
+			}
+			daConn = c
+			// poor man's alts
+			c.isALTSConn.Store(false)
+			return c, nil
+		}
+
+		poolSize := 2
+		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		conns := pool.getConns()
+		if conns[0].conn == daConn {
+			t.Error("Pool incorrectly reused non-ALTS connection")
+		}
+
+		// Verify the discarded connection is closed
+		if !isConnClosed(daConn.ClientConn) {
+			t.Error("Discarded non-ALTS connection was not closed")
+		}
+	})
+
+	t.Run("DirectAccess_DialFail_Fallback", func(t *testing.T) {
+		fake.reset()
+		daDial := func() (*BigtableConn, error) {
+			return nil, errors.New("da dial failed")
+		}
+
+		poolSize := 1
+		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		if pool.Num() != 1 {
+			t.Errorf("Pool size got %d, want 1", pool.Num())
+		}
+	})
+
+	t.Run("DirectAccess_PrimeFailed", func(t *testing.T) {
+		fake.reset()
+		// Let's make the first Prime call fail (DA check), and subsequent ones succeed (standard dial).
+		fake.setPingErr(status.Error(codes.Internal, "da prime fail"), nil, nil, nil)
+
+		var daConn *BigtableConn
+		daDial := func() (*BigtableConn, error) {
+			c, err := baseDialFunc()
+			if err != nil {
+				return nil, err
+			}
+			daConn = c
+			return c, nil
+		}
+		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		poolSize := 1
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		// Verify fallback
+		if pool.getConns()[0].conn == daConn {
+			t.Error("Pool reused connection despite Prime failure")
+		}
+
+		if !isConnClosed(daConn.ClientConn) {
+			t.Error("Failed DA connection was not closed")
+		}
+	})
+}
+
 func TestConnPoolStatisticsVisitor(t *testing.T) {
 	ctx := context.Background()
 	poolSize := 3
