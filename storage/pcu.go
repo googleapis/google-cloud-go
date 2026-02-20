@@ -224,6 +224,10 @@ type uploadResult struct {
 func (w *Writer) initPCU(ctx context.Context) error {
 	// TODO: Check if PCU is enabled on the Writer.
 
+	// Sanity check: If these are nil, something has gone fundamentally wrong in the Writer lifecycle.
+	if w.o == nil || w.o.c == nil || w.o.bucket == "" {
+		return fmt.Errorf("upload requires a non-nil ObjectHandle with a bucket name and a client")
+	}
 	// TODO: Get the config from the Writer.
 	cfg := &parallelUploadConfig{}
 	cfg.defaults()
@@ -292,19 +296,29 @@ func (s *pcuState) worker() {
 			}
 			func(t uploadTask) {
 				// Ensure the buffer is returned to the pool.
-				defer func() { s.bufferCh <- t.buffer }()
+				defer func() {
+					select {
+					case s.bufferCh <- t.buffer:
+					default:
+						// If the buffer pool is full, drop the buffer.
+						// This is a safety measure to avoid blocking indefinitely.
+					}
+				}()
 				// This handles the case where cancellation happens before we begin upload.
-				select {
-				case <-s.ctx.Done():
-					s.resultCh <- uploadResult{partNumber: t.partNumber, err: s.ctx.Err()}
+				if err := s.ctx.Err(); err != nil {
 					return
-				default:
 				}
 
 				handle, attrs, err := s.uploadPartFn(s, t)
 
-				// Always send a result to the collector.
-				s.resultCh <- uploadResult{partNumber: t.partNumber, obj: attrs, handle: handle, err: err}
+				if err := s.ctx.Err(); err != nil {
+					return
+				}
+				select {
+				// Always send a result to the collector if the context is not cancelled.
+				case s.resultCh <- uploadResult{partNumber: t.partNumber, obj: attrs, handle: handle, err: err}:
+				case <-s.ctx.Done():
+				}
 			}(task)
 		}
 	}
@@ -320,12 +334,10 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 	pw.ObjectAttrs.Size = task.size
 	pw.DisableAutoChecksum = s.w.DisableAutoChecksum
 	pw.ChunkSize = 0 // Force single-shot upload for parts.
-	// Clear fields not applicable to parts or that are set by compose.
-	pw.ObjectAttrs.MD5 = nil
+
 	setPartMetadata(pw, s, task)
 
 	if _, err := pw.Write(task.buffer[:task.size]); err != nil {
-		_ = pw.CloseWithError(err)
 		return nil, nil, fmt.Errorf("failed to write part %d: %w", task.partNumber, err)
 	}
 
@@ -452,7 +464,11 @@ func (s *pcuState) flushCurrentBuffer() error {
 	select {
 	case <-s.ctx.Done():
 		// Return buffer to pool if we couldn't dispatch.
-		s.bufferCh <- task.buffer
+		select {
+		case s.bufferCh <- task.buffer:
+		default:
+			// Discard the buffer if we can't return it, to avoid blocking.
+		}
 		return s.ctx.Err()
 	case s.uploadCh <- task:
 		return nil
@@ -560,19 +576,24 @@ func (s *pcuState) composeParts() error {
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
 				composer := interHandle.ComposerFrom(finalComps[start:end]...)
 
-				attrs, err := s.composeFn(s.ctx, composer)
+				_, err := s.composeFn(s.ctx, composer)
 				if err != nil {
 					errOnce.Do(func() { levelErr = err })
 					return
 				}
-
-				s.mu.Lock()
-				s.intermediateMap[attrs.Name] = interHandle
-				s.mu.Unlock()
 				nextLevel[idx] = interHandle
 			}(i)
 		}
 		wg.Wait()
+		// Do a batch insert of intermediate handles to the map to minimize lock contention.
+		s.mu.Lock()
+		for _, h := range nextLevel {
+			if h != nil {
+				s.intermediateMap[h.object] = h
+			}
+		}
+		s.mu.Unlock()
+
 		if levelErr != nil {
 			return levelErr
 		}

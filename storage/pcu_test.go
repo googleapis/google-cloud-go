@@ -382,24 +382,28 @@ func TestPCUWorker_ContextCancellation(t *testing.T) {
 
 	cancel()
 
-	// Check if context has been cancelled.
-	select {
-	case result := <-state.resultCh:
-		if result.err != context.Canceled {
-			t.Errorf("worker error on cancel: got %v, want %v", result.err, context.Canceled)
-		}
-	case <-time.After(1 * time.Second):
-		t.Errorf("worker timeout waiting for result after cancel")
-	}
+	// Worker safely returns early on cancellation to avoid deadlocks.
+	done := make(chan struct{})
+	go func() {
+		state.workerWG.Wait()
+		close(done)
+	}()
 
-	// Wait for the worker to finish.
-	state.workerWG.Wait()
+	select {
+	case <-done:
+		// Success: worker exited.
+	case <-time.After(2 * time.Second):
+		t.Errorf("worker did not exit after context cancellation")
+	}
 
 	// Verify the buffer was correctly returned to the channel.
 	select {
-	case <-state.bufferCh:
-	case <-time.After(1 * time.Second):
-		t.Errorf("worker timeout waiting for buffer return after cancel")
+	case buf := <-state.bufferCh:
+		if len(buf) != 10 {
+			t.Errorf("got buffer size %d, want 10", len(buf))
+		}
+	case <-time.After(2 * time.Second):
+		t.Errorf("worker failed to return buffer to pool after cancellation")
 	}
 }
 
