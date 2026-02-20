@@ -22,7 +22,7 @@ import (
 	"context"
 
 	auditmanager "cloud.google.com/go/auditmanager/apiv1"
-	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb"
+	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1/auditmanagerpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -42,7 +42,7 @@ func ExampleClient_ListAuditReports_all() {
 
 	req := &auditmanagerpb.ListAuditReportsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb#ListAuditReportsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#ListAuditReportsRequest.
 	}
 	for resp, err := range c.ListAuditReports(ctx, req).All() {
 		if err != nil {
@@ -68,7 +68,7 @@ func ExampleClient_ListControls_all() {
 
 	req := &auditmanagerpb.ListControlsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb#ListControlsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#ListControlsRequest.
 	}
 	for resp, err := range c.ListControls(ctx, req).All() {
 		if err != nil {
@@ -94,7 +94,7 @@ func ExampleClient_ListResourceEnrollmentStatuses_all() {
 
 	req := &auditmanagerpb.ListResourceEnrollmentStatusesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb#ListResourceEnrollmentStatusesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#ListResourceEnrollmentStatusesRequest.
 	}
 	for resp, err := range c.ListResourceEnrollmentStatuses(ctx, req).All() {
 		if err != nil {

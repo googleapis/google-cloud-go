@@ -21,7 +21,7 @@ package auditmanager
 import (
 	"iter"
 
-	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb"
+	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1/auditmanagerpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/googleapis/gax-go/v2/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"

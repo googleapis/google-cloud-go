@@ -58,7 +58,7 @@
 //
 //	req := &auditmanagerpb.EnrollResourceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1main/auditmanagerpb#EnrollResourceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#EnrollResourceRequest.
 //	}
 //	resp, err := c.EnrollResource(ctx, req)
 //	if err != nil {
