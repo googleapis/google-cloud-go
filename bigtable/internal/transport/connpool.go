@@ -345,6 +345,9 @@ type BigtableChannelPool struct {
 	directAccessFeatureFlagsMD metadata.MD
 	directAccessDialer         func() (*BigtableConn, error)
 
+	// Add the cached gauge instrument
+	daEligibleGauge metric.Int64Gauge
+
 	// background monitors
 	monitors []Monitor
 }
@@ -388,6 +391,20 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		opt(pool)
 	}
 
+	// make the da guage lifetime, optional
+	if pool.meterProvider != nil {
+		meter := pool.meterProvider.Meter(clientMeterName)
+		var err error
+		pool.daEligibleGauge, err = meter.Int64Gauge(
+			"direct_access/compatible",
+			metric.WithDescription("Reports 1 if the environment is eligible for DirectPath, 0 otherwise. Based on a connection attempt at startup."),
+			metric.WithUnit("1"),
+		)
+		if err != nil {
+			btopt.Debugf(pool.logger, "bigtable_connpool: failed to create direct_access/compatible metric: %v", err)
+		}
+	}
+
 	// All standard dialers and feature flags
 	factoryDial := dial
 	factoryFeatureFlagsMD := pool.featureFlagsMD
@@ -396,8 +413,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 	if pool.directAccessDialer != nil {
 		var isDirectAccess bool
-		firstConn, isDirectAccess = pool.checkIfDirectAccessIsAvailable()
-		if isDirectAccess {
+		if firstConn, isDirectAccess = pool.checkIfDirectAccessIsAvailable(); isDirectAccess {
 			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
 			factoryDial = pool.directAccessDialer
 			factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD
@@ -448,6 +464,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		} else {
 			entry, err = pool.factory.newEntry(ctx)
 		}
+
 		if err != nil {
 			exitSignal = err
 			break
@@ -492,7 +509,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 }
 
 // checkIfDirectAccessIsAvailable attempts to create a single connection using the directAccessDialer,
-// primes it, and checks if ALTS was successfull
+// primes it, and checks if direct access was successful
 func (p *BigtableChannelPool) checkIfDirectAccessIsAvailable() (*BigtableConn, bool) {
 	conn, err := p.directAccessDialer()
 	if err != nil {
@@ -521,25 +538,15 @@ func (p *BigtableChannelPool) checkIfDirectAccessIsAvailable() (*BigtableConn, b
 
 // reportDirectAccessMetric records the direct_access/compatible metric.
 func (p *BigtableChannelPool) reportDirectAccessMetric(isEligible bool) {
-	if p.meterProvider == nil {
+	// Check if the instrument was successfully created during pool initialization
+	if p.daEligibleGauge == nil {
 		return
 	}
-	meter := p.meterProvider.Meter(clientMeterName)
-	directAccessEligible, err := meter.Int64Gauge(
-		"direct_access/compatible",
-		metric.WithDescription("Reports 1 if the environment is eligible for DirectPath, 0 otherwise. Based on a connection attempt at startup."),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: failed to create direct_access/compatible metric: %v", err)
-		return
-	}
-
 	val := int64(0)
 	if isEligible {
 		val = 1
 	}
-	directAccessEligible.Record(p.poolCtx, val)
+	p.daEligibleGauge.Record(p.poolCtx, val)
 }
 
 func (p *BigtableChannelPool) recordClientStartUp(clientCreationTimestamp time.Time, transportType string) {
