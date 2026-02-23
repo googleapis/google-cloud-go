@@ -455,7 +455,8 @@ func TestIntegration_MRDManyReads(t *testing.T) {
 				log.Printf("failed to delete test object: %v", err)
 			}
 		}()
-		reader, err := obj.NewMultiRangeDownloader(ctx)
+		reader, err := obj.NewMultiRangeDownloader(ctx, WithMinConnections(3))
+		manager := reader.impl.(*multiRangeDownloaderManager)
 		if err != nil {
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
@@ -471,6 +472,18 @@ func TestIntegration_MRDManyReads(t *testing.T) {
 			})
 		}
 		reader.Wait()
+		// Check if ranges have been distributed across all streams
+		for id, stream := range manager.streams {
+			if stream.statsRangeBytes == 0 ||
+				stream.statsRanges == 0 {
+				t.Errorf("stream %v received no ranges: statsRanges: %v, statsRangeBytes: %v", id, stream.statsRanges, stream.statsRangeBytes)
+			}
+			if stream.totalRangeBytes != 0 ||
+				stream.totalRanges != 0 {
+				t.Errorf("totalRangeBytes or totalRanges for stream: %v is not zero. totalRangeBytes: %v, totalRanges: %v", id, stream.totalRangeBytes, stream.totalRanges)
+			}
+		}
+
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
 		}
@@ -623,6 +636,95 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 		}
 		if err := mrd2.Close(); err != nil {
 			t.Fatalf("Error while closing reader created with read handle: %v", err)
+		}
+	})
+}
+
+func TestIntegration_MRDScaleUpConnections(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 1<<10)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloaderConcurrentReads"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() {
+			if err := obj.Delete(context.Background()); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		})
+		maxConnections := 3
+		// Initializing targetPendingBytes to 1 to make sure manager
+		// definitely scales up with any load.
+		reader, err := obj.NewMultiRangeDownloader(ctx, WithMaxConnections(maxConnections), WithTargetPendingBytes(1))
+		manager := reader.impl.(*multiRangeDownloaderManager)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+
+		const (
+			addCount  = 100
+			rangeSize = 100
+		)
+
+		type rangeRes struct {
+			buf       bytes.Buffer
+			offset    int64
+			limit     int64
+			gotOffset int64
+			gotLimit  int64
+			err       error
+		}
+		results := make([]*rangeRes, addCount)
+
+		var wg sync.WaitGroup
+		wg.Add(len(results))
+
+		for i := 0; i < addCount; i++ {
+			// Randomize offset/limit slightly to ensure varied request patterns.
+			offset := int64(0)
+			limit := int64(rangeSize)
+
+			r := &rangeRes{offset: offset, limit: limit}
+			results[i] = r
+
+			reader.Add(&r.buf, offset, limit, func(o, l int64, err error) {
+				r.err = err
+				r.gotOffset = o
+				r.gotLimit = l
+				wg.Done()
+			})
+		}
+
+		// Wait for all goroutines to finish adding their ranges.
+		wg.Wait()
+		// Wait for all reads to complete.
+		reader.Wait()
+
+		if manager.streamIDCounter != maxConnections {
+			t.Fatalf("Manager did not scale up to maxConnections; got %d, want %d", manager.streamIDCounter, maxConnections)
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader: %v", err)
+		}
+
+		for id, res := range results {
+			if res.err != nil {
+				t.Errorf("Range %d (offset %d) failed: %v", id, res.offset, res.err)
+				continue
+			}
+			if res.gotOffset != res.offset || res.gotLimit != res.limit {
+				t.Errorf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+					id, res.gotOffset, res.gotLimit, res.offset, res.limit)
+			}
+			want := content[res.offset : res.offset+res.limit]
+			if !bytes.Equal(res.buf.Bytes(), want) {
+				t.Errorf("Data mismatch in range %d: got %d bytes, want %d bytes",
+					id, res.buf.Len(), len(want))
+			}
 		}
 	})
 }

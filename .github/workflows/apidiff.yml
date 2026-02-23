@@ -63,10 +63,15 @@ jobs:
     - name: Create baseline
       id: baseline
       run: |
-        export CHANGED=${{ matrix.changed }}
+        export CHANGED=${MATRIX_CHANGED}
         echo pkg="${CHANGED//\//_}_pkg.main" >> $GITHUB_OUTPUT
+      env:
+        MATRIX_CHANGED: ${{ matrix.changed }}
     - name: Create Go package baseline
-      run: cd ${{ matrix.changed }} && apidiff -m -w ${{ steps.baseline.outputs.pkg }} .
+      run: cd ${MATRIX_CHANGED} && apidiff -m -w ${STEPS_BASELINE_OUTPUTS_PKG} .
+      env:
+        MATRIX_CHANGED: ${{ matrix.changed }}
+        STEPS_BASELINE_OUTPUTS_PKG: ${{ steps.baseline.outputs.pkg }}
     - name: Upload baseline package data
       uses: actions/upload-artifact@v6
       with:
@@ -88,9 +93,11 @@ jobs:
       # as it is likely a new method added to the gRPC client stub interface, which is non-breaking.
       env:
         PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        MATRIX_CHANGED: ${{ matrix.changed }}
+        STEPS_BASELINE_OUTPUTS_PKG: ${{ steps.baseline.outputs.pkg }}
       run: |
-        cd ${{ matrix.changed }}
-        apidiff -m -incompatible ${{ steps.baseline.outputs.pkg }} . > diff.txt
+        cd ${MATRIX_CHANGED}
+        apidiff -m -incompatible ${STEPS_BASELINE_OUTPUTS_PKG} . > diff.txt
         if [[ "$PR_HEAD_REF" == librarian-* ]]; then
           sed -i '/: added/d' ./diff.txt
         fi
@@ -110,11 +117,13 @@ jobs:
       id: ga_check # Add an ID to this step to check its outcome later.
       if: steps.detect.outputs.breaking_change_found == 'true'
       run: |
-        if [[ "${{ matrix.changed }}" =~ apiv[0-9]+$ ]]; then
-          echo "Error: Breaking change detected in GA API: ${{ matrix.changed }}"
+        if [[ "${MATRIX_CHANGED}" =~ apiv[0-9]+$ ]]; then
+          echo "Error: Breaking change detected in GA API: ${MATRIX_CHANGED}"
           exit 1
         fi
         echo "Breaking change in non-GA API, proceeding."
+      env:
+        MATRIX_CHANGED: ${{ matrix.changed }}
     # Step 3: Add a "breaking change" label.
     # This step runs if a breaking change was found, regardless of whether the
     # API is GA or not. This ensures that all breaking changes are labeled for
