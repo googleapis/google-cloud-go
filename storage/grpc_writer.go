@@ -226,7 +226,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, w.settings.retry, w.settings.idempotent, WithOperation("WriteObject"), WithBucket(w.bucket), WithObject(w.attrs.Name)))
+		}, writerRetry, w.settings.idempotent, WithOperation("WriteObject"), WithBucket(w.bucket), WithObject(w.attrs.Name)))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
@@ -1534,7 +1534,7 @@ func withBidiWriteObjectRedirectionErrorRetries(s *settings) (newr *retryConfig)
 		if errors.Is(err, bidiWriteObjectRedirectionError{}) {
 			return true
 		}
-		v := oldr.runShouldRetry(err, &RetryContext{})
+		v := oldr.runShouldRetry(err, nil)
 		return v
 	}
 	return newr
