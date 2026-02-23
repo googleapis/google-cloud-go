@@ -386,7 +386,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		err = run(it.ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, WithOperation("ListObjects"), WithBucket(bucket))
+		}, s.retry, s.idempotent, WithOperation("ListObjects"), WithObject(it.query.Prefix), WithBucket(bucket))
 		if err != nil {
 			return "", formatBucketError(err)
 		}
@@ -1116,13 +1116,10 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			if useRetry {
 				if s.retry != nil {
 					// Wrap shouldRetry to adapt to the googleapi WithRetry signature.
-					// WithRetry expects func(error) bool, but our shouldRetry uses
-					// func(error, int, string) bool. Since WithRetry doesn't provide
-					// attempt/invocation context, we pass default values.
 					var retryFunc func(error) bool
 					if s.retry.shouldRetry != nil {
 						retryFunc = func(err error) bool {
-							return s.retry.shouldRetry(err, &RetryContext{})
+							return s.retry.shouldRetry(err, nil)
 						}
 					}
 					call.WithRetry(s.retry.backoff, retryFunc)

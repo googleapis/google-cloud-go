@@ -56,21 +56,21 @@ var (
 // runShouldRetry calls the configured shouldRetry function.
 // The shouldRetry function has already been normalized to the new signature
 // (with error and *RetryContext) by withErrorFunc.apply().
-func (r *retryConfig) runShouldRetry(err error, ctx *RetryContext) bool {
+func (r *retryConfig) runShouldRetry(err error, retryCtx *RetryContext) bool {
 	if r == nil || r.shouldRetry == nil {
 		return ShouldRetry(err)
 	}
-	return r.shouldRetry(err, ctx)
+	return r.shouldRetry(err, retryCtx)
 }
 
-// runOptions holds optional metadata for retry operations.
+// runOptions holds optional metadata for retry contexts.
 type runOptions struct {
 	operation string
 	bucket    string
 	object    string
 }
 
-// RunOption configures optional metadata for run.
+// RunOption configures optional metadata for retry contexts.
 type RunOption func(*runOptions)
 
 // WithOperation specifies the operation name for retry context.
@@ -99,6 +99,13 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 
 	attempts := 1
 	invocationID := uuid.New().String()
+	retryCtx := &RetryContext{
+		Attempt:      attempts,
+		InvocationID: invocationID,
+		Operation:    options.operation,
+		Bucket:       options.bucket,
+		Object:       options.object,
+	}
 
 	if retry == nil {
 		retry = defaultRetry
@@ -138,13 +145,8 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		if lastErr != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
 			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
 		}
-		retryCtx := &RetryContext{
-			Attempt:      attempts,
-			InvocationID: invocationID,
-			Operation:    options.operation,
-			Bucket:       options.bucket,
-			Object:       options.object,
-		}
+
+		retryCtx.Attempt = attempts
 		retryable := retry.runShouldRetry(lastErr, retryCtx)
 		attempts++
 		// Explicitly check context cancellation so that we can distinguish between a

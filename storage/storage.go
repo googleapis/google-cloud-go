@@ -2568,6 +2568,8 @@ type RetryContext struct {
 	// Attempt is the current attempt number (1-based, so first call is attempt 1).
 	Attempt int
 	// InvocationID is a unique identifier for the current operation invocation.
+	// This will be same for all attempts of the same operation, used to correlated
+	// retries of the same operation together.
 	InvocationID string
 	// Operation describes the operation being performed (e.g., "GetObject", "DeleteObject").
 	Operation string
@@ -2579,10 +2581,6 @@ type RetryContext struct {
 
 // WithErrorFunc allows users to pass a custom function to the retryer. Errors
 // will be retried if and only if `shouldRetry(err)` returns true.
-//
-// Deprecated: Use WithErrorFuncWithContext instead to access additional retry
-// context such as attempt number, operation name, bucket, and object information.
-//
 // By default, the following errors are retried (see ShouldRetry for the default
 // function):
 //

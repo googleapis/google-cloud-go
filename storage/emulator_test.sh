@@ -31,7 +31,7 @@ if [ "$minor_ver" -lt "$min_minor_ver" ]; then
     exit 0
 fi
 
-export DOCKER_API_VERSION=1.39
+export DOCKER_API_VERSION=1.44
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 export STORAGE_EMULATOR_HOST_GRPC="localhost:8888"
 

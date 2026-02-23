@@ -1133,7 +1133,7 @@ func TestBucketRetryer(t *testing.T) {
 				policy:           RetryAlways,
 				maxAttempts:      intPointer(5),
 				maxRetryDuration: 120 * time.Second,
-				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
+				shouldRetry:      func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 		{

@@ -1000,7 +1000,7 @@ func TestObjectRetryer(t *testing.T) {
 				maxAttempts:      intPointer(5),
 				maxRetryDuration: 90 * time.Second,
 				policy:           RetryAlways,
-				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
+				shouldRetry:      func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 		{
@@ -1108,7 +1108,7 @@ func TestClientSetRetry(t *testing.T) {
 				maxAttempts:      intPointer(5),
 				maxRetryDuration: 60 * time.Second,
 				policy:           RetryAlways,
-				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
+				shouldRetry:      func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 		{
