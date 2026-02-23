@@ -9,7 +9,6 @@ git checkout main -- \
     .github/workflows/vet.sh \
     .github/CODEOWNERS \
     .github/header-checker-lint.yml \
-    internal/godocfx \
     internal/kokoro \
     internal/testutil \
     internal/uid \
