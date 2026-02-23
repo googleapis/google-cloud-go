@@ -64,7 +64,7 @@ jobs:
       id: baseline
       run: |
         export CHANGED=${MATRIX_CHANGED}
-        echo pkg="${CHANGED//\//_}_pkg.main" >> $GITHUB_OUTPUT
+        echo pkg="${CHANGED//\//_}_pkg.main" >> "$GITHUB_OUTPUT"
       env:
         MATRIX_CHANGED: ${{ matrix.changed }}
     - name: Create Go package baseline
