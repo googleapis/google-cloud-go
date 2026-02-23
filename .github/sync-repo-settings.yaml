@@ -13,4 +13,4 @@ branchProtectionRules:
   requiresStrictStatusChecks: true
 permissionRules:
   - team: cloud-sdk-platform-team
-    permission: admin
+    permission: push
