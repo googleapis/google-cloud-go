@@ -18,7 +18,7 @@ jobs:
         ref: main
     - name: Get main commit
       id: main
-      run: echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      run: echo "hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
     - uses: actions/checkout@v6
     - uses: actions/setup-go@v6
       with:
@@ -31,12 +31,12 @@ jobs:
         dirs=$(cd internal/actions; go run ./cmd/changefinder -q --diff-filter=a --dir=${{ github.workspace }})
         if [ -z "$dirs" ]
         then
-          echo "skip=1" >> $GITHUB_OUTPUT
+          echo "skip=1" >> "$GITHUB_OUTPUT"
           echo "No changes worth diffing!"
         else
           for d in $dirs; do list=${list},\"${d}\"; done
-          echo "changed={\"changed\":[${list#,}]}" >> $GITHUB_OUTPUT
-          echo "skip=" >> $GITHUB_OUTPUT
+          echo "changed={\"changed\":[${list#,}]}" >> "$GITHUB_OUTPUT"
+          echo "skip=" >> "$GITHUB_OUTPUT"
         fi
     outputs:
       changed_dirs: ${{ steps.changed_dirs.outputs.changed }}
@@ -103,9 +103,9 @@ jobs:
         fi
         cat diff.txt
         if [ -s diff.txt ]; then
-          echo "breaking_change_found=true" >> $GITHUB_OUTPUT
+          echo "breaking_change_found=true" >> "$GITHUB_OUTPUT"
         else
-          echo "breaking_change_found=false" >> $GITHUB_OUTPUT
+          echo "breaking_change_found=false" >> "$GITHUB_OUTPUT"
         fi
     # Step 2: Conditionally fail the job for GA APIs.
     # This step runs only if a breaking change was found in the previous step.
