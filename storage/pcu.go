@@ -30,17 +30,15 @@ import (
 )
 
 const (
-	defaultPartSize           = 16 * 1024 * 1024 // 16 MiB
-	minPartSize               = 5 * 1024 * 1024  // 5 MiB
-	baseWorkers               = 4
-	maxWorkers                = 16
-	tmpObjectPrefix           = "gcs-go-sdk-pcu-tmp/"
-	maxComposeComponents      = 32
-	defaultMaxRetries         = 3
-	defaultBaseDelay          = 100 * time.Millisecond
-	defaultMaxDelay           = 5 * time.Second
-	pcuPartNumberMetadataKey  = "x-goog-meta-gcs-pcu-part-number"
-	pcuFinalObjectMetadataKey = "x-goog-meta-gcs-pcu-final-object"
+	defaultPartSize      = 16 * 1024 * 1024 // 16 MiB
+	minPartSize          = 5 * 1024 * 1024  // 5 MiB
+	baseWorkers          = 4
+	maxWorkers           = 16
+	tmpObjectPrefix      = "gcs-go-sdk-pcu-tmp/"
+	maxComposeComponents = 32
+	defaultMaxRetries    = 3
+	defaultBaseDelay     = 100 * time.Millisecond
+	defaultMaxDelay      = 5 * time.Second
 )
 
 // parallelUploadConfig holds configuration for Parallel Uploads.
