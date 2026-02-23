@@ -373,6 +373,10 @@ func (s *pcuState) resultCollector() {
 			s.mu.Lock()
 			s.partMap[result.partNumber] = result.handle
 			s.mu.Unlock()
+		} else {
+			// Both are nil: this is an impossible state that indicates a logical error.
+			// Setting an error to prevent silent data corruption.
+			s.setError(fmt.Errorf("upload result missing both error and handle for part %d", result.partNumber))
 		}
 	}
 }
@@ -448,13 +452,14 @@ func (s *pcuState) flushCurrentBuffer() error {
 		return s.firstErr
 	}
 	s.partNum++
+	pNum := s.partNum
+	s.mu.Unlock()
+
 	task := uploadTask{
-		partNumber: s.partNum,
+		partNumber: pNum,
 		buffer:     s.currentBuffer,
 		size:       s.bytesBuffered,
 	}
-	s.mu.Unlock()
-
 	// Clear current state so the next Write call picks up a fresh buffer.
 	s.currentBuffer = nil
 	s.bytesBuffered = 0
