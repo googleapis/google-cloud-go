@@ -1667,7 +1667,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 
 		// Now, making object public or making bucket public should succeed. Run with
 		// retry because ACL settings may take time to propagate.
-		retrier := func(err error, ctx *RetryContext) bool {
+		retrier := func(err error) bool {
 			// Once ACL settings propagate, PAP should no longer be enforced and the call will succeed.
 			// In the meantime, while PAP is enforced, trying to set ACL results in:
 			// 	-	FailedPrecondition for gRPC
@@ -1676,7 +1676,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		}
 
 		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-		a = o.Retryer(WithErrorFuncWithContext(retrier), WithPolicy(RetryAlways)).ACL()
+		a = o.Retryer(WithErrorFunc(retrier), WithPolicy(RetryAlways)).ACL()
 		err = a.Set(ctxWithTimeout, AllUsers, RoleReader)
 		cancelCtx()
 		if err != nil {
@@ -5575,11 +5575,11 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 
 		// Delete with retry, as bucket metadata changes
 		// can take some time to propagate.
-		retry := func(err error, ctx *RetryContext) bool { return err != nil }
+		retry := func(err error) bool { return err != nil }
 		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
 		defer cancel()
 
-		o = o.Retryer(WithErrorFuncWithContext(retry), WithPolicy(RetryAlways))
+		o = o.Retryer(WithErrorFunc(retry), WithPolicy(RetryAlways))
 		if err := o.Delete(ctx); err != nil {
 			t.Fatalf("object delete: %v", err)
 		}

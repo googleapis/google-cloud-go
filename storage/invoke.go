@@ -53,9 +53,8 @@ var (
 	})
 )
 
-// runShouldRetry calls the configured shouldRetry function.
-// The shouldRetry function has already been normalized to the new signature
-// (with error and *RetryContext) by withErrorFunc.apply().
+// runShouldRetry calls the configured shouldRetry function if it exists,
+// otherwise it falls back to the default ShouldRetry function.
 func (r *retryConfig) runShouldRetry(err error, retryCtx *RetryContext) bool {
 	if r == nil || r.shouldRetry == nil {
 		return ShouldRetry(err)
@@ -70,28 +69,28 @@ type runOptions struct {
 	object    string
 }
 
-// RunOption configures optional metadata for retry contexts.
-type RunOption func(*runOptions)
+// runOption configures optional metadata for retry contexts.
+type runOption func(*runOptions)
 
-// WithOperation specifies the operation name for retry context.
-func WithOperation(op string) RunOption {
+// withOperation specifies the operation name for retry context.
+func withOperation(op string) runOption {
 	return func(o *runOptions) { o.operation = op }
 }
 
-// WithBucket specifies the bucket name for retry context.
-func WithBucket(bucket string) RunOption {
+// withBucket specifies the bucket name for retry context.
+func withBucket(bucket string) runOption {
 	return func(o *runOptions) { o.bucket = bucket }
 }
 
-// WithObject specifies the object name for retry context.
-func WithObject(object string) RunOption {
+// withObject specifies the object name for retry context.
+func withObject(object string) runOption {
 	return func(o *runOptions) { o.object = object }
 }
 
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
-func run(ctx context.Context, call func(ctx context.Context) error, retry *retryConfig, isIdempotent bool, opts ...RunOption) error {
+func run(ctx context.Context, call func(ctx context.Context) error, retry *retryConfig, isIdempotent bool, opts ...runOption) error {
 	options := &runOptions{}
 	for _, opt := range opts {
 		opt(options)

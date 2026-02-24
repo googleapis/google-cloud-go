@@ -386,7 +386,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		err = run(it.ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, WithOperation("ListObjects"), WithObject(it.query.Prefix), WithBucket(bucket))
+		}, s.retry, s.idempotent, withOperation("ListObjects"), withObject(it.query.Prefix), withBucket(bucket))
 		if err != nil {
 			return "", formatBucketError(err)
 		}
@@ -417,7 +417,7 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	if s.userProject != "" {
 		req.UserProject(s.userProject)
 	}
-	err := run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent, WithOperation("DeleteObject"), WithBucket(bucket), WithObject(object))
+	err := run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent, withOperation("DeleteObject"), withBucket(bucket), withObject(object))
 	return formatObjectErr(err)
 }
 
@@ -442,7 +442,7 @@ func (c *httpStorageClient) GetObject(ctx context.Context, params *getObjectPara
 	err = run(ctx, func(ctx context.Context) error {
 		obj, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, WithOperation("GetObject"), WithBucket(params.bucket), WithObject(params.object))
+	}, s.retry, s.idempotent, withOperation("GetObject"), withBucket(params.bucket), withObject(params.object))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -561,7 +561,7 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObje
 
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent, WithOperation("UpdateObject"), WithBucket(params.bucket), WithObject(params.object))
+	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent, withOperation("UpdateObject"), withBucket(params.bucket), withObject(params.object))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -587,7 +587,7 @@ func (c *httpStorageClient) RestoreObject(ctx context.Context, params *restoreOb
 
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent, WithOperation("RestoreObject"), WithBucket(params.bucket), WithObject(params.object))
+	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent, withOperation("RestoreObject"), withBucket(params.bucket), withObject(params.object))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -611,7 +611,7 @@ func (c *httpStorageClient) MoveObject(ctx context.Context, params *moveObjectPa
 	}
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent, WithOperation("MoveObject"), WithBucket(params.bucket), WithObject(params.srcObject))
+	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent, withOperation("MoveObject"), withBucket(params.bucket), withObject(params.srcObject))
 	if err != nil {
 		return nil, formatObjectErr(err)
 	}
@@ -800,7 +800,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	var err error
 	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent, WithOperation("ComposeObject"), WithBucket(req.dstBucket), WithObject(req.dstObject.name)); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent, withOperation("ComposeObject"), withBucket(req.dstBucket), withObject(req.dstObject.name)); err != nil {
 		return nil, formatObjectErr(err)
 	}
 	return newObject(obj), nil
@@ -847,7 +847,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 
 	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent, WithOperation("RewriteObject"), WithBucket(req.srcObject.bucket), WithObject(req.srcObject.name)); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent, withOperation("RewriteObject"), withBucket(req.srcObject.bucket), withObject(req.srcObject.name)); err != nil {
 		return nil, formatObjectErr(err)
 	}
 

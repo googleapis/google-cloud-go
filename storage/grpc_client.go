@@ -590,7 +590,7 @@ func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	}
 	err := run(ctx, func(ctx context.Context) error {
 		return c.raw.DeleteObject(ctx, req, s.gax...)
-	}, s.retry, s.idempotent, WithOperation("DeleteObject"), WithBucket(bucket), WithObject(object))
+	}, s.retry, s.idempotent, withOperation("DeleteObject"), withBucket(bucket), withObject(object))
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return formatObjectErr(err)
 	}
@@ -624,7 +624,7 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, params *getObjectPara
 		attrs = newObjectFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent, WithOperation("GetObject"), WithBucket(params.bucket), WithObject(params.object))
+	}, s.retry, s.idempotent, withOperation("GetObject"), withBucket(params.bucket), withObject(params.object))
 
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
@@ -733,7 +733,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 		res, err := c.raw.UpdateObject(ctx, req, s.gax...)
 		attrs = newObjectFromProto(res)
 		return err
-	}, s.retry, s.idempotent, WithOperation("UpdateObject"), WithBucket(params.bucket), WithObject(params.object))
+	}, s.retry, s.idempotent, withOperation("UpdateObject"), withBucket(params.bucket), withObject(params.object))
 	if e, ok := status.FromError(err); ok && e.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
 	}
@@ -760,7 +760,7 @@ func (c *grpcStorageClient) RestoreObject(ctx context.Context, params *restoreOb
 		res, err := c.raw.RestoreObject(ctx, req, s.gax...)
 		attrs = newObjectFromProto(res)
 		return err
-	}, s.retry, s.idempotent, WithOperation("RestoreObject"), WithBucket(params.bucket), WithObject(params.object))
+	}, s.retry, s.idempotent, withOperation("RestoreObject"), withBucket(params.bucket), withObject(params.object))
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
 	}
@@ -790,7 +790,7 @@ func (c *grpcStorageClient) MoveObject(ctx context.Context, params *moveObjectPa
 		res, err := c.raw.MoveObject(ctx, req, s.gax...)
 		attrs = newObjectFromProto(res)
 		return err
-	}, s.retry, s.idempotent, WithOperation("MoveObject"), WithBucket(params.bucket), WithObject(params.srcObject))
+	}, s.retry, s.idempotent, withOperation("MoveObject"), withBucket(params.bucket), withObject(params.srcObject))
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, formatObjectErr(err)
 	}
@@ -1033,7 +1033,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	if err := run(ctx, func(ctx context.Context) error {
 		obj, err = c.raw.ComposeObject(ctx, rawReq, s.gax...)
 		return err
-	}, s.retry, s.idempotent, WithOperation("ComposeObject"), WithBucket(req.dstObject.bucket), WithObject(req.dstObject.name)); err != nil {
+	}, s.retry, s.idempotent, withOperation("ComposeObject"), withBucket(req.dstObject.bucket), withObject(req.dstObject.name)); err != nil {
 		if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 			return nil, formatObjectErr(err)
 		}
@@ -1095,7 +1095,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 
 	retryCall := func(ctx context.Context) error { res, err = c.raw.RewriteObject(ctx, call, s.gax...); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent, WithOperation("RewriteObject"), WithBucket(req.srcObject.bucket), WithObject(req.srcObject.name)); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent, withOperation("RewriteObject"), withBucket(req.srcObject.bucket), withObject(req.srcObject.name)); err != nil {
 		if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 			return nil, formatObjectErr(err)
 		}

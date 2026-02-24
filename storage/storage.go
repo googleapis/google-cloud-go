@@ -2568,7 +2568,7 @@ type RetryContext struct {
 	// Attempt is the current attempt number (1-based, so first call is attempt 1).
 	Attempt int
 	// InvocationID is a unique identifier for the current operation invocation.
-	// This will be same for all attempts of the same operation, used to correlated
+	// This will be same for all attempts of the same operation, used to correlate
 	// retries of the same operation together.
 	InvocationID string
 	// Operation describes the operation being performed (e.g., "GetObject", "DeleteObject").
@@ -2607,14 +2607,14 @@ type withErrorFunc struct {
 
 func (wef *withErrorFunc) apply(config *retryConfig) {
 	// Wrap legacy signature to new signature
-	config.shouldRetry = func(err error, ctx *RetryContext) bool {
+	config.shouldRetry = func(err error, retryCtx *RetryContext) bool {
 		return wef.shouldRetry(err)
 	}
 }
 
 // WithErrorFuncWithContext allows users to pass a custom function to the retryer
 // with access to comprehensive retry context. Errors will be retried if and only
-// if `shouldRetry(err, ctx)` returns true.
+// if `shouldRetry(err, retryCtx)` returns true.
 //
 // The RetryContext provides:
 // - Attempt: current attempt number (1-based)
@@ -2637,14 +2637,17 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 // This option can be used to retry on a different set of errors than the
 // default. Users can use the default ShouldRetry function inside their custom
 // function if they only want to make minor modifications to default behavior.
-func WithErrorFuncWithContext(shouldRetry func(err error, ctx *RetryContext) bool) RetryOption {
+// RetryContext can be used to improve observability by logging InvocationID to 
+// correlate retries of the same operation together, or to implement more complex
+// retry logic such as conditional retries based on the operation type or attempt.
+func WithErrorFuncWithContext(shouldRetry func(err error, retryCtx *RetryContext) bool) RetryOption {
 	return &withErrorFuncWithContext{
 		shouldRetry: shouldRetry,
 	}
 }
 
 type withErrorFuncWithContext struct {
-	shouldRetry func(err error, ctx *RetryContext) bool
+	shouldRetry func(err error, retryCtx *RetryContext) bool
 }
 
 func (wef *withErrorFuncWithContext) apply(config *retryConfig) {
