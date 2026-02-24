@@ -596,3 +596,5 @@ replace cloud.google.com/go/auditmanager => ../../../auditmanager
 replace cloud.google.com/go/datamanager => ../../../datamanager
 
 replace cloud.google.com/go/workloadmanager => ../../../workloadmanager
+
+replace cloud.google.com/go/ces => ../../../ces

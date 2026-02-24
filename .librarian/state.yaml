@@ -1361,6 +1361,29 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
+  - id: ces
+    version: 0.0.0
+    last_generated_commit: 258563af0e9d6e7219de9afdffe74687d1eb7b83
+    apis:
+      - path: google/cloud/ces/v1beta
+        service_config: ces_v1beta.yaml
+    source_roots:
+      - ces
+      - internal/generated/snippets/ces
+    preserve_regex: []
+    remove_regex:
+      - ^internal/generated/snippets/ces/
+      - ^ces/apiv1beta/[^/]*_client\.go$
+      - ^ces/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^ces/apiv1beta/[^/]*_client_example_test\.go$
+      - ^ces/apiv1beta/auxiliary\.go$
+      - ^ces/apiv1beta/auxiliary_go123\.go$
+      - ^ces/apiv1beta/doc\.go$
+      - ^ces/apiv1beta/gapic_metadata\.json$
+      - ^ces/apiv1beta/helpers\.go$
+      - ^ces/apiv1beta/\.repo-metadata\.json$
+      - ^ces/apiv1beta/cespb/.*$
+    tag_format: '{id}/v{version}'
   - id: channel
     version: 1.21.0
     last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818

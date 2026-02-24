@@ -1,0 +1,1229 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.ces.v1beta",
+  "libraryPackage": "cloud.google.com/go/ces/apiv1beta",
+  "services": {
+    "AgentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AgentClient",
+          "rpcs": {
+            "BatchDeleteConversations": {
+              "methods": [
+                "BatchDeleteConversations"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAgent": {
+              "methods": [
+                "CreateAgent"
+              ]
+            },
+            "CreateApp": {
+              "methods": [
+                "CreateApp"
+              ]
+            },
+            "CreateAppVersion": {
+              "methods": [
+                "CreateAppVersion"
+              ]
+            },
+            "CreateDeployment": {
+              "methods": [
+                "CreateDeployment"
+              ]
+            },
+            "CreateExample": {
+              "methods": [
+                "CreateExample"
+              ]
+            },
+            "CreateGuardrail": {
+              "methods": [
+                "CreateGuardrail"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "CreateToolset": {
+              "methods": [
+                "CreateToolset"
+              ]
+            },
+            "DeleteAgent": {
+              "methods": [
+                "DeleteAgent"
+              ]
+            },
+            "DeleteApp": {
+              "methods": [
+                "DeleteApp"
+              ]
+            },
+            "DeleteAppVersion": {
+              "methods": [
+                "DeleteAppVersion"
+              ]
+            },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
+            "DeleteDeployment": {
+              "methods": [
+                "DeleteDeployment"
+              ]
+            },
+            "DeleteExample": {
+              "methods": [
+                "DeleteExample"
+              ]
+            },
+            "DeleteGuardrail": {
+              "methods": [
+                "DeleteGuardrail"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "DeleteToolset": {
+              "methods": [
+                "DeleteToolset"
+              ]
+            },
+            "ExportApp": {
+              "methods": [
+                "ExportApp"
+              ]
+            },
+            "GetAgent": {
+              "methods": [
+                "GetAgent"
+              ]
+            },
+            "GetApp": {
+              "methods": [
+                "GetApp"
+              ]
+            },
+            "GetAppVersion": {
+              "methods": [
+                "GetAppVersion"
+              ]
+            },
+            "GetChangelog": {
+              "methods": [
+                "GetChangelog"
+              ]
+            },
+            "GetConversation": {
+              "methods": [
+                "GetConversation"
+              ]
+            },
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "GetExample": {
+              "methods": [
+                "GetExample"
+              ]
+            },
+            "GetGuardrail": {
+              "methods": [
+                "GetGuardrail"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "GetToolset": {
+              "methods": [
+                "GetToolset"
+              ]
+            },
+            "ImportApp": {
+              "methods": [
+                "ImportApp"
+              ]
+            },
+            "ListAgents": {
+              "methods": [
+                "ListAgents"
+              ]
+            },
+            "ListAppVersions": {
+              "methods": [
+                "ListAppVersions"
+              ]
+            },
+            "ListApps": {
+              "methods": [
+                "ListApps"
+              ]
+            },
+            "ListChangelogs": {
+              "methods": [
+                "ListChangelogs"
+              ]
+            },
+            "ListConversations": {
+              "methods": [
+                "ListConversations"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            },
+            "ListExamples": {
+              "methods": [
+                "ListExamples"
+              ]
+            },
+            "ListGuardrails": {
+              "methods": [
+                "ListGuardrails"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "ListToolsets": {
+              "methods": [
+                "ListToolsets"
+              ]
+            },
+            "RestoreAppVersion": {
+              "methods": [
+                "RestoreAppVersion"
+              ]
+            },
+            "UpdateAgent": {
+              "methods": [
+                "UpdateAgent"
+              ]
+            },
+            "UpdateApp": {
+              "methods": [
+                "UpdateApp"
+              ]
+            },
+            "UpdateDeployment": {
+              "methods": [
+                "UpdateDeployment"
+              ]
+            },
+            "UpdateExample": {
+              "methods": [
+                "UpdateExample"
+              ]
+            },
+            "UpdateGuardrail": {
+              "methods": [
+                "UpdateGuardrail"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
+              ]
+            },
+            "UpdateToolset": {
+              "methods": [
+                "UpdateToolset"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AgentClient",
+          "rpcs": {
+            "BatchDeleteConversations": {
+              "methods": [
+                "BatchDeleteConversations"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAgent": {
+              "methods": [
+                "CreateAgent"
+              ]
+            },
+            "CreateApp": {
+              "methods": [
+                "CreateApp"
+              ]
+            },
+            "CreateAppVersion": {
+              "methods": [
+                "CreateAppVersion"
+              ]
+            },
+            "CreateDeployment": {
+              "methods": [
+                "CreateDeployment"
+              ]
+            },
+            "CreateExample": {
+              "methods": [
+                "CreateExample"
+              ]
+            },
+            "CreateGuardrail": {
+              "methods": [
+                "CreateGuardrail"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "CreateToolset": {
+              "methods": [
+                "CreateToolset"
+              ]
+            },
+            "DeleteAgent": {
+              "methods": [
+                "DeleteAgent"
+              ]
+            },
+            "DeleteApp": {
+              "methods": [
+                "DeleteApp"
+              ]
+            },
+            "DeleteAppVersion": {
+              "methods": [
+                "DeleteAppVersion"
+              ]
+            },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
+            "DeleteDeployment": {
+              "methods": [
+                "DeleteDeployment"
+              ]
+            },
+            "DeleteExample": {
+              "methods": [
+                "DeleteExample"
+              ]
+            },
+            "DeleteGuardrail": {
+              "methods": [
+                "DeleteGuardrail"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "DeleteToolset": {
+              "methods": [
+                "DeleteToolset"
+              ]
+            },
+            "ExportApp": {
+              "methods": [
+                "ExportApp"
+              ]
+            },
+            "GetAgent": {
+              "methods": [
+                "GetAgent"
+              ]
+            },
+            "GetApp": {
+              "methods": [
+                "GetApp"
+              ]
+            },
+            "GetAppVersion": {
+              "methods": [
+                "GetAppVersion"
+              ]
+            },
+            "GetChangelog": {
+              "methods": [
+                "GetChangelog"
+              ]
+            },
+            "GetConversation": {
+              "methods": [
+                "GetConversation"
+              ]
+            },
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "GetExample": {
+              "methods": [
+                "GetExample"
+              ]
+            },
+            "GetGuardrail": {
+              "methods": [
+                "GetGuardrail"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "GetToolset": {
+              "methods": [
+                "GetToolset"
+              ]
+            },
+            "ImportApp": {
+              "methods": [
+                "ImportApp"
+              ]
+            },
+            "ListAgents": {
+              "methods": [
+                "ListAgents"
+              ]
+            },
+            "ListAppVersions": {
+              "methods": [
+                "ListAppVersions"
+              ]
+            },
+            "ListApps": {
+              "methods": [
+                "ListApps"
+              ]
+            },
+            "ListChangelogs": {
+              "methods": [
+                "ListChangelogs"
+              ]
+            },
+            "ListConversations": {
+              "methods": [
+                "ListConversations"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            },
+            "ListExamples": {
+              "methods": [
+                "ListExamples"
+              ]
+            },
+            "ListGuardrails": {
+              "methods": [
+                "ListGuardrails"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "ListToolsets": {
+              "methods": [
+                "ListToolsets"
+              ]
+            },
+            "RestoreAppVersion": {
+              "methods": [
+                "RestoreAppVersion"
+              ]
+            },
+            "UpdateAgent": {
+              "methods": [
+                "UpdateAgent"
+              ]
+            },
+            "UpdateApp": {
+              "methods": [
+                "UpdateApp"
+              ]
+            },
+            "UpdateDeployment": {
+              "methods": [
+                "UpdateDeployment"
+              ]
+            },
+            "UpdateExample": {
+              "methods": [
+                "UpdateExample"
+              ]
+            },
+            "UpdateGuardrail": {
+              "methods": [
+                "UpdateGuardrail"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
+              ]
+            },
+            "UpdateToolset": {
+              "methods": [
+                "UpdateToolset"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "EvaluationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EvaluationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEvaluation": {
+              "methods": [
+                "CreateEvaluation"
+              ]
+            },
+            "CreateEvaluationDataset": {
+              "methods": [
+                "CreateEvaluationDataset"
+              ]
+            },
+            "CreateEvaluationExpectation": {
+              "methods": [
+                "CreateEvaluationExpectation"
+              ]
+            },
+            "CreateScheduledEvaluationRun": {
+              "methods": [
+                "CreateScheduledEvaluationRun"
+              ]
+            },
+            "DeleteEvaluation": {
+              "methods": [
+                "DeleteEvaluation"
+              ]
+            },
+            "DeleteEvaluationDataset": {
+              "methods": [
+                "DeleteEvaluationDataset"
+              ]
+            },
+            "DeleteEvaluationExpectation": {
+              "methods": [
+                "DeleteEvaluationExpectation"
+              ]
+            },
+            "DeleteEvaluationResult": {
+              "methods": [
+                "DeleteEvaluationResult"
+              ]
+            },
+            "DeleteEvaluationRun": {
+              "methods": [
+                "DeleteEvaluationRun"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteScheduledEvaluationRun": {
+              "methods": [
+                "DeleteScheduledEvaluationRun"
+              ]
+            },
+            "GenerateEvaluation": {
+              "methods": [
+                "GenerateEvaluation"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetEvaluationDataset": {
+              "methods": [
+                "GetEvaluationDataset"
+              ]
+            },
+            "GetEvaluationExpectation": {
+              "methods": [
+                "GetEvaluationExpectation"
+              ]
+            },
+            "GetEvaluationResult": {
+              "methods": [
+                "GetEvaluationResult"
+              ]
+            },
+            "GetEvaluationRun": {
+              "methods": [
+                "GetEvaluationRun"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetScheduledEvaluationRun": {
+              "methods": [
+                "GetScheduledEvaluationRun"
+              ]
+            },
+            "ImportEvaluations": {
+              "methods": [
+                "ImportEvaluations"
+              ]
+            },
+            "ListEvaluationDatasets": {
+              "methods": [
+                "ListEvaluationDatasets"
+              ]
+            },
+            "ListEvaluationExpectations": {
+              "methods": [
+                "ListEvaluationExpectations"
+              ]
+            },
+            "ListEvaluationResults": {
+              "methods": [
+                "ListEvaluationResults"
+              ]
+            },
+            "ListEvaluationRuns": {
+              "methods": [
+                "ListEvaluationRuns"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListScheduledEvaluationRuns": {
+              "methods": [
+                "ListScheduledEvaluationRuns"
+              ]
+            },
+            "RunEvaluation": {
+              "methods": [
+                "RunEvaluation"
+              ]
+            },
+            "TestPersonaVoice": {
+              "methods": [
+                "TestPersonaVoice"
+              ]
+            },
+            "UpdateEvaluation": {
+              "methods": [
+                "UpdateEvaluation"
+              ]
+            },
+            "UpdateEvaluationDataset": {
+              "methods": [
+                "UpdateEvaluationDataset"
+              ]
+            },
+            "UpdateEvaluationExpectation": {
+              "methods": [
+                "UpdateEvaluationExpectation"
+              ]
+            },
+            "UpdateScheduledEvaluationRun": {
+              "methods": [
+                "UpdateScheduledEvaluationRun"
+              ]
+            },
+            "UploadEvaluationAudio": {
+              "methods": [
+                "UploadEvaluationAudio"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "EvaluationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEvaluation": {
+              "methods": [
+                "CreateEvaluation"
+              ]
+            },
+            "CreateEvaluationDataset": {
+              "methods": [
+                "CreateEvaluationDataset"
+              ]
+            },
+            "CreateEvaluationExpectation": {
+              "methods": [
+                "CreateEvaluationExpectation"
+              ]
+            },
+            "CreateScheduledEvaluationRun": {
+              "methods": [
+                "CreateScheduledEvaluationRun"
+              ]
+            },
+            "DeleteEvaluation": {
+              "methods": [
+                "DeleteEvaluation"
+              ]
+            },
+            "DeleteEvaluationDataset": {
+              "methods": [
+                "DeleteEvaluationDataset"
+              ]
+            },
+            "DeleteEvaluationExpectation": {
+              "methods": [
+                "DeleteEvaluationExpectation"
+              ]
+            },
+            "DeleteEvaluationResult": {
+              "methods": [
+                "DeleteEvaluationResult"
+              ]
+            },
+            "DeleteEvaluationRun": {
+              "methods": [
+                "DeleteEvaluationRun"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteScheduledEvaluationRun": {
+              "methods": [
+                "DeleteScheduledEvaluationRun"
+              ]
+            },
+            "GenerateEvaluation": {
+              "methods": [
+                "GenerateEvaluation"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetEvaluationDataset": {
+              "methods": [
+                "GetEvaluationDataset"
+              ]
+            },
+            "GetEvaluationExpectation": {
+              "methods": [
+                "GetEvaluationExpectation"
+              ]
+            },
+            "GetEvaluationResult": {
+              "methods": [
+                "GetEvaluationResult"
+              ]
+            },
+            "GetEvaluationRun": {
+              "methods": [
+                "GetEvaluationRun"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetScheduledEvaluationRun": {
+              "methods": [
+                "GetScheduledEvaluationRun"
+              ]
+            },
+            "ImportEvaluations": {
+              "methods": [
+                "ImportEvaluations"
+              ]
+            },
+            "ListEvaluationDatasets": {
+              "methods": [
+                "ListEvaluationDatasets"
+              ]
+            },
+            "ListEvaluationExpectations": {
+              "methods": [
+                "ListEvaluationExpectations"
+              ]
+            },
+            "ListEvaluationResults": {
+              "methods": [
+                "ListEvaluationResults"
+              ]
+            },
+            "ListEvaluationRuns": {
+              "methods": [
+                "ListEvaluationRuns"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListScheduledEvaluationRuns": {
+              "methods": [
+                "ListScheduledEvaluationRuns"
+              ]
+            },
+            "RunEvaluation": {
+              "methods": [
+                "RunEvaluation"
+              ]
+            },
+            "TestPersonaVoice": {
+              "methods": [
+                "TestPersonaVoice"
+              ]
+            },
+            "UpdateEvaluation": {
+              "methods": [
+                "UpdateEvaluation"
+              ]
+            },
+            "UpdateEvaluationDataset": {
+              "methods": [
+                "UpdateEvaluationDataset"
+              ]
+            },
+            "UpdateEvaluationExpectation": {
+              "methods": [
+                "UpdateEvaluationExpectation"
+              ]
+            },
+            "UpdateScheduledEvaluationRun": {
+              "methods": [
+                "UpdateScheduledEvaluationRun"
+              ]
+            },
+            "UploadEvaluationAudio": {
+              "methods": [
+                "UploadEvaluationAudio"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SessionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SessionClient",
+          "rpcs": {
+            "BidiRunSession": {
+              "methods": [
+                "BidiRunSession"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunSession": {
+              "methods": [
+                "RunSession"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SessionClient",
+          "rpcs": {
+            "BidiRunSession": {
+              "methods": [
+                "BidiRunSession"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunSession": {
+              "methods": [
+                "RunSession"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ToolService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ToolClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteTool": {
+              "methods": [
+                "ExecuteTool"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetrieveToolSchema": {
+              "methods": [
+                "RetrieveToolSchema"
+              ]
+            },
+            "RetrieveTools": {
+              "methods": [
+                "RetrieveTools"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ToolClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteTool": {
+              "methods": [
+                "ExecuteTool"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetrieveToolSchema": {
+              "methods": [
+                "RetrieveToolSchema"
+              ]
+            },
+            "RetrieveTools": {
+              "methods": [
+                "RetrieveTools"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "WidgetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "WidgetClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateChatToken": {
+              "methods": [
+                "GenerateChatToken"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "WidgetClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateChatToken": {
+              "methods": [
+                "GenerateChatToken"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
