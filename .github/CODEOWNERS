@@ -20,7 +20,7 @@
 /logging/               @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /profiler/              @googleapis/cloud-profiler-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /vertexai/              @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/internal/protoveneer/  @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team @jba
+/internal/protoveneer/  @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 
 
 # We mark the librarian state file as unowned to avoid gatekeeping librarian operations on 
