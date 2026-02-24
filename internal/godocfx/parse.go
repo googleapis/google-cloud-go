@@ -744,29 +744,33 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.M
 			// This is useful when the root module directory doesn't have it, but its subdirectories (like apiv*) do.
 			// Example: For root pkg cloud.google.com/go/auditmanager, search module subdirectories
 			// for the first instance of .repo-metadata.json (e.g. in apiv1/).
-			filepath.Walk(module.Dir, func(path string, info os.FileInfo, err error) error {
-				if err != nil || found {
+			err := filepath.WalkDir(module.Dir, func(path string, de os.DirEntry, err error) error {
+				if err != nil {
 					return err
 				}
 				// Skip subdirectories that are separate modules.
 				// This is needed to avoid overlap in nested modules, like in cloud.google.com/go/pubsub/v2
-				if path != module.Dir && info.IsDir() {
+				if path != module.Dir && de.IsDir() {
 					if _, err := os.Stat(filepath.Join(path, "go.mod")); err == nil {
 						return filepath.SkipDir
 					}
 				}
-				if info.Name() == ".repo-metadata.json" {
+				if de.Name() == ".repo-metadata.json" {
 					b, err := os.ReadFile(path)
 					if err == nil {
 						var m repoMetadata
 						if err := json.Unmarshal(b, &m); err == nil {
 							meta = m
 							found = true
+							return filepath.SkipAll
 						}
 					}
 				}
 				return nil
 			})
+			if err != nil {
+				return "", err
+			}
 			if found {
 				d.mu.Lock()
 				if d.metadata == nil {
