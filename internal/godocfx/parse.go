@@ -692,7 +692,6 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.M
 		relPath := strings.TrimPrefix(importPath, module.Path)
 		relPath = strings.TrimPrefix(relPath, "/")
 		pkgDir := filepath.Join(module.Dir, relPath)
-		log.Println("pkgDir ", pkgDir)
 
 		// Search upwards from pkgDir to module.Dir for .repo-metadata.json.
 		// Example: For pkg cloud.google.com/go/storage/internal/apiv2, search:
