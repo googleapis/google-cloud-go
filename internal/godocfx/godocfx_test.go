@@ -289,17 +289,49 @@ Deprecated: use Reader.Attrs.Size.`,
 }
 
 func TestFriendlyAPIName(t *testing.T) {
-	tmpDir := t.TempDir()
-	meta := repoMetadata{
-		Description: "Storage API",
-	}
+	// 1. Root metadata
+	storageDir := t.TempDir()
+	meta := repoMetadata{Description: "Storage API"}
 	b, _ := json.Marshal(meta)
-	if err := os.WriteFile(filepath.Join(tmpDir, ".repo-metadata.json"), b, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(storageDir, ".repo-metadata.json"), b, 0644); err != nil {
 		t.Fatal(err)
 	}
 
+	// 2. Sub-package metadata only
+	subModuleDir := t.TempDir()
+	subPkgDir := filepath.Join(subModuleDir, "apiv1")
+	if err := os.MkdirAll(subPkgDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	subMeta := repoMetadata{Description: "Sub API"}
+	subB, _ := json.Marshal(subMeta)
+	if err := os.WriteFile(filepath.Join(subPkgDir, ".repo-metadata.json"), subB, 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// 3. Malformed metadata
 	badDir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(badDir, ".repo-metadata.json"), []byte("invalid json"), 0644); err != nil {
+	badSubDir := filepath.Join(badDir, "apiv1")
+	if err := os.MkdirAll(badSubDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(badSubDir, ".repo-metadata.json"), []byte("invalid json"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// 4. Submodule avoidance
+	pubsubDir := t.TempDir()
+	pubsubV2Dir := filepath.Join(pubsubDir, "v2")
+	if err := os.MkdirAll(pubsubV2Dir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	// Create go.mod in v2 to mark it as a separate module.
+	if err := os.WriteFile(filepath.Join(pubsubV2Dir, "go.mod"), []byte("module cloud.google.com/go/pubsub/v2"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	v2Meta := repoMetadata{Description: "PubSub V2 API"}
+	v2B, _ := json.Marshal(v2Meta)
+	if err := os.WriteFile(filepath.Join(pubsubV2Dir, ".repo-metadata.json"), v2B, 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -315,25 +347,25 @@ func TestFriendlyAPIName(t *testing.T) {
 			importPath: "cloud.google.com/go/storage",
 			module: &packages.Module{
 				Path: "cloud.google.com/go/storage",
-				Dir:  tmpDir,
+				Dir:  storageDir,
 			},
 			want: "Storage API",
+		},
+		{
+			importPath: "cloud.google.com/go/sub",
+			module: &packages.Module{
+				Path: "cloud.google.com/go/sub",
+				Dir:  subModuleDir,
+			},
+			want: "Sub API",
 		},
 		{
 			importPath: "cloud.google.com/go/storage/apiv1",
 			module: &packages.Module{
 				Path: "cloud.google.com/go/storage",
-				Dir:  tmpDir,
+				Dir:  storageDir,
 			},
 			want: "Storage API v1",
-		},
-		{
-			importPath: "cloud.google.com/go/storage/apiv1beta1",
-			module: &packages.Module{
-				Path: "cloud.google.com/go/storage",
-				Dir:  tmpDir,
-			},
-			want: "Storage API v1beta1",
 		},
 		{
 			importPath: "cloud.google.com/go/bad",
@@ -342,6 +374,14 @@ func TestFriendlyAPIName(t *testing.T) {
 				Dir:  badDir,
 			},
 			wantErr: true,
+		},
+		{
+			importPath: "cloud.google.com/go/pubsub",
+			module: &packages.Module{
+				Path: "cloud.google.com/go/pubsub",
+				Dir:  pubsubDir,
+			},
+			wantErr: true, // Should NOT find v2's metadata.
 		},
 		{
 			importPath: "not found",

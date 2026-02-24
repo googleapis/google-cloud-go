@@ -692,8 +692,13 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.M
 		relPath := strings.TrimPrefix(importPath, module.Path)
 		relPath = strings.TrimPrefix(relPath, "/")
 		pkgDir := filepath.Join(module.Dir, relPath)
+		log.Println("pkgDir ", pkgDir)
 
 		// Search upwards from pkgDir to module.Dir for .repo-metadata.json.
+		// Example: For pkg cloud.google.com/go/storage/internal/apiv2, search:
+		// 1. .../storage/internal/apiv2/.repo-metadata.json
+		// 2. .../storage/internal/.repo-metadata.json
+		// 3. .../storage/.repo-metadata.json (module.Dir)
 		var meta repoMetadata
 		found := false
 
@@ -734,6 +739,45 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.M
 			}
 			currDir = parent
 		}
+
+		if !found {
+			// Search subdirectories for .repo-metadata.json.
+			// This is useful when the root module directory doesn't have it, but its subdirectories (like apiv*) do.
+			// Example: For root pkg cloud.google.com/go/auditmanager, search module subdirectories
+			// for the first instance of .repo-metadata.json (e.g. in apiv1/).
+			filepath.Walk(module.Dir, func(path string, info os.FileInfo, err error) error {
+				if err != nil || found {
+					return err
+				}
+				// Skip subdirectories that are separate modules.
+				// This is needed to avoid overlap in nested modules, like in cloud.google.com/go/pubsub/v2
+				if path != module.Dir && info.IsDir() {
+					if _, err := os.Stat(filepath.Join(path, "go.mod")); err == nil {
+						return filepath.SkipDir
+					}
+				}
+				if info.Name() == ".repo-metadata.json" {
+					b, err := os.ReadFile(path)
+					if err == nil {
+						var m repoMetadata
+						if err := json.Unmarshal(b, &m); err == nil {
+							meta = m
+							found = true
+						}
+					}
+				}
+				return nil
+			})
+			if found {
+				d.mu.Lock()
+				if d.metadata == nil {
+					d.metadata = make(map[string]repoMetadata)
+				}
+				d.metadata[module.Dir] = meta
+				d.mu.Unlock()
+			}
+		}
+
 		if found {
 			description = meta.Description
 		}
