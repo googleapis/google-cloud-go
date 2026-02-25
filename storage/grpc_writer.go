@@ -23,7 +23,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -260,7 +259,6 @@ type gRPCWriter struct {
 
 	buf       []byte
 	chunkSize int
-	bufOnce   sync.Once
 	// A writeQuantum is the largest quantity of data which can be sent to the
 	// service in a single message.
 	writeQuantum     int
@@ -377,28 +375,26 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 	for cmd := range w.writesChan {
 		switch v := cmd.(type) {
 		case *gRPCWriterCommandWrite:
-			if len(w.buf)+len(v.p) <= w.chunkSize {
-				if w.buf == nil {
-					w.buf = make([]byte, 0, w.chunkSize)
-				}
-				if len(w.buf) == 0 && len(v.p) >= w.chunkSize {
-					w.currentCommand = cmd
-					return nil
-				}
-				// We have not started sending yet, and we can stage all data without
-				// starting a send. Compare against w.chunkSize instead of
-				// w.writeQuantum: that way we can perform a oneshot upload for objects
-				// which fit in one chunk, even though we will cut the request into
-				// w.writeQuantum units when we do start sending.
-				origLen := len(w.buf)
-				w.buf = w.buf[:origLen+len(v.p)]
-				copy(w.buf[origLen:], v.p)
-				close(v.done)
-			} else {
-				// Too large. Handle it in writeLoop.
+			// If zero-copy one-shot is requested, OR the payload is larger than the buffer,
+			// bypass staging entirely and hand off to the writeLoop immediately.
+			if w.forceOneShot || len(w.buf)+len(v.p) > w.chunkSize {
 				w.currentCommand = cmd
 				return nil
 			}
+
+			// Otherwise, lazily allocate and stage the small write (normal buffered path)
+			if w.buf == nil {
+				w.buf = make([]byte, 0, w.chunkSize)
+			}
+			// We have not started sending yet, and we can stage all data without
+			// starting a send. Compare against w.chunkSize instead of
+			// w.writeQuantum: that way we can perform a oneshot upload for objects
+			// which fit in one chunk, even though we will cut the request into
+			// w.writeQuantum units when we do start sending.
+			origLen := len(w.buf)
+			w.buf = w.buf[:origLen+len(v.p)]
+			copy(w.buf[origLen:], v.p)
+			close(v.done)
 			break
 		case *gRPCWriterCommandClose:
 			// If we get here, data (if any) fits in w.buf, so we can force oneshot.
@@ -581,20 +577,23 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		return nil
 	}
 
-	// Try Zero-Copy send.
-	if len(w.buf) == 0 && (len(c.p) >= w.chunkSize || w.forceOneShot) {
-		done, err := c.attemptZeroCopyWrite(w, cs)
+	// Zero-Copy send.
+	if w.forceOneShot {
+		done, err := c.zeroCopyWrite(w, cs)
 		if err != nil {
 			return err
 		}
 		if done {
 			return nil
+		} else {
+			// This should never happen: if zeroCopyWrite returns done == false, it means the stream was already completed, in which case we should have returned an error.
+			return fmt.Errorf("zero-copy write successful but stream is in unexpected state")
 		}
 	}
 
-	w.bufOnce.Do(func() {
+	if w.buf == nil {
 		w.buf = make([]byte, 0, w.chunkSize)
-	})
+	}
 	wblen := len(w.buf)
 	allKnownBytes := wblen + len(c.p)
 	fullBufs := allKnownBytes / cap(w.buf)
@@ -718,7 +717,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	return nil
 }
 
-func (c *gRPCWriterCommandWrite) attemptZeroCopyWrite(w *gRPCWriter, cs gRPCWriterCommandHandleChans) (bool, error) {
+func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterCommandHandleChans) (bool, error) {
 	if !c.hasStarted {
 		c.initialOffset = w.bufBaseOffset
 		c.hasStarted = true
@@ -737,20 +736,6 @@ func (c *gRPCWriterCommandWrite) attemptZeroCopyWrite(w *gRPCWriter, cs gRPCWrit
 	}
 
 	pending := c.p[skip:]
-	n := len(pending)
-
-	// Fall back to buffering if we don't have a full chunk (unless forcing one-shot).
-	if n < w.chunkSize && !w.forceOneShot {
-		return false, nil
-	}
-
-	// Determine chunking strategy.
-	toSendSize := n
-	chunksToSend := 1
-	if !w.forceOneShot {
-		toSendSize = w.chunkSize
-		chunksToSend = n / w.chunkSize
-	}
 
 	// Pre-emptively get the context channel to avoid closure overhead in the loop.
 	var ctxDone <-chan struct{}
@@ -758,48 +743,37 @@ func (c *gRPCWriterCommandWrite) attemptZeroCopyWrite(w *gRPCWriter, cs gRPCWrit
 		ctxDone = w.preRunCtx.Done()
 	}
 
-	for i := 0; i < chunksToSend; i++ {
-		chunk := pending[:toSendSize]
-		// sendBufferToTarget handles the quantum breakdown.
-		newOffset, ok := w.sendBufferToTarget(cs, chunk, w.bufBaseOffset, len(chunk), w.handleCompletion)
-		if !ok {
-			return false, w.streamSender.err()
-		}
+	// sendBufferToTarget handles the quantum breakdown.
+	newOffset, ok := w.sendBufferToTarget(cs, pending, w.bufBaseOffset, len(pending), w.handleCompletion)
+	if !ok {
+		return false, w.streamSender.err()
+	}
 
-		// Request an ack from the sender goroutine to ensure the buffer has been
-		// dispatched to gRPC and is safe for the user to reuse.
-		if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, w.handleCompletion) {
-			return false, w.streamSender.err()
-		}
+	// Request an ack from the sender goroutine to ensure the buffer has been
+	// dispatched to gRPC and is safe for the user to reuse.
+	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, w.handleCompletion) {
+		return false, w.streamSender.err()
+	}
 
-		ackOutstanding := true
+	ackOutstanding := true
 
-		// Wait for server acknowledgement and sender transmissions to enable incremental progress.
-		for ackOutstanding || w.bufBaseOffset < newOffset {
-			select {
-			case completion, ok := <-cs.completions:
-				if !ok {
-					return false, w.streamSender.err()
-				}
-				w.handleCompletion(completion)
-			case <-cs.requestAcks:
-				ackOutstanding = false
-			case <-ctxDone:
-				return false, w.preRunCtx.Err()
+	// Wait for server acknowledgement and sender transmissions to enable incremental progress.
+	for ackOutstanding || w.bufBaseOffset < newOffset {
+		select {
+		case completion, ok := <-cs.completions:
+			if !ok {
+				return false, w.streamSender.err()
 			}
+			w.handleCompletion(completion)
+		case <-cs.requestAcks:
+			ackOutstanding = false
+		case <-ctxDone:
+			return false, w.preRunCtx.Err()
 		}
-
-		// Advance the pending slice.
-		pending = pending[toSendSize:]
 	}
 
-	// Update the command's buffer with whatever remains.
-	c.p = pending
-
-	if len(c.p) == 0 {
-		return c.markDone(), nil
-	}
-	return false, nil
+	c.p = pending[len(pending):]
+	return c.markDone(), nil
 }
 
 // Helper to ensure we don't close done twice and keep the main logic clean.
