@@ -29,8 +29,19 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/retry"
 	"cloud.google.com/go/compute/metadata"
 )
+
+func init() {
+	// Override retry options for testing to avoid long waits.
+	retryOptions = &retry.Options{
+		Initial:     1 * time.Millisecond,
+		Max:         5 * time.Millisecond,
+		Multiplier:  2.0,
+		MaxAttempts: 6,
+	}
+}
 
 func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 	type serverResponse struct {

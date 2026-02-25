@@ -48,6 +48,16 @@ const (
 	baseCooldownDuration = 15 * time.Minute
 )
 
+var (
+	// retryOptions configures the retry behavior for Regional Access Boundary lookups.
+	retryOptions = &retry.Options{
+		Initial:     1 * time.Second,
+		Max:         60 * time.Second,
+		Multiplier:  2.0,
+		MaxAttempts: 6,
+	}
+)
+
 // isEnabled wraps isRegionalAccessBoundaryEnabled with sync.OnceValues to ensure it's
 // called only once.
 var isEnabled = sync.OnceValues(isRegionalAccessBoundaryEnabled)
@@ -117,7 +127,7 @@ func fetchRegionalAccessBoundaryData(ctx context.Context, client *http.Client, u
 	req.Header.Set("Authorization", typ+" "+token.Value)
 	logger.DebugContext(ctx, "Regional Access Boundary request", "request", internallog.HTTPRequest(req, nil))
 
-	retryer := retry.New()
+	retryer := retry.NewWithOptions(retryOptions)
 	startTime := time.Now()
 	var response *http.Response
 	for {
@@ -285,6 +295,8 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 	return ""
 }
 
+// fetchAsync performs the background lookup for Regional Access Boundary data.
+// It updates the provider's state based on the result (success or failure).
 func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) {
 	defer func() {
 		p.mu.Lock()
@@ -310,6 +322,7 @@ func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) 
 	p.handleFetchSuccess(newData)
 }
 
+// handleFetchSuccess updates the cache with new data and clears any existing cooldown.
 func (p *DataProvider) handleFetchSuccess(newData *internal.RegionalAccessBoundaryData) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -319,6 +332,7 @@ func (p *DataProvider) handleFetchSuccess(newData *internal.RegionalAccessBounda
 	p.cooldownDuration = baseCooldownDuration
 }
 
+// handleFetchFailure triggers the cooldown period using exponential backoff.
 func (p *DataProvider) handleFetchFailure(ctx context.Context) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
