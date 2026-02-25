@@ -112,6 +112,7 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 		mockSender := &mockZeroCopySender{}
 		w := &gRPCWriter{
 			buf:           nil,
+			preRunCtx:     context.Background(),
 			chunkSize:     0,
 			forceOneShot:  true,
 			writeQuantum:  maxPerMessageWriteSize,
@@ -157,7 +158,8 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 		mockSender := &mockZeroCopySender{}
 		w := &gRPCWriter{
 			buf:           make([]byte, chunkSize), // Buffered path requires pre-allocated buffer
-			chunkSize:     chunkSize,               // Resumable trigger
+			preRunCtx:     context.Background(),
+			chunkSize:     chunkSize, // Resumable trigger
 			writeQuantum:  chunkSize,
 			sendableUnits: 10,
 			writesChan:    make(chan gRPCWriterCommand, 1),

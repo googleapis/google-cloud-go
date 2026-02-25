@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -376,7 +377,7 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 		switch v := cmd.(type) {
 		case *gRPCWriterCommandWrite:
 			// If zero-copy one-shot is requested, OR the payload is larger than the buffer,
-			// bypass staging entirely and hand off to the writeLoop immediately.
+			// bypass buffering entirely and hand off to the writeLoop immediately.
 			if w.forceOneShot || len(w.buf)+len(v.p) > w.chunkSize {
 				w.currentCommand = cmd
 				return nil
@@ -568,6 +569,7 @@ type gRPCWriterCommandWrite struct {
 	done          chan struct{}
 	initialOffset int64
 	hasStarted    bool
+	once          sync.Once
 }
 
 func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
@@ -735,16 +737,13 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 		return c.markDone(), nil
 	}
 
-	pending := c.p[skip:]
+	c.p = c.p[skip:]
 
 	// Pre-emptively get the context channel to avoid closure overhead in the loop.
-	var ctxDone <-chan struct{}
-	if w.preRunCtx != nil {
-		ctxDone = w.preRunCtx.Done()
-	}
+	ctxDone := w.preRunCtx.Done()
 
 	// sendBufferToTarget handles the quantum breakdown.
-	newOffset, ok := w.sendBufferToTarget(cs, pending, w.bufBaseOffset, len(pending), w.handleCompletion)
+	newOffset, ok := w.sendBufferToTarget(cs, c.p, w.bufBaseOffset, len(c.p), w.handleCompletion)
 	if !ok {
 		return false, w.streamSender.err()
 	}
@@ -778,12 +777,7 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 
 // Helper to ensure we don't close done twice and keep the main logic clean.
 func (c *gRPCWriterCommandWrite) markDone() bool {
-	select {
-	case <-c.done:
-		// already closed
-	default:
-		close(c.done)
-	}
+	c.once.Do(func() { close(c.done) })
 	return true
 }
 
