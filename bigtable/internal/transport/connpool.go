@@ -521,23 +521,25 @@ func (p *BigtableChannelPool) checkIfDirectAccessIsAvailable() (*BigtableConn, b
 	if err != nil {
 		btopt.Debugf(p.logger, "bigtable_connpool: Prime() failed during Direct Access check: %v", err)
 		conn.Close()
-		p.reportDirectAccessMetric(false)
+		p.reportDirectAccessMetric(false, "")
 		return nil, false
 	}
 
 	if conn.isALTSConn.Load() {
-		p.reportDirectAccessMetric(true)
+		ipProtocol := conn.ipProtocol()
+		p.reportDirectAccessMetric(true, ipProtocol)
 		return conn, true
 	}
 
 	// If not ALTS, discard
 	conn.Close()
-	p.reportDirectAccessMetric(false)
+	// sent empty ip protocol
+	p.reportDirectAccessMetric(false, "")
 	return nil, false
 }
 
 // reportDirectAccessMetric records the direct_access/compatible metric.
-func (p *BigtableChannelPool) reportDirectAccessMetric(isEligible bool) {
+func (p *BigtableChannelPool) reportDirectAccessMetric(isEligible bool, ipPreference string) {
 	// Check if the instrument was successfully created during pool initialization
 	if p.daEligibleGauge == nil {
 		return
@@ -546,7 +548,8 @@ func (p *BigtableChannelPool) reportDirectAccessMetric(isEligible bool) {
 	if isEligible {
 		val = 1
 	}
-	p.daEligibleGauge.Record(p.poolCtx, val)
+	p.daEligibleGauge.Record(p.poolCtx, val, metric.WithAttributes(
+		attribute.String("ip_preference", ipPreference)))
 }
 
 func (p *BigtableChannelPool) recordClientStartUp(clientCreationTimestamp time.Time, transportType string) {
