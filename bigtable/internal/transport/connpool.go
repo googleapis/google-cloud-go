@@ -413,7 +413,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 	if pool.directAccessDialer != nil {
 		var isDirectAccess bool
-		if firstConn, isDirectAccess = pool.checkIfDirectAccessIsAvailable(); isDirectAccess {
+		if firstConn, isDirectAccess = pool.checkIfDirectAccessCompatible(); isDirectAccess {
 			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
 			factoryDial = pool.directAccessDialer
 			factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD
@@ -508,9 +508,9 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	return pool, nil
 }
 
-// checkIfDirectAccessIsAvailable attempts to create a single connection using the directAccessDialer,
+// checkIfDirectAccessCompatible attempts to create a single connection using the directAccessDialer,
 // primes it, and checks if direct access was successful
-func (p *BigtableChannelPool) checkIfDirectAccessIsAvailable() (*BigtableConn, bool) {
+func (p *BigtableChannelPool) checkIfDirectAccessCompatible() (*BigtableConn, bool) {
 	conn, err := p.directAccessDialer()
 	if err != nil {
 		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access failed: %v", err)
