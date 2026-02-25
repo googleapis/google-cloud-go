@@ -185,8 +185,8 @@ func TestNewWithOptions(t *testing.T) {
 	t.Run("Partial options (defaults)", func(t *testing.T) {
 		// Provide only partial options, zeros should become defaults.
 		opts := &Options{
-			Initial: 0,   // Should default to 100ms
-			Max:     0,   // Should default to 30s
+			Initial: 0, // Should default to 100ms
+			Max:     0, // Should default to 30s
 			// Multiplier 0 -> Should default to 2.0
 			// MaxAttempts 0 -> Should default to 5
 		}
