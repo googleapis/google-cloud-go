@@ -381,6 +381,10 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 				if w.buf == nil {
 					w.buf = make([]byte, 0, w.chunkSize)
 				}
+				if len(w.buf) == 0 && len(v.p) >= w.chunkSize {
+					w.currentCommand = cmd
+					return nil
+				}
 				// We have not started sending yet, and we can stage all data without
 				// starting a send. Compare against w.chunkSize instead of
 				// w.writeQuantum: that way we can perform a oneshot upload for objects
@@ -762,14 +766,24 @@ func (c *gRPCWriterCommandWrite) attemptZeroCopyWrite(w *gRPCWriter, cs gRPCWrit
 			return false, w.streamSender.err()
 		}
 
-		// Wait for server acknowledgement to enable incremental progress.
-		for w.bufBaseOffset < newOffset {
+		// Request an ack from the sender goroutine to ensure the buffer has been
+		// dispatched to gRPC and is safe for the user to reuse.
+		if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, w.handleCompletion) {
+			return false, w.streamSender.err()
+		}
+
+		ackOutstanding := true
+
+		// Wait for server acknowledgement and sender transmissions to enable incremental progress.
+		for ackOutstanding || w.bufBaseOffset < newOffset {
 			select {
 			case completion, ok := <-cs.completions:
 				if !ok {
 					return false, w.streamSender.err()
 				}
 				w.handleCompletion(completion)
+			case <-cs.requestAcks:
+				ackOutstanding = false
 			case <-ctxDone:
 				return false, w.preRunCtx.Err()
 			}
