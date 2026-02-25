@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.117.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -1719,7 +1719,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.54.0
-    last_generated_commit: 87e3579c041a50f985f8de71e9494c8fc85d520b
+    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -2104,7 +2104,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datamanager
     version: 0.1.0
-    last_generated_commit: 21faf440e089d06f66243c77792f37ac86c01115
+    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/ads/datamanager/v1
         service_config: datamanager_v1.yaml
@@ -2302,7 +2302,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: developerconnect
     version: 0.4.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/developerconnect/v1
         service_config: developerconnect_v1.yaml
@@ -5819,7 +5819,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: speech
     version: 1.29.0
-    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
+    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/speech/v1
         service_config: speech_v1.yaml

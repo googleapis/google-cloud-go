@@ -151,7 +151,7 @@
     {
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_CreateGitRepositoryLink_sync",
       "title": "developerconnect CreateGitRepositoryLink Sample",
-      "description": "CreateGitRepositoryLink creates a GitRepositoryLink. Upon linking a Git Repository, Developer\nConnect will configure the Git Repository to send webhook events to\nDeveloper Connect. Connections that use Firebase GitHub Application will\nhave events forwarded to the Firebase service. All other Connections will\nhave events forwarded to Cloud Build.",
+      "description": "CreateGitRepositoryLink creates a GitRepositoryLink. Upon linking a Git Repository, Developer\nConnect will configure the Git Repository to send webhook events to\nDeveloper Connect. Connections that use Firebase GitHub Application will\nhave events forwarded to the Firebase service. Connections that use Gemini\nCode Assist will have events forwarded to Gemini Code Assist service. All\nother Connections will have events forwarded to Cloud Build.",
       "file": "Client/CreateGitRepositoryLink/main.go",
       "language": "GO",
       "clientMethod": {
@@ -792,6 +792,52 @@
       ]
     },
     {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_FinishOAuth_sync",
+      "title": "developerconnect FinishOAuth Sample",
+      "description": "FinishOAuth finishes OAuth flow for an account connector.",
+      "file": "Client/FinishOAuth/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FinishOAuth",
+        "fullName": "google.cloud.developerconnect.v1.Client.FinishOAuth",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.FinishOAuthRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*developerconnectpb.FinishOAuthResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "FinishOAuth",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.FinishOAuth",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetAccountConnector_sync",
       "title": "developerconnect GetAccountConnector Sample",
       "description": "GetAccountConnector gets details of a single AccountConnector.",
@@ -1162,7 +1208,7 @@
     {
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListLocations_sync",
       "title": "developerconnect ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1293,6 +1339,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_DeveloperConnect_StartOAuth_sync",
+      "title": "developerconnect StartOAuth Sample",
+      "description": "StartOAuth starts OAuth flow for an account connector.",
+      "file": "Client/StartOAuth/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartOAuth",
+        "fullName": "google.cloud.developerconnect.v1.Client.StartOAuth",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.StartOAuthRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*developerconnectpb.StartOAuthResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.developerconnect.v1.Client"
+        },
+        "method": {
+          "shortName": "StartOAuth",
+          "fullName": "google.cloud.developerconnect.v1.DeveloperConnect.StartOAuth",
+          "service": {
+            "shortName": "DeveloperConnect",
+            "fullName": "google.cloud.developerconnect.v1.DeveloperConnect"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1483,7 +1575,7 @@
     {
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_DeleteInsightsConfig_sync",
       "title": "developerconnect DeleteInsightsConfig Sample",
-      "description": "DeleteInsightsConfig delete a single Insight.",
+      "description": "DeleteInsightsConfig deletes a single Insight.",
       "file": "InsightsConfigClient/DeleteInsightsConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1567,6 +1659,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetDeploymentEvent_sync",
+      "title": "developerconnect GetDeploymentEvent Sample",
+      "description": "GetDeploymentEvent gets a single Deployment Event.",
+      "file": "InsightsConfigClient/GetDeploymentEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeploymentEvent",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.GetDeploymentEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.GetDeploymentEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*developerconnectpb.DeploymentEvent",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "GetDeploymentEvent",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigService.GetDeploymentEvent",
+          "service": {
+            "shortName": "InsightsConfigService",
+            "fullName": "google.cloud.developerconnect.v1.InsightsConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1710,6 +1848,52 @@
       ]
     },
     {
+      "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListDeploymentEvents_sync",
+      "title": "developerconnect ListDeploymentEvents Sample",
+      "description": "ListDeploymentEvents lists Deployment Events in a given insights config.",
+      "file": "InsightsConfigClient/ListDeploymentEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeploymentEvents",
+        "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient.ListDeploymentEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "developerconnectpb.ListDeploymentEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeploymentEventIterator",
+        "client": {
+          "shortName": "InsightsConfigClient",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigClient"
+        },
+        "method": {
+          "shortName": "ListDeploymentEvents",
+          "fullName": "google.cloud.developerconnect.v1.InsightsConfigService.ListDeploymentEvents",
+          "service": {
+            "shortName": "InsightsConfigService",
+            "fullName": "google.cloud.developerconnect.v1.InsightsConfigService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListInsightsConfigs_sync",
       "title": "developerconnect ListInsightsConfigs Sample",
       "description": "ListInsightsConfigs lists InsightsConfigs in a given project and location.",
@@ -1758,7 +1942,7 @@
     {
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListLocations_sync",
       "title": "developerconnect ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "InsightsConfigClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {

@@ -197,6 +197,8 @@ func (c *NetworkEndpointGroupsClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates a network endpoint group in the specified project using the
 // parameters that are included in the request.
+//
+// Note: Use the following APIs to manage network endpoint groups:
 func (c *NetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -657,6 +659,8 @@ func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computep
 
 // Insert creates a network endpoint group in the specified project using the
 // parameters that are included in the request.
+//
+// Note: Use the following APIs to manage network endpoint groups:
 func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()

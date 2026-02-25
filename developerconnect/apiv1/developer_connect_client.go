@@ -71,6 +71,8 @@ type CallOptions struct {
 	DeleteUser                   []gax.CallOption
 	FetchSelf                    []gax.CallOption
 	DeleteSelf                   []gax.CallOption
+	StartOAuth                   []gax.CallOption
+	FinishOAuth                  []gax.CallOption
 	GetLocation                  []gax.CallOption
 	ListLocations                []gax.CallOption
 	CancelOperation              []gax.CallOption
@@ -252,6 +254,8 @@ func defaultCallOptions() *CallOptions {
 		DeleteUser:             []gax.CallOption{},
 		FetchSelf:              []gax.CallOption{},
 		DeleteSelf:             []gax.CallOption{},
+		StartOAuth:             []gax.CallOption{},
+		FinishOAuth:            []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
 		CancelOperation:        []gax.CallOption{},
@@ -407,6 +411,8 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteUser:             []gax.CallOption{},
 		FetchSelf:              []gax.CallOption{},
 		DeleteSelf:             []gax.CallOption{},
+		StartOAuth:             []gax.CallOption{},
+		FinishOAuth:            []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
 		CancelOperation:        []gax.CallOption{},
@@ -455,6 +461,8 @@ type internalClient interface {
 	FetchSelf(context.Context, *developerconnectpb.FetchSelfRequest, ...gax.CallOption) (*developerconnectpb.User, error)
 	DeleteSelf(context.Context, *developerconnectpb.DeleteSelfRequest, ...gax.CallOption) (*DeleteSelfOperation, error)
 	DeleteSelfOperation(name string) *DeleteSelfOperation
+	StartOAuth(context.Context, *developerconnectpb.StartOAuthRequest, ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error)
+	FinishOAuth(context.Context, *developerconnectpb.FinishOAuthRequest, ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -549,8 +557,9 @@ func (c *Client) DeleteConnectionOperation(name string) *DeleteConnectionOperati
 // CreateGitRepositoryLink creates a GitRepositoryLink. Upon linking a Git Repository, Developer
 // Connect will configure the Git Repository to send webhook events to
 // Developer Connect. Connections that use Firebase GitHub Application will
-// have events forwarded to the Firebase service. All other Connections will
-// have events forwarded to Cloud Build.
+// have events forwarded to the Firebase service. Connections that use Gemini
+// Code Assist will have events forwarded to Gemini Code Assist service. All
+// other Connections will have events forwarded to Cloud Build.
 func (c *Client) CreateGitRepositoryLink(ctx context.Context, req *developerconnectpb.CreateGitRepositoryLinkRequest, opts ...gax.CallOption) (*CreateGitRepositoryLinkOperation, error) {
 	return c.internalClient.CreateGitRepositoryLink(ctx, req, opts...)
 }
@@ -691,12 +700,30 @@ func (c *Client) DeleteSelfOperation(name string) *DeleteSelfOperation {
 	return c.internalClient.DeleteSelfOperation(name)
 }
 
+// StartOAuth starts OAuth flow for an account connector.
+func (c *Client) StartOAuth(ctx context.Context, req *developerconnectpb.StartOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error) {
+	return c.internalClient.StartOAuth(ctx, req, opts...)
+}
+
+// FinishOAuth finishes OAuth flow for an account connector.
+func (c *Client) FinishOAuth(ctx context.Context, req *developerconnectpb.FinishOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error) {
+	return c.internalClient.FinishOAuth(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1531,6 +1558,42 @@ func (c *gRPCClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	}, nil
 }
 
+func (c *gRPCClient) StartOAuth(ctx context.Context, req *developerconnectpb.StartOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StartOAuth[0:len((*c.CallOptions).StartOAuth):len((*c.CallOptions).StartOAuth)], opts...)
+	var resp *developerconnectpb.StartOAuthResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StartOAuth, req, settings.GRPC, c.logger, "StartOAuth")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FinishOAuth(ctx context.Context, req *developerconnectpb.FinishOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FinishOAuth[0:len((*c.CallOptions).FinishOAuth):len((*c.CallOptions).FinishOAuth)], opts...)
+	var resp *developerconnectpb.FinishOAuthResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FinishOAuth, req, settings.GRPC, c.logger, "FinishOAuth")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2029,8 +2092,9 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *developerconnect
 // CreateGitRepositoryLink creates a GitRepositoryLink. Upon linking a Git Repository, Developer
 // Connect will configure the Git Repository to send webhook events to
 // Developer Connect. Connections that use Firebase GitHub Application will
-// have events forwarded to the Firebase service. All other Connections will
-// have events forwarded to Cloud Build.
+// have events forwarded to the Firebase service. Connections that use Gemini
+// Code Assist will have events forwarded to Gemini Code Assist service. All
+// other Connections will have events forwarded to Cloud Build.
 func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developerconnectpb.CreateGitRepositoryLinkRequest, opts ...gax.CallOption) (*CreateGitRepositoryLinkOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetGitRepositoryLink()
@@ -3263,6 +3327,117 @@ func (c *restClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	}, nil
 }
 
+// StartOAuth starts OAuth flow for an account connector.
+func (c *restClient) StartOAuth(ctx context.Context, req *developerconnectpb.StartOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/users:startOAuthFlow", req.GetAccountConnector())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).StartOAuth[0:len((*c.CallOptions).StartOAuth):len((*c.CallOptions).StartOAuth)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.StartOAuthResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "StartOAuth")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FinishOAuth finishes OAuth flow for an account connector.
+func (c *restClient) FinishOAuth(ctx context.Context, req *developerconnectpb.FinishOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/users:finishOAuthFlow", req.GetAccountConnector())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetGoogleOauthParams().GetScopes(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("googleOauthParams.scopes", fmt.Sprintf("%v", item))
+		}
+	}
+	params.Add("googleOauthParams.ticket", fmt.Sprintf("%v", req.GetGoogleOauthParams().GetTicket()))
+	if req.GetGoogleOauthParams().GetVersionInfo() != "" {
+		params.Add("googleOauthParams.versionInfo", fmt.Sprintf("%v", req.GetGoogleOauthParams().GetVersionInfo()))
+	}
+	params.Add("oauthParams.code", fmt.Sprintf("%v", req.GetOauthParams().GetCode()))
+	params.Add("oauthParams.ticket", fmt.Sprintf("%v", req.GetOauthParams().GetTicket()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FinishOAuth[0:len((*c.CallOptions).FinishOAuth):len((*c.CallOptions).FinishOAuth)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.FinishOAuthResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FinishOAuth")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -3314,6 +3489,14 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)

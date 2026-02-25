@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,6 +59,8 @@ const (
 	DeveloperConnect_DeleteUser_FullMethodName                   = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteUser"
 	DeveloperConnect_FetchSelf_FullMethodName                    = "/google.cloud.developerconnect.v1.DeveloperConnect/FetchSelf"
 	DeveloperConnect_DeleteSelf_FullMethodName                   = "/google.cloud.developerconnect.v1.DeveloperConnect/DeleteSelf"
+	DeveloperConnect_StartOAuth_FullMethodName                   = "/google.cloud.developerconnect.v1.DeveloperConnect/StartOAuth"
+	DeveloperConnect_FinishOAuth_FullMethodName                  = "/google.cloud.developerconnect.v1.DeveloperConnect/FinishOAuth"
 )
 
 // DeveloperConnectClient is the client API for DeveloperConnect service.
@@ -78,8 +80,9 @@ type DeveloperConnectClient interface {
 	// Creates a GitRepositoryLink. Upon linking a Git Repository, Developer
 	// Connect will configure the Git Repository to send webhook events to
 	// Developer Connect. Connections that use Firebase GitHub Application will
-	// have events forwarded to the Firebase service. All other Connections will
-	// have events forwarded to Cloud Build.
+	// have events forwarded to the Firebase service. Connections that use Gemini
+	// Code Assist will have events forwarded to Gemini Code Assist service. All
+	// other Connections will have events forwarded to Cloud Build.
 	CreateGitRepositoryLink(ctx context.Context, in *CreateGitRepositoryLinkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single GitRepositoryLink.
 	DeleteGitRepositoryLink(ctx context.Context, in *DeleteGitRepositoryLinkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -121,6 +124,10 @@ type DeveloperConnectClient interface {
 	FetchSelf(ctx context.Context, in *FetchSelfRequest, opts ...grpc.CallOption) (*User, error)
 	// Delete the User based on the user credentials.
 	DeleteSelf(ctx context.Context, in *DeleteSelfRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Starts OAuth flow for an account connector.
+	StartOAuth(ctx context.Context, in *StartOAuthRequest, opts ...grpc.CallOption) (*StartOAuthResponse, error)
+	// Finishes OAuth flow for an account connector.
+	FinishOAuth(ctx context.Context, in *FinishOAuthRequest, opts ...grpc.CallOption) (*FinishOAuthResponse, error)
 }
 
 type developerConnectClient struct {
@@ -347,6 +354,24 @@ func (c *developerConnectClient) DeleteSelf(ctx context.Context, in *DeleteSelfR
 	return out, nil
 }
 
+func (c *developerConnectClient) StartOAuth(ctx context.Context, in *StartOAuthRequest, opts ...grpc.CallOption) (*StartOAuthResponse, error) {
+	out := new(StartOAuthResponse)
+	err := c.cc.Invoke(ctx, DeveloperConnect_StartOAuth_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *developerConnectClient) FinishOAuth(ctx context.Context, in *FinishOAuthRequest, opts ...grpc.CallOption) (*FinishOAuthResponse, error) {
+	out := new(FinishOAuthResponse)
+	err := c.cc.Invoke(ctx, DeveloperConnect_FinishOAuth_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DeveloperConnectServer is the server API for DeveloperConnect service.
 // All implementations should embed UnimplementedDeveloperConnectServer
 // for forward compatibility
@@ -364,8 +389,9 @@ type DeveloperConnectServer interface {
 	// Creates a GitRepositoryLink. Upon linking a Git Repository, Developer
 	// Connect will configure the Git Repository to send webhook events to
 	// Developer Connect. Connections that use Firebase GitHub Application will
-	// have events forwarded to the Firebase service. All other Connections will
-	// have events forwarded to Cloud Build.
+	// have events forwarded to the Firebase service. Connections that use Gemini
+	// Code Assist will have events forwarded to Gemini Code Assist service. All
+	// other Connections will have events forwarded to Cloud Build.
 	CreateGitRepositoryLink(context.Context, *CreateGitRepositoryLinkRequest) (*longrunningpb.Operation, error)
 	// Deletes a single GitRepositoryLink.
 	DeleteGitRepositoryLink(context.Context, *DeleteGitRepositoryLinkRequest) (*longrunningpb.Operation, error)
@@ -407,6 +433,10 @@ type DeveloperConnectServer interface {
 	FetchSelf(context.Context, *FetchSelfRequest) (*User, error)
 	// Delete the User based on the user credentials.
 	DeleteSelf(context.Context, *DeleteSelfRequest) (*longrunningpb.Operation, error)
+	// Starts OAuth flow for an account connector.
+	StartOAuth(context.Context, *StartOAuthRequest) (*StartOAuthResponse, error)
+	// Finishes OAuth flow for an account connector.
+	FinishOAuth(context.Context, *FinishOAuthRequest) (*FinishOAuthResponse, error)
 }
 
 // UnimplementedDeveloperConnectServer should be embedded to have forward compatible implementations.
@@ -484,6 +514,12 @@ func (UnimplementedDeveloperConnectServer) FetchSelf(context.Context, *FetchSelf
 }
 func (UnimplementedDeveloperConnectServer) DeleteSelf(context.Context, *DeleteSelfRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSelf not implemented")
+}
+func (UnimplementedDeveloperConnectServer) StartOAuth(context.Context, *StartOAuthRequest) (*StartOAuthResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartOAuth not implemented")
+}
+func (UnimplementedDeveloperConnectServer) FinishOAuth(context.Context, *FinishOAuthRequest) (*FinishOAuthResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FinishOAuth not implemented")
 }
 
 // UnsafeDeveloperConnectServer may be embedded to opt out of forward compatibility for this service.
@@ -929,6 +965,42 @@ func _DeveloperConnect_DeleteSelf_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DeveloperConnect_StartOAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartOAuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).StartOAuth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_StartOAuth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).StartOAuth(ctx, req.(*StartOAuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeveloperConnect_FinishOAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FinishOAuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeveloperConnectServer).FinishOAuth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DeveloperConnect_FinishOAuth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeveloperConnectServer).FinishOAuth(ctx, req.(*FinishOAuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DeveloperConnect_ServiceDesc is the grpc.ServiceDesc for DeveloperConnect service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1031,6 +1103,14 @@ var DeveloperConnect_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteSelf",
 			Handler:    _DeveloperConnect_DeleteSelf_Handler,
+		},
+		{
+			MethodName: "StartOAuth",
+			Handler:    _DeveloperConnect_StartOAuth_Handler,
+		},
+		{
+			MethodName: "FinishOAuth",
+			Handler:    _DeveloperConnect_FinishOAuth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
