@@ -16,7 +16,7 @@ package internal
 
 import (
 	"context"
-	"math/rand"
+	"math/rand/v2"
 	"sync"
 	"time"
 
@@ -33,7 +33,6 @@ type ConnectionRecycler struct {
 	ticker   *time.Ticker
 	done     chan struct{}
 	stopOnce sync.Once
-	rng      *rand.Rand
 }
 
 // NewConnectionRecycler creates a new recycler with the provided configuration.
@@ -42,7 +41,6 @@ func NewConnectionRecycler(config btopt.ConnectionRecycleConfig, pool *BigtableC
 		pool:   pool,
 		config: config,
 		done:   make(chan struct{}),
-		rng:    rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 }
 
@@ -103,7 +101,7 @@ func (cr *ConnectionRecycler) checkRecycle() {
 
 		var currentJitter time.Duration
 		if hasJitter {
-			currentJitter = time.Duration(cr.rng.Int63n(jitterVal))
+			currentJitter = time.Duration(rand.Int64N(jitterVal))
 		}
 
 		if age > cr.config.MaxAge+currentJitter {

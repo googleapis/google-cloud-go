@@ -21,7 +21,7 @@ import (
 	"io"
 	"log"
 	"math"
-	"math/rand"
+	"math/rand/v2"
 	"net"
 	"net/url"
 	"slices"
@@ -731,8 +731,8 @@ func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (*connEntry, error)
 
 	// Retry numConns * 2 times in worst case.
 	for i := 0; i < numConns*2 && numConns > 1; i++ {
-		idx1 := rand.Intn(numConns)
-		idx2 := rand.Intn(numConns)
+		idx1 := rand.IntN(numConns)
+		idx2 := rand.IntN(numConns)
 
 		entry1 := conns[idx1]
 		entry2 := conns[idx2]
