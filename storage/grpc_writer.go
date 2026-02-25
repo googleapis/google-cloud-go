@@ -585,10 +585,10 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		}
 		if done {
 			return nil
-		} else {
-			// This should never happen: if zeroCopyWrite returns done == false, it means the stream was already completed, in which case we should have returned an error.
-			return fmt.Errorf("zero-copy write successful but stream is in unexpected state")
 		}
+		// This should never happen: if zeroCopyWrite returns done == false, it means
+		// the stream was already completed, in which case we should have returned an error.
+		return fmt.Errorf("zero-copy write successful but stream is in unexpected state")
 	}
 
 	if w.buf == nil {
@@ -772,7 +772,7 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 		}
 	}
 
-	c.p = pending[len(pending):]
+	c.p = nil
 	return c.markDone(), nil
 }
 
