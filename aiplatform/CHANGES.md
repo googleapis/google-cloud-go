@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.118.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.118.0) (2026-02-26)
+
+### Features
+
+* Add image_spec to Reasoning Engine public protos ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add transcription fields to Session Service ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add v1 API version for Session Service ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+
+### Documentation
+
+* A comment for field `expire_time` in message `.google.cloud.aiplatform.v1beta1.Session` is changed ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A comment for field `filter` in message `.google.cloud.aiplatform.v1beta1.ListSessionsRequest` is changed ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A comment for field `ttl` in message `.google.cloud.aiplatform.v1beta1.Session` is changed ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+
 ## [1.117.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.117.0) (2026-02-19)
 
 ### Features

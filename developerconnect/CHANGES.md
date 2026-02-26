@@ -1,5 +1,48 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/developerconnect%2Fv0.5.0) (2026-02-26)
+
+### Features
+
+* A new enum value `GEMINI_CODE_ASSIST` is added to enum `google.cloud.developerconnect.v1.GitHubConfig.GitHubApp` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new field `app_hub_service` is added to message `google.cloud.developerconnect.v1.insights.RuntimeConfig` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new field `google_cloud_run` is added to message `google.cloud.developerconnect.v1.insights.RuntimeConfig` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new field `http_config` is added to message `google.cloud.developerconnect.v1.Connection` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new field `http_proxy_base_uri` is added to message `google.cloud.developerconnect.v1.HTTPProxyConfig` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new field `organization` is added to message `google.cloud.developerconnect.v1.GitHubEnterpriseConfig` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new field `projects` is added to message `google.cloud.developerconnect.v1.insights.InsightsConfig` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new field `secure_source_manager_instance_config` is added to message `google.cloud.developerconnect.v1.Connection` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.FinishOAuthRequest` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.FinishOAuthResponse` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.GenericHTTPEndpointConfig` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfig` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.StartOAuthRequest` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.StartOAuthResponse` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.AppHubService` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.ArtifactDeployment` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.DeploymentEvent` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.GetDeploymentEventRequest` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.GoogleCloudRun` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.ListDeploymentEventsRequest` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.ListDeploymentEventsResponse` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* A new message `google.cloud.developerconnect.v1.insights.Projects` is added ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add Cloud Run and App Hub Service runtimes to InsightsConfig ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add Deployment Events to Insights API (GetDeploymentEvent, ListDeploymentEvents) ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add Gemini Code Assist GitHub App type ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add HTTP Proxy base URI field ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add OAuth flow RPCs (StartOAuth, FinishOAuth) ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add Projects field to InsightsConfig for project tracking ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Add Secure Source Manager and Generic HTTP Endpoint connection types ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+
+### Documentation
+
+* Corrected typos in comments for `google.cloud.developerconnect.v1.insights.InsightsConfig` and `google.cloud.developerconnect.v1.insights.ArtifactConfig` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Updated comment for `CreateGitRepositoryLink` RPC in `google.cloud.developerconnect.v1.DeveloperConnect` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Updated comments to include regional secret patterns for SecretManager fields in `GitHubConfig`, `OAuthCredential`, `UserCredential`, `GitLabConfig`, `GitLabEnterpriseConfig`, `BitbucketDataCenterConfig`, and `BitbucketCloudConfig` ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Updated description for `google.cloud.location.Locations.ListLocations` in YAML ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.4.0...developerconnect/v0.4.1) (2025-09-16)
 
 

@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.117.0
+    version: 1.118.0
     last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/aiplatform/v1
@@ -1362,7 +1362,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: 258563af0e9d6e7219de9afdffe74687d1eb7b83
     apis:
       - path: google/cloud/ces/v1beta
@@ -1718,7 +1718,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.54.0
+    version: 1.55.0
     last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/compute/v1
@@ -2103,7 +2103,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/ads/datamanager/v1
@@ -2301,7 +2301,7 @@ libraries:
       - internal/generated/snippets/deploy/
     tag_format: '{id}/v{version}'
   - id: developerconnect
-    version: 0.4.1
+    version: 0.5.0
     last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/developerconnect/v1
@@ -3023,7 +3023,7 @@ libraries:
       - internal/generated/snippets/gsuiteaddons/
     tag_format: '{id}/v{version}'
   - id: hypercomputecluster
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: 258563af0e9d6e7219de9afdffe74687d1eb7b83
     apis:
       - path: google/cloud/hypercomputecluster/v1beta
@@ -5818,7 +5818,7 @@ libraries:
       - spanner/testdata
     tag_format: '{id}/v{version}'
   - id: speech
-    version: 1.29.0
+    version: 1.30.0
     last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
     apis:
       - path: google/cloud/speech/v1
