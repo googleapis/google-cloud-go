@@ -575,7 +575,7 @@ type gRPCWriterCommandWrite struct {
 func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
 	if len(c.p) == 0 {
 		// No data to write.
-		close(c.done)
+		c.markDone()
 		return nil
 	}
 
@@ -622,7 +622,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 			return w.streamSender.err()
 		}
 		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
-		close(c.done)
+		c.markDone()
 		return nil
 	}
 
@@ -715,7 +715,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	w.buf = w.buf[:len(toCopyIn)]
 	copy(w.buf, toCopyIn)
 	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
-	close(c.done)
+	c.markDone()
 	return nil
 }
 
