@@ -50,6 +50,8 @@ type InsightsConfigCallOptions struct {
 	GetInsightsConfig    []gax.CallOption
 	UpdateInsightsConfig []gax.CallOption
 	DeleteInsightsConfig []gax.CallOption
+	GetDeploymentEvent   []gax.CallOption
+	ListDeploymentEvents []gax.CallOption
 	GetLocation          []gax.CallOption
 	ListLocations        []gax.CallOption
 	CancelOperation      []gax.CallOption
@@ -80,6 +82,8 @@ func defaultInsightsConfigCallOptions() *InsightsConfigCallOptions {
 		GetInsightsConfig:    []gax.CallOption{},
 		UpdateInsightsConfig: []gax.CallOption{},
 		DeleteInsightsConfig: []gax.CallOption{},
+		GetDeploymentEvent:   []gax.CallOption{},
+		ListDeploymentEvents: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
 		CancelOperation:      []gax.CallOption{},
@@ -96,6 +100,8 @@ func defaultInsightsConfigRESTCallOptions() *InsightsConfigCallOptions {
 		GetInsightsConfig:    []gax.CallOption{},
 		UpdateInsightsConfig: []gax.CallOption{},
 		DeleteInsightsConfig: []gax.CallOption{},
+		GetDeploymentEvent:   []gax.CallOption{},
+		ListDeploymentEvents: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
 		CancelOperation:      []gax.CallOption{},
@@ -118,6 +124,8 @@ type internalInsightsConfigClient interface {
 	UpdateInsightsConfigOperation(name string) *UpdateInsightsConfigOperation
 	DeleteInsightsConfig(context.Context, *developerconnectpb.DeleteInsightsConfigRequest, ...gax.CallOption) (*DeleteInsightsConfigOperation, error)
 	DeleteInsightsConfigOperation(name string) *DeleteInsightsConfigOperation
+	GetDeploymentEvent(context.Context, *developerconnectpb.GetDeploymentEventRequest, ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error)
+	ListDeploymentEvents(context.Context, *developerconnectpb.ListDeploymentEventsRequest, ...gax.CallOption) *DeploymentEventIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -133,7 +141,7 @@ type internalInsightsConfigClient interface {
 //
 // The InsightsConfig resource is the core configuration object to capture
 // events from your Software Development Lifecycle. It acts as the central hub
-// for managing how Developer connect understands your application, its runtime
+// for managing how Developer Connect understands your application, its runtime
 // environments, and the artifacts deployed within them.
 // A user can create an InsightsConfig, list previously-requested
 // InsightsConfigs or get InsightsConfigs by their ID to determine the status of
@@ -206,7 +214,7 @@ func (c *InsightsConfigClient) UpdateInsightsConfigOperation(name string) *Updat
 	return c.internalClient.UpdateInsightsConfigOperation(name)
 }
 
-// DeleteInsightsConfig delete a single Insight.
+// DeleteInsightsConfig deletes a single Insight.
 func (c *InsightsConfigClient) DeleteInsightsConfig(ctx context.Context, req *developerconnectpb.DeleteInsightsConfigRequest, opts ...gax.CallOption) (*DeleteInsightsConfigOperation, error) {
 	return c.internalClient.DeleteInsightsConfig(ctx, req, opts...)
 }
@@ -217,12 +225,30 @@ func (c *InsightsConfigClient) DeleteInsightsConfigOperation(name string) *Delet
 	return c.internalClient.DeleteInsightsConfigOperation(name)
 }
 
+// GetDeploymentEvent gets a single Deployment Event.
+func (c *InsightsConfigClient) GetDeploymentEvent(ctx context.Context, req *developerconnectpb.GetDeploymentEventRequest, opts ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error) {
+	return c.internalClient.GetDeploymentEvent(ctx, req, opts...)
+}
+
+// ListDeploymentEvents lists Deployment Events in a given insights config.
+func (c *InsightsConfigClient) ListDeploymentEvents(ctx context.Context, req *developerconnectpb.ListDeploymentEventsRequest, opts ...gax.CallOption) *DeploymentEventIterator {
+	return c.internalClient.ListDeploymentEvents(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *InsightsConfigClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *InsightsConfigClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -282,7 +308,7 @@ type insightsConfigGRPCClient struct {
 //
 // The InsightsConfig resource is the core configuration object to capture
 // events from your Software Development Lifecycle. It acts as the central hub
-// for managing how Developer connect understands your application, its runtime
+// for managing how Developer Connect understands your application, its runtime
 // environments, and the artifacts deployed within them.
 // A user can create an InsightsConfig, list previously-requested
 // InsightsConfigs or get InsightsConfigs by their ID to determine the status of
@@ -382,7 +408,7 @@ type insightsConfigRESTClient struct {
 //
 // The InsightsConfig resource is the core configuration object to capture
 // events from your Software Development Lifecycle. It acts as the central hub
-// for managing how Developer connect understands your application, its runtime
+// for managing how Developer Connect understands your application, its runtime
 // environments, and the artifacts deployed within them.
 // A user can create an InsightsConfig, list previously-requested
 // InsightsConfigs or get InsightsConfigs by their ID to determine the status of
@@ -575,6 +601,70 @@ func (c *insightsConfigGRPCClient) DeleteInsightsConfig(ctx context.Context, req
 	return &DeleteInsightsConfigOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *insightsConfigGRPCClient) GetDeploymentEvent(ctx context.Context, req *developerconnectpb.GetDeploymentEventRequest, opts ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDeploymentEvent[0:len((*c.CallOptions).GetDeploymentEvent):len((*c.CallOptions).GetDeploymentEvent)], opts...)
+	var resp *developerconnectpb.DeploymentEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.insightsConfigClient.GetDeploymentEvent, req, settings.GRPC, c.logger, "GetDeploymentEvent")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *insightsConfigGRPCClient) ListDeploymentEvents(ctx context.Context, req *developerconnectpb.ListDeploymentEventsRequest, opts ...gax.CallOption) *DeploymentEventIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDeploymentEvents[0:len((*c.CallOptions).ListDeploymentEvents):len((*c.CallOptions).ListDeploymentEvents)], opts...)
+	it := &DeploymentEventIterator{}
+	req = proto.Clone(req).(*developerconnectpb.ListDeploymentEventsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.DeploymentEvent, string, error) {
+		resp := &developerconnectpb.ListDeploymentEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.insightsConfigClient.ListDeploymentEvents, req, settings.GRPC, c.logger, "ListDeploymentEvents")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDeploymentEvents(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *insightsConfigGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1000,7 +1090,7 @@ func (c *insightsConfigRESTClient) UpdateInsightsConfig(ctx context.Context, req
 	}, nil
 }
 
-// DeleteInsightsConfig delete a single Insight.
+// DeleteInsightsConfig deletes a single Insight.
 func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req *developerconnectpb.DeleteInsightsConfigRequest, opts ...gax.CallOption) (*DeleteInsightsConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1062,6 +1152,137 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req
 	}, nil
 }
 
+// GetDeploymentEvent gets a single Deployment Event.
+func (c *insightsConfigRESTClient) GetDeploymentEvent(ctx context.Context, req *developerconnectpb.GetDeploymentEventRequest, opts ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDeploymentEvent[0:len((*c.CallOptions).GetDeploymentEvent):len((*c.CallOptions).GetDeploymentEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.DeploymentEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeploymentEvent")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListDeploymentEvents lists Deployment Events in a given insights config.
+func (c *insightsConfigRESTClient) ListDeploymentEvents(ctx context.Context, req *developerconnectpb.ListDeploymentEventsRequest, opts ...gax.CallOption) *DeploymentEventIterator {
+	it := &DeploymentEventIterator{}
+	req = proto.Clone(req).(*developerconnectpb.ListDeploymentEventsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.DeploymentEvent, string, error) {
+		resp := &developerconnectpb.ListDeploymentEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/deploymentEvents", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeploymentEvents")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDeploymentEvents(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetLocation gets information about a location.
 func (c *insightsConfigRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1113,6 +1334,14 @@ func (c *insightsConfigRESTClient) GetLocation(ctx context.Context, req *locatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *insightsConfigRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)

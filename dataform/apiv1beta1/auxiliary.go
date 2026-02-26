@@ -17,10 +17,122 @@
 package dataform
 
 import (
+	"context"
+	"time"
+
 	dataformpb "cloud.google.com/go/dataform/apiv1beta1/dataformpb"
+	"cloud.google.com/go/longrunning"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// MoveFolderOperation manages a long-running operation from MoveFolder.
+type MoveFolderOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *MoveFolderOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *MoveFolderOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *MoveFolderOperation) Metadata() (*dataformpb.MoveFolderMetadata, error) {
+	var meta dataformpb.MoveFolderMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *MoveFolderOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *MoveFolderOperation) Name() string {
+	return op.lro.Name()
+}
+
+// MoveRepositoryOperation manages a long-running operation from MoveRepository.
+type MoveRepositoryOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *MoveRepositoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *MoveRepositoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *MoveRepositoryOperation) Metadata() (*dataformpb.MoveRepositoryMetadata, error) {
+	var meta dataformpb.MoveRepositoryMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *MoveRepositoryOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *MoveRepositoryOperation) Name() string {
+	return op.lro.Name()
+}
 
 // CommitLogEntryIterator manages a stream of *dataformpb.CommitLogEntry.
 type CommitLogEntryIterator struct {
@@ -257,6 +369,194 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// QueryFolderContentsResponse_FolderContentsEntryIterator manages a stream of *dataformpb.QueryFolderContentsResponse_FolderContentsEntry.
+type QueryFolderContentsResponse_FolderContentsEntryIterator struct {
+	items    []*dataformpb.QueryFolderContentsResponse_FolderContentsEntry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *QueryFolderContentsResponse_FolderContentsEntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *QueryFolderContentsResponse_FolderContentsEntryIterator) Next() (*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, error) {
+	var item *dataformpb.QueryFolderContentsResponse_FolderContentsEntry
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *QueryFolderContentsResponse_FolderContentsEntryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *QueryFolderContentsResponse_FolderContentsEntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator manages a stream of *dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry.
+type QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator struct {
+	items    []*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator) Next() (*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, error) {
+	var item *dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// QueryUserRootContentsResponse_RootContentsEntryIterator manages a stream of *dataformpb.QueryUserRootContentsResponse_RootContentsEntry.
+type QueryUserRootContentsResponse_RootContentsEntryIterator struct {
+	items    []*dataformpb.QueryUserRootContentsResponse_RootContentsEntry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *QueryUserRootContentsResponse_RootContentsEntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *QueryUserRootContentsResponse_RootContentsEntryIterator) Next() (*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, error) {
+	var item *dataformpb.QueryUserRootContentsResponse_RootContentsEntry
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *QueryUserRootContentsResponse_RootContentsEntryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *QueryUserRootContentsResponse_RootContentsEntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ReleaseConfigIterator manages a stream of *dataformpb.ReleaseConfig.
 type ReleaseConfigIterator struct {
 	items    []*dataformpb.ReleaseConfig
@@ -393,6 +693,53 @@ func (it *SearchResultIterator) bufLen() int {
 }
 
 func (it *SearchResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SearchTeamFoldersResponse_TeamFolderSearchResultIterator manages a stream of *dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult.
+type SearchTeamFoldersResponse_TeamFolderSearchResultIterator struct {
+	items    []*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SearchTeamFoldersResponse_TeamFolderSearchResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SearchTeamFoldersResponse_TeamFolderSearchResultIterator) Next() (*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, error) {
+	var item *dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SearchTeamFoldersResponse_TeamFolderSearchResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SearchTeamFoldersResponse_TeamFolderSearchResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

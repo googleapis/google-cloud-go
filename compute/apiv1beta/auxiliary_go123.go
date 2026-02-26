@@ -321,6 +321,12 @@ func (it *InstancesScopedListPairIterator) All() iter.Seq2[InstancesScopedListPa
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *InstantSnapshotGroupIterator) All() iter.Seq2[*computepb.InstantSnapshotGroup, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *InstantSnapshotIterator) All() iter.Seq2[*computepb.InstantSnapshot, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -604,6 +610,12 @@ func (it *ReservationBlockIterator) All() iter.Seq2[*computepb.ReservationBlock,
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ReservationIterator) All() iter.Seq2[*computepb.Reservation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationSlotIterator) All() iter.Seq2[*computepb.ReservationSlot, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

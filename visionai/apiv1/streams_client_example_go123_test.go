@@ -24,6 +24,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionai "cloud.google.com/go/visionai/apiv1"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 func ExampleStreamsClient_ListClusters_all() {
@@ -122,6 +123,32 @@ func ExampleStreamsClient_ListStreams_all() {
 		// See https://pkg.go.dev/cloud.google.com/go/visionai/apiv1/visionaipb#ListStreamsRequest.
 	}
 	for resp, err := range c.ListStreams(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleStreamsClient_ListLocations_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := visionai.NewStreamsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}

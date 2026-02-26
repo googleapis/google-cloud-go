@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.11.0) (2026-02-12)
+
+### Features
+
+* add Nvidia Attestation proto message with its relevant fields and ConfidentialGke options ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.10.0...confidentialcomputing/v1.10.1) (2025-09-16)
 
 

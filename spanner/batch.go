@@ -298,7 +298,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	// Read or query partition.
 	if p.rreq != nil {
 		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
-			client, err := client.StreamingRead(ctx, &sppb.ReadRequest{
+			req := &sppb.ReadRequest{
 				Session:             p.rreq.Session,
 				Transaction:         p.rreq.Transaction,
 				Table:               p.rreq.Table,
@@ -310,7 +310,11 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:         resumeToken,
 				DataBoostEnabled:    p.rreq.DataBoostEnabled,
 				DirectedReadOptions: p.rreq.DirectedReadOptions,
-			}, opts...)
+			}
+			if t.locationRouter != nil {
+				t.locationRouter.prepareReadRequest(req)
+			}
+			client, err := client.StreamingRead(ctx, req, opts...)
 			if err != nil {
 				return client, err
 			}
@@ -327,7 +331,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		}
 	} else {
 		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
-			client, err := client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
+			req := &sppb.ExecuteSqlRequest{
 				Session:             p.qreq.Session,
 				Transaction:         p.qreq.Transaction,
 				Sql:                 p.qreq.Sql,
@@ -339,7 +343,11 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:         resumeToken,
 				DataBoostEnabled:    p.qreq.DataBoostEnabled,
 				DirectedReadOptions: p.qreq.DirectedReadOptions,
-			}, opts...)
+			}
+			if t.locationRouter != nil {
+				t.locationRouter.prepareExecuteSQLRequest(req)
+			}
+			client, err := client.ExecuteStreamingSql(ctx, req, opts...)
 			if err != nil {
 				return client, err
 			}
@@ -356,13 +364,25 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			return client, err
 		}
 	}
-	return stream(
+	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		t.sm.sc.metricsTracerFactory,
 		rpc,
+		nil,
+		func(err error) error {
+			return err
+		},
+		nil,
 		t.setTimestamp,
-		t.release, client.(*grpcSpannerClient))
+		t.release,
+		client.(*grpcSpannerClient),
+		func(prs *sppb.PartialResultSet) {
+			if t.locationRouter != nil {
+				t.locationRouter.observePartialResultSet(prs)
+			}
+		},
+	)
 }
 
 // MarshalBinary implements BinaryMarshaler.

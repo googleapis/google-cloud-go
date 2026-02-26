@@ -1,0 +1,10 @@
+{
+  "api_shortname": "vectorsearch",
+  "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vectorsearch/latest/apiv1",
+  "client_library_type": "generated",
+  "description": "Vector Search API",
+  "distribution_name": "cloud.google.com/go/vectorsearch/apiv1",
+  "language": "go",
+  "library_type": "GAPIC_AUTO",
+  "release_level": "preview"
+}

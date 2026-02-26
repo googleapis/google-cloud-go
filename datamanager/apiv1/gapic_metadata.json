@@ -58,6 +58,256 @@
           }
         }
       }
+    },
+    "MarketingDataInsightsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MarketingDataInsightsClient",
+          "rpcs": {
+            "RetrieveInsights": {
+              "methods": [
+                "RetrieveInsights"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MarketingDataInsightsClient",
+          "rpcs": {
+            "RetrieveInsights": {
+              "methods": [
+                "RetrieveInsights"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PartnerLinkService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PartnerLinkClient",
+          "rpcs": {
+            "CreatePartnerLink": {
+              "methods": [
+                "CreatePartnerLink"
+              ]
+            },
+            "DeletePartnerLink": {
+              "methods": [
+                "DeletePartnerLink"
+              ]
+            },
+            "SearchPartnerLinks": {
+              "methods": [
+                "SearchPartnerLinks"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "PartnerLinkClient",
+          "rpcs": {
+            "CreatePartnerLink": {
+              "methods": [
+                "CreatePartnerLink"
+              ]
+            },
+            "DeletePartnerLink": {
+              "methods": [
+                "DeletePartnerLink"
+              ]
+            },
+            "SearchPartnerLinks": {
+              "methods": [
+                "SearchPartnerLinks"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserListDirectLicenseService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserListDirectLicenseClient",
+          "rpcs": {
+            "CreateUserListDirectLicense": {
+              "methods": [
+                "CreateUserListDirectLicense"
+              ]
+            },
+            "GetUserListDirectLicense": {
+              "methods": [
+                "GetUserListDirectLicense"
+              ]
+            },
+            "ListUserListDirectLicenses": {
+              "methods": [
+                "ListUserListDirectLicenses"
+              ]
+            },
+            "UpdateUserListDirectLicense": {
+              "methods": [
+                "UpdateUserListDirectLicense"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "UserListDirectLicenseClient",
+          "rpcs": {
+            "CreateUserListDirectLicense": {
+              "methods": [
+                "CreateUserListDirectLicense"
+              ]
+            },
+            "GetUserListDirectLicense": {
+              "methods": [
+                "GetUserListDirectLicense"
+              ]
+            },
+            "ListUserListDirectLicenses": {
+              "methods": [
+                "ListUserListDirectLicenses"
+              ]
+            },
+            "UpdateUserListDirectLicense": {
+              "methods": [
+                "UpdateUserListDirectLicense"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserListGlobalLicenseService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserListGlobalLicenseClient",
+          "rpcs": {
+            "CreateUserListGlobalLicense": {
+              "methods": [
+                "CreateUserListGlobalLicense"
+              ]
+            },
+            "GetUserListGlobalLicense": {
+              "methods": [
+                "GetUserListGlobalLicense"
+              ]
+            },
+            "ListUserListGlobalLicenseCustomerInfos": {
+              "methods": [
+                "ListUserListGlobalLicenseCustomerInfos"
+              ]
+            },
+            "ListUserListGlobalLicenses": {
+              "methods": [
+                "ListUserListGlobalLicenses"
+              ]
+            },
+            "UpdateUserListGlobalLicense": {
+              "methods": [
+                "UpdateUserListGlobalLicense"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "UserListGlobalLicenseClient",
+          "rpcs": {
+            "CreateUserListGlobalLicense": {
+              "methods": [
+                "CreateUserListGlobalLicense"
+              ]
+            },
+            "GetUserListGlobalLicense": {
+              "methods": [
+                "GetUserListGlobalLicense"
+              ]
+            },
+            "ListUserListGlobalLicenseCustomerInfos": {
+              "methods": [
+                "ListUserListGlobalLicenseCustomerInfos"
+              ]
+            },
+            "ListUserListGlobalLicenses": {
+              "methods": [
+                "ListUserListGlobalLicenses"
+              ]
+            },
+            "UpdateUserListGlobalLicense": {
+              "methods": [
+                "UpdateUserListGlobalLicense"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserListService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserListClient",
+          "rpcs": {
+            "CreateUserList": {
+              "methods": [
+                "CreateUserList"
+              ]
+            },
+            "DeleteUserList": {
+              "methods": [
+                "DeleteUserList"
+              ]
+            },
+            "GetUserList": {
+              "methods": [
+                "GetUserList"
+              ]
+            },
+            "ListUserLists": {
+              "methods": [
+                "ListUserLists"
+              ]
+            },
+            "UpdateUserList": {
+              "methods": [
+                "UpdateUserList"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "UserListClient",
+          "rpcs": {
+            "CreateUserList": {
+              "methods": [
+                "CreateUserList"
+              ]
+            },
+            "DeleteUserList": {
+              "methods": [
+                "DeleteUserList"
+              ]
+            },
+            "GetUserList": {
+              "methods": [
+                "GetUserList"
+              ]
+            },
+            "ListUserLists": {
+              "methods": [
+                "ListUserLists"
+              ]
+            },
+            "UpdateUserList": {
+              "methods": [
+                "UpdateUserList"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

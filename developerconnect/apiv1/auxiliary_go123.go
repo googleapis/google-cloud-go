@@ -41,6 +41,12 @@ func (it *ConnectionIterator) All() iter.Seq2[*developerconnectpb.Connection, er
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DeploymentEventIterator) All() iter.Seq2[*developerconnectpb.DeploymentEvent, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *GitRepositoryLinkIterator) All() iter.Seq2[*developerconnectpb.GitRepositoryLink, error] {
 	return iterator.RangeAdapter(it.Next)
 }

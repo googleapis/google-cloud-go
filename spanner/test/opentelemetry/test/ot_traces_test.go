@@ -50,7 +50,7 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		SessionPoolConfig: spanner.SessionPoolConfig{
 			MinOpened: minOpened,
 		},
-	}, option.WithGRPCDialOption(grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor(otelgrpc.WithTracerProvider(te.tp)))))
+	}, option.WithGRPCDialOption(grpc.WithStatsHandler(otelgrpc.NewClientHandler(otelgrpc.WithTracerProvider(te.tp)))))
 	defer teardown()
 
 	waitFor(t, func() error {

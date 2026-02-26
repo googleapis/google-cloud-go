@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,11 +36,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	StorageBatchOperations_ListJobs_FullMethodName  = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/ListJobs"
-	StorageBatchOperations_GetJob_FullMethodName    = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/GetJob"
-	StorageBatchOperations_CreateJob_FullMethodName = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/CreateJob"
-	StorageBatchOperations_DeleteJob_FullMethodName = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/DeleteJob"
-	StorageBatchOperations_CancelJob_FullMethodName = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/CancelJob"
+	StorageBatchOperations_ListJobs_FullMethodName             = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/ListJobs"
+	StorageBatchOperations_GetJob_FullMethodName               = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/GetJob"
+	StorageBatchOperations_CreateJob_FullMethodName            = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/CreateJob"
+	StorageBatchOperations_DeleteJob_FullMethodName            = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/DeleteJob"
+	StorageBatchOperations_CancelJob_FullMethodName            = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/CancelJob"
+	StorageBatchOperations_ListBucketOperations_FullMethodName = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/ListBucketOperations"
+	StorageBatchOperations_GetBucketOperation_FullMethodName   = "/google.cloud.storagebatchoperations.v1.StorageBatchOperations/GetBucketOperation"
 )
 
 // StorageBatchOperationsClient is the client API for StorageBatchOperations service.
@@ -57,6 +59,10 @@ type StorageBatchOperationsClient interface {
 	DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Cancels a batch job.
 	CancelJob(ctx context.Context, in *CancelJobRequest, opts ...grpc.CallOption) (*CancelJobResponse, error)
+	// Lists BucketOperations in a given project and job.
+	ListBucketOperations(ctx context.Context, in *ListBucketOperationsRequest, opts ...grpc.CallOption) (*ListBucketOperationsResponse, error)
+	// Gets a BucketOperation.
+	GetBucketOperation(ctx context.Context, in *GetBucketOperationRequest, opts ...grpc.CallOption) (*BucketOperation, error)
 }
 
 type storageBatchOperationsClient struct {
@@ -112,6 +118,24 @@ func (c *storageBatchOperationsClient) CancelJob(ctx context.Context, in *Cancel
 	return out, nil
 }
 
+func (c *storageBatchOperationsClient) ListBucketOperations(ctx context.Context, in *ListBucketOperationsRequest, opts ...grpc.CallOption) (*ListBucketOperationsResponse, error) {
+	out := new(ListBucketOperationsResponse)
+	err := c.cc.Invoke(ctx, StorageBatchOperations_ListBucketOperations_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageBatchOperationsClient) GetBucketOperation(ctx context.Context, in *GetBucketOperationRequest, opts ...grpc.CallOption) (*BucketOperation, error) {
+	out := new(BucketOperation)
+	err := c.cc.Invoke(ctx, StorageBatchOperations_GetBucketOperation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageBatchOperationsServer is the server API for StorageBatchOperations service.
 // All implementations should embed UnimplementedStorageBatchOperationsServer
 // for forward compatibility
@@ -126,6 +150,10 @@ type StorageBatchOperationsServer interface {
 	DeleteJob(context.Context, *DeleteJobRequest) (*emptypb.Empty, error)
 	// Cancels a batch job.
 	CancelJob(context.Context, *CancelJobRequest) (*CancelJobResponse, error)
+	// Lists BucketOperations in a given project and job.
+	ListBucketOperations(context.Context, *ListBucketOperationsRequest) (*ListBucketOperationsResponse, error)
+	// Gets a BucketOperation.
+	GetBucketOperation(context.Context, *GetBucketOperationRequest) (*BucketOperation, error)
 }
 
 // UnimplementedStorageBatchOperationsServer should be embedded to have forward compatible implementations.
@@ -146,6 +174,12 @@ func (UnimplementedStorageBatchOperationsServer) DeleteJob(context.Context, *Del
 }
 func (UnimplementedStorageBatchOperationsServer) CancelJob(context.Context, *CancelJobRequest) (*CancelJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelJob not implemented")
+}
+func (UnimplementedStorageBatchOperationsServer) ListBucketOperations(context.Context, *ListBucketOperationsRequest) (*ListBucketOperationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBucketOperations not implemented")
+}
+func (UnimplementedStorageBatchOperationsServer) GetBucketOperation(context.Context, *GetBucketOperationRequest) (*BucketOperation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBucketOperation not implemented")
 }
 
 // UnsafeStorageBatchOperationsServer may be embedded to opt out of forward compatibility for this service.
@@ -249,6 +283,42 @@ func _StorageBatchOperations_CancelJob_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageBatchOperations_ListBucketOperations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBucketOperationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageBatchOperationsServer).ListBucketOperations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageBatchOperations_ListBucketOperations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageBatchOperationsServer).ListBucketOperations(ctx, req.(*ListBucketOperationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageBatchOperations_GetBucketOperation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBucketOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageBatchOperationsServer).GetBucketOperation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageBatchOperations_GetBucketOperation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageBatchOperationsServer).GetBucketOperation(ctx, req.(*GetBucketOperationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StorageBatchOperations_ServiceDesc is the grpc.ServiceDesc for StorageBatchOperations service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -275,6 +345,14 @@ var StorageBatchOperations_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CancelJob",
 			Handler:    _StorageBatchOperations_CancelJob_Handler,
+		},
+		{
+			MethodName: "ListBucketOperations",
+			Handler:    _StorageBatchOperations_ListBucketOperations_Handler,
+		},
+		{
+			MethodName: "GetBucketOperation",
+			Handler:    _StorageBatchOperations_GetBucketOperation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

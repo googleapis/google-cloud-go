@@ -1557,6 +1557,10 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 		t.Error("expected query plan, none present")
 	}
 
+	if qStats.TotalServicesSkuSlotMillis < 0 {
+		t.Errorf("expected total services SKU slot ms >= 0, got: %d", qStats.TotalServicesSkuSlotMillis)
+	}
+
 	if len(qStats.Timeline) == 0 {
 		t.Error("expected query timeline, none present")
 	}

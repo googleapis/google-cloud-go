@@ -1,13 +1,13 @@
 module cloud.google.com/go/internal/generated
 
-go 1.24.0
+go 1.25.0
 
 require (
-	cloud.google.com/go v0.123.0
+	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/accessapproval v1.8.8
 	cloud.google.com/go/accesscontextmanager v1.9.7
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/aiplatform v1.114.0
+	cloud.google.com/go/aiplatform v1.115.0
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/analytics v0.30.1
 	cloud.google.com/go/apigateway v1.7.7
@@ -23,7 +23,7 @@ require (
 	cloud.google.com/go/baremetalsolution v1.4.0
 	cloud.google.com/go/batch v1.14.0
 	cloud.google.com/go/beyondcorp v1.2.0
-	cloud.google.com/go/bigquery v1.72.0
+	cloud.google.com/go/bigquery v1.73.1
 	cloud.google.com/go/bigquery/v2 v2.0.0
 	cloud.google.com/go/billing v1.21.0
 	cloud.google.com/go/binaryauthorization v1.10.0
@@ -35,23 +35,24 @@ require (
 	cloud.google.com/go/compute v1.54.0
 	cloud.google.com/go/confidentialcomputing v0.1.0
 	cloud.google.com/go/contactcenterinsights v1.17.4
-	cloud.google.com/go/container v1.45.0
+	cloud.google.com/go/container v1.46.0
 	cloud.google.com/go/containeranalysis v0.14.2
 	cloud.google.com/go/datacatalog v1.26.1
 	cloud.google.com/go/dataflow v0.11.1
 	cloud.google.com/go/dataform v0.12.1
 	cloud.google.com/go/datafusion v1.8.7
 	cloud.google.com/go/datalabeling v0.9.7
+	cloud.google.com/go/datamanager v0.0.0
 	cloud.google.com/go/dataplex v1.28.0
 	cloud.google.com/go/dataproc/v2 v2.15.0
 	cloud.google.com/go/dataqna v0.9.8
-	cloud.google.com/go/datastore v1.21.0
+	cloud.google.com/go/datastore v1.22.0
 	cloud.google.com/go/datastream v1.15.1
 	cloud.google.com/go/deploy v1.27.3
-	cloud.google.com/go/dialogflow v1.74.0
+	cloud.google.com/go/dialogflow v1.75.0
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dlp v1.28.0
-	cloud.google.com/go/documentai v1.39.0
+	cloud.google.com/go/documentai v1.40.0
 	cloud.google.com/go/domains v0.10.7
 	cloud.google.com/go/edgecontainer v1.4.4
 	cloud.google.com/go/errorreporting v0.4.0
@@ -72,7 +73,7 @@ require (
 	cloud.google.com/go/kms v1.25.0
 	cloud.google.com/go/language v1.14.6
 	cloud.google.com/go/lifesciences v0.10.7
-	cloud.google.com/go/logging v1.13.1
+	cloud.google.com/go/logging v1.13.2
 	cloud.google.com/go/longrunning v0.8.0
 	cloud.google.com/go/managedidentities v1.7.7
 	cloud.google.com/go/maps v1.26.0
@@ -81,7 +82,7 @@ require (
 	cloud.google.com/go/metastore v1.14.8
 	cloud.google.com/go/monitoring v1.24.3
 	cloud.google.com/go/networkconnectivity v1.20.0
-	cloud.google.com/go/networkmanagement v1.21.0
+	cloud.google.com/go/networkmanagement v1.22.0
 	cloud.google.com/go/networksecurity v0.11.0
 	cloud.google.com/go/notebooks v1.12.7
 	cloud.google.com/go/optimization v1.7.7
@@ -98,7 +99,7 @@ require (
 	cloud.google.com/go/recommender v1.13.6
 	cloud.google.com/go/redis v1.18.3
 	cloud.google.com/go/resourcemanager v1.10.7
-	cloud.google.com/go/retail v1.25.1
+	cloud.google.com/go/retail v1.26.0
 	cloud.google.com/go/run v1.15.0
 	cloud.google.com/go/scheduler v1.11.8
 	cloud.google.com/go/secretmanager v1.16.0
@@ -129,8 +130,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.7
 	cloud.google.com/go/workflows v1.14.3
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.265.0
-	google.golang.org/genproto v0.0.0-20260128011058-8636f8732409
+	google.golang.org/api v0.266.0
+	google.golang.org/genproto v0.0.0-20260209200024-4cfbd4190f57
 )
 
 require (
@@ -139,6 +140,7 @@ require (
 	cloud.google.com/go/apiregistry v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apphub v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apps v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/auditmanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/backupdr v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/capacityplanner v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/chat v0.0.0-00010101000000-000000000000
@@ -187,6 +189,7 @@ require (
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/vectorsearch v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/workloadmanager v0.0.0-00010101000000-000000000000
 	google.golang.org/protobuf v1.36.11
 )
 
@@ -205,9 +208,9 @@ require (
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0 // indirect
-	go.opentelemetry.io/otel v1.39.0 // indirect
-	go.opentelemetry.io/otel/metric v1.39.0 // indirect
-	go.opentelemetry.io/otel/trace v1.39.0 // indirect
+	go.opentelemetry.io/otel v1.40.0 // indirect
+	go.opentelemetry.io/otel/metric v1.40.0 // indirect
+	go.opentelemetry.io/otel/trace v1.40.0 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect
@@ -215,9 +218,9 @@ require (
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260203192932-546029d2fa20 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260209200024-4cfbd4190f57 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260203192932-546029d2fa20 // indirect
-	google.golang.org/grpc v1.78.0 // indirect
+	google.golang.org/grpc v1.79.1 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
@@ -587,3 +590,11 @@ replace cloud.google.com/go/hypercomputecluster => ../../../hypercomputecluster
 replace cloud.google.com/go/apiregistry => ../../../apiregistry
 
 replace cloud.google.com/go/cloudsecuritycompliance => ../../../cloudsecuritycompliance
+
+replace cloud.google.com/go/auditmanager => ../../../auditmanager
+
+replace cloud.google.com/go/datamanager => ../../../datamanager
+
+replace cloud.google.com/go/workloadmanager => ../../../workloadmanager
+
+replace cloud.google.com/go/ces => ../../../ces

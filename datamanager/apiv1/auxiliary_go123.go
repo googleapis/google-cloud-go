@@ -17,3 +17,40 @@
 //go:build go1.23
 
 package datamanager
+
+import (
+	"iter"
+
+	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
+	"github.com/googleapis/gax-go/v2/iterator"
+)
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PartnerLinkIterator) All() iter.Seq2[*datamanagerpb.PartnerLink, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListDirectLicenseIterator) All() iter.Seq2[*datamanagerpb.UserListDirectLicense, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListGlobalLicenseCustomerInfoIterator) All() iter.Seq2[*datamanagerpb.UserListGlobalLicenseCustomerInfo, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListGlobalLicenseIterator) All() iter.Seq2[*datamanagerpb.UserListGlobalLicense, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListIterator) All() iter.Seq2[*datamanagerpb.UserList, error] {
+	return iterator.RangeAdapter(it.Next)
+}

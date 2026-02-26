@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/releases/tag/asset%2Fv1.22.1) (2026-02-06)
+
+
+### Features
+
+* **asset:** Enable AllowHardBoundTokens for Go library ([#13346](https://github.com/googleapis/google-cloud-go/pull/13346)) ([29b6c97](https://github.com/googleapis/google-cloud-go/commit/29b6c97d99fb4a139b7cf571ef628297faa47b11))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/asset%2Fv1.22.0) (2025-10-10)
 
 ### Features

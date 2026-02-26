@@ -3,6 +3,12 @@
 
 
 
+## [1.74.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.74.0) (2026-02-25)
+
+### Features
+
+* add TotalServicesSkuSlotMillis to QueryStatistics (#13808) ([d716a47](https://github.com/googleapis/google-cloud-go/commit/d716a472d52af217bdccbcd5e974bac70e7e256a))
+
 ## [1.73.1](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.73.1) (2026-02-05)
 
 ### Bug Fixes

@@ -29,7 +29,6 @@ import (
 	"go/printer"
 	"go/token"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -160,7 +159,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 	for _, pi := range pkgInfos {
 		link := newLinker(pi)
 		topLevelDecls := pkgsite.TopLevelDecls(pi.Doc)
-		friendly, err := namer.friendlyAPIName(pi.Doc.ImportPath)
+		friendly, err := namer.friendlyAPIName(pi.Doc.ImportPath, pi.Pkg.Module)
 		if err != nil {
 			return nil, err
 		}
@@ -654,67 +653,151 @@ func hasPrefix(s string, prefixes []string) bool {
 	return false
 }
 
-// repoMetadata is the JSON format of the .repo-metadata-full.json file.
-// See https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json.
-type repoMetadata map[string]repoMetadataItem
-
-type repoMetadataItem struct {
-	Description string `json:"description"`
+// repoMetadata is the JSON format of the .repo-metadata.json file.
+type repoMetadata struct {
+	Description      string `json:"description"`
+	DistributionName string `json:"distribution_name"`
 }
 
 type friendlyAPINamer struct {
-	// metaURL is the URL to .repo-metadata-full.json, which contains metadata
-	// about packages in this repo. See
-	// https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json.
-	metaURL string
+	// metadata caches the repo metadata results by directory.
+	metadata map[string]repoMetadata
+	mu       sync.Mutex
 
-	// metadata caches the repo metadata results.
-	metadata repoMetadata
-	// getOnce ensures we only fetch the metadata JSON once.
-	getOnce sync.Once
+	// Fallbacks maps importPath -> description. Used when decentralized
+	// metadata is not found.
+	Fallbacks map[string]string
 }
 
 // vNumberRE is a heuristic for API versions.
 var vNumberRE = regexp.MustCompile(`apiv[0-9][^/]*`)
 
 // friendlyAPIName returns the friendlyAPIName for the given import path.
-// We rely on the .repo-metadata-full.json file to get the description of the
-// API for the given import path. We use the importPath to parse out the
-// API version, since that isn't included in the metadata.
+// We rely on the .repo-metadata.json file in the package directory (or its
+// parents up to the module root) to get the description of the API for the
+// given import path. We use the importPath to parse out the API version, since
+// that isn't included in the metadata.
+//
+// If no API description is found, it falls back to the Fallbacks map.
 //
 // If no API description is found, friendlyAPIName returns "".
 // If no API version is found, friendlyAPIName only returns the description.
 //
 // See https://github.com/googleapis/google-cloud-go/issues/5949.
-func (d *friendlyAPINamer) friendlyAPIName(importPath string) (string, error) {
-	var err error
-	d.getOnce.Do(func() {
-		resp, getErr := http.Get(d.metaURL)
-		if err != nil {
-			err = fmt.Errorf("error getting repo metadata: %v", getErr)
-			return
+func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.Module) (string, error) {
+	var description string
+
+	if module != nil {
+		// Determine the directory for the package.
+		relPath := strings.TrimPrefix(importPath, module.Path)
+		relPath = strings.TrimPrefix(relPath, "/")
+		pkgDir := filepath.Join(module.Dir, relPath)
+
+		// Search upwards from pkgDir to module.Dir for .repo-metadata.json.
+		// Example: For pkg cloud.google.com/go/storage/internal/apiv2, search:
+		// 1. .../storage/internal/apiv2/.repo-metadata.json
+		// 2. .../storage/internal/.repo-metadata.json
+		// 3. .../storage/.repo-metadata.json (module.Dir)
+		var meta repoMetadata
+		found := false
+
+		currDir := pkgDir
+		for {
+			d.mu.Lock()
+			if d.metadata == nil {
+				d.metadata = make(map[string]repoMetadata)
+			}
+			cached, ok := d.metadata[currDir]
+			d.mu.Unlock()
+
+			if ok {
+				meta = cached
+				found = true
+				break
+			}
+
+			metaFile := filepath.Join(currDir, ".repo-metadata.json")
+			b, err := os.ReadFile(metaFile)
+			if err == nil {
+				if err := json.Unmarshal(b, &meta); err != nil {
+					return "", fmt.Errorf("failed to decode repo metadata in %s: %v", metaFile, err)
+				}
+				d.mu.Lock()
+				d.metadata[currDir] = meta
+				d.mu.Unlock()
+				found = true
+				break
+			}
+
+			if currDir == module.Dir || currDir == "." || currDir == "/" {
+				break
+			}
+			parent := filepath.Dir(currDir)
+			if parent == currDir {
+				break
+			}
+			currDir = parent
 		}
-		defer resp.Body.Close()
-		if decodeErr := json.NewDecoder(resp.Body).Decode(&d.metadata); err != nil {
-			err = fmt.Errorf("failed to decode repo metadata: %v", decodeErr)
-			return
+
+		if !found {
+			// Search subdirectories for .repo-metadata.json.
+			// This is useful when the root module directory doesn't have it, but its subdirectories (like apiv*) do.
+			// Example: For root pkg cloud.google.com/go/auditmanager, search module subdirectories
+			// for the first instance of .repo-metadata.json (e.g. in apiv1/).
+			err := filepath.WalkDir(module.Dir, func(path string, de os.DirEntry, err error) error {
+				if err != nil {
+					return err
+				}
+				// Skip subdirectories that are separate modules.
+				// This is needed to avoid overlap in nested modules, like in cloud.google.com/go/pubsub/v2
+				if path != module.Dir && de.IsDir() {
+					if _, err := os.Stat(filepath.Join(path, "go.mod")); err == nil {
+						return filepath.SkipDir
+					}
+				}
+				if de.Name() == ".repo-metadata.json" {
+					b, err := os.ReadFile(path)
+					if err == nil {
+						var m repoMetadata
+						if err := json.Unmarshal(b, &m); err == nil {
+							meta = m
+							found = true
+							return filepath.SkipAll
+						}
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				return "", err
+			}
+			if found {
+				d.mu.Lock()
+				if d.metadata == nil {
+					d.metadata = make(map[string]repoMetadata)
+				}
+				d.metadata[module.Dir] = meta
+				d.mu.Unlock()
+			}
 		}
-	})
-	if err != nil {
-		return "", err
+
+		if found {
+			description = meta.Description
+		}
 	}
-	if d.metadata == nil {
-		return "", fmt.Errorf("no metadata found: earlier error fetching?")
+
+	if description == "" && d.Fallbacks != nil {
+		description = d.Fallbacks[importPath]
 	}
-	pkg, ok := d.metadata[importPath]
-	if !ok {
-		return "", nil
+
+	if description == "" {
+		return "", fmt.Errorf("no description found for %q and no fallback provided", importPath)
 	}
 
 	if apiV := vNumberRE.FindString(importPath); apiV != "" {
 		version := strings.TrimPrefix(apiV, "api")
-		return fmt.Sprintf("%s %s", pkg.Description, version), nil
+		return fmt.Sprintf("%s %s", description, version), nil
 	}
 
-	return pkg.Description, nil
+	return description, nil
 }

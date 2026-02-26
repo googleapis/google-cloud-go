@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ const (
 	InsightsConfigService_GetInsightsConfig_FullMethodName    = "/google.cloud.developerconnect.v1.InsightsConfigService/GetInsightsConfig"
 	InsightsConfigService_UpdateInsightsConfig_FullMethodName = "/google.cloud.developerconnect.v1.InsightsConfigService/UpdateInsightsConfig"
 	InsightsConfigService_DeleteInsightsConfig_FullMethodName = "/google.cloud.developerconnect.v1.InsightsConfigService/DeleteInsightsConfig"
+	InsightsConfigService_GetDeploymentEvent_FullMethodName   = "/google.cloud.developerconnect.v1.InsightsConfigService/GetDeploymentEvent"
+	InsightsConfigService_ListDeploymentEvents_FullMethodName = "/google.cloud.developerconnect.v1.InsightsConfigService/ListDeploymentEvents"
 )
 
 // InsightsConfigServiceClient is the client API for InsightsConfigService service.
@@ -54,8 +56,12 @@ type InsightsConfigServiceClient interface {
 	GetInsightsConfig(ctx context.Context, in *GetInsightsConfigRequest, opts ...grpc.CallOption) (*InsightsConfig, error)
 	// Updates the parameters of a single InsightsConfig.
 	UpdateInsightsConfig(ctx context.Context, in *UpdateInsightsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Delete a single Insight.
+	// Deletes a single Insight.
 	DeleteInsightsConfig(ctx context.Context, in *DeleteInsightsConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets a single Deployment Event.
+	GetDeploymentEvent(ctx context.Context, in *GetDeploymentEventRequest, opts ...grpc.CallOption) (*DeploymentEvent, error)
+	// Lists Deployment Events in a given insights config.
+	ListDeploymentEvents(ctx context.Context, in *ListDeploymentEventsRequest, opts ...grpc.CallOption) (*ListDeploymentEventsResponse, error)
 }
 
 type insightsConfigServiceClient struct {
@@ -111,6 +117,24 @@ func (c *insightsConfigServiceClient) DeleteInsightsConfig(ctx context.Context, 
 	return out, nil
 }
 
+func (c *insightsConfigServiceClient) GetDeploymentEvent(ctx context.Context, in *GetDeploymentEventRequest, opts ...grpc.CallOption) (*DeploymentEvent, error) {
+	out := new(DeploymentEvent)
+	err := c.cc.Invoke(ctx, InsightsConfigService_GetDeploymentEvent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *insightsConfigServiceClient) ListDeploymentEvents(ctx context.Context, in *ListDeploymentEventsRequest, opts ...grpc.CallOption) (*ListDeploymentEventsResponse, error) {
+	out := new(ListDeploymentEventsResponse)
+	err := c.cc.Invoke(ctx, InsightsConfigService_ListDeploymentEvents_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InsightsConfigServiceServer is the server API for InsightsConfigService service.
 // All implementations should embed UnimplementedInsightsConfigServiceServer
 // for forward compatibility
@@ -123,8 +147,12 @@ type InsightsConfigServiceServer interface {
 	GetInsightsConfig(context.Context, *GetInsightsConfigRequest) (*InsightsConfig, error)
 	// Updates the parameters of a single InsightsConfig.
 	UpdateInsightsConfig(context.Context, *UpdateInsightsConfigRequest) (*longrunningpb.Operation, error)
-	// Delete a single Insight.
+	// Deletes a single Insight.
 	DeleteInsightsConfig(context.Context, *DeleteInsightsConfigRequest) (*longrunningpb.Operation, error)
+	// Gets a single Deployment Event.
+	GetDeploymentEvent(context.Context, *GetDeploymentEventRequest) (*DeploymentEvent, error)
+	// Lists Deployment Events in a given insights config.
+	ListDeploymentEvents(context.Context, *ListDeploymentEventsRequest) (*ListDeploymentEventsResponse, error)
 }
 
 // UnimplementedInsightsConfigServiceServer should be embedded to have forward compatible implementations.
@@ -145,6 +173,12 @@ func (UnimplementedInsightsConfigServiceServer) UpdateInsightsConfig(context.Con
 }
 func (UnimplementedInsightsConfigServiceServer) DeleteInsightsConfig(context.Context, *DeleteInsightsConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInsightsConfig not implemented")
+}
+func (UnimplementedInsightsConfigServiceServer) GetDeploymentEvent(context.Context, *GetDeploymentEventRequest) (*DeploymentEvent, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDeploymentEvent not implemented")
+}
+func (UnimplementedInsightsConfigServiceServer) ListDeploymentEvents(context.Context, *ListDeploymentEventsRequest) (*ListDeploymentEventsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDeploymentEvents not implemented")
 }
 
 // UnsafeInsightsConfigServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -248,6 +282,42 @@ func _InsightsConfigService_DeleteInsightsConfig_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InsightsConfigService_GetDeploymentEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDeploymentEventRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InsightsConfigServiceServer).GetDeploymentEvent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InsightsConfigService_GetDeploymentEvent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InsightsConfigServiceServer).GetDeploymentEvent(ctx, req.(*GetDeploymentEventRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InsightsConfigService_ListDeploymentEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDeploymentEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InsightsConfigServiceServer).ListDeploymentEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InsightsConfigService_ListDeploymentEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InsightsConfigServiceServer).ListDeploymentEvents(ctx, req.(*ListDeploymentEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InsightsConfigService_ServiceDesc is the grpc.ServiceDesc for InsightsConfigService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +344,14 @@ var InsightsConfigService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteInsightsConfig",
 			Handler:    _InsightsConfigService_DeleteInsightsConfig_Handler,
+		},
+		{
+			MethodName: "GetDeploymentEvent",
+			Handler:    _InsightsConfigService_GetDeploymentEvent_Handler,
+		},
+		{
+			MethodName: "ListDeploymentEvents",
+			Handler:    _InsightsConfigService_ListDeploymentEvents_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

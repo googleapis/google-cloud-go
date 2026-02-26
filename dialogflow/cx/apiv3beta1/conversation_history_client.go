@@ -229,6 +229,14 @@ func (c *ConversationHistoryClient) GetLocation(ctx context.Context, req *locati
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *ConversationHistoryClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -844,6 +852,14 @@ func (c *conversationHistoryRESTClient) GetLocation(ctx context.Context, req *lo
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *conversationHistoryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)

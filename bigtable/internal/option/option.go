@@ -271,3 +271,23 @@ func DefaultMetricsReporterConfig() MetricsReporterConfig {
 		ReportingInterval: 1 * time.Minute,
 	}
 }
+
+// ConnectionRecycleConfig controls the behavior of the connection recycler.
+type ConnectionRecycleConfig struct {
+	// MaxAge is the base lifespan of a connection.
+	MaxAge time.Duration
+	// Jitter is the random buffer added to MaxAge which can allow for connection to be recycled.
+	MaxJitter time.Duration
+	// RunFrequency determines how often the recycler checks for expired connections.
+	RunFrequency time.Duration
+}
+
+// DefaultConnectionRecycleConfig returns the default configuration:
+// MaxAge: 45 minutes, Jitter: 5 minutes, RunFrequency: 1 minute, Enabled: true.
+func DefaultConnectionRecycleConfig() ConnectionRecycleConfig {
+	return ConnectionRecycleConfig{
+		MaxAge:       45 * time.Minute,
+		MaxJitter:    5 * time.Minute,
+		RunFrequency: 1 * time.Minute,
+	}
+}

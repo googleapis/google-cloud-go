@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ package dataformpb
 import (
 	context "context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,11 +37,25 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	Dataform_GetTeamFolder_FullMethodName                      = "/google.cloud.dataform.v1beta1.Dataform/GetTeamFolder"
+	Dataform_CreateTeamFolder_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/CreateTeamFolder"
+	Dataform_UpdateTeamFolder_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/UpdateTeamFolder"
+	Dataform_DeleteTeamFolder_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/DeleteTeamFolder"
+	Dataform_QueryTeamFolderContents_FullMethodName            = "/google.cloud.dataform.v1beta1.Dataform/QueryTeamFolderContents"
+	Dataform_SearchTeamFolders_FullMethodName                  = "/google.cloud.dataform.v1beta1.Dataform/SearchTeamFolders"
+	Dataform_GetFolder_FullMethodName                          = "/google.cloud.dataform.v1beta1.Dataform/GetFolder"
+	Dataform_CreateFolder_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/CreateFolder"
+	Dataform_UpdateFolder_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/UpdateFolder"
+	Dataform_DeleteFolder_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/DeleteFolder"
+	Dataform_QueryFolderContents_FullMethodName                = "/google.cloud.dataform.v1beta1.Dataform/QueryFolderContents"
+	Dataform_QueryUserRootContents_FullMethodName              = "/google.cloud.dataform.v1beta1.Dataform/QueryUserRootContents"
+	Dataform_MoveFolder_FullMethodName                         = "/google.cloud.dataform.v1beta1.Dataform/MoveFolder"
 	Dataform_ListRepositories_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/ListRepositories"
 	Dataform_GetRepository_FullMethodName                      = "/google.cloud.dataform.v1beta1.Dataform/GetRepository"
 	Dataform_CreateRepository_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/CreateRepository"
 	Dataform_UpdateRepository_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/UpdateRepository"
 	Dataform_DeleteRepository_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/DeleteRepository"
+	Dataform_MoveRepository_FullMethodName                     = "/google.cloud.dataform.v1beta1.Dataform/MoveRepository"
 	Dataform_CommitRepositoryChanges_FullMethodName            = "/google.cloud.dataform.v1beta1.Dataform/CommitRepositoryChanges"
 	Dataform_ReadRepositoryFile_FullMethodName                 = "/google.cloud.dataform.v1beta1.Dataform/ReadRepositoryFile"
 	Dataform_QueryRepositoryDirectoryContents_FullMethodName   = "/google.cloud.dataform.v1beta1.Dataform/QueryRepositoryDirectoryContents"
@@ -89,12 +105,44 @@ const (
 	Dataform_QueryWorkflowInvocationActions_FullMethodName     = "/google.cloud.dataform.v1beta1.Dataform/QueryWorkflowInvocationActions"
 	Dataform_GetConfig_FullMethodName                          = "/google.cloud.dataform.v1beta1.Dataform/GetConfig"
 	Dataform_UpdateConfig_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/UpdateConfig"
+	Dataform_GetIamPolicy_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/GetIamPolicy"
+	Dataform_SetIamPolicy_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/SetIamPolicy"
+	Dataform_TestIamPermissions_FullMethodName                 = "/google.cloud.dataform.v1beta1.Dataform/TestIamPermissions"
 )
 
 // DataformClient is the client API for Dataform service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DataformClient interface {
+	// Fetches a single TeamFolder.
+	GetTeamFolder(ctx context.Context, in *GetTeamFolderRequest, opts ...grpc.CallOption) (*TeamFolder, error)
+	// Creates a new TeamFolder in a given project and location.
+	CreateTeamFolder(ctx context.Context, in *CreateTeamFolderRequest, opts ...grpc.CallOption) (*TeamFolder, error)
+	// Updates a single TeamFolder.
+	UpdateTeamFolder(ctx context.Context, in *UpdateTeamFolderRequest, opts ...grpc.CallOption) (*TeamFolder, error)
+	// Deletes a single TeamFolder.
+	DeleteTeamFolder(ctx context.Context, in *DeleteTeamFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Returns the contents of a given TeamFolder.
+	QueryTeamFolderContents(ctx context.Context, in *QueryTeamFolderContentsRequest, opts ...grpc.CallOption) (*QueryTeamFolderContentsResponse, error)
+	// Returns all TeamFolders in a given location that the caller has access to
+	// and match the provided filter.
+	SearchTeamFolders(ctx context.Context, in *SearchTeamFoldersRequest, opts ...grpc.CallOption) (*SearchTeamFoldersResponse, error)
+	// Fetches a single Folder.
+	GetFolder(ctx context.Context, in *GetFolderRequest, opts ...grpc.CallOption) (*Folder, error)
+	// Creates a new Folder in a given project and location.
+	CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*Folder, error)
+	// Updates a single Folder.
+	UpdateFolder(ctx context.Context, in *UpdateFolderRequest, opts ...grpc.CallOption) (*Folder, error)
+	// Deletes a single Folder.
+	DeleteFolder(ctx context.Context, in *DeleteFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Returns the contents of a given Folder.
+	QueryFolderContents(ctx context.Context, in *QueryFolderContentsRequest, opts ...grpc.CallOption) (*QueryFolderContentsResponse, error)
+	// Returns the contents of a caller's root folder in a given location.
+	// The root folder contains all resources that are created by the user and not
+	// contained in any other folder.
+	QueryUserRootContents(ctx context.Context, in *QueryUserRootContentsRequest, opts ...grpc.CallOption) (*QueryUserRootContentsResponse, error)
+	// Moves a Folder to a new Folder, TeamFolder, or the root location.
+	MoveFolder(ctx context.Context, in *MoveFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists Repositories in a given project and location.
 	//
 	// **Note:** *This method can return repositories not shown in the [Dataform
@@ -113,6 +161,8 @@ type DataformClient interface {
 	UpdateRepository(ctx context.Context, in *UpdateRepositoryRequest, opts ...grpc.CallOption) (*Repository, error)
 	// Deletes a single Repository.
 	DeleteRepository(ctx context.Context, in *DeleteRepositoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Moves a Repository to a new location.
+	MoveRepository(ctx context.Context, in *MoveRepositoryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Applies a Git commit to a Repository. The Repository must not have a value
 	// for `git_remote_settings.url`.
 	CommitRepositoryChanges(ctx context.Context, in *CommitRepositoryChangesRequest, opts ...grpc.CallOption) (*CommitRepositoryChangesResponse, error)
@@ -231,6 +281,23 @@ type DataformClient interface {
 	// as a bad request, and when the `field_mask` is omitted, the request is
 	// treated as a full update on all modifiable fields.*
 	UpdateConfig(ctx context.Context, in *UpdateConfigRequest, opts ...grpc.CallOption) (*Config, error)
+	// Gets the access control policy for a resource.
+	// Returns an empty policy if the resource exists and does not have a policy
+	// set.
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
+	// Sets the access control policy on the specified resource. Replaces any
+	// existing policy.
+	//
+	// Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
+	// Returns permissions that a caller has on the specified resource.
+	// If the resource does not exist, this will return an empty set of
+	// permissions, not a `NOT_FOUND` error.
+	//
+	// Note: This operation is designed to be used for building permission-aware
+	// UIs and command-line tools, not for authorization checking. This operation
+	// may "fail open" without warning.
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type dataformClient struct {
@@ -239,6 +306,123 @@ type dataformClient struct {
 
 func NewDataformClient(cc grpc.ClientConnInterface) DataformClient {
 	return &dataformClient{cc}
+}
+
+func (c *dataformClient) GetTeamFolder(ctx context.Context, in *GetTeamFolderRequest, opts ...grpc.CallOption) (*TeamFolder, error) {
+	out := new(TeamFolder)
+	err := c.cc.Invoke(ctx, Dataform_GetTeamFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) CreateTeamFolder(ctx context.Context, in *CreateTeamFolderRequest, opts ...grpc.CallOption) (*TeamFolder, error) {
+	out := new(TeamFolder)
+	err := c.cc.Invoke(ctx, Dataform_CreateTeamFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) UpdateTeamFolder(ctx context.Context, in *UpdateTeamFolderRequest, opts ...grpc.CallOption) (*TeamFolder, error) {
+	out := new(TeamFolder)
+	err := c.cc.Invoke(ctx, Dataform_UpdateTeamFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) DeleteTeamFolder(ctx context.Context, in *DeleteTeamFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Dataform_DeleteTeamFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) QueryTeamFolderContents(ctx context.Context, in *QueryTeamFolderContentsRequest, opts ...grpc.CallOption) (*QueryTeamFolderContentsResponse, error) {
+	out := new(QueryTeamFolderContentsResponse)
+	err := c.cc.Invoke(ctx, Dataform_QueryTeamFolderContents_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) SearchTeamFolders(ctx context.Context, in *SearchTeamFoldersRequest, opts ...grpc.CallOption) (*SearchTeamFoldersResponse, error) {
+	out := new(SearchTeamFoldersResponse)
+	err := c.cc.Invoke(ctx, Dataform_SearchTeamFolders_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) GetFolder(ctx context.Context, in *GetFolderRequest, opts ...grpc.CallOption) (*Folder, error) {
+	out := new(Folder)
+	err := c.cc.Invoke(ctx, Dataform_GetFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*Folder, error) {
+	out := new(Folder)
+	err := c.cc.Invoke(ctx, Dataform_CreateFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) UpdateFolder(ctx context.Context, in *UpdateFolderRequest, opts ...grpc.CallOption) (*Folder, error) {
+	out := new(Folder)
+	err := c.cc.Invoke(ctx, Dataform_UpdateFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) DeleteFolder(ctx context.Context, in *DeleteFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Dataform_DeleteFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) QueryFolderContents(ctx context.Context, in *QueryFolderContentsRequest, opts ...grpc.CallOption) (*QueryFolderContentsResponse, error) {
+	out := new(QueryFolderContentsResponse)
+	err := c.cc.Invoke(ctx, Dataform_QueryFolderContents_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) QueryUserRootContents(ctx context.Context, in *QueryUserRootContentsRequest, opts ...grpc.CallOption) (*QueryUserRootContentsResponse, error) {
+	out := new(QueryUserRootContentsResponse)
+	err := c.cc.Invoke(ctx, Dataform_QueryUserRootContents_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) MoveFolder(ctx context.Context, in *MoveFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_MoveFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *dataformClient) ListRepositories(ctx context.Context, in *ListRepositoriesRequest, opts ...grpc.CallOption) (*ListRepositoriesResponse, error) {
@@ -280,6 +464,15 @@ func (c *dataformClient) UpdateRepository(ctx context.Context, in *UpdateReposit
 func (c *dataformClient) DeleteRepository(ctx context.Context, in *DeleteRepositoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Dataform_DeleteRepository_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) MoveRepository(ctx context.Context, in *MoveRepositoryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_MoveRepository_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -727,10 +920,66 @@ func (c *dataformClient) UpdateConfig(ctx context.Context, in *UpdateConfigReque
 	return out, nil
 }
 
+func (c *dataformClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, Dataform_GetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, Dataform_SetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
+	err := c.cc.Invoke(ctx, Dataform_TestIamPermissions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataformServer is the server API for Dataform service.
 // All implementations should embed UnimplementedDataformServer
 // for forward compatibility
 type DataformServer interface {
+	// Fetches a single TeamFolder.
+	GetTeamFolder(context.Context, *GetTeamFolderRequest) (*TeamFolder, error)
+	// Creates a new TeamFolder in a given project and location.
+	CreateTeamFolder(context.Context, *CreateTeamFolderRequest) (*TeamFolder, error)
+	// Updates a single TeamFolder.
+	UpdateTeamFolder(context.Context, *UpdateTeamFolderRequest) (*TeamFolder, error)
+	// Deletes a single TeamFolder.
+	DeleteTeamFolder(context.Context, *DeleteTeamFolderRequest) (*emptypb.Empty, error)
+	// Returns the contents of a given TeamFolder.
+	QueryTeamFolderContents(context.Context, *QueryTeamFolderContentsRequest) (*QueryTeamFolderContentsResponse, error)
+	// Returns all TeamFolders in a given location that the caller has access to
+	// and match the provided filter.
+	SearchTeamFolders(context.Context, *SearchTeamFoldersRequest) (*SearchTeamFoldersResponse, error)
+	// Fetches a single Folder.
+	GetFolder(context.Context, *GetFolderRequest) (*Folder, error)
+	// Creates a new Folder in a given project and location.
+	CreateFolder(context.Context, *CreateFolderRequest) (*Folder, error)
+	// Updates a single Folder.
+	UpdateFolder(context.Context, *UpdateFolderRequest) (*Folder, error)
+	// Deletes a single Folder.
+	DeleteFolder(context.Context, *DeleteFolderRequest) (*emptypb.Empty, error)
+	// Returns the contents of a given Folder.
+	QueryFolderContents(context.Context, *QueryFolderContentsRequest) (*QueryFolderContentsResponse, error)
+	// Returns the contents of a caller's root folder in a given location.
+	// The root folder contains all resources that are created by the user and not
+	// contained in any other folder.
+	QueryUserRootContents(context.Context, *QueryUserRootContentsRequest) (*QueryUserRootContentsResponse, error)
+	// Moves a Folder to a new Folder, TeamFolder, or the root location.
+	MoveFolder(context.Context, *MoveFolderRequest) (*longrunningpb.Operation, error)
 	// Lists Repositories in a given project and location.
 	//
 	// **Note:** *This method can return repositories not shown in the [Dataform
@@ -749,6 +998,8 @@ type DataformServer interface {
 	UpdateRepository(context.Context, *UpdateRepositoryRequest) (*Repository, error)
 	// Deletes a single Repository.
 	DeleteRepository(context.Context, *DeleteRepositoryRequest) (*emptypb.Empty, error)
+	// Moves a Repository to a new location.
+	MoveRepository(context.Context, *MoveRepositoryRequest) (*longrunningpb.Operation, error)
 	// Applies a Git commit to a Repository. The Repository must not have a value
 	// for `git_remote_settings.url`.
 	CommitRepositoryChanges(context.Context, *CommitRepositoryChangesRequest) (*CommitRepositoryChangesResponse, error)
@@ -867,12 +1118,68 @@ type DataformServer interface {
 	// as a bad request, and when the `field_mask` is omitted, the request is
 	// treated as a full update on all modifiable fields.*
 	UpdateConfig(context.Context, *UpdateConfigRequest) (*Config, error)
+	// Gets the access control policy for a resource.
+	// Returns an empty policy if the resource exists and does not have a policy
+	// set.
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
+	// Sets the access control policy on the specified resource. Replaces any
+	// existing policy.
+	//
+	// Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
+	// Returns permissions that a caller has on the specified resource.
+	// If the resource does not exist, this will return an empty set of
+	// permissions, not a `NOT_FOUND` error.
+	//
+	// Note: This operation is designed to be used for building permission-aware
+	// UIs and command-line tools, not for authorization checking. This operation
+	// may "fail open" without warning.
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedDataformServer should be embedded to have forward compatible implementations.
 type UnimplementedDataformServer struct {
 }
 
+func (UnimplementedDataformServer) GetTeamFolder(context.Context, *GetTeamFolderRequest) (*TeamFolder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTeamFolder not implemented")
+}
+func (UnimplementedDataformServer) CreateTeamFolder(context.Context, *CreateTeamFolderRequest) (*TeamFolder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTeamFolder not implemented")
+}
+func (UnimplementedDataformServer) UpdateTeamFolder(context.Context, *UpdateTeamFolderRequest) (*TeamFolder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTeamFolder not implemented")
+}
+func (UnimplementedDataformServer) DeleteTeamFolder(context.Context, *DeleteTeamFolderRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTeamFolder not implemented")
+}
+func (UnimplementedDataformServer) QueryTeamFolderContents(context.Context, *QueryTeamFolderContentsRequest) (*QueryTeamFolderContentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTeamFolderContents not implemented")
+}
+func (UnimplementedDataformServer) SearchTeamFolders(context.Context, *SearchTeamFoldersRequest) (*SearchTeamFoldersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchTeamFolders not implemented")
+}
+func (UnimplementedDataformServer) GetFolder(context.Context, *GetFolderRequest) (*Folder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFolder not implemented")
+}
+func (UnimplementedDataformServer) CreateFolder(context.Context, *CreateFolderRequest) (*Folder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateFolder not implemented")
+}
+func (UnimplementedDataformServer) UpdateFolder(context.Context, *UpdateFolderRequest) (*Folder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateFolder not implemented")
+}
+func (UnimplementedDataformServer) DeleteFolder(context.Context, *DeleteFolderRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFolder not implemented")
+}
+func (UnimplementedDataformServer) QueryFolderContents(context.Context, *QueryFolderContentsRequest) (*QueryFolderContentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryFolderContents not implemented")
+}
+func (UnimplementedDataformServer) QueryUserRootContents(context.Context, *QueryUserRootContentsRequest) (*QueryUserRootContentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryUserRootContents not implemented")
+}
+func (UnimplementedDataformServer) MoveFolder(context.Context, *MoveFolderRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MoveFolder not implemented")
+}
 func (UnimplementedDataformServer) ListRepositories(context.Context, *ListRepositoriesRequest) (*ListRepositoriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRepositories not implemented")
 }
@@ -887,6 +1194,9 @@ func (UnimplementedDataformServer) UpdateRepository(context.Context, *UpdateRepo
 }
 func (UnimplementedDataformServer) DeleteRepository(context.Context, *DeleteRepositoryRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRepository not implemented")
+}
+func (UnimplementedDataformServer) MoveRepository(context.Context, *MoveRepositoryRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MoveRepository not implemented")
 }
 func (UnimplementedDataformServer) CommitRepositoryChanges(context.Context, *CommitRepositoryChangesRequest) (*CommitRepositoryChangesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommitRepositoryChanges not implemented")
@@ -1035,6 +1345,15 @@ func (UnimplementedDataformServer) GetConfig(context.Context, *GetConfigRequest)
 func (UnimplementedDataformServer) UpdateConfig(context.Context, *UpdateConfigRequest) (*Config, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateConfig not implemented")
 }
+func (UnimplementedDataformServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
+}
+func (UnimplementedDataformServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
+}
+func (UnimplementedDataformServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
+}
 
 // UnsafeDataformServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to DataformServer will
@@ -1045,6 +1364,240 @@ type UnsafeDataformServer interface {
 
 func RegisterDataformServer(s grpc.ServiceRegistrar, srv DataformServer) {
 	s.RegisterService(&Dataform_ServiceDesc, srv)
+}
+
+func _Dataform_GetTeamFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTeamFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).GetTeamFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_GetTeamFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).GetTeamFolder(ctx, req.(*GetTeamFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_CreateTeamFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTeamFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).CreateTeamFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_CreateTeamFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).CreateTeamFolder(ctx, req.(*CreateTeamFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_UpdateTeamFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTeamFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).UpdateTeamFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_UpdateTeamFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).UpdateTeamFolder(ctx, req.(*UpdateTeamFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_DeleteTeamFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTeamFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).DeleteTeamFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_DeleteTeamFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).DeleteTeamFolder(ctx, req.(*DeleteTeamFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_QueryTeamFolderContents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTeamFolderContentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).QueryTeamFolderContents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_QueryTeamFolderContents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).QueryTeamFolderContents(ctx, req.(*QueryTeamFolderContentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_SearchTeamFolders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchTeamFoldersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).SearchTeamFolders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_SearchTeamFolders_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).SearchTeamFolders(ctx, req.(*SearchTeamFoldersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_GetFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).GetFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_GetFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).GetFolder(ctx, req.(*GetFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_CreateFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).CreateFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_CreateFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).CreateFolder(ctx, req.(*CreateFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_UpdateFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).UpdateFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_UpdateFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).UpdateFolder(ctx, req.(*UpdateFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_DeleteFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).DeleteFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_DeleteFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).DeleteFolder(ctx, req.(*DeleteFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_QueryFolderContents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryFolderContentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).QueryFolderContents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_QueryFolderContents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).QueryFolderContents(ctx, req.(*QueryFolderContentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_QueryUserRootContents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUserRootContentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).QueryUserRootContents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_QueryUserRootContents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).QueryUserRootContents(ctx, req.(*QueryUserRootContentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_MoveFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).MoveFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_MoveFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).MoveFolder(ctx, req.(*MoveFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Dataform_ListRepositories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1133,6 +1686,24 @@ func _Dataform_DeleteRepository_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataformServer).DeleteRepository(ctx, req.(*DeleteRepositoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_MoveRepository_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveRepositoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).MoveRepository(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_MoveRepository_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).MoveRepository(ctx, req.(*MoveRepositoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2019,6 +2590,60 @@ func _Dataform_UpdateConfig_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Dataform_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.GetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).GetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_GetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.SetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).SetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_SetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.TestIamPermissionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).TestIamPermissions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_TestIamPermissions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Dataform_ServiceDesc is the grpc.ServiceDesc for Dataform service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2026,6 +2651,58 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "google.cloud.dataform.v1beta1.Dataform",
 	HandlerType: (*DataformServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetTeamFolder",
+			Handler:    _Dataform_GetTeamFolder_Handler,
+		},
+		{
+			MethodName: "CreateTeamFolder",
+			Handler:    _Dataform_CreateTeamFolder_Handler,
+		},
+		{
+			MethodName: "UpdateTeamFolder",
+			Handler:    _Dataform_UpdateTeamFolder_Handler,
+		},
+		{
+			MethodName: "DeleteTeamFolder",
+			Handler:    _Dataform_DeleteTeamFolder_Handler,
+		},
+		{
+			MethodName: "QueryTeamFolderContents",
+			Handler:    _Dataform_QueryTeamFolderContents_Handler,
+		},
+		{
+			MethodName: "SearchTeamFolders",
+			Handler:    _Dataform_SearchTeamFolders_Handler,
+		},
+		{
+			MethodName: "GetFolder",
+			Handler:    _Dataform_GetFolder_Handler,
+		},
+		{
+			MethodName: "CreateFolder",
+			Handler:    _Dataform_CreateFolder_Handler,
+		},
+		{
+			MethodName: "UpdateFolder",
+			Handler:    _Dataform_UpdateFolder_Handler,
+		},
+		{
+			MethodName: "DeleteFolder",
+			Handler:    _Dataform_DeleteFolder_Handler,
+		},
+		{
+			MethodName: "QueryFolderContents",
+			Handler:    _Dataform_QueryFolderContents_Handler,
+		},
+		{
+			MethodName: "QueryUserRootContents",
+			Handler:    _Dataform_QueryUserRootContents_Handler,
+		},
+		{
+			MethodName: "MoveFolder",
+			Handler:    _Dataform_MoveFolder_Handler,
+		},
 		{
 			MethodName: "ListRepositories",
 			Handler:    _Dataform_ListRepositories_Handler,
@@ -2045,6 +2722,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteRepository",
 			Handler:    _Dataform_DeleteRepository_Handler,
+		},
+		{
+			MethodName: "MoveRepository",
+			Handler:    _Dataform_MoveRepository_Handler,
 		},
 		{
 			MethodName: "CommitRepositoryChanges",
@@ -2241,6 +2922,18 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateConfig",
 			Handler:    _Dataform_UpdateConfig_Handler,
+		},
+		{
+			MethodName: "GetIamPolicy",
+			Handler:    _Dataform_GetIamPolicy_Handler,
+		},
+		{
+			MethodName: "SetIamPolicy",
+			Handler:    _Dataform_SetIamPolicy_Handler,
+		},
+		{
+			MethodName: "TestIamPermissions",
+			Handler:    _Dataform_TestIamPermissions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

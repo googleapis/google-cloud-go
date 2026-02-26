@@ -1,6 +1,9 @@
+// Deprecated: use cloud.google.com/go/pubsub/v2 instead.
+// This version will be supported with bug fixes and security patches until December 31st, 2026.
+// For migration, see https://github.com/googleapis/google-cloud-go/blob/main/pubsub/MIGRATING.md
 module cloud.google.com/go/pubsub
 
-go 1.24.0
+go 1.25.0
 
 require (
 	cloud.google.com/go v0.123.0
@@ -12,9 +15,9 @@ require (
 	github.com/googleapis/gax-go/v2 v2.17.0
 	go.einride.tech/aip v0.80.0
 	go.opencensus.io v0.24.0
-	go.opentelemetry.io/otel v1.39.0
-	go.opentelemetry.io/otel/sdk v1.39.0
-	go.opentelemetry.io/otel/trace v1.39.0
+	go.opentelemetry.io/otel v1.40.0
+	go.opentelemetry.io/otel/sdk v1.40.0
+	go.opentelemetry.io/otel/trace v1.40.0
 	golang.org/x/oauth2 v0.35.0
 	golang.org/x/sync v0.19.0
 	golang.org/x/time v0.14.0
@@ -39,7 +42,7 @@ require (
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0 // indirect
-	go.opentelemetry.io/otel/metric v1.39.0 // indirect
+	go.opentelemetry.io/otel/metric v1.40.0 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect

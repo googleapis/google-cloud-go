@@ -1,6 +1,6 @@
 module cloud.google.com/go/spanner
 
-go 1.24.0
+go 1.25.0
 
 retract v1.76.0 // due to https://github.com/googleapis/google-cloud-go/issues/11630
 
@@ -17,11 +17,11 @@ require (
 	github.com/googleapis/gax-go/v2 v2.17.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.38.0
-	go.opentelemetry.io/otel v1.39.0
-	go.opentelemetry.io/otel/metric v1.39.0
-	go.opentelemetry.io/otel/sdk v1.39.0
-	go.opentelemetry.io/otel/sdk/metric v1.39.0
-	go.opentelemetry.io/otel/trace v1.39.0
+	go.opentelemetry.io/otel v1.40.0
+	go.opentelemetry.io/otel/metric v1.40.0
+	go.opentelemetry.io/otel/sdk v1.40.0
+	go.opentelemetry.io/otel/sdk/metric v1.40.0
+	go.opentelemetry.io/otel/trace v1.40.0
 	golang.org/x/oauth2 v0.35.0
 	golang.org/x/sync v0.19.0
 	google.golang.org/api v0.265.0

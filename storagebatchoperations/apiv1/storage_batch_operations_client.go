@@ -47,17 +47,19 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListJobs        []gax.CallOption
-	GetJob          []gax.CallOption
-	CreateJob       []gax.CallOption
-	DeleteJob       []gax.CallOption
-	CancelJob       []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	CancelOperation []gax.CallOption
-	DeleteOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	ListJobs             []gax.CallOption
+	GetJob               []gax.CallOption
+	CreateJob            []gax.CallOption
+	DeleteJob            []gax.CallOption
+	CancelJob            []gax.CallOption
+	ListBucketOperations []gax.CallOption
+	GetBucketOperation   []gax.CallOption
+	GetLocation          []gax.CallOption
+	ListLocations        []gax.CallOption
+	CancelOperation      []gax.CallOption
+	DeleteOperation      []gax.CallOption
+	GetOperation         []gax.CallOption
+	ListOperations       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -119,8 +121,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		ListBucketOperations: []gax.CallOption{},
+		GetBucketOperation:   []gax.CallOption{},
+		GetLocation:          []gax.CallOption{},
+		ListLocations:        []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -213,8 +217,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		ListBucketOperations: []gax.CallOption{},
+		GetBucketOperation:   []gax.CallOption{},
+		GetLocation:          []gax.CallOption{},
+		ListLocations:        []gax.CallOption{},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -273,6 +279,8 @@ type internalClient interface {
 	CreateJobOperation(name string) *CreateJobOperation
 	DeleteJob(context.Context, *storagebatchoperationspb.DeleteJobRequest, ...gax.CallOption) error
 	CancelJob(context.Context, *storagebatchoperationspb.CancelJobRequest, ...gax.CallOption) (*storagebatchoperationspb.CancelJobResponse, error)
+	ListBucketOperations(context.Context, *storagebatchoperationspb.ListBucketOperationsRequest, ...gax.CallOption) *BucketOperationIterator
+	GetBucketOperation(context.Context, *storagebatchoperationspb.GetBucketOperationRequest, ...gax.CallOption) (*storagebatchoperationspb.BucketOperation, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -353,6 +361,16 @@ func (c *Client) DeleteJob(ctx context.Context, req *storagebatchoperationspb.De
 // CancelJob cancels a batch job.
 func (c *Client) CancelJob(ctx context.Context, req *storagebatchoperationspb.CancelJobRequest, opts ...gax.CallOption) (*storagebatchoperationspb.CancelJobResponse, error) {
 	return c.internalClient.CancelJob(ctx, req, opts...)
+}
+
+// ListBucketOperations lists BucketOperations in a given project and job.
+func (c *Client) ListBucketOperations(ctx context.Context, req *storagebatchoperationspb.ListBucketOperationsRequest, opts ...gax.CallOption) *BucketOperationIterator {
+	return c.internalClient.ListBucketOperations(ctx, req, opts...)
+}
+
+// GetBucketOperation gets a BucketOperation.
+func (c *Client) GetBucketOperation(ctx context.Context, req *storagebatchoperationspb.GetBucketOperationRequest, opts ...gax.CallOption) (*storagebatchoperationspb.BucketOperation, error) {
+	return c.internalClient.GetBucketOperation(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -689,6 +707,70 @@ func (c *gRPCClient) CancelJob(ctx context.Context, req *storagebatchoperationsp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.CancelJob, req, settings.GRPC, c.logger, "CancelJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBucketOperations(ctx context.Context, req *storagebatchoperationspb.ListBucketOperationsRequest, opts ...gax.CallOption) *BucketOperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBucketOperations[0:len((*c.CallOptions).ListBucketOperations):len((*c.CallOptions).ListBucketOperations)], opts...)
+	it := &BucketOperationIterator{}
+	req = proto.Clone(req).(*storagebatchoperationspb.ListBucketOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagebatchoperationspb.BucketOperation, string, error) {
+		resp := &storagebatchoperationspb.ListBucketOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListBucketOperations, req, settings.GRPC, c.logger, "ListBucketOperations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBucketOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetBucketOperation(ctx context.Context, req *storagebatchoperationspb.GetBucketOperationRequest, opts ...gax.CallOption) (*storagebatchoperationspb.BucketOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBucketOperation[0:len((*c.CallOptions).GetBucketOperation):len((*c.CallOptions).GetBucketOperation)], opts...)
+	var resp *storagebatchoperationspb.BucketOperation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetBucketOperation, req, settings.GRPC, c.logger, "GetBucketOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1061,6 +1143,9 @@ func (c *restClient) DeleteJob(ctx context.Context, req *storagebatchoperationsp
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1129,6 +1214,140 @@ func (c *restClient) CancelJob(ctx context.Context, req *storagebatchoperationsp
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelJob")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBucketOperations lists BucketOperations in a given project and job.
+func (c *restClient) ListBucketOperations(ctx context.Context, req *storagebatchoperationspb.ListBucketOperationsRequest, opts ...gax.CallOption) *BucketOperationIterator {
+	it := &BucketOperationIterator{}
+	req = proto.Clone(req).(*storagebatchoperationspb.ListBucketOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagebatchoperationspb.BucketOperation, string, error) {
+		resp := &storagebatchoperationspb.ListBucketOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/bucketOperations", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBucketOperations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBucketOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetBucketOperation gets a BucketOperation.
+func (c *restClient) GetBucketOperation(ctx context.Context, req *storagebatchoperationspb.GetBucketOperationRequest, opts ...gax.CallOption) (*storagebatchoperationspb.BucketOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBucketOperation[0:len((*c.CallOptions).GetBucketOperation):len((*c.CallOptions).GetBucketOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &storagebatchoperationspb.BucketOperation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBucketOperation")
 		if err != nil {
 			return err
 		}

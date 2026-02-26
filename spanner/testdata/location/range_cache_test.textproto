@@ -1,0 +1,1204 @@
+test_case {
+  name: "no_key"
+  step {
+    test {
+      result {
+      }
+    }
+  }
+}
+
+test_case {
+  name: "empty_key"
+  step {
+    test {
+      key: ""
+      result {
+        key: ""
+      }
+    }
+  }
+}
+
+test_case {
+  name: "empty_cache"
+  step {
+    update {
+    }
+    test {
+      key: "a"
+      result {
+        key: "a"
+      }
+    }
+  }
+}
+
+test_case {
+  name: "basic_cache_hit"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 0
+          skip: false
+        }
+      }
+    }
+    test {
+      key: "a"
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "z"
+      result {
+        key: "z"
+      }
+    }
+  }
+}
+
+test_case {
+  name: "cache_math"
+  step {
+    # Start with [k..n)->split 3
+    update {
+      range {
+        start_key: "k"
+        limit_key: "n"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+        }
+      }
+    }
+    test {
+      key: "k"
+      result {
+        key: "k"
+        limit_key: "n"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Insert [m..o)->4. Now:
+  #   [k..m)->3
+  #   [m..o)->4
+  step {
+    update {
+      range {
+        start_key: "m"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 4
+        generation: "23"
+      }
+    }
+    test {
+      key: "k"
+      result {
+        key: "k"
+        limit_key: "m"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "m"
+      result {
+        key: "m"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 4
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Insert [n..p)->5. Now:
+  #   [k..m)->3
+  #   [m..o)->4
+  #   [o..p)->5
+  step {
+    update {
+      range {
+        start_key: "n"
+        limit_key: "p"
+        group_uid: 2
+        split_id: 5
+        generation: "24"
+      }
+    }
+    test {
+      key: "k"
+      result {
+        key: "k"
+        limit_key: "m"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "m"
+      result {
+        key: "m"
+        limit_key: "n"
+        group_uid: 2
+        split_id: 4
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "n"
+      result {
+        key: "n"
+        limit_key: "p"
+        group_uid: 2
+        split_id: 5
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Exact range replacement: Insert [m..n)->6
+  step {
+    update {
+      range {
+        start_key: "m"
+        limit_key: "n"
+        group_uid: 2
+        split_id: 6
+        generation: "25"
+      }
+    }
+    test {
+      key: "k"
+      result {
+        key: "k"
+        limit_key: "m"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "m"
+      result {
+        key: "m"
+        limit_key: "n"
+        group_uid: 2
+        split_id: 6
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "n"
+      result {
+        key: "n"
+        limit_key: "p"
+        group_uid: 2
+        split_id: 5
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Merge ranges, insert [k..o)->7. Now:
+  #   [k..o)->7
+  #   [o..p)->5
+  step {
+    update {
+      range {
+        start_key: "k"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 7
+        generation: "26"
+      }
+    }
+    test {
+      key: "k"
+      result {
+        key: "k"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 7
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "n"
+      result {
+        key: "k"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 7
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    test {
+      key: "o"
+      result {
+        key: "o"
+        limit_key: "p"
+        group_uid: 2
+        split_id: 5
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Inserting an old range does nothing.
+  step {
+    update {
+      range {
+        start_key: "k"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 8
+        generation: "25"
+      }
+    }
+    test {
+      key: "k"
+      result {
+        key: "k"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 7
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Old ranges that are bigger than the existing old ranges are also discarded.
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 8
+        generation: "25"
+      }
+    }
+    test {
+      key: "k"
+      result {
+        key: "k"
+        limit_key: "o"
+        group_uid: 2
+        split_id: 7
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+}
+
+test_case {
+  name: "leader_selection"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 0
+          skip: false
+        }
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 1
+          skip: false
+        }
+        tablets {
+          tablet_uid: 6
+          server_address: "server3"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "66"
+          distance: 10
+          skip: false
+        }
+        leader_index: 1
+      }
+    }
+    test {
+      key: "a"
+      leader: true
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 5
+      }
+      server: "server2"
+    }
+  }
+  # Update the leader to be tablet 4.
+  step {
+    update {
+      group {
+        group_uid: 2
+        leader_index: 0
+        generation: "23"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 0
+          skip: false
+        }
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 1
+          skip: false
+        }
+        tablets {
+          tablet_uid: 6
+          server_address: "server3"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "66"
+          distance: 10
+          skip: false
+        }
+      }
+    }
+    test {
+      key: "a"
+      leader: true
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Old generation updates are ignored.
+  step {
+    update {
+      group {
+        group_uid: 2
+        leader_index: 1
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 0
+          skip: false
+        }
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 1
+          skip: false
+        }
+        tablets {
+          tablet_uid: 6
+          server_address: "server3"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "66"
+          distance: 10
+          skip: false
+        }
+      }
+    }
+    test {
+      key: "a"
+      leader: true
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+}
+
+# We should not use a leader that is too far away, and instead use a close
+# non-leader replica.
+test_case {
+  name: "far_away_leader"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 5
+          skip: false
+        }
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 6
+          skip: false
+        }
+        leader_index: 1
+      }
+    }
+    test {
+      key: "a"
+      leader: true
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+}
+
+# No leader - make sure we handle leader_index: -1
+test_case {
+  name: "no_leader"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 0
+          skip: false
+        }
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 1
+          skip: false
+        }
+        leader_index: -1
+      }
+    }
+    test {
+      key: "a"
+      leader: true
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+}
+
+test_case {
+  name: "tablet_location_updates"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          incarnation: "33"
+        }
+      }
+    }
+    test {
+      key: "a"
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  step {
+    update {
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server2"
+          incarnation: "34"
+        }
+      }
+    }
+    test {
+      key: "a"
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server2"
+    }
+  }
+  # Distance updates are allowed with same incarnation.
+  step {
+    update {
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server2"
+          incarnation: "34"
+          distance: 6
+        }
+      }
+    }
+    test {
+      key: "a"
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+      }
+    }
+  }
+  step {
+    update {
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server2"
+          incarnation: "34"
+          distance: 2
+        }
+      }
+    }
+    test {
+      key: "a"
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server2"
+    }
+  }
+}
+
+test_case {
+  name: "replica_reshuffling"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 0
+          skip: false
+        }
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 1
+          skip: false
+        }
+      }
+    }
+    test {
+      key: "a"
+      leader: true
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+  # Reorder the replicas. The updates should apply correctly, and the new
+  # first replica should be used.
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 0
+          skip: false
+        }
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 1
+          skip: false
+        }
+      }
+    }
+    test {
+      key: "a"
+      leader: true
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 5
+      }
+      server: "server2"
+    }
+  }
+}
+
+# Directed read options: region picking
+test_case {
+  name: "directed_read_options"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          location: "us-central1"
+          role: READ_WRITE
+          incarnation: "44"
+          distance: 0
+          skip: false
+        }
+        tablets {
+          tablet_uid: 5
+          server_address: "server2"
+          location: "us-central2"
+          role: READ_WRITE
+          incarnation: "55"
+          distance: 1
+          skip: false
+        }
+        tablets {
+          tablet_uid: 6
+          server_address: "server3"
+          location: "us-central3"
+          role: READ_ONLY
+          incarnation: "66"
+          distance: 2
+          skip: false
+        }
+      }
+    }
+    # Specific location
+    test {
+      key: "a"
+      directed_read_options {
+        include_replicas {
+          replica_selections {
+            location: "us-central2"
+          }
+        }
+      }
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 5
+      }
+      server: "server2"
+    }
+    # Specific replica type
+    test {
+      key: "a"
+      directed_read_options {
+        include_replicas {
+          replica_selections {
+            type: READ_ONLY
+          }
+        }
+      }
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 6
+      }
+      server: "server3"
+    }
+    # Specific location and replica type, match found.
+    test {
+      key: "a"
+      directed_read_options {
+        include_replicas {
+          replica_selections {
+            location: "us-central3"
+            type: READ_ONLY
+          }
+        }
+      }
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 6
+      }
+      server: "server3"
+    }
+    # Specific location and replica type, no match found.
+    test {
+      key: "a"
+      directed_read_options {
+        include_replicas {
+          replica_selections {
+            location: "us-central2"
+            type: READ_ONLY
+          }
+        }
+      }
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+      }
+    }
+    # Exclude a location
+    test {
+      key: "a"
+      directed_read_options {
+        exclude_replicas {
+          replica_selections {
+            location: "us-central1"
+          }
+        }
+      }
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 5
+      }
+      server: "server2"
+    }
+    # Exclude a replica type
+    test {
+      key: "a"
+      directed_read_options {
+        exclude_replicas {
+          replica_selections {
+            type: READ_WRITE
+          }
+        }
+      }
+      result {
+        key: "a"
+        limit_key: "z"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 6
+      }
+      server: "server3"
+    }
+  }
+}
+
+test_case {
+  name: "range_calls"
+  step {
+    update {
+      range {
+        start_key: "b"
+        limit_key: "f"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          incarnation: "44"
+        }
+      }
+    }
+    # Part of the range matching start.
+    test {
+      key: "b"
+      limit_key: "c"
+      result {
+        key: "b"
+        limit_key: "f"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    # Part of the range matching limit.
+    test {
+      key: "e"
+      limit_key: "f"
+      result {
+        key: "b"
+        limit_key: "f"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    # Exact range match.
+    test {
+      key: "b"
+      limit_key: "f"
+      result {
+        key: "b"
+        limit_key: "f"
+        group_uid: 2
+        split_id: 3
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    # Range does not overlap, start.
+    test {
+      key: "a"
+      limit_key: "f"
+      result {
+        key: "a"
+        limit_key: "f"
+      }
+    }
+    # Range does not overlap, limit.
+    test {
+      key: "b"
+      limit_key: "g"
+      result {
+        key: "b"
+        limit_key: "g"
+      }
+    }
+    # Range does not overlap, both sides.
+    test {
+      key: "a"
+      limit_key: "g"
+      result {
+        key: "a"
+        limit_key: "g"
+      }
+    }
+  }
+}
+
+test_case {
+  name: "range_calls_random"
+  step {
+    update {
+      range {
+        start_key: "a"
+        limit_key: "c"
+        group_uid: 2
+        split_id: 3
+        generation: "22"
+      }
+      range {
+        start_key: "c"
+        limit_key: "e"
+        group_uid: 2
+        split_id: 4
+        generation: "22"
+      }
+      range {
+        start_key: "e"
+        limit_key: "g"
+        group_uid: 2
+        split_id: 5
+        generation: "22"
+      }
+      range {
+        start_key: "j"
+        limit_key: "l"
+        group_uid: 2
+        split_id: 6
+        generation: "22"
+      }
+      range {
+        start_key: "o"
+        limit_key: "q"
+        group_uid: 2
+        split_id: 7
+        generation: "22"
+      }
+      group {
+        group_uid: 2
+        generation: "22"
+        tablets {
+          tablet_uid: 4
+          server_address: "server1"
+          incarnation: "44"
+        }
+      }
+    }
+    # Requested range covers multiple splits with COVERING_SPLIT.
+    # Should pick nothing.
+    test {
+      key: "b"
+      limit_key: "f"
+      range_mode: COVERING_SPLIT
+      result {
+        key: "b"
+        limit_key: "f"
+      }
+    }
+    # With PICK_RANDOM, should get a random split that overlaps.
+    test {
+      key: "b"
+      limit_key: "f"
+      range_mode: PICK_RANDOM
+      result {
+        key: "c"
+        limit_key: "e"
+        group_uid: 2
+        split_id: 4
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+    # There is a gap in the cache for the requested ranges, so we should pick
+    # nothing. Test gaps at the start, in the middle, at the end, and at 
+    # the end of the entire cache.
+    test {
+      key: "g"  # Matches the limit of prior split.
+      limit_key: "k"  # Inside the next cached split after 'g'.
+      range_mode: PICK_RANDOM
+      result {
+        key: "g"
+        limit_key: "k"
+      }
+    }
+    test {
+      key: "h"  # In a gap between cached splits.
+      limit_key: "k"  # Inside the next cached split after 'h'.
+      range_mode: PICK_RANDOM
+      result {
+        key: "h"
+        limit_key: "k"
+      }
+    }
+    test {
+      key: "f"  # Inside a cached split
+      limit_key: "k"  # Inside another cached split, but a gap between f and k.
+      range_mode: PICK_RANDOM
+      result {
+        key: "f"
+        limit_key: "k"
+      }
+    }
+    test {
+      key: "k"  # Inside a cached split.
+      limit_key: "m"  # In a gap between the cached split and the next one.
+      range_mode: PICK_RANDOM
+      result {
+        key: "k"
+        limit_key: "m"
+      }
+    }
+    test {
+      key: "p"  # In the last cached split in the cache.
+      limit_key: "z"  # Should cause iteration to hit the end of the cache.
+      range_mode: PICK_RANDOM
+      result {
+        key: "p"
+        limit_key: "z"
+      }
+    }
+    # Gaps are okay if we have enough cached entries.
+    # Test the boundary condition first - we only have 5 entries in the cache.
+    test {
+      key: "a"
+      limit_key: "z"
+      range_mode: PICK_RANDOM
+      min_cache_entries_for_random_pick: 6
+      result {
+        key: "a"
+        limit_key: "z"
+      }
+    }
+    test {
+      key: "a"
+      limit_key: "z"
+      range_mode: PICK_RANDOM
+      min_cache_entries_for_random_pick: 5
+      result {
+        key: "e"
+        limit_key: "g"
+        group_uid: 2
+        split_id: 5
+        tablet_uid: 4
+      }
+      server: "server1"
+    }
+  }
+}
+
+

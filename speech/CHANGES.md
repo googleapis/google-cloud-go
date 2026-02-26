@@ -1,5 +1,11 @@
 # Changes
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.30.0) (2026-02-26)
+
+### Features
+
+* adds endpointing sensitivity to streaming recognition features ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.29.0) (2026-01-08)
 
 ### Features

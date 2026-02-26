@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -238,6 +237,35 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Upload 3MiB of data. This provides enough data to ensure retries happen mid-stream.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
+				return fmt.Errorf("failed to upload 3MiB object: %v", err)
+			}
+
+			obj := c.Bucket(fs.bucket.Name).Object(objName)
+			r, err := obj.NewRangeReader(ctx, 0, 3*MiB)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+
+			// Request the full 3MiB range.
+			// The emulator's fault injection (e.g., reset-connection) will trigger mid-download.
+			buf, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("resumption test failed: %v", err)
+			}
+
+			if int64(len(buf)) != 3*MiB {
+				return fmt.Errorf("resumption data length mismatch: got %d, want %d", len(buf), 3*MiB)
+			}
+			if !bytes.Equal(buf, randomBytes3MiB) {
+				return fmt.Errorf("resumption data mismatch: content does not match randomBytes3MiB")
+			}
+			return nil
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			// Test JSON reads.
@@ -563,28 +591,33 @@ var methods = map[string][]retryFunc{
 			}
 
 			// Download the test object using the MultiRangeDownloader.
-			mrr, err := c.Bucket(fs.bucket.Name).Object(objName).NewMultiRangeDownloader(ctx)
+			mrd, err := c.Bucket(fs.bucket.Name).Object(objName).NewMultiRangeDownloader(ctx)
 			if err != nil {
 				return err
 			}
-			buf := new(bytes.Buffer)
-			var err1 error
-			callback := func(x, y int64, err error) {
-				err1 = err
+			addCount := 50
+			results := make([]multiRangeDownloaderOutput, addCount)
+			for i := 0; i < addCount; i++ {
+				mrd.Add(&results[i].buf, 0, 3*MiB, func(x, y int64, err error) {
+					results[i].offset = x
+					results[i].limit = y
+					results[i].err = err
+				})
 			}
-			mrr.Add(buf, 0, 3*MiB, callback)
-			mrr.Wait()
-			if err1 != nil {
-				return err1
-			}
-			if got, want := len(buf.Bytes()), 3*MiB; got != want {
-				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
-			}
-			if got, want := buf.Bytes(), randomBytes3MiB; !bytes.Equal(got, want) {
-				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
-			}
-			if err = mrr.Close(); err != nil {
+			mrd.Wait()
+			if err = mrd.Close(); err != nil {
 				return err
+			}
+			for i := 0; i < addCount; i++ {
+				if results[i].err != nil {
+					return results[i].err
+				}
+				if int64(results[i].buf.Len()) != 3*MiB {
+					return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", int64(results[i].buf.Len()), 3*MiB)
+				}
+				if !bytes.Equal(results[i].buf.Bytes(), randomBytes3MiB) {
+					return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", results[i].buf.Bytes(), randomBytes3MiB)
+				}
 			}
 			return nil
 		},
@@ -1147,13 +1180,6 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 			et.resources.hmacKey = key
 		}
 	}
-}
-
-// Generates size random bytes.
-func generateRandomBytes(n int) []byte {
-	b := make([]byte, n)
-	_, _ = rand.Read(b)
-	return b
 }
 
 // Upload test object with given bytes.
