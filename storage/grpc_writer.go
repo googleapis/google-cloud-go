@@ -581,16 +581,12 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 
 	// Zero-Copy send.
 	if w.forceOneShot {
-		done, err := c.zeroCopyWrite(w, cs)
+		err := c.zeroCopyWrite(w, cs)
 		if err != nil {
 			return err
 		}
-		if done {
-			return nil
-		}
-		// This should never happen: if zeroCopyWrite returns done == false, it means
-		// the stream was already completed, in which case we should have returned an error.
-		return fmt.Errorf("zero-copy write successful but stream is in unexpected state")
+		// If zeroCopyWrite returns without error, the write is done.
+		return nil
 	}
 
 	if w.buf == nil {
@@ -719,7 +715,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	return nil
 }
 
-func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterCommandHandleChans) (bool, error) {
+func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
 	if !c.hasStarted {
 		c.initialOffset = w.bufBaseOffset
 		c.hasStarted = true
@@ -734,7 +730,8 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 
 	// If we've already sent everything, we're done.
 	if skip >= int64(len(c.p)) {
-		return c.markDone(), nil
+		c.markDone()
+		return nil
 	}
 
 	c.p = c.p[skip:]
@@ -745,13 +742,13 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 	// sendBufferToTarget handles the quantum breakdown.
 	newOffset, ok := w.sendBufferToTarget(cs, c.p, w.bufBaseOffset, len(c.p), w.handleCompletion)
 	if !ok {
-		return false, w.streamSender.err()
+		return w.streamSender.err()
 	}
 
 	// Request an ack from the sender goroutine to ensure the buffer has been
 	// dispatched to gRPC and is safe for the user to reuse.
 	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, w.handleCompletion) {
-		return false, w.streamSender.err()
+		return w.streamSender.err()
 	}
 
 	ackOutstanding := true
@@ -761,24 +758,24 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 		select {
 		case completion, ok := <-cs.completions:
 			if !ok {
-				return false, w.streamSender.err()
+				return w.streamSender.err()
 			}
 			w.handleCompletion(completion)
 		case <-cs.requestAcks:
 			ackOutstanding = false
 		case <-ctxDone:
-			return false, w.preRunCtx.Err()
+			return w.preRunCtx.Err()
 		}
 	}
 
 	c.p = nil
-	return c.markDone(), nil
+	c.markDone()
+	return nil
 }
 
 // Helper to ensure we don't close done twice and keep the main logic clean.
-func (c *gRPCWriterCommandWrite) markDone() bool {
+func (c *gRPCWriterCommandWrite) markDone() {
 	c.once.Do(func() { close(c.done) })
-	return true
 }
 
 type gRPCWriterCommandFlush struct {
