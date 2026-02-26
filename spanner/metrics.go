@@ -313,8 +313,8 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 
 		if isEnableGRPCBuiltInMetrics {
 			mo := opentelemetry.MetricsOptions{
-				MeterProvider: meterProvider,
-				Metrics:       stats.NewMetrics(grpcMetricsToEnable...),
+				MeterProvider:  meterProvider,
+				Metrics:        stats.NewMetrics(grpcMetricsToEnable...),
 				OptionalLabels: grpcOptionalLabels,
 			}
 
