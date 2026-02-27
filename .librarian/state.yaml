@@ -3958,12 +3958,14 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
     version: 1.20.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: 5328d7103e480708b3fe2458f90441c3e720a15c
     apis:
       - path: google/cloud/networkconnectivity/v1
         service_config: networkconnectivity_v1.yaml
       - path: google/cloud/networkconnectivity/v1alpha1
         service_config: networkconnectivity_v1alpha1.yaml
+      - path: google/cloud/networkconnectivity/v1beta
+        service_config: networkconnectivity_v1beta.yaml
     source_roots:
       - networkconnectivity
       - internal/generated/snippets/networkconnectivity
@@ -3990,8 +3992,16 @@ libraries:
       - ^networkconnectivity/apiv1alpha1/helpers\.go$
       - ^networkconnectivity/apiv1alpha1/networkconnectivitypb/.*$
       - ^networkconnectivity/apiv1alpha1/\.repo-metadata\.json$
-    release_exclude_paths:
-      - internal/generated/snippets/networkconnectivity/
+      - ^networkconnectivity/apiv1beta/[^/]*_client\.go$
+      - ^networkconnectivity/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^networkconnectivity/apiv1beta/[^/]*_client_example_test\.go$
+      - ^networkconnectivity/apiv1beta/auxiliary\.go$
+      - ^networkconnectivity/apiv1beta/auxiliary_go123\.go$
+      - ^networkconnectivity/apiv1beta/doc\.go$
+      - ^networkconnectivity/apiv1beta/gapic_metadata\.json$
+      - ^networkconnectivity/apiv1beta/helpers\.go$
+      - ^networkconnectivity/apiv1beta/\.repo-metadata\.json$
+      - ^networkconnectivity/apiv1beta/networkconnectivitypb/.*$
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.22.0
