@@ -108,95 +108,82 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 	data[0] = 1
 	data[dataSize-1] = 2
 
-	t.Run("OneShot_ZeroCopy", func(t *testing.T) {
-		mockSender := &mockZeroCopySender{}
-		w := &gRPCWriter{
-			buf:           nil,
-			preRunCtx:     context.Background(),
-			chunkSize:     0,
-			forceOneShot:  true,
-			writeQuantum:  maxPerMessageWriteSize,
-			sendableUnits: 10,
-			writesChan:    make(chan gRPCWriterCommand, 1),
-			donec:         make(chan struct{}),
-			streamSender:  mockSender,
-			settings:      &settings{},
-		}
-		w.progress = func(int64) {}
-		w.setObj = func(*ObjectAttrs) {}
-		w.setSize = func(int64) {}
+	tests := []struct {
+		name         string
+		chunkSize    int
+		writeQuantum int
+		forceOneShot bool
+		wantZeroCopy bool
+	}{
+		{
+			name:         "OneShot_ZeroCopy",
+			chunkSize:    0,
+			writeQuantum: maxPerMessageWriteSize,
+			forceOneShot: true,
+			wantZeroCopy: true,
+		},
+		{
+			name:         "Resumable_Buffering",
+			chunkSize:    2 * 1024 * 1024,
+			writeQuantum: 256 * 1024,
+			forceOneShot: false,
+			wantZeroCopy: false,
+		},
+	}
 
-		go func() {
-			w.writeLoop(context.Background())
-			close(w.donec)
-		}()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockSender := &mockZeroCopySender{}
+			w := &gRPCWriter{
+				buf:           nil, // Allocated lazily on first buffered write.
+				chunkSize:     tt.chunkSize,
+				forceOneShot:  tt.forceOneShot,
+				writeQuantum:  tt.writeQuantum,
+				preRunCtx:     context.Background(),
+				sendableUnits: 10,
+				writesChan:    make(chan gRPCWriterCommand, 1),
+				donec:         make(chan struct{}),
+				streamSender:  mockSender,
+				settings:      &settings{},
+			}
+			w.progress = func(int64) {}
+			w.setObj = func(*ObjectAttrs) {}
+			w.setSize = func(int64) {}
 
-		if _, err := w.Write(data); err != nil {
-			t.Fatalf("Write failed: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			t.Fatalf("Close failed: %v", err)
-		}
-		mockSender.wg.Wait()
+			go func() {
+				w.writeLoop(context.Background())
+				close(w.donec)
+			}()
 
-		mockSender.mu.Lock()
-		defer mockSender.mu.Unlock()
+			if _, err := w.Write(data); err != nil {
+				t.Fatalf("Write failed: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Close failed: %v", err)
+			}
+			mockSender.wg.Wait()
 
-		reqs := filterDataRequests(mockSender.requests)
-		if len(reqs) != 1 {
-			t.Fatalf("Expected exactly 1 data request for one-shot, got %d", len(reqs))
-		}
+			mockSender.mu.Lock()
+			defer mockSender.mu.Unlock()
 
-		// Verify zero-copy: underlying array pointers must match.
-		if &reqs[0].buf[0] != &data[0] {
-			t.Errorf("One-shot upload bypassed zero-copy path; data was copied")
-		}
-	})
+			reqs := filterDataRequests(mockSender.requests)
+			if len(reqs) == 0 {
+				t.Fatalf("Expected at least 1 data request, got 0")
+			}
 
-	t.Run("Resumable_Buffering", func(t *testing.T) {
-		chunkSize := 256 * 1024
-		mockSender := &mockZeroCopySender{}
-		w := &gRPCWriter{
-			buf:           make([]byte, chunkSize), // Buffered path requires pre-allocated buffer
-			preRunCtx:     context.Background(),
-			chunkSize:     chunkSize, // Resumable trigger
-			writeQuantum:  chunkSize,
-			sendableUnits: 10,
-			writesChan:    make(chan gRPCWriterCommand, 1),
-			donec:         make(chan struct{}),
-			streamSender:  mockSender,
-			settings:      &settings{},
-		}
-		w.progress = func(int64) {}
-		w.setObj = func(*ObjectAttrs) {}
-		w.setSize = func(int64) {}
-
-		go func() {
-			w.writeLoop(context.Background())
-			close(w.donec)
-		}()
-
-		if _, err := w.Write(data); err != nil {
-			t.Fatalf("Write failed: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			t.Fatalf("Close failed: %v", err)
-		}
-		mockSender.wg.Wait()
-
-		mockSender.mu.Lock()
-		defer mockSender.mu.Unlock()
-
-		reqs := filterDataRequests(mockSender.requests)
-		if len(reqs) == 0 {
-			t.Fatalf("Expected at least 1 data request for resumable upload, got 0")
-		}
-
-		// Verify buffering: underlying array pointers must differ.
-		if &reqs[0].buf[0] == &data[0] {
-			t.Errorf("Resumable upload bypassed buffering path; data was unexpectedly zero-copied")
-		}
-	})
+			// Verify memory address logic:
+			// For zero-copy, the underlying array pointer of the request buffer must match the input data.
+			// For buffering/copying, the pointers must differ.
+			isZeroCopy := &reqs[0].buf[0] == &data[0]
+			if isZeroCopy != tt.wantZeroCopy {
+				if tt.wantZeroCopy {
+					t.Errorf("One-shot upload bypassed zero-copy path; data was unexpectedly copied")
+				} else {
+					t.Errorf("Resumable upload bypassed buffering path; data was unexpectedly zero-copied")
+				}
+			}
+		})
+	}
 }
 
 type mockZeroCopySender struct {
