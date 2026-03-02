@@ -1751,6 +1751,141 @@ func TestQueryRunOptionsAndGetAllWithOptions(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestQuery_Pipeline(t *testing.T) {
+	t.Parallel()
+	client, _, cleanup := newMock(t)
+	defer cleanup()
+
+	coll := client.Collection("C")
+
+	testCases := []struct {
+		name    string
+		query   Query
+		expPipe *Pipeline
+	}{
+		{
+			name:    "simple query",
+			query:   coll.Where("f", "==", 1).Limit(10),
+			expPipe: client.Pipeline().Collection("C").Where(Equal("f", 1)).Limit(10),
+		},
+		{
+			name:    "query with all clauses",
+			query:   coll.Where("f", ">", 1).OrderBy("f", Asc).Select("f").Offset(1),
+			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}).Where(GreaterThan("f", 1)).Offset(1).Select("f"),
+		},
+		{
+			name:    "query with collection group",
+			query:   client.CollectionGroup("C").Where("f", "==", 1).Limit(10),
+			expPipe: client.Pipeline().CollectionGroup("C").Where(Equal("f", 1)).Limit(10),
+		},
+		{
+			name:    "query with cursor",
+			query:   coll.OrderBy("f", Asc).StartAt(1),
+			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}).Where(GreaterThanOrEqual(FieldPath{"f"}, 1)),
+		},
+		{
+			name:    "query with findNearest",
+			query:   coll.FindNearest("f", []float32{1, 2, 3}, 5, DistanceMeasureEuclidean, &FindNearestOptions{DistanceResultField: "dist"}).q,
+			expPipe: client.Pipeline().Collection("C").FindNearest("f", []float32{1, 2, 3}, PipelineDistanceMeasureEuclidean, &PipelineFindNearestOptions{Limit: intptr(5), DistanceField: stringptr("dist")}),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			p := tc.query.Pipeline()
+			if p.err != nil {
+				t.Fatalf("Pipeline() got error: %v", p.err)
+			}
+			gotProto, err := p.toProto()
+			if err != nil {
+				t.Fatalf("p.toProto() got error: %v", err)
+			}
+			expProto, err := tc.expPipe.toProto()
+			if err != nil {
+				t.Fatalf("expPipe.toProto() got error: %v", err)
+			}
+
+			if diff := cmp.Diff(expProto, gotProto, protocmp.Transform()); diff != "" {
+				t.Errorf("mismatch (-want, +got)\n: %s", diff)
+			}
+		})
+	}
+}
+
+func intptr(i int) *int {
+	return &i
+}
+
+func stringptr(s string) *string {
+	return &s
+}
+
+func TestAggregationQuery_Pipeline(t *testing.T) {
+	t.Parallel()
+	client, _, cleanup := newMock(t)
+	defer cleanup()
+
+	coll := client.Collection("C")
+	queryWithWhere := coll.Where("f", "==", 1)
+
+	testCases := []struct {
+		name    string
+		query   *AggregationQuery
+		expPipe *Pipeline
+	}{
+		{
+			name:    "simple aggregation query",
+			query:   coll.NewAggregationQuery().WithCount("total"),
+			expPipe: client.Pipeline().Collection("C").Aggregate(Count(DocumentID).As("total")),
+		},
+		{
+			name:    "aggregation query with where",
+			query:   queryWithWhere.NewAggregationQuery().WithCount("total"),
+			expPipe: client.Pipeline().Collection("C").Where(Equal("f", 1)).Aggregate(Count(DocumentID).As("total")),
+		},
+		{
+			name:    "aggregation query with sum",
+			query:   coll.NewAggregationQuery().WithSum("f", "sum_f"),
+			expPipe: client.Pipeline().Collection("C").Aggregate(Sum("f").As("sum_f")),
+		},
+		{
+			name:    "aggregation query with avg",
+			query:   coll.NewAggregationQuery().WithAvg("f", "avg_f"),
+			expPipe: client.Pipeline().Collection("C").Aggregate(Average("f").As("avg_f")),
+		},
+		{
+			name:    "aggregation query with multiple aggregations",
+			query:   coll.NewAggregationQuery().WithCount("total").WithSum("f", "sum_f"),
+			expPipe: client.Pipeline().Collection("C").Aggregate(Count(DocumentID).As("total"), Sum("f").As("sum_f")),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			p := tc.query.Pipeline()
+			if p.err != nil {
+				t.Fatalf("Pipeline() got error: %v", p.err)
+			}
+			gotProto, err := p.toProto()
+			if err != nil {
+				t.Fatalf("p.toProto() got error: %v", err)
+			}
+			expProto, err := tc.expPipe.toProto()
+			if err != nil {
+				t.Fatalf("expPipe.toProto() got error: %v", err)
+			}
+
+			if diff := cmp.Diff(expProto, gotProto, protocmp.Transform()); diff != "" {
+				t.Errorf("mismatch (-want, +got)\n: %s", diff)
+			}
+		})
+	}
+}
 func TestFindNearest(t *testing.T) {
 	ctx := context.Background()
 	c, srv, cleanup := newMock(t)

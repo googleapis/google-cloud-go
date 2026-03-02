@@ -1,5 +1,12 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.28.0) (2025-12-18)
+
+### Documentation
+
+* add example resource name to VertexDatasetResourceReference ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add messages stating that Data Catalog actions are deprecated ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.27.0) (2025-10-13)
 
 ### Features

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,6 +157,34 @@ func ExampleStorageControlClient_DeleteFolder() {
 		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#DeleteFolderRequest.
 	}
 	err = c.DeleteFolder(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleStorageControlClient_DeleteFolderRecursive() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.DeleteFolderRecursiveRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#DeleteFolderRecursiveRequest.
+	}
+	op, err := c.DeleteFolderRecursive(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

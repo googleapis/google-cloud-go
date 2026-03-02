@@ -29,6 +29,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // keysetProto returns protobuf encoding of valid spanner.KeySet.
@@ -54,7 +55,11 @@ func TestMutationToProto(t *testing.T) {
 	}{
 		// Delete Mutation
 		{
-			&Mutation{opDelete, "t_foo", Key{"foo"}, nil, nil, nil},
+			&Mutation{
+				op:     opDelete,
+				table:  "t_foo",
+				keySet: Key{"foo"},
+			},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Delete_{
 					Delete: &sppb.Mutation_Delete{
@@ -66,7 +71,13 @@ func TestMutationToProto(t *testing.T) {
 		},
 		// Insert Mutation
 		{
-			&Mutation{opInsert, "t_foo", KeySets(), []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}, nil},
+			&Mutation{
+				op:      opInsert,
+				table:   "t_foo",
+				keySet:  KeySets(),
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{int64(1), int64(2)},
+			},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Insert{
 					Insert: &sppb.Mutation_Write{
@@ -83,7 +94,13 @@ func TestMutationToProto(t *testing.T) {
 		},
 		// InsertOrUpdate Mutation
 		{
-			&Mutation{opInsertOrUpdate, "t_foo", KeySets(), []string{"col1", "col2"}, []interface{}{1.0, 2.0}, nil},
+			&Mutation{
+				op:      opInsertOrUpdate,
+				table:   "t_foo",
+				keySet:  KeySets(),
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{1.0, 2.0},
+			},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_InsertOrUpdate{
 					InsertOrUpdate: &sppb.Mutation_Write{
@@ -100,7 +117,13 @@ func TestMutationToProto(t *testing.T) {
 		},
 		// Replace Mutation
 		{
-			&Mutation{opReplace, "t_foo", KeySets(), []string{"col1", "col2"}, []interface{}{"one", 2.0}, nil},
+			&Mutation{
+				op:      opReplace,
+				table:   "t_foo",
+				keySet:  KeySets(),
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", 2.0},
+			},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Replace{
 					Replace: &sppb.Mutation_Write{
@@ -117,7 +140,13 @@ func TestMutationToProto(t *testing.T) {
 		},
 		// Update Mutation
 		{
-			&Mutation{opUpdate, "t_foo", KeySets(), []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}, nil},
+			&Mutation{
+				op:      opUpdate,
+				table:   "t_foo",
+				keySet:  KeySets(),
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", []byte(nil)},
+			},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Update{
 					Update: &sppb.Mutation_Write{
@@ -132,14 +161,52 @@ func TestMutationToProto(t *testing.T) {
 				},
 			},
 		},
+		// Queue Send Mutation
+		{
+			&Mutation{
+				op:          opSend,
+				queue:       "t_foo",
+				key:         Key{"k1"},
+				payload:     "test payload",
+				deliverTime: time.Date(2026, time.January, 1, 1, 1, 1, 1, utc),
+			},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Send_{
+					Send: &sppb.Mutation_Send{
+						Queue:       "t_foo",
+						Key:         &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+						Payload:     stringProto("test payload"),
+						DeliverTime: timestamppb.New(time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)),
+					},
+				},
+			},
+		},
+		// Queue Ack Mutation
+		{
+			&Mutation{
+				op:             opAck,
+				queue:          "t_foo",
+				key:            Key{"k1"},
+				ignoreNotFound: true,
+			},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Ack_{
+					Ack: &sppb.Mutation_Ack{
+						Queue:          "t_foo",
+						Key:            &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+						IgnoreNotFound: true,
+					},
+				},
+			},
+		},
 		// Mutation with all supported data types
 		{
 			&Mutation{
-				opInsert,
-				"t_foo",
-				KeySets(),
-				[]string{"colBool", "colInt64", "colFloat64", "colNumeric", "colString", "colBytes", "colDate", "colTimestamp"},
-				[]interface{}{
+				op:      opInsert,
+				table:   "t_foo",
+				keySet:  KeySets(),
+				columns: []string{"colBool", "colInt64", "colFloat64", "colNumeric", "colString", "colBytes", "colDate", "colTimestamp"},
+				values: []interface{}{
 					true,
 					int64(100),
 					float64(3.14),
@@ -149,7 +216,6 @@ func TestMutationToProto(t *testing.T) {
 					civil.Date{Year: 2020, Month: 12, Day: 2},
 					time.Date(2020, time.December, 3, 8, 46, 58, 109, utc),
 				},
-				nil,
 			},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Insert{
@@ -190,6 +256,9 @@ func TestMutationToProto(t *testing.T) {
 		if g, w := wrapped.table, test.m.table; g != w {
 			t.Errorf("wrapped table mismatch\n Got: %v\n Want: %v", g, w)
 		}
+		if g, w := wrapped.queue, test.m.queue; g != w {
+			t.Errorf("wrapped queue mismatch\n Got: %v\n Want: %v", g, w)
+		}
 		proto, err := wrapped.proto()
 		if err != nil {
 			t.Errorf("converting wrapped mutation %v to proto failed: %v", wrapped, err)
@@ -211,12 +280,11 @@ type mutationColumnSorter struct {
 func newMutationColumnSorter(m *Mutation) *mutationColumnSorter {
 	return &mutationColumnSorter{
 		Mutation{
-			m.op,
-			m.table,
-			m.keySet,
-			append([]string(nil), m.columns...),
-			append([]interface{}(nil), m.values...),
-			nil,
+			op:      m.op,
+			table:   m.table,
+			keySet:  m.keySet,
+			columns: append([]string(nil), m.columns...),
+			values:  append([]interface{}(nil), m.values...),
 		},
 	}
 }
@@ -259,12 +327,22 @@ func TestMutationHelpers(t *testing.T) {
 		{
 			"Insert",
 			Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}),
-			&Mutation{opInsert, "t_foo", nil, []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}, nil},
+			&Mutation{
+				op:      opInsert,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{int64(1), int64(2)},
+			},
 		},
 		{
 			"InsertMap",
 			InsertMap("t_foo", map[string]interface{}{"col1": int64(1), "col2": int64(2)}),
-			&Mutation{opInsert, "t_foo", nil, []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}, nil},
+			&Mutation{
+				op:      opInsert,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{int64(1), int64(2)},
+			},
 		},
 		{
 			"InsertStruct",
@@ -282,17 +360,32 @@ func TestMutationHelpers(t *testing.T) {
 				}
 				return m
 			}(),
-			&Mutation{opInsert, "t_foo", nil, []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}, nil},
+			&Mutation{
+				op:      opInsert,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{int64(1), int64(2)},
+			},
 		},
 		{
 			"Update",
 			Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}),
-			&Mutation{opUpdate, "t_foo", nil, []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}, nil},
+			&Mutation{
+				op:      opUpdate,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", []byte(nil)},
+			},
 		},
 		{
 			"UpdateMap",
 			UpdateMap("t_foo", map[string]interface{}{"col1": "one", "col2": []byte(nil)}),
-			&Mutation{opUpdate, "t_foo", nil, []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}, nil},
+			&Mutation{
+				op:      opUpdate,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", []byte(nil)},
+			},
 		},
 		{
 			"UpdateStruct",
@@ -310,17 +403,32 @@ func TestMutationHelpers(t *testing.T) {
 				}
 				return m
 			}(),
-			&Mutation{opUpdate, "t_foo", nil, []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}, nil},
+			&Mutation{
+				op:      opUpdate,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", []byte(nil)},
+			},
 		},
 		{
 			"InsertOrUpdate",
 			InsertOrUpdate("t_foo", []string{"col1", "col2"}, []interface{}{1.0, 2.0}),
-			&Mutation{opInsertOrUpdate, "t_foo", nil, []string{"col1", "col2"}, []interface{}{1.0, 2.0}, nil},
+			&Mutation{
+				op:      opInsertOrUpdate,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{1.0, 2.0},
+			},
 		},
 		{
 			"InsertOrUpdateMap",
 			InsertOrUpdateMap("t_foo", map[string]interface{}{"col1": 1.0, "col2": 2.0}),
-			&Mutation{opInsertOrUpdate, "t_foo", nil, []string{"col1", "col2"}, []interface{}{1.0, 2.0}, nil},
+			&Mutation{
+				op:      opInsertOrUpdate,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{1.0, 2.0},
+			},
 		},
 		{
 			"InsertOrUpdateStruct",
@@ -338,17 +446,32 @@ func TestMutationHelpers(t *testing.T) {
 				}
 				return m
 			}(),
-			&Mutation{opInsertOrUpdate, "t_foo", nil, []string{"col1", "col2"}, []interface{}{1.0, 2.0}, nil},
+			&Mutation{
+				op:      opInsertOrUpdate,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{1.0, 2.0},
+			},
 		},
 		{
 			"Replace",
 			Replace("t_foo", []string{"col1", "col2"}, []interface{}{"one", 2.0}),
-			&Mutation{opReplace, "t_foo", nil, []string{"col1", "col2"}, []interface{}{"one", 2.0}, nil},
+			&Mutation{
+				op:      opReplace,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", 2.0},
+			},
 		},
 		{
 			"ReplaceMap",
 			ReplaceMap("t_foo", map[string]interface{}{"col1": "one", "col2": 2.0}),
-			&Mutation{opReplace, "t_foo", nil, []string{"col1", "col2"}, []interface{}{"one", 2.0}, nil},
+			&Mutation{
+				op:      opReplace,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", 2.0},
+			},
 		},
 		{
 			"ReplaceStruct",
@@ -366,17 +489,30 @@ func TestMutationHelpers(t *testing.T) {
 				}
 				return m
 			}(),
-			&Mutation{opReplace, "t_foo", nil, []string{"col1", "col2"}, []interface{}{"one", 2.0}, nil},
+			&Mutation{
+				op:      opReplace,
+				table:   "t_foo",
+				columns: []string{"col1", "col2"},
+				values:  []interface{}{"one", 2.0},
+			},
 		},
 		{
 			"Delete",
 			Delete("t_foo", Key{"foo"}),
-			&Mutation{opDelete, "t_foo", Key{"foo"}, nil, nil, nil},
+			&Mutation{
+				op:     opDelete,
+				table:  "t_foo",
+				keySet: Key{"foo"},
+			},
 		},
 		{
 			"DeleteRange",
 			Delete("t_foo", KeyRange{Key{"bar"}, Key{"foo"}, ClosedClosed}),
-			&Mutation{opDelete, "t_foo", KeyRange{Key{"bar"}, Key{"foo"}, ClosedClosed}, nil, nil, nil},
+			&Mutation{
+				op:     opDelete,
+				table:  "t_foo",
+				keySet: KeyRange{Key{"bar"}, Key{"foo"}, ClosedClosed},
+			},
 		},
 	} {
 		if !mutationEqual(t, *test.got, *test.want) {
@@ -567,6 +703,10 @@ func TestReadWrite_Generated(t *testing.T) {
 
 // Test encoding Mutation into proto.
 func TestEncodeMutation(t *testing.T) {
+	utc, err := time.LoadLocation("UTC")
+	if err != nil {
+		t.Fatalf("Could not load UTC: %v", err)
+	}
 	for _, test := range []struct {
 		name      string
 		mutation  Mutation
@@ -575,7 +715,7 @@ func TestEncodeMutation(t *testing.T) {
 	}{
 		{
 			"OpDelete",
-			Mutation{opDelete, "t_test", Key{1}, nil, nil, nil},
+			Mutation{op: opDelete, table: "t_test", keySet: Key{1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Delete_{
 					Delete: &sppb.Mutation_Delete{
@@ -590,7 +730,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpDelete - Key error",
-			Mutation{opDelete, "t_test", Key{struct{}{}}, nil, nil, nil},
+			Mutation{op: opDelete, table: "t_test", keySet: Key{struct{}{}}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Delete_{
 					Delete: &sppb.Mutation_Delete{
@@ -603,7 +743,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpInsert",
-			Mutation{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}, nil},
+			Mutation{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo", 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Insert{
 					Insert: &sppb.Mutation_Write{
@@ -617,7 +757,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpInsert - Value Type Error",
-			Mutation{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{struct{}{}, 1}, nil},
+			Mutation{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{struct{}{}, 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Insert{
 					Insert: &sppb.Mutation_Write{},
@@ -627,7 +767,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpInsertOrUpdate",
-			Mutation{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}, nil},
+			Mutation{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo", 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_InsertOrUpdate{
 					InsertOrUpdate: &sppb.Mutation_Write{
@@ -641,7 +781,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpInsertOrUpdate - Value Type Error",
-			Mutation{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{struct{}{}, 1}, nil},
+			Mutation{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{struct{}{}, 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_InsertOrUpdate{
 					InsertOrUpdate: &sppb.Mutation_Write{},
@@ -651,7 +791,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpReplace",
-			Mutation{opReplace, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}, nil},
+			Mutation{op: opReplace, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo", 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Replace{
 					Replace: &sppb.Mutation_Write{
@@ -665,7 +805,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpReplace - Value Type Error",
-			Mutation{opReplace, "t_test", nil, []string{"key", "val"}, []interface{}{struct{}{}, 1}, nil},
+			Mutation{op: opReplace, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{struct{}{}, 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Replace{
 					Replace: &sppb.Mutation_Write{},
@@ -675,7 +815,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpUpdate",
-			Mutation{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}, nil},
+			Mutation{op: opUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo", 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Update{
 					Update: &sppb.Mutation_Write{
@@ -689,7 +829,7 @@ func TestEncodeMutation(t *testing.T) {
 		},
 		{
 			"OpUpdate - Value Type Error",
-			Mutation{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{struct{}{}, 1}, nil},
+			Mutation{op: opUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{struct{}{}, 1}},
 			&sppb.Mutation{
 				Operation: &sppb.Mutation_Update{
 					Update: &sppb.Mutation_Write{},
@@ -698,10 +838,74 @@ func TestEncodeMutation(t *testing.T) {
 			errEncoderUnsupportedType(struct{}{}),
 		},
 		{
+			"OpSend",
+			Mutation{op: opSend, queue: "q_test", key: Key{"k1"}, payload: "test payload", deliverTime: time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Send_{
+					Send: &sppb.Mutation_Send{
+						Queue:       "q_test",
+						Key:         &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+						Payload:     stringProto("test payload"),
+						DeliverTime: timestamppb.New(time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)),
+					},
+				},
+			},
+			nil,
+		},
+		{
+			"OpSend - Key Error",
+			Mutation{op: opSend, queue: "q_test", key: Key{struct{}{}}, payload: "test payload", deliverTime: time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Send_{
+					Send: &sppb.Mutation_Send{},
+				},
+			},
+			errEncoderUnsupportedType(struct{}{}),
+		},
+		{
+			"OpSend - Payload Value Type Empty Struct",
+			Mutation{op: opSend, queue: "q_test", key: Key{"k1"}, payload: struct{}{}, deliverTime: time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Send_{
+					Send: &sppb.Mutation_Send{
+						Queue:       "q_test",
+						Key:         &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+						Payload:     listProto(), // Use of spanner value.go encodeValue which in turns calls encodeStruct
+						DeliverTime: timestamppb.New(time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)),
+					},
+				},
+			},
+			nil,
+		},
+		{
+			"OpAck",
+			Mutation{op: opAck, queue: "q_test", key: Key{"k1"}, ignoreNotFound: true},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Ack_{
+					Ack: &sppb.Mutation_Ack{
+						Queue:          "q_test",
+						Key:            &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+						IgnoreNotFound: true,
+					},
+				},
+			},
+			nil,
+		},
+		{
+			"OpAck - Key Error",
+			Mutation{op: opAck, queue: "q_test", key: Key{struct{}{}}, ignoreNotFound: true},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Ack_{
+					Ack: &sppb.Mutation_Ack{},
+				},
+			},
+			errEncoderUnsupportedType(struct{}{}),
+		},
+		{
 			"OpKnown - Unknown Mutation Operation Code",
-			Mutation{op(100), "t_test", nil, nil, nil, nil},
+			Mutation{op: op(100), table: "t_test"},
 			&sppb.Mutation{},
-			errInvdMutationOp(Mutation{op(100), "t_test", nil, nil, nil, nil}),
+			errInvdMutationOp(Mutation{op: op(100), table: "t_test"}),
 		},
 	} {
 		gotProto, gotErr := test.mutation.proto()
@@ -719,6 +923,10 @@ func TestEncodeMutation(t *testing.T) {
 
 // Test Encoding an array of mutations.
 func TestEncodeMutationArray(t *testing.T) {
+	utc, err := time.LoadLocation("UTC")
+	if err != nil {
+		t.Fatalf("Could not load UTC: %v", err)
+	}
 	tests := []struct {
 		name            string
 		ms              []*Mutation
@@ -738,9 +946,9 @@ func TestEncodeMutationArray(t *testing.T) {
 		{
 			name: "Only Inserts",
 			ms: []*Mutation{
-				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}, nil},
-				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"bar", 2}, nil},
-				{opInsert, "t_test", nil, []string{"key", "val", "col3"}, []interface{}{"bar2", 3, 4}, nil},
+				{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo", 1}},
+				{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"bar", 2}},
+				{op: opInsert, table: "t_test", columns: []string{"key", "val", "col3"}, values: []interface{}{"bar2", 3, 4}},
 			},
 			want: []*sppb.Mutation{
 				{
@@ -794,8 +1002,8 @@ func TestEncodeMutationArray(t *testing.T) {
 		{
 			name: "Mixed Operations",
 			ms: []*Mutation{
-				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo", 1}, nil},
-				{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"bar", 2}, nil},
+				{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo", 1}},
+				{op: opUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"bar", 2}},
 			},
 			want: []*sppb.Mutation{
 				{
@@ -838,7 +1046,7 @@ func TestEncodeMutationArray(t *testing.T) {
 		{
 			name: "Error in Mutation",
 			ms: []*Mutation{
-				{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{struct{}{}, 1}, nil},
+				{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{struct{}{}, 1}},
 			},
 			want:            []*sppb.Mutation{},
 			wantMutationKey: nil,
@@ -848,8 +1056,8 @@ func TestEncodeMutationArray(t *testing.T) {
 		{
 			name: "Only Deletes",
 			ms: []*Mutation{
-				{opDelete, "t_test", Key{"foo"}, nil, nil, nil},
-				{opDelete, "t_test", Key{"bar"}, nil, nil, nil},
+				{op: opDelete, table: "t_test", keySet: Key{"foo"}},
+				{op: opDelete, table: "t_test", keySet: Key{"bar"}},
 			},
 			want: []*sppb.Mutation{
 				{
@@ -891,6 +1099,36 @@ func TestEncodeMutationArray(t *testing.T) {
 			},
 			wantErr: nil,
 		},
+		{
+			name: "Queue related mutations",
+			ms: []*Mutation{
+				{op: opSend, queue: "q_test", key: Key{"k1"}, payload: "test payload", deliverTime: time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)},
+				{op: opAck, queue: "q_test", key: Key{"k1"}, ignoreNotFound: true},
+			},
+			want: []*sppb.Mutation{
+				{
+					Operation: &sppb.Mutation_Send_{
+						Send: &sppb.Mutation_Send{
+							Queue:       "q_test",
+							Key:         &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+							Payload:     stringProto("test payload"),
+							DeliverTime: timestamppb.New(time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)),
+						},
+					},
+				},
+				{
+					Operation: &sppb.Mutation_Ack_{
+						Ack: &sppb.Mutation_Ack{
+							Queue:          "q_test",
+							Key:            &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+							IgnoreNotFound: true,
+						},
+					},
+				},
+			},
+			wantMutationKey: nil,
+			wantErr:         nil,
+		},
 	}
 
 	for _, test := range tests {
@@ -915,6 +1153,10 @@ func TestEncodeMutationArray(t *testing.T) {
 }
 
 func TestEncodeMutationGroupArray(t *testing.T) {
+	utc, err := time.LoadLocation("UTC")
+	if err != nil {
+		t.Fatalf("Could not load UTC: %v", err)
+	}
 	for _, test := range []struct {
 		name    string
 		mgs     []*MutationGroup
@@ -925,15 +1167,19 @@ func TestEncodeMutationGroupArray(t *testing.T) {
 			"Multiple Mutations",
 			[]*MutationGroup{
 				{[]*Mutation{
-					{opDelete, "t_test", Key{"bar"}, nil, nil, nil},
-					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}, nil},
+					{op: opDelete, table: "t_test", keySet: Key{"bar"}},
+					{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo1", 1}},
 				}},
 				{[]*Mutation{
-					{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo2", 1}, nil},
-					{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo3", 1}, nil},
+					{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo2", 1}},
+					{op: opUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo3", 1}},
 				}},
 				{[]*Mutation{
-					{opReplace, "t_test", nil, []string{"key", "val"}, []interface{}{"foo4", 1}, nil},
+					{op: opReplace, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo4", 1}},
+				}},
+				{[]*Mutation{
+					{op: opSend, queue: "q_test", key: Key{"k1"}, payload: "test payload", deliverTime: time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)},
+					{op: opAck, queue: "q_test", key: Key{"k1"}, ignoreNotFound: true},
 				}},
 			},
 			[]*sppb.BatchWriteRequest_MutationGroup{
@@ -989,6 +1235,27 @@ func TestEncodeMutationGroupArray(t *testing.T) {
 						},
 					},
 				}},
+				{Mutations: []*sppb.Mutation{
+					{
+						Operation: &sppb.Mutation_Send_{
+							Send: &sppb.Mutation_Send{
+								Queue:       "q_test",
+								Key:         &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+								Payload:     stringProto("test payload"),
+								DeliverTime: timestamppb.New(time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)),
+							},
+						},
+					},
+					{
+						Operation: &sppb.Mutation_Ack_{
+							Ack: &sppb.Mutation_Ack{
+								Queue:          "q_test",
+								Key:            &proto3.ListValue{Values: []*proto3.Value{stringProto("k1")}},
+								IgnoreNotFound: true,
+							},
+						},
+					},
+				}},
 			},
 			nil,
 		},
@@ -996,12 +1263,16 @@ func TestEncodeMutationGroupArray(t *testing.T) {
 			"Multiple Mutations - Bad Mutation",
 			[]*MutationGroup{
 				{[]*Mutation{
-					{opDelete, "t_test", Key{"bar"}, nil, nil, nil},
-					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", struct{}{}}, nil},
+					{op: opDelete, table: "t_test", keySet: Key{"bar"}},
+					{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo1", struct{}{}}},
 				}},
 				{[]*Mutation{
-					{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo2", 1}, nil},
-					{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo3", 1}, nil},
+					{op: opInsert, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo2", 1}},
+					{op: opUpdate, table: "t_test", columns: []string{"key", "val"}, values: []interface{}{"foo3", 1}},
+				}},
+				{[]*Mutation{
+					{op: opSend, queue: "q_test", key: Key{struct{}{}}, payload: "test payload", deliverTime: time.Date(2026, time.January, 1, 1, 1, 1, 1, utc)},
+					{op: opAck, queue: "q_test", key: Key{struct{}{}}, ignoreNotFound: true},
 				}},
 			},
 			[]*sppb.BatchWriteRequest_MutationGroup{},
@@ -1022,6 +1293,10 @@ func TestEncodeMutationGroupArray(t *testing.T) {
 }
 
 func BenchmarkMutationsProto(b *testing.B) {
+	utc, err := time.LoadLocation("UTC")
+	if err != nil {
+		b.Fatalf("Could not load UTC: %v", err)
+	}
 	type benchmarkCase struct {
 		name      string
 		mutations []*Mutation
@@ -1035,6 +1310,8 @@ func BenchmarkMutationsProto(b *testing.B) {
 				InsertOrUpdate("t_foo", []string{"col1", "col2"}, []interface{}{1.0, 2.0}),
 				Replace("t_foo", []string{"col1", "col2"}, []interface{}{"one", 2.0}),
 				Delete("t_foo", Key{"foo"}),
+				Send("q_test", Key{"k1"}, "test payload", WithDeliveryTime(time.Date(2026, time.January, 1, 1, 1, 1, 1, utc))),
+				Ack("q_test", Key{"k1"}, WithIgnoreNotFound(true)),
 			},
 		},
 		{
@@ -1047,6 +1324,8 @@ func BenchmarkMutationsProto(b *testing.B) {
 					mutations = append(mutations, InsertOrUpdate("t_foo", []string{"col1", "col2"}, []interface{}{1.0, 2.0}))
 					mutations = append(mutations, Replace("t_foo", []string{"col1", "col2"}, []interface{}{"one", 2.0}))
 					mutations = append(mutations, Delete("t_foo", Key{i}))
+					mutations = append(mutations, Send("q_test", Key{i}, "test payload", WithDeliveryTime(time.Date(2026, time.January, 1, 1, 1, 1, i, utc))))
+					mutations = append(mutations, Ack("q_test", Key{i}, WithIgnoreNotFound(true)))
 				}
 				return mutations
 			}(),

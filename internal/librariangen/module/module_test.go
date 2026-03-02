@@ -132,6 +132,33 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 			},
 		},
 		{
+			name: "existing preview version",
+			lib: &request.Library{
+				ID:      "workflows",
+				Version: "5.6.7-preview.1",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/workflows/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "workflows",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/workflows/v1",
+						ProtoPackage: "google.cloud.workflows.v1",
+					},
+				},
+			},
+			files: map[string]string{
+				"internal/generated/snippets/workflows/apiv1/snippet_metadata.google.cloud.workflows.v1.json": `{"clientLibrary":{"version":"1.2.3-preview.5"}}`,
+			},
+			want: map[string]string{
+				"internal/generated/snippets/workflows/apiv1/snippet_metadata.google.cloud.workflows.v1.json": `{"clientLibrary":{"version":"5.6.7-preview.1"}}`,
+			},
+		},
+		{
 			name: "file not found",
 			lib: &request.Library{
 				ID:      "secretmanager",

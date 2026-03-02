@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -166,12 +166,12 @@ func (c *QuotaAdjusterSettingsManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// UpdateQuotaAdjusterSettings rPC Method for updating QuotaAdjusterSettings based on the request
+// UpdateQuotaAdjusterSettings updates the QuotaAdjusterSettings for the specified resource.
 func (c *QuotaAdjusterSettingsManagerClient) UpdateQuotaAdjusterSettings(ctx context.Context, req *cloudquotaspb.UpdateQuotaAdjusterSettingsRequest, opts ...gax.CallOption) (*cloudquotaspb.QuotaAdjusterSettings, error) {
 	return c.internalClient.UpdateQuotaAdjusterSettings(ctx, req, opts...)
 }
 
-// GetQuotaAdjusterSettings rPC Method for getting QuotaAdjusterSettings based on the request
+// GetQuotaAdjusterSettings gets the QuotaAdjusterSettings for the specified resource.
 func (c *QuotaAdjusterSettingsManagerClient) GetQuotaAdjusterSettings(ctx context.Context, req *cloudquotaspb.GetQuotaAdjusterSettingsRequest, opts ...gax.CallOption) (*cloudquotaspb.QuotaAdjusterSettings, error) {
 	return c.internalClient.GetQuotaAdjusterSettings(ctx, req, opts...)
 }
@@ -377,7 +377,7 @@ func (c *quotaAdjusterSettingsManagerGRPCClient) GetQuotaAdjusterSettings(ctx co
 	return resp, nil
 }
 
-// UpdateQuotaAdjusterSettings rPC Method for updating QuotaAdjusterSettings based on the request
+// UpdateQuotaAdjusterSettings updates the QuotaAdjusterSettings for the specified resource.
 func (c *quotaAdjusterSettingsManagerRESTClient) UpdateQuotaAdjusterSettings(ctx context.Context, req *cloudquotaspb.UpdateQuotaAdjusterSettingsRequest, opts ...gax.CallOption) (*cloudquotaspb.QuotaAdjusterSettings, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetQuotaAdjusterSettings()
@@ -444,7 +444,7 @@ func (c *quotaAdjusterSettingsManagerRESTClient) UpdateQuotaAdjusterSettings(ctx
 	return resp, nil
 }
 
-// GetQuotaAdjusterSettings rPC Method for getting QuotaAdjusterSettings based on the request
+// GetQuotaAdjusterSettings gets the QuotaAdjusterSettings for the specified resource.
 func (c *quotaAdjusterSettingsManagerRESTClient) GetQuotaAdjusterSettings(ctx context.Context, req *cloudquotaspb.GetQuotaAdjusterSettingsRequest, opts ...gax.CallOption) (*cloudquotaspb.QuotaAdjusterSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

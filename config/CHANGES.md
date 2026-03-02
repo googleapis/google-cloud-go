@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/config%2Fv1.6.0) (2026-01-15)
+
+### Features
+
+* add support for enabling automigration from deprecated Terraform versions ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* added error code when failing import values from an external source ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.5.0...config/v1.5.1) (2025-09-16)
 
 

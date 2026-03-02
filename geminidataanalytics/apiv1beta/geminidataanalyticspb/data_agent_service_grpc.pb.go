@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -40,8 +41,11 @@ const (
 	DataAgentService_ListAccessibleDataAgents_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/ListAccessibleDataAgents"
 	DataAgentService_GetDataAgent_FullMethodName             = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/GetDataAgent"
 	DataAgentService_CreateDataAgent_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgent"
+	DataAgentService_CreateDataAgentSync_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgentSync"
 	DataAgentService_UpdateDataAgent_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgent"
+	DataAgentService_UpdateDataAgentSync_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgentSync"
 	DataAgentService_DeleteDataAgent_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgent"
+	DataAgentService_DeleteDataAgentSync_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgentSync"
 	DataAgentService_GetIamPolicy_FullMethodName             = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/GetIamPolicy"
 	DataAgentService_SetIamPolicy_FullMethodName             = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/SetIamPolicy"
 )
@@ -59,10 +63,16 @@ type DataAgentServiceClient interface {
 	GetDataAgent(ctx context.Context, in *GetDataAgentRequest, opts ...grpc.CallOption) (*DataAgent, error)
 	// Creates a new DataAgent in a given project and location.
 	CreateDataAgent(ctx context.Context, in *CreateDataAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Creates a new DataAgent in a given project and location synchronously.
+	CreateDataAgentSync(ctx context.Context, in *CreateDataAgentRequest, opts ...grpc.CallOption) (*DataAgent, error)
 	// Updates the parameters of a single DataAgent.
 	UpdateDataAgent(ctx context.Context, in *UpdateDataAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single DataAgent synchronously.
+	UpdateDataAgentSync(ctx context.Context, in *UpdateDataAgentRequest, opts ...grpc.CallOption) (*DataAgent, error)
 	// Deletes a single DataAgent.
 	DeleteDataAgent(ctx context.Context, in *DeleteDataAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single DataAgent synchronously.
+	DeleteDataAgentSync(ctx context.Context, in *DeleteDataAgentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Gets the IAM policy for DataAgent
 	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the IAM policy for a DataAgent.
@@ -113,6 +123,15 @@ func (c *dataAgentServiceClient) CreateDataAgent(ctx context.Context, in *Create
 	return out, nil
 }
 
+func (c *dataAgentServiceClient) CreateDataAgentSync(ctx context.Context, in *CreateDataAgentRequest, opts ...grpc.CallOption) (*DataAgent, error) {
+	out := new(DataAgent)
+	err := c.cc.Invoke(ctx, DataAgentService_CreateDataAgentSync_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataAgentServiceClient) UpdateDataAgent(ctx context.Context, in *UpdateDataAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, DataAgentService_UpdateDataAgent_FullMethodName, in, out, opts...)
@@ -122,9 +141,27 @@ func (c *dataAgentServiceClient) UpdateDataAgent(ctx context.Context, in *Update
 	return out, nil
 }
 
+func (c *dataAgentServiceClient) UpdateDataAgentSync(ctx context.Context, in *UpdateDataAgentRequest, opts ...grpc.CallOption) (*DataAgent, error) {
+	out := new(DataAgent)
+	err := c.cc.Invoke(ctx, DataAgentService_UpdateDataAgentSync_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataAgentServiceClient) DeleteDataAgent(ctx context.Context, in *DeleteDataAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, DataAgentService_DeleteDataAgent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataAgentServiceClient) DeleteDataAgentSync(ctx context.Context, in *DeleteDataAgentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, DataAgentService_DeleteDataAgentSync_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -162,10 +199,16 @@ type DataAgentServiceServer interface {
 	GetDataAgent(context.Context, *GetDataAgentRequest) (*DataAgent, error)
 	// Creates a new DataAgent in a given project and location.
 	CreateDataAgent(context.Context, *CreateDataAgentRequest) (*longrunningpb.Operation, error)
+	// Creates a new DataAgent in a given project and location synchronously.
+	CreateDataAgentSync(context.Context, *CreateDataAgentRequest) (*DataAgent, error)
 	// Updates the parameters of a single DataAgent.
 	UpdateDataAgent(context.Context, *UpdateDataAgentRequest) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single DataAgent synchronously.
+	UpdateDataAgentSync(context.Context, *UpdateDataAgentRequest) (*DataAgent, error)
 	// Deletes a single DataAgent.
 	DeleteDataAgent(context.Context, *DeleteDataAgentRequest) (*longrunningpb.Operation, error)
+	// Deletes a single DataAgent synchronously.
+	DeleteDataAgentSync(context.Context, *DeleteDataAgentRequest) (*emptypb.Empty, error)
 	// Gets the IAM policy for DataAgent
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the IAM policy for a DataAgent.
@@ -188,11 +231,20 @@ func (UnimplementedDataAgentServiceServer) GetDataAgent(context.Context, *GetDat
 func (UnimplementedDataAgentServiceServer) CreateDataAgent(context.Context, *CreateDataAgentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDataAgent not implemented")
 }
+func (UnimplementedDataAgentServiceServer) CreateDataAgentSync(context.Context, *CreateDataAgentRequest) (*DataAgent, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDataAgentSync not implemented")
+}
 func (UnimplementedDataAgentServiceServer) UpdateDataAgent(context.Context, *UpdateDataAgentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDataAgent not implemented")
 }
+func (UnimplementedDataAgentServiceServer) UpdateDataAgentSync(context.Context, *UpdateDataAgentRequest) (*DataAgent, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDataAgentSync not implemented")
+}
 func (UnimplementedDataAgentServiceServer) DeleteDataAgent(context.Context, *DeleteDataAgentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataAgent not implemented")
+}
+func (UnimplementedDataAgentServiceServer) DeleteDataAgentSync(context.Context, *DeleteDataAgentRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataAgentSync not implemented")
 }
 func (UnimplementedDataAgentServiceServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
@@ -284,6 +336,24 @@ func _DataAgentService_CreateDataAgent_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataAgentService_CreateDataAgentSync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDataAgentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataAgentServiceServer).CreateDataAgentSync(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataAgentService_CreateDataAgentSync_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataAgentServiceServer).CreateDataAgentSync(ctx, req.(*CreateDataAgentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DataAgentService_UpdateDataAgent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateDataAgentRequest)
 	if err := dec(in); err != nil {
@@ -302,6 +372,24 @@ func _DataAgentService_UpdateDataAgent_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataAgentService_UpdateDataAgentSync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDataAgentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataAgentServiceServer).UpdateDataAgentSync(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataAgentService_UpdateDataAgentSync_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataAgentServiceServer).UpdateDataAgentSync(ctx, req.(*UpdateDataAgentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DataAgentService_DeleteDataAgent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteDataAgentRequest)
 	if err := dec(in); err != nil {
@@ -316,6 +404,24 @@ func _DataAgentService_DeleteDataAgent_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataAgentServiceServer).DeleteDataAgent(ctx, req.(*DeleteDataAgentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataAgentService_DeleteDataAgentSync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDataAgentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataAgentServiceServer).DeleteDataAgentSync(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataAgentService_DeleteDataAgentSync_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataAgentServiceServer).DeleteDataAgentSync(ctx, req.(*DeleteDataAgentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -380,12 +486,24 @@ var DataAgentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DataAgentService_CreateDataAgent_Handler,
 		},
 		{
+			MethodName: "CreateDataAgentSync",
+			Handler:    _DataAgentService_CreateDataAgentSync_Handler,
+		},
+		{
 			MethodName: "UpdateDataAgent",
 			Handler:    _DataAgentService_UpdateDataAgent_Handler,
 		},
 		{
+			MethodName: "UpdateDataAgentSync",
+			Handler:    _DataAgentService_UpdateDataAgentSync_Handler,
+		},
+		{
 			MethodName: "DeleteDataAgent",
 			Handler:    _DataAgentService_DeleteDataAgent_Handler,
+		},
+		{
+			MethodName: "DeleteDataAgentSync",
+			Handler:    _DataAgentService_DeleteDataAgentSync_Handler,
 		},
 		{
 			MethodName: "GetIamPolicy",

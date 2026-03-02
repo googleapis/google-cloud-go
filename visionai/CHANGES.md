@@ -1,5 +1,18 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/visionai%2Fv0.5.0) (2026-02-12)
+
+### Bug Fixes
+
+* An existing default host `visionai.googleapis.com` is changed to `warehouse-visionai.googleapis.com` in service `Warehouse` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+### Documentation
+
+* A comment for field `page_size` in message `.google.cloud.visionai.v1.SearchIndexEndpointRequest` is changed ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* A comment for field `relevance` in message `.google.cloud.visionai.v1.SearchResultItem` is changed ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
 ## [0.4.6](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.4.5...visionai/v0.4.6) (2025-09-22)
 
 

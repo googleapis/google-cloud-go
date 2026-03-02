@@ -95,6 +95,11 @@
                 "FetchSelf"
               ]
             },
+            "FinishOAuth": {
+              "methods": [
+                "FinishOAuth"
+              ]
+            },
             "GetAccountConnector": {
               "methods": [
                 "GetAccountConnector"
@@ -148,6 +153,11 @@
             "ListUsers": {
               "methods": [
                 "ListUsers"
+              ]
+            },
+            "StartOAuth": {
+              "methods": [
+                "StartOAuth"
               ]
             },
             "UpdateAccountConnector": {
@@ -250,6 +260,11 @@
                 "FetchSelf"
               ]
             },
+            "FinishOAuth": {
+              "methods": [
+                "FinishOAuth"
+              ]
+            },
             "GetAccountConnector": {
               "methods": [
                 "GetAccountConnector"
@@ -305,6 +320,11 @@
                 "ListUsers"
               ]
             },
+            "StartOAuth": {
+              "methods": [
+                "StartOAuth"
+              ]
+            },
             "UpdateAccountConnector": {
               "methods": [
                 "UpdateAccountConnector"
@@ -344,6 +364,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetDeploymentEvent": {
+              "methods": [
+                "GetDeploymentEvent"
+              ]
+            },
             "GetInsightsConfig": {
               "methods": [
                 "GetInsightsConfig"
@@ -357,6 +382,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListDeploymentEvents": {
+              "methods": [
+                "ListDeploymentEvents"
               ]
             },
             "ListInsightsConfigs": {
@@ -404,6 +434,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetDeploymentEvent": {
+              "methods": [
+                "GetDeploymentEvent"
+              ]
+            },
             "GetInsightsConfig": {
               "methods": [
                 "GetInsightsConfig"
@@ -417,6 +452,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListDeploymentEvents": {
+              "methods": [
+                "ListDeploymentEvents"
               ]
             },
             "ListInsightsConfigs": {

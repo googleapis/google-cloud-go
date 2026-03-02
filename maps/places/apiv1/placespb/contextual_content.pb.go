@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@ type ContextualContent struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// List of reviews about this place, contexual to the place query.
+	// List of reviews about this place, contextual to the place query.
 	Reviews []*Review `protobuf:"bytes,1,rep,name=reviews,proto3" json:"reviews,omitempty"`
-	// Information (including references) about photos of this place, contexual to
-	// the place query.
+	// Information (including references) about photos of this place, contextual
+	// to the place query.
 	Photos []*Photo `protobuf:"bytes,2,rep,name=photos,proto3" json:"photos,omitempty"`
 	// Experimental: See
 	// https://developers.google.com/maps/documentation/places/web-service/experimental/places-generative

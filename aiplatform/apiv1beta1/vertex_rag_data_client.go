@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1336,6 +1336,9 @@ func (c *vertexRagDataRESTClient) DeleteRagCorpus(ctx context.Context, req *aipl
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+	if req.GetForceDelete() {
+		params.Add("forceDelete", fmt.Sprintf("%v", req.GetForceDelete()))
 	}
 
 	baseUrl.RawQuery = params.Encode()

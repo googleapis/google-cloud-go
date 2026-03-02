@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ type CreateDataObjectRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The id of the dataObject to create.
 	// The id must be 1-63 characters long, and comply with
-	// <a href="https://www.ietf.org/rfc/rfc1035.txt" target="_blank">RFC1035</a>.
+	// [RFC1035](https://www.ietf.org/rfc/rfc1035.txt).
 	// Specifically, it must be 1-63 characters long and match the regular
 	// expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`.
 	DataObjectId string `protobuf:"bytes,2,opt,name=data_object_id,json=dataObjectId,proto3" json:"data_object_id,omitempty"`

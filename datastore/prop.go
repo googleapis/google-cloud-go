@@ -74,6 +74,13 @@ type Entity struct {
 }
 
 // PropertyLoadSaver can be converted from and to a slice of Properties.
+//
+// Warning: If a struct embeds another struct that implements PropertyLoadSaver,
+// the embedding struct will inherit the Load and Save methods. This means
+// that saving the embedding struct will only save the fields managed by the
+// embedded PropertyLoadSaver, ignoring the embedding struct's own fields.
+// To fix this, explicitly implement Load and Save methods on the embedding
+// struct.
 type PropertyLoadSaver interface {
 	Load([]Property) error
 	Save() ([]Property, error)

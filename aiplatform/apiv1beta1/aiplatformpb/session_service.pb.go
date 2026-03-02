@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -222,8 +222,9 @@ type ListSessionsRequest struct {
 	// Supported fields:
 	//   - `display_name`
 	//   - `user_id`
+	//   - `labels`
 	//
-	// Example: `display_name="abc"`, `user_id="123"`.
+	// Example: `display_name="abc"`, `user_id="123"`, `labels.key="value"`.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. A comma-separated list of fields to order by, sorted in ascending
 	// order. Use "desc" after a field name for descending. Supported fields:

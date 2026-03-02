@@ -277,7 +277,7 @@ type QuotaInfo struct {
 	// For example,
 	// `projects/123/locations/global/services/compute.googleapis.com/quotaInfos/CpusPerProjectPerRegion`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The id of the quota, which is unquie within the service.
+	// The id of the quota, which is unique within the service.
 	// For example, `CpusPerProjectPerRegion`
 	QuotaId string `protobuf:"bytes,2,opt,name=quota_id,json=quotaId,proto3" json:"quota_id,omitempty"`
 	// The metric of the quota. It specifies the resources consumption the quota

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ type CreateDatabaseRequest struct {
 	// with first character a letter and the last a letter or a number. Must not
 	// be UUID-like /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/.
 	//
-	// "(default)" database ID is also valid.
+	// "(default)" database ID is also valid if the database is Standard edition.
 	DatabaseId string `protobuf:"bytes,3,opt,name=database_id,json=databaseId,proto3" json:"database_id,omitempty"`
 }
 
@@ -1792,8 +1792,8 @@ type ExportDocumentsRequest struct {
 	// Required. Database to export. Should be of the form:
 	// `projects/{project_id}/databases/{database_id}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Which collection IDs to export. Unspecified means all collections. Each
-	// collection ID in this list must be unique.
+	// IDs of the collection groups to export. Unspecified means all
+	// collection groups. Each collection group in this list must be unique.
 	CollectionIds []string `protobuf:"bytes,2,rep,name=collection_ids,json=collectionIds,proto3" json:"collection_ids,omitempty"`
 	// The output URI. Currently only supports Google Cloud Storage URIs of the
 	// form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where `BUCKET_NAME` is the name
@@ -1896,8 +1896,9 @@ type ImportDocumentsRequest struct {
 	// Required. Database to import into. Should be of the form:
 	// `projects/{project_id}/databases/{database_id}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Which collection IDs to import. Unspecified means all collections included
-	// in the import. Each collection ID in this list must be unique.
+	// IDs of the collection groups to import. Unspecified means all collection
+	// groups that were included in the export. Each collection group in this list
+	// must be unique.
 	CollectionIds []string `protobuf:"bytes,2,rep,name=collection_ids,json=collectionIds,proto3" json:"collection_ids,omitempty"`
 	// Location of the exported files.
 	// This must match the output_uri_prefix of an ExportDocumentsResponse from
@@ -2350,7 +2351,7 @@ type RestoreDatabaseRequest struct {
 	// with first character a letter and the last a letter or a number. Must not
 	// be UUID-like /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/.
 	//
-	// "(default)" database ID is also valid.
+	// "(default)" database ID is also valid if the database is Standard edition.
 	DatabaseId string `protobuf:"bytes,2,opt,name=database_id,json=databaseId,proto3" json:"database_id,omitempty"`
 	// Required. Backup to restore from. Must be from the same project as the
 	// parent.
@@ -2456,7 +2457,7 @@ type CloneDatabaseRequest struct {
 	// with first character a letter and the last a letter or a number. Must not
 	// be UUID-like /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/.
 	//
-	// "(default)" database ID is also valid.
+	// "(default)" database ID is also valid if the database is Standard edition.
 	DatabaseId string `protobuf:"bytes,2,opt,name=database_id,json=databaseId,proto3" json:"database_id,omitempty"`
 	// Required. Specification of the PITR data to clone from. The source database
 	// must exist.

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ type VertexEmbeddingConfig struct {
 	ModelId string `protobuf:"bytes,1,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"`
 	// Required. Required: Text template for the input to the model. The template
 	// must contain one or more references to fields in the DataObject, e.g.:
-	// "Movie Title: {title} ---- Movie Plot: {plot}"".
+	// "Movie Title: {title} ---- Movie Plot: {plot}".
 	TextTemplate string `protobuf:"bytes,2,opt,name=text_template,json=textTemplate,proto3" json:"text_template,omitempty"`
 	// Required. Required: Task type for the embeddings.
 	TaskType EmbeddingTaskType `protobuf:"varint,3,opt,name=task_type,json=taskType,proto3,enum=google.cloud.vectorsearch.v1beta.EmbeddingTaskType" json:"task_type,omitempty"`

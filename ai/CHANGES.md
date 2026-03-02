@@ -1,6 +1,16 @@
 # Changes
 
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/ai%2Fv0.15.0) (2026-01-08)
+
+### Features
+
+* add IMAGE_RECITATION reason when generation is stopped due to recitation ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+* add json_name for GenerationConfig.response_json_schema_ordered field ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+* add support for GoogleMaps and FileSearch tools ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+* add support for GroundingMetadata.google_maps_widget_context_token ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+* add support for RetrievalConfig ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
 ## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/ai%2Fv0.14.0) (2025-10-22)
 
 ### Features

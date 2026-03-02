@@ -237,21 +237,9 @@ type SummarizeMaintenancesRequest struct {
 	PageToken string `protobuf:"bytes,10506,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Filter the list as specified in https://google.aip.dev/160.
 	// Supported fields include:
-	// - `state`
-	// - `resource.location`
-	// - `resource.resourceName`
-	// - `resource.type`
 	// - `maintenance.maintenanceName`
-	// - `maintenanceStartTime`
-	// - `maintenanceCompleteTime`
 	// Examples:
-	// - `state="SCHEDULED"`
-	// - `resource.location="us-central1-c"`
-	// - `resource.resourceName=~"*/instance-20241212-211259"`
-	// - `maintenanceStartTime>"2000-10-11T20:44:51Z"`
-	// - `state="SCHEDULED" OR resource.type="compute.googleapis.com/Instance"`
-	// - `maintenance.maitenanceName="eb3b709c-9ca1-5472-9fb6-800a3849eda1" AND
-	// maintenanceCompleteTime>"2000-10-11T20:44:51Z"`
+	// - `maintenance.maintenanceName="eb3b709c-9ca1-5472-9fb6-800a3849eda1"`
 	Filter string `protobuf:"bytes,10507,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Order results as specified in https://google.aip.dev/132.
 	OrderBy string `protobuf:"bytes,10508,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`

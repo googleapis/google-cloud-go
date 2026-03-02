@@ -30,6 +30,11 @@
                 "DeleteFolder"
               ]
             },
+            "DeleteFolderRecursive": {
+              "methods": [
+                "DeleteFolderRecursive"
+              ]
+            },
             "DeleteManagedFolder": {
               "methods": [
                 "DeleteManagedFolder"
@@ -163,6 +168,11 @@
             "DeleteFolder": {
               "methods": [
                 "DeleteFolder"
+              ]
+            },
+            "DeleteFolderRecursive": {
+              "methods": [
+                "DeleteFolderRecursive"
               ]
             },
             "DeleteManagedFolder": {

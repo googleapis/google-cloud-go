@@ -213,11 +213,14 @@ type QuotaAdjusterSettings struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. Name of the config would be of the format:
+	// Identifier. Name of the configuration, in the formats below:
 	//
-	//	projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
-	//	folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
-	//	organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
+	//   - For a project:
+	//     projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
+	//   - For a folder:
+	//     folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
+	//   - For an organization:
+	//     organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The configured value of the enablement at the given resource.
 	Enablement QuotaAdjusterSettings_Enablement `protobuf:"varint,2,opt,name=enablement,proto3,enum=google.api.cloudquotas.v1beta.QuotaAdjusterSettings_Enablement" json:"enablement,omitempty"`

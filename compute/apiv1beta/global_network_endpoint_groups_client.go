@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -166,6 +166,8 @@ func (c *GlobalNetworkEndpointGroupsClient) Get(ctx context.Context, req *comput
 
 // Insert creates a network endpoint group in the specified project using the
 // parameters that are included in the request.
+//
+// Note: Use the following APIs to manage network endpoint groups:
 func (c *GlobalNetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertGlobalNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -513,6 +515,8 @@ func (c *globalNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 
 // Insert creates a network endpoint group in the specified project using the
 // parameters that are included in the request.
+//
+// Note: Use the following APIs to manage network endpoint groups:
 func (c *globalNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()

@@ -50,7 +50,7 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		SessionPoolConfig: spanner.SessionPoolConfig{
 			MinOpened: minOpened,
 		},
-	}, option.WithGRPCDialOption(grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor(otelgrpc.WithTracerProvider(te.tp)))))
+	}, option.WithGRPCDialOption(grpc.WithStatsHandler(otelgrpc.NewClientHandler(otelgrpc.WithTracerProvider(te.tp)))))
 	defer teardown()
 
 	waitFor(t, func() error {
@@ -130,6 +130,7 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		"cloud.region":        "global",
 		"gcp.client.version":  internal.Version,
 		"gcp.client.repo":     "googleapis/google-cloud-go",
+		"gcp.resource.name":   spanner.GcpResourceNamePrefix + "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]",
 		"gcp.client.artifact": "cloud.google.com/go/spanner",
 		"transaction.tag":     transactionTag,
 	}

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,24 +41,28 @@ var newNetworksClientHook clientHook
 
 // NetworksCallOptions contains the retry settings for each method of NetworksClient.
 type NetworksCallOptions struct {
-	AddPeering            []gax.CallOption
-	Delete                []gax.CallOption
-	Get                   []gax.CallOption
-	GetEffectiveFirewalls []gax.CallOption
-	Insert                []gax.CallOption
-	List                  []gax.CallOption
-	ListPeeringRoutes     []gax.CallOption
-	Patch                 []gax.CallOption
-	RemovePeering         []gax.CallOption
-	RequestRemovePeering  []gax.CallOption
-	SwitchToCustomMode    []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	UpdatePeering         []gax.CallOption
+	AddPeering                 []gax.CallOption
+	CancelRequestRemovePeering []gax.CallOption
+	Delete                     []gax.CallOption
+	Get                        []gax.CallOption
+	GetEffectiveFirewalls      []gax.CallOption
+	Insert                     []gax.CallOption
+	List                       []gax.CallOption
+	ListPeeringRoutes          []gax.CallOption
+	Patch                      []gax.CallOption
+	RemovePeering              []gax.CallOption
+	RequestRemovePeering       []gax.CallOption
+	SwitchToCustomMode         []gax.CallOption
+	TestIamPermissions         []gax.CallOption
+	UpdatePeering              []gax.CallOption
 }
 
 func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 	return &NetworksCallOptions{
 		AddPeering: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CancelRequestRemovePeering: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Delete: []gax.CallOption{
@@ -142,6 +146,7 @@ type internalNetworksClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddPeering(context.Context, *computepb.AddPeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
+	CancelRequestRemovePeering(context.Context, *computepb.CancelRequestRemovePeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteNetworkRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetNetworkRequest, ...gax.CallOption) (*computepb.Network, error)
 	GetEffectiveFirewalls(context.Context, *computepb.GetEffectiveFirewallsNetworkRequest, ...gax.CallOption) (*computepb.NetworksGetEffectiveFirewallsResponse, error)
@@ -194,6 +199,13 @@ func (c *NetworksClient) Connection() *grpc.ClientConn {
 // AddPeering adds a peering to the specified network.
 func (c *NetworksClient) AddPeering(ctx context.Context, req *computepb.AddPeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddPeering(ctx, req, opts...)
+}
+
+// CancelRequestRemovePeering cancel requests to remove a peering from the specified network. Applicable
+// only for PeeringConnection with update_strategy=CONSENSUS.  Cancels a
+// request to remove a peering from the specified network.
+func (c *NetworksClient) CancelRequestRemovePeering(ctx context.Context, req *computepb.CancelRequestRemovePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.CancelRequestRemovePeering(ctx, req, opts...)
 }
 
 // Delete deletes the specified network.
@@ -397,6 +409,74 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddPeering")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// CancelRequestRemovePeering cancel requests to remove a peering from the specified network. Applicable
+// only for PeeringConnection with update_strategy=CONSENSUS.  Cancels a
+// request to remove a peering from the specified network.
+func (c *networksRESTClient) CancelRequestRemovePeering(ctx context.Context, req *computepb.CancelRequestRemovePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNetworksCancelRequestRemovePeeringRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/networks/%v/cancelRequestRemovePeering", req.GetProject(), req.GetNetwork())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CancelRequestRemovePeering[0:len((*c.CallOptions).CancelRequestRemovePeering):len((*c.CallOptions).CancelRequestRemovePeering)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelRequestRemovePeering")
 		if err != nil {
 			return err
 		}

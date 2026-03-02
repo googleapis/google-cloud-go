@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1650,8 +1650,13 @@ func (c *firestoreAdminGRPCClient) CloneDatabase(ctx context.Context, req *admin
 	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
 		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	if headerValue, ok := routingHeadersMap["project_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "project_id", headerValue)
+		delete(routingHeadersMap, "project_id")
+	}
+	if headerValue, ok := routingHeadersMap["database_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "database_id", headerValue)
+		delete(routingHeadersMap, "database_id")
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
 	hds := []string{"x-goog-request-params", routingHeaders}
@@ -3578,8 +3583,13 @@ func (c *firestoreAdminRESTClient) CloneDatabase(ctx context.Context, req *admin
 	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetPitrSnapshot().GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])) > 0 {
 		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetPitrSnapshot().GetDatabase())[1])
 	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	if headerValue, ok := routingHeadersMap["project_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "project_id", headerValue)
+		delete(routingHeadersMap, "project_id")
+	}
+	if headerValue, ok := routingHeadersMap["database_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "database_id", headerValue)
+		delete(routingHeadersMap, "database_id")
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
 	hds := []string{"x-goog-request-params", routingHeaders}

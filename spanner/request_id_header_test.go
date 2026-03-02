@@ -131,7 +131,6 @@ func TestRequestIDHeader_sentOnEveryClientCall(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -468,7 +467,6 @@ func TestRequestIDHeader_onRetriesWithFailedTransactionCommit(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -492,7 +490,7 @@ func TestRequestIDHeader_onRetriesWithFailedTransactionCommit(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}, // First commit fails.
 		&sppb.BeginTransactionRequest{},
@@ -531,7 +529,6 @@ func TestRequestIDHeader_retriesOnSessionNotFound(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -614,7 +611,6 @@ func TestRequestIDHeader_BatchDMLWithMultipleDML(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -643,7 +639,7 @@ func TestRequestIDHeader_BatchDMLWithMultipleDML(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -699,7 +695,6 @@ func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -710,7 +705,7 @@ func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
 
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}, nil},
+			{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []any{"foo1", 1}},
 		}},
 	}
 	iter := sc.BatchWrite(context.Background(), mutationGroups)
@@ -727,7 +722,7 @@ func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BatchWriteRequest{},
 	}, requests); err != nil {
 		t.Fatal(err)
@@ -762,7 +757,6 @@ func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -777,7 +771,7 @@ func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}, nil},
+			{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []any{"foo1", 1}},
 		}},
 	}
 	iter := sc.BatchWrite(context.Background(), mutationGroups)
@@ -795,7 +789,7 @@ func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BatchWriteRequest{},
 		&sppb.BatchWriteRequest{},
 	}, requests); err != nil {
@@ -833,7 +827,6 @@ func TestRequestIDHeader_ClientBatchWriteWithError(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -849,7 +842,7 @@ func TestRequestIDHeader_ClientBatchWriteWithError(t *testing.T) {
 	)
 	mutationGroups := []*MutationGroup{
 		{[]*Mutation{
-			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []any{"foo1", 1}, nil},
+			{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []any{"foo1", 1}},
 		}},
 	}
 	iter := sc.BatchWrite(context.Background(), mutationGroups)
@@ -911,7 +904,6 @@ func testRequestIDHeaderPartitionQuery(t *testing.T, mustErrorOnPartitionQuery b
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1083,7 +1075,6 @@ func TestRequestIDHeader_ReadWriteTransactionUpdate(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1112,7 +1103,7 @@ func TestRequestIDHeader_ReadWriteTransactionUpdate(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1171,7 +1162,6 @@ func TestRequestIDHeader_ReadWriteTransactionBatchUpdateWithOptions(t *testing.T
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1235,7 +1225,6 @@ func TestRequestIDHeader_multipleParallelCallsWithConventionalCustomerCalls(t *t
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1367,7 +1356,6 @@ func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1395,7 +1383,7 @@ func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 		&sppb.CommitRequest{},
@@ -1456,7 +1444,6 @@ func TestRequestIDHeader_BatchCreateSessions_Unavailable(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1485,8 +1472,8 @@ func TestRequestIDHeader_BatchCreateSessions_Unavailable(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 	}); err != nil {
 		t.Fatal(err)
@@ -1541,7 +1528,6 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *te
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1571,7 +1557,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *te
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -1625,7 +1611,6 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_InvalidArgument(t
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1671,7 +1656,6 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_ContextDeadlineEx
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1718,7 +1702,6 @@ func TestRequestIDHeader_Commit_ContextDeadlineExceeded(t *testing.T) {
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1758,42 +1741,16 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
 	}
 	clientConfig := ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 100,
-			MaxOpened: 400,
-			incStep:   25,
-		},
-		NumChannels:          4,
 		DisableNativeMetrics: true,
+		NumChannels:          4,
 	}
 
 	_, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
 	t.Cleanup(tearDown)
 	defer sc.Close()
-	// Wait for the session pool to be initialized.
-	sp := sc.idleSessions
-	waitFor(t, func() error {
-		sp.mu.Lock()
-		defer sp.mu.Unlock()
-		if uint64(sp.idleList.Len()) != clientConfig.MinOpened {
-			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
-		}
-		return nil
-	})
-	// Verify that we've seen request IDs for each channel number.
-	for channel := uint32(1); channel <= uint32(clientConfig.NumChannels); channel++ {
-		if !slices.ContainsFunc(interceptorTracker.unaryClientRequestIDSegments, func(segments *requestIDSegments) bool {
-			return segments.ChannelID == channel
-		}) {
-			t.Fatalf("missing channel %d in unary requests", channel)
-		}
-	}
 
-	// Execute MinOpened + 1 queries without closing the iterators.
-	// This will check out MinOpened + 1 sessions, which also triggers
-	// one more BatchCreateSessions call.
-	iterators := make([]*RowIterator, 0, clientConfig.MinOpened+1)
-	for i := 0; i < int(clientConfig.MinOpened)+1; i++ {
+	iterators := make([]*RowIterator, 0, clientConfig.NumChannels)
+	for i := 0; i < int(clientConfig.NumChannels); i++ {
 		iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
 		iterators = append(iterators, iter)
 		_, err := iter.Next()
@@ -1809,6 +1766,7 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 			t.Fatalf("missing channel %d in unary requests", channel)
 		}
 	}
+
 	// Verify that we've only seen channel numbers in the range [1, config.NumChannels].
 	for _, segmentsSlice := range [][]*requestIDSegments{interceptorTracker.streamClientRequestIDSegments, interceptorTracker.unaryClientRequestIDSegments} {
 		if slices.ContainsFunc(segmentsSlice, func(segments *requestIDSegments) bool {
@@ -1818,11 +1776,12 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 		}
 	}
 
-	if g, w := interceptorTracker.unaryCallCount(), uint64(5); g != w {
+	// only one CreateSession request
+	if g, w := interceptorTracker.unaryCallCount(), uint64(1); g != w {
 		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
 	}
 
-	if g, w := interceptorTracker.streamCallCount(), uint64(101); g != w {
+	if g, w := interceptorTracker.streamCallCount(), uint64(clientConfig.NumChannels); g != w {
 		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
 	}
 
@@ -1879,7 +1838,6 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuring
 			MinOpened:     2,
 			MaxOpened:     10,
 			WriteSessions: 0.2,
-			incStep:       2,
 		},
 		DisableNativeMetrics: true,
 	}
@@ -1913,7 +1871,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuring
 		}
 	}
 	if _, err := shouldHaveReceived(server.TestSpanner, []any{
-		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CreateSessionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},

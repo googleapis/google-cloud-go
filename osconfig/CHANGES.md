@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/osconfig%2Fv1.16.0) (2026-02-05)
+
+### Features
+
+* add new `ReportVmInventory` endpoint along with new request and response messages ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* A comment for enum `TaskDirective` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for field `DEFINITION` in enum `Classification` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for field `DESIRED_STATE_CHECK_POST_ENFORCEMENT` in enum `Type` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for field `DESIRED_STATE_ENFORCEMENT` in enum `Type` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for field `enforce` in message `.google.cloud.osconfig.agentendpoint.v1.OSPolicy` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for message `ExecResource` in message `.google.cloud.osconfig.agentendpoint.v1.OSPolicy` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for message `Inventory` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for message `OSPolicyResourceConfigStep` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for message `OSPolicy` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for message `PatchConfig` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* A comment for service `AgentEndpointService` is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.15.0...osconfig/v1.15.1) (2025-09-18)
 
 

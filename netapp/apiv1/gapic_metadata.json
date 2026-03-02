@@ -35,6 +35,11 @@
                 "CreateBackupVault"
               ]
             },
+            "CreateHostGroup": {
+              "methods": [
+                "CreateHostGroup"
+              ]
+            },
             "CreateKmsConfig": {
               "methods": [
                 "CreateKmsConfig"
@@ -83,6 +88,11 @@
             "DeleteBackupVault": {
               "methods": [
                 "DeleteBackupVault"
+              ]
+            },
+            "DeleteHostGroup": {
+              "methods": [
+                "DeleteHostGroup"
               ]
             },
             "DeleteKmsConfig": {
@@ -150,6 +160,11 @@
                 "GetBackupVault"
               ]
             },
+            "GetHostGroup": {
+              "methods": [
+                "GetHostGroup"
+              ]
+            },
             "GetKmsConfig": {
               "methods": [
                 "GetKmsConfig"
@@ -210,6 +225,11 @@
                 "ListBackups"
               ]
             },
+            "ListHostGroups": {
+              "methods": [
+                "ListHostGroups"
+              ]
+            },
             "ListKmsConfigs": {
               "methods": [
                 "ListKmsConfigs"
@@ -248,6 +268,11 @@
             "ListVolumes": {
               "methods": [
                 "ListVolumes"
+              ]
+            },
+            "RestoreBackupFiles": {
+              "methods": [
+                "RestoreBackupFiles"
               ]
             },
             "ResumeReplication": {
@@ -298,6 +323,11 @@
             "UpdateBackupVault": {
               "methods": [
                 "UpdateBackupVault"
+              ]
+            },
+            "UpdateHostGroup": {
+              "methods": [
+                "UpdateHostGroup"
               ]
             },
             "UpdateKmsConfig": {
@@ -370,6 +400,11 @@
                 "CreateBackupVault"
               ]
             },
+            "CreateHostGroup": {
+              "methods": [
+                "CreateHostGroup"
+              ]
+            },
             "CreateKmsConfig": {
               "methods": [
                 "CreateKmsConfig"
@@ -418,6 +453,11 @@
             "DeleteBackupVault": {
               "methods": [
                 "DeleteBackupVault"
+              ]
+            },
+            "DeleteHostGroup": {
+              "methods": [
+                "DeleteHostGroup"
               ]
             },
             "DeleteKmsConfig": {
@@ -485,6 +525,11 @@
                 "GetBackupVault"
               ]
             },
+            "GetHostGroup": {
+              "methods": [
+                "GetHostGroup"
+              ]
+            },
             "GetKmsConfig": {
               "methods": [
                 "GetKmsConfig"
@@ -545,6 +590,11 @@
                 "ListBackups"
               ]
             },
+            "ListHostGroups": {
+              "methods": [
+                "ListHostGroups"
+              ]
+            },
             "ListKmsConfigs": {
               "methods": [
                 "ListKmsConfigs"
@@ -583,6 +633,11 @@
             "ListVolumes": {
               "methods": [
                 "ListVolumes"
+              ]
+            },
+            "RestoreBackupFiles": {
+              "methods": [
+                "RestoreBackupFiles"
               ]
             },
             "ResumeReplication": {
@@ -633,6 +688,11 @@
             "UpdateBackupVault": {
               "methods": [
                 "UpdateBackupVault"
+              ]
+            },
+            "UpdateHostGroup": {
+              "methods": [
+                "UpdateHostGroup"
               ]
             },
             "UpdateKmsConfig": {

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ const (
 	AgentEndpointService_ReportTaskComplete_FullMethodName      = "/google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReportTaskComplete"
 	AgentEndpointService_RegisterAgent_FullMethodName           = "/google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/RegisterAgent"
 	AgentEndpointService_ReportInventory_FullMethodName         = "/google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReportInventory"
+	AgentEndpointService_ReportVmInventory_FullMethodName       = "/google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReportVmInventory"
 )
 
 // AgentEndpointServiceClient is the client API for AgentEndpointService service.
@@ -59,6 +60,8 @@ type AgentEndpointServiceClient interface {
 	RegisterAgent(ctx context.Context, in *RegisterAgentRequest, opts ...grpc.CallOption) (*RegisterAgentResponse, error)
 	// Reports the VMs current inventory.
 	ReportInventory(ctx context.Context, in *ReportInventoryRequest, opts ...grpc.CallOption) (*ReportInventoryResponse, error)
+	// Reports the VMs current inventory.
+	ReportVmInventory(ctx context.Context, in *ReportVmInventoryRequest, opts ...grpc.CallOption) (*ReportVmInventoryResponse, error)
 }
 
 type agentEndpointServiceClient struct {
@@ -146,6 +149,15 @@ func (c *agentEndpointServiceClient) ReportInventory(ctx context.Context, in *Re
 	return out, nil
 }
 
+func (c *agentEndpointServiceClient) ReportVmInventory(ctx context.Context, in *ReportVmInventoryRequest, opts ...grpc.CallOption) (*ReportVmInventoryResponse, error) {
+	out := new(ReportVmInventoryResponse)
+	err := c.cc.Invoke(ctx, AgentEndpointService_ReportVmInventory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AgentEndpointServiceServer is the server API for AgentEndpointService service.
 // All implementations should embed UnimplementedAgentEndpointServiceServer
 // for forward compatibility
@@ -163,6 +175,8 @@ type AgentEndpointServiceServer interface {
 	RegisterAgent(context.Context, *RegisterAgentRequest) (*RegisterAgentResponse, error)
 	// Reports the VMs current inventory.
 	ReportInventory(context.Context, *ReportInventoryRequest) (*ReportInventoryResponse, error)
+	// Reports the VMs current inventory.
+	ReportVmInventory(context.Context, *ReportVmInventoryRequest) (*ReportVmInventoryResponse, error)
 }
 
 // UnimplementedAgentEndpointServiceServer should be embedded to have forward compatible implementations.
@@ -186,6 +200,9 @@ func (UnimplementedAgentEndpointServiceServer) RegisterAgent(context.Context, *R
 }
 func (UnimplementedAgentEndpointServiceServer) ReportInventory(context.Context, *ReportInventoryRequest) (*ReportInventoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportInventory not implemented")
+}
+func (UnimplementedAgentEndpointServiceServer) ReportVmInventory(context.Context, *ReportVmInventoryRequest) (*ReportVmInventoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReportVmInventory not implemented")
 }
 
 // UnsafeAgentEndpointServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -310,6 +327,24 @@ func _AgentEndpointService_ReportInventory_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AgentEndpointService_ReportVmInventory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReportVmInventoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentEndpointServiceServer).ReportVmInventory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentEndpointService_ReportVmInventory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentEndpointServiceServer).ReportVmInventory(ctx, req.(*ReportVmInventoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AgentEndpointService_ServiceDesc is the grpc.ServiceDesc for AgentEndpointService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -336,6 +371,10 @@ var AgentEndpointService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReportInventory",
 			Handler:    _AgentEndpointService_ReportInventory_Handler,
+		},
+		{
+			MethodName: "ReportVmInventory",
+			Handler:    _AgentEndpointService_ReportVmInventory_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

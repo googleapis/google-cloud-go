@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudquotas/apiv1beta",
-    "version": "1.4.0",
+    "version": "1.6.0",
     "language": "GO",
     "apis": [
       {
@@ -290,7 +290,7 @@
     {
       "regionTag": "cloudquotas_v1beta_generated_QuotaAdjusterSettingsManager_GetQuotaAdjusterSettings_sync",
       "title": "cloudquotas GetQuotaAdjusterSettings Sample",
-      "description": "GetQuotaAdjusterSettings rPC Method for getting QuotaAdjusterSettings based on the request",
+      "description": "GetQuotaAdjusterSettings gets the QuotaAdjusterSettings for the specified resource.",
       "file": "QuotaAdjusterSettingsManagerClient/GetQuotaAdjusterSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -336,7 +336,7 @@
     {
       "regionTag": "cloudquotas_v1beta_generated_QuotaAdjusterSettingsManager_UpdateQuotaAdjusterSettings_sync",
       "title": "cloudquotas UpdateQuotaAdjusterSettings Sample",
-      "description": "UpdateQuotaAdjusterSettings rPC Method for updating QuotaAdjusterSettings based on the request",
+      "description": "UpdateQuotaAdjusterSettings updates the QuotaAdjusterSettings for the specified resource.",
       "file": "QuotaAdjusterSettingsManagerClient/UpdateQuotaAdjusterSettings/main.go",
       "language": "GO",
       "clientMethod": {

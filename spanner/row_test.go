@@ -2837,3 +2837,11 @@ func TestSelectAll(t *testing.T) {
 func stringPointer(s string) *string {
 	return &s
 }
+
+func float32Pointer(f float32) *float32 {
+	return &f
+}
+
+func float64Pointer(f float64) *float64 {
+	return &f
+}

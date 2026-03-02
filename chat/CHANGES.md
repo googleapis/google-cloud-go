@@ -1,5 +1,28 @@
 # Changes
 
+## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.18.0) (2026-02-05)
+
+### Features
+
+* Addition of QuoteType enum, QuotedMessageSnapshot &amp; ForwardMetadata in the QuotedMessageMetadata proto ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
+## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.17.0) (2025-12-18)
+
+### Features
+
+* Add accessory widget support for private messages ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Add app authorization support to space APIs ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Addition of GMAIL_MESSAGE value for RichLinkType enum in the RichLinkMetadata proto ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* Improve documentation of attachment.proto, event_payload.proto and space.proto ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.16.0) (2025-11-06)
 
 ### Features

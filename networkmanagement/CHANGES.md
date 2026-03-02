@@ -1,5 +1,11 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.22.0) (2026-01-29)
+
+### Features
+
+* add fields and messages for GKE Pods and IP masquerading ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.21.0) (2025-11-06)
 
 ### Features

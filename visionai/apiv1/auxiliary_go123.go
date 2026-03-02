@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	"github.com/googleapis/gax-go/v2/iterator"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 // All returns an iterator. If an error is returned by the iterator, the
@@ -113,6 +114,12 @@ func (it *IndexedAssetIterator) All() iter.Seq2[*visionaipb.IndexedAsset, error]
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *InstanceIterator) All() iter.Seq2[*visionaipb.Instance, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

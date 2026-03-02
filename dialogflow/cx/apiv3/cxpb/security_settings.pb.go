@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -891,6 +891,9 @@ type SecuritySettings_AudioExportSettings struct {
 	// storage.buckets.setIamPolicy.
 	GcsBucket string `protobuf:"bytes,1,opt,name=gcs_bucket,json=gcsBucket,proto3" json:"gcs_bucket,omitempty"`
 	// Filename pattern for exported audio.
+	// {conversation} and {timestamp} are placeholders that will be replaced
+	// with the conversation ID and epoch micros of the conversation.
+	// For example, "{conversation}/recording_{timestamp}.mulaw".
 	AudioExportPattern string `protobuf:"bytes,2,opt,name=audio_export_pattern,json=audioExportPattern,proto3" json:"audio_export_pattern,omitempty"`
 	// Enable audio redaction if it is true.
 	// Note that this only redacts end-user audio data;

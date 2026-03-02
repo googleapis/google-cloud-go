@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -891,7 +891,7 @@ func (*OSPolicy_Resource_RepositoryResource_Zypper) isOSPolicy_Resource_Reposito
 func (*OSPolicy_Resource_RepositoryResource_Goo) isOSPolicy_Resource_RepositoryResource_Repository() {
 }
 
-// A resource that contains custom validation and enforcement steps.
+// A resource that contains custom validation and execution steps.
 type OSPolicy_Resource_ExecResource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -903,7 +903,7 @@ type OSPolicy_Resource_ExecResource struct {
 	// a failure running validate.
 	Validate *OSPolicy_Resource_ExecResource_Exec `protobuf:"bytes,1,opt,name=validate,proto3" json:"validate,omitempty"`
 	// What to run to bring this resource into the desired state.
-	// A exit code of 100 indicates "success", any other exit code idicates a
+	// A exit code of 100 indicates "success", any other exit code indicates a
 	// failure running enforce.
 	Enforce *OSPolicy_Resource_ExecResource_Exec `protobuf:"bytes,2,opt,name=enforce,proto3" json:"enforce,omitempty"`
 }

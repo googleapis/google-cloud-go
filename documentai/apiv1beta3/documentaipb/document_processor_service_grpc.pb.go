@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,6 +117,7 @@ type DocumentProcessorServiceClient interface {
 	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1beta3.DocumentProcessorService.BatchProcessDocuments].
 	SetDefaultProcessorVersion(ctx context.Context, in *SetDefaultProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Send a document for Human Review. The input document should be processed by
 	// the specified processor.
 	ReviewDocument(ctx context.Context, in *ReviewDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -301,6 +302,7 @@ func (c *documentProcessorServiceClient) SetDefaultProcessorVersion(ctx context.
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *documentProcessorServiceClient) ReviewDocument(ctx context.Context, in *ReviewDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, DocumentProcessorService_ReviewDocument_FullMethodName, in, out, opts...)
@@ -403,6 +405,7 @@ type DocumentProcessorServiceServer interface {
 	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1beta3.DocumentProcessorService.BatchProcessDocuments].
 	SetDefaultProcessorVersion(context.Context, *SetDefaultProcessorVersionRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Send a document for Human Review. The input document should be processed by
 	// the specified processor.
 	ReviewDocument(context.Context, *ReviewDocumentRequest) (*longrunningpb.Operation, error)

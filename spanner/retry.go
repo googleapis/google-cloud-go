@@ -88,13 +88,13 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	return delay, true
 }
 
-// runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound executes the given function and
-// retries it if it returns an Aborted, Session not found error or certain Internal errors. The retry
+// runWithRetryOnAbortedOrFailedInlineBegin executes the given function and
+// retries it if it returns an Aborted, or certain Internal errors. The retry
 // is delayed if the error was Aborted or Internal error. The delay between retries is the delay
 // returned by Cloud Spanner, or if none is returned, the calculated delay with
 // a minimum of 10ms and maximum of 32s. There is no delay before the retry if
 // the error was Session not found or failed inline begin transaction.
-func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Context, f func(context.Context) error) error {
+func runWithRetryOnAbortedOrFailedInlineBegin(ctx context.Context, f func(context.Context) error) error {
 	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.ResourceExhausted, codes.Internal)
 	funcWithRetry := func(ctx context.Context) error {
 		for {
@@ -119,10 +119,6 @@ func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Conte
 					return err
 				}
 				retryErr = err
-			}
-			if isSessionNotFoundError(retryErr) {
-				trace.TracePrintf(ctx, nil, "Retrying after Session not found")
-				continue
 			}
 			if isFailedInlineBeginTransaction(retryErr) {
 				trace.TracePrintf(ctx, nil, "Retrying after failed inline begin transaction")

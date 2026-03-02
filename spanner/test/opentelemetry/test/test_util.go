@@ -22,7 +22,6 @@ package test
 import (
 	"context"
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -32,12 +31,9 @@ import (
 )
 
 var (
-	isMultiplexEnabled = getMultiplexEnableFlag()
+	// Multiplexed sessions are always enabled as session pool has been removed.
+	isMultiplexEnabled = true
 )
-
-func getMultiplexEnableFlag() bool {
-	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
-}
 
 func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig, clientOpts ...option.ClientOption) (server *stestutil.MockedSpannerInMemTestServer, client *spanner.Client, teardown func()) {
 	server, opts, serverTeardown := stestutil.NewMockedSpannerInMemTestServer(t)

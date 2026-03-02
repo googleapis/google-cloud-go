@@ -1,0 +1,2625 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/cloudsecuritycompliance/apiv1",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.cloudsecuritycompliance.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_CancelOperation_sync",
+      "title": "cloudsecuritycompliance CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AuditClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_CreateFrameworkAudit_sync",
+      "title": "cloudsecuritycompliance CreateFrameworkAudit Sample",
+      "description": "CreateFrameworkAudit creates an audit scope report for a framework.",
+      "file": "AuditClient/CreateFrameworkAudit/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFrameworkAudit",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.CreateFrameworkAudit",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.CreateFrameworkAuditRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFrameworkAuditOperation",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "CreateFrameworkAudit",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit.CreateFrameworkAudit",
+          "service": {
+            "shortName": "Audit",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_DeleteOperation_sync",
+      "title": "cloudsecuritycompliance DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "AuditClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GenerateFrameworkAuditScopeReport_sync",
+      "title": "cloudsecuritycompliance GenerateFrameworkAuditScopeReport Sample",
+      "description": "GenerateFrameworkAuditScopeReport generates an audit scope report for a framework.",
+      "file": "AuditClient/GenerateFrameworkAuditScopeReport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateFrameworkAuditScopeReport",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.GenerateFrameworkAuditScopeReport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.GenerateFrameworkAuditScopeReportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.GenerateFrameworkAuditScopeReportResponse",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "GenerateFrameworkAuditScopeReport",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit.GenerateFrameworkAuditScopeReport",
+          "service": {
+            "shortName": "Audit",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GetFrameworkAudit_sync",
+      "title": "cloudsecuritycompliance GetFrameworkAudit Sample",
+      "description": "GetFrameworkAudit gets the details for a framework audit.",
+      "file": "AuditClient/GetFrameworkAudit/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFrameworkAudit",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.GetFrameworkAudit",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.GetFrameworkAuditRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.FrameworkAudit",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "GetFrameworkAudit",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit.GetFrameworkAudit",
+          "service": {
+            "shortName": "Audit",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GetLocation_sync",
+      "title": "cloudsecuritycompliance GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "AuditClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GetOperation_sync",
+      "title": "cloudsecuritycompliance GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AuditClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_ListFrameworkAudits_sync",
+      "title": "cloudsecuritycompliance ListFrameworkAudits Sample",
+      "description": "ListFrameworkAudits lists the framework audits for a given organization, folder, or project.",
+      "file": "AuditClient/ListFrameworkAudits/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFrameworkAudits",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.ListFrameworkAudits",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListFrameworkAuditsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FrameworkAuditIterator",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "ListFrameworkAudits",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit.ListFrameworkAudits",
+          "service": {
+            "shortName": "Audit",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Audit"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_ListLocations_sync",
+      "title": "cloudsecuritycompliance ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "AuditClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Audit_ListOperations_sync",
+      "title": "cloudsecuritycompliance ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AuditClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AuditClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.AuditClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_CalculateEffectiveCmEnrollment_sync",
+      "title": "cloudsecuritycompliance CalculateEffectiveCmEnrollment Sample",
+      "description": "CalculateEffectiveCmEnrollment calculates the effective Compliance Manager enrollment for a resource.\nAn effective enrollment is either a direct enrollment of a\nresource (if it exists), or an enrollment of the closest parent of a\nresource that's enrolled in Compliance Manager.",
+      "file": "CmEnrollmentClient/CalculateEffectiveCmEnrollment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CalculateEffectiveCmEnrollment",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.CalculateEffectiveCmEnrollment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.CalculateEffectiveCmEnrollmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.CalculateEffectiveCmEnrollmentResponse",
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "CalculateEffectiveCmEnrollment",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentService.CalculateEffectiveCmEnrollment",
+          "service": {
+            "shortName": "CmEnrollmentService",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_CancelOperation_sync",
+      "title": "cloudsecuritycompliance CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmEnrollmentClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_DeleteOperation_sync",
+      "title": "cloudsecuritycompliance DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmEnrollmentClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_GetLocation_sync",
+      "title": "cloudsecuritycompliance GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CmEnrollmentClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_GetOperation_sync",
+      "title": "cloudsecuritycompliance GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CmEnrollmentClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_ListLocations_sync",
+      "title": "cloudsecuritycompliance ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CmEnrollmentClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_ListOperations_sync",
+      "title": "cloudsecuritycompliance ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CmEnrollmentClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_UpdateCmEnrollment_sync",
+      "title": "cloudsecuritycompliance UpdateCmEnrollment Sample",
+      "description": "UpdateCmEnrollment updates the Compliance Manager enrollment for a resource to facilitate\nan audit.\nUse this method to enroll a resource in Compliance Manager or to\ncreate or update feature-specific configurations.",
+      "file": "CmEnrollmentClient/UpdateCmEnrollment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCmEnrollment",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient.UpdateCmEnrollment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.UpdateCmEnrollmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.CmEnrollment",
+        "client": {
+          "shortName": "CmEnrollmentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentClient"
+        },
+        "method": {
+          "shortName": "UpdateCmEnrollment",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentService.UpdateCmEnrollment",
+          "service": {
+            "shortName": "CmEnrollmentService",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.CmEnrollmentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_CancelOperation_sync",
+      "title": "cloudsecuritycompliance CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_CreateCloudControl_sync",
+      "title": "cloudsecuritycompliance CreateCloudControl Sample",
+      "description": "CreateCloudControl creates a custom cloud control in a given parent\nresource.\nYou can't create built-in cloud controls because those are managed by\nGoogle.",
+      "file": "ConfigClient/CreateCloudControl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCloudControl",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.CreateCloudControl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.CreateCloudControlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.CloudControl",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateCloudControl",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.CreateCloudControl",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_CreateFramework_sync",
+      "title": "cloudsecuritycompliance CreateFramework Sample",
+      "description": "CreateFramework creates a custom framework in a given parent resource.\nYou can't create built-in frameworks because those are managed by\nGoogle.",
+      "file": "ConfigClient/CreateFramework/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFramework",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.CreateFramework",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.CreateFrameworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.Framework",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateFramework",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.CreateFramework",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_DeleteCloudControl_sync",
+      "title": "cloudsecuritycompliance DeleteCloudControl Sample",
+      "description": "DeleteCloudControl deletes a custom cloud control, including all its\nmajor and minor revisions. Consider the following: \n\n- You can't delete built-in cloud controls. You can only delete cloud\ncontrols with type `CUSTOM`.\n- You can't delete cloud controls if any of the versions are referenced\nby a framework.\n- You can't restore a deleted cloud control. This action is permanent.",
+      "file": "ConfigClient/DeleteCloudControl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCloudControl",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.DeleteCloudControl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.DeleteCloudControlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteCloudControl",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.DeleteCloudControl",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_DeleteFramework_sync",
+      "title": "cloudsecuritycompliance DeleteFramework Sample",
+      "description": "DeleteFramework deletes a custom framework, including all its major and\nminor revisions. Consider the following: \n\n- You can't delete built-in frameworks. You can only delete frameworks\nwith type `CUSTOM`.\n- You can't delete frameworks that are deployed to a resource.\n- You can't restore a deleted framework. This action is permanent.",
+      "file": "ConfigClient/DeleteFramework/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFramework",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.DeleteFramework",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.DeleteFrameworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteFramework",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.DeleteFramework",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_DeleteOperation_sync",
+      "title": "cloudsecuritycompliance DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConfigClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetCloudControl_sync",
+      "title": "cloudsecuritycompliance GetCloudControl Sample",
+      "description": "GetCloudControl gets details about a cloud control.\nThis method retrieves the latest major version of a cloud control that\nyou identify by name.\n\nBy default, the latest major version of the cloud control is returned.\nTo retrieve a specific major version, include `major_revision_id` in\nthe request.",
+      "file": "ConfigClient/GetCloudControl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCloudControl",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.GetCloudControl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.GetCloudControlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.CloudControl",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetCloudControl",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.GetCloudControl",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetFramework_sync",
+      "title": "cloudsecuritycompliance GetFramework Sample",
+      "description": "GetFramework gets details about a framework.\nThis method retrieves the latest major version of the framework.\n\nTo retrieve a specific major version, include `major_revision_id` in\nthe request.",
+      "file": "ConfigClient/GetFramework/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFramework",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.GetFramework",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.GetFrameworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.Framework",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetFramework",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.GetFramework",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetLocation_sync",
+      "title": "cloudsecuritycompliance GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ConfigClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetOperation_sync",
+      "title": "cloudsecuritycompliance GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListCloudControls_sync",
+      "title": "cloudsecuritycompliance ListCloudControls Sample",
+      "description": "ListCloudControls lists the cloud controls (both built-in and custom) that are available\nin a given parent resource. The latest major version of each cloud control\nis returned.\nThis method supports pagination.",
+      "file": "ConfigClient/ListCloudControls/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCloudControls",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.ListCloudControls",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListCloudControlsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CloudControlIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListCloudControls",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.ListCloudControls",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListFrameworks_sync",
+      "title": "cloudsecuritycompliance ListFrameworks Sample",
+      "description": "ListFrameworks lists the frameworks (both built-in and custom) that are available within\nthe parent resource. The latest major version of each framework is\nreturned.\nThis method supports pagination.",
+      "file": "ConfigClient/ListFrameworks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFrameworks",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.ListFrameworks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListFrameworksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FrameworkIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListFrameworks",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.ListFrameworks",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListLocations_sync",
+      "title": "cloudsecuritycompliance ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ConfigClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListOperations_sync",
+      "title": "cloudsecuritycompliance ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_UpdateCloudControl_sync",
+      "title": "cloudsecuritycompliance UpdateCloudControl Sample",
+      "description": "UpdateCloudControl updates a custom cloud control.\nThis method allows for partial updates of a cloud control. Use the\n`update_mask` to specify which fields to update. Consider the following: \n\n- If you provide an `update_mask`, only the fields that are specified\nin the mask are updated.\n- If you don't provide an `update_mask`, all the fields that are present\nin the request's `cloud_control` body are used to overwrite the existing\nresource.\n\nYou can only update cloud controls with the `CUSTOM` type.\nA successful update creates a new version of the cloud control.",
+      "file": "ConfigClient/UpdateCloudControl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCloudControl",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.UpdateCloudControl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.UpdateCloudControlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.CloudControl",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateCloudControl",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.UpdateCloudControl",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Config_UpdateFramework_sync",
+      "title": "cloudsecuritycompliance UpdateFramework Sample",
+      "description": "UpdateFramework updates a custom framework.\nThis method allows for partial updates of a framework. Use the\n`update_mask` to specify which fields to update. Consider the following: \n\n- If you provide an `update_mask`, only the fields that are specified\nin the mask are updated.\n- If you don't provide an `update_mask`, all the fields that are present\nin the request's `framework` body are used to overwrite the existing\nresource.\n\nYou can only update frameworks with the `CUSTOM` type.\nA successful update creates a new version of the framework.",
+      "file": "ConfigClient/UpdateFramework/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFramework",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient.UpdateFramework",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.UpdateFrameworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.Framework",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateFramework",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Config.UpdateFramework",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_CancelOperation_sync",
+      "title": "cloudsecuritycompliance CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_CreateFrameworkDeployment_sync",
+      "title": "cloudsecuritycompliance CreateFrameworkDeployment Sample",
+      "description": "CreateFrameworkDeployment creates a framework deployment in a given parent resource. A\nframework deployment lets you assign a particular framework version to an\norganization, folder, or project so that you can control and monitor\nthose resources using the framework's cloud controls.",
+      "file": "DeploymentClient/CreateFrameworkDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFrameworkDeployment",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.CreateFrameworkDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.CreateFrameworkDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFrameworkDeploymentOperation",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "CreateFrameworkDeployment",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment.CreateFrameworkDeployment",
+          "service": {
+            "shortName": "Deployment",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_DeleteFrameworkDeployment_sync",
+      "title": "cloudsecuritycompliance DeleteFrameworkDeployment Sample",
+      "description": "DeleteFrameworkDeployment deletes a framework deployment.",
+      "file": "DeploymentClient/DeleteFrameworkDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFrameworkDeployment",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.DeleteFrameworkDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.DeleteFrameworkDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFrameworkDeploymentOperation",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "DeleteFrameworkDeployment",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment.DeleteFrameworkDeployment",
+          "service": {
+            "shortName": "Deployment",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_DeleteOperation_sync",
+      "title": "cloudsecuritycompliance DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetCloudControlDeployment_sync",
+      "title": "cloudsecuritycompliance GetCloudControlDeployment Sample",
+      "description": "GetCloudControlDeployment gets details about a cloud control deployment.",
+      "file": "DeploymentClient/GetCloudControlDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCloudControlDeployment",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.GetCloudControlDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.GetCloudControlDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.CloudControlDeployment",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "GetCloudControlDeployment",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment.GetCloudControlDeployment",
+          "service": {
+            "shortName": "Deployment",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetFrameworkDeployment_sync",
+      "title": "cloudsecuritycompliance GetFrameworkDeployment Sample",
+      "description": "GetFrameworkDeployment gets details about a framework deployment.",
+      "file": "DeploymentClient/GetFrameworkDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFrameworkDeployment",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.GetFrameworkDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.GetFrameworkDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.FrameworkDeployment",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "GetFrameworkDeployment",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment.GetFrameworkDeployment",
+          "service": {
+            "shortName": "Deployment",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetLocation_sync",
+      "title": "cloudsecuritycompliance GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DeploymentClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetOperation_sync",
+      "title": "cloudsecuritycompliance GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListCloudControlDeployments_sync",
+      "title": "cloudsecuritycompliance ListCloudControlDeployments Sample",
+      "description": "ListCloudControlDeployments lists the cloud conrol deployments in a given parent resource.",
+      "file": "DeploymentClient/ListCloudControlDeployments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCloudControlDeployments",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.ListCloudControlDeployments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListCloudControlDeploymentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CloudControlDeploymentIterator",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "ListCloudControlDeployments",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment.ListCloudControlDeployments",
+          "service": {
+            "shortName": "Deployment",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListFrameworkDeployments_sync",
+      "title": "cloudsecuritycompliance ListFrameworkDeployments Sample",
+      "description": "ListFrameworkDeployments lists the framework deployments in a given parent resource.",
+      "file": "DeploymentClient/ListFrameworkDeployments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFrameworkDeployments",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.ListFrameworkDeployments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListFrameworkDeploymentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FrameworkDeploymentIterator",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "ListFrameworkDeployments",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment.ListFrameworkDeployments",
+          "service": {
+            "shortName": "Deployment",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Deployment"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListLocations_sync",
+      "title": "cloudsecuritycompliance ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DeploymentClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListOperations_sync",
+      "title": "cloudsecuritycompliance ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DeploymentClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.DeploymentClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_AggregateFrameworkComplianceReport_sync",
+      "title": "cloudsecuritycompliance AggregateFrameworkComplianceReport Sample",
+      "description": "AggregateFrameworkComplianceReport gets the aggregated compliance report over time for a given scope.",
+      "file": "MonitoringClient/AggregateFrameworkComplianceReport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregateFrameworkComplianceReport",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.AggregateFrameworkComplianceReport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.AggregateFrameworkComplianceReportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.AggregateFrameworkComplianceReportResponse",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "AggregateFrameworkComplianceReport",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring.AggregateFrameworkComplianceReport",
+          "service": {
+            "shortName": "Monitoring",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_CancelOperation_sync",
+      "title": "cloudsecuritycompliance CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "MonitoringClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_DeleteOperation_sync",
+      "title": "cloudsecuritycompliance DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "MonitoringClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_FetchFrameworkComplianceReport_sync",
+      "title": "cloudsecuritycompliance FetchFrameworkComplianceReport Sample",
+      "description": "FetchFrameworkComplianceReport fetches the framework compliance report for a given scope.",
+      "file": "MonitoringClient/FetchFrameworkComplianceReport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchFrameworkComplianceReport",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.FetchFrameworkComplianceReport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.FetchFrameworkComplianceReportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudsecuritycompliancepb.FrameworkComplianceReport",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "FetchFrameworkComplianceReport",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring.FetchFrameworkComplianceReport",
+          "service": {
+            "shortName": "Monitoring",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_GetLocation_sync",
+      "title": "cloudsecuritycompliance GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "MonitoringClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_GetOperation_sync",
+      "title": "cloudsecuritycompliance GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "MonitoringClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListControlComplianceSummaries_sync",
+      "title": "cloudsecuritycompliance ListControlComplianceSummaries Sample",
+      "description": "ListControlComplianceSummaries lists the control compliance summary for a given scope.",
+      "file": "MonitoringClient/ListControlComplianceSummaries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListControlComplianceSummaries",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.ListControlComplianceSummaries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListControlComplianceSummariesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ControlComplianceSummaryIterator",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "ListControlComplianceSummaries",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring.ListControlComplianceSummaries",
+          "service": {
+            "shortName": "Monitoring",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListFindingSummaries_sync",
+      "title": "cloudsecuritycompliance ListFindingSummaries Sample",
+      "description": "ListFindingSummaries lists the finding summary by category for a given scope.",
+      "file": "MonitoringClient/ListFindingSummaries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFindingSummaries",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.ListFindingSummaries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListFindingSummariesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FindingSummaryIterator",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "ListFindingSummaries",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFindingSummaries",
+          "service": {
+            "shortName": "Monitoring",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListFrameworkComplianceSummaries_sync",
+      "title": "cloudsecuritycompliance ListFrameworkComplianceSummaries Sample",
+      "description": "ListFrameworkComplianceSummaries lists the framework compliance summary for a given scope.",
+      "file": "MonitoringClient/ListFrameworkComplianceSummaries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFrameworkComplianceSummaries",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.ListFrameworkComplianceSummaries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudsecuritycompliancepb.ListFrameworkComplianceSummariesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FrameworkComplianceSummaryIterator",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "ListFrameworkComplianceSummaries",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFrameworkComplianceSummaries",
+          "service": {
+            "shortName": "Monitoring",
+            "fullName": "google.cloud.cloudsecuritycompliance.v1.Monitoring"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListLocations_sync",
+      "title": "cloudsecuritycompliance ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "MonitoringClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListOperations_sync",
+      "title": "cloudsecuritycompliance ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "MonitoringClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "MonitoringClient",
+          "fullName": "google.cloud.cloudsecuritycompliance.v1.MonitoringClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ var newRegionInstanceGroupManagersClientHook clientHook
 // RegionInstanceGroupManagersCallOptions contains the retry settings for each method of RegionInstanceGroupManagersClient.
 type RegionInstanceGroupManagersCallOptions struct {
 	AbandonInstances         []gax.CallOption
+	AdoptInstances           []gax.CallOption
 	ApplyUpdatesToInstances  []gax.CallOption
 	CreateInstances          []gax.CallOption
 	Delete                   []gax.CallOption
@@ -73,6 +74,9 @@ type RegionInstanceGroupManagersCallOptions struct {
 func defaultRegionInstanceGroupManagersRESTCallOptions() *RegionInstanceGroupManagersCallOptions {
 	return &RegionInstanceGroupManagersCallOptions{
 		AbandonInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AdoptInstances: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		ApplyUpdatesToInstances: []gax.CallOption{
@@ -189,6 +193,7 @@ type internalRegionInstanceGroupManagersClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AbandonInstances(context.Context, *computepb.AbandonInstancesRegionInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	AdoptInstances(context.Context, *computepb.AdoptInstancesRegionInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	ApplyUpdatesToInstances(context.Context, *computepb.ApplyUpdatesToInstancesRegionInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	CreateInstances(context.Context, *computepb.CreateInstancesRegionInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteRegionInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
@@ -269,6 +274,18 @@ func (c *RegionInstanceGroupManagersClient) Connection() *grpc.ClientConn {
 // You can specify a maximum of 1000 instances with this method per request.
 func (c *RegionInstanceGroupManagersClient) AbandonInstances(ctx context.Context, req *computepb.AbandonInstancesRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AbandonInstances(ctx, req, opts...)
+}
+
+// AdoptInstances flags the specified instances to be adopted to the managed instance
+// group. Adopting an instance does not change the instance status, but it
+// adds the instance to any target pools that are applied by the managed
+// instance group. This method increases the targetSize of the managed
+// instance group by the number of instances that you adopt. This operation
+// is marked as DONE when the action is scheduled even if the instances have
+// not been adopted to the group yet. You must separately verify the status
+// of the adopting action with the listManagedInstances method.
+func (c *RegionInstanceGroupManagersClient) AdoptInstances(ctx context.Context, req *computepb.AdoptInstancesRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.AdoptInstances(ctx, req, opts...)
 }
 
 // ApplyUpdatesToInstances apply updates to selected instances the managed instance group.
@@ -738,6 +755,80 @@ func (c *regionInstanceGroupManagersRESTClient) AbandonInstances(ctx context.Con
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AbandonInstances")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// AdoptInstances flags the specified instances to be adopted to the managed instance
+// group. Adopting an instance does not change the instance status, but it
+// adds the instance to any target pools that are applied by the managed
+// instance group. This method increases the targetSize of the managed
+// instance group by the number of instances that you adopt. This operation
+// is marked as DONE when the action is scheduled even if the instances have
+// not been adopted to the group yet. You must separately verify the status
+// of the adopting action with the listManagedInstances method.
+func (c *regionInstanceGroupManagersRESTClient) AdoptInstances(ctx context.Context, req *computepb.AdoptInstancesRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionInstanceGroupManagersAdoptInstancesRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instanceGroupManagers/%v/adoptInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AdoptInstances[0:len((*c.CallOptions).AdoptInstances):len((*c.CallOptions).AdoptInstances)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AdoptInstances")
 		if err != nil {
 			return err
 		}

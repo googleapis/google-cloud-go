@@ -43,14 +43,6 @@ try3 go mod download
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
-case $JOB_TYPE in
-integration-with-regular-session )
-  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS=false
-  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW=false
-  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS=false
-  echo "running presubmit with regular sessions enabled: $GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"
-  ;;
-esac
 
 # Run tests in the current directory and tee output to log file,
 # to be pushed to GCS as artifact.
@@ -69,11 +61,10 @@ runPresubmitTests() {
       tee sponge_log.log
   fi
 
-  # Skip running integration tests since Emulator does not support Multiplexed sessions
   # Run integration tests against an emulator.
-#  if [ -f "emulator_test.sh" ]; then
-#    ./emulator_test.sh
-#  fi
+  if [ -f "emulator_test.sh" ]; then
+    ./emulator_test.sh
+  fi
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
   cat sponge_log.log |

@@ -36,8 +36,9 @@ Please look at the [Configurations](#configurations) section for allowed options
 
 To enable some application specific configurations, you can reference the following table.
 
-| Description                 | Environment variable                            |
-|-----------------------------|-------------------------------------------------|
-| Disabling multiplex session | GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS=false |
-| Enabling directpath         | GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=true        |
+| Description         | Environment variable                       |
+|---------------------|--------------------------------------------|
+| Enabling directpath | GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS=true   |
+
+Note: Multiplexed sessions are always enabled and cannot be disabled. The session pool has been removed.
 

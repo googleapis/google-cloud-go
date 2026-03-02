@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"gopkg.in/yaml.v3"
 )
 
 func TestLoadRepoConfig_success(t *testing.T) {
@@ -88,7 +89,7 @@ modules:
 	if err != nil {
 		t.Fatalf("LoadRepoConfig() failed: %v", err)
 	}
-	if diff := cmp.Diff(want, got); diff != "" {
+	if diff := cmp.Diff(want, got, cmp.AllowUnexported(RepoConfig{}, ModuleConfig{}, APIConfig{})); diff != "" {
 		t.Errorf("LoadRepoConfig() mismatch (-want +got):\n%s", diff)
 	}
 }
@@ -139,7 +140,7 @@ func TestGetModuleConfig(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			got := config.GetModuleConfig(test.moduleName)
-			if diff := cmp.Diff(test.want, got); diff != "" {
+			if diff := cmp.Diff(test.want, got, cmp.AllowUnexported(RepoConfig{}, ModuleConfig{}, APIConfig{})); diff != "" {
 				t.Errorf("GetModuleConfig() mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -185,7 +186,7 @@ func TestGetAPIConfig(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			got := config.GetAPIConfig(test.apiPath)
-			if diff := cmp.Diff(test.want, got); diff != "" {
+			if diff := cmp.Diff(test.want, got, cmp.AllowUnexported(RepoConfig{}, ModuleConfig{}, APIConfig{})); diff != "" {
 				t.Errorf("GetAPIConfig() mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -330,4 +331,67 @@ func TestHasDisableGAPIC(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestFeatureResolution(t *testing.T) {
+
+	const configFileContent = `
+modules:
+  - name: maps
+    enabled_generator_features:
+    - F_module_feat1
+    disabled_generator_features:
+    - F_global_feat2
+    apis:
+      - path: google/maps/foo/v1
+        enabled_generator_features:
+        - F_api_feat1
+      - path: google/maps/foo/v2
+        enabled_generator_features:
+        - F_api_feat2
+        disabled_generator_features:
+        - F_global_feat3
+        - F_module_feat3
+global:
+  enabled_generator_features:
+    - F_global_feat1
+    - F_global_feat2
+    - F_global_feat3
+`
+
+	var rc RepoConfig
+	if err := yaml.Unmarshal([]byte(configFileContent), &rc); err != nil {
+		t.Fatalf("yaml.Unmarshal: %v", err)
+	}
+
+	// Validate the resolved state:
+	wantGlobalFeatures := []string{"F_global_feat1", "F_global_feat2", "F_global_feat3"}
+	got := rc.Global.ResolvedGeneratorFeatures()
+	if diff := cmp.Diff(wantGlobalFeatures, got); diff != "" {
+		t.Errorf("global feature mismatch (-want +got):\n%s", diff)
+	}
+
+	mc := rc.GetModuleConfig("maps")
+	wantModuleFeatures := []string{"F_global_feat1", "F_global_feat3", "F_module_feat1"}
+	got = mc.ResolvedGeneratorFeatures()
+	if diff := cmp.Diff(wantModuleFeatures, got); diff != "" {
+		t.Errorf("global feature mismatch (-want +got):\n%s", diff)
+	}
+
+	apiPath := "google/maps/foo/v1"
+	ac := mc.GetAPIConfig(apiPath)
+	wantAPIFeatures := []string{"F_api_feat1", "F_global_feat1", "F_global_feat3", "F_module_feat1"}
+	got = ac.ResolvedGeneratorFeatures()
+	if diff := cmp.Diff(wantAPIFeatures, got); diff != "" {
+		t.Errorf("global feature (%q) mismatch (-want +got):\n%s", apiPath, diff)
+	}
+
+	apiPath = "google/maps/foo/v2"
+	ac = mc.GetAPIConfig(apiPath)
+	wantAPIFeatures = []string{"F_api_feat2", "F_global_feat1", "F_module_feat1"}
+	got = ac.ResolvedGeneratorFeatures()
+	if diff := cmp.Diff(wantAPIFeatures, got); diff != "" {
+		t.Errorf("global feature (%q) mismatch (-want +got):\n%s", apiPath, diff)
+	}
+
 }

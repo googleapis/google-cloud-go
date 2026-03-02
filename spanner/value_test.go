@@ -1691,10 +1691,20 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode an invalid json string", proto: stringProto(invalidJSONStr), protoType: jsonType(), want: NullJSON{}, wantErr: true},
 		{desc: "decode a json string with empty array to a NullJSON", proto: stringProto(emptyArrayJSONStr), protoType: jsonType(), want: NullJSON{unmarshalledEmptyJSONArray, true}},
 		{desc: "decode a json string with null to a NullJSON", proto: stringProto(nullValueJSONStr), protoType: jsonType(), want: NullJSON{unmarshalledStructWithNull, true}},
+		// PG_JSONB
+		{desc: "decode json to PGJsonB", proto: stringProto(jsonStr), protoType: pgJsonbType(), want: PGJsonB{Value: unmarshalledJSONStruct, Valid: true}},
+		{desc: "decode NULL to PGJsonB", proto: nullProto(), protoType: pgJsonbType(), want: PGJsonB{}},
+		{desc: "decode an invalid json string", proto: stringProto(invalidJSONStr), protoType: pgJsonbType(), want: PGJsonB{}, wantErr: true},
+		{desc: "decode a json string with empty array to a PGJsonB", proto: stringProto(emptyArrayJSONStr), protoType: pgJsonbType(), want: PGJsonB{Value: unmarshalledEmptyJSONArray, Valid: true}},
+		{desc: "decode a json string with null to a PGJsonB", proto: stringProto(nullValueJSONStr), protoType: pgJsonbType(), want: PGJsonB{Value: unmarshalledStructWithNull, Valid: true}},
 		// JSON ARRAY with []NullJSON
 		{desc: "decode ARRAY<JSON> to []NullJSON", proto: listProto(stringProto(jsonStr), stringProto(jsonStr), nullProto()), protoType: listType(jsonType()), want: []NullJSON{{unmarshalledJSONStruct, true}, {unmarshalledJSONStruct, true}, {}}},
 		{desc: "decode ARRAY<JSON> to NullJSON", proto: listProto(stringProto(jsonStr), nullProto(), stringProto("true")), protoType: listType(jsonType()), want: NullJSON{unmarshalledJSONArray, true}},
 		{desc: "decode NULL to []NullJSON", proto: nullProto(), protoType: listType(jsonType()), want: []NullJSON(nil)},
+		// PG_JSONB ARRAY with []PGJsonB
+		{desc: "decode ARRAY<PG_JSONB> to []PGJsonB", proto: listProto(stringProto(jsonStr), stringProto(jsonStr), nullProto()), protoType: listType(pgJsonbType()), want: []PGJsonB{{Value: unmarshalledJSONStruct, Valid: true}, {Value: unmarshalledJSONStruct, Valid: true}, {}}},
+		{desc: "decode empty ARRAY<PG_JSONB> to []PGJsonB", proto: listProto(), protoType: listType(pgJsonbType()), want: []PGJsonB{}},
+		{desc: "decode NULL to []PGJsonB", proto: nullProto(), protoType: listType(pgJsonbType()), want: []PGJsonB(nil)},
 		// PG NUMERIC
 		{desc: "decode PG NUMERIC to PGNumeric", proto: stringProto("123.456"), protoType: pgNumericType(), want: PGNumeric{"123.456", true}},
 		{desc: "decode NaN to PGNumeric", proto: stringProto("NaN"), protoType: pgNumericType(), want: PGNumeric{"NaN", true}},
@@ -3550,6 +3560,45 @@ func TestScanNullNumeric(t *testing.T) {
 			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
 		}
 	}
+}
+
+func TestScanPGNumeric(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		input any
+		want  PGNumeric
+	}{
+		{name: "string", input: "3.14", want: PGNumeric{Numeric: "3.14", Valid: true}},
+		{name: "stringptr", input: stringPointer("3.14"), want: PGNumeric{Numeric: "3.14", Valid: true}},
+		{name: "nil", input: nil, want: PGNumeric{}},
+		{name: "nilstringptr", input: (*string)(nil), want: PGNumeric{}},
+		{name: "float32", input: float32(3.14), want: PGNumeric{Numeric: "3.140000105", Valid: true}},
+		{name: "float32ptr", input: float32Pointer(float32(3.14)), want: PGNumeric{Numeric: "3.140000105", Valid: true}},
+		{name: "float64", input: 3.14, want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "float64ptr", input: float64Pointer(3.14), want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "NullNumeric", input: NullNumeric{Numeric: *bigRatFromString("3.14"), Valid: true}, want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "NullNumericPtr", input: &NullNumeric{Numeric: *bigRatFromString("3.14"), Valid: true}, want: PGNumeric{Numeric: "3.140000000", Valid: true}},
+		{name: "NullNumericWithNullValue", input: NullNumeric{}, want: PGNumeric{}},
+		{name: "NullNumericPtrWithNullValue", input: &NullNumeric{}, want: PGNumeric{}},
+		{name: "bigrat", input: *bigRatFromString("6.626"), want: PGNumeric{Numeric: "6.626000000", Valid: true}},
+		{name: "bigratptr", input: bigRatFromString("9.99"), want: PGNumeric{Numeric: "9.990000000", Valid: true}},
+		{name: "nilbigratptr", input: (*big.Rat)(nil), want: PGNumeric{}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			n := PGNumeric{Numeric: "should be overwritten", Valid: true}
+			if err := n.Scan(test.input); err != nil {
+				t.Fatal(err)
+			}
+			if g, w := n, test.want; !reflect.DeepEqual(g, w) {
+				t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+			}
+		})
+	}
+}
+
+func bigRatFromString(s string) *big.Rat {
+	r, _ := (&big.Rat{}).SetString(s)
+	return r
 }
 
 func TestInterval(t *testing.T) {

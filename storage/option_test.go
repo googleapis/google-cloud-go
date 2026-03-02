@@ -152,6 +152,13 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcAppendableUploads: true,
 			},
 		},
+		{
+			desc: "enforce direct connectivity",
+			opts: []option.ClientOption{withDirectConnectivityEnforced()},
+			want: storageConfig{
+				grpcDirectPathEnforced: true,
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,9 +107,9 @@ const (
 	OSPolicyResourceConfigStep_VALIDATION OSPolicyResourceConfigStep_Type = 1
 	// Check the current desired state status of the resource.
 	OSPolicyResourceConfigStep_DESIRED_STATE_CHECK OSPolicyResourceConfigStep_Type = 2
-	// Enforce the desired state for a resource that is not in desired state.
+	// Apply the desired state for a resource that is not in desired state.
 	OSPolicyResourceConfigStep_DESIRED_STATE_ENFORCEMENT OSPolicyResourceConfigStep_Type = 3
-	// Re-check desired state status for a resource after enforcement of all
+	// Re-check desired state status for a resource after applying all
 	// resources in the current configuration run.
 	//
 	// This step is used to determine the final desired state status for the

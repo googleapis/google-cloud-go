@@ -3,6 +3,12 @@
 
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.20.0) (2026-01-08)
+
+### Features
+
+* add POSTGRES_18 to DatabaseVersion ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.19.0) (2025-10-10)
 
 ### Features

@@ -104,6 +104,7 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 //
 // large number of files.
 func TestIntegration_NextBatch(t *testing.T) {
+	t.Skip("flaky - https://github.com/googleapis/google-cloud-go/issues/12066")
 	// Accessing public bucket to list large number of files in batches.
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat.
 	if testing.Short() {

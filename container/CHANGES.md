@@ -1,5 +1,36 @@
 # Changes
 
+## [1.46.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.46.0) (2026-01-29)
+
+### Features
+
+* Add AutopilotGeneralProfile to ClusterAutoscaling to configure Autopilot profiles ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add DRAINING status to AdditionalIPRangesConfig for subnet draining ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add DisruptionEvent to provide details on node disruption events ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add GPUDirectConfig to configure GPU Direct for node pools ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add ManagedOpenTelemetryConfig to Cluster to manage the OpenTelemetry pipeline ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add NodeDrainConfig to NodePool to configure node draining behavior ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add RegistryHostConfig to ContainerdConfig for containerd registry host configuration ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add SHORT_LIVED as a NodePoolUpdateStrategy ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add SliceControllerConfig to AddonsConfig to manage the Slice Controller addon ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add SwapConfig to enable and configure swap memory for node pools ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Add consolidation_delay to configure Cluster Autoscaler node consolidation delay ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Allow specifying subnetwork in NodeNetworkConfig during node pool creation ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+
+### Documentation
+
+* A comment for field `cluster_ipv4_cidr_block` in message `.google.container.v1.IPAllocationPolicy` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `cluster_ipv4_cidr` in message `.google.container.v1.Cluster` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `gcp_secret_manager_certificate_config` in message `.google.container.v1.ContainerdConfig` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `node_ipv4_cidr_block` in message `.google.container.v1.IPAllocationPolicy` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `recurrence` in message `.google.container.v1.RecurringTimeWindow` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `services_ipv4_cidr_block` in message `.google.container.v1.IPAllocationPolicy` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `services_ipv4_cidr` in message `.google.container.v1.Cluster` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `subnetwork` in message `.google.container.v1.NodeNetworkConfig` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `sysctls` in message `.google.container.v1.LinuxNodeConfig` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `tpu_ipv4_cidr_block` in message `.google.container.v1.Cluster` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* A comment for field `tpu_ipv4_cidr_block` in message `.google.container.v1.IPAllocationPolicy` is changed ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+
 ## [1.45.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.45.0) (2025-10-22)
 
 ### Features

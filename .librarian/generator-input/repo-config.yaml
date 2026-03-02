@@ -1,10 +1,16 @@
 # Configuration file for libraries where the container needs
 # more information than is readily available.
 modules:
+  - name: asset
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
   - name: bigquery/v2
     apis:
       - path: google/cloud/bigquery/v2
         client_directory: v2/apiv2
+        enabled_generator_features:
+        - F_wrapper_types_for_page_size
 
   - name: bigtable
     apis:
@@ -19,6 +25,8 @@ modules:
         client_directory: apiv1/v2
 
   - name: cloudtasks
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
     apis:
       - path: google/cloud/tasks/v2
         client_directory: apiv2
@@ -36,23 +44,50 @@ modules:
         nested_protos:
           - grafeas/grafeas.proto
 
+  - name: dataflow
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
   - name: dataproc
     module_path_version: v2
 
   - name: datastore
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
     apis:
       - path: google/datastore/v1
         disable_gapic: true
 
   - name: errorreporting
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
     apis:
       - path: google/devtools/clouderrorreporting/v1beta1
         client_directory: apiv1beta1
 
+  - name: essentialcontacts
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
   - name: firestore
+    enabled_generator_features:
+    - F_ordered_routing_headers
+    - F_mtls_hard_bound_tokens
     apis:
       - path: google/firestore/admin/v1
         client_directory: apiv1/admin
+
+  - name: iam
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
+  - name: kms
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
+  - name: logging
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
 
   - name: longrunning
     apis:
@@ -67,11 +102,23 @@ modules:
         proto_package: maps.fleetengine.delivery.v1
 
   - name: monitoring
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
     apis:
       - path: google/monitoring/v3
         client_directory: apiv3/v2
 
+  - name: orgpolicy
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
+  - name: pubsub
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
   - name: pubsub/v2
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
     apis:
       - path: google/pubsub/v1
         client_directory: apiv1
@@ -79,11 +126,25 @@ modules:
   - name: recaptchaenterprise
     module_path_version: v2
 
+  - name: recommender
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
+  - name: resourcemanager
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
+  - name: secretmanager
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
+
   - name: storage
     delete_generation_output_paths:
       - internal/generated/snippets/storage/internal
 
   - name: trace
+    enabled_generator_features:
+    - F_mtls_hard_bound_tokens
     apis:
       - path: google/devtools/cloudtrace/v1
         client_directory: apiv1

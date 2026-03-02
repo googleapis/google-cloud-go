@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ const (
 	StorageControl_GetFolder_FullMethodName                            = "/google.storage.control.v2.StorageControl/GetFolder"
 	StorageControl_ListFolders_FullMethodName                          = "/google.storage.control.v2.StorageControl/ListFolders"
 	StorageControl_RenameFolder_FullMethodName                         = "/google.storage.control.v2.StorageControl/RenameFolder"
+	StorageControl_DeleteFolderRecursive_FullMethodName                = "/google.storage.control.v2.StorageControl/DeleteFolderRecursive"
 	StorageControl_GetStorageLayout_FullMethodName                     = "/google.storage.control.v2.StorageControl/GetStorageLayout"
 	StorageControl_CreateManagedFolder_FullMethodName                  = "/google.storage.control.v2.StorageControl/CreateManagedFolder"
 	StorageControl_DeleteManagedFolder_FullMethodName                  = "/google.storage.control.v2.StorageControl/DeleteManagedFolder"
@@ -86,6 +87,9 @@ type StorageControlClient interface {
 	// source and destination folders are locked until the long running operation
 	// completes.
 	RenameFolder(ctx context.Context, in *RenameFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a folder recursively. This operation is only applicable to a
+	// hierarchical namespace enabled bucket.
+	DeleteFolderRecursive(ctx context.Context, in *DeleteFolderRecursiveRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the storage layout configuration for a given bucket.
 	GetStorageLayout(ctx context.Context, in *GetStorageLayoutRequest, opts ...grpc.CallOption) (*StorageLayout, error)
 	// Creates a new managed folder.
@@ -195,6 +199,15 @@ func (c *storageControlClient) ListFolders(ctx context.Context, in *ListFoldersR
 func (c *storageControlClient) RenameFolder(ctx context.Context, in *RenameFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, StorageControl_RenameFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageControlClient) DeleteFolderRecursive(ctx context.Context, in *DeleteFolderRecursiveRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, StorageControl_DeleteFolderRecursive_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -411,6 +424,9 @@ type StorageControlServer interface {
 	// source and destination folders are locked until the long running operation
 	// completes.
 	RenameFolder(context.Context, *RenameFolderRequest) (*longrunningpb.Operation, error)
+	// Deletes a folder recursively. This operation is only applicable to a
+	// hierarchical namespace enabled bucket.
+	DeleteFolderRecursive(context.Context, *DeleteFolderRecursiveRequest) (*longrunningpb.Operation, error)
 	// Returns the storage layout configuration for a given bucket.
 	GetStorageLayout(context.Context, *GetStorageLayoutRequest) (*StorageLayout, error)
 	// Creates a new managed folder.
@@ -491,6 +507,9 @@ func (UnimplementedStorageControlServer) ListFolders(context.Context, *ListFolde
 }
 func (UnimplementedStorageControlServer) RenameFolder(context.Context, *RenameFolderRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RenameFolder not implemented")
+}
+func (UnimplementedStorageControlServer) DeleteFolderRecursive(context.Context, *DeleteFolderRecursiveRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFolderRecursive not implemented")
 }
 func (UnimplementedStorageControlServer) GetStorageLayout(context.Context, *GetStorageLayoutRequest) (*StorageLayout, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStorageLayout not implemented")
@@ -653,6 +672,24 @@ func _StorageControl_RenameFolder_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageControlServer).RenameFolder(ctx, req.(*RenameFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageControl_DeleteFolderRecursive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFolderRecursiveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).DeleteFolderRecursive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_DeleteFolderRecursive_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).DeleteFolderRecursive(ctx, req.(*DeleteFolderRecursiveRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1061,6 +1098,10 @@ var StorageControl_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RenameFolder",
 			Handler:    _StorageControl_RenameFolder_Handler,
+		},
+		{
+			MethodName: "DeleteFolderRecursive",
+			Handler:    _StorageControl_DeleteFolderRecursive_Handler,
 		},
 		{
 			MethodName: "GetStorageLayout",

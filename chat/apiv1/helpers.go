@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/chat.admin.spaces.readonly",
 		"https://www.googleapis.com/auth/chat.app.delete",
 		"https://www.googleapis.com/auth/chat.app.memberships",
+		"https://www.googleapis.com/auth/chat.app.messages.readonly",
 		"https://www.googleapis.com/auth/chat.app.spaces",
 		"https://www.googleapis.com/auth/chat.app.spaces.create",
 		"https://www.googleapis.com/auth/chat.bot",

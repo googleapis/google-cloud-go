@@ -1321,7 +1321,7 @@ type DefaultServiceAccount struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. Format:
-	// `projects/{project}/locations/{location}/defaultServiceAccount
+	// `projects/{project}/locations/{location}/defaultServiceAccount`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The email address of the service account identity that will be
 	// used for a build by default.
