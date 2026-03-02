@@ -1,0 +1,3583 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/ces/apiv1",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.ces.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "ces_v1_generated_AgentService_BatchDeleteConversations_sync",
+      "title": "ces BatchDeleteConversations Sample",
+      "description": "BatchDeleteConversations batch deletes the specified conversations.",
+      "file": "AgentClient/BatchDeleteConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteConversations",
+        "fullName": "google.cloud.ces.v1.AgentClient.BatchDeleteConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.BatchDeleteConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchDeleteConversationsOperation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "BatchDeleteConversations",
+          "fullName": "google.cloud.ces.v1.AgentService.BatchDeleteConversations",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CancelOperation_sync",
+      "title": "ces CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AgentClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.ces.v1.AgentClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateAgent_sync",
+      "title": "ces CreateAgent Sample",
+      "description": "CreateAgent creates a new agent in the given app.",
+      "file": "AgentClient/CreateAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAgent",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Agent",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateAgent",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateAgent",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateApp_sync",
+      "title": "ces CreateApp Sample",
+      "description": "CreateApp creates a new app in the given project and location.",
+      "file": "AgentClient/CreateApp/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateApp",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateApp",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateAppRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAppOperation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateApp",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateApp",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateAppVersion_sync",
+      "title": "ces CreateAppVersion Sample",
+      "description": "CreateAppVersion creates a new app version in the given app.",
+      "file": "AgentClient/CreateAppVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAppVersion",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateAppVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateAppVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.AppVersion",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateAppVersion",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateAppVersion",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateDeployment_sync",
+      "title": "ces CreateDeployment Sample",
+      "description": "CreateDeployment creates a new deployment in the given app.",
+      "file": "AgentClient/CreateDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeployment",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Deployment",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateDeployment",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateDeployment",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateExample_sync",
+      "title": "ces CreateExample Sample",
+      "description": "CreateExample creates a new example in the given app.",
+      "file": "AgentClient/CreateExample/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExample",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateExample",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateExampleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Example",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateExample",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateExample",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateGuardrail_sync",
+      "title": "ces CreateGuardrail Sample",
+      "description": "CreateGuardrail creates a new guardrail in the given app.",
+      "file": "AgentClient/CreateGuardrail/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGuardrail",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateGuardrail",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateGuardrailRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Guardrail",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateGuardrail",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateGuardrail",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateTool_sync",
+      "title": "ces CreateTool Sample",
+      "description": "CreateTool creates a new tool in the given app.",
+      "file": "AgentClient/CreateTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTool",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Tool",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateTool",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateTool",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_CreateToolset_sync",
+      "title": "ces CreateToolset Sample",
+      "description": "CreateToolset creates a new toolset in the given app.",
+      "file": "AgentClient/CreateToolset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateToolset",
+        "fullName": "google.cloud.ces.v1.AgentClient.CreateToolset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.CreateToolsetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Toolset",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "CreateToolset",
+          "fullName": "google.cloud.ces.v1.AgentService.CreateToolset",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteAgent_sync",
+      "title": "ces DeleteAgent Sample",
+      "description": "DeleteAgent deletes the specified agent.",
+      "file": "AgentClient/DeleteAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAgent",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteAgent",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteAgent",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteApp_sync",
+      "title": "ces DeleteApp Sample",
+      "description": "DeleteApp deletes the specified app.",
+      "file": "AgentClient/DeleteApp/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApp",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteApp",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteAppRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAppOperation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteApp",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteApp",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteAppVersion_sync",
+      "title": "ces DeleteAppVersion Sample",
+      "description": "DeleteAppVersion deletes the specified app version.",
+      "file": "AgentClient/DeleteAppVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAppVersion",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteAppVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteAppVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteAppVersion",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteAppVersion",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteConversation_sync",
+      "title": "ces DeleteConversation Sample",
+      "description": "DeleteConversation deletes the specified conversation.",
+      "file": "AgentClient/DeleteConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversation",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteConversation",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteConversation",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteDeployment_sync",
+      "title": "ces DeleteDeployment Sample",
+      "description": "DeleteDeployment deletes the specified deployment.",
+      "file": "AgentClient/DeleteDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDeployment",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteDeployment",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteDeployment",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteExample_sync",
+      "title": "ces DeleteExample Sample",
+      "description": "DeleteExample deletes the specified example.",
+      "file": "AgentClient/DeleteExample/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExample",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteExample",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteExampleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteExample",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteExample",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteGuardrail_sync",
+      "title": "ces DeleteGuardrail Sample",
+      "description": "DeleteGuardrail deletes the specified guardrail.",
+      "file": "AgentClient/DeleteGuardrail/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGuardrail",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteGuardrail",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteGuardrailRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteGuardrail",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteGuardrail",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteOperation_sync",
+      "title": "ces DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "AgentClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteTool_sync",
+      "title": "ces DeleteTool Sample",
+      "description": "DeleteTool deletes the specified tool.",
+      "file": "AgentClient/DeleteTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTool",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteTool",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteTool",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_DeleteToolset_sync",
+      "title": "ces DeleteToolset Sample",
+      "description": "DeleteToolset deletes the specified toolset.",
+      "file": "AgentClient/DeleteToolset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteToolset",
+        "fullName": "google.cloud.ces.v1.AgentClient.DeleteToolset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.DeleteToolsetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "DeleteToolset",
+          "fullName": "google.cloud.ces.v1.AgentService.DeleteToolset",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ExportApp_sync",
+      "title": "ces ExportApp Sample",
+      "description": "ExportApp exports the specified app.",
+      "file": "AgentClient/ExportApp/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportApp",
+        "fullName": "google.cloud.ces.v1.AgentClient.ExportApp",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ExportAppRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportAppOperation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ExportApp",
+          "fullName": "google.cloud.ces.v1.AgentService.ExportApp",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetAgent_sync",
+      "title": "ces GetAgent Sample",
+      "description": "GetAgent gets details of the specified agent.",
+      "file": "AgentClient/GetAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAgent",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Agent",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetAgent",
+          "fullName": "google.cloud.ces.v1.AgentService.GetAgent",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetApp_sync",
+      "title": "ces GetApp Sample",
+      "description": "GetApp gets details of the specified app.",
+      "file": "AgentClient/GetApp/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetApp",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetApp",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetAppRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.App",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetApp",
+          "fullName": "google.cloud.ces.v1.AgentService.GetApp",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetAppVersion_sync",
+      "title": "ces GetAppVersion Sample",
+      "description": "GetAppVersion gets details of the specified app version.",
+      "file": "AgentClient/GetAppVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAppVersion",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetAppVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetAppVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.AppVersion",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetAppVersion",
+          "fullName": "google.cloud.ces.v1.AgentService.GetAppVersion",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetChangelog_sync",
+      "title": "ces GetChangelog Sample",
+      "description": "GetChangelog gets the specified changelog.",
+      "file": "AgentClient/GetChangelog/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetChangelog",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetChangelog",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetChangelogRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Changelog",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetChangelog",
+          "fullName": "google.cloud.ces.v1.AgentService.GetChangelog",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetConversation_sync",
+      "title": "ces GetConversation Sample",
+      "description": "GetConversation gets details of the specified conversation.",
+      "file": "AgentClient/GetConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversation",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Conversation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetConversation",
+          "fullName": "google.cloud.ces.v1.AgentService.GetConversation",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetDeployment_sync",
+      "title": "ces GetDeployment Sample",
+      "description": "GetDeployment gets details of the specified deployment.",
+      "file": "AgentClient/GetDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeployment",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Deployment",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetDeployment",
+          "fullName": "google.cloud.ces.v1.AgentService.GetDeployment",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetExample_sync",
+      "title": "ces GetExample Sample",
+      "description": "GetExample gets details of the specified example.",
+      "file": "AgentClient/GetExample/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExample",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetExample",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetExampleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Example",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetExample",
+          "fullName": "google.cloud.ces.v1.AgentService.GetExample",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetGuardrail_sync",
+      "title": "ces GetGuardrail Sample",
+      "description": "GetGuardrail gets details of the specified guardrail.",
+      "file": "AgentClient/GetGuardrail/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGuardrail",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetGuardrail",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetGuardrailRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Guardrail",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetGuardrail",
+          "fullName": "google.cloud.ces.v1.AgentService.GetGuardrail",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetLocation_sync",
+      "title": "ces GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "AgentClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetOperation_sync",
+      "title": "ces GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AgentClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetTool_sync",
+      "title": "ces GetTool Sample",
+      "description": "GetTool gets details of the specified tool.",
+      "file": "AgentClient/GetTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTool",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Tool",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetTool",
+          "fullName": "google.cloud.ces.v1.AgentService.GetTool",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_GetToolset_sync",
+      "title": "ces GetToolset Sample",
+      "description": "GetToolset gets details of the specified toolset.",
+      "file": "AgentClient/GetToolset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetToolset",
+        "fullName": "google.cloud.ces.v1.AgentClient.GetToolset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetToolsetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Toolset",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "GetToolset",
+          "fullName": "google.cloud.ces.v1.AgentService.GetToolset",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ImportApp_sync",
+      "title": "ces ImportApp Sample",
+      "description": "ImportApp imports the specified app.",
+      "file": "AgentClient/ImportApp/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportApp",
+        "fullName": "google.cloud.ces.v1.AgentClient.ImportApp",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ImportAppRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportAppOperation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ImportApp",
+          "fullName": "google.cloud.ces.v1.AgentService.ImportApp",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListAgents_sync",
+      "title": "ces ListAgents Sample",
+      "description": "ListAgents lists agents in the given app.",
+      "file": "AgentClient/ListAgents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAgents",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListAgents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListAgentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AgentIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListAgents",
+          "fullName": "google.cloud.ces.v1.AgentService.ListAgents",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListAppVersions_sync",
+      "title": "ces ListAppVersions Sample",
+      "description": "ListAppVersions lists all app versions in the given app.",
+      "file": "AgentClient/ListAppVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAppVersions",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListAppVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListAppVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AppVersionIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListAppVersions",
+          "fullName": "google.cloud.ces.v1.AgentService.ListAppVersions",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListApps_sync",
+      "title": "ces ListApps Sample",
+      "description": "ListApps lists apps in the given project and location.",
+      "file": "AgentClient/ListApps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListApps",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListApps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListAppsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AppIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListApps",
+          "fullName": "google.cloud.ces.v1.AgentService.ListApps",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListChangelogs_sync",
+      "title": "ces ListChangelogs Sample",
+      "description": "ListChangelogs lists the changelogs of the specified app.",
+      "file": "AgentClient/ListChangelogs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChangelogs",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListChangelogs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListChangelogsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChangelogIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListChangelogs",
+          "fullName": "google.cloud.ces.v1.AgentService.ListChangelogs",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListConversations_sync",
+      "title": "ces ListConversations Sample",
+      "description": "ListConversations lists conversations in the given app.",
+      "file": "AgentClient/ListConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversations",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversationIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListConversations",
+          "fullName": "google.cloud.ces.v1.AgentService.ListConversations",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListDeployments_sync",
+      "title": "ces ListDeployments Sample",
+      "description": "ListDeployments lists deployments in the given app.",
+      "file": "AgentClient/ListDeployments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeployments",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListDeployments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListDeploymentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeploymentIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListDeployments",
+          "fullName": "google.cloud.ces.v1.AgentService.ListDeployments",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListExamples_sync",
+      "title": "ces ListExamples Sample",
+      "description": "ListExamples lists examples in the given app.",
+      "file": "AgentClient/ListExamples/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExamples",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListExamples",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListExamplesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExampleIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListExamples",
+          "fullName": "google.cloud.ces.v1.AgentService.ListExamples",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListGuardrails_sync",
+      "title": "ces ListGuardrails Sample",
+      "description": "ListGuardrails lists guardrails in the given app.",
+      "file": "AgentClient/ListGuardrails/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGuardrails",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListGuardrails",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListGuardrailsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GuardrailIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListGuardrails",
+          "fullName": "google.cloud.ces.v1.AgentService.ListGuardrails",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListLocations_sync",
+      "title": "ces ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "AgentClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListOperations_sync",
+      "title": "ces ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AgentClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListTools_sync",
+      "title": "ces ListTools Sample",
+      "description": "ListTools lists tools in the given app.",
+      "file": "AgentClient/ListTools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTools",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListTools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListToolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ToolIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListTools",
+          "fullName": "google.cloud.ces.v1.AgentService.ListTools",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_ListToolsets_sync",
+      "title": "ces ListToolsets Sample",
+      "description": "ListToolsets lists toolsets in the given app.",
+      "file": "AgentClient/ListToolsets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListToolsets",
+        "fullName": "google.cloud.ces.v1.AgentClient.ListToolsets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ListToolsetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ToolsetIterator",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "ListToolsets",
+          "fullName": "google.cloud.ces.v1.AgentService.ListToolsets",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_RestoreAppVersion_sync",
+      "title": "ces RestoreAppVersion Sample",
+      "description": "RestoreAppVersion restores the specified app version.\nThis will create a new app version from the current draft app and overwrite\nthe current draft with the specified app version.",
+      "file": "AgentClient/RestoreAppVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreAppVersion",
+        "fullName": "google.cloud.ces.v1.AgentClient.RestoreAppVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.RestoreAppVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreAppVersionOperation",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "RestoreAppVersion",
+          "fullName": "google.cloud.ces.v1.AgentService.RestoreAppVersion",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_UpdateAgent_sync",
+      "title": "ces UpdateAgent Sample",
+      "description": "UpdateAgent updates the specified agent.",
+      "file": "AgentClient/UpdateAgent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAgent",
+        "fullName": "google.cloud.ces.v1.AgentClient.UpdateAgent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateAgentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Agent",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateAgent",
+          "fullName": "google.cloud.ces.v1.AgentService.UpdateAgent",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_UpdateApp_sync",
+      "title": "ces UpdateApp Sample",
+      "description": "UpdateApp updates the specified app.",
+      "file": "AgentClient/UpdateApp/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateApp",
+        "fullName": "google.cloud.ces.v1.AgentClient.UpdateApp",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateAppRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.App",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateApp",
+          "fullName": "google.cloud.ces.v1.AgentService.UpdateApp",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_UpdateDeployment_sync",
+      "title": "ces UpdateDeployment Sample",
+      "description": "UpdateDeployment updates the specified deployment.",
+      "file": "AgentClient/UpdateDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeployment",
+        "fullName": "google.cloud.ces.v1.AgentClient.UpdateDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Deployment",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateDeployment",
+          "fullName": "google.cloud.ces.v1.AgentService.UpdateDeployment",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_UpdateExample_sync",
+      "title": "ces UpdateExample Sample",
+      "description": "UpdateExample updates the specified example.",
+      "file": "AgentClient/UpdateExample/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExample",
+        "fullName": "google.cloud.ces.v1.AgentClient.UpdateExample",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateExampleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Example",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateExample",
+          "fullName": "google.cloud.ces.v1.AgentService.UpdateExample",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_UpdateGuardrail_sync",
+      "title": "ces UpdateGuardrail Sample",
+      "description": "UpdateGuardrail updates the specified guardrail.",
+      "file": "AgentClient/UpdateGuardrail/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGuardrail",
+        "fullName": "google.cloud.ces.v1.AgentClient.UpdateGuardrail",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateGuardrailRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Guardrail",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateGuardrail",
+          "fullName": "google.cloud.ces.v1.AgentService.UpdateGuardrail",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_UpdateTool_sync",
+      "title": "ces UpdateTool Sample",
+      "description": "UpdateTool updates the specified tool.",
+      "file": "AgentClient/UpdateTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTool",
+        "fullName": "google.cloud.ces.v1.AgentClient.UpdateTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Tool",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateTool",
+          "fullName": "google.cloud.ces.v1.AgentService.UpdateTool",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_AgentService_UpdateToolset_sync",
+      "title": "ces UpdateToolset Sample",
+      "description": "UpdateToolset updates the specified toolset.",
+      "file": "AgentClient/UpdateToolset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateToolset",
+        "fullName": "google.cloud.ces.v1.AgentClient.UpdateToolset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateToolsetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.Toolset",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateToolset",
+          "fullName": "google.cloud.ces.v1.AgentService.UpdateToolset",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_BidiRunSession_sync",
+      "title": "ces BidiRunSession Sample",
+      "description": "BidiRunSession establishes a bidirectional streaming connection with the CES agent.\nThe agent processes continuous multimodal inputs (e.g., text, audio) and\ngenerates real-time multimodal output streams.\n\n--- Client Request Stream ---\nThe client streams requests in the following order: \n\n1.  Initialization: \nThe first message must contain\n[SessionConfig][google.cloud.ces.v1.BidiSessionClientMessage.config].\nFor audio sessions, this should also include\n[InputAudioConfig][google.cloud.ces.v1.SessionConfig.input_audio_config]\nand\n[OutputAudioConfig][google.cloud.ces.v1.SessionConfig.output_audio_config]\nto define audio processing and synthesis parameters.\n\n2.  Interaction: \nSubsequent messages stream\n[SessionInput][google.cloud.ces.v1.BidiSessionClientMessage.realtime_input]\ncontaining real-time user input data.\n\n3.  Termination: \nThe client should half-close the stream when there is no more user\ninput. It should also half-close upon receiving\n[EndSession][google.cloud.ces.v1.BidiSessionServerMessage.end_session]\nor [GoAway][google.cloud.ces.v1.BidiSessionServerMessage.go_away] from\nthe agent.\n\n--- Server Response Stream ---\nFor each interaction turn, the agent streams messages in the following\nsequence: \n\n1.  Speech Recognition (First N messages): \nContains\n[RecognitionResult][google.cloud.ces.v1.BidiSessionServerMessage.recognition_result]\nrepresenting the concatenated user speech segments captured so far.\nThis is only populated for audio sessions.\n\n2.  Response (Next M messages): \nContains\n[SessionOutput][google.cloud.ces.v1.BidiSessionServerMessage.session_output]\ndelivering the agent's response in various modalities (e.g., text,\naudio).\n\n3.  Turn Completion (Final message of the turn): \nContains\n[SessionOutput][google.cloud.ces.v1.BidiSessionServerMessage.session_output]\nwith [turn_completed][google.cloud.ces.v1.SessionOutput.turn_completed]\nset to true. This signals the end of the current turn and includes\n[DiagnosticInfo][google.cloud.ces.v1.SessionOutput.diagnostic_info]\nwith execution details.\n\n--- Audio Best Practices ---\n1.  Streaming: \nStream [audio data][google.cloud.ces.v1.SessionInput.audio]\n**CONTINUOUSLY**, even during silence. Recommended chunk size: 40-120ms\n(balances latency vs. efficiency).\n\n2.  Playback & Interruption: \nPlay [audio responses][google.cloud.ces.v1.SessionOutput.audio] upon\nreceipt. Stop playback immediately if an\n[InterruptionSignal][google.cloud.ces.v1.BidiSessionServerMessage.interruption_signal]\nis received (e.g., user barge-in or new agent response).\n\n\nThis method is not supported for the REST transport.",
+      "file": "SessionClient/BidiRunSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BidiRunSession",
+        "fullName": "google.cloud.ces.v1.SessionClient.BidiRunSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cespb.SessionService_BidiRunSessionClient",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "BidiRunSession",
+          "fullName": "google.cloud.ces.v1.SessionService.BidiRunSession",
+          "service": {
+            "shortName": "SessionService",
+            "fullName": "google.cloud.ces.v1.SessionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_CancelOperation_sync",
+      "title": "ces CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.ces.v1.SessionClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_DeleteOperation_sync",
+      "title": "ces DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.ces.v1.SessionClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_GetLocation_sync",
+      "title": "ces GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "SessionClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.ces.v1.SessionClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_GetOperation_sync",
+      "title": "ces GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.ces.v1.SessionClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_ListLocations_sync",
+      "title": "ces ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "SessionClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.ces.v1.SessionClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_ListOperations_sync",
+      "title": "ces ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SessionClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.ces.v1.SessionClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_SessionService_RunSession_sync",
+      "title": "ces RunSession Sample",
+      "description": "RunSession initiates a single turn interaction with the CES agent within a\nsession.",
+      "file": "SessionClient/RunSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunSession",
+        "fullName": "google.cloud.ces.v1.SessionClient.RunSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.RunSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.RunSessionResponse",
+        "client": {
+          "shortName": "SessionClient",
+          "fullName": "google.cloud.ces.v1.SessionClient"
+        },
+        "method": {
+          "shortName": "RunSession",
+          "fullName": "google.cloud.ces.v1.SessionService.RunSession",
+          "service": {
+            "shortName": "SessionService",
+            "fullName": "google.cloud.ces.v1.SessionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_CancelOperation_sync",
+      "title": "ces CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ToolClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.ces.v1.ToolClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_DeleteOperation_sync",
+      "title": "ces DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ToolClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.ces.v1.ToolClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_ExecuteTool_sync",
+      "title": "ces ExecuteTool Sample",
+      "description": "ExecuteTool executes the given tool with the given arguments.",
+      "file": "ToolClient/ExecuteTool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteTool",
+        "fullName": "google.cloud.ces.v1.ToolClient.ExecuteTool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.ExecuteToolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.ExecuteToolResponse",
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "ExecuteTool",
+          "fullName": "google.cloud.ces.v1.ToolService.ExecuteTool",
+          "service": {
+            "shortName": "ToolService",
+            "fullName": "google.cloud.ces.v1.ToolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_GetLocation_sync",
+      "title": "ces GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ToolClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.ces.v1.ToolClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_GetOperation_sync",
+      "title": "ces GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ToolClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.ces.v1.ToolClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_ListLocations_sync",
+      "title": "ces ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "ToolClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.ces.v1.ToolClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_ListOperations_sync",
+      "title": "ces ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ToolClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.ces.v1.ToolClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_RetrieveToolSchema_sync",
+      "title": "ces RetrieveToolSchema Sample",
+      "description": "RetrieveToolSchema retrieve the schema of the given tool. The schema is computed on the fly\nfor the given instance of the tool.",
+      "file": "ToolClient/RetrieveToolSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveToolSchema",
+        "fullName": "google.cloud.ces.v1.ToolClient.RetrieveToolSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.RetrieveToolSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.RetrieveToolSchemaResponse",
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "RetrieveToolSchema",
+          "fullName": "google.cloud.ces.v1.ToolService.RetrieveToolSchema",
+          "service": {
+            "shortName": "ToolService",
+            "fullName": "google.cloud.ces.v1.ToolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_ToolService_RetrieveTools_sync",
+      "title": "ces RetrieveTools Sample",
+      "description": "RetrieveTools retrieve the list of tools included in the specified toolset.",
+      "file": "ToolClient/RetrieveTools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveTools",
+        "fullName": "google.cloud.ces.v1.ToolClient.RetrieveTools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.RetrieveToolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.RetrieveToolsResponse",
+        "client": {
+          "shortName": "ToolClient",
+          "fullName": "google.cloud.ces.v1.ToolClient"
+        },
+        "method": {
+          "shortName": "RetrieveTools",
+          "fullName": "google.cloud.ces.v1.ToolService.RetrieveTools",
+          "service": {
+            "shortName": "ToolService",
+            "fullName": "google.cloud.ces.v1.ToolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_WidgetService_CancelOperation_sync",
+      "title": "ces CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "WidgetClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.ces.v1.WidgetClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "WidgetClient",
+          "fullName": "google.cloud.ces.v1.WidgetClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_WidgetService_DeleteOperation_sync",
+      "title": "ces DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "WidgetClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.ces.v1.WidgetClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "WidgetClient",
+          "fullName": "google.cloud.ces.v1.WidgetClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_WidgetService_GenerateChatToken_sync",
+      "title": "ces GenerateChatToken Sample",
+      "description": "GenerateChatToken generates a session scoped token for chat widget to authenticate with\nSession APIs.",
+      "file": "WidgetClient/GenerateChatToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateChatToken",
+        "fullName": "google.cloud.ces.v1.WidgetClient.GenerateChatToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GenerateChatTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.GenerateChatTokenResponse",
+        "client": {
+          "shortName": "WidgetClient",
+          "fullName": "google.cloud.ces.v1.WidgetClient"
+        },
+        "method": {
+          "shortName": "GenerateChatToken",
+          "fullName": "google.cloud.ces.v1.WidgetService.GenerateChatToken",
+          "service": {
+            "shortName": "WidgetService",
+            "fullName": "google.cloud.ces.v1.WidgetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_WidgetService_GetLocation_sync",
+      "title": "ces GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "WidgetClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.ces.v1.WidgetClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "WidgetClient",
+          "fullName": "google.cloud.ces.v1.WidgetClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_WidgetService_GetOperation_sync",
+      "title": "ces GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "WidgetClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.ces.v1.WidgetClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "WidgetClient",
+          "fullName": "google.cloud.ces.v1.WidgetClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_WidgetService_ListLocations_sync",
+      "title": "ces ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "WidgetClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.ces.v1.WidgetClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "WidgetClient",
+          "fullName": "google.cloud.ces.v1.WidgetClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1_generated_WidgetService_ListOperations_sync",
+      "title": "ces ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "WidgetClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.ces.v1.WidgetClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "WidgetClient",
+          "fullName": "google.cloud.ces.v1.WidgetClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

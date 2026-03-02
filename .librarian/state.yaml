@@ -1363,10 +1363,12 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: ces
     version: 0.1.0
-    last_generated_commit: 258563af0e9d6e7219de9afdffe74687d1eb7b83
+    last_generated_commit: c83d354f79b02e3dc98f22248e22851fcf9b961d
     apis:
       - path: google/cloud/ces/v1beta
         service_config: ces_v1beta.yaml
+      - path: google/cloud/ces/v1
+        service_config: ces_v1.yaml
     source_roots:
       - ces
       - internal/generated/snippets/ces
@@ -1383,6 +1385,16 @@ libraries:
       - ^ces/apiv1beta/helpers\.go$
       - ^ces/apiv1beta/\.repo-metadata\.json$
       - ^ces/apiv1beta/cespb/.*$
+      - ^ces/apiv1/[^/]*_client\.go$
+      - ^ces/apiv1/[^/]*_client_example_go123_test\.go$
+      - ^ces/apiv1/[^/]*_client_example_test\.go$
+      - ^ces/apiv1/auxiliary\.go$
+      - ^ces/apiv1/auxiliary_go123\.go$
+      - ^ces/apiv1/doc\.go$
+      - ^ces/apiv1/gapic_metadata\.json$
+      - ^ces/apiv1/helpers\.go$
+      - ^ces/apiv1/\.repo-metadata\.json$
+      - ^ces/apiv1/cespb/.*$
     tag_format: '{id}/v{version}'
   - id: channel
     version: 1.21.0
