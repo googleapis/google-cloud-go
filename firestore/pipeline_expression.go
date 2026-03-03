@@ -518,8 +518,8 @@ func (b *baseExpression) Trunc() Expression             { return Trunc(b) }
 func (b *baseExpression) TruncWithPlaces(places any) Expression {
 	return TruncPlaces(b, places)
 }
-func (b *baseExpression) Sqrt() Expression              { return Sqrt(b) }
-func (b *baseExpression) Cmp(other any) Expression      { return Cmp(b, other) }
+func (b *baseExpression) Sqrt() Expression         { return Sqrt(b) }
+func (b *baseExpression) Cmp(other any) Expression { return Cmp(b, other) }
 
 // Array functions
 func (b *baseExpression) ArrayContains(value any) BooleanExpression { return ArrayContains(b, value) }
@@ -537,15 +537,15 @@ func (b *baseExpression) ArrayReverse() Expression                 { return Arra
 func (b *baseExpression) ArrayConcat(otherArrays ...any) Expression {
 	return ArrayConcat(b, otherArrays...)
 }
-func (b *baseExpression) ArraySum() Expression     { return ArraySum(b) }
-func (b *baseExpression) ArrayMaximum() Expression { return ArrayMaximum(b) }
-func (b *baseExpression) ArrayMaximumN(n any) Expression { return ArrayMaximumN(b, n) }
-func (b *baseExpression) ArrayMinimum() Expression { return ArrayMinimum(b) }
-func (b *baseExpression) ArrayMinimumN(n any) Expression { return ArrayMinimumN(b, n) }
-func (b *baseExpression) ArrayFirst() Expression         { return ArrayFirst(b) }
-func (b *baseExpression) ArrayFirstN(n any) Expression   { return ArrayFirstN(b, n) }
-func (b *baseExpression) ArrayLast() Expression          { return ArrayLast(b) }
-func (b *baseExpression) ArrayLastN(n any) Expression    { return ArrayLastN(b, n) }
+func (b *baseExpression) ArraySum() Expression             { return ArraySum(b) }
+func (b *baseExpression) ArrayMaximum() Expression         { return ArrayMaximum(b) }
+func (b *baseExpression) ArrayMaximumN(n any) Expression   { return ArrayMaximumN(b, n) }
+func (b *baseExpression) ArrayMinimum() Expression         { return ArrayMinimum(b) }
+func (b *baseExpression) ArrayMinimumN(n any) Expression   { return ArrayMinimumN(b, n) }
+func (b *baseExpression) ArrayFirst() Expression           { return ArrayFirst(b) }
+func (b *baseExpression) ArrayFirstN(n any) Expression     { return ArrayFirstN(b, n) }
+func (b *baseExpression) ArrayLast() Expression            { return ArrayLast(b) }
+func (b *baseExpression) ArrayLastN(n any) Expression      { return ArrayLastN(b, n) }
 func (b *baseExpression) ArraySlice(offset any) Expression { return ArraySlice(b, offset) }
 func (b *baseExpression) ArraySliceWithLength(offset, length any) Expression {
 	return ArraySliceLength(b, offset, length)
@@ -700,7 +700,7 @@ func (b *baseExpression) RTrimWithValues(valuesToTrim any) Expression {
 func (b *baseExpression) Split(delimiter any) Expression { return Split(b, delimiter) }
 
 // Type functions
-func (b *baseExpression) Type() Expression                { return Type(b) }
+func (b *baseExpression) Type() Expression                      { return Type(b) }
 func (b *baseExpression) IsType(dataType any) BooleanExpression { return IsType(b, dataType) }
 
 // Vector functions

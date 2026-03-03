@@ -859,23 +859,22 @@ func TestIntegration_PipelineFunctions(t *testing.T) {
 	t.Run("aggregationFuncs", aggregationFuncs)
 }
 
-
 func aggregationFuncs(t *testing.T) {
 	t.Parallel()
 	h := testHelper{t}
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
-	
-	docData := []struct{
-		Category string `firestore:"category"`
-		Val      int    `firestore:"val"`
+
+	docData := []struct {
+		Category string   `firestore:"category"`
+		Val      int      `firestore:"val"`
 		Tags     []string `firestore:"tags"`
 	}{
 		{Category: "A", Val: 1, Tags: []string{"x"}},
 		{Category: "A", Val: 2, Tags: []string{"x", "y"}},
 		{Category: "A", Val: 1, Tags: []string{"z"}},
 	}
-	
+
 	var docRefs []*DocumentRef
 	for _, d := range docData {
 		docRef := coll.NewDoc()
@@ -884,7 +883,6 @@ func aggregationFuncs(t *testing.T) {
 	}
 	defer deleteDocuments(docRefs)
 
-	
 	pipeline := client.Pipeline().Collection(coll.ID).
 		Sort(Ascending(FieldOf("val"))).
 		Aggregate(
@@ -898,14 +896,14 @@ func aggregationFuncs(t *testing.T) {
 
 	iter := pipeline.Execute(context.Background()).Results()
 	defer iter.Stop()
-	
+
 	res, err := iter.Next()
 	if err != nil {
 		t.Fatalf("iter.Next() failed: %v", err)
 	}
-	
+
 	data := res.Data()
-	
+
 	// Check ArrayAgg "all_vals" -> [1, 2, 1] (order irrelevant)
 	allValsRaw, ok := data["all_vals"].([]interface{})
 	if !ok {
@@ -919,7 +917,7 @@ func aggregationFuncs(t *testing.T) {
 	if diff := testutil.Diff(allVals, []int{1, 1, 2}); diff != "" {
 		t.Errorf("all_vals mismatch: %s", diff)
 	}
-	
+
 	// Check ArrayAggDistinct "distinct_vals" -> [1, 2]
 	distinctValsRaw, ok := data["distinct_vals"].([]interface{})
 	if !ok {
@@ -1587,7 +1585,7 @@ func stringFuncs(t *testing.T) {
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Trim("name").As("trimmed_name")),
 			want:     map[string]interface{}{"trimmed_name": "John Doe"},
 		},
-				{
+		{
 			name:     "TrimWithValues",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(TrimWithValues("name", " eD").As("trimmed_name_values")),
 			want:     map[string]interface{}{"trimmed_name_values": "John Do"},
@@ -2905,4 +2903,3 @@ func logicalFuncs(t *testing.T) {
 		})
 	}
 }
-

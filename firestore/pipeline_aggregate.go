@@ -215,7 +215,6 @@ func ArrayAggDistinct(fieldOrExpr any) AggregateFunction {
 	return newBaseAggregateFunction("array_agg_distinct", fieldOrExpr)
 }
 
-
 // CountIf creates an aggregation that counts the number of stage inputs where the provided boolean
 // expression evaluates to true.
 // Example:

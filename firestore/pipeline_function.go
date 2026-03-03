@@ -262,10 +262,10 @@ func TimestampSubtract(timestamp, unit, amount any) Expression {
 }
 
 // TimestampExtract creates an expression that extracts a part from a timestamp.
-// - timestamp can be a field path string, [FieldPath] or [Expression].
-// - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
-//   "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
-//   "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
+//   - timestamp can be a field path string, [FieldPath] or [Expression].
+//   - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+//     "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+//     "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
@@ -274,11 +274,11 @@ func TimestampExtract(timestamp, part any) Expression {
 }
 
 // TimestampExtractWithTimezone creates an expression that extracts a part from a timestamp in a given timezone.
-// - timestamp can be a field path string, [FieldPath] or [Expression].
-// - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
-//   "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
-//   "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
-// - timezone can be a string or an [Expression].
+//   - timestamp can be a field path string, [FieldPath] or [Expression].
+//   - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+//     "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+//     "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
+//   - timezone can be a string or an [Expression].
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
@@ -594,8 +594,6 @@ func ArrayIndexOfAll(exprOrFieldPath any, search any) Expression {
 	return newBaseFunction("array_index_of_all", []Expression{asFieldExpr(exprOrFieldPath), toExprOrConstant(search)})
 }
 
-
-
 // ByteLength creates an expression that calculates the length of a string represented by a field or [Expression] in UTF-8
 // bytes.
 //   - exprOrFieldPath can be a field path string, [FieldPath] or [Expression].
@@ -771,6 +769,7 @@ func RTrim(exprOrFieldPath any) Expression {
 func RTrimWithValues(exprOrFieldPath any, valuesToTrim any) Expression {
 	return newBaseFunction("rtrim", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(valuesToTrim)})
 }
+
 // Split creates an expression that splits a string by a delimiter.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
 // - delimiter is the string to use to split by.
@@ -902,7 +901,6 @@ func GetDocumentID(exprStringOrDocRef any) Expression {
 
 	return newBaseFunction("document_id", []Expression{expr})
 }
-
 
 // Conditional creates an expression that evaluates a condition and returns one of two expressions.
 // - condition is the boolean expression to evaluate.
