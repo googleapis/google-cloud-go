@@ -289,7 +289,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	return tracerFactory, nil
 }
 
-func (tf *builtinMetricsTracerFactory) reset(mt *builtinMetricsTracer, ctx context.Context, tableName string, isStreaming bool) {
+func (tf *builtinMetricsTracerFactory) reset(ctx context.Context, mt *builtinMetricsTracer, tableName string, isStreaming bool) {
 	mt.ctx = ctx
 	mt.builtInEnabled = tf.enabled
 	mt.clientAttributes = tf.clientAttributes
