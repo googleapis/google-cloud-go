@@ -294,7 +294,6 @@ func (tf *builtinMetricsTracerFactory) reset(ctx context.Context, mt *builtinMet
 	mt.builtInEnabled = tf.enabled
 	mt.clientAttributes = tf.clientAttributes
 
-	// 2. Re-assign instruments (fast pointer copies)
 	mt.instrumentOperationLatencies = tf.operationLatencies
 	mt.instrumentServerLatencies = tf.serverLatencies
 	mt.instrumentAttemptLatencies = tf.attemptLatencies
