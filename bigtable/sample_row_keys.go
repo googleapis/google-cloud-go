@@ -29,7 +29,10 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 
 	mt := t.newBuiltinMetricsTracer(ctx, true)
-	defer mt.recordOperationCompletion()
+	defer func() {
+		mt.recordOperationCompletion()
+		metricsTracerPool.Put(mt)
+	}()
 
 	rowKeys, err := t.sampleRowKeys(ctx, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)

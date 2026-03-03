@@ -107,7 +107,11 @@ func (c *Client) prepareStatementWithMetadata(ctx context.Context, query string,
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	mt := c.newBuiltinMetricsTracer(ctx, "", false)
-	defer mt.recordOperationCompletion()
+
+	defer func() {
+		mt.recordOperationCompletion()
+		metricsTracerPool.Put(mt)
+	}()
 
 	preparedStatement, err = c.prepareStatement(ctx, mt, query, paramTypes, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
@@ -286,7 +290,10 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	mt := bs.ps.c.newBuiltinMetricsTracer(ctx, "", true)
-	defer mt.recordOperationCompletion()
+	defer func() {
+		mt.recordOperationCompletion()
+		metricsTracerPool.Put(mt)
+	}()
 
 	err = bs.execute(ctx, f, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
