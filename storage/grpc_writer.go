@@ -577,7 +577,7 @@ type gRPCWriterCommandWrite struct {
 	done          chan struct{}
 	initialOffset int64
 	hasStarted    bool
-	once          sync.Once
+	closeOnce     sync.Once
 }
 
 func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
@@ -724,26 +724,6 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 }
 
 func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
-	if !c.hasStarted {
-		c.initialOffset = w.bufBaseOffset
-		c.hasStarted = true
-	}
-
-	// Calculate the offset delta. If w.bufBaseOffset > c.initialOffset,
-	// the server persisted data from a previous attempt; we must skip those bytes.
-	skip := w.bufBaseOffset - c.initialOffset
-	if skip < 0 {
-		skip = 0
-	}
-
-	// If we've already sent everything, we're done.
-	if skip >= int64(len(c.p)) {
-		c.markDone()
-		return nil
-	}
-
-	c.p = c.p[skip:]
-
 	// Pre-emptively get the context channel to avoid closure overhead in the loop.
 	ctxDone := w.preRunCtx.Done()
 
@@ -783,7 +763,7 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 
 // Helper to ensure we don't close done twice and keep the main logic clean.
 func (c *gRPCWriterCommandWrite) markDone() {
-	c.once.Do(func() { close(c.done) })
+	c.closeOnce.Do(func() { close(c.done) })
 }
 
 type gRPCWriterCommandFlush struct {
