@@ -708,30 +708,6 @@ func TestKeyFunctions(t *testing.T) {
 				},
 			}},
 		},
-		{
-			desc: "Parent",
-			expr: Parent("field"),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "parent",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "baseExpression Parent",
-			expr: FieldOf("field").Parent(),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "parent",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-					},
-				},
-			}},
-		},
 	}
 
 	for _, tc := range testcases {

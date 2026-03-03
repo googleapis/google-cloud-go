@@ -244,14 +244,16 @@ type Expression interface {
 	// the Unix epoch (1970-01-01 00:00:00 UTC).
 	TimestampToUnixSeconds() Expression
 	// TimestampExtract creates an expression that extracts a part from a timestamp.
-	//
-	// The parameter 'part' can be a string constant (e.g., "year") or an [Expression] that evaluates to a valid part string.
-	// Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day", "dayofweek", "dayofyear", "week", "month", "quarter", "year", "isoweek", and "isoyear".
+	// - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+	//   "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+	//   "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
 	TimestampExtract(part any) Expression
 	// TimestampExtractWithTimezone creates an expression that extracts a part from a timestamp in a given timezone.
-	//
-	// The parameter 'part' can be a string constant or an [Expression] that evaluates to a valid part string.
-	// The parameter 'timezone' can be a string constant (e.g., "America/Los_Angeles") or an [Expression] that evaluates to a valid timezone string.
+	// - timestamp can be a field path string, [FieldPath] or [Expression].
+	// - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+	//   "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+	//   "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
+	// - timezone can be a string or an [Expression].
 	TimestampExtractWithTimezone(part, timezone any) Expression
 	// TimestampDiff creates an expression that calculates the difference between two timestamps.
 	//
@@ -306,8 +308,6 @@ type Expression interface {
 	GetCollectionID() Expression
 	// GetDocumentID creates an expression that returns the ID of the document.
 	GetDocumentID() Expression
-	// Parent creates an expression that returns the parent of a document reference or a field path.
-	Parent() Expression
 
 	// Logical functions
 	// IfError creates an expression that evaluates and returns the receiver expression if it does not produce an error;
@@ -344,7 +344,7 @@ type Expression interface {
 	MapRemove(strOrExprkey any) Expression
 	// MapSet creates an expression that updates a map with key-value pairs.
 	//
-	// The parameter 'keysAndValues' is a list of key-value pairs.
+	// The parameter 'keysAndValues' is a list of alternating key and value arguments.
 	MapSet(keysAndValues ...any) Expression
 	// MapKeys creates an expression that returns the keys of a map as an array.
 	MapKeys() Expression
@@ -613,7 +613,6 @@ func (b *baseExpression) Concat(others ...any) Expression { return Concat(b, oth
 // Key functions
 func (b *baseExpression) GetCollectionID() Expression { return GetCollectionID(b) }
 func (b *baseExpression) GetDocumentID() Expression   { return GetDocumentID(b) }
-func (b *baseExpression) Parent() Expression          { return Parent(b) }
 
 // Logical functions
 func (b *baseExpression) IfError(catchExprOrValue any) Expression {

@@ -388,10 +388,6 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if len(results) != 2 {
 			t.Errorf("got %d documents, want 2", len(results))
 		}
-
-		for _, result := range results {
-			fmt.Println(result.Data())
-		}
 	})
 	t.Run("Constants", func(t *testing.T) {
 		iter := client.Pipeline().Literals(map[string]any{"a": 1}).
@@ -2487,12 +2483,6 @@ func keyFuncs(t *testing.T) {
 			pipeline: client.Pipeline().Collection(coll.ID).Select(GetDocumentID(docRef1).As("documentId")),
 			want:     map[string]interface{}{"documentId": "doc1"},
 		},
-		{
-			name: "Parent",
-			pipeline: client.Pipeline().Collection(coll.ID + "/" + docRef1.ID + "/sub").
-				Select(Parent(FieldOf("__name__")).As("parentDoc")),
-			want: map[string]interface{}{"parentDoc": docRef1},
-		},
 	}
 
 	for _, test := range tests {
@@ -2510,7 +2500,6 @@ func keyFuncs(t *testing.T) {
 				t.Fatalf("expected 1 doc, got %d", len(docs))
 			}
 			got := docs[0].Data()
-			fmt.Println(got)
 			if diff := testutil.Diff(got, test.want); diff != "" {
 				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
 			}

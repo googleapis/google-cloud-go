@@ -903,14 +903,6 @@ func GetDocumentID(exprStringOrDocRef any) Expression {
 	return newBaseFunction("document_id", []Expression{expr})
 }
 
-// Parent creates an expression that returns the parent of a document reference or a field path.
-// - exprOrField can be a field path string, [FieldPath] or an [Expression] that evaluates to a field path or document reference.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
-func Parent(exprOrField any) Expression {
-	return newBaseFunction("parent", []Expression{asFieldExpr(exprOrField)})
-}
 
 // Conditional creates an expression that evaluates a condition and returns one of two expressions.
 // - condition is the boolean expression to evaluate.
@@ -1058,7 +1050,7 @@ func MapRemove(exprOrField any, strOrExprkey any) Expression {
 
 // MapSet creates an expression that updates a map with key-value pairs.
 // - exprOrField: The expression representing the map.
-// - keysAndValues: A list of key-value pairs.
+// - keysAndValues: A list of alternating key and value arguments.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
