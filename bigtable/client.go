@@ -379,7 +379,7 @@ func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTrace
 
 func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *builtinMetricsTracer {
 	mt := metricsTracerPool.Get().(*builtinMetricsTracer)
-	// reset the metrics tracer factory
+	// reset the tracer for reuse
 	c.metricsTracerFactory.reset(ctx, mt, table, isStreaming)
 	return mt
 }
