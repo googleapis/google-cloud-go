@@ -24,17 +24,20 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 )
 
+const continuousDownscaleRunsThreshold = 3
+
 // DynamicScaleMonitor manages upscale and downscale of the connection pool.
 // Owner: It is owned by BigtableClient
 type DynamicScaleMonitor struct {
-	config            btopt.DynamicChannelPoolConfig
-	pool              *BigtableChannelPool
-	lastScalingTime   time.Time
-	mu                sync.Mutex
-	ticker            *time.Ticker
-	done              chan struct{}
-	stopOnce          sync.Once
-	perConnTargetLoad float64 // target load per conn
+	config                  btopt.DynamicChannelPoolConfig
+	pool                    *BigtableChannelPool
+	lastScalingTime         time.Time
+	mu                      sync.Mutex
+	ticker                  *time.Ticker
+	done                    chan struct{}
+	stopOnce                sync.Once
+	perConnTargetLoad       float64 // target load per conn
+	continuousDownscaleRuns int     // avoid downscaling in one run
 
 }
 
@@ -110,10 +113,22 @@ func (dsm *DynamicScaleMonitor) evaluateAndScale() {
 	}
 	currentAvgLoadPerConn := float64(currentLoadSum) / float64(currentConnsCount)
 
+	btopt.Debugf(dsm.pool.logger, "bigtable_connpool: evaluateAndScale currentLoadSum: %d, currentChannel: %d, avgLoad: %.2f\n", currentLoadSum, currentConnsCount, currentAvgLoadPerConn)
+
 	if currentAvgLoadPerConn >= dsm.config.AvgLoadHighThreshold {
 		dsm.scaleUp(currentLoadSum, currentConnsCount)
 	} else if currentAvgLoadPerConn <= dsm.config.AvgLoadLowThreshold {
-		dsm.scaleDown(currentLoadSum, currentConnsCount)
+		dsm.continuousDownscaleRuns++
+		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Low load detected (avg: %.2f). Downscale streak: %d/3\n", currentAvgLoadPerConn, dsm.continuousDownscaleRuns)
+		if dsm.continuousDownscaleRuns >= continuousDownscaleRunsThreshold {
+			dsm.scaleDown(currentLoadSum, currentConnsCount)
+			dsm.continuousDownscaleRuns = 0
+		}
+	} else {
+		if dsm.continuousDownscaleRuns > 0 {
+			btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Normal load detected (avg: %.2f). Resetting downscale streak from %d to 0.\n", currentAvgLoadPerConn, dsm.continuousDownscaleRuns)
+		}
+		dsm.continuousDownscaleRuns = 0
 	}
 }
 

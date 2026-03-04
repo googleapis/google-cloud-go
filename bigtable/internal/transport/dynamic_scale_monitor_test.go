@@ -39,11 +39,12 @@ func TestDynamicChannelScaling(t *testing.T) {
 		MaxRemoveConns:       3,
 	}
 	tests := []struct {
-		name        string
-		initialSize int
-		configOpt   func(*btopt.DynamicChannelPoolConfig)
-		setLoad     func(conns []*connEntry)
-		wantSize    int
+		name          string
+		initialSize   int
+		configOpt     func(*btopt.DynamicChannelPoolConfig)
+		setLoad       func(conns []*connEntry)
+		wantSize      int
+		evaluateCalls int
 	}{
 		{
 			name:        "ScaleUp",
@@ -52,7 +53,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 				setConnLoads(conns, 12, 0) // Avg load 12 > 10
 			},
 			// Total load = 3 * 12 = 36. Desired = ceil(36 / 6.5) = 6
-			wantSize: 6,
+			wantSize:      6,
+			evaluateCalls: 1,
 		},
 		{
 			name:        "ScaleUpCappedAtMax",
@@ -61,7 +63,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 				setConnLoads(conns, 20, 0) // Avg load 20 > 10
 			},
 			// Total load = 8 * 20 = 160. Desired = ceil(160 / 6.5) = 25. Capped at MaxConns = 10
-			wantSize: 10,
+			wantSize:      10,
+			evaluateCalls: 1,
 		},
 		{
 			name:        "ScaleDown",
@@ -70,7 +73,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 				setConnLoads(conns, 1, 0) // Avg load 1 < 3
 			},
 			// Total load = 9 * 1 = 9. Desired = ceil(9 / 6.5) = 2.
-			wantSize: 6,
+			wantSize:      6,
+			evaluateCalls: 3,
 		},
 		{
 			name:        "ScaleDownCappedAtMin",
@@ -79,7 +83,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 				setConnLoads(conns, 1, 0) // Avg load 1 < 3
 			},
 			// Total load = 3 * 1 = 3. Desired = ceil(3 / 6.5) = 1. Capped at MinConns = 2
-			wantSize: 2,
+			wantSize:      2,
+			evaluateCalls: 3,
 		},
 		{
 			name:        "ScaleDownLimitedByMaxRemove",
@@ -91,7 +96,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 				setConnLoads(conns, 0, 0) // Avg load 0 < 3
 			},
 			// Total load = 0. Desired = 2 (MinConns). removeCount = 10 - 2 = 8. Limited by MaxRemoveConns = 2.
-			wantSize: 10 - 2,
+			wantSize:      10 - 2,
+			evaluateCalls: 3,
 		},
 		{
 			name:        "NoScaleUp",
@@ -99,7 +105,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 			setLoad: func(conns []*connEntry) {
 				setConnLoads(conns, 7, 0) // 3 < Avg load 7 < 10
 			},
-			wantSize: 5,
+			wantSize:      5,
+			evaluateCalls: 1,
 		},
 		{
 			name:        "NoScaleDown",
@@ -107,7 +114,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 			setLoad: func(conns []*connEntry) {
 				setConnLoads(conns, 5, 1) // Weighted load 5*1 + 1*2 = 7.  3 < 7 < 10
 			},
-			wantSize: 5,
+			wantSize:      5,
+			evaluateCalls: 3,
 		},
 		{
 			name:        "ScaleUpAddAtLeastOne",
@@ -116,7 +124,8 @@ func TestDynamicChannelScaling(t *testing.T) {
 				setConnLoads(conns, 10, 0) // Avg load 10, right at threshold.
 			},
 			// Total load = 20. Desired = ceil(20 / 6.5) = 4. Add 2.
-			wantSize: 4,
+			wantSize:      4,
+			evaluateCalls: 1,
 		},
 	}
 
@@ -139,7 +148,15 @@ func TestDynamicChannelScaling(t *testing.T) {
 				tc.setLoad(pool.getConns())
 			}
 
-			dsm.evaluateAndScale()
+			calls := tc.evaluateCalls
+			if calls == 0 {
+				calls = 1
+			}
+
+			// Simulate the ticker calling evaluateAndScale
+			for i := 0; i < calls; i++ {
+				dsm.evaluateAndScale()
+			}
 			time.Sleep(50 * time.Millisecond) // Allow add/remove goroutines to potentially run
 
 			if gotSize := pool.Num(); gotSize != tc.wantSize {
