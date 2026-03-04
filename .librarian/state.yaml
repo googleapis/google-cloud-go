@@ -138,7 +138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.118.0
-    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -175,7 +175,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.20.0
-    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -1731,7 +1731,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.55.0
-    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -2497,7 +2497,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: documentai
     version: 1.41.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/documentai/v1
         service_config: documentai_v1.yaml
@@ -2746,7 +2746,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: firestore
     version: 1.21.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/firestore/admin/v1
         service_config: firestore_v1.yaml
@@ -4007,7 +4007,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.22.0
-    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/networkmanagement/v1
         service_config: networkmanagement_v1.yaml
@@ -5751,7 +5751,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.88.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
@@ -5919,7 +5919,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
     version: 0.3.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/storagebatchoperations/v1
         service_config: storagebatchoperations_v1.yaml
@@ -6230,7 +6230,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vectorsearch
     version: 0.3.0
-    last_generated_commit: 27ffde22e73154260f8eaa6115420b7bd895db2f
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/vectorsearch/v1beta
         service_config: vectorsearch_v1beta.yaml

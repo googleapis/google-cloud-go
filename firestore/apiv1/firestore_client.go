@@ -150,7 +150,6 @@ func defaultCallOptions() *CallOptions {
 		BatchGetDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -207,7 +206,6 @@ func defaultCallOptions() *CallOptions {
 		RunQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -221,7 +219,6 @@ func defaultCallOptions() *CallOptions {
 		ExecutePipeline: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -235,7 +232,6 @@ func defaultCallOptions() *CallOptions {
 		RunAggregationQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -250,7 +246,6 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -389,7 +384,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
@@ -443,7 +437,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
@@ -457,7 +450,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
@@ -471,7 +463,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
@@ -485,7 +476,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)

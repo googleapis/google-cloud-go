@@ -3648,7 +3648,7 @@
     {
       "regionTag": "compute_v1beta_generated_Disks_Update_sync",
       "title": "compute Update Sample",
-      "description": "Update updates the specified disk with the data included in the request.\nThe update is performed only on selected fields included as part\nof update-mask. Only the following fields can be modified: user_license.",
+      "description": "Update updates the specified disk with the data included in the request.\nThe update is performed only on selected fields included as part\nof update-mask.",
       "file": "DisksClient/Update/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9196,6 +9196,52 @@
         "method": {
           "shortName": "ApplyUpdatesToInstances",
           "fullName": "google.cloud.compute.v1beta.InstanceGroupManagers.ApplyUpdatesToInstances",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1beta.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_InstanceGroupManagers_ConfigureAcceleratorTopologies_sync",
+      "title": "compute ConfigureAcceleratorTopologies Sample",
+      "description": "ConfigureAcceleratorTopologies updates the accelerator topologies configuration.",
+      "file": "InstanceGroupManagersClient/ConfigureAcceleratorTopologies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ConfigureAcceleratorTopologies",
+        "fullName": "google.cloud.compute.v1beta.InstanceGroupManagersClient.ConfigureAcceleratorTopologies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ConfigureAcceleratorTopologiesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1beta.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "ConfigureAcceleratorTopologies",
+          "fullName": "google.cloud.compute.v1beta.InstanceGroupManagers.ConfigureAcceleratorTopologies",
           "service": {
             "shortName": "InstanceGroupManagers",
             "fullName": "google.cloud.compute.v1beta.InstanceGroupManagers"
@@ -26832,7 +26878,7 @@
     {
       "regionTag": "compute_v1beta_generated_RegionDisks_Update_sync",
       "title": "compute Update Sample",
-      "description": "Update update the specified disk with the data included in the request. Update is\nperformed only on selected fields included as part of update-mask. Only the\nfollowing fields can be modified: user_license.",
+      "description": "Update update the specified disk with the data included in the request. Update is\nperformed only on selected fields included as part of update-mask.",
       "file": "RegionDisksClient/Update/main.go",
       "language": "GO",
       "clientMethod": {
@@ -38238,6 +38284,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_Routers_DeleteNamedSet_sync",
+      "title": "compute DeleteNamedSet Sample",
+      "description": "DeleteNamedSet deletes Named Set",
+      "file": "RoutersClient/DeleteNamedSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNamedSet",
+        "fullName": "google.cloud.compute.v1beta.RoutersClient.DeleteNamedSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteNamedSetRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1beta.RoutersClient"
+        },
+        "method": {
+          "shortName": "DeleteNamedSet",
+          "fullName": "google.cloud.compute.v1beta.Routers.DeleteNamedSet",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1beta.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_Routers_DeleteRoutePolicy_sync",
       "title": "compute DeleteRoutePolicy Sample",
       "description": "DeleteRoutePolicy deletes Route Policy",
@@ -38314,6 +38406,52 @@
         "method": {
           "shortName": "Get",
           "fullName": "google.cloud.compute.v1beta.Routers.Get",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1beta.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_Routers_GetNamedSet_sync",
+      "title": "compute GetNamedSet Sample",
+      "description": "GetNamedSet returns specified Named Set",
+      "file": "RoutersClient/GetNamedSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNamedSet",
+        "fullName": "google.cloud.compute.v1beta.RoutersClient.GetNamedSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetNamedSetRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.RoutersGetNamedSetResponse",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1beta.RoutersClient"
+        },
+        "method": {
+          "shortName": "GetNamedSet",
+          "fullName": "google.cloud.compute.v1beta.Routers.GetNamedSet",
           "service": {
             "shortName": "Routers",
             "fullName": "google.cloud.compute.v1beta.Routers"
@@ -38652,6 +38790,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_Routers_ListNamedSets_sync",
+      "title": "compute ListNamedSets Sample",
+      "description": "ListNamedSets retrieves a list of router named set subresources available to the\nspecified project.",
+      "file": "RoutersClient/ListNamedSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNamedSets",
+        "fullName": "google.cloud.compute.v1beta.RoutersClient.ListNamedSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListNamedSetsRoutersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NamedSetIterator",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1beta.RoutersClient"
+        },
+        "method": {
+          "shortName": "ListNamedSets",
+          "fullName": "google.cloud.compute.v1beta.Routers.ListNamedSets",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1beta.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_Routers_ListRoutePolicies_sync",
       "title": "compute ListRoutePolicies Sample",
       "description": "ListRoutePolicies retrieves a list of router route policy subresources available to the\nspecified project.",
@@ -38728,6 +38912,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1beta.Routers.Patch",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1beta.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_Routers_PatchNamedSet_sync",
+      "title": "compute PatchNamedSet Sample",
+      "description": "PatchNamedSet patches Named Set",
+      "file": "RoutersClient/PatchNamedSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchNamedSet",
+        "fullName": "google.cloud.compute.v1beta.RoutersClient.PatchNamedSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchNamedSetRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1beta.RoutersClient"
+        },
+        "method": {
+          "shortName": "PatchNamedSet",
+          "fullName": "google.cloud.compute.v1beta.Routers.PatchNamedSet",
           "service": {
             "shortName": "Routers",
             "fullName": "google.cloud.compute.v1beta.Routers"
@@ -38912,6 +39142,52 @@
         "method": {
           "shortName": "Update",
           "fullName": "google.cloud.compute.v1beta.Routers.Update",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1beta.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_Routers_UpdateNamedSet_sync",
+      "title": "compute UpdateNamedSet Sample",
+      "description": "UpdateNamedSet updates or creates new Named Set",
+      "file": "RoutersClient/UpdateNamedSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNamedSet",
+        "fullName": "google.cloud.compute.v1beta.RoutersClient.UpdateNamedSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateNamedSetRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1beta.RoutersClient"
+        },
+        "method": {
+          "shortName": "UpdateNamedSet",
+          "fullName": "google.cloud.compute.v1beta.Routers.UpdateNamedSet",
           "service": {
             "shortName": "Routers",
             "fullName": "google.cloud.compute.v1beta.Routers"
@@ -40203,6 +40479,328 @@
           "service": {
             "shortName": "ServiceAttachments",
             "fullName": "google.cloud.compute.v1beta.ServiceAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_SnapshotGroups_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified SnapshotGroup resource",
+      "file": "SnapshotGroupsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteSnapshotGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "SnapshotGroupsClient",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroups.Delete",
+          "service": {
+            "shortName": "SnapshotGroups",
+            "fullName": "google.cloud.compute.v1beta.SnapshotGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_SnapshotGroups_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified SnapshotGroup resource.",
+      "file": "SnapshotGroupsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetSnapshotGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.SnapshotGroup",
+        "client": {
+          "shortName": "SnapshotGroupsClient",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroups.Get",
+          "service": {
+            "shortName": "SnapshotGroups",
+            "fullName": "google.cloud.compute.v1beta.SnapshotGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_SnapshotGroups_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such\npolicy or resource exists.",
+      "file": "SnapshotGroupsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicySnapshotGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "SnapshotGroupsClient",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroups.GetIamPolicy",
+          "service": {
+            "shortName": "SnapshotGroups",
+            "fullName": "google.cloud.compute.v1beta.SnapshotGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_SnapshotGroups_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a snapshot group in the specified project using the data included\nin the request.",
+      "file": "SnapshotGroupsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertSnapshotGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "SnapshotGroupsClient",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroups.Insert",
+          "service": {
+            "shortName": "SnapshotGroups",
+            "fullName": "google.cloud.compute.v1beta.SnapshotGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_SnapshotGroups_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves the list of SnapshotGroup resources contained within\nthe specified project.",
+      "file": "SnapshotGroupsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListSnapshotGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SnapshotGroupIterator",
+        "client": {
+          "shortName": "SnapshotGroupsClient",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroups.List",
+          "service": {
+            "shortName": "SnapshotGroups",
+            "fullName": "google.cloud.compute.v1beta.SnapshotGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_SnapshotGroups_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource.\nReplaces any existing policy.",
+      "file": "SnapshotGroupsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicySnapshotGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "SnapshotGroupsClient",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroups.SetIamPolicy",
+          "service": {
+            "shortName": "SnapshotGroups",
+            "fullName": "google.cloud.compute.v1beta.SnapshotGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_SnapshotGroups_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "SnapshotGroupsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsSnapshotGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "SnapshotGroupsClient",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroupsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1beta.SnapshotGroups.TestIamPermissions",
+          "service": {
+            "shortName": "SnapshotGroups",
+            "fullName": "google.cloud.compute.v1beta.SnapshotGroups"
           }
         }
       },

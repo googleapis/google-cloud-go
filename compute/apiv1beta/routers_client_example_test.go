@@ -106,6 +106,34 @@ func ExampleRoutersClient_Delete() {
 	}
 }
 
+func ExampleRoutersClient_DeleteNamedSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRoutersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.DeleteNamedSetRouterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#DeleteNamedSetRouterRequest.
+	}
+	op, err := c.DeleteNamedSet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleRoutersClient_DeleteRoutePolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -152,6 +180,31 @@ func ExampleRoutersClient_Get() {
 		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#GetRouterRequest.
 	}
 	resp, err := c.Get(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRoutersClient_GetNamedSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRoutersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.GetNamedSetRouterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#GetNamedSetRouterRequest.
+	}
+	resp, err := c.GetNamedSet(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -373,6 +426,43 @@ func ExampleRoutersClient_ListBgpRoutes() {
 	}
 }
 
+func ExampleRoutersClient_ListNamedSets() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRoutersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.ListNamedSetsRoutersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#ListNamedSetsRoutersRequest.
+	}
+	it := c.ListNamedSets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.RoutersListNamedSets)
+	}
+}
+
 func ExampleRoutersClient_ListRoutePolicies() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -428,6 +518,34 @@ func ExampleRoutersClient_Patch() {
 		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#PatchRouterRequest.
 	}
 	op, err := c.Patch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleRoutersClient_PatchNamedSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRoutersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.PatchNamedSetRouterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#PatchNamedSetRouterRequest.
+	}
+	op, err := c.PatchNamedSet(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -534,6 +652,34 @@ func ExampleRoutersClient_Update() {
 		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#UpdateRouterRequest.
 	}
 	op, err := c.Update(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleRoutersClient_UpdateNamedSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRoutersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.UpdateNamedSetRouterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#UpdateNamedSetRouterRequest.
+	}
+	op, err := c.UpdateNamedSet(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

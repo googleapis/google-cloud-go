@@ -129,6 +129,32 @@ func ExampleRoutersClient_ListBgpRoutes_all() {
 	}
 }
 
+func ExampleRoutersClient_ListNamedSets_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRoutersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.ListNamedSetsRoutersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#ListNamedSetsRoutersRequest.
+	}
+	for resp, err := range c.ListNamedSets(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleRoutersClient_ListRoutePolicies_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

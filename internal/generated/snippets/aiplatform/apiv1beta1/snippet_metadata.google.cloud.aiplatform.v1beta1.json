@@ -33529,6 +33529,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_VertexRagService_AskContexts_sync",
+      "title": "aiplatform AskContexts Sample",
+      "description": "AskContexts agentic Retrieval Ask API for RAG.",
+      "file": "VertexRagClient/AskContexts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AskContexts",
+        "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient.AskContexts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AskContextsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.AskContextsResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "AskContexts",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService.AskContexts",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_VertexRagService_AsyncRetrieveContexts_sync",
+      "title": "aiplatform AsyncRetrieveContexts Sample",
+      "description": "AsyncRetrieveContexts asynchronous API to retrieves relevant contexts for a query.",
+      "file": "VertexRagClient/AsyncRetrieveContexts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AsyncRetrieveContexts",
+        "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient.AsyncRetrieveContexts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AsyncRetrieveContextsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AsyncRetrieveContextsOperation",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "AsyncRetrieveContexts",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService.AsyncRetrieveContexts",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_VertexRagService_AugmentPrompt_sync",
       "title": "aiplatform AugmentPrompt Sample",
       "description": "AugmentPrompt given an input prompt, it returns augmented prompt from vertex rag store\nto guide LLM towards generating grounded responses.",

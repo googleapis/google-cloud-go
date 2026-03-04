@@ -2247,6 +2247,8 @@ type Cluster struct {
 	// service account. The per-cluster service account naming format is subject
 	// to change.
 	ServiceAccountEmail string `protobuf:"bytes,46,opt,name=service_account_email,json=serviceAccountEmail,proto3" json:"service_account_email,omitempty"`
+	// Optional. Configuration for Dataplex integration.
+	DataplexConfig *Cluster_DataplexConfig `protobuf:"bytes,47,opt,name=dataplex_config,json=dataplexConfig,proto3" json:"dataplex_config,omitempty"`
 }
 
 func (x *Cluster) Reset() {
@@ -2546,6 +2548,13 @@ func (x *Cluster) GetServiceAccountEmail() string {
 		return x.ServiceAccountEmail
 	}
 	return ""
+}
+
+func (x *Cluster) GetDataplexConfig() *Cluster_DataplexConfig {
+	if x != nil {
+		return x.DataplexConfig
+	}
+	return nil
 }
 
 type isCluster_Source interface {
@@ -4378,6 +4387,55 @@ func (x *Cluster_TrialMetadata) GetGraceEndTime() *timestamppb.Timestamp {
 	return nil
 }
 
+// Configuration for Dataplex integration.
+type Cluster_DataplexConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Dataplex is enabled by default for resources such as clusters and
+	// instances. This flag controls the integration of AlloyDB PG
+	// resources (like databases, schemas, and tables) with Dataplex."
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+}
+
+func (x *Cluster_DataplexConfig) Reset() {
+	*x = Cluster_DataplexConfig{}
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Cluster_DataplexConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Cluster_DataplexConfig) ProtoMessage() {}
+
+func (x *Cluster_DataplexConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Cluster_DataplexConfig.ProtoReflect.Descriptor instead.
+func (*Cluster_DataplexConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_alloydb_v1alpha_resources_proto_rawDescGZIP(), []int{12, 5}
+}
+
+func (x *Cluster_DataplexConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
 // MachineConfig describes the configuration of a machine.
 type Instance_MachineConfig struct {
 	state         protoimpl.MessageState
@@ -4394,7 +4452,7 @@ type Instance_MachineConfig struct {
 
 func (x *Instance_MachineConfig) Reset() {
 	*x = Instance_MachineConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[33]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4406,7 +4464,7 @@ func (x *Instance_MachineConfig) String() string {
 func (*Instance_MachineConfig) ProtoMessage() {}
 
 func (x *Instance_MachineConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[33]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4460,7 +4518,7 @@ type Instance_Node struct {
 
 func (x *Instance_Node) Reset() {
 	*x = Instance_Node{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[34]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4472,7 +4530,7 @@ func (x *Instance_Node) String() string {
 func (*Instance_Node) ProtoMessage() {}
 
 func (x *Instance_Node) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[34]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4539,7 +4597,7 @@ type Instance_QueryInsightsInstanceConfig struct {
 
 func (x *Instance_QueryInsightsInstanceConfig) Reset() {
 	*x = Instance_QueryInsightsInstanceConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[35]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4551,7 +4609,7 @@ func (x *Instance_QueryInsightsInstanceConfig) String() string {
 func (*Instance_QueryInsightsInstanceConfig) ProtoMessage() {}
 
 func (x *Instance_QueryInsightsInstanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[35]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4637,7 +4695,7 @@ type Instance_ObservabilityInstanceConfig struct {
 
 func (x *Instance_ObservabilityInstanceConfig) Reset() {
 	*x = Instance_ObservabilityInstanceConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[36]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4649,7 +4707,7 @@ func (x *Instance_ObservabilityInstanceConfig) String() string {
 func (*Instance_ObservabilityInstanceConfig) ProtoMessage() {}
 
 func (x *Instance_ObservabilityInstanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[36]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4747,7 +4805,7 @@ type Instance_ReadPoolConfig struct {
 
 func (x *Instance_ReadPoolConfig) Reset() {
 	*x = Instance_ReadPoolConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[37]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4759,7 +4817,7 @@ func (x *Instance_ReadPoolConfig) String() string {
 func (*Instance_ReadPoolConfig) ProtoMessage() {}
 
 func (x *Instance_ReadPoolConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[37]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4794,7 +4852,7 @@ type Instance_UpdatePolicy struct {
 
 func (x *Instance_UpdatePolicy) Reset() {
 	*x = Instance_UpdatePolicy{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[38]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4806,7 +4864,7 @@ func (x *Instance_UpdatePolicy) String() string {
 func (*Instance_UpdatePolicy) ProtoMessage() {}
 
 func (x *Instance_UpdatePolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[38]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4844,7 +4902,7 @@ type Instance_ClientConnectionConfig struct {
 
 func (x *Instance_ClientConnectionConfig) Reset() {
 	*x = Instance_ClientConnectionConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[39]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4856,7 +4914,7 @@ func (x *Instance_ClientConnectionConfig) String() string {
 func (*Instance_ClientConnectionConfig) ProtoMessage() {}
 
 func (x *Instance_ClientConnectionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[39]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4902,7 +4960,7 @@ type Instance_PscInterfaceConfig struct {
 
 func (x *Instance_PscInterfaceConfig) Reset() {
 	*x = Instance_PscInterfaceConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[40]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4914,7 +4972,7 @@ func (x *Instance_PscInterfaceConfig) String() string {
 func (*Instance_PscInterfaceConfig) ProtoMessage() {}
 
 func (x *Instance_PscInterfaceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[40]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5000,7 +5058,7 @@ type Instance_PscAutoConnectionConfig struct {
 
 func (x *Instance_PscAutoConnectionConfig) Reset() {
 	*x = Instance_PscAutoConnectionConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[41]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5012,7 +5070,7 @@ func (x *Instance_PscAutoConnectionConfig) String() string {
 func (*Instance_PscAutoConnectionConfig) ProtoMessage() {}
 
 func (x *Instance_PscAutoConnectionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[41]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5092,7 +5150,7 @@ type Instance_PscInstanceConfig struct {
 
 func (x *Instance_PscInstanceConfig) Reset() {
 	*x = Instance_PscInstanceConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[42]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5104,7 +5162,7 @@ func (x *Instance_PscInstanceConfig) String() string {
 func (*Instance_PscInstanceConfig) ProtoMessage() {}
 
 func (x *Instance_PscInstanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[42]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5186,7 +5244,7 @@ type Instance_InstanceNetworkConfig struct {
 
 func (x *Instance_InstanceNetworkConfig) Reset() {
 	*x = Instance_InstanceNetworkConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[43]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5198,7 +5256,7 @@ func (x *Instance_InstanceNetworkConfig) String() string {
 func (*Instance_InstanceNetworkConfig) ProtoMessage() {}
 
 func (x *Instance_InstanceNetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[43]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5265,7 +5323,7 @@ type Instance_ConnectionPoolConfig struct {
 
 func (x *Instance_ConnectionPoolConfig) Reset() {
 	*x = Instance_ConnectionPoolConfig{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[44]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5277,7 +5335,7 @@ func (x *Instance_ConnectionPoolConfig) String() string {
 func (*Instance_ConnectionPoolConfig) ProtoMessage() {}
 
 func (x *Instance_ConnectionPoolConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[44]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5326,7 +5384,7 @@ type Instance_InstanceNetworkConfig_AuthorizedNetwork struct {
 
 func (x *Instance_InstanceNetworkConfig_AuthorizedNetwork) Reset() {
 	*x = Instance_InstanceNetworkConfig_AuthorizedNetwork{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[48]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5338,7 +5396,7 @@ func (x *Instance_InstanceNetworkConfig_AuthorizedNetwork) String() string {
 func (*Instance_InstanceNetworkConfig_AuthorizedNetwork) ProtoMessage() {}
 
 func (x *Instance_InstanceNetworkConfig_AuthorizedNetwork) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[48]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5389,7 +5447,7 @@ type Backup_QuantityBasedExpiry struct {
 
 func (x *Backup_QuantityBasedExpiry) Reset() {
 	*x = Backup_QuantityBasedExpiry{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[50]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5401,7 +5459,7 @@ func (x *Backup_QuantityBasedExpiry) String() string {
 func (*Backup_QuantityBasedExpiry) ProtoMessage() {}
 
 func (x *Backup_QuantityBasedExpiry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[50]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5444,7 +5502,7 @@ type SupportedDatabaseFlag_StringRestrictions struct {
 
 func (x *SupportedDatabaseFlag_StringRestrictions) Reset() {
 	*x = SupportedDatabaseFlag_StringRestrictions{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[54]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5456,7 +5514,7 @@ func (x *SupportedDatabaseFlag_StringRestrictions) String() string {
 func (*SupportedDatabaseFlag_StringRestrictions) ProtoMessage() {}
 
 func (x *SupportedDatabaseFlag_StringRestrictions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[54]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5493,7 +5551,7 @@ type SupportedDatabaseFlag_IntegerRestrictions struct {
 
 func (x *SupportedDatabaseFlag_IntegerRestrictions) Reset() {
 	*x = SupportedDatabaseFlag_IntegerRestrictions{}
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[55]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5505,7 +5563,7 @@ func (x *SupportedDatabaseFlag_IntegerRestrictions) String() string {
 func (*SupportedDatabaseFlag_IntegerRestrictions) ProtoMessage() {}
 
 func (x *SupportedDatabaseFlag_IntegerRestrictions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[55]
+	mi := &file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5795,7 +5853,7 @@ var file_google_cloud_alloydb_v1alpha_resources_proto_rawDesc = []byte{
 	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
 	0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x09, 0x73, 0x74, 0x61, 0x72, 0x74, 0x54, 0x69, 0x6d,
-	0x65, 0x22, 0x83, 0x21, 0x0a, 0x07, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x12, 0x56, 0x0a,
+	0x65, 0x22, 0x93, 0x22, 0x0a, 0x07, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x12, 0x56, 0x0a,
 	0x0d, 0x62, 0x61, 0x63, 0x6b, 0x75, 0x70, 0x5f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x0f,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
 	0x6f, 0x75, 0x64, 0x2e, 0x61, 0x6c, 0x6c, 0x6f, 0x79, 0x64, 0x62, 0x2e, 0x76, 0x31, 0x61, 0x6c,
@@ -5979,53 +6037,62 @@ var file_google_cloud_alloydb_v1alpha_resources_proto_rawDesc = []byte{
 	0x73, 0x12, 0x37, 0x0a, 0x15, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x61, 0x63, 0x63,
 	0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x2e, 0x20, 0x01, 0x28, 0x09,
 	0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x13, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x41, 0x63,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x1a, 0x84, 0x01, 0x0a, 0x0d, 0x4e,
-	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x40, 0x0a, 0x07,
-	0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x26, 0xe0,
-	0x41, 0x01, 0xfa, 0x41, 0x20, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4e, 0x65,
-	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x12, 0x31,
-	0x0a, 0x12, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x69, 0x70, 0x5f, 0x72,
-	0x61, 0x6e, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52,
-	0x10, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x65, 0x64, 0x49, 0x70, 0x52, 0x61, 0x6e, 0x67,
-	0x65, 0x1a, 0x68, 0x0a, 0x0f, 0x53, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x43, 0x6f,
-	0x6e, 0x66, 0x69, 0x67, 0x12, 0x55, 0x0a, 0x14, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x5f,
-	0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x42, 0x23, 0xfa, 0x41, 0x20, 0x0a, 0x1e, 0x61, 0x6c, 0x6c, 0x6f, 0x79, 0x64, 0x62,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x12, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79,
-	0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x1a, 0x6f, 0x0a, 0x0d, 0x50,
-	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x5e, 0x0a, 0x17,
-	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x5f, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65,
-	0x72, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x42, 0x26, 0xe0,
-	0x41, 0x03, 0xfa, 0x41, 0x20, 0x0a, 0x1e, 0x61, 0x6c, 0x6c, 0x6f, 0x79, 0x64, 0x62, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x43, 0x6c,
-	0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79,
-	0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x1a, 0x77, 0x0a, 0x09,
-	0x50, 0x73, 0x63, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x24, 0x0a, 0x0b, 0x70, 0x73, 0x63,
-	0x5f, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03,
-	0xe0, 0x41, 0x01, 0x52, 0x0a, 0x70, 0x73, 0x63, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12,
-	0x44, 0x0a, 0x1c, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6f, 0x77, 0x6e, 0x65, 0x64,
-	0x5f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x03, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x19, 0x73, 0x65, 0x72, 0x76,
-	0x69, 0x63, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4e,
-	0x75, 0x6d, 0x62, 0x65, 0x72, 0x1a, 0x82, 0x02, 0x0a, 0x0d, 0x54, 0x72, 0x69, 0x61, 0x6c, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x39, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74,
-	0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
-	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x73, 0x74, 0x61, 0x72, 0x74, 0x54, 0x69,
-	0x6d, 0x65, 0x12, 0x35, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x62, 0x0a, 0x0f, 0x64, 0x61,
+	0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x2f, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x34, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x61, 0x6c, 0x6c, 0x6f, 0x79, 0x64, 0x62, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70,
+	0x68, 0x61, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x70,
+	0x6c, 0x65, 0x78, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0e,
+	0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x1a, 0x84,
+	0x01, 0x0a, 0x0d, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x12, 0x40, 0x0a, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x26, 0xe0, 0x41, 0x01, 0xfa, 0x41, 0x20, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x70, 0x75,
+	0x74, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x52, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f,
+	0x72, 0x6b, 0x12, 0x31, 0x0a, 0x12, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x65, 0x64, 0x5f,
+	0x69, 0x70, 0x5f, 0x72, 0x61, 0x6e, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
+	0xe0, 0x41, 0x01, 0x52, 0x10, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x65, 0x64, 0x49, 0x70,
+	0x52, 0x61, 0x6e, 0x67, 0x65, 0x1a, 0x68, 0x0a, 0x0f, 0x53, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
+	0x72, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x55, 0x0a, 0x14, 0x70, 0x72, 0x69, 0x6d,
+	0x61, 0x72, 0x79, 0x5f, 0x63, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x5f, 0x6e, 0x61, 0x6d, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x23, 0xfa, 0x41, 0x20, 0x0a, 0x1e, 0x61, 0x6c, 0x6c,
+	0x6f, 0x79, 0x64, 0x62, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x12, 0x70, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x1a,
+	0x6f, 0x0a, 0x0d, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x12, 0x5e, 0x0a, 0x17, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x5f, 0x63, 0x6c,
+	0x75, 0x73, 0x74, 0x65, 0x72, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x09, 0x42, 0x26, 0xe0, 0x41, 0x03, 0xfa, 0x41, 0x20, 0x0a, 0x1e, 0x61, 0x6c, 0x6c, 0x6f, 0x79,
+	0x64, 0x62, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e,
+	0x64, 0x61, 0x72, 0x79, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x73,
+	0x1a, 0x77, 0x0a, 0x09, 0x50, 0x73, 0x63, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x24, 0x0a,
+	0x0b, 0x70, 0x73, 0x63, 0x5f, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0a, 0x70, 0x73, 0x63, 0x45, 0x6e, 0x61, 0x62,
+	0x6c, 0x65, 0x64, 0x12, 0x44, 0x0a, 0x1c, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6f,
+	0x77, 0x6e, 0x65, 0x64, 0x5f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6e, 0x75, 0x6d,
+	0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x19,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x1a, 0x82, 0x02, 0x0a, 0x0d, 0x54, 0x72,
+	0x69, 0x61, 0x6c, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x39, 0x0a, 0x0a, 0x73,
+	0x74, 0x61, 0x72, 0x74, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x73, 0x74, 0x61,
+	0x72, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x35, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69,
+	0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
+	0x74, 0x61, 0x6d, 0x70, 0x52, 0x07, 0x65, 0x6e, 0x64, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x3d, 0x0a,
+	0x0c, 0x75, 0x70, 0x67, 0x72, 0x61, 0x64, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
+	0x0b, 0x75, 0x70, 0x67, 0x72, 0x61, 0x64, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x40, 0x0a, 0x0e,
+	0x67, 0x72, 0x61, 0x63, 0x65, 0x5f, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x04,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
-	0x52, 0x07, 0x65, 0x6e, 0x64, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x3d, 0x0a, 0x0c, 0x75, 0x70, 0x67,
-	0x72, 0x61, 0x64, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0b, 0x75, 0x70, 0x67,
-	0x72, 0x61, 0x64, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x40, 0x0a, 0x0e, 0x67, 0x72, 0x61, 0x63,
-	0x65, 0x5f, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0c, 0x67, 0x72,
-	0x61, 0x63, 0x65, 0x45, 0x6e, 0x64, 0x54, 0x69, 0x6d, 0x65, 0x1a, 0x39, 0x0a, 0x0b, 0x4c, 0x61,
+	0x52, 0x0c, 0x67, 0x72, 0x61, 0x63, 0x65, 0x45, 0x6e, 0x64, 0x54, 0x69, 0x6d, 0x65, 0x1a, 0x2a,
+	0x0a, 0x0e, 0x44, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x1a, 0x39, 0x0a, 0x0b, 0x4c, 0x61,
 	0x62, 0x65, 0x6c, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76,
 	0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75,
@@ -6864,7 +6931,7 @@ func file_google_cloud_alloydb_v1alpha_resources_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_alloydb_v1alpha_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 20)
-var file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 56)
+var file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 57)
 var file_google_cloud_alloydb_v1alpha_resources_proto_goTypes = []any{
 	(InstanceView)(0),                                    // 0: google.cloud.alloydb.v1alpha.InstanceView
 	(ClusterView)(0),                                     // 1: google.cloud.alloydb.v1alpha.ClusterView
@@ -6916,42 +6983,43 @@ var file_google_cloud_alloydb_v1alpha_resources_proto_goTypes = []any{
 	(*Cluster_PrimaryConfig)(nil),                         // 47: google.cloud.alloydb.v1alpha.Cluster.PrimaryConfig
 	(*Cluster_PscConfig)(nil),                             // 48: google.cloud.alloydb.v1alpha.Cluster.PscConfig
 	(*Cluster_TrialMetadata)(nil),                         // 49: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata
-	nil,                                                   // 50: google.cloud.alloydb.v1alpha.Cluster.LabelsEntry
-	nil,                                                   // 51: google.cloud.alloydb.v1alpha.Cluster.AnnotationsEntry
-	nil,                                                   // 52: google.cloud.alloydb.v1alpha.Cluster.TagsEntry
-	(*Instance_MachineConfig)(nil),                        // 53: google.cloud.alloydb.v1alpha.Instance.MachineConfig
-	(*Instance_Node)(nil),                                 // 54: google.cloud.alloydb.v1alpha.Instance.Node
-	(*Instance_QueryInsightsInstanceConfig)(nil), // 55: google.cloud.alloydb.v1alpha.Instance.QueryInsightsInstanceConfig
-	(*Instance_ObservabilityInstanceConfig)(nil), // 56: google.cloud.alloydb.v1alpha.Instance.ObservabilityInstanceConfig
-	(*Instance_ReadPoolConfig)(nil),              // 57: google.cloud.alloydb.v1alpha.Instance.ReadPoolConfig
-	(*Instance_UpdatePolicy)(nil),                // 58: google.cloud.alloydb.v1alpha.Instance.UpdatePolicy
-	(*Instance_ClientConnectionConfig)(nil),      // 59: google.cloud.alloydb.v1alpha.Instance.ClientConnectionConfig
-	(*Instance_PscInterfaceConfig)(nil),          // 60: google.cloud.alloydb.v1alpha.Instance.PscInterfaceConfig
-	(*Instance_PscAutoConnectionConfig)(nil),     // 61: google.cloud.alloydb.v1alpha.Instance.PscAutoConnectionConfig
-	(*Instance_PscInstanceConfig)(nil),           // 62: google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig
-	(*Instance_InstanceNetworkConfig)(nil),       // 63: google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig
-	(*Instance_ConnectionPoolConfig)(nil),        // 64: google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig
-	nil,                                          // 65: google.cloud.alloydb.v1alpha.Instance.LabelsEntry
-	nil,                                          // 66: google.cloud.alloydb.v1alpha.Instance.DatabaseFlagsEntry
-	nil,                                          // 67: google.cloud.alloydb.v1alpha.Instance.AnnotationsEntry
-	(*Instance_InstanceNetworkConfig_AuthorizedNetwork)(nil), // 68: google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig.AuthorizedNetwork
-	nil,                                // 69: google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig.FlagsEntry
-	(*Backup_QuantityBasedExpiry)(nil), // 70: google.cloud.alloydb.v1alpha.Backup.QuantityBasedExpiry
-	nil,                                // 71: google.cloud.alloydb.v1alpha.Backup.LabelsEntry
-	nil,                                // 72: google.cloud.alloydb.v1alpha.Backup.AnnotationsEntry
-	nil,                                // 73: google.cloud.alloydb.v1alpha.Backup.TagsEntry
-	(*SupportedDatabaseFlag_StringRestrictions)(nil),  // 74: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.StringRestrictions
-	(*SupportedDatabaseFlag_IntegerRestrictions)(nil), // 75: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions
-	(*durationpb.Duration)(nil),                       // 76: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),                     // 77: google.protobuf.Timestamp
-	(dayofweek.DayOfWeek)(0),                          // 78: google.type.DayOfWeek
-	(*CloudSQLBackupRunSource)(nil),                   // 79: google.cloud.alloydb.v1alpha.CloudSQLBackupRunSource
-	(*GeminiClusterConfig)(nil),                       // 80: google.cloud.alloydb.v1alpha.GeminiClusterConfig
-	(*GeminiInstanceConfig)(nil),                      // 81: google.cloud.alloydb.v1alpha.GeminiInstanceConfig
-	(*GCAInstanceConfig)(nil),                         // 82: google.cloud.alloydb.v1alpha.GCAInstanceConfig
-	(*wrapperspb.Int64Value)(nil),                     // 83: google.protobuf.Int64Value
-	(*timeofday.TimeOfDay)(nil),                       // 84: google.type.TimeOfDay
-	(*date.Date)(nil),                                 // 85: google.type.Date
+	(*Cluster_DataplexConfig)(nil),                        // 50: google.cloud.alloydb.v1alpha.Cluster.DataplexConfig
+	nil,                                                   // 51: google.cloud.alloydb.v1alpha.Cluster.LabelsEntry
+	nil,                                                   // 52: google.cloud.alloydb.v1alpha.Cluster.AnnotationsEntry
+	nil,                                                   // 53: google.cloud.alloydb.v1alpha.Cluster.TagsEntry
+	(*Instance_MachineConfig)(nil),                        // 54: google.cloud.alloydb.v1alpha.Instance.MachineConfig
+	(*Instance_Node)(nil),                                 // 55: google.cloud.alloydb.v1alpha.Instance.Node
+	(*Instance_QueryInsightsInstanceConfig)(nil),          // 56: google.cloud.alloydb.v1alpha.Instance.QueryInsightsInstanceConfig
+	(*Instance_ObservabilityInstanceConfig)(nil),          // 57: google.cloud.alloydb.v1alpha.Instance.ObservabilityInstanceConfig
+	(*Instance_ReadPoolConfig)(nil),                       // 58: google.cloud.alloydb.v1alpha.Instance.ReadPoolConfig
+	(*Instance_UpdatePolicy)(nil),                         // 59: google.cloud.alloydb.v1alpha.Instance.UpdatePolicy
+	(*Instance_ClientConnectionConfig)(nil),               // 60: google.cloud.alloydb.v1alpha.Instance.ClientConnectionConfig
+	(*Instance_PscInterfaceConfig)(nil),                   // 61: google.cloud.alloydb.v1alpha.Instance.PscInterfaceConfig
+	(*Instance_PscAutoConnectionConfig)(nil),              // 62: google.cloud.alloydb.v1alpha.Instance.PscAutoConnectionConfig
+	(*Instance_PscInstanceConfig)(nil),                    // 63: google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig
+	(*Instance_InstanceNetworkConfig)(nil),                // 64: google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig
+	(*Instance_ConnectionPoolConfig)(nil),                 // 65: google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig
+	nil,                                                   // 66: google.cloud.alloydb.v1alpha.Instance.LabelsEntry
+	nil,                                                   // 67: google.cloud.alloydb.v1alpha.Instance.DatabaseFlagsEntry
+	nil,                                                   // 68: google.cloud.alloydb.v1alpha.Instance.AnnotationsEntry
+	(*Instance_InstanceNetworkConfig_AuthorizedNetwork)(nil), // 69: google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig.AuthorizedNetwork
+	nil,                                // 70: google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig.FlagsEntry
+	(*Backup_QuantityBasedExpiry)(nil), // 71: google.cloud.alloydb.v1alpha.Backup.QuantityBasedExpiry
+	nil,                                // 72: google.cloud.alloydb.v1alpha.Backup.LabelsEntry
+	nil,                                // 73: google.cloud.alloydb.v1alpha.Backup.AnnotationsEntry
+	nil,                                // 74: google.cloud.alloydb.v1alpha.Backup.TagsEntry
+	(*SupportedDatabaseFlag_StringRestrictions)(nil),  // 75: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.StringRestrictions
+	(*SupportedDatabaseFlag_IntegerRestrictions)(nil), // 76: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions
+	(*durationpb.Duration)(nil),                       // 77: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),                     // 78: google.protobuf.Timestamp
+	(dayofweek.DayOfWeek)(0),                          // 79: google.type.DayOfWeek
+	(*CloudSQLBackupRunSource)(nil),                   // 80: google.cloud.alloydb.v1alpha.CloudSQLBackupRunSource
+	(*GeminiClusterConfig)(nil),                       // 81: google.cloud.alloydb.v1alpha.GeminiClusterConfig
+	(*GeminiInstanceConfig)(nil),                      // 82: google.cloud.alloydb.v1alpha.GeminiInstanceConfig
+	(*GCAInstanceConfig)(nil),                         // 83: google.cloud.alloydb.v1alpha.GCAInstanceConfig
+	(*wrapperspb.Int64Value)(nil),                     // 84: google.protobuf.Int64Value
+	(*timeofday.TimeOfDay)(nil),                       // 85: google.type.TimeOfDay
+	(*date.Date)(nil),                                 // 86: google.type.Date
 }
 var file_google_cloud_alloydb_v1alpha_resources_proto_depIdxs = []int32{
 	4,   // 0: google.cloud.alloydb.v1alpha.MigrationSource.source_type:type_name -> google.cloud.alloydb.v1alpha.MigrationSource.MigrationSourceType
@@ -6961,30 +7029,30 @@ var file_google_cloud_alloydb_v1alpha_resources_proto_depIdxs = []int32{
 	39,  // 4: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.weekly_schedule:type_name -> google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.WeeklySchedule
 	40,  // 5: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.time_based_retention:type_name -> google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.TimeBasedRetention
 	41,  // 6: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.quantity_based_retention:type_name -> google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.QuantityBasedRetention
-	76,  // 7: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.backup_window:type_name -> google.protobuf.Duration
+	77,  // 7: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.backup_window:type_name -> google.protobuf.Duration
 	22,  // 8: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.encryption_config:type_name -> google.cloud.alloydb.v1alpha.EncryptionConfig
 	42,  // 9: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.labels:type_name -> google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.LabelsEntry
 	22,  // 10: google.cloud.alloydb.v1alpha.ContinuousBackupConfig.encryption_config:type_name -> google.cloud.alloydb.v1alpha.EncryptionConfig
 	23,  // 11: google.cloud.alloydb.v1alpha.ContinuousBackupInfo.encryption_info:type_name -> google.cloud.alloydb.v1alpha.EncryptionInfo
-	77,  // 12: google.cloud.alloydb.v1alpha.ContinuousBackupInfo.enabled_time:type_name -> google.protobuf.Timestamp
-	78,  // 13: google.cloud.alloydb.v1alpha.ContinuousBackupInfo.schedule:type_name -> google.type.DayOfWeek
-	77,  // 14: google.cloud.alloydb.v1alpha.ContinuousBackupInfo.earliest_restorable_time:type_name -> google.protobuf.Timestamp
-	77,  // 15: google.cloud.alloydb.v1alpha.ContinuousBackupSource.point_in_time:type_name -> google.protobuf.Timestamp
+	78,  // 12: google.cloud.alloydb.v1alpha.ContinuousBackupInfo.enabled_time:type_name -> google.protobuf.Timestamp
+	79,  // 13: google.cloud.alloydb.v1alpha.ContinuousBackupInfo.schedule:type_name -> google.type.DayOfWeek
+	78,  // 14: google.cloud.alloydb.v1alpha.ContinuousBackupInfo.earliest_restorable_time:type_name -> google.protobuf.Timestamp
+	78,  // 15: google.cloud.alloydb.v1alpha.ContinuousBackupSource.point_in_time:type_name -> google.protobuf.Timestamp
 	43,  // 16: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.maintenance_windows:type_name -> google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.MaintenanceWindow
 	44,  // 17: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.deny_maintenance_periods:type_name -> google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.DenyMaintenancePeriod
-	77,  // 18: google.cloud.alloydb.v1alpha.MaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
+	78,  // 18: google.cloud.alloydb.v1alpha.MaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
 	28,  // 19: google.cloud.alloydb.v1alpha.Cluster.backup_source:type_name -> google.cloud.alloydb.v1alpha.BackupSource
 	21,  // 20: google.cloud.alloydb.v1alpha.Cluster.migration_source:type_name -> google.cloud.alloydb.v1alpha.MigrationSource
-	79,  // 21: google.cloud.alloydb.v1alpha.Cluster.cloudsql_backup_run_source:type_name -> google.cloud.alloydb.v1alpha.CloudSQLBackupRunSource
-	77,  // 22: google.cloud.alloydb.v1alpha.Cluster.create_time:type_name -> google.protobuf.Timestamp
-	77,  // 23: google.cloud.alloydb.v1alpha.Cluster.update_time:type_name -> google.protobuf.Timestamp
-	77,  // 24: google.cloud.alloydb.v1alpha.Cluster.delete_time:type_name -> google.protobuf.Timestamp
-	50,  // 25: google.cloud.alloydb.v1alpha.Cluster.labels:type_name -> google.cloud.alloydb.v1alpha.Cluster.LabelsEntry
+	80,  // 21: google.cloud.alloydb.v1alpha.Cluster.cloudsql_backup_run_source:type_name -> google.cloud.alloydb.v1alpha.CloudSQLBackupRunSource
+	78,  // 22: google.cloud.alloydb.v1alpha.Cluster.create_time:type_name -> google.protobuf.Timestamp
+	78,  // 23: google.cloud.alloydb.v1alpha.Cluster.update_time:type_name -> google.protobuf.Timestamp
+	78,  // 24: google.cloud.alloydb.v1alpha.Cluster.delete_time:type_name -> google.protobuf.Timestamp
+	51,  // 25: google.cloud.alloydb.v1alpha.Cluster.labels:type_name -> google.cloud.alloydb.v1alpha.Cluster.LabelsEntry
 	8,   // 26: google.cloud.alloydb.v1alpha.Cluster.state:type_name -> google.cloud.alloydb.v1alpha.Cluster.State
 	9,   // 27: google.cloud.alloydb.v1alpha.Cluster.cluster_type:type_name -> google.cloud.alloydb.v1alpha.Cluster.ClusterType
 	2,   // 28: google.cloud.alloydb.v1alpha.Cluster.database_version:type_name -> google.cloud.alloydb.v1alpha.DatabaseVersion
 	45,  // 29: google.cloud.alloydb.v1alpha.Cluster.network_config:type_name -> google.cloud.alloydb.v1alpha.Cluster.NetworkConfig
-	51,  // 30: google.cloud.alloydb.v1alpha.Cluster.annotations:type_name -> google.cloud.alloydb.v1alpha.Cluster.AnnotationsEntry
+	52,  // 30: google.cloud.alloydb.v1alpha.Cluster.annotations:type_name -> google.cloud.alloydb.v1alpha.Cluster.AnnotationsEntry
 	20,  // 31: google.cloud.alloydb.v1alpha.Cluster.initial_user:type_name -> google.cloud.alloydb.v1alpha.UserPassword
 	25,  // 32: google.cloud.alloydb.v1alpha.Cluster.automated_backup_policy:type_name -> google.cloud.alloydb.v1alpha.AutomatedBackupPolicy
 	24,  // 33: google.cloud.alloydb.v1alpha.Cluster.ssl_config:type_name -> google.cloud.alloydb.v1alpha.SslConfig
@@ -6997,79 +7065,80 @@ var file_google_cloud_alloydb_v1alpha_resources_proto_depIdxs = []int32{
 	48,  // 40: google.cloud.alloydb.v1alpha.Cluster.psc_config:type_name -> google.cloud.alloydb.v1alpha.Cluster.PscConfig
 	30,  // 41: google.cloud.alloydb.v1alpha.Cluster.maintenance_update_policy:type_name -> google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy
 	31,  // 42: google.cloud.alloydb.v1alpha.Cluster.maintenance_schedule:type_name -> google.cloud.alloydb.v1alpha.MaintenanceSchedule
-	80,  // 43: google.cloud.alloydb.v1alpha.Cluster.gemini_config:type_name -> google.cloud.alloydb.v1alpha.GeminiClusterConfig
+	81,  // 43: google.cloud.alloydb.v1alpha.Cluster.gemini_config:type_name -> google.cloud.alloydb.v1alpha.GeminiClusterConfig
 	3,   // 44: google.cloud.alloydb.v1alpha.Cluster.subscription_type:type_name -> google.cloud.alloydb.v1alpha.SubscriptionType
 	49,  // 45: google.cloud.alloydb.v1alpha.Cluster.trial_metadata:type_name -> google.cloud.alloydb.v1alpha.Cluster.TrialMetadata
-	52,  // 46: google.cloud.alloydb.v1alpha.Cluster.tags:type_name -> google.cloud.alloydb.v1alpha.Cluster.TagsEntry
-	77,  // 47: google.cloud.alloydb.v1alpha.Instance.create_time:type_name -> google.protobuf.Timestamp
-	77,  // 48: google.cloud.alloydb.v1alpha.Instance.update_time:type_name -> google.protobuf.Timestamp
-	77,  // 49: google.cloud.alloydb.v1alpha.Instance.delete_time:type_name -> google.protobuf.Timestamp
-	65,  // 50: google.cloud.alloydb.v1alpha.Instance.labels:type_name -> google.cloud.alloydb.v1alpha.Instance.LabelsEntry
-	10,  // 51: google.cloud.alloydb.v1alpha.Instance.state:type_name -> google.cloud.alloydb.v1alpha.Instance.State
-	11,  // 52: google.cloud.alloydb.v1alpha.Instance.instance_type:type_name -> google.cloud.alloydb.v1alpha.Instance.InstanceType
-	53,  // 53: google.cloud.alloydb.v1alpha.Instance.machine_config:type_name -> google.cloud.alloydb.v1alpha.Instance.MachineConfig
-	12,  // 54: google.cloud.alloydb.v1alpha.Instance.availability_type:type_name -> google.cloud.alloydb.v1alpha.Instance.AvailabilityType
-	66,  // 55: google.cloud.alloydb.v1alpha.Instance.database_flags:type_name -> google.cloud.alloydb.v1alpha.Instance.DatabaseFlagsEntry
-	54,  // 56: google.cloud.alloydb.v1alpha.Instance.writable_node:type_name -> google.cloud.alloydb.v1alpha.Instance.Node
-	54,  // 57: google.cloud.alloydb.v1alpha.Instance.nodes:type_name -> google.cloud.alloydb.v1alpha.Instance.Node
-	55,  // 58: google.cloud.alloydb.v1alpha.Instance.query_insights_config:type_name -> google.cloud.alloydb.v1alpha.Instance.QueryInsightsInstanceConfig
-	56,  // 59: google.cloud.alloydb.v1alpha.Instance.observability_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ObservabilityInstanceConfig
-	57,  // 60: google.cloud.alloydb.v1alpha.Instance.read_pool_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ReadPoolConfig
-	67,  // 61: google.cloud.alloydb.v1alpha.Instance.annotations:type_name -> google.cloud.alloydb.v1alpha.Instance.AnnotationsEntry
-	58,  // 62: google.cloud.alloydb.v1alpha.Instance.update_policy:type_name -> google.cloud.alloydb.v1alpha.Instance.UpdatePolicy
-	59,  // 63: google.cloud.alloydb.v1alpha.Instance.client_connection_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ClientConnectionConfig
-	62,  // 64: google.cloud.alloydb.v1alpha.Instance.psc_instance_config:type_name -> google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig
-	63,  // 65: google.cloud.alloydb.v1alpha.Instance.network_config:type_name -> google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig
-	81,  // 66: google.cloud.alloydb.v1alpha.Instance.gemini_config:type_name -> google.cloud.alloydb.v1alpha.GeminiInstanceConfig
-	13,  // 67: google.cloud.alloydb.v1alpha.Instance.activation_policy:type_name -> google.cloud.alloydb.v1alpha.Instance.ActivationPolicy
-	64,  // 68: google.cloud.alloydb.v1alpha.Instance.connection_pool_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig
-	82,  // 69: google.cloud.alloydb.v1alpha.Instance.gca_config:type_name -> google.cloud.alloydb.v1alpha.GCAInstanceConfig
-	77,  // 70: google.cloud.alloydb.v1alpha.Backup.create_time:type_name -> google.protobuf.Timestamp
-	77,  // 71: google.cloud.alloydb.v1alpha.Backup.update_time:type_name -> google.protobuf.Timestamp
-	77,  // 72: google.cloud.alloydb.v1alpha.Backup.delete_time:type_name -> google.protobuf.Timestamp
-	77,  // 73: google.cloud.alloydb.v1alpha.Backup.create_completion_time:type_name -> google.protobuf.Timestamp
-	71,  // 74: google.cloud.alloydb.v1alpha.Backup.labels:type_name -> google.cloud.alloydb.v1alpha.Backup.LabelsEntry
-	15,  // 75: google.cloud.alloydb.v1alpha.Backup.state:type_name -> google.cloud.alloydb.v1alpha.Backup.State
-	16,  // 76: google.cloud.alloydb.v1alpha.Backup.type:type_name -> google.cloud.alloydb.v1alpha.Backup.Type
-	22,  // 77: google.cloud.alloydb.v1alpha.Backup.encryption_config:type_name -> google.cloud.alloydb.v1alpha.EncryptionConfig
-	23,  // 78: google.cloud.alloydb.v1alpha.Backup.encryption_info:type_name -> google.cloud.alloydb.v1alpha.EncryptionInfo
-	72,  // 79: google.cloud.alloydb.v1alpha.Backup.annotations:type_name -> google.cloud.alloydb.v1alpha.Backup.AnnotationsEntry
-	77,  // 80: google.cloud.alloydb.v1alpha.Backup.expiry_time:type_name -> google.protobuf.Timestamp
-	70,  // 81: google.cloud.alloydb.v1alpha.Backup.expiry_quantity:type_name -> google.cloud.alloydb.v1alpha.Backup.QuantityBasedExpiry
-	2,   // 82: google.cloud.alloydb.v1alpha.Backup.database_version:type_name -> google.cloud.alloydb.v1alpha.DatabaseVersion
-	73,  // 83: google.cloud.alloydb.v1alpha.Backup.tags:type_name -> google.cloud.alloydb.v1alpha.Backup.TagsEntry
-	74,  // 84: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.string_restrictions:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.StringRestrictions
-	75,  // 85: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.integer_restrictions:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions
-	83,  // 86: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.recommended_integer_value:type_name -> google.protobuf.Int64Value
-	17,  // 87: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.value_type:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.ValueType
-	2,   // 88: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.supported_db_versions:type_name -> google.cloud.alloydb.v1alpha.DatabaseVersion
-	18,  // 89: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.scope:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.Scope
-	19,  // 90: google.cloud.alloydb.v1alpha.User.user_type:type_name -> google.cloud.alloydb.v1alpha.User.UserType
-	84,  // 91: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.WeeklySchedule.start_times:type_name -> google.type.TimeOfDay
-	78,  // 92: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.WeeklySchedule.days_of_week:type_name -> google.type.DayOfWeek
-	76,  // 93: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.TimeBasedRetention.retention_period:type_name -> google.protobuf.Duration
-	78,  // 94: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.MaintenanceWindow.day:type_name -> google.type.DayOfWeek
-	84,  // 95: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.MaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
-	85,  // 96: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.DenyMaintenancePeriod.start_date:type_name -> google.type.Date
-	85,  // 97: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.DenyMaintenancePeriod.end_date:type_name -> google.type.Date
-	84,  // 98: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.DenyMaintenancePeriod.time:type_name -> google.type.TimeOfDay
-	77,  // 99: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.start_time:type_name -> google.protobuf.Timestamp
-	77,  // 100: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.end_time:type_name -> google.protobuf.Timestamp
-	77,  // 101: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.upgrade_time:type_name -> google.protobuf.Timestamp
-	77,  // 102: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.grace_end_time:type_name -> google.protobuf.Timestamp
-	14,  // 103: google.cloud.alloydb.v1alpha.Instance.UpdatePolicy.mode:type_name -> google.cloud.alloydb.v1alpha.Instance.UpdatePolicy.Mode
-	24,  // 104: google.cloud.alloydb.v1alpha.Instance.ClientConnectionConfig.ssl_config:type_name -> google.cloud.alloydb.v1alpha.SslConfig
-	60,  // 105: google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig.psc_interface_configs:type_name -> google.cloud.alloydb.v1alpha.Instance.PscInterfaceConfig
-	61,  // 106: google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig.psc_auto_connections:type_name -> google.cloud.alloydb.v1alpha.Instance.PscAutoConnectionConfig
-	68,  // 107: google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig.authorized_external_networks:type_name -> google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig.AuthorizedNetwork
-	69,  // 108: google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig.flags:type_name -> google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig.FlagsEntry
-	83,  // 109: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions.min_value:type_name -> google.protobuf.Int64Value
-	83,  // 110: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions.max_value:type_name -> google.protobuf.Int64Value
-	111, // [111:111] is the sub-list for method output_type
-	111, // [111:111] is the sub-list for method input_type
-	111, // [111:111] is the sub-list for extension type_name
-	111, // [111:111] is the sub-list for extension extendee
-	0,   // [0:111] is the sub-list for field type_name
+	53,  // 46: google.cloud.alloydb.v1alpha.Cluster.tags:type_name -> google.cloud.alloydb.v1alpha.Cluster.TagsEntry
+	50,  // 47: google.cloud.alloydb.v1alpha.Cluster.dataplex_config:type_name -> google.cloud.alloydb.v1alpha.Cluster.DataplexConfig
+	78,  // 48: google.cloud.alloydb.v1alpha.Instance.create_time:type_name -> google.protobuf.Timestamp
+	78,  // 49: google.cloud.alloydb.v1alpha.Instance.update_time:type_name -> google.protobuf.Timestamp
+	78,  // 50: google.cloud.alloydb.v1alpha.Instance.delete_time:type_name -> google.protobuf.Timestamp
+	66,  // 51: google.cloud.alloydb.v1alpha.Instance.labels:type_name -> google.cloud.alloydb.v1alpha.Instance.LabelsEntry
+	10,  // 52: google.cloud.alloydb.v1alpha.Instance.state:type_name -> google.cloud.alloydb.v1alpha.Instance.State
+	11,  // 53: google.cloud.alloydb.v1alpha.Instance.instance_type:type_name -> google.cloud.alloydb.v1alpha.Instance.InstanceType
+	54,  // 54: google.cloud.alloydb.v1alpha.Instance.machine_config:type_name -> google.cloud.alloydb.v1alpha.Instance.MachineConfig
+	12,  // 55: google.cloud.alloydb.v1alpha.Instance.availability_type:type_name -> google.cloud.alloydb.v1alpha.Instance.AvailabilityType
+	67,  // 56: google.cloud.alloydb.v1alpha.Instance.database_flags:type_name -> google.cloud.alloydb.v1alpha.Instance.DatabaseFlagsEntry
+	55,  // 57: google.cloud.alloydb.v1alpha.Instance.writable_node:type_name -> google.cloud.alloydb.v1alpha.Instance.Node
+	55,  // 58: google.cloud.alloydb.v1alpha.Instance.nodes:type_name -> google.cloud.alloydb.v1alpha.Instance.Node
+	56,  // 59: google.cloud.alloydb.v1alpha.Instance.query_insights_config:type_name -> google.cloud.alloydb.v1alpha.Instance.QueryInsightsInstanceConfig
+	57,  // 60: google.cloud.alloydb.v1alpha.Instance.observability_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ObservabilityInstanceConfig
+	58,  // 61: google.cloud.alloydb.v1alpha.Instance.read_pool_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ReadPoolConfig
+	68,  // 62: google.cloud.alloydb.v1alpha.Instance.annotations:type_name -> google.cloud.alloydb.v1alpha.Instance.AnnotationsEntry
+	59,  // 63: google.cloud.alloydb.v1alpha.Instance.update_policy:type_name -> google.cloud.alloydb.v1alpha.Instance.UpdatePolicy
+	60,  // 64: google.cloud.alloydb.v1alpha.Instance.client_connection_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ClientConnectionConfig
+	63,  // 65: google.cloud.alloydb.v1alpha.Instance.psc_instance_config:type_name -> google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig
+	64,  // 66: google.cloud.alloydb.v1alpha.Instance.network_config:type_name -> google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig
+	82,  // 67: google.cloud.alloydb.v1alpha.Instance.gemini_config:type_name -> google.cloud.alloydb.v1alpha.GeminiInstanceConfig
+	13,  // 68: google.cloud.alloydb.v1alpha.Instance.activation_policy:type_name -> google.cloud.alloydb.v1alpha.Instance.ActivationPolicy
+	65,  // 69: google.cloud.alloydb.v1alpha.Instance.connection_pool_config:type_name -> google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig
+	83,  // 70: google.cloud.alloydb.v1alpha.Instance.gca_config:type_name -> google.cloud.alloydb.v1alpha.GCAInstanceConfig
+	78,  // 71: google.cloud.alloydb.v1alpha.Backup.create_time:type_name -> google.protobuf.Timestamp
+	78,  // 72: google.cloud.alloydb.v1alpha.Backup.update_time:type_name -> google.protobuf.Timestamp
+	78,  // 73: google.cloud.alloydb.v1alpha.Backup.delete_time:type_name -> google.protobuf.Timestamp
+	78,  // 74: google.cloud.alloydb.v1alpha.Backup.create_completion_time:type_name -> google.protobuf.Timestamp
+	72,  // 75: google.cloud.alloydb.v1alpha.Backup.labels:type_name -> google.cloud.alloydb.v1alpha.Backup.LabelsEntry
+	15,  // 76: google.cloud.alloydb.v1alpha.Backup.state:type_name -> google.cloud.alloydb.v1alpha.Backup.State
+	16,  // 77: google.cloud.alloydb.v1alpha.Backup.type:type_name -> google.cloud.alloydb.v1alpha.Backup.Type
+	22,  // 78: google.cloud.alloydb.v1alpha.Backup.encryption_config:type_name -> google.cloud.alloydb.v1alpha.EncryptionConfig
+	23,  // 79: google.cloud.alloydb.v1alpha.Backup.encryption_info:type_name -> google.cloud.alloydb.v1alpha.EncryptionInfo
+	73,  // 80: google.cloud.alloydb.v1alpha.Backup.annotations:type_name -> google.cloud.alloydb.v1alpha.Backup.AnnotationsEntry
+	78,  // 81: google.cloud.alloydb.v1alpha.Backup.expiry_time:type_name -> google.protobuf.Timestamp
+	71,  // 82: google.cloud.alloydb.v1alpha.Backup.expiry_quantity:type_name -> google.cloud.alloydb.v1alpha.Backup.QuantityBasedExpiry
+	2,   // 83: google.cloud.alloydb.v1alpha.Backup.database_version:type_name -> google.cloud.alloydb.v1alpha.DatabaseVersion
+	74,  // 84: google.cloud.alloydb.v1alpha.Backup.tags:type_name -> google.cloud.alloydb.v1alpha.Backup.TagsEntry
+	75,  // 85: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.string_restrictions:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.StringRestrictions
+	76,  // 86: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.integer_restrictions:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions
+	84,  // 87: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.recommended_integer_value:type_name -> google.protobuf.Int64Value
+	17,  // 88: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.value_type:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.ValueType
+	2,   // 89: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.supported_db_versions:type_name -> google.cloud.alloydb.v1alpha.DatabaseVersion
+	18,  // 90: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.scope:type_name -> google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.Scope
+	19,  // 91: google.cloud.alloydb.v1alpha.User.user_type:type_name -> google.cloud.alloydb.v1alpha.User.UserType
+	85,  // 92: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.WeeklySchedule.start_times:type_name -> google.type.TimeOfDay
+	79,  // 93: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.WeeklySchedule.days_of_week:type_name -> google.type.DayOfWeek
+	77,  // 94: google.cloud.alloydb.v1alpha.AutomatedBackupPolicy.TimeBasedRetention.retention_period:type_name -> google.protobuf.Duration
+	79,  // 95: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.MaintenanceWindow.day:type_name -> google.type.DayOfWeek
+	85,  // 96: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.MaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
+	86,  // 97: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.DenyMaintenancePeriod.start_date:type_name -> google.type.Date
+	86,  // 98: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.DenyMaintenancePeriod.end_date:type_name -> google.type.Date
+	85,  // 99: google.cloud.alloydb.v1alpha.MaintenanceUpdatePolicy.DenyMaintenancePeriod.time:type_name -> google.type.TimeOfDay
+	78,  // 100: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.start_time:type_name -> google.protobuf.Timestamp
+	78,  // 101: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.end_time:type_name -> google.protobuf.Timestamp
+	78,  // 102: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.upgrade_time:type_name -> google.protobuf.Timestamp
+	78,  // 103: google.cloud.alloydb.v1alpha.Cluster.TrialMetadata.grace_end_time:type_name -> google.protobuf.Timestamp
+	14,  // 104: google.cloud.alloydb.v1alpha.Instance.UpdatePolicy.mode:type_name -> google.cloud.alloydb.v1alpha.Instance.UpdatePolicy.Mode
+	24,  // 105: google.cloud.alloydb.v1alpha.Instance.ClientConnectionConfig.ssl_config:type_name -> google.cloud.alloydb.v1alpha.SslConfig
+	61,  // 106: google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig.psc_interface_configs:type_name -> google.cloud.alloydb.v1alpha.Instance.PscInterfaceConfig
+	62,  // 107: google.cloud.alloydb.v1alpha.Instance.PscInstanceConfig.psc_auto_connections:type_name -> google.cloud.alloydb.v1alpha.Instance.PscAutoConnectionConfig
+	69,  // 108: google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig.authorized_external_networks:type_name -> google.cloud.alloydb.v1alpha.Instance.InstanceNetworkConfig.AuthorizedNetwork
+	70,  // 109: google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig.flags:type_name -> google.cloud.alloydb.v1alpha.Instance.ConnectionPoolConfig.FlagsEntry
+	84,  // 110: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions.min_value:type_name -> google.protobuf.Int64Value
+	84,  // 111: google.cloud.alloydb.v1alpha.SupportedDatabaseFlag.IntegerRestrictions.max_value:type_name -> google.protobuf.Int64Value
+	112, // [112:112] is the sub-list for method output_type
+	112, // [112:112] is the sub-list for method input_type
+	112, // [112:112] is the sub-list for extension type_name
+	112, // [112:112] is the sub-list for extension extendee
+	0,   // [0:112] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_alloydb_v1alpha_resources_proto_init() }
@@ -7097,15 +7166,15 @@ func file_google_cloud_alloydb_v1alpha_resources_proto_init() {
 		(*SupportedDatabaseFlag_RecommendedIntegerValue)(nil),
 	}
 	file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[18].OneofWrappers = []any{}
-	file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[35].OneofWrappers = []any{}
 	file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[36].OneofWrappers = []any{}
+	file_google_cloud_alloydb_v1alpha_resources_proto_msgTypes[37].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_alloydb_v1alpha_resources_proto_rawDesc,
 			NumEnums:      20,
-			NumMessages:   56,
+			NumMessages:   57,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

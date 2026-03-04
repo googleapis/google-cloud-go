@@ -3464,7 +3464,7 @@
     {
       "regionTag": "compute_v1_generated_Disks_Update_sync",
       "title": "compute Update Sample",
-      "description": "Update updates the specified disk with the data included in the request.\nThe update is performed only on selected fields included as part\nof update-mask. Only the following fields can be modified: user_license.",
+      "description": "Update updates the specified disk with the data included in the request.\nThe update is performed only on selected fields included as part\nof update-mask.",
       "file": "DisksClient/Update/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6454,7 +6454,7 @@
     {
       "regionTag": "compute_v1_generated_GlobalNetworkEndpointGroups_Insert_sync",
       "title": "compute Insert Sample",
-      "description": "Insert creates a network endpoint group in the specified project using the\nparameters that are included in the request.",
+      "description": "Insert creates a network endpoint group in the specified project using the\nparameters that are included in the request.\n\nNote: Use the following APIs to manage network endpoint groups: \n\n-\nTo manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity\nNEGs): zonal\nAPI\n-\nTo manage NEGs with regional scope (such as regional internet NEGs,\nserverless NEGs, Private Service Connect NEGs): regional\nAPI\n-\nTo manage NEGs with global scope (such as global internet NEGs): global\nAPI",
       "file": "GlobalNetworkEndpointGroupsClient/Insert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -16712,7 +16712,7 @@
     {
       "regionTag": "compute_v1_generated_NetworkEndpointGroups_Insert_sync",
       "title": "compute Insert Sample",
-      "description": "Insert creates a network endpoint group in the specified project using the\nparameters that are included in the request.",
+      "description": "Insert creates a network endpoint group in the specified project using the\nparameters that are included in the request.\n\nNote: Use the following APIs to manage network endpoint groups: \n\n-\nTo manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity\nNEGs): zonal\nAPI\n-\nTo manage NEGs with regional scope (such as regional internet NEGs,\nserverless NEGs, Private Service Connect NEGs): regional\nAPI\n-\nTo manage NEGs with global scope (such as global internet NEGs): global\nAPI",
       "file": "NetworkEndpointGroupsClient/Insert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24164,7 +24164,7 @@
     {
       "regionTag": "compute_v1_generated_RegionDisks_Update_sync",
       "title": "compute Update Sample",
-      "description": "Update update the specified disk with the data included in the request. Update is\nperformed only on selected fields included as part of update-mask. Only the\nfollowing fields can be modified: user_license.",
+      "description": "Update update the specified disk with the data included in the request. Update is\nperformed only on selected fields included as part of update-mask.",
       "file": "RegionDisksClient/Update/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24203,6 +24203,328 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthAggregationPolicies_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all HealthAggregationPolicy resources,\nregional and global, available to the specified project.\n\nTo prevent failure, it is recommended that you set the\n`returnPartialSuccess` parameter to `true`.",
+      "file": "RegionHealthAggregationPoliciesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionHealthAggregationPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthAggregationPoliciesScopedListPairIterator",
+        "client": {
+          "shortName": "RegionHealthAggregationPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies.AggregatedList",
+          "service": {
+            "shortName": "RegionHealthAggregationPolicies",
+            "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthAggregationPolicies_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified HealthAggregationPolicy in the given region.",
+      "file": "RegionHealthAggregationPoliciesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionHealthAggregationPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthAggregationPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies.Delete",
+          "service": {
+            "shortName": "RegionHealthAggregationPolicies",
+            "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthAggregationPolicies_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified HealthAggregationPolicy resource in the given region.",
+      "file": "RegionHealthAggregationPoliciesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionHealthAggregationPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.HealthAggregationPolicy",
+        "client": {
+          "shortName": "RegionHealthAggregationPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies.Get",
+          "service": {
+            "shortName": "RegionHealthAggregationPolicies",
+            "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthAggregationPolicies_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert create a HealthAggregationPolicy in the specified project in the given\nregion using the parameters that are included in the request.",
+      "file": "RegionHealthAggregationPoliciesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionHealthAggregationPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthAggregationPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies.Insert",
+          "service": {
+            "shortName": "RegionHealthAggregationPolicies",
+            "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthAggregationPolicies_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the HealthAggregationPolicies for a project in the given region.",
+      "file": "RegionHealthAggregationPoliciesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionHealthAggregationPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthAggregationPolicyIterator",
+        "client": {
+          "shortName": "RegionHealthAggregationPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies.List",
+          "service": {
+            "shortName": "RegionHealthAggregationPolicies",
+            "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthAggregationPolicies_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch updates the specified regional HealthAggregationPolicy\nresource with the data included in the request. This method supportsPATCH\nsemantics and uses theJSON merge\npatch format and processing rules.",
+      "file": "RegionHealthAggregationPoliciesClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRegionHealthAggregationPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthAggregationPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies.Patch",
+          "service": {
+            "shortName": "RegionHealthAggregationPolicies",
+            "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthAggregationPolicies_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionHealthAggregationPoliciesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionHealthAggregationPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionHealthAggregationPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPoliciesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies.TestIamPermissions",
+          "service": {
+            "shortName": "RegionHealthAggregationPolicies",
+            "fullName": "google.cloud.compute.v1.RegionHealthAggregationPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -24433,6 +24755,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthCheckServices_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionHealthCheckServicesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionHealthCheckServicesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionHealthCheckServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionHealthCheckServicesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthCheckServicesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionHealthCheckServices.TestIamPermissions",
+          "service": {
+            "shortName": "RegionHealthCheckServices",
+            "fullName": "google.cloud.compute.v1.RegionHealthCheckServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -26832,7 +27200,7 @@
     {
       "regionTag": "compute_v1_generated_RegionNetworkEndpointGroups_Insert_sync",
       "title": "compute Insert Sample",
-      "description": "Insert creates a network endpoint group in the specified project using the\nparameters that are included in the request.",
+      "description": "Insert creates a network endpoint group in the specified project using the\nparameters that are included in the request.\n\nNote: Use the following APIs to manage network endpoint groups: \n\n-\nTo manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity\nNEGs): zonal\nAPI\n-\nTo manage NEGs with regional scope (such as regional internet NEGs,\nserverless NEGs, Private Service Connect NEGs): regional\nAPI\n-\nTo manage NEGs with global scope (such as global internet NEGs): global\nAPI",
       "file": "RegionNetworkEndpointGroupsClient/Insert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30551,6 +30919,144 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSlots_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get retrieves information about the specified reservation slot.",
+      "file": "ReservationSlotsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.ReservationSlotsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetReservationSlotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.ReservationSlotsGetResponse",
+        "client": {
+          "shortName": "ReservationSlotsClient",
+          "fullName": "google.cloud.compute.v1.ReservationSlotsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.ReservationSlots.Get",
+          "service": {
+            "shortName": "ReservationSlots",
+            "fullName": "google.cloud.compute.v1.ReservationSlots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSlots_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of reservation slots under a single reservation.",
+      "file": "ReservationSlotsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.ReservationSlotsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListReservationSlotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReservationSlotIterator",
+        "client": {
+          "shortName": "ReservationSlotsClient",
+          "fullName": "google.cloud.compute.v1.ReservationSlotsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.ReservationSlots.List",
+          "service": {
+            "shortName": "ReservationSlots",
+            "fullName": "google.cloud.compute.v1.ReservationSlots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSlots_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update update a reservation slot in the specified sub-block.",
+      "file": "ReservationSlotsClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.ReservationSlotsClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateReservationSlotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSlotsClient",
+          "fullName": "google.cloud.compute.v1.ReservationSlotsClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.ReservationSlots.Update",
+          "service": {
+            "shortName": "ReservationSlots",
+            "fullName": "google.cloud.compute.v1.ReservationSlots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
