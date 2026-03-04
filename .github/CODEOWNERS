@@ -5,13 +5,13 @@
 
 /ai/                    @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /aiplatform/            @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/              @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/bttest        @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/datastore/             @googleapis/cloud-native-db-dpes @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/firestore/             @googleapis/cloud-native-db-dpes @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/pubsub/                @googleapis/pubsub-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team @googleapis/cloud-native-db-dpes
+/bigtable/              @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/cmd/cbt       @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/cmd/emulator  @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/bigtable/bttest        @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/datastore/             @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/firestore/             @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/pubsub/                @googleapis/pubsub-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /pubsublite/            @googleapis/pubsub-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /spanner/               @googleapis/spanner-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /storage/               @googleapis/gcs-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
@@ -20,7 +20,7 @@
 /logging/               @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /profiler/              @googleapis/cloud-profiler-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /vertexai/              @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/internal/protoveneer/  @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team @jba
+/internal/protoveneer/  @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 
 
 # We mark the librarian state file as unowned to avoid gatekeeping librarian operations on 
