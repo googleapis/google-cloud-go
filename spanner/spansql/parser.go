@@ -3404,6 +3404,7 @@ var baseTypes = map[string]TypeBase{
 	"PROTO":     Proto, // for use in CAST
 	"ENUM":      Enum,  // for use in CAST
 	"TOKENLIST": Tokenlist,
+	"UUID":      UUID,
 }
 
 func (p *parser) parseBaseType() (Type, *parseError) {

@@ -814,6 +814,8 @@ func (tb TypeBase) SQL() string {
 		return "ENUM"
 	case Tokenlist:
 		return "TOKENLIST"
+	case UUID:
+		return "UUID"
 	}
 
 	panic("unknown TypeBase")
