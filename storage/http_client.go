@@ -125,6 +125,10 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, fmt.Errorf("storage client: %w", err)
 	}
 	// Update xmlHost and scheme with the chosen endpoint.
+	// If the endpoint doesn't have a scheme, prepend https:// so it parses correctly.
+	if !strings.Contains(ep, "://") {
+		ep = "https://" + ep
+	}
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
