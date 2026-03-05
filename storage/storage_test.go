@@ -2372,6 +2372,14 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "http",
 		},
 		{
+			desc:                "With schemeless regional endpoint",
+			CustomEndpoint:      "storage.europe-west3.rep.googleapis.com",
+			StorageEmulatorHost: "",
+			WantRawBasePath:     "https://storage.europe-west3.rep.googleapis.com/storage/v1/",
+			WantXMLHost:         "storage.europe-west3.rep.googleapis.com",
+			WantScheme:          "https",
+		},
+		{
 			desc:                "Endpoint overrides emulator host when both are specified - https",
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "http://emu.com",
