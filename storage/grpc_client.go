@@ -120,10 +120,10 @@ func defaultGRPCOptions() []option.ClientOption {
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
 // storageClient interface.
 type grpcStorageClient struct {
-	raw           *gapic.Client
-	settings      *settings
-	config        *storageConfig
-	dp_diagnostic string
+	raw      *gapic.Client
+	settings *settings
+	config   *storageConfig
+	dpDiag   string
 }
 
 func enableClientMetrics(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
@@ -178,7 +178,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(ui)),
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(si)),
 	)
-	c.dp_diagnostic = directPathDiagnostic(ctx, s.clientOption...)
+	c.dpDiag = directPathDiagnostic(ctx, s.clientOption...)
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, err
@@ -233,7 +233,7 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 	// Target should not be empty in a normal scenario, but treat empty target
 	// as DirectPath incompatible.
 	if !strings.HasPrefix(target, directPathEndpointPrefix) {
-		reason := directConnectivityDiagnosticHeaderKey + "=" + c.dp_diagnostic
+		reason := directConnectivityDiagnosticHeaderKey + "=" + c.dpDiag
 		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
 			md.Set(requestParamsHeaderKey, vals[0]+"&"+reason)
 		} else {

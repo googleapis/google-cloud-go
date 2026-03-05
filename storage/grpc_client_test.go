@@ -466,8 +466,8 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
 			c := &grpcStorageClient{
-				config:        &storageConfig{grpcDirectPathEnforced: tc.enforced},
-				dp_diagnostic: "reason",
+				config: &storageConfig{grpcDirectPathEnforced: tc.enforced},
+				dpDiag: "reason",
 			}
 
 			ctx := context.Background()
