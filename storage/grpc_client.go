@@ -212,17 +212,6 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 	if !ok {
 		md = metadata.MD{}
 	}
-	// Check if the connection target supports DirectPath.
-	// Target should not be empty in a normal scenario, but treat empty target
-	// as DirectPath incompatible.
-	if !strings.HasPrefix(target, directPathEndpointPrefix) {
-		reason := directConnectivityDiagnosticHeaderKey + "=" + c.dp_diagnostic
-		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
-			md.Set(requestParamsHeaderKey, vals[0]+"&"+reason)
-		} else {
-			md.Set(requestParamsHeaderKey, reason)
-		}
-	}
 
 	// Determine the intended mode based on user configuration.
 	value := ""
@@ -240,8 +229,17 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 			md.Set(requestParamsHeaderKey, dc)
 		}
 	}
-
-	fmt.Printf("Headers=%v\n", md.Get(requestParamsHeaderKey))
+	// Check if the connection target supports DirectPath.
+	// Target should not be empty in a normal scenario, but treat empty target
+	// as DirectPath incompatible.
+	if !strings.HasPrefix(target, directPathEndpointPrefix) {
+		reason := directConnectivityDiagnosticHeaderKey + "=" + c.dp_diagnostic
+		if vals := md.Get(requestParamsHeaderKey); len(vals) > 0 {
+			md.Set(requestParamsHeaderKey, vals[0]+"&"+reason)
+		} else {
+			md.Set(requestParamsHeaderKey, reason)
+		}
+	}
 	return metadata.NewOutgoingContext(ctx, md), nil
 }
 
@@ -2202,60 +2200,4 @@ func (r *gRPCReader) reopenStream() error {
 	r.currMsg = res.decoder
 	r.cancel = cancel
 	return nil
-}
-
-// GetDirectPathDiagnostic determines why DirectPath might not be used.
-func GetDirectPathDiagnostic(ctx context.Context, opts ...option.ClientOption) string {
-	ur, err := internaloption.NewUnsafeResolver(opts...)
-	if err != nil {
-		return "endpoint_fetch_error"
-	}
-
-	// 1. Check environment variables.
-	if strings.EqualFold(os.Getenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH"), "true") {
-		return "env_disabled"
-	}
-
-	// 2. Check explicit options (requires extending UnsafeResolver).
-	// If these methods are not added, you cannot rule these out in the SDK.
-	if !ur.ResolvedEnableDirectPath() {
-		return "option_disabled"
-	}
-	if !ur.ResolvedEnableDirectPathXds() {
-		return "xds_not_enabled"
-	}
-
-	// 3. Check endpoint compatibility.
-	endpoint, err := ur.ResolvedGRPCEndpoint()
-	if err != nil {
-		return "endpoint_fetch_error"
-	}
-	if !isDirectPathEndpoint(endpoint) {
-		return "unsupported_endpoint"
-	}
-
-	// 4. Check for custom transport overrides.
-	if ur.ResolvedGRPCConnIsCustom() {
-		return "custom_grpc_conn"
-	}
-
-	// 5. Check environment and identity (GCE + Auth).
-	if !compute_metadata.OnGCE() {
-		return "not_on_gce"
-	}
-
-	// This method would rule out API keys, NoAuth, and incompatible tokens.
-	if authStatus := ur.ResolvedAuthStatus(ctx); authStatus != "" {
-		return authStatus
-	}
-
-	return "enabled"
-}
-
-func isDirectPathEndpoint(endpoint string) bool {
-	// Logic from transport/grpc: Only dns:/// or no-scheme is supported.
-	if strings.Contains(endpoint, "://") && !strings.HasPrefix(endpoint, "dns:///") {
-		return false
-	}
-	return endpoint != ""
 }
