@@ -507,6 +507,33 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 	}
 }
 
+func TestSignedURL_SchemelessEndpoint(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ep := "storage.europe-west3.rep.googleapis.com"
+	client, err := NewClient(ctx, option.WithEndpoint(ep), option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	u, err := client.Bucket("my-bucket").SignedURL("my-object", &SignedURLOptions{
+		Method:  "GET",
+		Expires: time.Now().Add(time.Hour),
+		GoogleAccessID: "xxx@xxx.com",
+		SignBytes: func(b []byte) ([]byte, error) {
+			return []byte("signed"), nil
+		},
+	})
+	if err != nil {
+		t.Fatalf("SignedURL: %v", err)
+	}
+
+	if !strings.HasPrefix(u, "https://"+ep) {
+		t.Errorf("SignedURL %q does not start with expected endpoint %q", u, "https://"+ep)
+	}
+}
+
 func TestSignedURL_MissingOptions(t *testing.T) {
 	now, _ := time.Parse(time.RFC3339, "2002-10-01T00:00:00-05:00")
 	expires, _ := time.Parse(time.RFC3339, "2002-10-15T00:00:00-05:00")
@@ -2497,6 +2524,13 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			StorageEmulatorHost: "http://host",
 			wantScheme:          "https",
 			wantHost:            "end",
+		},
+		{
+			desc:                "schemeless endpoint specified",
+			CustomEndpoint:      "storage.europe-west3.rep.googleapis.com",
+			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "storage.europe-west3.rep.googleapis.com",
 		},
 	}
 
