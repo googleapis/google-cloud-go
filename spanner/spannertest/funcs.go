@@ -315,16 +315,16 @@ func convertToTimestamp(val interface{}) (res time.Time, convertErr error, err e
 	return time.Time{}, nil, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to TIMESTAMP", val)
 }
 
-func convertToUUID(val any) (res uuid.UUID, convertErr error, err error) {
+func convertToUUID(val interface{}) (res uuid.UUID, convertErr error, err error) {
 	switch v := val.(type) {
 	case uuid.UUID:
 		return v, nil, nil
 	case string:
-		res, err := uuid.Parse(v)
-		if err != nil {
+		id, parseErr := uuid.Parse(v)
+		if parseErr != nil {
 			return uuid.UUID{}, status.Errorf(codes.InvalidArgument, "invalid value for UUID: %q", v), nil
 		}
-		return res, nil, nil
+		return id, nil, nil
 	}
 	return uuid.UUID{}, nil, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to UUID", val)
 }
