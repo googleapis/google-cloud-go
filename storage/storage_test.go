@@ -508,7 +508,6 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 }
 
 func TestSignedURL_SchemelessEndpoint(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
 	ep := "storage.europe-west3.rep.googleapis.com"
 	client, err := NewClient(ctx, option.WithEndpoint(ep), option.WithoutAuthentication())
@@ -2537,11 +2536,10 @@ func TestOperationsWithEndpoint(t *testing.T) {
 	for _, tc := range testCases {
 		ctx := context.Background()
 		t.Run(tc.desc, func(t *testing.T) {
+			t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 			timeout := time.After(time.Second)
 			done := make(chan bool, 1)
 			go func() {
-				t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
-
 				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
 				if err != nil {
 					t.Errorf("error creating client: %v", err)
