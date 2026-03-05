@@ -261,12 +261,20 @@ func (n *NullInt64) Scan(value interface{}) error {
 	default:
 		return spannerErrorf(codes.InvalidArgument, "invalid type for NullInt64: %v", p)
 	case *int64:
-		n.Int64 = *p
+		if p == nil {
+			n.Int64, n.Valid = 0, false
+		} else {
+			n.Int64 = *p
+		}
 	case int64:
 		n.Int64 = p
 	case *NullInt64:
-		n.Int64 = p.Int64
-		n.Valid = p.Valid
+		if p == nil {
+			n.Int64, n.Valid = 0, false
+		} else {
+			n.Int64 = p.Int64
+			n.Valid = p.Valid
+		}
 	case NullInt64:
 		n.Int64 = p.Int64
 		n.Valid = p.Valid
@@ -278,6 +286,10 @@ func (n *NullInt64) Scan(value interface{}) error {
 		n.Int64 = i64
 		n.Valid = true
 	case *string:
+		if p == nil {
+			n.Int64, n.Valid = 0, false
+			return nil
+		}
 		i64, err := strconv.ParseInt(*p, 10, 64)
 		if err != nil {
 			return err
@@ -360,12 +372,20 @@ func (n *NullString) Scan(value interface{}) error {
 	default:
 		return spannerErrorf(codes.InvalidArgument, "invalid type for NullString: %v", p)
 	case *string:
-		n.StringVal = *p
+		if p == nil {
+			n.StringVal, n.Valid = "", false
+		} else {
+			n.StringVal = *p
+		}
 	case string:
 		n.StringVal = p
 	case *NullString:
-		n.StringVal = p.StringVal
-		n.Valid = p.Valid
+		if p == nil {
+			n.StringVal, n.Valid = "", false
+		} else {
+			n.StringVal = p.StringVal
+			n.Valid = p.Valid
+		}
 	case NullString:
 		n.StringVal = p.StringVal
 		n.Valid = p.Valid
@@ -440,12 +460,20 @@ func (n *NullFloat64) Scan(value interface{}) error {
 	default:
 		return spannerErrorf(codes.InvalidArgument, "invalid type for NullFloat64: %v", p)
 	case *float64:
-		n.Float64 = *p
+		if p == nil {
+			n.Float64, n.Valid = 0, false
+		} else {
+			n.Float64 = *p
+		}
 	case float64:
 		n.Float64 = p
 	case *NullFloat64:
-		n.Float64 = p.Float64
-		n.Valid = p.Valid
+		if p == nil {
+			n.Float64, n.Valid = 0, false
+		} else {
+			n.Float64 = p.Float64
+			n.Valid = p.Valid
+		}
 	case NullFloat64:
 		n.Float64 = p.Float64
 		n.Valid = p.Valid
@@ -457,6 +485,10 @@ func (n *NullFloat64) Scan(value interface{}) error {
 		n.Float64 = f
 		n.Valid = true
 	case *string:
+		if p == nil {
+			n.Float64, n.Valid = 0, false
+			return nil
+		}
 		f, err := strconv.ParseFloat(*p, 64)
 		if err != nil {
 			return err
@@ -534,12 +566,20 @@ func (n *NullFloat32) Scan(value interface{}) error {
 	default:
 		return spannerErrorf(codes.InvalidArgument, "invalid type for NullFloat32: %v", p)
 	case *float32:
-		n.Float32 = *p
+		if p == nil {
+			n.Float32, n.Valid = 0, false
+		} else {
+			n.Float32 = *p
+		}
 	case float32:
 		n.Float32 = p
 	case *NullFloat32:
-		n.Float32 = p.Float32
-		n.Valid = p.Valid
+		if p == nil {
+			n.Float32, n.Valid = 0, false
+		} else {
+			n.Float32 = p.Float32
+			n.Valid = p.Valid
+		}
 	case NullFloat32:
 		n.Float32 = p.Float32
 		n.Valid = p.Valid
@@ -551,6 +591,10 @@ func (n *NullFloat32) Scan(value interface{}) error {
 		n.Float32 = float32(f)
 		n.Valid = true
 	case *string:
+		if p == nil {
+			n.Float32, n.Valid = 0, false
+			return nil
+		}
 		f, err := strconv.ParseFloat(*p, 32)
 		if err != nil {
 			return err
@@ -628,12 +672,20 @@ func (n *NullBool) Scan(value interface{}) error {
 	default:
 		return spannerErrorf(codes.InvalidArgument, "invalid type for NullBool: %v", p)
 	case *bool:
-		n.Bool = *p
+		if p == nil {
+			n.Bool, n.Valid = false, false
+		} else {
+			n.Bool = *p
+		}
 	case bool:
 		n.Bool = p
 	case *NullBool:
-		n.Bool = p.Bool
-		n.Valid = p.Valid
+		if p == nil {
+			n.Bool, n.Valid = false, false
+		} else {
+			n.Bool = p.Bool
+			n.Valid = p.Valid
+		}
 	case NullBool:
 		n.Bool = p.Bool
 		n.Valid = p.Valid
@@ -645,6 +697,10 @@ func (n *NullBool) Scan(value interface{}) error {
 		n.Bool = f
 		n.Valid = true
 	case *string:
+		if p == nil {
+			n.Bool, n.Valid = false, false
+			return nil
+		}
 		f, err := strconv.ParseBool(*p)
 		if err != nil {
 			return err
@@ -727,12 +783,20 @@ func (n *NullTime) Scan(value interface{}) error {
 	default:
 		return spannerErrorf(codes.InvalidArgument, "invalid type for NullTime: %v", p)
 	case *time.Time:
-		n.Time = *p
+		if p == nil {
+			n.Time, n.Valid = time.Time{}, false
+		} else {
+			n.Time = *p
+		}
 	case time.Time:
 		n.Time = p
 	case *NullTime:
-		n.Time = p.Time
-		n.Valid = p.Valid
+		if p == nil {
+			n.Time, n.Valid = time.Time{}, false
+		} else {
+			n.Time = p.Time
+			n.Valid = p.Valid
+		}
 	case NullTime:
 		n.Time = p.Time
 		n.Valid = p.Valid
@@ -744,6 +808,10 @@ func (n *NullTime) Scan(value interface{}) error {
 		n.Time = f
 		n.Valid = true
 	case *string:
+		if p == nil {
+			n.Time, n.Valid = time.Time{}, false
+			return nil
+		}
 		f, err := time.Parse(time.RFC3339Nano, *p)
 		if err != nil {
 			return err
@@ -831,12 +899,20 @@ func (n *NullDate) Scan(value interface{}) error {
 		n.Date = d
 		n.Valid = true
 	case *civil.Date:
-		n.Date = *p
+		if p == nil {
+			n.Date, n.Valid = civil.Date{}, false
+		} else {
+			n.Date = *p
+		}
 	case civil.Date:
 		n.Date = p
 	case *NullDate:
-		n.Date = p.Date
-		n.Valid = p.Valid
+		if p == nil {
+			n.Date, n.Valid = civil.Date{}, false
+		} else {
+			n.Date = p.Date
+			n.Valid = p.Valid
+		}
 	case NullDate:
 		n.Date = p.Date
 		n.Valid = p.Valid
@@ -916,12 +992,20 @@ func (n *NullNumeric) Scan(value interface{}) error {
 	default:
 		return spannerErrorf(codes.InvalidArgument, "invalid type for NullNumeric: %v", p)
 	case *big.Rat:
-		n.Numeric = *p
+		if p == nil {
+			n.Numeric, n.Valid = big.Rat{}, false
+		} else {
+			n.Numeric = *p
+		}
 	case big.Rat:
 		n.Numeric = p
 	case *NullNumeric:
-		n.Numeric = p.Numeric
-		n.Valid = p.Valid
+		if p == nil {
+			n.Numeric, n.Valid = big.Rat{}, false
+		} else {
+			n.Numeric = p.Numeric
+			n.Valid = p.Valid
+		}
 	case NullNumeric:
 		n.Numeric = p.Numeric
 		n.Valid = p.Valid
@@ -933,6 +1017,10 @@ func (n *NullNumeric) Scan(value interface{}) error {
 		n.Numeric = *y
 		n.Valid = true
 	case *string:
+		if p == nil {
+			n.Numeric, n.Valid = big.Rat{}, false
+			return nil
+		}
 		y, ok := (&big.Rat{}).SetString(*p)
 		if !ok {
 			return errUnexpectedNumericStr(*p)
@@ -1285,18 +1373,47 @@ func (n *NullUUID) Scan(value interface{}) error {
 	n.Valid = true
 	switch p := value.(type) {
 	default:
-		return spannerErrorf(codes.InvalidArgument, "invalid type for NullUUID: %v", p)
+		return spannerErrorf(codes.InvalidArgument, "invalid type for NullUUID: %v (%t)", p, p)
 	case *uuid.UUID:
-		n.UUID = *p
+		if p == nil {
+			n.UUID = uuid.Nil
+			n.Valid = false
+		} else {
+			n.UUID = *p
+		}
 	case uuid.UUID:
 		n.UUID = p
 	case *NullUUID:
-		n.UUID = p.UUID
-		n.Valid = p.Valid
+		if p == nil {
+			n.UUID = uuid.Nil
+			n.Valid = false
+		} else {
+			n.UUID = p.UUID
+			n.Valid = p.Valid
+		}
 	case NullUUID:
 		n.UUID = p.UUID
 		n.Valid = p.Valid
+	case string:
+		return n.scanStringValue(p)
+	case *string:
+		if p == nil {
+			n.UUID = uuid.Nil
+			n.Valid = false
+			return nil
+		}
+		return n.scanStringValue(*p)
 	}
+	return nil
+}
+
+func (n *NullUUID) scanStringValue(s string) error {
+	u, err := uuid.Parse(s)
+	if err != nil {
+		return err
+	}
+	n.UUID = u
+	n.Valid = true
 	return nil
 }
 
