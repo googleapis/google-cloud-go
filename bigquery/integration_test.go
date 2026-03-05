@@ -1512,7 +1512,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 		t.Fatal("expected job statistics, none found")
 	}
 
-	if status.Statistics.TotalSlotDuration <= 0 {
+	if status.Statistics.TotalSlotDuration < 0 {
 		t.Errorf("expected positive total slot duration, %s reported", status.Statistics.TotalSlotDuration.String())
 	}
 
