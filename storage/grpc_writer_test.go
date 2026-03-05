@@ -192,11 +192,10 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 			}
 
 			// Verify memory address logic:
-			// The last byte of the request buffer should match the last byte of the input data for zero-copy.
+			// The last byte of the last request buffer should match the last byte of the input data for zero-copy.
+			// For buffering/copying, the pointers must differ.
 			idx := len(reqs) - 1
 			bufIdx := len(reqs[idx].buf)
-			// For zero-copy, the underlying array pointer of the request buffer must match the input data.
-			// For buffering/copying, the pointers must differ.
 			isZeroCopy := &reqs[idx].buf[bufIdx-1] == &data[tt.dataSize-1]
 			if isZeroCopy != tt.wantZeroCopy {
 				if tt.wantZeroCopy && tt.forceOneShot {
