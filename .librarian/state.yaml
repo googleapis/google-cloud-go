@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.118.0
+    version: 1.119.0
     last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/aiplatform/v1
@@ -174,7 +174,7 @@ libraries:
       - internal/generated/snippets/aiplatform/
     tag_format: '{id}/v{version}'
   - id: alloydb
-    version: 1.20.0
+    version: 1.21.0
     last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/alloydb/v1
@@ -1362,7 +1362,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: c83d354f79b02e3dc98f22248e22851fcf9b961d
     apis:
       - path: google/cloud/ces/v1beta
@@ -1730,7 +1730,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.55.0
+    version: 1.56.0
     last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/compute/v1
@@ -2496,7 +2496,7 @@ libraries:
       - ^dlp/apiv2/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: documentai
-    version: 1.41.0
+    version: 1.42.0
     last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/documentai/v1
@@ -4006,7 +4006,7 @@ libraries:
       - internal/generated/snippets/networkconnectivity/
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.22.0
+    version: 1.23.0
     last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/networkmanagement/v1
@@ -5918,7 +5918,7 @@ libraries:
       - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
-    version: 0.3.0
+    version: 0.4.0
     last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/storagebatchoperations/v1
@@ -6229,7 +6229,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.3.0
+    version: 0.4.0
     last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/vectorsearch/v1beta

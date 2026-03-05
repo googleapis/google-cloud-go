@@ -1,5 +1,11 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.4.0) (2026-03-05)
+
+### Features
+
+* add new transformation `update_object_custom_context` ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.3.0) (2026-02-19)
 
 ### Features

@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.119.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.119.0) (2026-03-05)
+
+### Features
+
+* A new field `evaluation_run` is added to message `.google.cloud.aiplatform.v1beta1.EvaluateDatasetRun` ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+* A new field `inference_generation_config` is added to message `.google.cloud.aiplatform.v1beta1.EvaluationConfig` ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+* add AskContexts and AsyncRetrieveContexts APIs to VertexRagService ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+### Documentation
+
+* comment on `evaluate_dataset_response` clarified ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
 ## [1.118.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.118.0) (2026-02-26)
 
 ### Features
