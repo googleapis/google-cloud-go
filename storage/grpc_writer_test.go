@@ -103,29 +103,45 @@ func TestGetObjectChecksums(t *testing.T) {
 	}
 }
 func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
-	dataSize := 1024 * 1024 // 1 MB payload
-	data := make([]byte, dataSize)
-	data[0] = 1
-	data[dataSize-1] = 2
-
 	tests := []struct {
 		name         string
 		chunkSize    int
-		writeQuantum int
+		dataSize     int
 		forceOneShot bool
 		wantZeroCopy bool
 	}{
 		{
-			name:         "OneShot_ZeroCopy",
+			name:         "OneShot_ZeroCopy_1MB",
 			chunkSize:    0,
-			writeQuantum: maxPerMessageWriteSize,
+			dataSize:     1 * 1024 * 1024, // 1 MiB
+			forceOneShot: true,
+			wantZeroCopy: true,
+		},
+		{
+			name:         "OneShot_ZeroCopy_10MB",
+			chunkSize:    0,
+			dataSize:     10 * 1024 * 1024, // 10 MiB
 			forceOneShot: true,
 			wantZeroCopy: true,
 		},
 		{
 			name:         "Resumable_Buffering",
 			chunkSize:    2 * 1024 * 1024,
-			writeQuantum: 256 * 1024,
+			dataSize:     1 * 1024 * 1024, // 1 MiB
+			forceOneShot: false,
+			wantZeroCopy: false,
+		},
+		{
+			name:         "Resumable_ZeroCopy",
+			chunkSize:    1 * 1024 * 1024, // 1 MiB
+			dataSize:     2 * 1024 * 1024, // 2 MiB
+			forceOneShot: false,
+			wantZeroCopy: true,
+		},
+		{
+			name:         "Resumable_Hybrid",
+			chunkSize:    2 * 1024 * 1024, // 2 MiB
+			dataSize:     3 * 1024 * 1024, // 3 MiB
 			forceOneShot: false,
 			wantZeroCopy: false,
 		},
@@ -133,12 +149,16 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			data := make([]byte, tt.dataSize)
+			data[0] = 1
+			data[tt.dataSize-1] = 2
+			chunkSize := gRPCChunkSize(tt.chunkSize)
 			mockSender := &mockZeroCopySender{}
 			w := &gRPCWriter{
 				buf:           nil, // Allocated lazily on first buffered write.
-				chunkSize:     tt.chunkSize,
+				chunkSize:     chunkSize,
 				forceOneShot:  tt.forceOneShot,
-				writeQuantum:  tt.writeQuantum,
+				writeQuantum:  maxPerMessageWriteSize,
 				preRunCtx:     context.Background(),
 				sendableUnits: 10,
 				writesChan:    make(chan gRPCWriterCommand, 1),
@@ -172,14 +192,19 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 			}
 
 			// Verify memory address logic:
+			// The last byte of the request buffer should match the last byte of the input data for zero-copy.
+			idx := len(reqs) - 1
+			bufIdx := len(reqs[idx].buf)
 			// For zero-copy, the underlying array pointer of the request buffer must match the input data.
 			// For buffering/copying, the pointers must differ.
-			isZeroCopy := &reqs[0].buf[0] == &data[0]
+			isZeroCopy := &reqs[idx].buf[bufIdx-1] == &data[tt.dataSize-1]
 			if isZeroCopy != tt.wantZeroCopy {
-				if tt.wantZeroCopy {
+				if tt.wantZeroCopy && tt.forceOneShot {
 					t.Errorf("One-shot upload bypassed zero-copy path; data was unexpectedly copied")
-				} else {
+				} else if !tt.wantZeroCopy && !tt.forceOneShot {
 					t.Errorf("Resumable upload bypassed buffering path; data was unexpectedly zero-copied")
+				} else if tt.wantZeroCopy && !tt.forceOneShot {
+					t.Errorf("Resumable upload bypassed zero-copy path; data was unexpectedly copied")
 				}
 			}
 		})
