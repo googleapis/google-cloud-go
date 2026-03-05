@@ -115,20 +115,26 @@ func (dsm *DynamicScaleMonitor) evaluateAndScale() {
 
 	btopt.Debugf(dsm.pool.logger, "bigtable_connpool: evaluateAndScale currentLoadSum: %d, currentChannel: %d, avgLoad: %.2f\n", currentLoadSum, currentConnsCount, currentAvgLoadPerConn)
 
-	if currentAvgLoadPerConn >= dsm.config.AvgLoadHighThreshold {
-		dsm.scaleUp(currentLoadSum, currentConnsCount)
-	} else if currentAvgLoadPerConn <= dsm.config.AvgLoadLowThreshold {
+	if currentAvgLoadPerConn <= dsm.config.AvgLoadLowThreshold {
 		dsm.continuousDownscaleRuns++
-		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Low load detected (avg: %.2f). Downscale streak: %d/3\n", currentAvgLoadPerConn, dsm.continuousDownscaleRuns)
+
+		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Low load detected. Downscale streak: %d/%d\n", dsm.continuousDownscaleRuns, continuousDownscaleRunsThreshold)
+
 		if dsm.continuousDownscaleRuns >= continuousDownscaleRunsThreshold {
 			dsm.scaleDown(currentLoadSum, currentConnsCount)
 			dsm.continuousDownscaleRuns = 0
 		}
 	} else {
+		// Reset the downscale streak
 		if dsm.continuousDownscaleRuns > 0 {
-			btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Normal load detected (avg: %.2f). Resetting downscale streak from %d to 0.\n", currentAvgLoadPerConn, dsm.continuousDownscaleRuns)
+			btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Load above low threshold. Resetting downscale streak from %d to 0.\n", dsm.continuousDownscaleRuns)
+			dsm.continuousDownscaleRuns = 0
 		}
-		dsm.continuousDownscaleRuns = 0
+
+		// Proceed to check if we need to scale up
+		if currentAvgLoadPerConn >= dsm.config.AvgLoadHighThreshold {
+			dsm.scaleUp(currentLoadSum, currentConnsCount)
+		}
 	}
 }
 
