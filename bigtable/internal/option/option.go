@@ -180,8 +180,6 @@ func parseLoadBalancingStrategy(strategyStr string) LoadBalancingStrategy {
 		return PowerOfTwoLeastInFlight
 	case "ROUND_ROBIN":
 		return RoundRobin
-	case "":
-		return PowerOfTwoLeastInFlight // Default if env var is not set
 	default:
 		return PowerOfTwoLeastInFlight // Default for unknown values
 	}
