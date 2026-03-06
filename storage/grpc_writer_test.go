@@ -148,7 +148,7 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 		},
 		{
 			name:         "Resumable_Buffering",
-			chunkSize:    2 * 1024 * 1024,
+			chunkSize:    2 * 1024 * 1024, // 2 MiB
 			dataSize:     1 * 1024 * 1024, // 1 MiB
 			forceOneShot: false,
 			wantZeroCopy: false,
@@ -175,7 +175,7 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 			data[0] = 1
 			data[tt.dataSize-1] = 2
 			chunkSize := gRPCChunkSize(tt.chunkSize)
-			mockSender := &mockZeroCopySender{}
+			mockSender := &mockSender{}
 			w := &gRPCWriter{
 				buf:           nil, // Allocated lazily on first buffered write.
 				chunkSize:     chunkSize,
@@ -217,8 +217,8 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 			// The last byte of the last request buffer should match the last byte of the input data for zero-copy.
 			// For buffering/copying, the pointers must differ.
 			idx := len(reqs) - 1
-			bufIdx := len(reqs[idx].buf)
-			isZeroCopy := &reqs[idx].buf[bufIdx-1] == &data[tt.dataSize-1]
+			bufIdx := len(reqs[idx].buf) - 1
+			isZeroCopy := &reqs[idx].buf[bufIdx] == &data[tt.dataSize-1]
 			if isZeroCopy != tt.wantZeroCopy {
 				if tt.wantZeroCopy && tt.forceOneShot {
 					t.Errorf("One-shot upload bypassed zero-copy path; data was unexpectedly copied")
@@ -232,14 +232,14 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 	}
 }
 
-type mockZeroCopySender struct {
+type mockSender struct {
 	mu        sync.Mutex
 	requests  []gRPCBidiWriteRequest
 	errResult error
 	wg        sync.WaitGroup // Waits for all async operations to complete.
 }
 
-func (m *mockZeroCopySender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
 	m.wg.Add(1)
 	go func() {
 		defer m.wg.Done()
@@ -282,7 +282,7 @@ func (m *mockZeroCopySender) connect(ctx context.Context, cs gRPCBufSenderChans,
 	}()
 }
 
-func (m *mockZeroCopySender) err() error { return m.errResult }
+func (m *mockSender) err() error { return m.errResult }
 
 // filterDataRequests returns only requests containing data, ignoring protocol overhead.
 func filterDataRequests(reqs []gRPCBidiWriteRequest) []gRPCBidiWriteRequest {

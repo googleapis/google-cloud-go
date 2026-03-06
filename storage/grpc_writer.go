@@ -57,6 +57,7 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 		// Skip checksum calculation if user configures MD5 or CRC32C themselves.
 		if !w.disableAutoChecksum &&
 			!w.sendCRC32C &&
+			w.attrs != nil &&
 			w.attrs.MD5 == nil {
 			w.fullObjectChecksum = crc32.Update(w.fullObjectChecksum, crc32cTable, p)
 		}
