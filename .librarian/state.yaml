@@ -704,7 +704,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: auditmanager
     version: 0.1.0
-    last_generated_commit: e40bad750cef7fa4ca8cd6ad50965fb709bd91c6
+    last_generated_commit: 052914c6278b3cce47646dcfd02e4b5fa9c72e39
     apis:
       - path: google/cloud/auditmanager/v1
         service_config: auditmanager_v1.yaml
