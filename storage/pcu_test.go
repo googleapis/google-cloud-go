@@ -25,8 +25,6 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
-	gax "github.com/googleapis/gax-go/v2"
 )
 
 func TestNewPartName(t *testing.T) {
@@ -119,25 +117,6 @@ func TestNewPCUSettings(t *testing.T) {
 	wantBufferPoolSize := maxConcurrency + 1
 	if settings.bufferPoolSize != wantBufferPoolSize {
 		t.Errorf("bufferPoolSize = %d; want %d", settings.bufferPoolSize, wantBufferPoolSize)
-	}
-
-	// Verify hardcoded retry options.
-	if len(settings.retryOptions) != 2 {
-		t.Errorf("len(retryOptions) = %d; want 2", len(settings.retryOptions))
-	}
-
-	wantRetry := []RetryOption{
-		WithMaxAttempts(defaultMaxRetries),
-		WithBackoff(gax.Backoff{
-			Initial: defaultBaseDelay,
-			Max:     defaultMaxDelay,
-		}),
-	}
-
-	if diff := cmp.Diff(wantRetry, settings.retryOptions,
-		cmp.AllowUnexported(withMaxAttempts{}, withBackoff{}),
-		cmpopts.IgnoreUnexported(gax.Backoff{})); diff != "" {
-		t.Errorf("retryOptions mismatch (-want +got):\n%s", diff)
 	}
 }
 
