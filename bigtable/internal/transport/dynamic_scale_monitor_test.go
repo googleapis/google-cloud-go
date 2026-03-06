@@ -29,14 +29,15 @@ func TestDynamicChannelScaling(t *testing.T) {
 	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
 
 	baseConfig := btopt.DynamicChannelPoolConfig{
-		Enabled:              true,
-		MinConns:             2,
-		MaxConns:             10,
-		AvgLoadHighThreshold: 10.0,             // Scale up if avg load >= 10
-		AvgLoadLowThreshold:  3.0,              // Scale down if avg load <= 3
-		MinScalingInterval:   0,                // Disable time throttling for most tests
-		CheckInterval:        10 * time.Second, // Not directly used by calling evaluateAndScale
-		MaxRemoveConns:       3,
+		Enabled:                          true,
+		MinConns:                         2,
+		MaxConns:                         10,
+		AvgLoadHighThreshold:             10.0,             // Scale up if avg load >= 10
+		AvgLoadLowThreshold:              3.0,              // Scale down if avg load <= 3
+		MinScalingInterval:               0,                // Disable time throttling for most tests
+		CheckInterval:                    10 * time.Second, // Not directly used by calling evaluateAndScale
+		MaxRemoveConns:                   3,
+		ContinuousDownscaleRunsThreshold: 3,
 	}
 	tests := []struct {
 		name          string
@@ -126,6 +127,15 @@ func TestDynamicChannelScaling(t *testing.T) {
 			// Total load = 20. Desired = ceil(20 / 6.5) = 4. Add 2.
 			wantSize:      4,
 			evaluateCalls: 1,
+		},
+		{
+			name:        "NoScaleDownWithEvaluations<ContinuousDownscaleRunsThreshold",
+			initialSize: 6,
+			setLoad: func(conns []*connEntry) {
+				setConnLoads(conns, 1, 0) // Avg load 1 < 3 (Low load)
+			},
+			wantSize:      6,
+			evaluateCalls: 2,
 		},
 	}
 

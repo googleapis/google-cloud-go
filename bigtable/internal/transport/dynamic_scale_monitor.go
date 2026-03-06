@@ -24,8 +24,6 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 )
 
-const continuousDownscaleRunsThreshold = 3
-
 // DynamicScaleMonitor manages upscale and downscale of the connection pool.
 // Owner: It is owned by BigtableClient
 type DynamicScaleMonitor struct {
@@ -43,6 +41,10 @@ type DynamicScaleMonitor struct {
 
 // NewDynamicScaleMonitor creates a new DynamicScaleMonitor.
 func NewDynamicScaleMonitor(config btopt.DynamicChannelPoolConfig, pool *BigtableChannelPool) *DynamicScaleMonitor {
+	// Fallback to a default threshold of 3 if specified 0.
+	if config.ContinuousDownscaleRunsThreshold == 0 {
+		config.ContinuousDownscaleRunsThreshold = 3
+	}
 
 	perConnTargetLoad := math.Floor(config.AvgLoadLowThreshold+config.AvgLoadHighThreshold) / 2.0
 	if perConnTargetLoad < 1.0 {
@@ -118,9 +120,9 @@ func (dsm *DynamicScaleMonitor) evaluateAndScale() {
 	if currentAvgLoadPerConn <= dsm.config.AvgLoadLowThreshold {
 		dsm.continuousDownscaleRuns++
 
-		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Low load detected. Downscale streak: %d/%d\n", dsm.continuousDownscaleRuns, continuousDownscaleRunsThreshold)
+		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Low load detected. Downscale streak: %d/%d\n", dsm.continuousDownscaleRuns, dsm.config.ContinuousDownscaleRunsThreshold)
 
-		if dsm.continuousDownscaleRuns >= continuousDownscaleRunsThreshold {
+		if dsm.continuousDownscaleRuns >= dsm.config.ContinuousDownscaleRunsThreshold {
 			dsm.scaleDown(currentLoadSum, currentConnsCount)
 			dsm.continuousDownscaleRuns = 0
 		}
@@ -160,6 +162,11 @@ func ValidateDynamicConfig(config btopt.DynamicChannelPoolConfig, connPoolSize i
 	}
 	if config.MaxRemoveConns <= 0 {
 		return fmt.Errorf("bigtable_connpool: DynamicChannelPoolConfig.MaxRemoveConns must be positive")
+	}
+
+	// Validate the new config field
+	if config.ContinuousDownscaleRunsThreshold < 0 {
+		return fmt.Errorf("bigtable_connpool: DynamicChannelPoolConfig.ContinuousDownscaleRunsThreshold cannot be negative")
 	}
 	return nil
 }
