@@ -1038,6 +1038,9 @@ func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/listAssociations")
 
 	params := url.Values{}
+	if req != nil && req.IncludeInheritedPolicies != nil {
+		params.Add("includeInheritedPolicies", fmt.Sprintf("%v", req.GetIncludeInheritedPolicies()))
+	}
 	if req != nil && req.TargetResource != nil {
 		params.Add("targetResource", fmt.Sprintf("%v", req.GetTargetResource()))
 	}
