@@ -414,7 +414,7 @@ func TestPCUWorker_UploadChannelClose(t *testing.T) {
 
 func TestNewPartName_Uniqueness(t *testing.T) {
 	bucket := "my-bucket"
-	prefix := "gcs-go-sdk-pcu-tmp/"
+	prefix := "gcs-go-sdk-pu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 

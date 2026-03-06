@@ -25,8 +25,6 @@ import (
 	"sort"
 	"sync"
 	"time"
-
-	gax "github.com/googleapis/gax-go/v2"
 )
 
 const (
@@ -34,7 +32,7 @@ const (
 	minPartSize          = 5 * 1024 * 1024  // 5 MiB
 	baseWorkers          = 4
 	maxWorkers           = 16
-	tmpObjectPrefix      = "gcs-go-sdk-pcu-tmp/"
+	tmpObjectPrefix      = "gcs-go-sdk-pu-tmp/"
 	maxComposeComponents = 32
 	defaultMaxRetries    = 3
 	defaultBaseDelay     = 100 * time.Millisecond
@@ -73,13 +71,9 @@ func (c *parallelUploadConfig) defaults() {
 }
 
 type pcuSettings struct {
-
 	// bufferPoolSize is the number of PartSize buffers to pool
 	// and is set to MaxConcurrency + 1.
 	bufferPoolSize int
-
-	// retryOptions defines the retry behavior for uploading parts..
-	retryOptions []RetryOption
 }
 
 func newPCUSettings(maxConcurrency int) *pcuSettings {
@@ -87,16 +81,6 @@ func newPCUSettings(maxConcurrency int) *pcuSettings {
 
 	if c.bufferPoolSize == 0 {
 		c.bufferPoolSize = maxConcurrency + 1
-	}
-
-	if c.retryOptions == nil {
-		c.retryOptions = []RetryOption{
-			WithMaxAttempts(defaultMaxRetries),
-			WithBackoff(gax.Backoff{
-				Initial: defaultBaseDelay,
-				Max:     defaultMaxDelay,
-			}),
-		}
 	}
 	return c
 }
@@ -265,7 +249,6 @@ func (s *pcuState) worker() {
 	}
 }
 
-// TODO: add retry logic.
 func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
 	partName := newPartName(s.w.o.bucket, tmpObjectPrefix, s.w.o.object, task.partNumber)
 	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
