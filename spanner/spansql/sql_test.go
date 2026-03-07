@@ -2240,6 +2240,29 @@ INNER JOIN t2 ON t1.id = t2.t1_id
 GROUP BY t1.id, t2.name`,
 			reparseQuery,
 		},
+		// Multiple ARRAY function with lambda expressions + ARRAY_INCLUDES with regular search_value
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Func{Name: "ARRAY_TRANSFORM", Args: []Expr{ID("items"), Lambda{Key: Paren{Expr: ExprList{ID("item"), ID("idx")}}, Value: Func{Name: "SPLIT", Args: []Expr{StringLiteral(",")}}}}},
+						Func{Name: "ARRAY_FILTER", Args: []Expr{ID("items"), Lambda{Key: ID("item"), Value: Func{Name: "STARTS_WITH", Args: []Expr{StringLiteral("secret")}}}}},
+						Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), Lambda{Key: ID("item"), Value: Func{Name: "STARTS_WITH", Args: []Expr{StringLiteral("secret")}}}}},
+						Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), StringLiteral("secret")}},
+					},
+					From: []SelectFrom{SelectFromTable{
+						Table: "orders",
+					}},
+				},
+			},
+			`SELECT
+	ARRAY_TRANSFORM(items, (item, idx) -> SPLIT(",")),
+	ARRAY_FILTER(items, item -> STARTS_WITH("secret")),
+	ARRAY_INCLUDES(items, item -> STARTS_WITH("secret")),
+	ARRAY_INCLUDES(items, "secret")
+FROM orders`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()

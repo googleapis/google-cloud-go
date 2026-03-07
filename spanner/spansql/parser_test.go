@@ -740,6 +740,34 @@ func TestParseExpr(t *testing.T) {
 				},
 			},
 		},
+
+		// Lambda expressions
+		{
+			`ARRAY_TRANSFORM(items, (item, idx) -> SPLIT_SUBSTR(item, "@", 1, 1))`,
+			Func{Name: "ARRAY_TRANSFORM", Args: []Expr{ID("items"), Lambda{
+				Key:   Paren{Expr: ExprList{ID("item"), ID("idx")}},
+				Value: Func{Name: "SPLIT_SUBSTR", Args: []Expr{ID("item"), StringLiteral("@"), IntegerLiteral(1), IntegerLiteral(1)}},
+			}}},
+		},
+		{
+			`ARRAY_FILTER(items, (item, idx) -> item)`,
+			Func{Name: "ARRAY_FILTER", Args: []Expr{ID("items"), Lambda{
+				Key:   Paren{Expr: ExprList{ID("item"), ID("idx")}},
+				Value: ID("item"),
+			}}},
+		},
+		{
+			`ARRAY_INCLUDES(items, (item, idx) -> item)`,
+			Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), Lambda{
+				Key:   Paren{Expr: ExprList{ID("item"), ID("idx")}},
+				Value: ID("item"),
+			}}},
+		},
+		// Check that ARRAY_INCLUDES still accepts a search_value
+		{
+			`ARRAY_INCLUDES(items, "item")`,
+			Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), StringLiteral("item")}},
+		},
 	}
 	for _, test := range tests {
 		p := newParser("test-file", test.in)
