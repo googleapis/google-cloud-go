@@ -2245,9 +2245,9 @@ GROUP BY t1.id, t2.name`,
 			Query{
 				Select: Select{
 					List: []Expr{
-						Func{Name: "ARRAY_TRANSFORM", Args: []Expr{ID("items"), Lambda{Key: Paren{Expr: ExprList{ID("item"), ID("idx")}}, Value: Func{Name: "SPLIT", Args: []Expr{StringLiteral(",")}}}}},
-						Func{Name: "ARRAY_FILTER", Args: []Expr{ID("items"), Lambda{Key: ID("item"), Value: Func{Name: "STARTS_WITH", Args: []Expr{StringLiteral("secret")}}}}},
-						Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), Lambda{Key: ID("item"), Value: Func{Name: "STARTS_WITH", Args: []Expr{StringLiteral("secret")}}}}},
+						Func{Name: "ARRAY_TRANSFORM", Args: []Expr{ID("items"), Lambda{Key: Paren{Expr: ExprList{ID("item"), ID("idx")}}, Value: Func{Name: "SPLIT", Args: []Expr{ID("item"), StringLiteral(",")}}}}},
+						Func{Name: "ARRAY_FILTER", Args: []Expr{ID("items"), Lambda{Key: ID("item"), Value: Func{Name: "STARTS_WITH", Args: []Expr{ID("item"), StringLiteral("secret")}}}}},
+						Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), Lambda{Key: ID("item"), Value: Func{Name: "STARTS_WITH", Args: []Expr{ID("item"), StringLiteral("secret")}}}}},
 						Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), StringLiteral("secret")}},
 					},
 					From: []SelectFrom{SelectFromTable{
@@ -2256,9 +2256,9 @@ GROUP BY t1.id, t2.name`,
 				},
 			},
 			`SELECT
-	ARRAY_TRANSFORM(items, (item, idx) -> SPLIT(",")),
-	ARRAY_FILTER(items, item -> STARTS_WITH("secret")),
-	ARRAY_INCLUDES(items, item -> STARTS_WITH("secret")),
+	ARRAY_TRANSFORM(items, (item, idx) -> SPLIT(item, ",")),
+	ARRAY_FILTER(items, item -> STARTS_WITH(item, "secret")),
+	ARRAY_INCLUDES(items, item -> STARTS_WITH(item, "secret")),
 	ARRAY_INCLUDES(items, "secret")
 FROM orders`,
 			reparseQuery,

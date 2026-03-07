@@ -4253,8 +4253,17 @@ var lambdaArgParser = func(p *parser) (Expr, *parseError) {
 			return nil, err
 		}
 		key = Paren{Expr: ExprList(defs)}
-	} else {
+	} else if p.sniffAhead(1, "-", ">") {
+		// special case to handle `id -> ...` syntax,
+		// otherwise it gets parsed as a binary operation
+		// and parser expects another identifier, resulting in an error
 		column, err := p.parseLit()
+		if err != nil {
+			return nil, err
+		}
+		key = column
+	} else {
+		column, err := p.parseExpr()
 		if err != nil {
 			return nil, err
 		}
@@ -4262,7 +4271,7 @@ var lambdaArgParser = func(p *parser) (Expr, *parseError) {
 	}
 
 	if p.eat("-", ">") {
-		expr, err := p.parseLit()
+		expr, err := p.parseExpr()
 		if err != nil {
 			return nil, err
 		}

@@ -750,10 +750,28 @@ func TestParseExpr(t *testing.T) {
 			}}},
 		},
 		{
+			`id`,
+			ID("id"),
+		},
+		{
+			`ARRAY_TRANSFORM(items, item -> SPLIT_SUBSTR(item, "@", 1, 1))`,
+			Func{Name: "ARRAY_TRANSFORM", Args: []Expr{ID("items"), Lambda{
+				Key:   ID("item"),
+				Value: Func{Name: "SPLIT_SUBSTR", Args: []Expr{ID("item"), StringLiteral("@"), IntegerLiteral(1), IntegerLiteral(1)}},
+			}}},
+		},
+		{
 			`ARRAY_FILTER(items, (item, idx) -> item)`,
 			Func{Name: "ARRAY_FILTER", Args: []Expr{ID("items"), Lambda{
 				Key:   Paren{Expr: ExprList{ID("item"), ID("idx")}},
 				Value: ID("item"),
+			}}},
+		},
+		{
+			`ARRAY_FILTER(items, item -> STARTS_WITH(item, "secret"))`,
+			Func{Name: "ARRAY_FILTER", Args: []Expr{ID("items"), Lambda{
+				Key:   ID("item"),
+				Value: Func{Name: "STARTS_WITH", Args: []Expr{ID("item"), StringLiteral("secret")}},
 			}}},
 		},
 		{
@@ -763,10 +781,30 @@ func TestParseExpr(t *testing.T) {
 				Value: ID("item"),
 			}}},
 		},
+		{
+			`ARRAY_INCLUDES(items, item -> STARTS_WITH(item, "secret"))`,
+			Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), Lambda{
+				Key:   ID("item"),
+				Value: Func{Name: "STARTS_WITH", Args: []Expr{ID("item"), StringLiteral("secret")}},
+			}}},
+		},
 		// Check that ARRAY_INCLUDES still accepts a search_value
 		{
 			`ARRAY_INCLUDES(items, "item")`,
 			Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), StringLiteral("item")}},
+		},
+		// ARRAY_INCLUDES with a binary expression as search_value
+		{
+			`ARRAY_INCLUDES(items, 1 + 1)`,
+			Func{Name: "ARRAY_INCLUDES", Args: []Expr{ID("items"), ArithOp{Op: Add, LHS: IntegerLiteral(1), RHS: IntegerLiteral(1)}}},
+		},
+		// ARRAY_FILTER with a binary expression in the lambda body
+		{
+			`ARRAY_FILTER(items, item -> item > 5)`,
+			Func{Name: "ARRAY_FILTER", Args: []Expr{ID("items"), Lambda{
+				Key:   ID("item"),
+				Value: ComparisonOp{Op: Gt, LHS: ID("item"), RHS: IntegerLiteral(5)},
+			}}},
 		},
 	}
 	for _, test := range tests {
