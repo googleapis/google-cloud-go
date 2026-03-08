@@ -707,6 +707,30 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.objects.insert": {
+		// Single-shot upload with ChunkSize = 0 (bufferless/one-shot).
+		// This tests the zero-copy optimization path in gRPC and ensures the
+		// client can retry correctly when the internal buffer is disabled.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object("new-object-oneshot.txt")
+
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			objW.ChunkSize = 0
+
+			// Using a 3 MiB object to ensure the upload spans several 2 MiB
+			// gRPC messages, testing retries across message boundaries.
+			if _, err := objW.Write(randomBytes3MiB); err != nil {
+				return fmt.Errorf("Writer.Write: %v", err)
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+			return nil
+		},
+
 		// Single-shot upload that is sent in a single message.
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			obj := c.Bucket(fs.bucket.Name).Object("new-object.txt")
