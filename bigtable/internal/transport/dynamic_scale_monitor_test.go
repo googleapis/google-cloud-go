@@ -38,6 +38,7 @@ func TestDynamicChannelScaling(t *testing.T) {
 		CheckInterval:                    10 * time.Second, // Not directly used by calling evaluateAndScale
 		MaxRemoveConns:                   3,
 		ContinuousDownscaleRunsThreshold: 3,
+		MaxScaleUpPercentage:             30,
 	}
 	tests := []struct {
 		name          string
@@ -51,10 +52,14 @@ func TestDynamicChannelScaling(t *testing.T) {
 			name:        "ScaleUp",
 			initialSize: 3,
 			setLoad: func(conns []*connEntry) {
-				setConnLoads(conns, 12, 0) // Avg load 12 > 10
+				// Target load per conn is 6.5.
+				// Total load = 12 * 3 = 36. Desired = ceil(36 / 6.5) = 6.
+				// try to add 3 conns
+				setConnLoads(conns, 12, 0)
 			},
 			// Total load = 3 * 12 = 36. Desired = ceil(36 / 6.5) = 6
-			wantSize:      6,
+			// capped by 30% of 3, ceil (0.9) => 1
+			wantSize:      4,
 			evaluateCalls: 1,
 		},
 		{
@@ -122,10 +127,11 @@ func TestDynamicChannelScaling(t *testing.T) {
 			name:        "ScaleUpAddAtLeastOne",
 			initialSize: 2,
 			setLoad: func(conns []*connEntry) {
+				// 10*2= 20 total load, conn count = ceil(20/6.5) = 4
 				setConnLoads(conns, 10, 0) // Avg load 10, right at threshold.
 			},
-			// Total load = 20. Desired = ceil(20 / 6.5) = 4. Add 2.
-			wantSize:      4,
+			// Total load = 20. Desired = ceil(20 / 6.5) = 4. Add 2 but capped by 30%
+			wantSize:      3,
 			evaluateCalls: 1,
 		},
 		{
@@ -136,6 +142,54 @@ func TestDynamicChannelScaling(t *testing.T) {
 			},
 			wantSize:      6,
 			evaluateCalls: 2,
+		},
+		{
+			name:        "ScaleUpCappedByMaxScaleUpPercentage",
+			initialSize: 10,
+			configOpt: func(cfg *btopt.DynamicChannelPoolConfig) {
+				cfg.MaxConns = 50             // Increase max conns so it doesn't artificially cap the test
+				cfg.MaxScaleUpPercentage = 20 // 20% of 10 = 2 max additions allowed
+			},
+			setLoad: func(conns []*connEntry) {
+				// Target load per conn is 6.5.
+				// Total load = 10 * 20 = 200. Desired = ceil(200 / 6.5) = 31.
+				// Normally it would try to add 21 connections.
+				setConnLoads(conns, 20, 0)
+			},
+			// Capped at adding 2 connections
+			wantSize:      12,
+			evaluateCalls: 1,
+		},
+		{
+			name:        "ScaleUpNotCappedByMaxScaleUpPercentage",
+			initialSize: 10,
+			configOpt: func(cfg *btopt.DynamicChannelPoolConfig) {
+				cfg.MaxConns = 50
+				cfg.MaxScaleUpPercentage = 100 // 100% of 10 = 10
+			},
+			setLoad: func(conns []*connEntry) {
+				// Total load = 10 * 10 = 100. Desired = ceil(100 / 6.5) = 16.
+				setConnLoads(conns, 10, 0)
+			},
+			//  max allowed 10, so 6 is fine
+			wantSize:      16,
+			evaluateCalls: 1,
+		},
+		{
+			name:        "ScaleUpCeilFractionalCap",
+			initialSize: 4,
+			configOpt: func(cfg *btopt.DynamicChannelPoolConfig) {
+				cfg.MaxConns = 20
+				cfg.MaxScaleUpPercentage = 30 // 30% of 4 = 1.2 -> ceil(1.2) = 2 allowed
+			},
+			setLoad: func(conns []*connEntry) {
+				// Total load = 4 * 20 = 80. Desired = ceil(80 / 6.5) = 13.
+				// Wants to add 9 connections.
+				setConnLoads(conns, 20, 0)
+			},
+			// Capped at adding 2 connections due to math.Ceil(1.2)
+			wantSize:      6,
+			evaluateCalls: 1,
 		},
 	}
 

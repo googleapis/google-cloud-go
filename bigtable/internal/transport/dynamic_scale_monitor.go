@@ -46,6 +46,11 @@ func NewDynamicScaleMonitor(config btopt.DynamicChannelPoolConfig, pool *Bigtabl
 		config.ContinuousDownscaleRunsThreshold = 3
 	}
 
+	// Fallback to a default max scale-up percentage of 30% if not specified or set to 0.
+	if config.MaxScaleUpPercentage <= 0 {
+		config.MaxScaleUpPercentage = 30
+	}
+
 	perConnTargetLoad := math.Floor(config.AvgLoadLowThreshold+config.AvgLoadHighThreshold) / 2.0
 	if perConnTargetLoad < 1.0 {
 		perConnTargetLoad = 1.0 //  targetLoad is at least 1 per channel
@@ -168,6 +173,10 @@ func ValidateDynamicConfig(config btopt.DynamicChannelPoolConfig, connPoolSize i
 	if config.ContinuousDownscaleRunsThreshold < 0 {
 		return fmt.Errorf("bigtable_connpool: DynamicChannelPoolConfig.ContinuousDownscaleRunsThreshold cannot be negative")
 	}
+
+	if config.MaxScaleUpPercentage < 0 || config.MaxScaleUpPercentage > 100 {
+		return fmt.Errorf("bigtable_connpool: DynamicChannelPoolConfig.MaxScaleUpPercentage must be between 0 and 100")
+	}
 	return nil
 }
 
@@ -177,6 +186,15 @@ func ValidateDynamicConfig(config btopt.DynamicChannelPoolConfig, connPoolSize i
 func (dsm *DynamicScaleMonitor) scaleUp(currentLoadSum int32, currentConnsCount int) {
 	desiredConns := int(math.Ceil(float64(currentLoadSum) / dsm.perConnTargetLoad))
 	addCount := desiredConns - currentConnsCount
+
+	// Cap the addition based on the configured MaxScaleUpPercentage
+	scaleUpFactor := float64(dsm.config.MaxScaleUpPercentage) / 100.0
+	maxAddCount := int(math.Ceil(float64(currentConnsCount) * scaleUpFactor))
+
+	if addCount > maxAddCount {
+		addCount = maxAddCount
+	}
+
 	if addCount > 0 {
 		btopt.Debugf(dsm.pool.logger, "bigtable_connpool: Scaling up: CurrentSize=%d, Adding=%d, TargetLoadPerConn=%.2f\n", currentConnsCount, addCount, dsm.perConnTargetLoad)
 		if dsm.pool.addConnections(addCount, dsm.config.MaxConns) {
