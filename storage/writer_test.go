@@ -19,6 +19,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -193,4 +194,27 @@ func TestCloseDoesNotLeak(t *testing.T) {
 	wc.Write([]byte(contents))
 
 	wc.Close()
+}
+
+func TestWriterDoubleClose(t *testing.T) {
+	ctx := context.Background()
+	w := &Writer{ctx: ctx, donec: make(chan struct{})}
+	w.closed = true // Simulate it being closed
+	w.err = fmt.Errorf("some previous error")
+
+	err := w.Close()
+	if err == nil || err.Error() != "some previous error" {
+		t.Fatalf("expected some previous error, got: %v", err)
+	}
+}
+
+func TestPCUWriterWriteAfterClose(t *testing.T) {
+	ctx := context.Background()
+	w := &Writer{ctx: ctx, donec: make(chan struct{})}
+	w.closed = true // Simulate it being closed
+
+	_, err := w.Write([]byte("hello"))
+	if err == nil || err.Error() != "storage: Writer is closed" {
+		t.Fatalf("expected Writer is closed error, got: %v", err)
+	}
 }
