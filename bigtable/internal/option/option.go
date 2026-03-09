@@ -240,7 +240,7 @@ type DynamicChannelPoolConfig struct {
 	CheckInterval                    time.Duration // How often to check if scaling is needed.
 	MaxRemoveConns                   int           // Maximum number of connections to remove at once.
 	ContinuousDownscaleRunsThreshold int           // Continous downscale signals for downscale to actually occur
-	MaxScaleUpPercentage             int           // 	// MaxScaleUpPercentage limits the maximum number of connections added during a single
+	MaxScaleUpPercentage             int           // MaxScaleUpPercentage limits the maximum number of connections added during a single
 	// scale-up event, expressed as a percentage of the current pool size.
 	// E.g., 30 means a maximum increase of 30%.
 }
