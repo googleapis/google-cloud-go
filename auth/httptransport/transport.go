@@ -209,7 +209,7 @@ func (t *otelAttributeTransport) RoundTrip(req *http.Request) (*http.Response, e
 	if span.IsRecording() {
 		var attrs []attribute.KeyValue
 		attrs = append(attrs, t.staticAttrs...)
-		attrs = append(attrs, attribute.String("rpc.system", "http"), attribute.String("url.domain", req.URL.Host))
+		attrs = append(attrs, attribute.String("rpc.system.name", "http"), attribute.String("url.domain", req.URL.Host))
 		if resName, ok := callctx.TelemetryFromContext(req.Context(), "resource_name"); ok {
 			attrs = append(attrs, attribute.String("gcp.resource.destination.id", resName))
 		}
