@@ -189,6 +189,7 @@ func (dsm *DynamicScaleMonitor) scaleUp(currentLoadSum int32, currentConnsCount 
 
 	// Cap the addition based on the configured MaxScaleUpPercentage
 	scaleUpFactor := float64(dsm.config.MaxScaleUpPercentage) / 100.0
+	// we guarantee currentConnsCount > 0
 	maxAddCount := int(math.Ceil(float64(currentConnsCount) * scaleUpFactor))
 
 	if addCount > maxAddCount {
