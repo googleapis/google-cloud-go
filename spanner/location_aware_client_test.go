@@ -46,6 +46,7 @@ type mockSpannerClient struct {
 	beginTxCount           int
 	commitCount            int
 	rollbackCount          int
+	closeCount             int
 
 	// Return values
 	beginTxResp    *sppb.Transaction
@@ -55,8 +56,11 @@ type mockSpannerClient struct {
 }
 
 func (m *mockSpannerClient) CallOptions() *vkit.CallOptions { return nil }
-func (m *mockSpannerClient) Close() error                   { return nil }
-func (m *mockSpannerClient) Connection() *grpc.ClientConn   { return nil }
+func (m *mockSpannerClient) Close() error {
+	m.closeCount++
+	return nil
+}
+func (m *mockSpannerClient) Connection() *grpc.ClientConn { return nil }
 func (m *mockSpannerClient) CreateSession(ctx context.Context, req *sppb.CreateSessionRequest, opts ...gax.CallOption) (*sppb.Session, error) {
 	return nil, nil
 }
@@ -162,7 +166,7 @@ func newMockEndpointCache() *mockEndpointCache {
 	}
 }
 
-func (c *mockEndpointCache) Get(address string) channelEndpoint {
+func (c *mockEndpointCache) Get(_ context.Context, address string) channelEndpoint {
 	if _, ok := c.clients[address]; ok {
 		if ep, ok := c.seen[address]; ok {
 			return ep
@@ -579,7 +583,7 @@ func TestLocationAwareSpannerClient_ReadOnlyTransactionIgnoresAffinityLookup(t *
 	seedTwoRangeRoutingCache(router)
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
-	ep := epCache.Get("server-a:443")
+	ep := epCache.Get(context.Background(), "server-a:443")
 	router.setTransactionAffinity("ro-explicit-1", ep)
 	router.trackReadOnlyTransaction("ro-explicit-1", true)
 
@@ -630,6 +634,18 @@ func TestLocationAwareSpannerClient_AsGRPCSpannerClient(t *testing.T) {
 	// Test nil for unknown types.
 	if got := asGRPCSpannerClient(&mockSpannerClient{}); got != nil {
 		t.Fatal("expected nil for unknown client type")
+	}
+}
+
+func TestLocationAwareSpannerClient_CloseDoesNotCloseDefaultClient(t *testing.T) {
+	defaultClient := &mockSpannerClient{}
+	lac := newLocationAwareSpannerClient(defaultClient, newLocationRouter(nil), newPassthroughChannelEndpointCache())
+
+	if err := lac.Close(); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if defaultClient.closeCount != 0 {
+		t.Fatalf("expected shared default client to remain open, got %d close calls", defaultClient.closeCount)
 	}
 }
 
@@ -709,9 +725,9 @@ type mockCloseCache struct {
 	closeFn func() error
 }
 
-func (c *mockCloseCache) Get(address string) channelEndpoint        { return nil }
-func (c *mockCloseCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
-func (c *mockCloseCache) Close() error                              { return c.closeFn() }
+func (c *mockCloseCache) Get(context.Context, string) channelEndpoint { return nil }
+func (c *mockCloseCache) ClientFor(_ channelEndpoint) spannerClient   { return nil }
+func (c *mockCloseCache) Close() error                                { return c.closeFn() }
 
 func seedTwoRangeRoutingCache(router *locationRouter) {
 	router.observeResultSet(&sppb.ResultSet{

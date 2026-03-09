@@ -172,6 +172,36 @@ func TestKeyRecipe_QueryParamsInvalidUUIDIsApproximate(t *testing.T) {
 	}
 }
 
+func TestKeyRecipe_QueryParamsNormalizesNamesToLowercase(t *testing.T) {
+	recipeProto := parseKeyRecipeTextProto(t,
+		"part { tag: 1 }\n"+
+			"part {\n"+
+			"  order: ASCENDING\n"+
+			"  null_order: NULLS_FIRST\n"+
+			"  type { code: STRING }\n"+
+			"  identifier: \"ID\"\n"+
+			"}\n")
+	params := parseStructTextProto(t,
+		"fields {\n"+
+			"  key: \"iD\"\n"+
+			"  value { string_value: \"foo\" }\n"+
+			"}\n")
+
+	recipe, err := newKeyRecipe(recipeProto)
+	if err != nil {
+		t.Fatalf("newKeyRecipe() failed: %v", err)
+	}
+	target := recipe.queryParamsToTargetRange(params)
+
+	wantStart := expectedKeyForStringValue(t, "foo")
+	if !bytes.Equal(target.start, wantStart) {
+		t.Fatalf("unexpected start with lowercase normalization: got %q want %q", target.start, wantStart)
+	}
+	if target.approximate {
+		t.Fatal("expected exact routing key with lowercase normalization")
+	}
+}
+
 func parseKeyRecipeTextProto(t *testing.T, text string) *sppb.KeyRecipe {
 	t.Helper()
 	recipe := &sppb.KeyRecipe{}

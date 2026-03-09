@@ -105,7 +105,7 @@ func (c *locationAwareSpannerClient) CallOptions() *vkit.CallOptions {
 }
 
 func (c *locationAwareSpannerClient) Close() error {
-	return c.defaultClient.Close()
+	return nil
 }
 
 func (c *locationAwareSpannerClient) Connection() *grpc.ClientConn {
@@ -151,7 +151,7 @@ func (c *locationAwareSpannerClient) BatchWrite(ctx context.Context, req *spanne
 // --- Routed RPCs ---
 
 func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
-	ep := c.router.prepareReadRequest(req)
+	ep := c.router.prepareReadRequest(ctx, req)
 	client := c.clientForEndpoint(ep)
 	stream, err := client.StreamingRead(ctx, req, opts...)
 	if err != nil {
@@ -169,7 +169,7 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 }
 
 func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	ep := c.router.prepareReadRequest(req)
+	ep := c.router.prepareReadRequest(ctx, req)
 	client := c.clientForEndpoint(ep)
 	resp, err := client.Read(ctx, req, opts...)
 	if err != nil {
@@ -187,7 +187,7 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 }
 
 func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
-	ep := c.router.prepareExecuteSQLRequest(req)
+	ep := c.router.prepareExecuteSQLRequest(ctx, req)
 	client := c.clientForEndpoint(ep)
 	stream, err := client.ExecuteStreamingSql(ctx, req, opts...)
 	if err != nil {
@@ -205,7 +205,7 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 }
 
 func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	ep := c.router.prepareExecuteSQLRequest(req)
+	ep := c.router.prepareExecuteSQLRequest(ctx, req)
 	client := c.clientForEndpoint(ep)
 	resp, err := client.ExecuteSql(ctx, req, opts...)
 	if err != nil {
@@ -223,7 +223,7 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 }
 
 func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
-	ep := c.router.prepareBeginTransactionRequest(req)
+	ep := c.router.prepareBeginTransactionRequest(ctx, req)
 	client := c.clientForEndpoint(ep)
 	resp, err := client.BeginTransaction(ctx, req, opts...)
 	if err != nil {
@@ -266,11 +266,11 @@ type affinityTrackingStream struct {
 	readOnlyStrong     bool
 	trackAffinity      bool
 	once               sync.Once
-	inner              spannerpb.Spanner_ExecuteStreamingSqlClient
+	inner              streamingClient
 }
 
-// streamingClient is the common interface for StreamingRead and ExecuteStreamingSql
-// response streams.
+// streamingClient is the shared interface implemented by both
+// StreamingRead and ExecuteStreamingSql response streams.
 type streamingClient interface {
 	Recv() (*spannerpb.PartialResultSet, error)
 	grpc.ClientStream

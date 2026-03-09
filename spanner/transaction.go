@@ -410,7 +410,6 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.setTimestamp,
 		t.release,
 		asGRPCSpannerClient(client),
-		nil,
 	)
 }
 
@@ -761,8 +760,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
-		nil)
+		asGRPCSpannerClient(client))
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {

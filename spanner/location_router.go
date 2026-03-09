@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"os"
 	"strconv"
 	"sync"
@@ -52,41 +53,41 @@ func newLocationRouter(endpointCache channelEndpointCache) *locationRouter {
 	}
 }
 
-func (r *locationRouter) prepareReadRequest(req *sppb.ReadRequest) channelEndpoint {
+func (r *locationRouter) prepareReadRequest(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
 	if r == nil || req == nil {
 		return nil
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerRead(req, preferLeader)
+			return r.finder.findServerRead(ctx, req, preferLeader)
 		}
 		if ep := r.getTransactionAffinity(txID); ep != nil {
 			return ep
 		}
 	}
-	return r.finder.findServerReadWithTransaction(req)
+	return r.finder.findServerReadWithTransaction(ctx, req)
 }
 
-func (r *locationRouter) prepareExecuteSQLRequest(req *sppb.ExecuteSqlRequest) channelEndpoint {
+func (r *locationRouter) prepareExecuteSQLRequest(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
 	if r == nil || req == nil {
 		return nil
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerExecuteSQL(req, preferLeader)
+			return r.finder.findServerExecuteSQL(ctx, req, preferLeader)
 		}
 		if ep := r.getTransactionAffinity(txID); ep != nil {
 			return ep
 		}
 	}
-	return r.finder.findServerExecuteSQLWithTransaction(req)
+	return r.finder.findServerExecuteSQLWithTransaction(ctx, req)
 }
 
-func (r *locationRouter) prepareBeginTransactionRequest(req *sppb.BeginTransactionRequest) channelEndpoint {
+func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
 	if r == nil || req == nil {
 		return nil
 	}
-	return r.finder.findServerBeginTransaction(req)
+	return r.finder.findServerBeginTransaction(ctx, req)
 }
 
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {

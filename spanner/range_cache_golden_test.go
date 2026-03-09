@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -85,7 +86,7 @@ func TestKeyRangeCache_Golden(t *testing.T) {
 				if directedRead == nil {
 					directedRead = &sppb.DirectedReadOptions{}
 				}
-				endpoint := cache.fillRoutingHint(testStep.leader, testStep.mode, directedRead, hint)
+				endpoint := cache.fillRoutingHint(context.Background(), testStep.leader, testStep.mode, directedRead, hint)
 				assertRangeCacheGoldenEndpoint(t, testCase.name, stepIdx, testIdx, testStep.server, endpoint)
 				assertRangeCacheGoldenHint(t, testCase.name, stepIdx, testIdx, testStep.result, hint)
 			}

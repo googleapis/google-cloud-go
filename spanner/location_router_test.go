@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -79,7 +80,7 @@ func TestLocationRouter_PrepareReadRequest_FromObservedResultSetUpdate(t *testin
 			},
 		},
 	}
-	router.prepareReadRequest(req)
+	router.prepareReadRequest(context.Background(), req)
 
 	hint := req.GetRoutingHint()
 	if hint == nil {
@@ -115,7 +116,7 @@ func TestLocationRouter_PrepareExecuteSQLRequest_FromObservedPartialResultSetUpd
 			},
 		},
 	}
-	router.prepareExecuteSQLRequest(req)
+	router.prepareExecuteSQLRequest(context.Background(), req)
 
 	hint := req.GetRoutingHint()
 	if hint == nil {
@@ -131,12 +132,12 @@ func TestLocationRouter_PrepareExecuteSQLRequest_FromObservedPartialResultSetUpd
 
 func TestLocationRouter_NilSafety(t *testing.T) {
 	var router *locationRouter
-	router.prepareReadRequest(nil)
-	router.prepareReadRequest(&sppb.ReadRequest{})
-	router.prepareExecuteSQLRequest(nil)
-	router.prepareExecuteSQLRequest(&sppb.ExecuteSqlRequest{})
-	router.prepareBeginTransactionRequest(nil)
-	router.prepareBeginTransactionRequest(&sppb.BeginTransactionRequest{})
+	router.prepareReadRequest(context.Background(), nil)
+	router.prepareReadRequest(context.Background(), &sppb.ReadRequest{})
+	router.prepareExecuteSQLRequest(context.Background(), nil)
+	router.prepareExecuteSQLRequest(context.Background(), &sppb.ExecuteSqlRequest{})
+	router.prepareBeginTransactionRequest(context.Background(), nil)
+	router.prepareBeginTransactionRequest(context.Background(), &sppb.BeginTransactionRequest{})
 	router.observePartialResultSet(nil)
 	router.observePartialResultSet(&sppb.PartialResultSet{})
 	router.observeResultSet(nil)

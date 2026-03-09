@@ -491,16 +491,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 	var pool gtransport.ConnPool
 	var endpointClientOpts []option.ClientOption
-	// When non-zero, this overrides the endpoint client pool size. This is used
-	// for GCPMultiEndpoint mode where endpoint clients should keep a single
-	// connection per endpoint.
-	var endpointClientPoolSize int
 
 	if gme != nil {
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
 		endpointClientOpts = append(endpointClientOpts, opts...)
-		endpointClientPoolSize = 1
 	} else {
 		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
 		// gRPC options.
@@ -580,7 +575,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	var locationRouter *locationRouter
 	if isExperimentalLocationAPIEnabled() {
 		sc.baseClientOpts = endpointClientOpts
-		sc.endpointClientPoolSize = endpointClientPoolSize
 		epCache := newEndpointClientCache(sc.createEndpointClient)
 		locationRouter = newLocationRouter(epCache)
 	}

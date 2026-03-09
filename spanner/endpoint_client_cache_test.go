@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"sync"
 	"sync/atomic"
 	"testing"
 )
@@ -45,7 +46,7 @@ func TestEndpointClientCache_GetOrCreate(t *testing.T) {
 	cache := newEndpointClientCache(factory)
 
 	// First Get should create.
-	ep1 := cache.Get("addr1")
+	ep1 := cache.Get(context.Background(), "addr1")
 	if ep1 == nil {
 		t.Fatal("expected non-nil endpoint")
 	}
@@ -60,7 +61,7 @@ func TestEndpointClientCache_GetOrCreate(t *testing.T) {
 	}
 
 	// Second Get for same address should hit cache.
-	ep2 := cache.Get("addr1")
+	ep2 := cache.Get(context.Background(), "addr1")
 	if ep2 != ep1 {
 		t.Fatal("expected same endpoint from cache")
 	}
@@ -69,7 +70,7 @@ func TestEndpointClientCache_GetOrCreate(t *testing.T) {
 	}
 
 	// Different address should create new.
-	ep3 := cache.Get("addr2")
+	ep3 := cache.Get(context.Background(), "addr2")
 	if ep3 == nil {
 		t.Fatal("expected non-nil endpoint for addr2")
 	}
@@ -85,7 +86,7 @@ func TestEndpointClientCache_ClientFor(t *testing.T) {
 	}
 
 	cache := newEndpointClientCache(factory)
-	ep := cache.Get("addr1")
+	ep := cache.Get(context.Background(), "addr1")
 
 	resolved := cache.ClientFor(ep)
 	if resolved == nil {
@@ -113,8 +114,8 @@ func TestEndpointClientCache_Close(t *testing.T) {
 	}
 
 	cache := newEndpointClientCache(factory)
-	cache.Get("addr1")
-	cache.Get("addr2")
+	cache.Get(context.Background(), "addr1")
+	cache.Get(context.Background(), "addr2")
 
 	if len(clients) != 2 {
 		t.Fatalf("expected 2 clients, got %d", len(clients))
@@ -145,7 +146,7 @@ func TestEndpointClientCache_FactoryError(t *testing.T) {
 	}
 
 	cache := newEndpointClientCache(factory)
-	ep := cache.Get("addr1")
+	ep := cache.Get(context.Background(), "addr1")
 	if ep != nil {
 		t.Fatal("expected nil endpoint when factory fails")
 	}
@@ -157,7 +158,7 @@ func TestEndpointClientCache_UnhealthyEndpoint(t *testing.T) {
 	}
 
 	cache := newEndpointClientCache(factory)
-	ep := cache.Get("addr1")
+	ep := cache.Get(context.Background(), "addr1")
 	if !ep.IsHealthy() {
 		t.Fatal("expected healthy initially")
 	}
@@ -167,5 +168,70 @@ func TestEndpointClientCache_UnhealthyEndpoint(t *testing.T) {
 	gep.healthy.Store(false)
 	if ep.IsHealthy() {
 		t.Fatal("expected unhealthy after marking")
+	}
+}
+
+func TestEndpointClientCache_GetPassesContextToFactory(t *testing.T) {
+	type contextKey string
+
+	const key contextKey = "request"
+	ctx := context.WithValue(context.Background(), key, "ctx-value")
+	factory := func(factoryCtx context.Context, address string) (spannerClient, error) {
+		if got := factoryCtx.Value(key); got != "ctx-value" {
+			t.Fatalf("expected context value to propagate, got %v", got)
+		}
+		return &closableSpannerClient{}, nil
+	}
+
+	cache := newEndpointClientCache(factory)
+	if ep := cache.Get(ctx, "addr1"); ep == nil {
+		t.Fatal("expected endpoint")
+	}
+}
+
+func TestEndpointClientCache_GetSingleFlightPerAddress(t *testing.T) {
+	var createCount atomic.Int32
+	started := make(chan struct{})
+	release := make(chan struct{})
+	factory := func(ctx context.Context, address string) (spannerClient, error) {
+		if createCount.Add(1) == 1 {
+			close(started)
+		}
+		<-release
+		return &closableSpannerClient{}, nil
+	}
+
+	cache := newEndpointClientCache(factory)
+	results := make(chan channelEndpoint, 2)
+	var wg sync.WaitGroup
+	for i := 0; i < 2; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			results <- cache.Get(context.Background(), "addr1")
+		}()
+	}
+
+	<-started
+	close(release)
+	wg.Wait()
+	close(results)
+
+	if got := createCount.Load(); got != 1 {
+		t.Fatalf("expected one factory call, got %d", got)
+	}
+
+	var first channelEndpoint
+	for ep := range results {
+		if ep == nil {
+			t.Fatal("expected non-nil endpoint")
+		}
+		if first == nil {
+			first = ep
+			continue
+		}
+		if ep != first {
+			t.Fatal("expected both callers to observe the same endpoint")
+		}
 	}
 }

@@ -74,7 +74,6 @@ func stream(
 		setTimestamp,
 		release,
 		gsc,
-		nil,
 	)
 }
 
@@ -91,7 +90,6 @@ func streamWithTransactionCallbacks(
 	setTimestamp func(time.Time),
 	release func(error),
 	gsc *grpcSpannerClient,
-	onPartialResult func(*sppb.PartialResultSet),
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
@@ -105,7 +103,6 @@ func streamWithTransactionCallbacks(
 		setTimestamp:         setTimestamp,
 		release:              release,
 		cancel:               cancel,
-		onPartialResult:      onPartialResult,
 	}
 }
 
@@ -149,7 +146,6 @@ type RowIterator struct {
 	err                  error
 	rows                 []*Row
 	sawStats             bool
-	onPartialResult      func(*sppb.PartialResultSet)
 }
 
 // this is for safety from future changes to RowIterator making sure that it implements rowIterator interface.
@@ -185,9 +181,6 @@ func (r *RowIterator) Next() (*Row, error) {
 
 	for len(r.rows) == 0 && r.streamd.next(&mt) {
 		prs := r.streamd.get()
-		if r.onPartialResult != nil {
-			r.onPartialResult(prs)
-		}
 		if r.setTransactionID != nil {
 			// this is when Read/Query is executed using ReadWriteTransaction
 			// and server returned the first stream response.

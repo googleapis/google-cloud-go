@@ -42,19 +42,31 @@ func (e *grpcChannelEndpoint) IsHealthy() bool {
 type endpointClientCache struct {
 	mu            sync.RWMutex
 	endpoints     map[string]*grpcChannelEndpoint
+	inflight      map[string]*endpointClientCreation
 	clientFactory func(ctx context.Context, address string) (spannerClient, error)
+	closed        bool
+}
+
+type endpointClientCreation struct {
+	done chan struct{}
+	ep   channelEndpoint
 }
 
 func newEndpointClientCache(clientFactory func(ctx context.Context, address string) (spannerClient, error)) *endpointClientCache {
 	return &endpointClientCache{
 		endpoints:     make(map[string]*grpcChannelEndpoint),
+		inflight:      make(map[string]*endpointClientCreation),
 		clientFactory: clientFactory,
 	}
 }
 
 // Get returns a channelEndpoint for the given address, creating a new gRPC
-// connection if one does not already exist (double-checked locking).
-func (c *endpointClientCache) Get(address string) channelEndpoint {
+// connection if one does not already exist. Channel creation is coordinated
+// per address so slow dials do not block unrelated cache access.
+func (c *endpointClientCache) Get(ctx context.Context, address string) channelEndpoint {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	// Fast path: read lock.
 	c.mu.RLock()
 	if ep, ok := c.endpoints[address]; ok {
@@ -63,23 +75,49 @@ func (c *endpointClientCache) Get(address string) channelEndpoint {
 	}
 	c.mu.RUnlock()
 
-	// Slow path: write lock + create.
 	c.mu.Lock()
-	defer c.mu.Unlock()
 	if ep, ok := c.endpoints[address]; ok {
+		c.mu.Unlock()
 		return ep
 	}
-	client, err := c.clientFactory(context.Background(), address)
-	if err != nil {
+	if c.closed {
+		c.mu.Unlock()
 		return nil
 	}
-	ep := &grpcChannelEndpoint{
-		address: address,
-		client:  client,
+	if creation, ok := c.inflight[address]; ok {
+		c.mu.Unlock()
+		select {
+		case <-creation.done:
+			return creation.ep
+		case <-ctx.Done():
+			return nil
+		}
 	}
-	ep.healthy.Store(true)
-	c.endpoints[address] = ep
-	return ep
+	creation := &endpointClientCreation{done: make(chan struct{})}
+	c.inflight[address] = creation
+	c.mu.Unlock()
+
+	client, err := c.clientFactory(ctx, address)
+
+	c.mu.Lock()
+	delete(c.inflight, address)
+	if err == nil && !c.closed {
+		ep := &grpcChannelEndpoint{
+			address: address,
+			client:  client,
+		}
+		ep.healthy.Store(true)
+		c.endpoints[address] = ep
+		creation.ep = ep
+	}
+	shouldCloseClient := c.closed && client != nil
+	close(creation.done)
+	c.mu.Unlock()
+
+	if shouldCloseClient {
+		_ = client.Close()
+	}
+	return creation.ep
 }
 
 // ClientFor resolves a channelEndpoint to the underlying spannerClient.
@@ -97,6 +135,7 @@ func (c *endpointClientCache) ClientFor(ep channelEndpoint) spannerClient {
 // Close shuts down all cached gRPC connections.
 func (c *endpointClientCache) Close() error {
 	c.mu.Lock()
+	c.closed = true
 	defer c.mu.Unlock()
 	var firstErr error
 	for addr, ep := range c.endpoints {

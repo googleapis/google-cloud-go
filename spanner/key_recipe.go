@@ -23,7 +23,9 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -554,11 +556,24 @@ func (r *keyRecipe) queryParamsToTargetRange(in *structpb.Struct) *targetRange {
 	if in != nil {
 		fields = in.GetFields()
 	}
+	lowercaseFields := map[string]*structpb.Value(nil)
+	if len(fields) > 0 {
+		fieldNames := make([]string, 0, len(fields))
+		for fieldName := range fields {
+			fieldNames = append(fieldNames, fieldName)
+		}
+		sort.Strings(fieldNames)
+
+		lowercaseFields = make(map[string]*structpb.Value, len(fieldNames))
+		for _, fieldName := range fieldNames {
+			lowercaseFields[strings.ToLower(fieldName)] = fields[fieldName]
+		}
+	}
 	return r.encodeKeyInternal(func(index int, identifier string) (*structpb.Value, valueLookupStatus) {
 		if identifier == "" {
 			return nil, valueLookupMissing
 		}
-		value, ok := fields[identifier]
+		value, ok := lowercaseFields[strings.ToLower(identifier)]
 		if !ok {
 			return nil, valueLookupMissing
 		}

@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"sync"
 	"sync/atomic"
 
@@ -63,39 +64,39 @@ func (f *channelFinder) update(update *sppb.CacheUpdate) {
 	f.rangeCache.addRanges(update)
 }
 
-func (f *channelFinder) findServerRead(req *sppb.ReadRequest, preferLeader bool) channelEndpoint {
+func (f *channelFinder) findServerRead(ctx context.Context, req *sppb.ReadRequest, preferLeader bool) channelEndpoint {
 	if req == nil {
 		return nil
 	}
 	f.recipeCache.computeReadKeys(req)
 	hint := ensureReadRoutingHint(req)
-	return f.fillRoutingHint(preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint)
+	return f.fillRoutingHint(ctx, preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint)
 }
 
-func (f *channelFinder) findServerReadWithTransaction(req *sppb.ReadRequest) channelEndpoint {
+func (f *channelFinder) findServerReadWithTransaction(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
 	if req == nil {
 		return nil
 	}
-	return f.findServerRead(req, preferLeaderFromSelector(req.GetTransaction()))
+	return f.findServerRead(ctx, req, preferLeaderFromSelector(req.GetTransaction()))
 }
 
-func (f *channelFinder) findServerExecuteSQL(req *sppb.ExecuteSqlRequest, preferLeader bool) channelEndpoint {
+func (f *channelFinder) findServerExecuteSQL(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool) channelEndpoint {
 	if req == nil {
 		return nil
 	}
 	f.recipeCache.computeQueryKeys(req)
 	hint := ensureExecuteSQLRoutingHint(req)
-	return f.fillRoutingHint(preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint)
+	return f.fillRoutingHint(ctx, preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint)
 }
 
-func (f *channelFinder) findServerExecuteSQLWithTransaction(req *sppb.ExecuteSqlRequest) channelEndpoint {
+func (f *channelFinder) findServerExecuteSQLWithTransaction(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
 	if req == nil {
 		return nil
 	}
-	return f.findServerExecuteSQL(req, preferLeaderFromSelector(req.GetTransaction()))
+	return f.findServerExecuteSQL(ctx, req, preferLeaderFromSelector(req.GetTransaction()))
 }
 
-func (f *channelFinder) findServerBeginTransaction(req *sppb.BeginTransactionRequest) channelEndpoint {
+func (f *channelFinder) findServerBeginTransaction(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
 	if req == nil || req.GetMutationKey() == nil {
 		return nil
 	}
@@ -107,10 +108,10 @@ func (f *channelFinder) findServerBeginTransaction(req *sppb.BeginTransactionReq
 	if len(target.limit) > 0 {
 		hint.LimitKey = append([]byte(nil), target.limit...)
 	}
-	return f.fillRoutingHint(preferLeaderFromTransactionOptions(req.GetOptions()), rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	return f.fillRoutingHint(ctx, preferLeaderFromTransactionOptions(req.GetOptions()), rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
 }
 
-func (f *channelFinder) fillRoutingHint(preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
+func (f *channelFinder) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
 	if hint == nil {
 		return nil
 	}
@@ -119,7 +120,7 @@ func (f *channelFinder) fillRoutingHint(preferLeader bool, mode rangeMode, direc
 		return nil
 	}
 	hint.DatabaseId = databaseID
-	return f.rangeCache.fillRoutingHint(preferLeader, mode, directedReadOptions, hint)
+	return f.rangeCache.fillRoutingHint(ctx, preferLeader, mode, directedReadOptions, hint)
 }
 
 func preferLeaderFromSelector(selector *sppb.TransactionSelector) bool {

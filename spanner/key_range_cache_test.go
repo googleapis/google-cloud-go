@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -47,7 +48,7 @@ func newTestEndpointCache() *testEndpointCache {
 func (c *testEndpointCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
 func (c *testEndpointCache) Close() error                              { return nil }
 
-func (c *testEndpointCache) Get(address string) channelEndpoint {
+func (c *testEndpointCache) Get(_ context.Context, address string) channelEndpoint {
 	if endpoint, ok := c.endpoints[address]; ok {
 		return endpoint
 	}
@@ -118,6 +119,7 @@ func TestCachedGroupFillRoutingHint_PreferLeaderDisabledByDirectedReadOptions(t 
 	}
 
 	endpoint := group.fillRoutingHint(
+		context.Background(),
 		newPassthroughChannelEndpointCache(),
 		true,
 		&sppb.DirectedReadOptions{},
@@ -137,6 +139,7 @@ func TestCachedGroupFillRoutingHint_PreferLeaderDisabledByDirectedReadOptions(t 
 		},
 	}
 	endpoint = group.fillRoutingHint(
+		context.Background(),
 		newPassthroughChannelEndpointCache(),
 		true,
 		directedRead,
@@ -184,7 +187,7 @@ func TestKeyRangeCache_FillRoutingHintSkipsUnhealthyCachedTablet(t *testing.T) {
 	})
 
 	initialHint := &sppb.RoutingHint{Key: []byte("a")}
-	initialEndpoint := cache.fillRoutingHint(false, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, initialHint)
+	initialEndpoint := cache.fillRoutingHint(context.Background(), false, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, initialHint)
 	if initialEndpoint == nil {
 		t.Fatal("expected initial endpoint")
 	}
@@ -192,7 +195,7 @@ func TestKeyRangeCache_FillRoutingHintSkipsUnhealthyCachedTablet(t *testing.T) {
 	endpointCache.setHealthy("server1", false)
 
 	hint := &sppb.RoutingHint{Key: []byte("a")}
-	endpoint := cache.fillRoutingHint(false, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	endpoint := cache.fillRoutingHint(context.Background(), false, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
 	if endpoint == nil || endpoint.Address() != "server2" {
 		t.Fatalf("expected server2 after server1 became unhealthy, got %#v", endpoint)
 	}
@@ -272,7 +275,7 @@ func countCacheHits(cache *keyRangeCache, numRanges int) int {
 	for i := 0; i < numRanges; i++ {
 		key := []byte(fmt.Sprintf("%04d", i))
 		hint := &sppb.RoutingHint{Key: key}
-		if endpoint := cache.fillRoutingHint(false, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint); endpoint != nil {
+		if endpoint := cache.fillRoutingHint(context.Background(), false, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint); endpoint != nil {
 			hits++
 		}
 	}
