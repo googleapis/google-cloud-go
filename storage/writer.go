@@ -176,10 +176,16 @@ type Writer struct {
 	// EnableParallelUpload enables the parallel upload feature.
 	// This feature splits a large object into multiple parts and uploads them in
 	// parallel.
+	//
+	// **Note:** This feature is currently experimental and its API surface may change
+	// in future releases. It is not yet recommended for production use.
 	EnableParallelUpload bool
 
 	// ParallelUploadConfig holds configuration for Parallel Uploads.
 	// This only takes effect if EnableParallelUpload is true.
+	//
+	// **Note:** This feature is currently experimental and its API surface may change
+	// in future releases. It is not yet recommended for production use.
 	ParallelUploadConfig ParallelUploadConfig
 
 	ctx context.Context
