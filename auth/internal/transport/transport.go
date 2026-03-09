@@ -36,6 +36,8 @@ var knownKeys = []string{
 	"url.domain",
 }
 
+// StaticTelemetryAttributes selectively converts known keys from a map of
+// strings to Open Telemetry attributes.
 func StaticTelemetryAttributes(m map[string]string) []attribute.KeyValue {
 	var staticAttrs []attribute.KeyValue
 	if m == nil {
