@@ -130,7 +130,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyServerAddr.String(valLocalhost),
 					attribute.String("error.type", "INTERNAL"),
 					attribute.String("status.message", "test error"),
-					attribute.String("grpc.status", "INTERNAL"),
+					attribute.String("rpc.response.status_code", "INTERNAL"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},

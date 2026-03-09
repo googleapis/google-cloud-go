@@ -504,7 +504,7 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	attrs := []attribute.KeyValue{
 		attribute.String("error.type", strings.ToUpper(st.Code().String())),
 		attribute.String("status.message", st.Message()),
-		attribute.String("grpc.status", strings.ToUpper(st.Code().String())),
+		attribute.String("rpc.response.status_code", strings.ToUpper(st.Code().String())),
 		attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),
 	}
 	if md, ok := metadata.FromOutgoingContext(ctx); ok {
