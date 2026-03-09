@@ -41,8 +41,12 @@ type pullStream struct {
 	open   func() (pb.Subscriber_StreamingPullClient, context.CancelFunc, error)
 	close  context.CancelFunc // cancel function to close down the currently open stream
 
+	// protects simultaneous sends on the stream
+	sendMu sync.Mutex
+	spc    *pb.Subscriber_StreamingPullClient
+
+	// protects writing to the permanent error.
 	mu  sync.Mutex
-	spc *pb.Subscriber_StreamingPullClient
 	err error // permanent error
 
 	openCount atomic.Int64
@@ -131,7 +135,9 @@ func (s *pullStream) openWithRetry() (pb.Subscriber_StreamingPullClient, context
 	for {
 		recordStat(s.ctx, StreamOpenCount, 1)
 		s.openCount.Add(1)
+		s.sendMu.Lock()
 		spc, close, err := s.open()
+		s.sendMu.Unlock()
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(s.ctx, StreamRetryCount, 1)
@@ -185,6 +191,8 @@ func (s *pullStream) call(f func(pb.Subscriber_StreamingPullClient) error, opts 
 }
 
 func (s *pullStream) Send(req *pb.StreamingPullRequest) error {
+	s.sendMu.Lock()
+	defer s.sendMu.Unlock()
 	return s.call(func(spc pb.Subscriber_StreamingPullClient) error {
 		recordStat(s.ctx, AckCount, int64(len(req.AckIds)))
 		zeroes := 0
@@ -211,21 +219,20 @@ func (s *pullStream) Recv() (*pb.StreamingPullResponse, error) {
 	return res, err
 }
 
+// CloseSend closes the stream and stores the error as a permanent error.
 func (s *pullStream) CloseSend() error {
-	err := s.call(func(spc pb.Subscriber_StreamingPullClient) error {
-		return spc.CloseSend()
-	})
+	err := s.Close()
 	s.mu.Lock()
 	s.err = io.EOF // should not be retried
 	s.mu.Unlock()
 	return err
 }
 
-// Close closes the stream to be reopened
-func (s *pullStream) Close() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.call(func(spc pb.Subscriber_StreamingPullClient) error {
+// Close closes the stream to be reopened.
+func (s *pullStream) Close() error {
+	s.sendMu.Lock()
+	defer s.sendMu.Unlock()
+	return s.call(func(spc pb.Subscriber_StreamingPullClient) error {
 		return spc.CloseSend()
 	})
 }
