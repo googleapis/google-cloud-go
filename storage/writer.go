@@ -305,38 +305,28 @@ func (w *Writer) Flush() (int64, error) {
 // If Close doesn't return an error, metadata about the written object
 // can be retrieved by calling Attrs.
 func (w *Writer) Close() error {
-	w.mu.Lock()
-	closed := w.closed
-	w.mu.Unlock()
-	if closed {
-		// Just return nil or previous error instead of erroring out entirely for backwards compatibility
-		// Or return w.err. Wait, we should just return w.err which captures the closing status or previous error.
+	if w.closed {
 		w.mu.Lock()
-		err := w.err
-		w.mu.Unlock()
-		return err
+		defer w.mu.Unlock()
+		return w.err
 	}
 
 	if w.EnableParallelUpload {
-		w.mu.Lock()
 		if w.pcu == nil {
 			if err := w.initPCU(w.ctx); err != nil {
-				w.mu.Unlock()
 				return err
 			}
 		}
-		w.mu.Unlock()
 
 		err := w.pcu.close()
-		w.mu.Lock()
 		w.closed = true
+		w.mu.Lock()
+		defer w.mu.Unlock()
 		if err != nil {
 			w.err = err
 		}
-		errToReturn := w.err
-		w.mu.Unlock()
-		endSpan(w.ctx, errToReturn)
-		return errToReturn
+		endSpan(w.ctx, w.err)
+		return w.err
 	}
 
 	if !w.opened {
