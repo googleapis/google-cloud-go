@@ -24,7 +24,30 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/credentials"
+	"go.opentelemetry.io/otel/attribute"
 )
+
+var knownKeys = []string{
+	"gcp.client.service",
+	"gcp.client.version",
+	"gcp.client.repo",
+	"gcp.client.artifact",
+	"gcp.client.language",
+	"url.domain",
+}
+
+func StaticTelemetryAttributes(m map[string]string) []attribute.KeyValue {
+	var staticAttrs []attribute.KeyValue
+	if m == nil {
+		return staticAttrs
+	}
+	for _, k := range knownKeys {
+		if v, ok := m[k]; ok {
+			staticAttrs = append(staticAttrs, attribute.String(k, v))
+		}
+	}
+	return staticAttrs
+}
 
 // CloneDetectOptions clones a user set detect option into some new memory that
 // we can internally manipulate before sending onto the detect package.

@@ -151,7 +151,13 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 				DisableAuthentication: true,
 				InternalOptions: &InternalOptions{
 					TelemetryAttributes: map[string]string{
-						"gcp.client.version": "1.0.0",
+						"gcp.client.service":  "echo",
+						"gcp.client.version":  "1.0.0",
+						"gcp.client.repo":     "googleapis/google-cloud-go",
+						"gcp.client.artifact": "c.g/auth/grpctransport",
+						"gcp.client.language": "go",
+						"url.domain":          "echo.googleapis.com",
+						"ignored.key":         "should not be included",
 					},
 				},
 			},
@@ -170,7 +176,12 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
 					attribute.String("gcp.resource.destination.id", "my-resource"),
+					attribute.String("gcp.client.service", "echo"),
 					attribute.String("gcp.client.version", "1.0.0"),
+					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+					attribute.String("gcp.client.artifact", "c.g/auth/grpctransport"),
+					attribute.String("gcp.client.language", "go"),
+					attribute.String("url.domain", "echo.googleapis.com"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},
@@ -245,6 +256,9 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					if _, ok := gotAttrs[wantKey]; !ok {
 						t.Errorf("missing attribute key: %s", wantKey)
 					}
+				}
+				if _, ok := gotAttrs[attribute.Key("ignored.key")]; ok {
+					t.Errorf("found unexpected attribute key: ignored.key")
 				}
 			}
 		})
@@ -350,6 +364,7 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					TelemetryAttributes: map[string]string{
 						"gcp.client.version": "1.0.0",
+						"ignored.key":        "should not be included",
 					},
 				},
 			},
@@ -441,6 +456,9 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					if _, ok := gotAttrs[wantKey]; !ok {
 						t.Errorf("missing attribute key: %s", wantKey)
 					}
+				}
+				if _, ok := gotAttrs[attribute.Key("ignored.key")]; ok {
+					t.Errorf("found unexpected attribute key: ignored.key")
 				}
 			}
 		})

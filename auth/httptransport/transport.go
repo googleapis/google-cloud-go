@@ -184,9 +184,7 @@ func addOpenTelemetryTransport(trans http.RoundTripper, opts *Options) http.Roun
 	}
 	var staticAttrs []attribute.KeyValue
 	if opts.InternalOptions != nil {
-		for k, v := range opts.InternalOptions.TelemetryAttributes {
-			staticAttrs = append(staticAttrs, attribute.String(k, v))
-		}
+		staticAttrs = transport.StaticTelemetryAttributes(opts.InternalOptions.TelemetryAttributes)
 	}
 	return otelhttp.NewTransport(&otelAttributeTransport{
 		base:        trans,
@@ -209,7 +207,7 @@ func (t *otelAttributeTransport) RoundTrip(req *http.Request) (*http.Response, e
 	if span.IsRecording() {
 		var attrs []attribute.KeyValue
 		attrs = append(attrs, t.staticAttrs...)
-		attrs = append(attrs, attribute.String("rpc.system.name", "http"), attribute.String("url.domain", req.URL.Host))
+		attrs = append(attrs, attribute.String("rpc.system.name", "http"))
 		if resName, ok := callctx.TelemetryFromContext(req.Context(), "resource_name"); ok {
 			attrs = append(attrs, attribute.String("gcp.resource.destination.id", resName))
 		}

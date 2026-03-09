@@ -94,7 +94,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 					attribute.String("rpc.system.name", "http"),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull, attribute.Key("url.domain")},
+			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull},
 		},
 		{
 			name:       "telemetry enabled error",
@@ -119,7 +119,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 					attribute.String("rpc.system.name", "http"),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull, attribute.Key("url.domain")},
+			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull},
 		},
 		{
 			name: "telemetry disabled",
@@ -136,7 +136,13 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 				DisableAuthentication: true,
 				InternalOptions: &InternalOptions{
 					TelemetryAttributes: map[string]string{
-						"gcp.client.version": "1.0.0",
+						"gcp.client.service":  "myservice",
+						"gcp.client.version":  "1.0.0",
+						"gcp.client.repo":     "googleapis/google-cloud-go",
+						"gcp.client.artifact": "c.g/auth/httptransport",
+						"gcp.client.language": "go",
+						"url.domain":          "myservice.googleapis.com",
+						"ignored.key":         "should not be included",
 					},
 				},
 			},
@@ -150,11 +156,16 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 					keyHTTPRequestMetod.String(valHTTPGet),
 					keyHTTPResponseStatus.Int(200),
 					attribute.String("gcp.resource.destination.id", "my-resource"),
+					attribute.String("gcp.client.service", "myservice"),
 					attribute.String("gcp.client.version", "1.0.0"),
+					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+					attribute.String("gcp.client.artifact", "c.g/auth/httptransport"),
+					attribute.String("gcp.client.language", "go"),
 					attribute.String("rpc.system.name", "http"),
+					attribute.String("url.domain", "myservice.googleapis.com"),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("url.domain")},
+			wantAttrKeys: []attribute.Key{keyServerAddr},
 		},
 		{
 			name: "telemetry enabled url template",
@@ -174,7 +185,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 					attribute.String("rpc.system.name", "http"),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("url.domain")},
+			wantAttrKeys: []attribute.Key{keyServerAddr},
 		},
 		{
 			name: "telemetry enabled resend count",
@@ -194,7 +205,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 					attribute.String("rpc.system.name", "http"),
 				},
 			}.Snapshot(),
-			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("url.domain")},
+			wantAttrKeys: []attribute.Key{keyServerAddr},
 		},
 	}
 
@@ -293,6 +304,9 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 						t.Errorf("missing attribute key: %s", wantKey)
 					}
 				}
+				if _, ok := gotAttrs[attribute.Key("ignored.key")]; ok {
+					t.Errorf("found unexpected attribute key: ignored.key")
+				}
 			}
 		})
 	}
@@ -381,6 +395,7 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					TelemetryAttributes: map[string]string{
 						"gcp.client.version": "1.0.0",
+						"ignored.key":        "should not be included",
 					},
 				},
 			},
@@ -485,6 +500,9 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 					if _, ok := gotAttrs[wantKey]; !ok {
 						t.Errorf("missing attribute key: %s", wantKey)
 					}
+				}
+				if _, ok := gotAttrs[attribute.Key("ignored.key")]; ok {
+					t.Errorf("found unexpected attribute key: ignored.key")
 				}
 			}
 		})

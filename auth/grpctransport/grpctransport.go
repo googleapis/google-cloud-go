@@ -41,7 +41,6 @@ import (
 	"google.golang.org/grpc"
 	grpccreds "google.golang.org/grpc/credentials"
 	grpcinsecure "google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
@@ -442,14 +441,12 @@ func addOpenTelemetryStatsHandler(dialOpts []grpc.DialOption, opts *Options) []g
 	if !gax.IsFeatureEnabled("TRACING") {
 		return append(dialOpts, grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 	}
-	var attrs []attribute.KeyValue
+	var staticAttrs []attribute.KeyValue
 	if opts.InternalOptions != nil {
-		for k, v := range opts.InternalOptions.TelemetryAttributes {
-			attrs = append(attrs, attribute.String(k, v))
-		}
+		staticAttrs = transport.StaticTelemetryAttributes(opts.InternalOptions.TelemetryAttributes)
 	}
 	otelOpts := []otelgrpc.Option{
-		otelgrpc.WithSpanAttributes(attrs...),
+		otelgrpc.WithSpanAttributes(staticAttrs...),
 	}
 	return append(dialOpts, grpc.WithStatsHandler(&otelHandler{
 		Handler: otelgrpc.NewClientHandler(otelOpts...),
@@ -506,11 +503,6 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 		attribute.String("status.message", st.Message()),
 		attribute.String("rpc.response.status_code", strings.ToUpper(st.Code().String())),
 		attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),
-	}
-	if md, ok := metadata.FromOutgoingContext(ctx); ok {
-		if v := md[":authority"]; len(v) > 0 {
-			attrs = append(attrs, attribute.String("url.domain", v[0]))
-		}
 	}
 	span.SetAttributes(attrs...)
 	h.Handler.HandleRPC(ctx, s)
