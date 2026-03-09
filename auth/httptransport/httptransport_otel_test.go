@@ -176,6 +176,26 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("url.domain")},
 		},
+		{
+			name: "telemetry enabled resend count",
+			opts: &Options{
+				DisableAuthentication: true,
+			},
+			telemetryCtxValues: map[string]string{"resend_count": "2"},
+			statusCode:         http.StatusOK,
+			wantSpans:          1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					keyHTTPResponseStatus.Int(200),
+					attribute.Int("http.request.resend_count", 2),
+					attribute.String("rpc.system.name", "http"),
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("url.domain")},
+		},
 	}
 
 	for _, tt := range tests {
@@ -374,6 +394,25 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 					keyHTTPRequestMetod.String(valHTTPGet),
 					keyHTTPResponseStatus.Int(200),
 					// NO gcp.* attributes, NO rpc.system
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr}, // NO url.domain
+		},
+		{
+			name: "telemetry enabled resend count (but gated off)",
+			opts: &Options{
+				DisableAuthentication: true,
+			},
+			telemetryCtxValues: map[string]string{"resend_count": "2"},
+			statusCode:         http.StatusOK,
+			wantSpans:          1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					keyHTTPResponseStatus.Int(200),
+					// NO http.request.resend_count
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerAddr}, // NO url.domain

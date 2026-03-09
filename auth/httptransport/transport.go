@@ -215,7 +215,7 @@ func (t *otelAttributeTransport) RoundTrip(req *http.Request) (*http.Response, e
 		}
 		if resendCountStr, ok := callctx.TelemetryFromContext(req.Context(), "resend_count"); ok {
 			if count, err := strconv.Atoi(resendCountStr); err == nil {
-				attrs = append(attrs, attribute.Int("gcp.grpc.resend_count", count))
+				attrs = append(attrs, attribute.Int("http.request.resend_count", count))
 			}
 		}
 		if urlTemplate, ok := callctx.TelemetryFromContext(req.Context(), "url_template"); ok {
