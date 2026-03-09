@@ -39,34 +39,34 @@ const (
 	defaultMaxDelay      = 5 * time.Second
 )
 
-// parallelUploadConfig holds configuration for Parallel Uploads.
+// ParallelUploadConfig holds configuration for Parallel Uploads.
 // Setting this config and EnableParallelUpload flag on Writer enables parallel uploads.
 //
 // **Note:** This feature is currently experimental and its API surface may change
 // in future releases. It is not yet recommended for production use.
-type parallelUploadConfig struct {
+type ParallelUploadConfig struct {
 
-	// partSize is the size of each part to be uploaded in parallel.
+	// PartSize is the size of each part to be uploaded in parallel.
 	// Defaults to 16MiB. Must be a multiple of 256KiB and more than 5MiB.
-	partSize int
+	PartSize int
 
-	// maxConcurrency is the number of goroutines to use for uploading parts in parallel.
+	// MaxConcurrency is the number of goroutines to use for uploading parts in parallel.
 	// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
-	maxConcurrency int
+	MaxConcurrency int
 }
 
 // defaults fills in values for the eventually-public configuration options.
-func (c *parallelUploadConfig) defaults() {
-	if c.partSize == 0 {
-		c.partSize = defaultPartSize
-	} else if c.partSize < minPartSize {
-		c.partSize = minPartSize
+func (c *ParallelUploadConfig) defaults() {
+	if c.PartSize == 0 {
+		c.PartSize = defaultPartSize
+	} else if c.PartSize < minPartSize {
+		c.PartSize = minPartSize
 	}
 	// Use a heuristic for the number of workers: start with 4, add 1 for
 	// every 2 CPUs, but don't exceed a cap of 16. This provides a
 	// balance between parallelism and resource contention.
-	if c.maxConcurrency == 0 {
-		c.maxConcurrency = min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
+	if c.MaxConcurrency == 0 {
+		c.MaxConcurrency = min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
 	}
 }
 
@@ -95,7 +95,7 @@ type pcuState struct {
 	ctx      context.Context
 	cancel   context.CancelFunc
 	w        *Writer
-	config   *parallelUploadConfig
+	config   *ParallelUploadConfig
 	settings *pcuSettings
 
 	mu sync.Mutex
@@ -144,20 +144,22 @@ type uploadResult struct {
 }
 
 func (w *Writer) initPCU(ctx context.Context) error {
-	// TODO: Check if PCU is enabled on the Writer.
+	if !w.EnableParallelUpload {
+		return nil
+	}
 
 	// Sanity check: If these are nil, something has gone fundamentally wrong in the Writer lifecycle.
 	if w.o == nil || w.o.c == nil || w.o.bucket == "" {
 		return fmt.Errorf("upload requires a non-nil ObjectHandle with a bucket name and a client")
 	}
-	// TODO: Get the config from the Writer.
-	cfg := &parallelUploadConfig{}
+
+	cfg := &w.ParallelUploadConfig
 	cfg.defaults()
 
 	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
-	cfg.partSize = gRPCChunkSize(cfg.partSize)
+	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
 
-	s := newPCUSettings(cfg.maxConcurrency)
+	s := newPCUSettings(cfg.MaxConcurrency)
 
 	pCtx, cancel := context.WithCancel(ctx)
 
@@ -168,7 +170,7 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		config:          cfg,
 		settings:        s,
 		bufferCh:        make(chan []byte, s.bufferPoolSize),
-		uploadCh:        make(chan uploadTask, cfg.maxConcurrency), // Buffered to prevent worker starvation
+		uploadCh:        make(chan uploadTask, cfg.MaxConcurrency), // Buffered to prevent worker starvation
 		resultCh:        make(chan uploadResult),
 		partMap:         make(map[int]*ObjectHandle),
 		intermediateMap: make(map[string]*ObjectHandle),
@@ -182,14 +184,14 @@ func (w *Writer) initPCU(ctx context.Context) error {
 			return c.Run(ctx)
 		},
 	}
-	// TODO: Assign the state to the Writer
+	w.pcu = state
 
 	for i := 0; i < s.bufferPoolSize; i++ {
-		state.bufferCh <- make([]byte, cfg.partSize)
+		state.bufferCh <- make([]byte, cfg.PartSize)
 	}
 
-	state.workerWG.Add(cfg.maxConcurrency)
-	for i := 0; i < cfg.maxConcurrency; i++ {
+	state.workerWG.Add(cfg.MaxConcurrency)
+	for i := 0; i < cfg.MaxConcurrency; i++ {
 		go state.worker()
 	}
 
@@ -337,7 +339,7 @@ func (s *pcuState) write(p []byte) (int, error) {
 		p = p[n:]
 
 		// If the buffer is full, dispatch it to a worker.
-		if s.bytesBuffered == int64(s.config.partSize) {
+		if s.bytesBuffered == int64(s.config.PartSize) {
 			if err := s.flushCurrentBuffer(); err != nil {
 				return total - len(p), err
 			}
@@ -533,7 +535,7 @@ func (s *pcuState) doCleanup() {
 	var wg sync.WaitGroup
 
 	// Semaphore to avoid spawning too many goroutines for deletion.
-	sem := make(chan struct{}, s.config.maxConcurrency)
+	sem := make(chan struct{}, s.config.MaxConcurrency)
 
 	runDelete := func(h *ObjectHandle) {
 		defer wg.Done()

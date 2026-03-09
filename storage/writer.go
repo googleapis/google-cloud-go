@@ -173,8 +173,19 @@ type Writer struct {
 	// ProgressFunc should return quickly without blocking.
 	ProgressFunc func(int64)
 
+	// EnableParallelUpload enables the parallel upload feature.
+	// This feature splits a large object into multiple parts and uploads them in
+	// parallel.
+	EnableParallelUpload bool
+
+	// ParallelUploadConfig holds configuration for Parallel Uploads.
+	// This only takes effect if EnableParallelUpload is true.
+	ParallelUploadConfig ParallelUploadConfig
+
 	ctx context.Context
 	o   *ObjectHandle
+
+	pcu *pcuState
 
 	opened bool
 	closed bool
@@ -200,10 +211,27 @@ type Writer struct {
 func (w *Writer) Write(p []byte) (n int, err error) {
 	w.mu.Lock()
 	werr := w.err
+	closed := w.closed
 	w.mu.Unlock()
 	if werr != nil {
 		return 0, werr
 	}
+	if closed {
+		return 0, fmt.Errorf("storage: Writer is closed")
+	}
+
+	if w.EnableParallelUpload {
+		w.mu.Lock()
+		if w.pcu == nil {
+			if err := w.initPCU(w.ctx); err != nil {
+				w.mu.Unlock()
+				return 0, err
+			}
+		}
+		w.mu.Unlock()
+		return w.pcu.write(p)
+	}
+
 	if !w.opened {
 		if err := w.openWriter(); err != nil {
 			return 0, err
@@ -271,6 +299,40 @@ func (w *Writer) Flush() (int64, error) {
 // If Close doesn't return an error, metadata about the written object
 // can be retrieved by calling Attrs.
 func (w *Writer) Close() error {
+	w.mu.Lock()
+	closed := w.closed
+	w.mu.Unlock()
+	if closed {
+		// Just return nil or previous error instead of erroring out entirely for backwards compatibility
+		// Or return w.err. Wait, we should just return w.err which captures the closing status or previous error.
+		w.mu.Lock()
+		err := w.err
+		w.mu.Unlock()
+		return err
+	}
+
+	if w.EnableParallelUpload {
+		w.mu.Lock()
+		if w.pcu == nil {
+			if err := w.initPCU(w.ctx); err != nil {
+				w.mu.Unlock()
+				return err
+			}
+		}
+		w.mu.Unlock()
+
+		err := w.pcu.close()
+		w.mu.Lock()
+		w.closed = true
+		if err != nil {
+			w.err = err
+		}
+		errToReturn := w.err
+		w.mu.Unlock()
+		endSpan(w.ctx, errToReturn)
+		return errToReturn
+	}
+
 	if !w.opened {
 		if err := w.openWriter(); err != nil {
 			return err

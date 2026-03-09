@@ -64,36 +64,36 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 
 	tests := []struct {
 		name string
-		in   *parallelUploadConfig
-		want *parallelUploadConfig
+		in   *ParallelUploadConfig
+		want *ParallelUploadConfig
 	}{
 		{
 			name: "all defaults",
-			in:   &parallelUploadConfig{},
-			want: &parallelUploadConfig{
-				partSize:       defaultPartSize,
-				maxConcurrency: expectedWorkers,
+			in:   &ParallelUploadConfig{},
+			want: &ParallelUploadConfig{
+				PartSize:       defaultPartSize,
+				MaxConcurrency: expectedWorkers,
 			},
 		},
 		{
 			name: "user-provided values are respected",
-			in: &parallelUploadConfig{
-				partSize:       10 * 1024 * 1024, // 10 MiB
-				maxConcurrency: 10,
+			in: &ParallelUploadConfig{
+				PartSize:       10 * 1024 * 1024, // 10 MiB
+				MaxConcurrency: 10,
 			},
-			want: &parallelUploadConfig{
-				partSize:       10 * 1024 * 1024,
-				maxConcurrency: 10,
+			want: &ParallelUploadConfig{
+				PartSize:       10 * 1024 * 1024,
+				MaxConcurrency: 10,
 			},
 		},
 		{
-			name: "partSize below minimum is adjusted",
-			in: &parallelUploadConfig{
-				partSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
+			name: "PartSize below minimum is adjusted",
+			in: &ParallelUploadConfig{
+				PartSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
 			},
-			want: &parallelUploadConfig{
-				partSize:       minPartSize,
-				maxConcurrency: expectedWorkers,
+			want: &ParallelUploadConfig{
+				PartSize:       minPartSize,
+				MaxConcurrency: expectedWorkers,
 			},
 		},
 	}
@@ -102,7 +102,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := tt.in
 			cfg.defaults()
-			if diff := cmp.Diff(tt.want, cfg, cmp.AllowUnexported(parallelUploadConfig{})); diff != "" {
+			if diff := cmp.Diff(tt.want, cfg, cmp.AllowUnexported(ParallelUploadConfig{})); diff != "" {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -110,11 +110,11 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 }
 
 func TestNewPCUSettings(t *testing.T) {
-	maxConcurrency := 8
-	settings := newPCUSettings(maxConcurrency)
+	MaxConcurrency := 8
+	settings := newPCUSettings(MaxConcurrency)
 
 	// Verify derived values
-	wantBufferPoolSize := maxConcurrency + 1
+	wantBufferPoolSize := MaxConcurrency + 1
 	if settings.bufferPoolSize != wantBufferPoolSize {
 		t.Errorf("bufferPoolSize = %d; want %d", settings.bufferPoolSize, wantBufferPoolSize)
 	}
@@ -406,7 +406,7 @@ func TestNewPartName_Uniqueness(t *testing.T) {
 }
 
 func TestPCUState_Write(t *testing.T) {
-	partSize := 10 // bytes
+	PartSize := 10 // bytes
 
 	tests := []struct {
 		name           string
@@ -448,12 +448,12 @@ func TestPCUState_Write(t *testing.T) {
 				started:  true,
 				bufferCh: make(chan []byte, 5),
 				uploadCh: make(chan uploadTask, 5),
-				config:   &parallelUploadConfig{partSize: partSize},
+				config:   &ParallelUploadConfig{PartSize: PartSize},
 			}
 
 			// Pre-fill buffer pool.
 			for i := 0; i < 5; i++ {
-				state.bufferCh <- make([]byte, partSize)
+				state.bufferCh <- make([]byte, PartSize)
 			}
 
 			// Execute.
@@ -692,7 +692,7 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				w: &Writer{
 					o: &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b"},
 				},
-				config: &parallelUploadConfig{},
+				config: &ParallelUploadConfig{},
 			}
 
 			state.composeFn = func(ctx context.Context, c *Composer) (*ObjectAttrs, error) {
@@ -785,7 +785,7 @@ func TestPCUState_ComposePartsIntegrity(t *testing.T) {
 						c:      &Client{},
 					},
 				},
-				config: &parallelUploadConfig{},
+				config: &ParallelUploadConfig{},
 			}
 
 			// Capture data from the final compose call.
@@ -855,7 +855,7 @@ func TestPCUState_DoCleanup(t *testing.T) {
 			state := &pcuState{
 				ctx:             pCtx,
 				cancel:          cancel,
-				config:          &parallelUploadConfig{maxConcurrency: 4},
+				config:          &ParallelUploadConfig{MaxConcurrency: 4},
 				firstErr:        tc.firstErr,
 				partMap:         make(map[int]*ObjectHandle),
 				intermediateMap: make(map[string]*ObjectHandle),

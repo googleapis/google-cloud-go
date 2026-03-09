@@ -8716,3 +8716,160 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 func crc32c(b []byte) uint32 {
 	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }
+
+func TestIntegration_ParallelUpload(t *testing.T) {
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		testCases := []struct {
+			name     string
+			content  []byte
+			config   ParallelUploadConfig
+			expected int64
+		}{
+			{
+				name:     "small object",
+				content:  bytes.Repeat([]byte("a"), 1<<20), // 1 MiB
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
+				expected: 1 << 20,
+			},
+			{
+				name:     "exact part size",
+				content:  bytes.Repeat([]byte("b"), 5<<20), // 5 MiB
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
+				expected: 5 << 20,
+			},
+			{
+				name:     "large object",
+				content:  bytes.Repeat([]byte("c"), 12<<20), // 12 MiB
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4},
+				expected: 12 << 20,
+			},
+			{
+				name:     "recursive composition logic",
+				content:  bytes.Repeat([]byte("d"), 165<<20), // 165 MiB = 33 parts of 5 MiB each (tests recursive compose)
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 16},
+				expected: 165 << 20,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				objName := "pcu-" + uidSpaceObjects.New()
+				obj := client.Bucket(bucket).Object(objName)
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = tc.config
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				// Verify object size and existence
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != tc.expected {
+					t.Errorf("Object size mismatch: got %d, want %d", attrs.Size, tc.expected)
+				}
+
+				// Verify cleanup of intermediate/part objects
+				it := client.Bucket(bucket).Objects(ctx, &Query{Prefix: tmpObjectPrefix})
+				count := 0
+				for {
+					_, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						t.Fatalf("iterator.Next: %v", err)
+					}
+					count++
+				}
+				// Cleanup might take some time, but we expect 0 if it's synchronously deleting everything,
+				// or we should retry a bit. PCU close does wg.Wait() on doCleanup(), so they should be gone.
+				if count != 0 {
+					t.Errorf("found %d temporary objects after PCU, expected 0", count)
+				}
+
+				// Verify contents
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		content := bytes.Repeat([]byte("z"), 15<<20) // 15 MiB
+		config := ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4}
+
+		var wg sync.WaitGroup
+		numUploads := 5
+		errs := make(chan error, numUploads)
+
+		for i := 0; i < numUploads; i++ {
+			wg.Add(1)
+			go func(idx int) {
+				defer wg.Done()
+				objName := fmt.Sprintf("pcu-concurrent-%d-%s", idx, uidSpaceObjects.New())
+				obj := client.Bucket(bucket).Object(objName)
+				defer h.mustDeleteObject(obj)
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = config
+
+				if _, err := w.Write(content); err != nil {
+					errs <- fmt.Errorf("Writer.Write failed: %v", err)
+					return
+				}
+				if err := w.Close(); err != nil {
+					errs <- fmt.Errorf("Writer.Close failed: %v", err)
+					return
+				}
+
+				// Verify object size
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					errs <- fmt.Errorf("obj.Attrs failed: %v", err)
+					return
+				}
+				if attrs.Size != int64(len(content)) {
+					errs <- fmt.Errorf("Object size mismatch: got %d, want %d", attrs.Size, len(content))
+					return
+				}
+			}(i)
+		}
+
+		wg.Wait()
+		close(errs)
+
+		for err := range errs {
+			t.Errorf("Concurrent upload error: %v", err)
+		}
+	})
+}
