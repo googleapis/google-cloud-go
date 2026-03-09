@@ -400,7 +400,7 @@ func TestIntegration_Aggregates(t *testing.T) {
 		t.Fatalf("Expected UpdateFamily to fail, but it didn't")
 	}
 	wantErrorPattern := "Immutable fields 'value_type.aggregate_type.*' cannot be updated"
-	if matched, _ := !regexp.MatchString(wantErrorPattern, err.Error()); !matched {
+	if matched, _ := regexp.MatchString(wantErrorPattern, err.Error()); !matched {
 		t.Errorf("Wrong error. Expected to match %q but was %v", wantErrorPattern, err)
 	}
 }

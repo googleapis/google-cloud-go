@@ -40,11 +40,10 @@ import (
 
 const (
 	// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
-	prodAddr              = "bigtable.UNIVERSE_DOMAIN:443"
-	mtlsProdAddr          = "bigtable.mtls.googleapis.com:443"
-	featureFlagsHeaderKey = "bigtable-features"
-	methodNameReadRows    = "ReadRows"
-	// Cannot extract extract d.GRPCConnPoolSize as DialSettings is in internal grpc pacakage
+	prodAddr                    = "bigtable.UNIVERSE_DOMAIN:443"
+	mtlsProdAddr                = "bigtable.mtls.googleapis.com:443"
+	featureFlagsHeaderKey       = "bigtable-features"
+	methodNameReadRows          = "ReadRows"
 	defaultBigtableConnPoolSize = 10
 
 	// For routing cookie

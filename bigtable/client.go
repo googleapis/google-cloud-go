@@ -165,6 +165,18 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	if enableBigtableConnPool {
+		uResolver, err := internaloption.NewUnsafeResolver(o...)
+		if err != nil {
+			// uResolver never returns err
+			return nil, fmt.Errorf("failed to resolve client options: %w", err)
+		}
+
+		connPoolSize := uResolver.ResolvedGRPCConnPoolSize()
+		// Fallback to 10 if it resolves to 0
+		if connPoolSize == 0 {
+			connPoolSize = defaultBigtableConnPoolSize
+		}
+
 		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
 		directAccessDialer := func() (*btransport.BigtableConn, error) {
@@ -177,7 +189,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 
 		btPool, err := btransport.NewBigtableChannelPool(ctx,
-			defaultBigtableConnPoolSize,
+			connPoolSize,
 			btopt.BigtableLoadBalancingStrategy(),
 			func() (*btransport.BigtableConn, error) {
 				grpcConn, err := gtransport.Dial(ctx, o...)
