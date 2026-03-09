@@ -79,13 +79,14 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 	}
 
 	tests := []struct {
-		name         string
-		echoer       echo.EchoerServer
-		opts         *Options
-		wantErr      bool
-		wantSpans    int
-		wantSpan     sdktrace.ReadOnlySpan
-		wantAttrKeys []attribute.Key
+		name               string
+		echoer             echo.EchoerServer
+		opts               *Options
+		telemetryCtxValues map[string]string
+		wantErr            bool
+		wantSpans          int
+		wantSpan           sdktrace.ReadOnlySpan
+		wantAttrKeys       []attribute.Key
 	}{
 		{
 			name:      "telemetry enabled success",
@@ -154,7 +155,8 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					},
 				},
 			},
-			wantSpans: 1,
+			telemetryCtxValues: map[string]string{"resource_name": "my-resource"},
+			wantSpans:          1,
 			wantSpan: tracetest.SpanStub{
 				Name:     "echo.Echoer/Echo",
 				SpanKind: oteltrace.SpanKindClient,
@@ -198,8 +200,8 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 			defer pool.Close()
 
 			ctx := context.Background()
-			if tt.name == "telemetry enabled metadata enrichment" {
-				ctx = callctx.WithTelemetryContext(ctx, "resource_name", "my-resource")
+			for k, v := range tt.telemetryCtxValues {
+				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
 
 			client := echo.NewEchoerClient(pool)
@@ -277,13 +279,14 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 	}
 
 	tests := []struct {
-		name         string
-		echoer       echo.EchoerServer
-		opts         *Options
-		wantErr      bool
-		wantSpans    int
-		wantSpan     sdktrace.ReadOnlySpan
-		wantAttrKeys []attribute.Key
+		name               string
+		echoer             echo.EchoerServer
+		opts               *Options
+		telemetryCtxValues map[string]string
+		wantErr            bool
+		wantSpans          int
+		wantSpan           sdktrace.ReadOnlySpan
+		wantAttrKeys       []attribute.Key
 	}{
 		{
 			name:      "telemetry enabled success (but gated off)",
@@ -350,7 +353,8 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					},
 				},
 			},
-			wantSpans: 1,
+			telemetryCtxValues: map[string]string{"resource_name": "my-resource"},
+			wantSpans:          1,
 			wantSpan: tracetest.SpanStub{
 				Name:     "echo.Echoer/Echo",
 				SpanKind: oteltrace.SpanKindClient,
@@ -393,8 +397,8 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 			defer pool.Close()
 
 			ctx := context.Background()
-			if tt.name == "telemetry enabled metadata enrichment (but gated off)" {
-				ctx = callctx.WithTelemetryContext(ctx, "resource_name", "my-resource")
+			for k, v := range tt.telemetryCtxValues {
+				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
 
 			client := echo.NewEchoerClient(pool)

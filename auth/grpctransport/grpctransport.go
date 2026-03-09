@@ -471,13 +471,17 @@ func (h *otelHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) contex
 	if !span.IsRecording() {
 		return ctx
 	}
+	var attrs []attribute.KeyValue
 	if resName, ok := callctx.TelemetryFromContext(ctx, "resource_name"); ok {
-		span.SetAttributes(attribute.String("gcp.resource.name", resName))
+		attrs = append(attrs, attribute.String("gcp.resource.name", resName))
 	}
 	if resendCountStr, ok := callctx.TelemetryFromContext(ctx, "resend_count"); ok {
 		if count, err := strconv.Atoi(resendCountStr); err == nil {
-			span.SetAttributes(attribute.Int("gcp.grpc.resend_count", count))
+			attrs = append(attrs, attribute.Int("gcp.grpc.resend_count", count))
 		}
+	}
+	if len(attrs) > 0 {
+		span.SetAttributes(attrs...)
 	}
 	return ctx
 }
@@ -497,16 +501,17 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	}
 	// Extract status code and message
 	st, _ := status.FromError(end.Error)
-	span.SetAttributes(
+	attrs := []attribute.KeyValue{
 		attribute.String("error.type", strings.ToUpper(st.Code().String())),
 		attribute.String("status.message", st.Message()),
 		attribute.String("grpc.status", strings.ToUpper(st.Code().String())),
 		attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),
-	)
+	}
 	if md, ok := metadata.FromOutgoingContext(ctx); ok {
 		if v := md[":authority"]; len(v) > 0 {
-			span.SetAttributes(attribute.String("url.domain", v[0]))
+			attrs = append(attrs, attribute.String("url.domain", v[0]))
 		}
 	}
+	span.SetAttributes(attrs...)
 	h.Handler.HandleRPC(ctx, s)
 }

@@ -62,12 +62,13 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 	otel.SetTracerProvider(tp)
 
 	tests := []struct {
-		name         string
-		opts         *Options
-		statusCode   int
-		wantSpans    int
-		wantSpan     sdktrace.ReadOnlySpan
-		wantAttrKeys []attribute.Key
+		name               string
+		opts               *Options
+		telemetryCtxValues map[string]string
+		statusCode         int
+		wantSpans          int
+		wantSpan           sdktrace.ReadOnlySpan
+		wantAttrKeys       []attribute.Key
 	}{
 		{
 			name:       "telemetry enabled success",
@@ -139,8 +140,9 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 					},
 				},
 			},
-			statusCode: http.StatusOK,
-			wantSpans:  1,
+			telemetryCtxValues: map[string]string{"resource_name": "my-resource"},
+			statusCode:         http.StatusOK,
+			wantSpans:          1,
 			wantSpan: tracetest.SpanStub{
 				Name:     "HTTP GET",
 				SpanKind: oteltrace.SpanKindClient,
@@ -159,8 +161,9 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 			opts: &Options{
 				DisableAuthentication: true,
 			},
-			statusCode: http.StatusOK,
-			wantSpans:  1,
+			telemetryCtxValues: map[string]string{"url_template": "/my/template"},
+			statusCode:         http.StatusOK,
+			wantSpans:          1,
 			wantSpan: tracetest.SpanStub{
 				Name:     "GET /my/template",
 				SpanKind: oteltrace.SpanKindClient,
@@ -191,11 +194,8 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			if tt.name == "telemetry enabled metadata enrichment" {
-				ctx = callctx.WithTelemetryContext(ctx, "resource_name", "my-resource")
-			}
-			if tt.name == "telemetry enabled url template" {
-				ctx = callctx.WithTelemetryContext(ctx, "url_template", "/my/template")
+			for k, v := range tt.telemetryCtxValues {
+				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
 
 			req, err := http.NewRequestWithContext(ctx, "GET", server.URL, nil)
@@ -294,12 +294,13 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 	otel.SetTracerProvider(tp)
 
 	tests := []struct {
-		name         string
-		opts         *Options
-		statusCode   int
-		wantSpans    int
-		wantSpan     sdktrace.ReadOnlySpan
-		wantAttrKeys []attribute.Key
+		name               string
+		opts               *Options
+		telemetryCtxValues map[string]string
+		statusCode         int
+		wantSpans          int
+		wantSpan           sdktrace.ReadOnlySpan
+		wantAttrKeys       []attribute.Key
 	}{
 		{
 			name:       "telemetry enabled success (but gated off)",
@@ -363,8 +364,9 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 					},
 				},
 			},
-			statusCode: http.StatusOK,
-			wantSpans:  1,
+			telemetryCtxValues: map[string]string{"resource_name": "my-resource"},
+			statusCode:         http.StatusOK,
+			wantSpans:          1,
 			wantSpan: tracetest.SpanStub{
 				Name:     "HTTP GET",
 				SpanKind: oteltrace.SpanKindClient,
@@ -394,8 +396,8 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			if tt.name == "telemetry enabled metadata enrichment (but gated off)" {
-				ctx = callctx.WithTelemetryContext(ctx, "resource_name", "my-resource")
+			for k, v := range tt.telemetryCtxValues {
+				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
 
 			req, err := http.NewRequestWithContext(ctx, "GET", server.URL, nil)
