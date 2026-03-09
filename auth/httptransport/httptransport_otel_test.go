@@ -149,7 +149,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 				Attributes: []attribute.KeyValue{
 					keyHTTPRequestMetod.String(valHTTPGet),
 					keyHTTPResponseStatus.Int(200),
-					attribute.String("gcp.resource.name", "my-resource"),
+					attribute.String("gcp.resource.destination.id", "my-resource"),
 					attribute.String("gcp.client.version", "1.0.0"),
 					attribute.String("rpc.system", "http"),
 				},

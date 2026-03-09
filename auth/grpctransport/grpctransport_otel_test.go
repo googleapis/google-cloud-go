@@ -169,7 +169,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCService.String("echo.Echoer"),
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("gcp.resource.name", "my-resource"),
+					attribute.String("gcp.resource.destination.id", "my-resource"),
 					attribute.String("gcp.client.version", "1.0.0"),
 				},
 			}.Snapshot(),

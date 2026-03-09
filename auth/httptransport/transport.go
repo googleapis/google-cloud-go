@@ -211,7 +211,7 @@ func (t *otelAttributeTransport) RoundTrip(req *http.Request) (*http.Response, e
 		attrs = append(attrs, t.staticAttrs...)
 		attrs = append(attrs, attribute.String("rpc.system", "http"), attribute.String("url.domain", req.URL.Host))
 		if resName, ok := callctx.TelemetryFromContext(req.Context(), "resource_name"); ok {
-			attrs = append(attrs, attribute.String("gcp.resource.name", resName))
+			attrs = append(attrs, attribute.String("gcp.resource.destination.id", resName))
 		}
 		if resendCountStr, ok := callctx.TelemetryFromContext(req.Context(), "resend_count"); ok {
 			if count, err := strconv.Atoi(resendCountStr); err == nil {

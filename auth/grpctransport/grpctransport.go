@@ -473,7 +473,7 @@ func (h *otelHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) contex
 	}
 	var attrs []attribute.KeyValue
 	if resName, ok := callctx.TelemetryFromContext(ctx, "resource_name"); ok {
-		attrs = append(attrs, attribute.String("gcp.resource.name", resName))
+		attrs = append(attrs, attribute.String("gcp.resource.destination.id", resName))
 	}
 	if resendCountStr, ok := callctx.TelemetryFromContext(ctx, "resend_count"); ok {
 		if count, err := strconv.Atoi(resendCountStr); err == nil {
