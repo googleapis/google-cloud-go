@@ -164,14 +164,15 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	var connRecycler *btransport.ConnectionRecycler
 
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
+	var connPoolSize int
 	if enableBigtableConnPool {
 		uResolver, err := internaloption.NewUnsafeResolver(o...)
 		if err != nil {
-			// uResolver never returns err
-			return nil, fmt.Errorf("failed to resolve client options: %w", err)
+			// just fallback
+			connPoolSize = defaultBigtableConnPoolSize
 		}
 
-		connPoolSize := uResolver.ResolvedGRPCConnPoolSize()
+		connPoolSize = uResolver.ResolvedGRPCConnPoolSize()
 		// Fallback to 10 if it resolves to 0
 		if connPoolSize == 0 {
 			connPoolSize = defaultBigtableConnPoolSize
