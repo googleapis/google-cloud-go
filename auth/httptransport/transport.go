@@ -207,21 +207,22 @@ type otelAttributeTransport struct {
 func (t *otelAttributeTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	span := trace.SpanFromContext(req.Context())
 	if span.IsRecording() {
-		span.SetAttributes(t.staticAttrs...)
-		span.SetAttributes(attribute.String("rpc.system", "http"))
-		span.SetAttributes(attribute.String("url.domain", req.URL.Host))
+		var attrs []attribute.KeyValue
+		attrs = append(attrs, t.staticAttrs...)
+		attrs = append(attrs, attribute.String("rpc.system", "http"), attribute.String("url.domain", req.URL.Host))
 		if resName, ok := callctx.TelemetryFromContext(req.Context(), "resource_name"); ok {
-			span.SetAttributes(attribute.String("gcp.resource.name", resName))
+			attrs = append(attrs, attribute.String("gcp.resource.name", resName))
 		}
 		if resendCountStr, ok := callctx.TelemetryFromContext(req.Context(), "resend_count"); ok {
 			if count, err := strconv.Atoi(resendCountStr); err == nil {
-				span.SetAttributes(attribute.Int("gcp.grpc.resend_count", count))
+				attrs = append(attrs, attribute.Int("gcp.grpc.resend_count", count))
 			}
 		}
 		if urlTemplate, ok := callctx.TelemetryFromContext(req.Context(), "url_template"); ok {
-			span.SetAttributes(attribute.String("url.template", urlTemplate))
+			attrs = append(attrs, attribute.String("url.template", urlTemplate))
 			span.SetName(fmt.Sprintf("%s %s", req.Method, urlTemplate))
 		}
+		span.SetAttributes(attrs...)
 	}
 
 	resp, err := t.base.RoundTrip(req)
