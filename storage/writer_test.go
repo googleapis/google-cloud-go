@@ -199,7 +199,7 @@ func TestCloseDoesNotLeak(t *testing.T) {
 func TestWriterDoubleClose(t *testing.T) {
 	ctx := context.Background()
 	w := &Writer{ctx: ctx, donec: make(chan struct{})}
-	w.closed = true // Simulate it being closed
+	w.closed = true // Simulate it being closed.
 	w.err = fmt.Errorf("some previous error")
 
 	err := w.Close()
@@ -208,10 +208,10 @@ func TestWriterDoubleClose(t *testing.T) {
 	}
 }
 
-func TestPCUWriterWriteAfterClose(t *testing.T) {
+func TestWriterWriteAfterClose(t *testing.T) {
 	ctx := context.Background()
 	w := &Writer{ctx: ctx, donec: make(chan struct{})}
-	w.closed = true // Simulate it being closed
+	w.closed = true // Simulate it being closed.
 
 	_, err := w.Write([]byte("hello"))
 	if err == nil || err.Error() != "storage: Writer is closed" {
