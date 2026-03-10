@@ -20,7 +20,6 @@ import (
 	"strings"
 
 	"cloud.google.com/go/compute/metadata"
-	"google.golang.org/api/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	_ "google.golang.org/grpc/balancer/rls"
@@ -50,7 +49,7 @@ const (
 // directPathDiagnostic evaluates the provided options and environment to determine
 // why gRPC DirectPath (high-throughput VPC routing) is not being utilized.
 func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) string {
-	res, err := internaloption.NewUnsafeResolver(opts)
+	res, err := internaloption.NewUnsafeResolver(opts...)
 	if err != nil {
 		return reasonEndpointFetchError
 	}
@@ -84,50 +83,25 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonNotOnGCE
 	}
 
-	return authDiagnostic(ctx, opts...)
+	return authDiagnostic(res)
 }
 
-// TODO: modify this function once unsafe resolver provides these data.
-func authDiagnostic(ctx context.Context, opts ...option.ClientOption) string {
-	ds := &internal.DialSettings{}
-	for _, opt := range opts {
-		opt.Apply(ds)
-	}
-
-	if ds.NoAuth {
+func authDiagnostic(res *internaloption.UnsafeResolver) string {
+	if res.ResolvedWithoutAuthentication() {
 		return reasonNoAuth
 	}
-	if ds.APIKey != "" {
+	if res.ResolvedWithAPIKeyIsCustom() {
 		return reasonAPIKey
 	}
 
-	creds, err := internal.Creds(ctx, ds)
-	if err != nil {
-		return reasonTokenFetchError
-	}
-
-	if creds.TokenSource == nil {
-		return reasonMissingTokenSource
-	}
-
-	tok, err := creds.TokenSource.Token()
-	if err != nil || tok == nil {
-		if err != nil {
-			return reasonTokenFetchError
-		}
-		return reasonNilToken
-	}
-
-	if ds.AllowNonDefaultServiceAccount {
-		return ""
-	}
-
-	if src, _ := tok.Extra("oauth2.google.tokenSource").(string); src != "compute-metadata" {
-		return reasonNotComputeMetadata
-	}
-
-	if acct, _ := tok.Extra("oauth2.google.serviceAccount").(string); acct != "default" {
+	// Verify that a default service account is attached.
+	if _, err := metadata.Email("default"); err != nil {
 		return reasonNotDefaultServiceAccount
+	}
+
+	// Verify that a token can be fetched.
+	if _, err := metadata.Get("instance/service-accounts/default/token"); err != nil {
+		return reasonTokenFetchError
 	}
 
 	return ""
