@@ -44,7 +44,7 @@ const (
 
 	directPathDisableEnvVar = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
 
-	defaultKey      = "default"
+	defaultKey             = "default"
 	serviceAccountTokenKey = "instance/service-accounts/default/token"
 )
 
