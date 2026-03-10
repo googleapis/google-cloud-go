@@ -172,7 +172,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 				Name:     "HTTP GET",
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
-					Code:        codes.Error,
+					Code: codes.Error,
 				},
 				Attributes: []attribute.KeyValue{
 					keyHTTPRequestMetod.String(valHTTPGet),
@@ -473,7 +473,7 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 				Name:     "HTTP GET",
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
-					Code:        codes.Error,
+					Code: codes.Error,
 				},
 				Attributes: []attribute.KeyValue{
 					keyHTTPRequestMetod.String(valHTTPGet),
@@ -492,7 +492,7 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 				Name:     "HTTP GET",
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
-					Code:        codes.Error,
+					Code: codes.Error,
 				},
 				Attributes: []attribute.KeyValue{
 					keyHTTPRequestMetod.String(valHTTPGet),
@@ -511,7 +511,7 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 				Name:     "HTTP GET",
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
-					Code:        codes.Error,
+					Code: codes.Error,
 				},
 				Attributes: []attribute.KeyValue{
 					keyHTTPRequestMetod.String(valHTTPGet),
