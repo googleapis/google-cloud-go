@@ -27,6 +27,11 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+// knownKeys provides keys for reading telemetry attributes from Context.
+// It provides an implicit contract with generated client library code
+// using the same keys. The keys in this collection should not be removed
+// or modified. New keys may be added, but they will need to be explicitly
+// used in code referencing this collection in order to appear in telemetry.
 var knownKeys = []string{
 	"gcp.client.service",
 	"gcp.client.version",

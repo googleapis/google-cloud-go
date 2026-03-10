@@ -112,3 +112,17 @@ func TestCloneDetectOptions(t *testing.T) {
 		t.Fatalf("Scopes should not reference the same slice")
 	}
 }
+
+func TestStaticTelemetryAttributes_KnownKeys(t *testing.T) {
+	want := []string{
+		"gcp.client.service",
+		"gcp.client.version",
+		"gcp.client.repo",
+		"gcp.client.artifact",
+		"gcp.client.language",
+		"url.domain",
+	}
+	if !reflect.DeepEqual(knownKeys, want) {
+		t.Errorf("got %v, want %v", knownKeys, want)
+	}
+}
