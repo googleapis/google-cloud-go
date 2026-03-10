@@ -15,9 +15,9 @@ import (
 func TestDirectPathDiagnostic(t *testing.T) {
 	// Start a mock metadata server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/computeMetadata/v1/instance/service-accounts/default/email" {
+		if r.URL.Path == "/computeMetadata/v1/instance/service-accounts/"+defaultServiceAccount+"/email" {
 			w.Write([]byte("default-compute@developer.gserviceaccount.com"))
-		} else if r.URL.Path == "/computeMetadata/v1/instance/service-accounts/default/token" {
+		} else if r.URL.Path == "/computeMetadata/v1/"+defaultServiceAccountToken {
 			w.Write([]byte(`{"access_token": "mock-token", "expires_in": 3600, "token_type": "Bearer"}`))
 		} else {
 			w.WriteHeader(http.StatusNotFound)
@@ -72,6 +72,16 @@ func TestDirectPathDiagnostic(t *testing.T) {
 			want: reasonCustomGRPCConn,
 		},
 		{
+			name: "custom http client",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				option.WithEndpoint("dns:///storage.googleapis.com"),
+				internaloption.EnableDirectPathXds(),
+				option.WithHTTPClient(&http.Client{}),
+			},
+			want: reasonCustomHTTPClient,
+		},
+		{
 			name: "no auth",
 			opts: []option.ClientOption{
 				internaloption.EnableDirectPath(true),
@@ -92,13 +102,13 @@ func TestDirectPathDiagnostic(t *testing.T) {
 			want: reasonAPIKey,
 		},
 		{
-			name: "success empty string",
+			name: "success undetermined",
 			opts: []option.ClientOption{
 				internaloption.EnableDirectPath(true),
 				option.WithEndpoint("dns:///storage.googleapis.com"),
 				internaloption.EnableDirectPathXds(),
 			},
-			want: "",
+			want: reasonUndetermined,
 		},
 	}
 
@@ -106,8 +116,7 @@ func TestDirectPathDiagnostic(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if len(tc.env) > 0 {
 				for k, v := range tc.env {
-					os.Setenv(k, v)
-					defer os.Unsetenv(k)
+					t.Setenv(k, v)
 				}
 			}
 

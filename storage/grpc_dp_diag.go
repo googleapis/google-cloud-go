@@ -37,13 +37,15 @@ const (
 	reasonNotOnGCE                 = "not_on_gce"
 	reasonNoAuth                   = "no_auth"
 	reasonAPIKey                   = "api_key"
-	reasonMissingTokenSource       = "missing_token_source"
 	reasonTokenFetchError          = "token_fetch_error"
-	reasonNilToken                 = "nil_token"
-	reasonNotComputeMetadata       = "not_compute_metadata"
 	reasonNotDefaultServiceAccount = "not_default_service_account"
+	reasonCustomHTTPClient         = "custom_http_client"
+	reasonUndetermined             = "undetermined"
 
 	directPathDisableEnvVar = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+
+	defaultServiceAccount      = "default"
+	defaultServiceAccountToken = "instance/service-accounts/default/token"
 )
 
 // directPathDiagnostic evaluates the provided options and environment to determine
@@ -79,6 +81,10 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonCustomGRPCConn
 	}
 
+	if res.ResolvedHTTPClientIsCustom() {
+		return reasonCustomHTTPClient
+	}
+
 	if !metadata.OnGCE() {
 		return reasonNotOnGCE
 	}
@@ -95,16 +101,16 @@ func authDiagnostic(res *internaloption.UnsafeResolver) string {
 	}
 
 	// Verify that a default service account is attached.
-	if _, err := metadata.Email("default"); err != nil {
+	if _, err := metadata.Email(defaultServiceAccount); err != nil {
 		return reasonNotDefaultServiceAccount
 	}
 
 	// Verify that a token can be fetched.
-	if _, err := metadata.Get("instance/service-accounts/default/token"); err != nil {
+	if _, err := metadata.Get(defaultServiceAccountToken); err != nil {
 		return reasonTokenFetchError
 	}
 
-	return ""
+	return reasonUndetermined
 }
 
 func isDirectPathCompatible(endpoint string) bool {
