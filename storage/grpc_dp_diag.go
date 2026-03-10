@@ -20,7 +20,6 @@ import (
 	"strings"
 
 	"cloud.google.com/go/compute/metadata"
-	"google.golang.org/api/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	_ "google.golang.org/grpc/balancer/rls"
@@ -38,19 +37,21 @@ const (
 	reasonNotOnGCE                 = "not_on_gce"
 	reasonNoAuth                   = "no_auth"
 	reasonAPIKey                   = "api_key"
-	reasonMissingTokenSource       = "missing_token_source"
 	reasonTokenFetchError          = "token_fetch_error"
-	reasonNilToken                 = "nil_token"
-	reasonNotComputeMetadata       = "not_compute_metadata"
 	reasonNotDefaultServiceAccount = "not_default_service_account"
+	reasonCustomHTTPClient         = "custom_http_client"
+	reasonUndetermined             = "undetermined"
 
 	directPathDisableEnvVar = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
+
+	defaultKey      = "default"
+	serviceAccountTokenKey = "instance/service-accounts/default/token"
 )
 
 // directPathDiagnostic evaluates the provided options and environment to determine
 // why gRPC DirectPath (high-throughput VPC routing) is not being utilized.
 func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) string {
-	res, err := internaloption.NewUnsafeResolver(opts)
+	res, err := internaloption.NewUnsafeResolver(opts...)
 	if err != nil {
 		return reasonEndpointFetchError
 	}
@@ -80,57 +81,36 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonCustomGRPCConn
 	}
 
+	if res.ResolvedHTTPClientIsCustom() {
+		return reasonCustomHTTPClient
+	}
+
 	if !metadata.OnGCE() {
 		return reasonNotOnGCE
 	}
 
-	return authDiagnostic(ctx, opts...)
+	return authDiagnostic(res)
 }
 
-// TODO: modify this function once unsafe resolver provides these data.
-func authDiagnostic(ctx context.Context, opts ...option.ClientOption) string {
-	ds := &internal.DialSettings{}
-	for _, opt := range opts {
-		opt.Apply(ds)
-	}
-
-	if ds.NoAuth {
+func authDiagnostic(res *internaloption.UnsafeResolver) string {
+	if res.ResolvedWithoutAuthentication() {
 		return reasonNoAuth
 	}
-	if ds.APIKey != "" {
+	if res.ResolvedWithAPIKeyIsCustom() {
 		return reasonAPIKey
 	}
 
-	creds, err := internal.Creds(ctx, ds)
-	if err != nil {
-		return reasonTokenFetchError
-	}
-
-	if creds.TokenSource == nil {
-		return reasonMissingTokenSource
-	}
-
-	tok, err := creds.TokenSource.Token()
-	if err != nil || tok == nil {
-		if err != nil {
-			return reasonTokenFetchError
-		}
-		return reasonNilToken
-	}
-
-	if ds.AllowNonDefaultServiceAccount {
-		return ""
-	}
-
-	if src, _ := tok.Extra("oauth2.google.tokenSource").(string); src != "compute-metadata" {
-		return reasonNotComputeMetadata
-	}
-
-	if acct, _ := tok.Extra("oauth2.google.serviceAccount").(string); acct != "default" {
+	// Verify that a default service account is attached.
+	if _, err := metadata.Email(defaultKey); err != nil {
 		return reasonNotDefaultServiceAccount
 	}
 
-	return ""
+	// Verify that a token can be fetched.
+	if _, err := metadata.Get(serviceAccountTokenKey); err != nil {
+		return reasonTokenFetchError
+	}
+
+	return reasonUndetermined
 }
 
 func isDirectPathCompatible(endpoint string) bool {
