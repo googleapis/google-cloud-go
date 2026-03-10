@@ -1071,7 +1071,11 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 
 						// Oneshot uploads assume all flushes succeed
 						if r.flush {
-							cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}
+							select {
+							case cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}:
+							case <-stream.Context().Done():
+								return stream.Context().Err()
+							}
 						}
 					}
 				}
@@ -1087,7 +1091,11 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 						return err
 					}
 					if c := completion(resp); c != nil {
-						cs.completions <- *c
+						select {
+						case cs.completions <- *c:
+						case <-stream.Context().Done():
+							return stream.Context().Err()
+						}
 					}
 				}
 			}()
@@ -1237,7 +1245,11 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						return err
 					}
 					if c := completion(resp); c != nil {
-						cs.completions <- *c
+						select {
+						case cs.completions <- *c:
+						case <-stream.Context().Done():
+							return stream.Context().Err()
+						}
 					}
 				}
 			}()
@@ -1363,7 +1375,11 @@ func (s *gRPCAppendBidiWriteBufferSender) handleStream(stream storagepb.Storage_
 				s.maybeUpdateFirstMessage(resp)
 
 				if c := completion(resp); c != nil {
-					cs.completions <- *c
+					select {
+					case cs.completions <- *c:
+					case <-stream.Context().Done():
+						return stream.Context().Err()
+					}
 				}
 			}
 		}()
