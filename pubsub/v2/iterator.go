@@ -54,6 +54,15 @@ const gracePeriod = 5 * time.Second
 // This is a var such that it can be modified for tests.
 const ackIDBatchSize int = 2500
 
+// The following configures how frequently
+// the client library will check for pending
+// acks/nacks/receipt modacks to batch them.
+const (
+	ackInterval     = 100 * time.Millisecond
+	nackInterval    = 100 * time.Millisecond
+	receiptInterval = 100 * time.Millisecond
+)
+
 // These are vars so tests can change them.
 var (
 	maxDurationPerLeaseExtension            = 10 * time.Minute
@@ -65,9 +74,9 @@ var (
 
 	// specifies the protocol to communicate with the Pub/Sub servers for streaming pull.
 	// this value cannot be set by users, and should be monotonically increasing.
-	clientPingInterval        = time.Duration(30 * time.Second)
-	serverMonitorInterval     = time.Duration(10 * time.Second)
-	serverPingTimeoutDuration = time.Duration(15 * time.Second)
+	clientPingInterval        = 30 * time.Second
+	serverMonitorInterval     = 10 * time.Second
+	serverPingTimeoutDuration = 15 * time.Second
 )
 
 type messageIterator struct {
@@ -150,9 +159,13 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	keepAlivePeriod := minDurationPerLeaseExtension / 2
 
 	// Ack promptly so users don't lose work if client crashes.
-	ackTicker := time.NewTicker(100 * time.Millisecond)
-	nackTicker := time.NewTicker(100 * time.Millisecond)
-	receiptTicker := time.NewTicker(100 * time.Millisecond)
+	ackTicker := time.NewTicker(ackInterval)
+	nackTicker := time.NewTicker(nackInterval)
+	receiptTicker := time.NewTicker(receiptInterval)
+
+	pingTicker := time.NewTicker(clientPingInterval)
+	serverMonitorTicker := time.NewTicker(serverMonitorInterval)
+
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
 
@@ -170,8 +183,8 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		kaTick:              time.After(keepAlivePeriod),
 		ackTicker:           ackTicker,
 		nackTicker:          nackTicker,
-		pingTicker:          time.NewTicker(clientPingInterval),
-		serverMonitorTicker: time.NewTicker(serverMonitorInterval),
+		pingTicker:          pingTicker,
+		serverMonitorTicker: serverMonitorTicker,
 		receiptTicker:       receiptTicker,
 		failed:              make(chan struct{}),
 		drained:             make(chan struct{}),
@@ -185,7 +198,7 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		lastClientPing:      time.UnixMicro(0),
 	}
 	it.wg.Add(1)
-	go it.streamKeepAliverHandler()
+	go it.streamKeepAliveHandler()
 	go it.sender()
 	return it
 }
@@ -880,7 +893,7 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 // we will close the stream and attempt to reopen.
 // This is unrelated to iterator.keepAliveDeadlines which handles
 // message leases keep alives.
-func (it *messageIterator) streamKeepAliverHandler() {
+func (it *messageIterator) streamKeepAliveHandler() {
 	for {
 		select {
 		case <-it.drained:
