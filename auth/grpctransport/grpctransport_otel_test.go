@@ -182,6 +182,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					attribute.String("gcp.client.artifact", "c.g/auth/grpctransport"),
 					attribute.String("gcp.client.language", "go"),
 					attribute.String("url.domain", "echo.googleapis.com"),
+					attribute.String("rpc.response.status_code", "OK"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},

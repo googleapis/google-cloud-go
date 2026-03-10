@@ -487,7 +487,7 @@ func (h *otelHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) contex
 // attributes ensuring they conform to Google Cloud observability standards.
 func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	end, ok := s.(*stats.End)
-	if !ok || end.Error == nil {
+	if !ok {
 		h.Handler.HandleRPC(ctx, s)
 		return
 	}
@@ -496,13 +496,21 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 		h.Handler.HandleRPC(ctx, s)
 		return
 	}
-	// Extract status code and message
-	st, _ := status.FromError(end.Error)
-	attrs := []attribute.KeyValue{
-		attribute.String("error.type", strings.ToUpper(st.Code().String())),
-		attribute.String("status.message", st.Message()),
-		attribute.String("rpc.response.status_code", strings.ToUpper(st.Code().String())),
-		attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),
+
+	var attrs []attribute.KeyValue
+	if end.Error != nil {
+		// Extract status code and message
+		st, _ := status.FromError(end.Error)
+		attrs = []attribute.KeyValue{
+			attribute.String("error.type", strings.ToUpper(st.Code().String())),
+			attribute.String("status.message", st.Message()),
+			attribute.String("rpc.response.status_code", strings.ToUpper(st.Code().String())),
+			attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),
+		}
+	} else {
+		attrs = []attribute.KeyValue{
+			attribute.String("rpc.response.status_code", "OK"),
+		}
 	}
 	span.SetAttributes(attrs...)
 	h.Handler.HandleRPC(ctx, s)
