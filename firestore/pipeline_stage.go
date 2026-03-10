@@ -45,6 +45,7 @@ const (
 	stageNameDistinct        = "distinct"
 	stageNameDocuments       = "documents"
 	stageNameFindNearest     = "find_nearest"
+	stageNameLiterals        = "literals"
 	stageNameRemoveFields    = "remove_fields"
 	stageNameReplaceWith     = "replace_with"
 	stageNameSample          = "sample"
@@ -124,6 +125,7 @@ func (s *inputStageDatabase) toProto() (*pb.Pipeline_Stage, error) {
 	}, nil
 }
 
+// inputStageDocuments returns all documents from the specific references.
 type inputStageDocuments struct {
 	baseStage
 }
@@ -140,6 +142,37 @@ func newInputStageDocuments(refs ...*DocumentRef) *inputStageDocuments {
 			Args: args,
 		},
 	}}
+}
+
+// inputStageLiterals returns a fixed set of documents.
+type inputStageLiterals struct {
+	baseStage
+	err error
+}
+
+func newInputStageLiterals(documents ...map[string]any) *inputStageLiterals {
+	args := make([]*pb.Value, len(documents))
+	for i, doc := range documents {
+		val, _, err := toProtoValue(reflect.ValueOf(doc))
+		if err != nil {
+			return &inputStageLiterals{err: err}
+		}
+		args[i] = val
+	}
+	return &inputStageLiterals{baseStage{
+		stageName: stageNameLiterals,
+		stagePb: &pb.Pipeline_Stage{
+			Name: stageNameLiterals,
+			Args: args,
+		},
+	}, nil}
+}
+
+func (s *inputStageLiterals) toProto() (*pb.Pipeline_Stage, error) {
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.baseStage.toProto()
 }
 
 // addFieldsStage is the internal representation of a AddFields stage.

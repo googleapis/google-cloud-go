@@ -94,8 +94,20 @@ type Expression interface {
 	Pow(other any) Expression
 	// Round creates an expression that rounds the input field or expression to nearest integer.
 	Round() Expression
+	// Trunc creates an expression that truncates a number to an integer.
+	Trunc() Expression
+	// TruncWithPlaces creates an expression that truncates a number to a specified number of decimal places.
+	//
+	// The parameter 'places' is the number of decimal places to truncate to. It can be an int, int32, int64 or [Expression].
+	TruncWithPlaces(places any) Expression
+
 	// Sqrt creates an expression that is the square root of the input field or expression.
 	Sqrt() Expression
+	// Cmp creates an expression that compares two expressions.
+	// Returns -1 if left < right, 0 if left == right, and 1 if left > right.
+	//
+	// The parameter 'other' can be a constant or an [Expression].
+	Cmp(other any) Expression
 
 	// Array operations
 	// ArrayContains creates a boolean expression that checks if an array contains a specific value.
@@ -135,8 +147,65 @@ type Expression interface {
 	ArraySum() Expression
 	// ArrayMaximum creates an expression that finds the maximum element in a numeric array.
 	ArrayMaximum() Expression
+	// ArrayMaximumN creates an expression that finds the N maximum elements in an array.
+	//
+	// The parameter 'n' can be an integer constant or an [Expression] that evaluates to an integer.
+	ArrayMaximumN(n any) Expression
 	// ArrayMinimum creates an expression that finds the minimum element in a numeric array.
 	ArrayMinimum() Expression
+	// ArrayMinimumN creates an expression that finds the N minimum elements in an array.
+	//
+	// The parameter 'n' can be an integer constant or an [Expression] that evaluates to an integer.
+	ArrayMinimumN(n any) Expression
+	// ArrayFirst creates an expression that returns the first element of an array.
+	ArrayFirst() Expression
+	// ArrayFirstN creates an expression that returns the first N elements of an array.
+	//
+	// The parameter 'n' can be an integer constant or an [Expression] that evaluates to an integer.
+	ArrayFirstN(n any) Expression
+	// ArrayLast creates an expression that returns the last element of an array.
+	ArrayLast() Expression
+	// ArrayLastN creates an expression that returns the last N elements of an array.
+	//
+	// The parameter 'n' can be an integer constant or an [Expression] that evaluates to an integer.
+	ArrayLastN(n any) Expression
+	// ArraySlice creates an expression that returns a slice of an array starting from the specified offset.
+	//
+	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
+	ArraySlice(offset any) Expression
+	// ArraySliceWithLength creates an expression that returns a slice of an array starting from the specified offset with a given length.
+	//
+	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
+	// The parameter 'length' is the number of elements to include. It can be an int, int32, int64 or [Expression].
+	ArraySliceWithLength(offset, length any) Expression
+	// ArrayIndexOf creates an expression that returns the index of a search value in an array.
+	//
+	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
+	// The parameter 'direction' is the search direction. It can be "first", "last" or [Expression].
+	ArrayIndexOf(search, direction any) Expression
+	// ArrayIndexOfAll creates an expression that returns the indices of all occurrences of a search value in an array.
+	//
+	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
+	ArrayIndexOfAll(search any) Expression
+	// First returns the value of the expression for the first document in the group.
+	First() AggregateFunction
+	// Last returns the value of the expression for the last document in the group.
+	Last() AggregateFunction
+	// ArrayAgg returns an array containing all values of the expression when evaluated on each document in the group.
+	//
+	// If the expression resolves to an absent value, it is converted to NULL.
+	// The order of elements in the output array is not stable and shouldn't be relied upon.
+	ArrayAgg() AggregateFunction
+	// ArrayAggDistinct returns an array containing all distinct values of the expression when evaluated on each document in the group.
+	//
+	// If the expression resolves to an absent value, it is converted to NULL.
+	// The order of elements in the output array is not stable and shouldn't be relied upon.
+	ArrayAggDistinct() AggregateFunction
+	// ArrayFilter creates an expression for array_filter(array, param, body).
+	//
+	// The parameter 'param' is the name of the parameter to use in the body expression.
+	// The parameter 'body' is the expression to evaluate for each element of the array.
+	ArrayFilter(param string, body BooleanExpression) Expression
 
 	// Timestamp operations
 	// TimestampAdd creates an expression that adds a specified amount of time to a timestamp.
@@ -174,6 +243,23 @@ type Expression interface {
 	// TimestampToUnixSeconds creates an expression that converts a timestamp expression to the number of seconds since
 	// the Unix epoch (1970-01-01 00:00:00 UTC).
 	TimestampToUnixSeconds() Expression
+	// TimestampExtract creates an expression that extracts a part from a timestamp.
+	// - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+	//   "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+	//   "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
+	TimestampExtract(part any) Expression
+	// TimestampExtractWithTimezone creates an expression that extracts a part from a timestamp in a given timezone.
+	// - timestamp can be a field path string, [FieldPath] or [Expression].
+	// - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+	//   "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+	//   "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
+	// - timezone can be a string or an [Expression].
+	TimestampExtractWithTimezone(part, timezone any) Expression
+	// TimestampDiff creates an expression that calculates the difference between two timestamps.
+	//
+	// The parameter 'start' can be a field path string, [FieldPath] or [Expression].
+	// The parameter 'unit' can be a string constant (e.g., "day") or an [Expression] that evaluates to a valid unit string.
+	TimestampDiff(start, unit any) Expression
 	// UnixMicrosToTimestamp creates an expression that converts a Unix timestamp in microseconds to a Firestore timestamp.
 	UnixMicrosToTimestamp() Expression
 	// UnixMillisToTimestamp creates an expression that converts a Unix timestamp in milliseconds to a Firestore timestamp.
@@ -234,6 +320,10 @@ type Expression interface {
 	// The parameter 'catchExprOrValue' is the value to return if the expression is absent.
 	// It can be a constant or an [Expression].
 	IfAbsent(catchExprOrValue any) Expression
+	// IfNull creates an expression that returns the first non-null value in a list of expressions.
+	//
+	// The parameter 'others' can be a list of constants or [Expression].
+	IfNull(others ...any) Expression
 
 	// Object functions
 	// MapGet creates an expression that accesses a value from a map (object) field using the provided key.
@@ -252,6 +342,16 @@ type Expression interface {
 	// The parameter 'strOrExprkey' is the key to remove from the map.
 	// It can be a string constant or an [Expression] that evaluates to a string.
 	MapRemove(strOrExprkey any) Expression
+	// MapSet creates an expression that updates a map with key-value pairs.
+	//
+	// The parameter 'keysAndValues' is a list of alternating key and value arguments.
+	MapSet(keysAndValues ...any) Expression
+	// MapKeys creates an expression that returns the keys of a map as an array.
+	MapKeys() Expression
+	// MapValues creates an expression that returns the values of a map as an array.
+	MapValues() Expression
+	// MapEntries creates an expression that returns the entries of a map as an array of key-value maps.
+	MapEntries() Expression
 
 	// Aggregators
 	// Sum creates an aggregate function that calculates the sum of the expression.
@@ -279,6 +379,14 @@ type Expression interface {
 	//
 	// The parameter 'pattern' can be a string constant or an [Expression] that evaluates to a string.
 	RegexContains(pattern any) BooleanExpression
+	// RegexFind creates an expression that returns the first substring that matches the specified regex pattern.
+	//
+	// The parameter 'pattern' can be a string constant or an [Expression] that evaluates to a string.
+	RegexFind(pattern any) Expression
+	// RegexFindAll creates an expression that returns all substrings that match the specified regex pattern.
+	//
+	// The parameter 'pattern' can be a string constant or an [Expression] that evaluates to a string.
+	RegexFindAll(pattern any) Expression
 	// RegexMatch creates a boolean expression that checks if the string expression matches the specified regex pattern.
 	//
 	// The parameter 'pattern' can be a string constant or an [Expression] that evaluates to a string.
@@ -295,6 +403,24 @@ type Expression interface {
 	//
 	// The parameter 'substring' can be a string constant or an [Expression] that evaluates to a string.
 	StringContains(substring any) BooleanExpression
+	// StringIndexOf creates an expression that returns the index of a search value in a string.
+	//
+	// The parameter 'search' can be a string constant or an [Expression] that evaluates to a string.
+	StringIndexOf(search any) Expression
+	// StringRepeat creates an expression that repeats a string a specified number of times.
+	//
+	// The parameter 'repetition' can be an integer constant or an [Expression] that evaluates to an integer.
+	StringRepeat(repetition any) Expression
+	// StringReplaceOne creates an expression that replaces the first occurrence of a search value with a replacement value.
+	//
+	// The parameter 'search' can be a string constant or an [Expression] that evaluates to a string.
+	// The parameter 'replacement' can be a string constant or an [Expression] that evaluates to a string.
+	StringReplaceOne(search, replacement any) Expression
+	// StringReplaceAll creates an expression that replaces all occurrences of a search value with a replacement value.
+	//
+	// The parameter 'search' can be a string constant or an [Expression] that evaluates to a string.
+	// The parameter 'replacement' can be a string constant or an [Expression] that evaluates to a string.
+	StringReplaceAll(search, replacement any) Expression
 	// StringReverse creates an expression that reverses a string.
 	StringReverse() Expression
 	// Join creates an expression that joins the elements of a string array into a single string.
@@ -314,6 +440,16 @@ type Expression interface {
 	ToUpper() Expression
 	// Trim creates an expression that removes leading and trailing whitespace from a string.
 	Trim() Expression
+	// TrimWithValues creates an expression that removes leading and trailing whitespace or specified characters from a string.
+	TrimWithValues(valuesToTrim any) Expression
+	// LTrim creates an expression that removes leading whitespace from a string.
+	LTrim() Expression
+	// LTrimWithValues creates an expression that removes leading whitespace or specified characters from a string.
+	LTrimWithValues(valuesToTrim any) Expression
+	// RTrim creates an expression that removes trailing whitespace from a string.
+	RTrim() Expression
+	// RTrimWithValues creates an expression that removes trailing whitespace or specified characters from a string.
+	RTrimWithValues(valuesToTrim any) Expression
 	// Split creates an expression that splits a string by a delimiter.
 	//
 	// The parameter 'delimiter' can be a string constant or an [Expression] that evaluates to a string.
@@ -321,6 +457,10 @@ type Expression interface {
 
 	// Type creates an expression that returns the type of the expression.
 	Type() Expression
+	// IsType creates a boolean expression that checks if the expression is of a specific type.
+	//
+	// The parameter 'dataType' can be a string constant or an [Expression] that evaluates to a type name.
+	IsType(dataType any) BooleanExpression
 
 	// Vector functions
 	// CosineDistance creates an expression that calculates the cosine distance between two vectors.
@@ -374,7 +514,12 @@ func (b *baseExpression) Ln() Expression                { return Ln(b) }
 func (b *baseExpression) Mod(other any) Expression      { return Mod(b, other) }
 func (b *baseExpression) Pow(other any) Expression      { return Pow(b, other) }
 func (b *baseExpression) Round() Expression             { return Round(b) }
-func (b *baseExpression) Sqrt() Expression              { return Sqrt(b) }
+func (b *baseExpression) Trunc() Expression             { return Trunc(b) }
+func (b *baseExpression) TruncWithPlaces(places any) Expression {
+	return TruncPlaces(b, places)
+}
+func (b *baseExpression) Sqrt() Expression         { return Sqrt(b) }
+func (b *baseExpression) Cmp(other any) Expression { return Cmp(b, other) }
 
 // Array functions
 func (b *baseExpression) ArrayContains(value any) BooleanExpression { return ArrayContains(b, value) }
@@ -392,9 +537,32 @@ func (b *baseExpression) ArrayReverse() Expression                 { return Arra
 func (b *baseExpression) ArrayConcat(otherArrays ...any) Expression {
 	return ArrayConcat(b, otherArrays...)
 }
-func (b *baseExpression) ArraySum() Expression     { return ArraySum(b) }
-func (b *baseExpression) ArrayMaximum() Expression { return ArrayMaximum(b) }
-func (b *baseExpression) ArrayMinimum() Expression { return ArrayMinimum(b) }
+func (b *baseExpression) ArraySum() Expression             { return ArraySum(b) }
+func (b *baseExpression) ArrayMaximum() Expression         { return ArrayMaximum(b) }
+func (b *baseExpression) ArrayMaximumN(n any) Expression   { return ArrayMaximumN(b, n) }
+func (b *baseExpression) ArrayMinimum() Expression         { return ArrayMinimum(b) }
+func (b *baseExpression) ArrayMinimumN(n any) Expression   { return ArrayMinimumN(b, n) }
+func (b *baseExpression) ArrayFirst() Expression           { return ArrayFirst(b) }
+func (b *baseExpression) ArrayFirstN(n any) Expression     { return ArrayFirstN(b, n) }
+func (b *baseExpression) ArrayLast() Expression            { return ArrayLast(b) }
+func (b *baseExpression) ArrayLastN(n any) Expression      { return ArrayLastN(b, n) }
+func (b *baseExpression) ArraySlice(offset any) Expression { return ArraySlice(b, offset) }
+func (b *baseExpression) ArraySliceWithLength(offset, length any) Expression {
+	return ArraySliceLength(b, offset, length)
+}
+func (b *baseExpression) ArrayIndexOf(search, direction any) Expression {
+	return ArrayIndexOf(b, search, direction)
+}
+func (b *baseExpression) ArrayIndexOfAll(search any) Expression {
+	return ArrayIndexOfAll(b, search)
+}
+func (b *baseExpression) First() AggregateFunction            { return First(b) }
+func (b *baseExpression) Last() AggregateFunction             { return Last(b) }
+func (b *baseExpression) ArrayAgg() AggregateFunction         { return ArrayAgg(b) }
+func (b *baseExpression) ArrayAggDistinct() AggregateFunction { return ArrayAggDistinct(b) }
+func (b *baseExpression) ArrayFilter(param string, body BooleanExpression) Expression {
+	return ArrayFilter(b, param, body)
+}
 
 // Timestamp functions
 func (b *baseExpression) TimestampAdd(unit, amount any) Expression {
@@ -412,6 +580,15 @@ func (b *baseExpression) TimestampTruncateWithTimezone(granularity any, timezone
 func (b *baseExpression) TimestampToUnixMicros() Expression  { return TimestampToUnixMicros(b) }
 func (b *baseExpression) TimestampToUnixMillis() Expression  { return TimestampToUnixMillis(b) }
 func (b *baseExpression) TimestampToUnixSeconds() Expression { return TimestampToUnixSeconds(b) }
+func (b *baseExpression) TimestampExtract(part any) Expression {
+	return TimestampExtract(b, part)
+}
+func (b *baseExpression) TimestampExtractWithTimezone(part, timezone any) Expression {
+	return TimestampExtractWithTimezone(b, part, timezone)
+}
+func (b *baseExpression) TimestampDiff(start, unit any) Expression {
+	return TimestampDiff(b, start, unit)
+}
 func (b *baseExpression) UnixMicrosToTimestamp() Expression  { return UnixMicrosToTimestamp(b) }
 func (b *baseExpression) UnixMillisToTimestamp() Expression  { return UnixMillisToTimestamp(b) }
 func (b *baseExpression) UnixSecondsToTimestamp() Expression { return UnixSecondsToTimestamp(b) }
@@ -444,6 +621,9 @@ func (b *baseExpression) IfError(catchExprOrValue any) Expression {
 func (b *baseExpression) IfAbsent(catchExprOrValue any) Expression {
 	return IfAbsent(b, catchExprOrValue)
 }
+func (b *baseExpression) IfNull(others ...any) Expression {
+	return IfNull(b, others...)
+}
 
 // Object functions
 func (b *baseExpression) MapGet(strOrExprkey any) Expression { return MapGet(b, strOrExprkey) }
@@ -451,6 +631,12 @@ func (b *baseExpression) MapMerge(secondMap Expression, otherMaps ...Expression)
 	return MapMerge(b, secondMap, otherMaps...)
 }
 func (b *baseExpression) MapRemove(strOrExprkey any) Expression { return MapRemove(b, strOrExprkey) }
+func (b *baseExpression) MapSet(keysAndValues ...any) Expression {
+	return MapSet(b, keysAndValues...)
+}
+func (b *baseExpression) MapKeys() Expression    { return MapKeys(b) }
+func (b *baseExpression) MapValues() Expression  { return MapValues(b) }
+func (b *baseExpression) MapEntries() Expression { return MapEntries(b) }
 
 // Aggregation operations
 func (b *baseExpression) Sum() AggregateFunction           { return Sum(b) }
@@ -468,6 +654,12 @@ func (b *baseExpression) Like(suffix any) BooleanExpression     { return Like(b,
 func (b *baseExpression) RegexContains(pattern any) BooleanExpression {
 	return RegexContains(b, pattern)
 }
+func (b *baseExpression) RegexFind(pattern any) Expression {
+	return RegexFind(b, pattern)
+}
+func (b *baseExpression) RegexFindAll(pattern any) Expression {
+	return RegexFindAll(b, pattern)
+}
 func (b *baseExpression) RegexMatch(pattern any) BooleanExpression { return RegexMatch(b, pattern) }
 func (b *baseExpression) StartsWith(prefix any) BooleanExpression  { return StartsWith(b, prefix) }
 func (b *baseExpression) StringConcat(otherStrings ...any) Expression {
@@ -476,16 +668,40 @@ func (b *baseExpression) StringConcat(otherStrings ...any) Expression {
 func (b *baseExpression) StringContains(substring any) BooleanExpression {
 	return StringContains(b, substring)
 }
+func (b *baseExpression) StringIndexOf(search any) Expression {
+	return StringIndexOf(b, search)
+}
+func (b *baseExpression) StringRepeat(repetition any) Expression {
+	return StringRepeat(b, repetition)
+}
+func (b *baseExpression) StringReplaceOne(search, replacement any) Expression {
+	return StringReplaceOne(b, search, replacement)
+}
+func (b *baseExpression) StringReplaceAll(search, replacement any) Expression {
+	return StringReplaceAll(b, search, replacement)
+}
 func (b *baseExpression) StringReverse() Expression              { return StringReverse(b) }
 func (b *baseExpression) Join(delimiter any) Expression          { return Join(b, delimiter) }
 func (b *baseExpression) Substring(index, offset any) Expression { return Substring(b, index, offset) }
 func (b *baseExpression) ToLower() Expression                    { return ToLower(b) }
 func (b *baseExpression) ToUpper() Expression                    { return ToUpper(b) }
 func (b *baseExpression) Trim() Expression                       { return Trim(b) }
-func (b *baseExpression) Split(delimiter any) Expression         { return Split(b, delimiter) }
+func (b *baseExpression) TrimWithValues(valuesToTrim any) Expression {
+	return TrimWithValues(b, valuesToTrim)
+}
+func (b *baseExpression) LTrim() Expression { return LTrim(b) }
+func (b *baseExpression) LTrimWithValues(valuesToTrim any) Expression {
+	return LTrimWithValues(b, valuesToTrim)
+}
+func (b *baseExpression) RTrim() Expression { return RTrim(b) }
+func (b *baseExpression) RTrimWithValues(valuesToTrim any) Expression {
+	return RTrimWithValues(b, valuesToTrim)
+}
+func (b *baseExpression) Split(delimiter any) Expression { return Split(b, delimiter) }
 
 // Type functions
-func (b *baseExpression) Type() Expression { return Type(b) }
+func (b *baseExpression) Type() Expression                      { return Type(b) }
+func (b *baseExpression) IsType(dataType any) BooleanExpression { return IsType(b, dataType) }
 
 // Vector functions
 func (b *baseExpression) CosineDistance(other any) Expression    { return CosineDistance(b, other) }

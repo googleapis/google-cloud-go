@@ -134,6 +134,34 @@ func ExampleInstanceGroupManagersClient_ApplyUpdatesToInstances() {
 	}
 }
 
+func ExampleInstanceGroupManagersClient_ConfigureAcceleratorTopologies() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInstanceGroupManagersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.ConfigureAcceleratorTopologiesInstanceGroupManagerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#ConfigureAcceleratorTopologiesInstanceGroupManagerRequest.
+	}
+	op, err := c.ConfigureAcceleratorTopologies(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleInstanceGroupManagersClient_CreateInstances() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

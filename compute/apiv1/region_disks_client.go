@@ -299,8 +299,7 @@ func (c *RegionDisksClient) TestIamPermissions(ctx context.Context, req *compute
 }
 
 // Update update the specified disk with the data included in the request. Update is
-// performed only on selected fields included as part of update-mask. Only the
-// following fields can be modified: user_license.
+// performed only on selected fields included as part of update-mask.
 func (c *RegionDisksClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -1428,8 +1427,7 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 }
 
 // Update update the specified disk with the data included in the request. Update is
-// performed only on selected fields included as part of update-mask. Only the
-// following fields can be modified: user_license.
+// performed only on selected fields included as part of update-mask.
 func (c *regionDisksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()

@@ -45,6 +45,7 @@ type InstanceGroupManagersCallOptions struct {
 	AbandonInstances                  []gax.CallOption
 	AggregatedList                    []gax.CallOption
 	ApplyUpdatesToInstances           []gax.CallOption
+	ConfigureAcceleratorTopologies    []gax.CallOption
 	CreateInstances                   []gax.CallOption
 	Delete                            []gax.CallOption
 	DeleteInstances                   []gax.CallOption
@@ -91,6 +92,9 @@ func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOpt
 			}),
 		},
 		ApplyUpdatesToInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ConfigureAcceleratorTopologies: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		CreateInstances: []gax.CallOption{
@@ -218,6 +222,7 @@ type internalInstanceGroupManagersClient interface {
 	AbandonInstances(context.Context, *computepb.AbandonInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListInstanceGroupManagersRequest, ...gax.CallOption) *InstanceGroupManagersScopedListPairIterator
 	ApplyUpdatesToInstances(context.Context, *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	ConfigureAcceleratorTopologies(context.Context, *computepb.ConfigureAcceleratorTopologiesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	CreateInstances(context.Context, *computepb.CreateInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	DeleteInstances(context.Context, *computepb.DeleteInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
@@ -312,6 +317,11 @@ func (c *InstanceGroupManagersClient) AggregatedList(ctx context.Context, req *c
 // This method can be used to apply new overrides and/or new versions.
 func (c *InstanceGroupManagersClient) ApplyUpdatesToInstances(ctx context.Context, req *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.ApplyUpdatesToInstances(ctx, req, opts...)
+}
+
+// ConfigureAcceleratorTopologies updates the accelerator topologies configuration.
+func (c *InstanceGroupManagersClient) ConfigureAcceleratorTopologies(ctx context.Context, req *computepb.ConfigureAcceleratorTopologiesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.ConfigureAcceleratorTopologies(ctx, req, opts...)
 }
 
 // CreateInstances creates instances with per-instance configurations in this managed instance
@@ -968,6 +978,73 @@ func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Co
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApplyUpdatesToInstances")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// ConfigureAcceleratorTopologies updates the accelerator topologies configuration.
+func (c *instanceGroupManagersRESTClient) ConfigureAcceleratorTopologies(ctx context.Context, req *computepb.ConfigureAcceleratorTopologiesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetInstanceGroupManagersConfigureAcceleratorTopologiesRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/configureAcceleratorTopologies", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ConfigureAcceleratorTopologies[0:len((*c.CallOptions).ConfigureAcceleratorTopologies):len((*c.CallOptions).ConfigureAcceleratorTopologies)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConfigureAcceleratorTopologies")
 		if err != nil {
 			return err
 		}

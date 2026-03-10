@@ -216,3 +216,11 @@ func (ps *PipelineSource) CreateFromQuery(query Queryer) *Pipeline {
 func (ps *PipelineSource) CreateFromAggregationQuery(query *AggregationQuery) *Pipeline {
 	return query.Pipeline()
 }
+
+// Literals creates a new [Pipeline] that operates on a fixed set of predefined document objects.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (ps *PipelineSource) Literals(documents ...map[string]any) *Pipeline {
+	return newPipeline(ps.client, newInputStageLiterals(documents...))
+}

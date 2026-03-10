@@ -1,0 +1,485 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.networkconnectivity.v1beta",
+  "libraryPackage": "cloud.google.com/go/networkconnectivity/apiv1beta",
+  "services": {
+    "DataTransferService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataTransferClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDestination": {
+              "methods": [
+                "CreateDestination"
+              ]
+            },
+            "CreateMulticloudDataTransferConfig": {
+              "methods": [
+                "CreateMulticloudDataTransferConfig"
+              ]
+            },
+            "DeleteDestination": {
+              "methods": [
+                "DeleteDestination"
+              ]
+            },
+            "DeleteMulticloudDataTransferConfig": {
+              "methods": [
+                "DeleteMulticloudDataTransferConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDestination": {
+              "methods": [
+                "GetDestination"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMulticloudDataTransferConfig": {
+              "methods": [
+                "GetMulticloudDataTransferConfig"
+              ]
+            },
+            "GetMulticloudDataTransferSupportedService": {
+              "methods": [
+                "GetMulticloudDataTransferSupportedService"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDestinations": {
+              "methods": [
+                "ListDestinations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMulticloudDataTransferConfigs": {
+              "methods": [
+                "ListMulticloudDataTransferConfigs"
+              ]
+            },
+            "ListMulticloudDataTransferSupportedServices": {
+              "methods": [
+                "ListMulticloudDataTransferSupportedServices"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDestination": {
+              "methods": [
+                "UpdateDestination"
+              ]
+            },
+            "UpdateMulticloudDataTransferConfig": {
+              "methods": [
+                "UpdateMulticloudDataTransferConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "HubService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "HubClient",
+          "rpcs": {
+            "AcceptHubSpoke": {
+              "methods": [
+                "AcceptHubSpoke"
+              ]
+            },
+            "AcceptSpokeUpdate": {
+              "methods": [
+                "AcceptSpokeUpdate"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGatewayAdvertisedRoute": {
+              "methods": [
+                "CreateGatewayAdvertisedRoute"
+              ]
+            },
+            "CreateHub": {
+              "methods": [
+                "CreateHub"
+              ]
+            },
+            "CreateSpoke": {
+              "methods": [
+                "CreateSpoke"
+              ]
+            },
+            "DeleteGatewayAdvertisedRoute": {
+              "methods": [
+                "DeleteGatewayAdvertisedRoute"
+              ]
+            },
+            "DeleteHub": {
+              "methods": [
+                "DeleteHub"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSpoke": {
+              "methods": [
+                "DeleteSpoke"
+              ]
+            },
+            "GetGatewayAdvertisedRoute": {
+              "methods": [
+                "GetGatewayAdvertisedRoute"
+              ]
+            },
+            "GetGroup": {
+              "methods": [
+                "GetGroup"
+              ]
+            },
+            "GetHub": {
+              "methods": [
+                "GetHub"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRoute": {
+              "methods": [
+                "GetRoute"
+              ]
+            },
+            "GetRouteTable": {
+              "methods": [
+                "GetRouteTable"
+              ]
+            },
+            "GetSpoke": {
+              "methods": [
+                "GetSpoke"
+              ]
+            },
+            "ListGatewayAdvertisedRoutes": {
+              "methods": [
+                "ListGatewayAdvertisedRoutes"
+              ]
+            },
+            "ListGroups": {
+              "methods": [
+                "ListGroups"
+              ]
+            },
+            "ListHubSpokes": {
+              "methods": [
+                "ListHubSpokes"
+              ]
+            },
+            "ListHubs": {
+              "methods": [
+                "ListHubs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRouteTables": {
+              "methods": [
+                "ListRouteTables"
+              ]
+            },
+            "ListRoutes": {
+              "methods": [
+                "ListRoutes"
+              ]
+            },
+            "ListSpokes": {
+              "methods": [
+                "ListSpokes"
+              ]
+            },
+            "QueryHubStatus": {
+              "methods": [
+                "QueryHubStatus"
+              ]
+            },
+            "RejectHubSpoke": {
+              "methods": [
+                "RejectHubSpoke"
+              ]
+            },
+            "RejectSpokeUpdate": {
+              "methods": [
+                "RejectSpokeUpdate"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateGatewayAdvertisedRoute": {
+              "methods": [
+                "UpdateGatewayAdvertisedRoute"
+              ]
+            },
+            "UpdateGroup": {
+              "methods": [
+                "UpdateGroup"
+              ]
+            },
+            "UpdateHub": {
+              "methods": [
+                "UpdateHub"
+              ]
+            },
+            "UpdateSpoke": {
+              "methods": [
+                "UpdateSpoke"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PolicyBasedRoutingService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PolicyBasedRoutingClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePolicyBasedRoute": {
+              "methods": [
+                "CreatePolicyBasedRoute"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePolicyBasedRoute": {
+              "methods": [
+                "DeletePolicyBasedRoute"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPolicyBasedRoute": {
+              "methods": [
+                "GetPolicyBasedRoute"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPolicyBasedRoutes": {
+              "methods": [
+                "ListPolicyBasedRoutes"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TransportManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TransportManagerClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateTransport": {
+              "methods": [
+                "CreateTransport"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteTransport": {
+              "methods": [
+                "DeleteTransport"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRemoteTransportProfile": {
+              "methods": [
+                "GetRemoteTransportProfile"
+              ]
+            },
+            "GetStatus": {
+              "methods": [
+                "GetStatus"
+              ]
+            },
+            "GetTransport": {
+              "methods": [
+                "GetTransport"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRemoteTransportProfiles": {
+              "methods": [
+                "ListRemoteTransportProfiles"
+              ]
+            },
+            "ListTransports": {
+              "methods": [
+                "ListTransports"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateTransport": {
+              "methods": [
+                "UpdateTransport"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

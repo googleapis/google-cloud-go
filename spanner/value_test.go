@@ -3562,6 +3562,23 @@ func TestScanNullNumeric(t *testing.T) {
 	}
 }
 
+func TestScanNullUUID(t *testing.T) {
+	u, err := uuid.NewRandom()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, val := range []any{u.String(), stringPointer(u.String())} {
+		n := NullUUID{}
+		if err := n.Scan(val); err != nil {
+			t.Fatal(err)
+		}
+		want := NullUUID{UUID: u, Valid: true}
+		if g, w := n, want; !cmp.Equal(g, w) {
+			t.Fatalf("value mismatch\n Got: %v\nWant: %v", g, w)
+		}
+	}
+}
+
 func TestScanPGNumeric(t *testing.T) {
 	for _, test := range []struct {
 		name  string

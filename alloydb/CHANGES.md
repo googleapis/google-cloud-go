@@ -3,6 +3,12 @@
 
 
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.21.0) (2026-03-05)
+
+### Features
+
+* Add a new field to support Dataplex integration configuration ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.20.0) (2026-01-08)
 
 ### Features

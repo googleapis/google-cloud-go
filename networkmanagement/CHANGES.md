@@ -1,5 +1,11 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.23.0) (2026-03-05)
+
+### Features
+
+* Add API fields related to GKE Pods and Network Policies ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.22.0) (2026-01-29)
 
 ### Features

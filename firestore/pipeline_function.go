@@ -200,6 +200,25 @@ func Round(numericExprOrFieldPath any) Expression {
 	return newBaseFunction("round", []Expression{asFieldExpr(numericExprOrFieldPath)})
 }
 
+// Trunc creates an expression that truncates a number to an integer.
+// - numericExprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that returns a number when evaluated.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Trunc(numericExprOrFieldPath any) Expression {
+	return newBaseFunction("trunc", []Expression{asFieldExpr(numericExprOrFieldPath)})
+}
+
+// TruncPlaces creates an expression that truncates a number to a specified number of decimal places.
+// - numericExprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that returns a number when evaluated.
+// - places can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func TruncPlaces(numericExprOrFieldPath any, places any) Expression {
+	return newBaseFunction("trunc", []Expression{asFieldExpr(numericExprOrFieldPath), asInt64Expr(places)})
+}
+
 // Sqrt creates an expression that is the square root of the input field or expression.
 // - numericExprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that returns a number when evaluated.
 //
@@ -207,6 +226,17 @@ func Round(numericExprOrFieldPath any) Expression {
 // regardless of any other documented package stability guarantees.
 func Sqrt(numericExprOrFieldPath any) Expression {
 	return newBaseFunction("sqrt", []Expression{asFieldExpr(numericExprOrFieldPath)})
+}
+
+// Cmp creates an expression that compares the left and right expressions, returning it as an Expr.
+// Returns -1 if left < right, 0 if left == right, and 1 if left > right.
+// - left can be a field path string, [FieldPath] or [Expression].
+// - right can be a constant or an [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Cmp(left, right any) Expression {
+	return leftRightToBaseFunction("cmp", left, right)
 }
 
 // TimestampAdd creates an expression that adds a specified amount of time to a timestamp.
@@ -229,6 +259,42 @@ func TimestampAdd(timestamp, unit, amount any) Expression {
 // regardless of any other documented package stability guarantees.
 func TimestampSubtract(timestamp, unit, amount any) Expression {
 	return newBaseFunction("timestamp_subtract", []Expression{asFieldExpr(timestamp), asStringExpr(unit), asInt64Expr(amount)})
+}
+
+// TimestampExtract creates an expression that extracts a part from a timestamp.
+//   - timestamp can be a field path string, [FieldPath] or [Expression].
+//   - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+//     "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+//     "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func TimestampExtract(timestamp, part any) Expression {
+	return newBaseFunction("timestamp_extract", []Expression{asFieldExpr(timestamp), asStringExpr(part)})
+}
+
+// TimestampExtractWithTimezone creates an expression that extracts a part from a timestamp in a given timezone.
+//   - timestamp can be a field path string, [FieldPath] or [Expression].
+//   - part can be a string or an [Expression]. Valid parts include "microsecond", "millisecond", "second", "minute", "hour", "day",
+//     "dayofweek", "dayofyear", "week", "week(monday)", "week(tuesday)", "week(wednesday)", "week(thursday)",
+//     "week(friday)", "week(saturday)", "week(sunday)", "month", "quarter", "year", "isoweek", and "isoyear".
+//   - timezone can be a string or an [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func TimestampExtractWithTimezone(timestamp, part, timezone any) Expression {
+	return newBaseFunction("timestamp_extract", []Expression{asFieldExpr(timestamp), asStringExpr(part), asStringExpr(timezone)})
+}
+
+// TimestampDiff creates an expression that calculates the difference between two timestamps.
+// - end can be a field path string, [FieldPath] or [Expression].
+// - start can be a field path string, [FieldPath] or [Expression].
+// - unit can be a string or an [Expression]. Valid units include "microsecond", "millisecond", "second", "minute", "hour" and "day".
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func TimestampDiff(end, start, unit any) Expression {
+	return newBaseFunction("timestamp_diff", []Expression{asFieldExpr(end), asFieldExpr(start), asStringExpr(unit)})
 }
 
 // TimestampTruncate creates an expression that truncates a timestamp to a specified granularity.
@@ -324,6 +390,14 @@ func CurrentTimestamp() Expression {
 	return newBaseFunction("current_timestamp", []Expression{})
 }
 
+// CurrentDocument creates an expression that returns the current document.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func CurrentDocument() Expression {
+	return newBaseFunction("current_document", []Expression{})
+}
+
 // ArrayLength creates an expression that calculates the length of an array.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
 //
@@ -409,6 +483,117 @@ func ArrayMinimum(exprOrFieldPath any) Expression {
 	return newBaseFunction("minimum", []Expression{asFieldExpr(exprOrFieldPath)})
 }
 
+// ArrayMaximumN creates an expression that finds the N maximum elements in an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - n can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayMaximumN(exprOrFieldPath any, n any) Expression {
+	return newBaseFunction("maximum_n", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(n)})
+}
+
+// ArrayMinimumN creates an expression that finds the N minimum elements in an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - n can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayMinimumN(exprOrFieldPath any, n any) Expression {
+	return newBaseFunction("minimum_n", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(n)})
+}
+
+// ArrayFirst creates an expression that returns the first element of an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayFirst(exprOrFieldPath any) Expression {
+	return newBaseFunction("array_first", []Expression{asFieldExpr(exprOrFieldPath)})
+}
+
+// ArrayFirstN creates an expression that returns the first N elements of an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - n can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayFirstN(exprOrFieldPath any, n any) Expression {
+	return newBaseFunction("array_first_n", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(n)})
+}
+
+// ArrayLast creates an expression that returns the last element of an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayLast(exprOrFieldPath any) Expression {
+	return newBaseFunction("array_last", []Expression{asFieldExpr(exprOrFieldPath)})
+}
+
+// ArrayLastN creates an expression that returns the last N elements of an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - n can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayLastN(exprOrFieldPath any, n any) Expression {
+	return newBaseFunction("array_last_n", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(n)})
+}
+
+// ArraySlice creates an expression that returns a slice of an array starting from the specified offset.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - offset is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArraySlice(exprOrFieldPath any, offset any) Expression {
+	return newBaseFunction("array_slice", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(offset)})
+}
+
+// ArraySliceLength creates an expression that returns a slice of an array starting from the specified offset with a given length.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - offset is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
+// - length is the number of elements to include. It can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArraySliceLength(exprOrFieldPath any, offset any, length any) Expression {
+	return newBaseFunction("array_slice", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(offset), asInt64Expr(length)})
+}
+
+// ArrayFilter creates an expression for array_filter(array, param, body).
+// - array can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - param is the name of the parameter to use in the body expression.
+// - body is the expression to evaluate for each element of the array.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayFilter(array any, param string, body BooleanExpression) Expression {
+	return newBaseFunction("array_filter", []Expression{asFieldExpr(array), ConstantOf(param), body})
+}
+
+// ArrayIndexOf creates an expression that returns the index of a search value in an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - search is the value to search for. It can be a constant or [Expression].
+// - direction is the search direction. It can be "first", "last" or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayIndexOf(exprOrFieldPath any, search any, direction any) Expression {
+	return newBaseFunction("array_index_of", []Expression{asFieldExpr(exprOrFieldPath), toExprOrConstant(search), toExprOrConstant(direction)})
+}
+
+// ArrayIndexOfAll creates an expression that returns the indices of all occurrences of a search value in an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - search is the value to search for. It can be a constant or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayIndexOfAll(exprOrFieldPath any, search any) Expression {
+	return newBaseFunction("array_index_of_all", []Expression{asFieldExpr(exprOrFieldPath), toExprOrConstant(search)})
+}
+
 // ByteLength creates an expression that calculates the length of a string represented by a field or [Expression] in UTF-8
 // bytes.
 //   - exprOrFieldPath can be a field path string, [FieldPath] or [Expression].
@@ -438,6 +623,38 @@ func StringConcat(exprOrFieldPath any, otherStrings ...any) Expression {
 	return newBaseFunction("string_concat", append([]Expression{asFieldExpr(exprOrFieldPath)}, toExprs(otherStrings)...))
 }
 
+// StringRepeat creates an expression that repeats a string a specified number of times.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+// - repetition is the number of times to repeat the string. It can be an int, int32, int64 or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func StringRepeat(exprOrFieldPath any, repetition any) Expression {
+	return newBaseFunction("string_repeat", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(repetition)})
+}
+
+// StringReplaceOne creates an expression that replaces the first occurrence of a search value with a replacement value.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+// - search is the value to search for. It can be a string or [Expression].
+// - replacement is the value to replace with. It can be a string or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func StringReplaceOne(exprOrFieldPath any, search, replacement any) Expression {
+	return newBaseFunction("string_replace_one", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(search), asStringExpr(replacement)})
+}
+
+// StringReplaceAll creates an expression that replaces all occurrences of a search value with a replacement value.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+// - search is the value to search for. It can be a string or [Expression].
+// - replacement is the value to replace with. It can be a string or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func StringReplaceAll(exprOrFieldPath any, search, replacement any) Expression {
+	return newBaseFunction("string_replace_all", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(search), asStringExpr(replacement)})
+}
+
 // StringReverse creates an expression that reverses a string.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
 //
@@ -445,6 +662,16 @@ func StringConcat(exprOrFieldPath any, otherStrings ...any) Expression {
 // regardless of any other documented package stability guarantees.
 func StringReverse(exprOrFieldPath any) Expression {
 	return newBaseFunction("string_reverse", []Expression{asFieldExpr(exprOrFieldPath)})
+}
+
+// StringIndexOf creates an expression that returns the index of a search value in a string.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+// - search is the value to search for. It can be a string or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func StringIndexOf(exprOrFieldPath any, search any) Expression {
+	return newBaseFunction("string_index_of", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(search)})
 }
 
 // Join creates an expression that joins the elements of a string array into a single string.
@@ -493,6 +720,54 @@ func ToUpper(exprOrFieldPath any) Expression {
 // regardless of any other documented package stability guarantees.
 func Trim(exprOrFieldPath any) Expression {
 	return newBaseFunction("trim", []Expression{asFieldExpr(exprOrFieldPath)})
+}
+
+// TrimWithValues creates an expression that removes leading and trailing whitespace or specified characters from a string.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+// - valuesToTrim is a string constant or [Expression] specifying characters to remove.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func TrimWithValues(exprOrFieldPath any, valuesToTrim any) Expression {
+	return newBaseFunction("trim", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(valuesToTrim)})
+}
+
+// LTrim creates an expression that removes leading whitespace from a string.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func LTrim(exprOrFieldPath any) Expression {
+	return newBaseFunction("ltrim", []Expression{asFieldExpr(exprOrFieldPath)})
+}
+
+// LTrimWithValues creates an expression that removes leading whitespace or specified characters from a string.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+// - valuesToTrim is a string constant or [Expression] specifying characters to remove.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func LTrimWithValues(exprOrFieldPath any, valuesToTrim any) Expression {
+	return newBaseFunction("ltrim", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(valuesToTrim)})
+}
+
+// RTrim creates an expression that removes trailing whitespace from a string.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func RTrim(exprOrFieldPath any) Expression {
+	return newBaseFunction("rtrim", []Expression{asFieldExpr(exprOrFieldPath)})
+}
+
+// RTrimWithValues creates an expression that removes trailing whitespace or specified characters from a string.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
+// - valuesToTrim is a string constant or [Expression] specifying characters to remove.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func RTrimWithValues(exprOrFieldPath any, valuesToTrim any) Expression {
+	return newBaseFunction("rtrim", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(valuesToTrim)})
 }
 
 // Split creates an expression that splits a string by a delimiter.
@@ -692,6 +967,40 @@ func IfAbsent(exprOrField any, elseValue any) Expression {
 	return newBaseFunction("if_absent", []Expression{asFieldExpr(exprOrField), toExprOrConstant(elseValue)})
 }
 
+// IfNull creates an expression that returns the first non-null value in a list of expressions.
+// - exprOrValue can be a constant or an [Expression].
+// - others are additional expressions or values to check.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func IfNull(exprOrValue any, others ...any) Expression {
+	return newBaseFunction("if_null", append([]Expression{toExprOrConstant(exprOrValue)}, toArrayOfExprOrConstant(others)...))
+}
+
+// SwitchOn creates an expression that evaluates a series of conditions and returns the result
+// associated with the first condition that evaluates to true.
+//
+// Arguments should be provided as alternating pairs of (condition, result).
+//   - condition: A [BooleanExpression].
+//   - result: An [Expression] or a literal value to return if the condition is true.
+//
+// An optional default result can be provided as the last argument if the total number
+// of arguments is odd.
+//
+// Example:
+//
+//	firestore.SwitchOn(
+//	    firestore.FieldOf("score").GreaterThan(90), "A",
+//	    firestore.FieldOf("score").GreaterThan(80), "B",
+//	    "F", // Default result
+//	)
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func SwitchOn(args ...any) Expression {
+	return newBaseFunction("switch_on", toArrayOfExprOrConstant(args))
+}
+
 // Map creates an expression that creates a Firestore map value from an input object.
 // - elements: The input map to evaluate in the expression.
 //
@@ -735,4 +1044,66 @@ func MapMerge(exprOrField any, secondMap Expression, otherMaps ...Expression) Ex
 // regardless of any other documented package stability guarantees.
 func MapRemove(exprOrField any, strOrExprkey any) Expression {
 	return newBaseFunction("map_remove", []Expression{asFieldExpr(exprOrField), asStringExpr(strOrExprkey)})
+}
+
+// MapSet creates an expression that updates a map with key-value pairs.
+// - exprOrField: The expression representing the map.
+// - keysAndValues: A list of alternating key and value arguments.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func MapSet(exprOrField any, keysAndValues ...any) Expression {
+	return newBaseFunction("map_set", append([]Expression{asFieldExpr(exprOrField)}, toArrayOfExprOrConstant(keysAndValues)...))
+}
+
+// MapKeys creates an expression that returns the keys of a map as an array.
+// - exprOrField: The expression representing the map.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func MapKeys(exprOrField any) Expression {
+	return newBaseFunction("map_keys", []Expression{asFieldExpr(exprOrField)})
+}
+
+// MapValues creates an expression that returns the values of a map as an array.
+// - exprOrField: The expression representing the map.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func MapValues(exprOrField any) Expression {
+	return newBaseFunction("map_values", []Expression{asFieldExpr(exprOrField)})
+}
+
+// MapEntries creates an expression that returns the entries of a map as an array of key-value maps.
+// - exprOrField: The expression representing the map.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func MapEntries(exprOrField any) Expression {
+	return newBaseFunction("map_entries", []Expression{asFieldExpr(exprOrField)})
+}
+
+// RegexFind creates an expression that returns the first substring that matches the specified regex pattern.
+// - exprOrField: The expression representing the string to search.
+// - pattern is the regular expression to search for.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func RegexFind(exprOrField any, pattern any) Expression {
+	return newBaseFunction("regex_find", []Expression{asFieldExpr(exprOrField), asStringExpr(pattern)})
+}
+
+// RegexFindAll creates an expression that returns all substrings that match the specified regex pattern.
+// - exprOrField: The expression representing the string to search.
+// - pattern is the regular expression to search for.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func RegexFindAll(exprOrField any, pattern any) Expression {
+	return newBaseFunction("regex_find_all", []Expression{asFieldExpr(exprOrField), asStringExpr(pattern)})
+}
+
+// Rand returns a pseudo-random floating point number, chosen uniformly between 0.0 (inclusive) and 1.0 (exclusive).
+func Rand() Expression {
+	return newBaseFunction("rand", nil)
 }

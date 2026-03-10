@@ -25,6 +25,8 @@ import (
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -40,19 +42,21 @@ var newVertexRagClientHook clientHook
 
 // VertexRagCallOptions contains the retry settings for each method of VertexRagClient.
 type VertexRagCallOptions struct {
-	RetrieveContexts   []gax.CallOption
-	AugmentPrompt      []gax.CallOption
-	CorroborateContent []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	RetrieveContexts      []gax.CallOption
+	AugmentPrompt         []gax.CallOption
+	CorroborateContent    []gax.CallOption
+	AskContexts           []gax.CallOption
+	AsyncRetrieveContexts []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
+	WaitOperation         []gax.CallOption
 }
 
 func defaultVertexRagGRPCClientOptions() []option.ClientOption {
@@ -72,19 +76,21 @@ func defaultVertexRagGRPCClientOptions() []option.ClientOption {
 
 func defaultVertexRagCallOptions() *VertexRagCallOptions {
 	return &VertexRagCallOptions{
-		RetrieveContexts:   []gax.CallOption{},
-		AugmentPrompt:      []gax.CallOption{},
-		CorroborateContent: []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		RetrieveContexts:      []gax.CallOption{},
+		AugmentPrompt:         []gax.CallOption{},
+		CorroborateContent:    []gax.CallOption{},
+		AskContexts:           []gax.CallOption{},
+		AsyncRetrieveContexts: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
+		WaitOperation:         []gax.CallOption{},
 	}
 }
 
@@ -96,6 +102,9 @@ type internalVertexRagClient interface {
 	RetrieveContexts(context.Context, *aiplatformpb.RetrieveContextsRequest, ...gax.CallOption) (*aiplatformpb.RetrieveContextsResponse, error)
 	AugmentPrompt(context.Context, *aiplatformpb.AugmentPromptRequest, ...gax.CallOption) (*aiplatformpb.AugmentPromptResponse, error)
 	CorroborateContent(context.Context, *aiplatformpb.CorroborateContentRequest, ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error)
+	AskContexts(context.Context, *aiplatformpb.AskContextsRequest, ...gax.CallOption) (*aiplatformpb.AskContextsResponse, error)
+	AsyncRetrieveContexts(context.Context, *aiplatformpb.AsyncRetrieveContextsRequest, ...gax.CallOption) (*AsyncRetrieveContextsOperation, error)
+	AsyncRetrieveContextsOperation(name string) *AsyncRetrieveContextsOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -118,6 +127,11 @@ type VertexRagClient struct {
 
 	// The call options for this service.
 	CallOptions *VertexRagCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -159,6 +173,22 @@ func (c *VertexRagClient) AugmentPrompt(ctx context.Context, req *aiplatformpb.A
 // supporting facts.
 func (c *VertexRagClient) CorroborateContent(ctx context.Context, req *aiplatformpb.CorroborateContentRequest, opts ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error) {
 	return c.internalClient.CorroborateContent(ctx, req, opts...)
+}
+
+// AskContexts agentic Retrieval Ask API for RAG.
+func (c *VertexRagClient) AskContexts(ctx context.Context, req *aiplatformpb.AskContextsRequest, opts ...gax.CallOption) (*aiplatformpb.AskContextsResponse, error) {
+	return c.internalClient.AskContexts(ctx, req, opts...)
+}
+
+// AsyncRetrieveContexts asynchronous API to retrieves relevant contexts for a query.
+func (c *VertexRagClient) AsyncRetrieveContexts(ctx context.Context, req *aiplatformpb.AsyncRetrieveContextsRequest, opts ...gax.CallOption) (*AsyncRetrieveContextsOperation, error) {
+	return c.internalClient.AsyncRetrieveContexts(ctx, req, opts...)
+}
+
+// AsyncRetrieveContextsOperation returns a new AsyncRetrieveContextsOperation from a given name.
+// The name must be that of a previously created AsyncRetrieveContextsOperation, possibly from a different process.
+func (c *VertexRagClient) AsyncRetrieveContextsOperation(name string) *AsyncRetrieveContextsOperation {
+	return c.internalClient.AsyncRetrieveContextsOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -235,6 +265,11 @@ type vertexRagGRPCClient struct {
 	// The gRPC API client.
 	vertexRagClient aiplatformpb.VertexRagServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
@@ -280,6 +315,17 @@ func NewVertexRagClient(ctx context.Context, opts ...option.ClientOption) (*Vert
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -360,6 +406,44 @@ func (c *vertexRagGRPCClient) CorroborateContent(ctx context.Context, req *aipla
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *vertexRagGRPCClient) AskContexts(ctx context.Context, req *aiplatformpb.AskContextsRequest, opts ...gax.CallOption) (*aiplatformpb.AskContextsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AskContexts[0:len((*c.CallOptions).AskContexts):len((*c.CallOptions).AskContexts)], opts...)
+	var resp *aiplatformpb.AskContextsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagClient.AskContexts, req, settings.GRPC, c.logger, "AskContexts")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagGRPCClient) AsyncRetrieveContexts(ctx context.Context, req *aiplatformpb.AsyncRetrieveContextsRequest, opts ...gax.CallOption) (*AsyncRetrieveContextsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AsyncRetrieveContexts[0:len((*c.CallOptions).AsyncRetrieveContexts):len((*c.CallOptions).AsyncRetrieveContexts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagClient.AsyncRetrieveContexts, req, settings.GRPC, c.logger, "AsyncRetrieveContexts")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AsyncRetrieveContextsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *vertexRagGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -588,4 +672,12 @@ func (c *vertexRagGRPCClient) WaitOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	return resp, nil
+}
+
+// AsyncRetrieveContextsOperation returns a new AsyncRetrieveContextsOperation from a given name.
+// The name must be that of a previously created AsyncRetrieveContextsOperation, possibly from a different process.
+func (c *vertexRagGRPCClient) AsyncRetrieveContextsOperation(name string) *AsyncRetrieveContextsOperation {
+	return &AsyncRetrieveContextsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }

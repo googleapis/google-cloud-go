@@ -23,6 +23,7 @@ package aiplatformpb
 import (
 	context "context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,9 +35,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	VertexRagService_RetrieveContexts_FullMethodName   = "/google.cloud.aiplatform.v1beta1.VertexRagService/RetrieveContexts"
-	VertexRagService_AugmentPrompt_FullMethodName      = "/google.cloud.aiplatform.v1beta1.VertexRagService/AugmentPrompt"
-	VertexRagService_CorroborateContent_FullMethodName = "/google.cloud.aiplatform.v1beta1.VertexRagService/CorroborateContent"
+	VertexRagService_RetrieveContexts_FullMethodName      = "/google.cloud.aiplatform.v1beta1.VertexRagService/RetrieveContexts"
+	VertexRagService_AugmentPrompt_FullMethodName         = "/google.cloud.aiplatform.v1beta1.VertexRagService/AugmentPrompt"
+	VertexRagService_CorroborateContent_FullMethodName    = "/google.cloud.aiplatform.v1beta1.VertexRagService/CorroborateContent"
+	VertexRagService_AskContexts_FullMethodName           = "/google.cloud.aiplatform.v1beta1.VertexRagService/AskContexts"
+	VertexRagService_AsyncRetrieveContexts_FullMethodName = "/google.cloud.aiplatform.v1beta1.VertexRagService/AsyncRetrieveContexts"
 )
 
 // VertexRagServiceClient is the client API for VertexRagService service.
@@ -53,6 +56,10 @@ type VertexRagServiceClient interface {
 	// the text. It also extracts and returns claims from the text and provides
 	// supporting facts.
 	CorroborateContent(ctx context.Context, in *CorroborateContentRequest, opts ...grpc.CallOption) (*CorroborateContentResponse, error)
+	// Agentic Retrieval Ask API for RAG.
+	AskContexts(ctx context.Context, in *AskContextsRequest, opts ...grpc.CallOption) (*AskContextsResponse, error)
+	// Asynchronous API to retrieves relevant contexts for a query.
+	AsyncRetrieveContexts(ctx context.Context, in *AsyncRetrieveContextsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type vertexRagServiceClient struct {
@@ -90,6 +97,24 @@ func (c *vertexRagServiceClient) CorroborateContent(ctx context.Context, in *Cor
 	return out, nil
 }
 
+func (c *vertexRagServiceClient) AskContexts(ctx context.Context, in *AskContextsRequest, opts ...grpc.CallOption) (*AskContextsResponse, error) {
+	out := new(AskContextsResponse)
+	err := c.cc.Invoke(ctx, VertexRagService_AskContexts_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagServiceClient) AsyncRetrieveContexts(ctx context.Context, in *AsyncRetrieveContextsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VertexRagService_AsyncRetrieveContexts_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VertexRagServiceServer is the server API for VertexRagService service.
 // All implementations should embed UnimplementedVertexRagServiceServer
 // for forward compatibility
@@ -104,6 +129,10 @@ type VertexRagServiceServer interface {
 	// the text. It also extracts and returns claims from the text and provides
 	// supporting facts.
 	CorroborateContent(context.Context, *CorroborateContentRequest) (*CorroborateContentResponse, error)
+	// Agentic Retrieval Ask API for RAG.
+	AskContexts(context.Context, *AskContextsRequest) (*AskContextsResponse, error)
+	// Asynchronous API to retrieves relevant contexts for a query.
+	AsyncRetrieveContexts(context.Context, *AsyncRetrieveContextsRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedVertexRagServiceServer should be embedded to have forward compatible implementations.
@@ -118,6 +147,12 @@ func (UnimplementedVertexRagServiceServer) AugmentPrompt(context.Context, *Augme
 }
 func (UnimplementedVertexRagServiceServer) CorroborateContent(context.Context, *CorroborateContentRequest) (*CorroborateContentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CorroborateContent not implemented")
+}
+func (UnimplementedVertexRagServiceServer) AskContexts(context.Context, *AskContextsRequest) (*AskContextsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AskContexts not implemented")
+}
+func (UnimplementedVertexRagServiceServer) AsyncRetrieveContexts(context.Context, *AsyncRetrieveContextsRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AsyncRetrieveContexts not implemented")
 }
 
 // UnsafeVertexRagServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -185,6 +220,42 @@ func _VertexRagService_CorroborateContent_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VertexRagService_AskContexts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AskContextsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagServiceServer).AskContexts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagService_AskContexts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagServiceServer).AskContexts(ctx, req.(*AskContextsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagService_AsyncRetrieveContexts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AsyncRetrieveContextsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagServiceServer).AsyncRetrieveContexts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagService_AsyncRetrieveContexts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagServiceServer).AsyncRetrieveContexts(ctx, req.(*AsyncRetrieveContextsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VertexRagService_ServiceDesc is the grpc.ServiceDesc for VertexRagService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -203,6 +274,14 @@ var VertexRagService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CorroborateContent",
 			Handler:    _VertexRagService_CorroborateContent_Handler,
+		},
+		{
+			MethodName: "AskContexts",
+			Handler:    _VertexRagService_AskContexts_Handler,
+		},
+		{
+			MethodName: "AsyncRetrieveContexts",
+			Handler:    _VertexRagService_AsyncRetrieveContexts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

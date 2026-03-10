@@ -117,7 +117,11 @@ jobs:
       id: ga_check # Add an ID to this step to check its outcome later.
       if: steps.detect.outputs.breaking_change_found == 'true'
       run: |
-        if [[ "${MATRIX_CHANGED}" =~ apiv[0-9]+$ ]]; then
+        # Fail if the module path itself indicates that it is GA (e.g. "compute/apiv1").
+        # Some modules (e.g. "shopping") contain multiple API versions below the module root.
+        # For these, we also check diff.txt for GA package paths (e.g. apiv1/) to
+        # catch breaking changes in GA packages nested within a non-versioned module.
+        if [[ "${MATRIX_CHANGED}" =~ apiv[0-9]+$ ]] || grep -q -E "(/|^)apiv[0-9]+(/|:)" "${MATRIX_CHANGED}/diff.txt"; then
           echo "Error: Breaking change detected in GA API: ${MATRIX_CHANGED}"
           exit 1
         fi

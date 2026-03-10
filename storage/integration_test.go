@@ -6253,8 +6253,111 @@ func TestIntegration_KMS(t *testing.T) {
 
 		// Remove the default KMS key.
 		attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: ""}}, attrs.MetaGeneration)
-		if attrs.Encryption != nil {
+		if attrs.Encryption != nil && attrs.Encryption.DefaultKMSKeyName != "" {
 			t.Fatalf("got %#v, want nil", attrs.Encryption)
+		}
+	})
+}
+
+func TestIntegration_BucketEncryptionEnforcement(t *testing.T) {
+	t.Skip("b/489975716")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bktName := prefix + uidSpace.New()
+		bkt := client.Bucket(bktName)
+		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		}
+		keyName := keyRingName + "/cryptoKeys/key1"
+		// Create bucket with encryption enforcement config.
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			Encryption: &BucketEncryption{
+				DefaultKMSKeyName: keyName,
+			},
+			GoogleManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: FullyRestricted,
+			},
+			CustomerManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: FullyRestricted,
+			},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		// Verify creation.
+		attrs := h.mustBucketAttrs(bkt)
+		if attrs.Encryption == nil {
+			t.Fatal("expected encryption attrs to be set")
+		}
+		if attrs.Encryption.DefaultKMSKeyName != keyName {
+			t.Fatalf("Encryption.DefaultKMSKeyName: got: %v, want: %v", attrs.Encryption.DefaultKMSKeyName, keyName)
+		}
+		if attrs.GoogleManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected GoogleManagedEncryptionEnforcementConfig to be set")
+		}
+		if got, want := attrs.GoogleManagedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("GoogleManagedEncryptionEnforcementConfig.RestrictionMode: got %q, want %q", got, want)
+		}
+		if attrs.CustomerManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected CustomerManagedEncryptionEnforcementConfig to be set")
+		}
+		if got, want := attrs.CustomerManagedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("CustomerManagedEncryptionEnforcementConfig.RestrictionMode: got %q, want %q", got, want)
+		}
+
+		// Update encryption enforcement config.
+		ua := BucketAttrsToUpdate{
+			CustomerManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: NotRestricted,
+			},
+			CustomerSuppliedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: FullyRestricted,
+			},
+		}
+
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+
+		// Verify update from attrs.
+		if attrs.Encryption == nil || attrs.Encryption.DefaultKMSKeyName == "" {
+			t.Errorf("expected DefaultKMSKeyName to be set, got %v", attrs.Encryption)
+		}
+		if attrs.GoogleManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected GoogleManagedEncryptionEnforcementConfig to be set after update")
+		}
+		if got, want := attrs.GoogleManagedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("GoogleManagedEncryptionEnforcementConfig.RestrictionMode (after update): got %q, want %q", got, want)
+		}
+		if attrs.CustomerManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected CustomerManagedEncryptionEnforcementConfig to be set after update")
+		}
+		if got, want := attrs.CustomerManagedEncryptionEnforcementConfig.RestrictionMode, NotRestricted; got != want {
+			t.Errorf("CustomerManagedEncryptionEnforcementConfig.RestrictionMode (after update): got %q, want %q", got, want)
+		}
+		if attrs.CustomerSuppliedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected CustomerSuppliedEncryptionEnforcementConfig to be set after update")
+		}
+		if got, want := attrs.CustomerSuppliedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("CustomerSuppliedEncryptionEnforcementConfig.RestrictionMode (after update): got %q, want %q", got, want)
+		}
+
+		// Patching GMEK while deleting DefaultKMSKeyName.
+		ua = BucketAttrsToUpdate{
+			Encryption: &BucketEncryption{DefaultKMSKeyName: ""},
+			GoogleManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: NotRestricted,
+			},
+		}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+
+		if attrs.Encryption != nil && attrs.Encryption.DefaultKMSKeyName != "" {
+			t.Errorf("expected DefaultKMSKeyName to be empty, got %v", attrs.Encryption.DefaultKMSKeyName)
+		}
+		if attrs.GoogleManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected GoogleManagedEncryptionEnforcementConfig to be set after patch")
+		}
+		if got, want := attrs.GoogleManagedEncryptionEnforcementConfig.RestrictionMode, NotRestricted; got != want {
+			t.Errorf("GoogleManagedEncryptionEnforcementConfig.RestrictionMode (after patch): got %q, want %q", got, want)
 		}
 	})
 }

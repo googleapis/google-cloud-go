@@ -264,6 +264,12 @@ func TestIsSubPath(t *testing.T) {
 			name:           "filePath is the same as localDirectory",
 			localDirectory: "/tmp/foo",
 			filePath:       "/tmp/foo",
+			wantIsSub:      false,
+		},
+		{
+			name:           "local directory is /",
+			localDirectory: "/",
+			filePath:       "/../../a",
 			wantIsSub:      true,
 		},
 		{

@@ -388,6 +388,14 @@ func Not(condition BooleanExpression) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("not", []Expression{condition})}
 }
 
+// Nor creates an expression that performs a logical 'NOR' operation.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Nor(condition BooleanExpression, right ...BooleanExpression) BooleanExpression {
+	return &baseBooleanExpression{baseFunction: newBaseFunctionFromBooleans("nor", append([]BooleanExpression{condition}, right...))}
+}
+
 // Or creates an expression that performs a logical 'OR' operation.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
@@ -418,4 +426,17 @@ func IsError(expr Expression) BooleanExpression {
 // regardless of any other documented package stability guarantees.
 func IsAbsent(exprOrField any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("is_absent", []Expression{asFieldExpr(exprOrField)})}
+}
+
+// IsType creates an expression that checks if an expression is of a specific type.
+//   - exprOrField can be a field path string, [FieldPath] or an [Expression].
+//   - dataType can be a string constant or an [Expression] that evaluates to a type name. Valid values are
+//     "null", "array", "boolean", "bytes", "timestamp", "geo_point", "number", "int32", "int64",
+//     "float64", "decimal128", "map", "reference", "string", "vector", "max_key", "min_key",
+//     "min_array", "object_id", "regex", "request_timestamp"
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func IsType(exprOrField any, dataType any) BooleanExpression {
+	return &baseBooleanExpression{baseFunction: newBaseFunction("is_type", []Expression{asFieldExpr(exprOrField), asStringExpr(dataType)})}
 }

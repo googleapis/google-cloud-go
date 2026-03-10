@@ -1113,6 +1113,9 @@ func (c *dataObjectRESTClient) DeleteDataObject(ctx context.Context, req *vector
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

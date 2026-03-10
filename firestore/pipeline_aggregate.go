@@ -179,6 +179,42 @@ func CountDistinct(fieldOrExpr any) AggregateFunction {
 	return newBaseAggregateFunction("count_distinct", fieldOrExpr)
 }
 
+// First returns the value of the expression for the first document in the group.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func First(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("first", fieldOrExpr)
+}
+
+// Last returns the value of the expression for the last document in the group.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Last(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("last", fieldOrExpr)
+}
+
+// ArrayAgg returns an array containing all values of the expression when evaluated on each document in the group.
+// If the expression resolves to an absent value, it is converted to NULL.
+// The order of elements in the output array is not stable and shouldn't be relied upon.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayAgg(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("array_agg", fieldOrExpr)
+}
+
+// ArrayAggDistinct returns an array containing all distinct values of the expression when evaluated on each document in the group.
+// If the expression resolves to an absent value, it is converted to NULL.
+// The order of elements in the output array is not stable and shouldn't be relied upon.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayAggDistinct(fieldOrExpr any) AggregateFunction {
+	return newBaseAggregateFunction("array_agg_distinct", fieldOrExpr)
+}
+
 // CountIf creates an aggregation that counts the number of stage inputs where the provided boolean
 // expression evaluates to true.
 // Example:

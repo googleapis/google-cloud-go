@@ -137,8 +137,8 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.118.0
-    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
+    version: 1.119.0
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/aiplatform/v1
         service_config: aiplatform_v1.yaml
@@ -174,8 +174,8 @@ libraries:
       - internal/generated/snippets/aiplatform/
     tag_format: '{id}/v{version}'
   - id: alloydb
-    version: 1.20.0
-    last_generated_commit: d4a34bf03d617723146fe3ae15192c4d93981a27
+    version: 1.21.0
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/alloydb/v1
         service_config: alloydb_v1.yaml
@@ -704,7 +704,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: auditmanager
     version: 0.1.0
-    last_generated_commit: e40bad750cef7fa4ca8cd6ad50965fb709bd91c6
+    last_generated_commit: 052914c6278b3cce47646dcfd02e4b5fa9c72e39
     apis:
       - path: google/cloud/auditmanager/v1
         service_config: auditmanager_v1.yaml
@@ -1362,7 +1362,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: c83d354f79b02e3dc98f22248e22851fcf9b961d
     apis:
       - path: google/cloud/ces/v1beta
@@ -1730,8 +1730,8 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.55.0
-    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
+    version: 1.56.0
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/compute/v1
         service_config: compute_v1.yaml
@@ -2496,8 +2496,8 @@ libraries:
       - ^dlp/apiv2/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: documentai
-    version: 1.41.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    version: 1.42.0
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/documentai/v1
         service_config: documentai_v1.yaml
@@ -2746,7 +2746,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: firestore
     version: 1.21.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/firestore/admin/v1
         service_config: firestore_v1.yaml
@@ -3970,12 +3970,14 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
     version: 1.20.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: 5328d7103e480708b3fe2458f90441c3e720a15c
     apis:
       - path: google/cloud/networkconnectivity/v1
         service_config: networkconnectivity_v1.yaml
       - path: google/cloud/networkconnectivity/v1alpha1
         service_config: networkconnectivity_v1alpha1.yaml
+      - path: google/cloud/networkconnectivity/v1beta
+        service_config: networkconnectivity_v1beta.yaml
     source_roots:
       - networkconnectivity
       - internal/generated/snippets/networkconnectivity
@@ -4002,12 +4004,20 @@ libraries:
       - ^networkconnectivity/apiv1alpha1/helpers\.go$
       - ^networkconnectivity/apiv1alpha1/networkconnectivitypb/.*$
       - ^networkconnectivity/apiv1alpha1/\.repo-metadata\.json$
-    release_exclude_paths:
-      - internal/generated/snippets/networkconnectivity/
+      - ^networkconnectivity/apiv1beta/[^/]*_client\.go$
+      - ^networkconnectivity/apiv1beta/[^/]*_client_example_go123_test\.go$
+      - ^networkconnectivity/apiv1beta/[^/]*_client_example_test\.go$
+      - ^networkconnectivity/apiv1beta/auxiliary\.go$
+      - ^networkconnectivity/apiv1beta/auxiliary_go123\.go$
+      - ^networkconnectivity/apiv1beta/doc\.go$
+      - ^networkconnectivity/apiv1beta/gapic_metadata\.json$
+      - ^networkconnectivity/apiv1beta/helpers\.go$
+      - ^networkconnectivity/apiv1beta/\.repo-metadata\.json$
+      - ^networkconnectivity/apiv1beta/networkconnectivitypb/.*$
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.22.0
-    last_generated_commit: cfe62b3c5ceb9f81879c61480f26707980534462
+    version: 1.23.0
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/networkmanagement/v1
         service_config: networkmanagement_v1.yaml
@@ -5751,7 +5761,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.88.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/spanner/adapter/v1
         service_config: spanner.yaml
@@ -5879,7 +5889,7 @@ libraries:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
-    version: 1.60.0
+    version: 1.61.0
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/storage/control/v2
@@ -5918,8 +5928,8 @@ libraries:
       - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
-    version: 0.3.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    version: 0.4.0
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/storagebatchoperations/v1
         service_config: storagebatchoperations_v1.yaml
@@ -6229,8 +6239,8 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.3.0
-    last_generated_commit: 27ffde22e73154260f8eaa6115420b7bd895db2f
+    version: 0.4.0
+    last_generated_commit: 5c9602dbb5ac6856c07daf83be1fbd001a972ef3
     apis:
       - path: google/cloud/vectorsearch/v1beta
         service_config: vectorsearch_v1beta.yaml
