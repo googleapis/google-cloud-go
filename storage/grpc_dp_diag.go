@@ -44,8 +44,8 @@ const (
 
 	directPathDisableEnvVar = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
 
-	defaultServiceAccount      = "default"
-	defaultServiceAccountToken = "instance/service-accounts/default/token"
+	defaultKey      = "default"
+	serviceAccountTokenKey = "instance/service-accounts/default/token"
 )
 
 // directPathDiagnostic evaluates the provided options and environment to determine
@@ -101,12 +101,12 @@ func authDiagnostic(res *internaloption.UnsafeResolver) string {
 	}
 
 	// Verify that a default service account is attached.
-	if _, err := metadata.Email(defaultServiceAccount); err != nil {
+	if _, err := metadata.Email(defaultKey); err != nil {
 		return reasonNotDefaultServiceAccount
 	}
 
 	// Verify that a token can be fetched.
-	if _, err := metadata.Get(defaultServiceAccountToken); err != nil {
+	if _, err := metadata.Get(serviceAccountTokenKey); err != nil {
 		return reasonTokenFetchError
 	}
 
