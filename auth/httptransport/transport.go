@@ -17,6 +17,7 @@ package httptransport
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -227,16 +228,29 @@ func (t *otelAttributeTransport) RoundTrip(req *http.Request) (*http.Response, e
 
 	if span.IsRecording() {
 		if err != nil {
+			var errorType string
+			switch {
+			case errors.Is(err, context.DeadlineExceeded):
+				errorType = "CLIENT_TIMEOUT"
+			case errors.Is(err, context.Canceled):
+				errorType = "CLIENT_CANCELLED"
+			default:
+				errorType = "CLIENT_CONNECTION_ERROR"
+			}
 			span.SetAttributes(
-				attribute.String("error.type", "ERROR"),
+				attribute.String("error.type", errorType),
 				attribute.String("status.message", err.Error()),
 				attribute.String("exception.type", fmt.Sprintf("%T", err)),
 			)
-		} else if resp.StatusCode >= 400 {
-			span.SetAttributes(
-				attribute.String("error.type", strconv.Itoa(resp.StatusCode)),
-				attribute.String("status.message", resp.Status),
-			)
+		} else {
+			span.SetAttributes(attribute.Int("http.response.status_code", resp.StatusCode))
+			if resp.StatusCode >= 400 {
+				errorType := strconv.Itoa(resp.StatusCode)
+				span.SetAttributes(
+					attribute.String("error.type", errorType),
+					attribute.String("status.message", resp.Status),
+				)
+			}
 		}
 	}
 

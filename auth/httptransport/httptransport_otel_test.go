@@ -19,8 +19,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -66,6 +68,8 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 		opts               *Options
 		telemetryCtxValues map[string]string
 		statusCode         int
+		errorType          string // "timeout", "cancel", "connection"
+		wantErr            bool
 		wantSpans          int
 		wantSpan           sdktrace.ReadOnlySpan
 		wantAttrKeys       []attribute.Key
@@ -82,14 +86,9 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 					Code: codes.Unset,
 				},
 				Attributes: []attribute.KeyValue{
-					// In Cloud Trace, this often forms part of the Span Name.
 					keyHTTPRequestMetod.String(valHTTPGet),
-					// In Cloud Trace, this status code maps to the visual "Status" field
-					// (e.g., a green checkmark for 200, or an error icon for 5xx).
 					keyHTTPResponseStatus.Int(200),
 					keyNetProtoVersion.String(valHTTP11),
-					// "server.address", "server.port", and "url.full" are displayed as
-					// standard attribute keys in the "Attributes" tab.
 					keyServerAddr.String(valLocalhost),
 					attribute.String("rpc.system.name", "http"),
 				},
@@ -100,6 +99,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 			name:       "telemetry enabled error",
 			opts:       &Options{DisableAuthentication: true},
 			statusCode: http.StatusInternalServerError,
+			wantErr:    false, // The RoundTrip itself doesn't return an error for 500, it returns a response.
 			wantSpans:  1,
 			wantSpan: tracetest.SpanStub{
 				Name:     "HTTP GET",
@@ -110,7 +110,6 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 				},
 				Attributes: []attribute.KeyValue{
 					keyHTTPRequestMetod.String(valHTTPGet),
-					// In Cloud Trace, 5xx status codes are displayed as errors in the "Status" field.
 					keyHTTPResponseStatus.Int(500),
 					keyNetProtoVersion.String(valHTTP11),
 					keyServerAddr.String(valLocalhost),
@@ -120,6 +119,68 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull},
+		},
+		{
+			name:      "telemetry enabled client timeout",
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "timeout",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+					Description: "context deadline exceeded",
+				},
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					keyErrorType.String("context.deadlineExceededError"),
+					attribute.String("rpc.system.name", "http"),
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("status.message"), attribute.Key("exception.type")},
+		},
+		{
+			name:      "telemetry enabled client cancelled",
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "cancel",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+					Description: "context canceled",
+				},
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					keyErrorType.String("*errors.errorString"),
+					attribute.String("rpc.system.name", "http"),
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("status.message"), attribute.Key("exception.type")},
+		},
+		{
+			name:      "telemetry enabled client connection error",
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "connection",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+				},
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					keyErrorType.String("*net.OpError"),
+					attribute.String("rpc.system.name", "http"),
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr, attribute.Key("status.message"), attribute.Key("exception.type")},
 		},
 		{
 			name: "telemetry disabled",
@@ -214,9 +275,18 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 			exporter.Reset()
 
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(tt.statusCode)
+				if tt.errorType == "timeout" {
+					time.Sleep(100 * time.Millisecond)
+				}
+				if tt.statusCode != 0 {
+					w.WriteHeader(tt.statusCode)
+				}
 			}))
 			defer server.Close()
+
+			if tt.errorType == "connection" {
+				server.Close()
+			}
 
 			tt.opts.Endpoint = server.URL
 			client, err := NewClient(tt.opts)
@@ -225,6 +295,15 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 			}
 
 			ctx := context.Background()
+			var cancel context.CancelFunc
+			if tt.errorType == "timeout" {
+				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
+				defer cancel()
+			} else if tt.errorType == "cancel" {
+				ctx, cancel = context.WithCancel(ctx)
+				cancel()
+			}
+
 			for k, v := range tt.telemetryCtxValues {
 				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
@@ -235,10 +314,12 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 			}
 
 			resp, err := client.Do(req)
-			if err != nil {
-				t.Fatalf("client.Do() = %v, want nil", err)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("client.Do() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			resp.Body.Close()
+			if resp != nil && resp.Body != nil {
+				resp.Body.Close()
+			}
 
 			spans := exporter.GetSpans()
 			if len(spans) != tt.wantSpans {
@@ -253,7 +334,7 @@ func TestNewClient_OpenTelemetry_Enabled(t *testing.T) {
 				if diff := cmp.Diff(tt.wantSpan.SpanKind(), span.SpanKind); diff != "" {
 					t.Errorf("span.SpanKind mismatch (-want +got):\n%s", diff)
 				}
-				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status); diff != "" {
+				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status, cmpopts.IgnoreFields(sdktrace.Status{}, "Description")); diff != "" {
 					t.Errorf("span.Status mismatch (-want +got):\n%s", diff)
 				}
 
@@ -332,6 +413,8 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 		opts               *Options
 		telemetryCtxValues map[string]string
 		statusCode         int
+		errorType          string // "timeout", "cancel", "connection"
+		wantErr            bool
 		wantSpans          int
 		wantSpan           sdktrace.ReadOnlySpan
 		wantAttrKeys       []attribute.Key
@@ -361,6 +444,7 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 			name:       "telemetry enabled error (but gated off)",
 			opts:       &Options{DisableAuthentication: true},
 			statusCode: http.StatusInternalServerError,
+			wantErr:    false,
 			wantSpans:  1,
 			wantSpan: tracetest.SpanStub{
 				Name:     "HTTP GET",
@@ -378,6 +462,63 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort, keyURLFull}, // NO url.domain
+		},
+		{
+			name:      "telemetry enabled client timeout (but gated off)",
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "timeout",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+				},
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					// NO rpc.system, exception.type, error.type
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr},
+		},
+		{
+			name:      "telemetry enabled client cancelled (but gated off)",
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "cancel",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+				},
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					// NO rpc.system, exception.type, error.type
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr},
+		},
+		{
+			name:      "telemetry enabled client connection error (but gated off)",
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "connection",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "HTTP GET",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+				},
+				Attributes: []attribute.KeyValue{
+					keyHTTPRequestMetod.String(valHTTPGet),
+					// NO rpc.system, exception.type, error.type
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerAddr},
 		},
 		{
 			name: "telemetry disabled",
@@ -439,9 +580,18 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 			exporter.Reset()
 
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(tt.statusCode)
+				if tt.errorType == "timeout" {
+					time.Sleep(100 * time.Millisecond)
+				}
+				if tt.statusCode != 0 {
+					w.WriteHeader(tt.statusCode)
+				}
 			}))
 			defer server.Close()
+
+			if tt.errorType == "connection" {
+				server.Close()
+			}
 
 			tt.opts.Endpoint = server.URL
 			client, err := NewClient(tt.opts)
@@ -450,6 +600,15 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 			}
 
 			ctx := context.Background()
+			var cancel context.CancelFunc
+			if tt.errorType == "timeout" {
+				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
+				defer cancel()
+			} else if tt.errorType == "cancel" {
+				ctx, cancel = context.WithCancel(ctx)
+				cancel()
+			}
+
 			for k, v := range tt.telemetryCtxValues {
 				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
@@ -460,10 +619,12 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 			}
 
 			resp, err := client.Do(req)
-			if err != nil {
-				t.Fatalf("client.Do() = %v, want nil", err)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("client.Do() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			resp.Body.Close()
+			if resp != nil && resp.Body != nil {
+				resp.Body.Close()
+			}
 
 			spans := exporter.GetSpans()
 			if len(spans) != tt.wantSpans {
@@ -478,7 +639,7 @@ func TestNewClient_OpenTelemetry_Disabled(t *testing.T) {
 				if diff := cmp.Diff(tt.wantSpan.SpanKind(), span.SpanKind); diff != "" {
 					t.Errorf("span.SpanKind mismatch (-want +got):\n%s", diff)
 				}
-				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status); diff != "" {
+				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status, cmpopts.IgnoreFields(sdktrace.Status{}, "Description")); diff != "" {
 					t.Errorf("span.Status mismatch (-want +got):\n%s", diff)
 				}
 
