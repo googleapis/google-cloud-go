@@ -29,9 +29,9 @@ import (
 func TestDirectPathDiagnostic(t *testing.T) {
 	// Start a mock metadata server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/computeMetadata/v1/instance/service-accounts/"+defaultServiceAccount+"/email" {
+		if r.URL.Path == "/computeMetadata/v1/instance/service-accounts/"+defaultKey+"/email" {
 			w.Write([]byte("default-compute@developer.gserviceaccount.com"))
-		} else if r.URL.Path == "/computeMetadata/v1/"+defaultServiceAccountToken {
+		} else if r.URL.Path == "/computeMetadata/v1/"+serviceAccountTokenKey {
 			w.Write([]byte(`{"access_token": "mock-token", "expires_in": 3600, "token_type": "Bearer"}`))
 		} else {
 			w.WriteHeader(http.StatusNotFound)
@@ -39,20 +39,20 @@ func TestDirectPathDiagnostic(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	os.Setenv("GCE_METADATA_HOST", ts.URL[7:]) // remove "http://"
+	os.Setenv("GCE_METADATA_HOST", ts.URL[7:])
 	defer os.Unsetenv("GCE_METADATA_HOST")
 
 	tests := []struct {
-		name string
-		opts []option.ClientOption
-		env  map[string]string
-		want string
+		name       string
+		opts       []option.ClientOption
+		disableEnv bool
+		want       string
 	}{
 		{
-			name: "disabled via env var",
-			opts: []option.ClientOption{internaloption.EnableDirectPath(true)},
-			env:  map[string]string{directPathDisableEnvVar: "true"},
-			want: reasonEnvVarDisabled,
+			name:       "disabled via env var",
+			opts:       []option.ClientOption{internaloption.EnableDirectPath(true)},
+			disableEnv: true,
+			want:       reasonEnvVarDisabled,
 		},
 		{
 			name: "option disabled",
@@ -116,7 +116,7 @@ func TestDirectPathDiagnostic(t *testing.T) {
 			want: reasonAPIKey,
 		},
 		{
-			name: "success undetermined",
+			name: "undetermined",
 			opts: []option.ClientOption{
 				internaloption.EnableDirectPath(true),
 				option.WithEndpoint("dns:///storage.googleapis.com"),
@@ -128,10 +128,9 @@ func TestDirectPathDiagnostic(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if len(tc.env) > 0 {
-				for k, v := range tc.env {
-					t.Setenv(k, v)
-				}
+			os.Setenv(directPathDisableEnvVar, "false") // ensure env var is not set unless specified in test case.
+			if tc.disableEnv {
+				os.Setenv(directPathDisableEnvVar, "true")
 			}
 
 			got := directPathDiagnostic(context.Background(), tc.opts...)
