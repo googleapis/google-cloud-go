@@ -39,6 +39,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	grpccreds "google.golang.org/grpc/credentials"
 	grpcinsecure "google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/stats"
@@ -501,8 +502,17 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if end.Error != nil {
 		// Extract status code and message
 		st, _ := status.FromError(end.Error)
+		var errorType string
+		switch st.Code() {
+		case codes.DeadlineExceeded:
+			errorType = "CLIENT_TIMEOUT"
+		case codes.Canceled:
+			errorType = "CLIENT_CANCELLED"
+		default:
+			errorType = strings.ToUpper(st.Code().String())
+		}
 		attrs = []attribute.KeyValue{
-			attribute.String("error.type", strings.ToUpper(st.Code().String())),
+			attribute.String("error.type", errorType),
 			attribute.String("status.message", st.Message()),
 			attribute.String("rpc.response.status_code", strings.ToUpper(st.Code().String())),
 			attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),

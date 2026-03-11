@@ -19,8 +19,10 @@ import (
 	"net"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -77,12 +79,24 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 			return nil, status.Error(grpccodes.Internal, "test error")
 		},
 	}
+	timeoutEchoer := &fakeEchoService{
+		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
+			time.Sleep(100 * time.Millisecond)
+			return &echo.EchoReply{Message: req.Message}, nil
+		},
+	}
+	cancelEchoer := &fakeEchoService{
+		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
+			return nil, status.Error(grpccodes.Canceled, "context canceled")
+		},
+	}
 
 	tests := []struct {
 		name               string
 		echoer             echo.EchoerServer
 		opts               *Options
 		telemetryCtxValues map[string]string
+		errorType          string // "timeout", "cancel"
 		wantErr            bool
 		wantSpans          int
 		wantSpan           sdktrace.ReadOnlySpan
@@ -134,6 +148,58 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},
+		},
+		{
+			name:      "telemetry enabled client timeout",
+			echoer:    timeoutEchoer,
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "timeout",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "echo.Echoer/Echo",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+					Description: "rpc error: code = DeadlineExceeded desc = context deadline exceeded",
+				},
+				Attributes: []attribute.KeyValue{
+					keyRPCStatusCode.Int64(4),
+					keyRPCMethod.String("Echo"),
+					keyRPCService.String("echo.Echoer"),
+					keyRPCSystem.String(valRPCSystemGRPC),
+					keyServerAddr.String(valLocalhost),
+					attribute.String("error.type", "CLIENT_TIMEOUT"),
+					attribute.String("rpc.response.status_code", "DEADLINEEXCEEDED"),
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("status.message"), attribute.Key("exception.type")},
+		},
+		{
+			name:      "telemetry enabled client cancelled",
+			echoer:    cancelEchoer,
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "cancel",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "echo.Echoer/Echo",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+					Description: "rpc error: code = Canceled desc = context canceled",
+				},
+				Attributes: []attribute.KeyValue{
+					keyRPCStatusCode.Int64(1),
+					keyRPCMethod.String("Echo"),
+					keyRPCService.String("echo.Echoer"),
+					keyRPCSystem.String(valRPCSystemGRPC),
+					keyServerAddr.String(valLocalhost),
+					attribute.String("error.type", "CLIENT_CANCELLED"),
+					attribute.String("rpc.response.status_code", "CANCELED"),
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("status.message"), attribute.Key("exception.type")},
 		},
 		{
 			name:   "telemetry disabled",
@@ -212,6 +278,12 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 			defer pool.Close()
 
 			ctx := context.Background()
+			var cancel context.CancelFunc
+			if tt.errorType == "timeout" {
+				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
+				defer cancel()
+			}
+
 			for k, v := range tt.telemetryCtxValues {
 				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
@@ -235,7 +307,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 				if diff := cmp.Diff(tt.wantSpan.SpanKind(), span.SpanKind); diff != "" {
 					t.Errorf("span.SpanKind mismatch (-want +got):\n%s", diff)
 				}
-				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status); diff != "" {
+				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status, cmpopts.IgnoreFields(sdktrace.Status{}, "Description")); diff != "" {
 					t.Errorf("span.Status mismatch (-want +got):\n%s", diff)
 				}
 
@@ -292,12 +364,24 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 			return nil, status.Error(grpccodes.Internal, "test error")
 		},
 	}
+	timeoutEchoer := &fakeEchoService{
+		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
+			time.Sleep(100 * time.Millisecond)
+			return &echo.EchoReply{Message: req.Message}, nil
+		},
+	}
+	cancelEchoer := &fakeEchoService{
+		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
+			return nil, status.Error(grpccodes.Canceled, "context canceled")
+		},
+	}
 
 	tests := []struct {
 		name               string
 		echoer             echo.EchoerServer
 		opts               *Options
 		telemetryCtxValues map[string]string
+		errorType          string // "timeout", "cancel"
 		wantErr            bool
 		wantSpans          int
 		wantSpan           sdktrace.ReadOnlySpan
@@ -344,6 +428,54 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
 					// Standard OTel attributes only, NO strict error.type/status.message/grpc.status
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerPort},
+		},
+		{
+			name:      "telemetry enabled client timeout (but gated off)",
+			echoer:    timeoutEchoer,
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "timeout",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "echo.Echoer/Echo",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+					Description: "rpc error: code = DeadlineExceeded desc = context deadline exceeded",
+				},
+				Attributes: []attribute.KeyValue{
+					keyRPCStatusCode.Int64(4),
+					keyRPCMethod.String("Echo"),
+					keyRPCService.String("echo.Echoer"),
+					keyRPCSystem.String(valRPCSystemGRPC),
+					keyServerAddr.String(valLocalhost),
+				},
+			}.Snapshot(),
+			wantAttrKeys: []attribute.Key{keyServerPort},
+		},
+		{
+			name:      "telemetry enabled client cancelled (but gated off)",
+			echoer:    cancelEchoer,
+			opts:      &Options{DisableAuthentication: true},
+			errorType: "cancel",
+			wantErr:   true,
+			wantSpans: 1,
+			wantSpan: tracetest.SpanStub{
+				Name:     "echo.Echoer/Echo",
+				SpanKind: oteltrace.SpanKindClient,
+				Status: sdktrace.Status{
+					Code:        codes.Error,
+					Description: "rpc error: code = Canceled desc = context canceled",
+				},
+				Attributes: []attribute.KeyValue{
+					keyRPCStatusCode.Int64(1),
+					keyRPCMethod.String("Echo"),
+					keyRPCService.String("echo.Echoer"),
+					keyRPCSystem.String(valRPCSystemGRPC),
+					keyServerAddr.String(valLocalhost),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},
@@ -413,6 +545,12 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 			defer pool.Close()
 
 			ctx := context.Background()
+			var cancel context.CancelFunc
+			if tt.errorType == "timeout" {
+				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
+				defer cancel()
+			}
+
 			for k, v := range tt.telemetryCtxValues {
 				ctx = callctx.WithTelemetryContext(ctx, k, v)
 			}
@@ -436,7 +574,7 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 				if diff := cmp.Diff(tt.wantSpan.SpanKind(), span.SpanKind); diff != "" {
 					t.Errorf("span.SpanKind mismatch (-want +got):\n%s", diff)
 				}
-				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status); diff != "" {
+				if diff := cmp.Diff(tt.wantSpan.Status(), span.Status, cmpopts.IgnoreFields(sdktrace.Status{}, "Description")); diff != "" {
 					t.Errorf("span.Status mismatch (-want +got):\n%s", diff)
 				}
 
