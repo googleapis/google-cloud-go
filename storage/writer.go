@@ -226,22 +226,38 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		return 0, fmt.Errorf("storage: Writer is closed")
 	}
 
+	if w.pcu != nil {
+		return w.pcu.write(p)
+	}
+	if w.opened {
+		n, err = w.iw.Write(p)
+		if err != nil {
+			w.mu.Lock()
+			werr := w.err
+			w.mu.Unlock()
+			// Preserve existing functionality that when context is canceled, Write will return
+			// context.Canceled instead of "io: read/write on closed pipe". This hides the
+			// pipe implementation detail from users and makes Write seem as though it's an RPC.
+			if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
+				return n, werr
+			}
+		}
+		return n, err
+	}
+
+	// First time initialization: freeze the configuration to either PCU or standard.
 	if w.EnableParallelUpload {
 		w.mu.Lock()
-		if w.pcu == nil {
-			if err := w.initPCU(w.ctx); err != nil {
-				w.mu.Unlock()
-				return 0, err
-			}
+		if err := w.initPCU(w.ctx); err != nil {
+			w.mu.Unlock()
+			return 0, err
 		}
 		w.mu.Unlock()
 		return w.pcu.write(p)
 	}
 
-	if !w.opened {
-		if err := w.openWriter(); err != nil {
-			return 0, err
-		}
+	if err := w.openWriter(); err != nil {
+		return 0, err
 	}
 	n, err = w.iw.Write(p)
 	if err != nil {
@@ -315,7 +331,7 @@ func (w *Writer) Close() error {
 		return w.err
 	}
 
-	if w.EnableParallelUpload {
+	if w.pcu != nil || (!w.opened && w.EnableParallelUpload) {
 		w.mu.Lock()
 		if w.pcu == nil {
 			if err := w.initPCU(w.ctx); err != nil {
