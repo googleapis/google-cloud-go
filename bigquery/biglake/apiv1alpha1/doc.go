@@ -21,7 +21,7 @@
 // managed, and highly available metastore for open-source data that can be
 // used for querying Apache Iceberg tables in BigQuery.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//	NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
 // # General documentation
 //

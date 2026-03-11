@@ -24,8 +24,6 @@
 // http://iamcredentials.googleapis.com)). However, disabling this API
 // doesn’t disable the IAM Service Account Credentials API.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

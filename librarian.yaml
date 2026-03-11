@@ -11,14 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 language: go
 version: experimental
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 1349486ee18dd6535c4379aa2b4b4665a56f674f
-    sha256: 520257070631db7cf4e8b18ad539b3baa4d79b7deb90ecf21ffa819a43d14326
+    commit: 256b575f6915282b20795c13414b21f2c0af65db
+    sha256: 36af505f07f7f8b485517269e033e139e83683e084313b6b9081ea3a89afdc14
 release:
   branch: main
 default:

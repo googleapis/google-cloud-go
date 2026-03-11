@@ -23,8 +23,6 @@
 // interact with the Trace API directly. If you are looking to instrument
 // your application for Stackdriver Trace, we recommend using OpenTelemetry.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

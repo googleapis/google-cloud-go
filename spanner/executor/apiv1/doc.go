@@ -29,8 +29,6 @@
 // any time for any users who are not registered as a part of a private
 // preview program.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

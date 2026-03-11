@@ -1,8 +1,8 @@
-# Google Meet API
+# Google Workspace Events API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/apps.svg)](https://pkg.go.dev/cloud.google.com/go/apps)
 
-Go Client Library for Google Meet API.
+Go Client Library for Google Workspace Events API.
 
 ## Install
 

@@ -19,7 +19,7 @@
 //
 // Programmatically manage your Merchant Center Accounts.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//	NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
 // # General documentation
 //

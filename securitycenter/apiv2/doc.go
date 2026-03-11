@@ -20,8 +20,6 @@
 // Security Command Center API provides access to temporal views of assets
 // and findings within an organization.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
