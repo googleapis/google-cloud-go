@@ -97,7 +97,8 @@ type GServer struct {
 	reactorOptions ReactorOptions
 	// schemas is a map of schemaIDs to a slice of schema revisions.
 	// the last element in the slice is the most recent schema.
-	schemas map[string][]*pb.Schema
+	schemas         map[string][]*pb.Schema
+	protocolVersion int
 
 	// PublishResponses is a channel of responses to use for Publish.
 	publishResponses chan *publishResponse
@@ -1068,7 +1069,7 @@ func (s *GServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
 		return err
 	}
 	// Create a new stream to handle the pull.
-	st := sub.newStream(sps, s.streamTimeout)
+	st := sub.newStream(sps, s.streamTimeout, req.GetProtocolVersion())
 	st.ackTimeout = time.Duration(req.StreamAckDeadlineSeconds) * time.Second
 	err = st.pull(&s.wg)
 	sub.deleteStream(st)
@@ -1302,7 +1303,7 @@ func (s *subscription) maintainMessages(now time.Time) {
 	}
 }
 
-func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration) *stream {
+func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration, version int64) *stream {
 	st := &stream{
 		sub:                       s,
 		done:                      make(chan struct{}),
@@ -1312,6 +1313,7 @@ func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout t
 		timeout:                   timeout,
 		enableExactlyOnceDelivery: s.proto.EnableExactlyOnceDelivery,
 		enableOrdering:            s.proto.EnableMessageOrdering,
+		protocolVersion:           version,
 	}
 	s.mu.Lock()
 	s.streams = append(s.streams, st)
@@ -1396,6 +1398,7 @@ type stream struct {
 	timeout                   time.Duration
 	enableExactlyOnceDelivery bool
 	enableOrdering            bool
+	protocolVersion           int64
 }
 
 // pull manages the StreamingPull interaction for the life of the stream.
@@ -1457,11 +1460,22 @@ func (st *stream) recvLoop() error {
 	}
 }
 
+func (st *stream) shouldResponseToPing() bool {
+	return st.protocolVersion >= 1
+}
+
 func (s *subscription) handleStreamingPullRequest(st *stream, req *pb.StreamingPullRequest) {
 	// Lock the entire server.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	// response to keep alive ping
+	if len(req.AckIds) == 0 && len(req.ModifyDeadlineAckIds) == 0 {
+		if st.shouldResponseToPing() {
+			st.msgc <- nil
+		}
+		return
+	}
 	for _, ackID := range req.AckIds {
 		s.ack(ackID)
 	}
