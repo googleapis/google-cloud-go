@@ -41,6 +41,7 @@ const (
 	reasonNotDefaultServiceAccount = "not_default_service_account"
 	reasonCustomHTTPClient         = "custom_http_client"
 	reasonUndetermined             = "undetermined"
+	reasonInternalError            = "internal_error"
 
 	directPathDisableEnvVar = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
 
@@ -51,13 +52,13 @@ const (
 // directPathDiagnostic evaluates the provided options and environment to determine
 // why gRPC DirectPath (high-throughput VPC routing) is not being utilized.
 func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) string {
-	res, err := internaloption.NewUnsafeResolver(opts...)
-	if err != nil {
-		return reasonEndpointFetchError
-	}
-
 	if strings.EqualFold(os.Getenv(directPathDisableEnvVar), "true") {
 		return reasonEnvVarDisabled
+	}
+
+	res, err := internaloption.NewUnsafeResolver(opts...)
+	if err != nil {
+		return reasonInternalError
 	}
 
 	if !res.ResolvedEnableDirectPath() {
