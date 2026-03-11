@@ -453,15 +453,15 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 		if isDirectAccess && !disableDirectAccess {
 			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
-			factoryDial = pool.directAccessDialer                   //
-			factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD //
+			factoryDial = pool.directAccessDialer
+			factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD
 			// transfer
 			firstConn = directAccessConn
 		} else {
-			// If we opened a connection but won't use it, close it now
+			// If we opened a connection but won't use it, close it now.
 			if directAccessConn != nil {
 				btopt.Debugf(pool.logger, "bigtable_connpool: Closing probe connection (Direct Access disabled or unavailable).")
-				directAccessConn.Close() //
+				directAccessConn.Close()
 			}
 			if !isDirectAccess {
 				btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is not available. Using standard path")
