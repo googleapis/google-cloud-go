@@ -1436,12 +1436,17 @@ func (st *stream) sendLoop() error {
 		case <-st.done:
 			return nil
 		case rm := <-st.msgc:
-			res := &pb.StreamingPullResponse{
-				ReceivedMessages: []*pb.ReceivedMessage{rm},
-				SubscriptionProperties: &pb.StreamingPullResponse_SubscriptionProperties{
-					ExactlyOnceDeliveryEnabled: st.enableExactlyOnceDelivery,
-					MessageOrderingEnabled:     st.enableOrdering,
-				},
+			var res *pb.StreamingPullResponse
+			if rm == nil {
+				res = &pb.StreamingPullResponse{}
+			} else {
+				res = &pb.StreamingPullResponse{
+					ReceivedMessages: []*pb.ReceivedMessage{rm},
+					SubscriptionProperties: &pb.StreamingPullResponse_SubscriptionProperties{
+						ExactlyOnceDeliveryEnabled: st.enableExactlyOnceDelivery,
+						MessageOrderingEnabled:     st.enableOrdering,
+					},
+				}
 			}
 			if err := st.gstream.Send(res); err != nil {
 				return err

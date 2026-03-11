@@ -799,12 +799,21 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 	})
 }
 
-func TestStreamingPullKeepAlive_ServerShutdown(t *testing.T) {
+// When the server doesn't respond with keep alive pings,
+// test that the client reopens the stream.
+func TestStreamingPullKeepAlive_ReopenStream(t *testing.T) {
 	clientPingInterval = 1 * time.Second
 	// any ping check should result in stream closure
 	serverPingTimeoutDuration = 0 * time.Second
 	// check for server pings more frequently to trigger test faster
 	serverMonitorInterval = 1 * time.Second
+
+	// Revert protocolVersion to 0 to make fake server
+	// not respond to client pings to test stream reopening.
+	// None of the client library code is gated on protocolVersion
+	// since it is assumed that newer versions of the client library
+	// will always be communicating with the latest protocol version.
+	protocolVersion = 0
 
 	c, srv := newFake(t)
 	ctx, cancel := context.WithCancel(t.Context())

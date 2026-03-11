@@ -895,8 +895,8 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 
 // streamKeepAliveHandler sends to and handles responses from the stream
 // to maintain stream aliveness. We send pings to the server on a timer
-// and monitor for server pings on a timer. When both time out, then
-// we will close the stream and attempt to reopen.
+// and monitor for server response on a timer. If no response is received,
+// close the stream and attempt to reopen.
 // This is unrelated to iterator.keepAliveDeadlines which handles
 // message leases keep alives.
 func (it *messageIterator) streamKeepAliveHandler() {
@@ -949,8 +949,6 @@ func (it *messageIterator) checkServer() {
 // network. This matters if it takes a long time to process messages relative to the
 // default ack deadline, and if the messages are small enough so that many can fit
 // into the buffer.
-// This was introduced before protocol versions and thus will not be gated
-// on requiring ProtocolVersion >= 1.
 func (it *messageIterator) pingStream() {
 	spr := &pb.StreamingPullRequest{}
 	it.eoMu.RLock()
