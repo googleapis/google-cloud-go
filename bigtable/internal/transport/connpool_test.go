@@ -1781,6 +1781,46 @@ func TestDirectAccessLogic(t *testing.T) {
 			t.Error("Failed DA connection was not closed")
 		}
 	})
+	t.Run("DirectAccess_DisabledByEnv", func(t *testing.T) {
+		fake.reset()
+		t.Setenv("CBT_ENABLE_DIRECTPATH", "false")
+
+		var daConn *BigtableConn
+		daDialCalled := false
+		daDial := func() (*BigtableConn, error) {
+			c, err := baseDialFunc()
+			if err != nil {
+				return nil, err
+			}
+			daConn = c
+			daDialCalled = true
+			c.isALTSConn.Store(true)
+			return c, nil
+		}
+
+		poolSize := 1
+		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		if !daDialCalled {
+			t.Error("Direct Access dialer should still be called for compatibility check")
+		}
+
+		// conn was not reused
+		conns := pool.getConns()
+		if conns[0].conn == daConn {
+			t.Error("Pool reused Direct Access connection despite CBT_ENABLE_DIRECTPATH=false")
+		}
+
+		// Verify the probe connection was closed to prevent leaks
+		if !isConnClosed(daConn.ClientConn) {
+			t.Error("Direct Access probe connection was not closed")
+		}
+	})
 }
 
 func TestConnPoolStatisticsVisitor(t *testing.T) {

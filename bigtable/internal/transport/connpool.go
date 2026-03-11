@@ -24,6 +24,7 @@ import (
 	"math/rand/v2"
 	"net"
 	"net/url"
+	"os"
 	"slices"
 	"sort"
 	"sync"
@@ -447,13 +448,24 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	var firstConn *BigtableConn
 
 	if pool.directAccessDialer != nil {
-		var isDirectAccess bool
-		if firstConn, isDirectAccess = pool.checkIfDirectAccessCompatible(); isDirectAccess {
+		directAccessConn, isDirectAccess := pool.checkIfDirectAccessCompatible()
+		disableDirectAccess := os.Getenv("CBT_ENABLE_DIRECTPATH") == "false"
+
+		if isDirectAccess && !disableDirectAccess {
 			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
-			factoryDial = pool.directAccessDialer
-			factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD
+			factoryDial = pool.directAccessDialer                   //
+			factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD //
+			// transfer
+			firstConn = directAccessConn
 		} else {
-			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is not available. Falling back to cloud path.")
+			// If we opened a connection but won't use it, close it now
+			if directAccessConn != nil {
+				btopt.Debugf(pool.logger, "bigtable_connpool: Closing probe connection (Direct Access disabled or unavailable).")
+				directAccessConn.Close() //
+			}
+			if !isDirectAccess {
+				btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is not available. Using standard path")
+			}
 		}
 	}
 
