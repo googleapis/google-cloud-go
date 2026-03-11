@@ -197,7 +197,7 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		lastServerResponse:  time.Now(),
 		lastClientPing:      time.UnixMicro(0),
 	}
-	it.wg.Add(1)
+	it.wg.Add(2)
 	go it.streamKeepAliveHandler()
 	go it.sender()
 	return it
@@ -894,6 +894,7 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 // This is unrelated to iterator.keepAliveDeadlines which handles
 // message leases keep alives.
 func (it *messageIterator) streamKeepAliveHandler() {
+	defer it.wg.Done()
 	for {
 		select {
 		case <-it.drained:
