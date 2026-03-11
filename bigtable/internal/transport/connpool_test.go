@@ -689,6 +689,53 @@ func TestNewBigtableChannelPool(t *testing.T) {
 	})
 }
 
+func TestConnEntryCalculateConnLoadWithPenalty(t *testing.T) {
+	entry := &connEntry{}
+
+	// 5 load
+	entry.unaryLoad.Store(2)
+	entry.streamingLoad.Store(3)
+
+	t.Run("NoPenalty", func(t *testing.T) {
+		entry.penaltyExpiry.Store(0)
+		if load := entry.calculateConnLoad(); load != 5 {
+			t.Errorf("Expected load of 5, got %d", load)
+		}
+	})
+
+	t.Run("ActivePenalty", func(t *testing.T) {
+		// Set expiration 5 seconds into the future
+		future := time.Now().Add(5 * time.Second).UnixNano()
+		entry.penaltyExpiry.Store(future)
+
+		// Expected: 5 (base) + 10 (penalty) = 15
+		if load := entry.calculateConnLoad(); load != 15 {
+			t.Errorf("Expected load of 15 due to active penalty, got %d", load)
+		}
+
+		// Verify the timestamp wasn't accidentally cleared
+		if entry.penaltyExpiry.Load() == 0 {
+			t.Errorf("Active penalty timestamp was incorrectly cleared")
+		}
+	})
+
+	t.Run("ExpiredPenaltySelfCleans", func(t *testing.T) {
+		// Set expiration 1 second in the past
+		past := time.Now().Add(-1 * time.Second).UnixNano()
+		entry.penaltyExpiry.Store(past)
+
+		// Expected: 5 (penalty is ignored because it expired)
+		if load := entry.calculateConnLoad(); load != 5 {
+			t.Errorf("Expected load of 5 due to expired penalty, got %d", load)
+		}
+
+		// Verify the lazy-evaluation reset the timestamp to 0
+		if expiry := entry.penaltyExpiry.Load(); expiry != 0 {
+			t.Errorf("Expected expired penalty timestamp to be reset to 0, but it remained %d", expiry)
+		}
+	})
+}
+
 func TestSelectLeastLoaded(t *testing.T) {
 	pool := &BigtableChannelPool{}
 	pool.conns.Store((&[]*connEntry{}))
@@ -980,6 +1027,44 @@ func TestPoolClose(t *testing.T) {
 
 	if len(pool.getConns()) != 0 {
 		t.Errorf("pool.getConns() got non-nil after Close, want nil")
+	}
+}
+
+func TestConnEntryApplyErrorPenalty(t *testing.T) {
+	tests := []struct {
+		name        string
+		err         error
+		wantPenalty bool
+	}{
+		{"Nil error", nil, false},
+		{"Non-gRPC error", errors.New("standard network error"), false}, // Treated as codes.Unknown
+		{"OK", status.Error(codes.OK, "ok"), false},
+		{"NotFound", status.Error(codes.NotFound, "key not found"), false},
+		{"Canceled", status.Error(codes.Canceled, "client canceled"), false},
+		{"Unavailable", status.Error(codes.Unavailable, "server down"), true},
+		{"ResourceExhausted", status.Error(codes.ResourceExhausted, "too many requests"), true},
+		{"Internal", status.Error(codes.Internal, "proxy error"), true},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			entry := &connEntry{}
+
+			// Apply the error
+			entry.applyErrorPenalty(tc.err)
+
+			expiry := entry.penaltyExpiry.Load()
+
+			if tc.wantPenalty {
+				if expiry == 0 {
+					t.Errorf("Expected a penalty to be applied for %v, but expiry was 0", tc.err)
+				}
+			} else {
+				if expiry != 0 {
+					t.Errorf("Expected NO penalty for %v, but got expiry timestamp %d", tc.err, expiry)
+				}
+			}
+		})
 	}
 }
 

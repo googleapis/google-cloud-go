@@ -35,9 +35,11 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	gtransport "google.golang.org/api/transport/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 
 	btopt "cloud.google.com/go/bigtable/internal/option"
 
@@ -48,6 +50,8 @@ import (
 // We cap the max draining timeout to 30mins as there might be a long running stream (such as full table scan).
 var maxDrainingTimeout = 30 * time.Minute
 
+const artificialLoadIfError = 10
+const artificialLoadPenalizedTimer = 5 * time.Second
 const requestParamsHeader = "x-goog-request-params"
 
 // ipProtocol represents the type of IP protocol used.
@@ -250,6 +254,7 @@ type connEntry struct {
 	streamingLoad atomic.Int32 // In-flight streaming requests
 	errorCount    atomic.Int64 // Errors since the last metric report
 	drainingState atomic.Bool  // True if the connection is being gracefully drained.
+	penaltyExpiry atomic.Int64 // penaltyExpiry stores the UnixNano timestamp of when the penalty ends
 
 }
 
@@ -269,6 +274,25 @@ func (e *connEntry) createdAt() int64 {
 		return 0
 	}
 	return e.conn.creationTime()
+}
+
+// applyErrorPenalty checks if the error warrants a load balancing penalty,
+// and if so, sets an expiration time for the artificial load.
+func (e *connEntry) applyErrorPenalty(err error) {
+	if err == nil {
+		return
+	}
+
+	code := status.Code(err)
+
+	// Penalize errors that typically indicate target-specific health or capacity issues.
+	if code == codes.Unavailable ||
+		code == codes.ResourceExhausted ||
+		code == codes.Internal {
+		// A simple Store is safe here; concurrent updates is fine here.
+		newExpiry := time.Now().Add(artificialLoadPenalizedTimer).UnixNano()
+		e.penaltyExpiry.Store(newExpiry)
+	}
 }
 
 // isDraining atomically checks if the connection is in the draining state.
@@ -313,7 +337,18 @@ func (p *BigtableChannelPool) waitForDrainAndClose(entry *connEntry) {
 func (e *connEntry) calculateConnLoad() int32 {
 	unary := e.unaryLoad.Load()
 	streaming := e.streamingLoad.Load()
-	return unary + streaming
+	load := unary + streaming
+
+	expiry := e.penaltyExpiry.Load()
+	if expiry > 0 {
+		if time.Now().UnixNano() < expiry {
+			load += artificialLoadIfError // Apply the artificial penalty weight
+		} else {
+			// restore to zero
+			e.penaltyExpiry.Store(0)
+		}
+	}
+	return load
 }
 
 // BigtableChannelPool implements ConnPool and routes requests to the connection
@@ -673,6 +708,7 @@ func (p *BigtableChannelPool) Invoke(ctx context.Context, method string, args in
 	err = entry.conn.Invoke(ctx, method, args, reply, opts...)
 	if err != nil {
 		entry.errorCount.Add(1)
+		entry.applyErrorPenalty(err) // Apply penalty on error
 	}
 	return err
 
@@ -823,6 +859,7 @@ func (s *refCountedStream) SendMsg(m interface{}) error {
 	err := s.ClientStream.SendMsg(m)
 	if err != nil {
 		s.entry.errorCount.Add(1)
+		s.entry.applyErrorPenalty(err)
 		s.decrementLoad()
 	}
 	return err
@@ -835,6 +872,7 @@ func (s *refCountedStream) RecvMsg(m interface{}) error {
 		// io.EOF is a normal stream termination, not an error to be counted.
 		if !errors.Is(err, io.EOF) {
 			s.entry.errorCount.Add(1)
+			s.entry.applyErrorPenalty(err)
 		}
 		s.decrementLoad()
 	}
