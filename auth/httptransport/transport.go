@@ -187,17 +187,18 @@ func addOpenTelemetryTransport(trans http.RoundTripper, opts *Options) http.Roun
 	if opts.InternalOptions != nil {
 		staticAttrs = transport.StaticTelemetryAttributes(opts.InternalOptions.TelemetryAttributes)
 	}
+	otelOpts := []otelhttp.Option{
+		otelhttp.WithSpanOptions(trace.WithAttributes(staticAttrs...)),
+	}
 	return otelhttp.NewTransport(&otelAttributeTransport{
-		base:        trans,
-		staticAttrs: staticAttrs,
-	})
+		base: trans,
+	}, otelOpts...)
 }
 
 // otelAttributeTransport is a wrapper around an http.RoundTripper that adds
 // custom Google Cloud-specific attributes to OpenTelemetry spans.
 type otelAttributeTransport struct {
-	base        http.RoundTripper
-	staticAttrs []attribute.KeyValue
+	base http.RoundTripper
 }
 
 // RoundTrip intercepts the HTTP request and response to enrich the active
@@ -207,7 +208,6 @@ func (t *otelAttributeTransport) RoundTrip(req *http.Request) (*http.Response, e
 	span := trace.SpanFromContext(req.Context())
 	if span.IsRecording() {
 		var attrs []attribute.KeyValue
-		attrs = append(attrs, t.staticAttrs...)
 		attrs = append(attrs, attribute.String("rpc.system.name", "http"))
 		if resName, ok := callctx.TelemetryFromContext(req.Context(), "resource_name"); ok {
 			attrs = append(attrs, attribute.String("gcp.resource.destination.id", resName))
