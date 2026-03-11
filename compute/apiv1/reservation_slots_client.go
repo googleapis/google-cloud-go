@@ -41,9 +41,10 @@ var newReservationSlotsClientHook clientHook
 
 // ReservationSlotsCallOptions contains the retry settings for each method of ReservationSlotsClient.
 type ReservationSlotsCallOptions struct {
-	Get    []gax.CallOption
-	List   []gax.CallOption
-	Update []gax.CallOption
+	Get        []gax.CallOption
+	GetVersion []gax.CallOption
+	List       []gax.CallOption
+	Update     []gax.CallOption
 }
 
 func defaultReservationSlotsRESTCallOptions() *ReservationSlotsCallOptions {
@@ -59,6 +60,9 @@ func defaultReservationSlotsRESTCallOptions() *ReservationSlotsCallOptions {
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
 			}),
+		},
+		GetVersion: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		List: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -84,6 +88,7 @@ type internalReservationSlotsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Get(context.Context, *computepb.GetReservationSlotRequest, ...gax.CallOption) (*computepb.ReservationSlotsGetResponse, error)
+	GetVersion(context.Context, *computepb.GetVersionReservationSlotRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListReservationSlotsRequest, ...gax.CallOption) *ReservationSlotIterator
 	Update(context.Context, *computepb.UpdateReservationSlotRequest, ...gax.CallOption) (*Operation, error)
 }
@@ -126,6 +131,11 @@ func (c *ReservationSlotsClient) Connection() *grpc.ClientConn {
 // Get retrieves information about the specified reservation slot.
 func (c *ReservationSlotsClient) Get(ctx context.Context, req *computepb.GetReservationSlotRequest, opts ...gax.CallOption) (*computepb.ReservationSlotsGetResponse, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetVersion allows customers to get SBOM versions of a reservation slot.
+func (c *ReservationSlotsClient) GetVersion(ctx context.Context, req *computepb.GetVersionReservationSlotRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.GetVersion(ctx, req, opts...)
 }
 
 // List retrieves a list of reservation slots under a single reservation.
@@ -274,6 +284,73 @@ func (c *reservationSlotsRESTClient) Get(ctx context.Context, req *computepb.Get
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetVersion allows customers to get SBOM versions of a reservation slot.
+func (c *reservationSlotsRESTClient) GetVersion(ctx context.Context, req *computepb.GetVersionReservationSlotRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetReservationSlotsGetVersionRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSlots/%v/getVersion", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSlot())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "parent_name", url.QueryEscape(req.GetParentName()), "reservation_slot", url.QueryEscape(req.GetReservationSlot()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }
 
 // List retrieves a list of reservation slots under a single reservation.

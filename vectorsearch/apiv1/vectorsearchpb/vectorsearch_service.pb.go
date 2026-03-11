@@ -1917,11 +1917,14 @@ type DedicatedInfrastructure_AutoscalingSpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Optional. The minimum number of replicas. If not set or set to `0`,
-	// defaults to `2`. Must be >= `2` and <= `1000`.
+	// defaults to `2`. Must be >= `1` and <= `1000`.
 	MinReplicaCount int32 `protobuf:"varint,1,opt,name=min_replica_count,json=minReplicaCount,proto3" json:"min_replica_count,omitempty"`
-	// Optional. The maximum number of replicas. If not set or set to `0`,
-	// defaults to the greater of `min_replica_count` and `5`. Must be >=
+	// Optional. The maximum number of replicas.  Must be >=
 	// `min_replica_count` and <= `1000`.
+	// For the v1beta version, if not set or set to `0`, defaults to
+	// the greater of `min_replica_count` and `5`.
+	// For all other versions, if not set or set to `0`, defaults to
+	// the greater of `min_replica_count` and `2`.
 	MaxReplicaCount int32 `protobuf:"varint,2,opt,name=max_replica_count,json=maxReplicaCount,proto3" json:"max_replica_count,omitempty"`
 }
 

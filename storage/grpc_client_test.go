@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"math/rand"
+	"strings"
 	"testing"
 	"time"
 
@@ -395,7 +396,7 @@ func TestRoutingInterceptors(t *testing.T) {
 				if err := unary(ctx, "/test/method", nil, nil, cc, invoker); err != nil {
 					t.Errorf("unary error: %v", err)
 				}
-				if got != tc.want {
+				if !strings.Contains(got, tc.want) {
 					t.Errorf("got %q, want %q", got, tc.want)
 				}
 			})
@@ -414,7 +415,7 @@ func TestRoutingInterceptors(t *testing.T) {
 				if _, err := stream(ctx, nil, cc, "/test/stream", streamer); err != nil {
 					t.Errorf("stream error: %v", err)
 				}
-				if got != tc.want {
+				if !strings.Contains(got, tc.want) {
 					t.Errorf("got %q, want %q", got, tc.want)
 				}
 			})
@@ -446,19 +447,19 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			desc:     "CloudPath target with ENFORCED",
 			enforced: true,
 			target:   "dns:///storage.googleapis.com",
-			want:     "force_direct_connectivity=OPTED_OUT",
+			want:     "force_direct_connectivity=ENFORCED&direct_connectivity_diagnostic=reason",
 		},
 		{
 			desc:     "CloudPath target with NOT ENFORCED",
 			enforced: false,
 			target:   "dns:///storage.googleapis.com",
-			want:     "force_direct_connectivity=OPTED_OUT",
+			want:     "direct_connectivity_diagnostic=reason",
 		},
 		{
 			desc:     "Empty target with ENFORCED",
 			enforced: true,
 			target:   "",
-			want:     "force_direct_connectivity=ENFORCED",
+			want:     "force_direct_connectivity=ENFORCED&direct_connectivity_diagnostic=reason",
 		},
 	}
 
@@ -466,6 +467,7 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 			c := &grpcStorageClient{
 				config: &storageConfig{grpcDirectPathEnforced: tc.enforced},
+				dpDiag: "reason",
 			}
 
 			ctx := context.Background()

@@ -27244,6 +27244,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_RegionHealthCheckServices_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all HealthCheckService resources,\nregional and global, available to the specified project.\n\nTo prevent failure, it is recommended that you set the\n`returnPartialSuccess` parameter to `true`.",
+      "file": "RegionHealthCheckServicesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1beta.RegionHealthCheckServicesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionHealthCheckServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthCheckServicesScopedListPairIterator",
+        "client": {
+          "shortName": "RegionHealthCheckServicesClient",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthCheckServicesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1beta.RegionHealthCheckServices.AggregatedList",
+          "service": {
+            "shortName": "RegionHealthCheckServices",
+            "fullName": "google.cloud.compute.v1beta.RegionHealthCheckServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_RegionHealthCheckServices_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified regional HealthCheckService.",
@@ -32856,6 +32902,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_RegionNotificationEndpoints_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all NotificationEndpoint resources,\nregional and global, available to the specified project.",
+      "file": "RegionNotificationEndpointsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1beta.RegionNotificationEndpointsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionNotificationEndpointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NotificationEndpointsScopedListPairIterator",
+        "client": {
+          "shortName": "RegionNotificationEndpointsClient",
+          "fullName": "google.cloud.compute.v1beta.RegionNotificationEndpointsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1beta.RegionNotificationEndpoints.AggregatedList",
+          "service": {
+            "shortName": "RegionNotificationEndpoints",
+            "fullName": "google.cloud.compute.v1beta.RegionNotificationEndpoints"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_RegionNotificationEndpoints_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified NotificationEndpoint in the given region",
@@ -36490,6 +36582,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1beta_generated_ReservationSlots_GetVersion_sync",
+      "title": "compute GetVersion Sample",
+      "description": "GetVersion allows customers to get SBOM versions of a reservation slot.",
+      "file": "ReservationSlotsClient/GetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVersion",
+        "fullName": "google.cloud.compute.v1beta.ReservationSlotsClient.GetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetVersionReservationSlotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSlotsClient",
+          "fullName": "google.cloud.compute.v1beta.ReservationSlotsClient"
+        },
+        "method": {
+          "shortName": "GetVersion",
+          "fullName": "google.cloud.compute.v1beta.ReservationSlots.GetVersion",
+          "service": {
+            "shortName": "ReservationSlots",
+            "fullName": "google.cloud.compute.v1beta.ReservationSlots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1beta_generated_ReservationSlots_List_sync",
       "title": "compute List Sample",
       "description": "List retrieves a list of reservation slots under a single reservation.",
@@ -36669,6 +36807,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1beta_generated_ReservationSubBlocks_GetVersion_sync",
+      "title": "compute GetVersion Sample",
+      "description": "GetVersion allows customers to get SBOM versions of a reservation subBlock.",
+      "file": "ReservationSubBlocksClient/GetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVersion",
+        "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient.GetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetVersionReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "GetVersion",
+          "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks.GetVersion",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1beta.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]

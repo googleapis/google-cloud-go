@@ -43,6 +43,8 @@ const (
 	AgentService_DeleteApp_FullMethodName                = "/google.cloud.ces.v1beta.AgentService/DeleteApp"
 	AgentService_ExportApp_FullMethodName                = "/google.cloud.ces.v1beta.AgentService/ExportApp"
 	AgentService_ImportApp_FullMethodName                = "/google.cloud.ces.v1beta.AgentService/ImportApp"
+	AgentService_GetSecuritySettings_FullMethodName      = "/google.cloud.ces.v1beta.AgentService/GetSecuritySettings"
+	AgentService_UpdateSecuritySettings_FullMethodName   = "/google.cloud.ces.v1beta.AgentService/UpdateSecuritySettings"
 	AgentService_ListAgents_FullMethodName               = "/google.cloud.ces.v1beta.AgentService/ListAgents"
 	AgentService_GetAgent_FullMethodName                 = "/google.cloud.ces.v1beta.AgentService/GetAgent"
 	AgentService_CreateAgent_FullMethodName              = "/google.cloud.ces.v1beta.AgentService/CreateAgent"
@@ -104,6 +106,10 @@ type AgentServiceClient interface {
 	ExportApp(ctx context.Context, in *ExportAppRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports the specified app.
 	ImportApp(ctx context.Context, in *ImportAppRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Retrieves the security settings for the project and location.
+	GetSecuritySettings(ctx context.Context, in *GetSecuritySettingsRequest, opts ...grpc.CallOption) (*SecuritySettings, error)
+	// Updates the security settings for the project and location.
+	UpdateSecuritySettings(ctx context.Context, in *UpdateSecuritySettingsRequest, opts ...grpc.CallOption) (*SecuritySettings, error)
 	// Lists agents in the given app.
 	ListAgents(ctx context.Context, in *ListAgentsRequest, opts ...grpc.CallOption) (*ListAgentsResponse, error)
 	// Gets details of the specified agent.
@@ -255,6 +261,24 @@ func (c *agentServiceClient) ExportApp(ctx context.Context, in *ExportAppRequest
 func (c *agentServiceClient) ImportApp(ctx context.Context, in *ImportAppRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AgentService_ImportApp_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *agentServiceClient) GetSecuritySettings(ctx context.Context, in *GetSecuritySettingsRequest, opts ...grpc.CallOption) (*SecuritySettings, error) {
+	out := new(SecuritySettings)
+	err := c.cc.Invoke(ctx, AgentService_GetSecuritySettings_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *agentServiceClient) UpdateSecuritySettings(ctx context.Context, in *UpdateSecuritySettingsRequest, opts ...grpc.CallOption) (*SecuritySettings, error) {
+	out := new(SecuritySettings)
+	err := c.cc.Invoke(ctx, AgentService_UpdateSecuritySettings_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -648,6 +672,10 @@ type AgentServiceServer interface {
 	ExportApp(context.Context, *ExportAppRequest) (*longrunningpb.Operation, error)
 	// Imports the specified app.
 	ImportApp(context.Context, *ImportAppRequest) (*longrunningpb.Operation, error)
+	// Retrieves the security settings for the project and location.
+	GetSecuritySettings(context.Context, *GetSecuritySettingsRequest) (*SecuritySettings, error)
+	// Updates the security settings for the project and location.
+	UpdateSecuritySettings(context.Context, *UpdateSecuritySettingsRequest) (*SecuritySettings, error)
 	// Lists agents in the given app.
 	ListAgents(context.Context, *ListAgentsRequest) (*ListAgentsResponse, error)
 	// Gets details of the specified agent.
@@ -758,6 +786,12 @@ func (UnimplementedAgentServiceServer) ExportApp(context.Context, *ExportAppRequ
 }
 func (UnimplementedAgentServiceServer) ImportApp(context.Context, *ImportAppRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportApp not implemented")
+}
+func (UnimplementedAgentServiceServer) GetSecuritySettings(context.Context, *GetSecuritySettingsRequest) (*SecuritySettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSecuritySettings not implemented")
+}
+func (UnimplementedAgentServiceServer) UpdateSecuritySettings(context.Context, *UpdateSecuritySettingsRequest) (*SecuritySettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSecuritySettings not implemented")
 }
 func (UnimplementedAgentServiceServer) ListAgents(context.Context, *ListAgentsRequest) (*ListAgentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAgents not implemented")
@@ -1016,6 +1050,42 @@ func _AgentService_ImportApp_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AgentServiceServer).ImportApp(ctx, req.(*ImportAppRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AgentService_GetSecuritySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSecuritySettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServiceServer).GetSecuritySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentService_GetSecuritySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServiceServer).GetSecuritySettings(ctx, req.(*GetSecuritySettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AgentService_UpdateSecuritySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSecuritySettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServiceServer).UpdateSecuritySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentService_UpdateSecuritySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServiceServer).UpdateSecuritySettings(ctx, req.(*UpdateSecuritySettingsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1792,6 +1862,14 @@ var AgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ImportApp",
 			Handler:    _AgentService_ImportApp_Handler,
+		},
+		{
+			MethodName: "GetSecuritySettings",
+			Handler:    _AgentService_GetSecuritySettings_Handler,
+		},
+		{
+			MethodName: "UpdateSecuritySettings",
+			Handler:    _AgentService_UpdateSecuritySettings_Handler,
 		},
 		{
 			MethodName: "ListAgents",

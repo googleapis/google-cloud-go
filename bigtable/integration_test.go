@@ -28,6 +28,7 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -398,9 +399,9 @@ func TestIntegration_Aggregates(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expected UpdateFamily to fail, but it didn't")
 	}
-	wantError := "Immutable fields 'value_type.aggregate_type' cannot be updated"
-	if !strings.Contains(err.Error(), wantError) {
-		t.Errorf("Wrong error. Expected to containt %q but was %v", wantError, err)
+	wantErrorPattern := "Immutable fields 'value_type.aggregate_type.*' cannot be updated"
+	if matched, _ := regexp.MatchString(wantErrorPattern, err.Error()); !matched {
+		t.Errorf("Wrong error. Expected to match %q but was %v", wantErrorPattern, err)
 	}
 }
 

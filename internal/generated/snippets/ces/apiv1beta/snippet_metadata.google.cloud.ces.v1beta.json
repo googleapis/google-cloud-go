@@ -1428,6 +1428,52 @@
       ]
     },
     {
+      "regionTag": "ces_v1beta_generated_AgentService_GetSecuritySettings_sync",
+      "title": "ces GetSecuritySettings Sample",
+      "description": "GetSecuritySettings retrieves the security settings for the project and location.",
+      "file": "AgentClient/GetSecuritySettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSecuritySettings",
+        "fullName": "google.cloud.ces.v1beta.AgentClient.GetSecuritySettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.GetSecuritySettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.SecuritySettings",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1beta.AgentClient"
+        },
+        "method": {
+          "shortName": "GetSecuritySettings",
+          "fullName": "google.cloud.ces.v1beta.AgentService.GetSecuritySettings",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1beta.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "ces_v1beta_generated_AgentService_GetTool_sync",
       "title": "ces GetTool Sample",
       "description": "GetTool gets details of the specified tool.",
@@ -2378,6 +2424,52 @@
         "method": {
           "shortName": "UpdateGuardrail",
           "fullName": "google.cloud.ces.v1beta.AgentService.UpdateGuardrail",
+          "service": {
+            "shortName": "AgentService",
+            "fullName": "google.cloud.ces.v1beta.AgentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "ces_v1beta_generated_AgentService_UpdateSecuritySettings_sync",
+      "title": "ces UpdateSecuritySettings Sample",
+      "description": "UpdateSecuritySettings updates the security settings for the project and location.",
+      "file": "AgentClient/UpdateSecuritySettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSecuritySettings",
+        "fullName": "google.cloud.ces.v1beta.AgentClient.UpdateSecuritySettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cespb.UpdateSecuritySettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cespb.SecuritySettings",
+        "client": {
+          "shortName": "AgentClient",
+          "fullName": "google.cloud.ces.v1beta.AgentClient"
+        },
+        "method": {
+          "shortName": "UpdateSecuritySettings",
+          "fullName": "google.cloud.ces.v1beta.AgentService.UpdateSecuritySettings",
           "service": {
             "shortName": "AgentService",
             "fullName": "google.cloud.ces.v1beta.AgentService"

@@ -1697,6 +1697,59 @@ func (it *HealthCheckServiceIterator) takeBuf() interface{} {
 	return b
 }
 
+// HealthCheckServicesScopedListPair is a holder type for string/*computepb.HealthCheckServicesScopedList map entries
+type HealthCheckServicesScopedListPair struct {
+	Key   string
+	Value *computepb.HealthCheckServicesScopedList
+}
+
+// HealthCheckServicesScopedListPairIterator manages a stream of HealthCheckServicesScopedListPair.
+type HealthCheckServicesScopedListPairIterator struct {
+	items    []HealthCheckServicesScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []HealthCheckServicesScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *HealthCheckServicesScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *HealthCheckServicesScopedListPairIterator) Next() (HealthCheckServicesScopedListPair, error) {
+	var item HealthCheckServicesScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *HealthCheckServicesScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *HealthCheckServicesScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // HealthChecksScopedListPair is a holder type for string/*computepb.HealthChecksScopedList map entries
 type HealthChecksScopedListPair struct {
 	Key   string
@@ -4185,6 +4238,59 @@ func (it *NotificationEndpointIterator) bufLen() int {
 }
 
 func (it *NotificationEndpointIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// NotificationEndpointsScopedListPair is a holder type for string/*computepb.NotificationEndpointsScopedList map entries
+type NotificationEndpointsScopedListPair struct {
+	Key   string
+	Value *computepb.NotificationEndpointsScopedList
+}
+
+// NotificationEndpointsScopedListPairIterator manages a stream of NotificationEndpointsScopedListPair.
+type NotificationEndpointsScopedListPairIterator struct {
+	items    []NotificationEndpointsScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []NotificationEndpointsScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *NotificationEndpointsScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *NotificationEndpointsScopedListPairIterator) Next() (NotificationEndpointsScopedListPair, error) {
+	var item NotificationEndpointsScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *NotificationEndpointsScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *NotificationEndpointsScopedListPairIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

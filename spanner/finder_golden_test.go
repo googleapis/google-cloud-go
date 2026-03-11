@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -75,7 +76,10 @@ func newFinderGoldenEndpointCache() *finderGoldenEndpointCache {
 	}
 }
 
-func (c *finderGoldenEndpointCache) Get(address string) channelEndpoint {
+func (c *finderGoldenEndpointCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
+func (c *finderGoldenEndpointCache) Close() error                              { return nil }
+
+func (c *finderGoldenEndpointCache) Get(_ context.Context, address string) channelEndpoint {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if endpoint, ok := c.endpoints[address]; ok {
@@ -126,12 +130,12 @@ func TestChannelFinder_Golden(t *testing.T) {
 				finder.update(event.cacheUpdate)
 			case event.read != nil:
 				req := proto.Clone(event.read).(*sppb.ReadRequest)
-				endpoint := finder.findServerReadWithTransaction(req)
+				endpoint := finder.findServerReadWithTransaction(context.Background(), req)
 				assertFinderGoldenEndpoint(t, testCase.name, eventName, event.server, endpoint)
 				assertFinderGoldenHint(t, testCase.name, eventName, event.hint, req.GetRoutingHint())
 			case event.sql != nil:
 				req := proto.Clone(event.sql).(*sppb.ExecuteSqlRequest)
-				endpoint := finder.findServerExecuteSQLWithTransaction(req)
+				endpoint := finder.findServerExecuteSQLWithTransaction(context.Background(), req)
 				assertFinderGoldenEndpoint(t, testCase.name, eventName, event.server, endpoint)
 				assertFinderGoldenHint(t, testCase.name, eventName, event.hint, req.GetRoutingHint())
 			default:

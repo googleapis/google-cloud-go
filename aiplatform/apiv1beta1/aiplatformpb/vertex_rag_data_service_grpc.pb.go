@@ -27,6 +27,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -35,18 +36,31 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	VertexRagDataService_CreateRagCorpus_FullMethodName       = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagCorpus"
-	VertexRagDataService_UpdateRagCorpus_FullMethodName       = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagCorpus"
-	VertexRagDataService_GetRagCorpus_FullMethodName          = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagCorpus"
-	VertexRagDataService_ListRagCorpora_FullMethodName        = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagCorpora"
-	VertexRagDataService_DeleteRagCorpus_FullMethodName       = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagCorpus"
-	VertexRagDataService_UploadRagFile_FullMethodName         = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/UploadRagFile"
-	VertexRagDataService_ImportRagFiles_FullMethodName        = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ImportRagFiles"
-	VertexRagDataService_GetRagFile_FullMethodName            = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagFile"
-	VertexRagDataService_ListRagFiles_FullMethodName          = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagFiles"
-	VertexRagDataService_DeleteRagFile_FullMethodName         = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagFile"
-	VertexRagDataService_UpdateRagEngineConfig_FullMethodName = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagEngineConfig"
-	VertexRagDataService_GetRagEngineConfig_FullMethodName    = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagEngineConfig"
+	VertexRagDataService_CreateRagCorpus_FullMethodName           = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagCorpus"
+	VertexRagDataService_UpdateRagCorpus_FullMethodName           = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagCorpus"
+	VertexRagDataService_GetRagCorpus_FullMethodName              = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagCorpus"
+	VertexRagDataService_ListRagCorpora_FullMethodName            = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagCorpora"
+	VertexRagDataService_DeleteRagCorpus_FullMethodName           = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagCorpus"
+	VertexRagDataService_UploadRagFile_FullMethodName             = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/UploadRagFile"
+	VertexRagDataService_ImportRagFiles_FullMethodName            = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ImportRagFiles"
+	VertexRagDataService_GetRagFile_FullMethodName                = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagFile"
+	VertexRagDataService_ListRagFiles_FullMethodName              = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagFiles"
+	VertexRagDataService_DeleteRagFile_FullMethodName             = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagFile"
+	VertexRagDataService_UpdateRagEngineConfig_FullMethodName     = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagEngineConfig"
+	VertexRagDataService_GetRagEngineConfig_FullMethodName        = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagEngineConfig"
+	VertexRagDataService_CreateRagDataSchema_FullMethodName       = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagDataSchema"
+	VertexRagDataService_BatchCreateRagDataSchemas_FullMethodName = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchCreateRagDataSchemas"
+	VertexRagDataService_GetRagDataSchema_FullMethodName          = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagDataSchema"
+	VertexRagDataService_ListRagDataSchemas_FullMethodName        = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagDataSchemas"
+	VertexRagDataService_DeleteRagDataSchema_FullMethodName       = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagDataSchema"
+	VertexRagDataService_BatchDeleteRagDataSchemas_FullMethodName = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchDeleteRagDataSchemas"
+	VertexRagDataService_CreateRagMetadata_FullMethodName         = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagMetadata"
+	VertexRagDataService_BatchCreateRagMetadata_FullMethodName    = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchCreateRagMetadata"
+	VertexRagDataService_UpdateRagMetadata_FullMethodName         = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagMetadata"
+	VertexRagDataService_GetRagMetadata_FullMethodName            = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagMetadata"
+	VertexRagDataService_ListRagMetadata_FullMethodName           = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagMetadata"
+	VertexRagDataService_DeleteRagMetadata_FullMethodName         = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagMetadata"
+	VertexRagDataService_BatchDeleteRagMetadata_FullMethodName    = "/google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchDeleteRagMetadata"
 )
 
 // VertexRagDataServiceClient is the client API for VertexRagDataService service.
@@ -77,6 +91,32 @@ type VertexRagDataServiceClient interface {
 	UpdateRagEngineConfig(ctx context.Context, in *UpdateRagEngineConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a RagEngineConfig.
 	GetRagEngineConfig(ctx context.Context, in *GetRagEngineConfigRequest, opts ...grpc.CallOption) (*RagEngineConfig, error)
+	// Creates a RagDataSchema.
+	CreateRagDataSchema(ctx context.Context, in *CreateRagDataSchemaRequest, opts ...grpc.CallOption) (*RagDataSchema, error)
+	// Batch Create one or more RagDataSchemas
+	BatchCreateRagDataSchemas(ctx context.Context, in *BatchCreateRagDataSchemasRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets a RagDataSchema.
+	GetRagDataSchema(ctx context.Context, in *GetRagDataSchemaRequest, opts ...grpc.CallOption) (*RagDataSchema, error)
+	// Lists RagDataSchemas in a Location.
+	ListRagDataSchemas(ctx context.Context, in *ListRagDataSchemasRequest, opts ...grpc.CallOption) (*ListRagDataSchemasResponse, error)
+	// Deletes a RagDataSchema.
+	DeleteRagDataSchema(ctx context.Context, in *DeleteRagDataSchemaRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Batch Deletes one or more RagDataSchemas
+	BatchDeleteRagDataSchemas(ctx context.Context, in *BatchDeleteRagDataSchemasRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Creates a RagMetadata.
+	CreateRagMetadata(ctx context.Context, in *CreateRagMetadataRequest, opts ...grpc.CallOption) (*RagMetadata, error)
+	// Batch Create one or more RagMetadatas
+	BatchCreateRagMetadata(ctx context.Context, in *BatchCreateRagMetadataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a RagMetadata.
+	UpdateRagMetadata(ctx context.Context, in *UpdateRagMetadataRequest, opts ...grpc.CallOption) (*RagMetadata, error)
+	// Gets a RagMetadata.
+	GetRagMetadata(ctx context.Context, in *GetRagMetadataRequest, opts ...grpc.CallOption) (*RagMetadata, error)
+	// Lists RagMetadata in a RagFile.
+	ListRagMetadata(ctx context.Context, in *ListRagMetadataRequest, opts ...grpc.CallOption) (*ListRagMetadataResponse, error)
+	// Deletes a RagMetadata.
+	DeleteRagMetadata(ctx context.Context, in *DeleteRagMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Batch Deletes one or more RagMetadata.
+	BatchDeleteRagMetadata(ctx context.Context, in *BatchDeleteRagMetadataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type vertexRagDataServiceClient struct {
@@ -195,6 +235,123 @@ func (c *vertexRagDataServiceClient) GetRagEngineConfig(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *vertexRagDataServiceClient) CreateRagDataSchema(ctx context.Context, in *CreateRagDataSchemaRequest, opts ...grpc.CallOption) (*RagDataSchema, error) {
+	out := new(RagDataSchema)
+	err := c.cc.Invoke(ctx, VertexRagDataService_CreateRagDataSchema_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) BatchCreateRagDataSchemas(ctx context.Context, in *BatchCreateRagDataSchemasRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VertexRagDataService_BatchCreateRagDataSchemas_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) GetRagDataSchema(ctx context.Context, in *GetRagDataSchemaRequest, opts ...grpc.CallOption) (*RagDataSchema, error) {
+	out := new(RagDataSchema)
+	err := c.cc.Invoke(ctx, VertexRagDataService_GetRagDataSchema_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) ListRagDataSchemas(ctx context.Context, in *ListRagDataSchemasRequest, opts ...grpc.CallOption) (*ListRagDataSchemasResponse, error) {
+	out := new(ListRagDataSchemasResponse)
+	err := c.cc.Invoke(ctx, VertexRagDataService_ListRagDataSchemas_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) DeleteRagDataSchema(ctx context.Context, in *DeleteRagDataSchemaRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, VertexRagDataService_DeleteRagDataSchema_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) BatchDeleteRagDataSchemas(ctx context.Context, in *BatchDeleteRagDataSchemasRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VertexRagDataService_BatchDeleteRagDataSchemas_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) CreateRagMetadata(ctx context.Context, in *CreateRagMetadataRequest, opts ...grpc.CallOption) (*RagMetadata, error) {
+	out := new(RagMetadata)
+	err := c.cc.Invoke(ctx, VertexRagDataService_CreateRagMetadata_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) BatchCreateRagMetadata(ctx context.Context, in *BatchCreateRagMetadataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VertexRagDataService_BatchCreateRagMetadata_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) UpdateRagMetadata(ctx context.Context, in *UpdateRagMetadataRequest, opts ...grpc.CallOption) (*RagMetadata, error) {
+	out := new(RagMetadata)
+	err := c.cc.Invoke(ctx, VertexRagDataService_UpdateRagMetadata_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) GetRagMetadata(ctx context.Context, in *GetRagMetadataRequest, opts ...grpc.CallOption) (*RagMetadata, error) {
+	out := new(RagMetadata)
+	err := c.cc.Invoke(ctx, VertexRagDataService_GetRagMetadata_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) ListRagMetadata(ctx context.Context, in *ListRagMetadataRequest, opts ...grpc.CallOption) (*ListRagMetadataResponse, error) {
+	out := new(ListRagMetadataResponse)
+	err := c.cc.Invoke(ctx, VertexRagDataService_ListRagMetadata_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) DeleteRagMetadata(ctx context.Context, in *DeleteRagMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, VertexRagDataService_DeleteRagMetadata_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vertexRagDataServiceClient) BatchDeleteRagMetadata(ctx context.Context, in *BatchDeleteRagMetadataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VertexRagDataService_BatchDeleteRagMetadata_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VertexRagDataServiceServer is the server API for VertexRagDataService service.
 // All implementations should embed UnimplementedVertexRagDataServiceServer
 // for forward compatibility
@@ -223,6 +380,32 @@ type VertexRagDataServiceServer interface {
 	UpdateRagEngineConfig(context.Context, *UpdateRagEngineConfigRequest) (*longrunningpb.Operation, error)
 	// Gets a RagEngineConfig.
 	GetRagEngineConfig(context.Context, *GetRagEngineConfigRequest) (*RagEngineConfig, error)
+	// Creates a RagDataSchema.
+	CreateRagDataSchema(context.Context, *CreateRagDataSchemaRequest) (*RagDataSchema, error)
+	// Batch Create one or more RagDataSchemas
+	BatchCreateRagDataSchemas(context.Context, *BatchCreateRagDataSchemasRequest) (*longrunningpb.Operation, error)
+	// Gets a RagDataSchema.
+	GetRagDataSchema(context.Context, *GetRagDataSchemaRequest) (*RagDataSchema, error)
+	// Lists RagDataSchemas in a Location.
+	ListRagDataSchemas(context.Context, *ListRagDataSchemasRequest) (*ListRagDataSchemasResponse, error)
+	// Deletes a RagDataSchema.
+	DeleteRagDataSchema(context.Context, *DeleteRagDataSchemaRequest) (*emptypb.Empty, error)
+	// Batch Deletes one or more RagDataSchemas
+	BatchDeleteRagDataSchemas(context.Context, *BatchDeleteRagDataSchemasRequest) (*longrunningpb.Operation, error)
+	// Creates a RagMetadata.
+	CreateRagMetadata(context.Context, *CreateRagMetadataRequest) (*RagMetadata, error)
+	// Batch Create one or more RagMetadatas
+	BatchCreateRagMetadata(context.Context, *BatchCreateRagMetadataRequest) (*longrunningpb.Operation, error)
+	// Updates a RagMetadata.
+	UpdateRagMetadata(context.Context, *UpdateRagMetadataRequest) (*RagMetadata, error)
+	// Gets a RagMetadata.
+	GetRagMetadata(context.Context, *GetRagMetadataRequest) (*RagMetadata, error)
+	// Lists RagMetadata in a RagFile.
+	ListRagMetadata(context.Context, *ListRagMetadataRequest) (*ListRagMetadataResponse, error)
+	// Deletes a RagMetadata.
+	DeleteRagMetadata(context.Context, *DeleteRagMetadataRequest) (*emptypb.Empty, error)
+	// Batch Deletes one or more RagMetadata.
+	BatchDeleteRagMetadata(context.Context, *BatchDeleteRagMetadataRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedVertexRagDataServiceServer should be embedded to have forward compatible implementations.
@@ -264,6 +447,45 @@ func (UnimplementedVertexRagDataServiceServer) UpdateRagEngineConfig(context.Con
 }
 func (UnimplementedVertexRagDataServiceServer) GetRagEngineConfig(context.Context, *GetRagEngineConfigRequest) (*RagEngineConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRagEngineConfig not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) CreateRagDataSchema(context.Context, *CreateRagDataSchemaRequest) (*RagDataSchema, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRagDataSchema not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) BatchCreateRagDataSchemas(context.Context, *BatchCreateRagDataSchemasRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateRagDataSchemas not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) GetRagDataSchema(context.Context, *GetRagDataSchemaRequest) (*RagDataSchema, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRagDataSchema not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) ListRagDataSchemas(context.Context, *ListRagDataSchemasRequest) (*ListRagDataSchemasResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRagDataSchemas not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) DeleteRagDataSchema(context.Context, *DeleteRagDataSchemaRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRagDataSchema not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) BatchDeleteRagDataSchemas(context.Context, *BatchDeleteRagDataSchemasRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteRagDataSchemas not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) CreateRagMetadata(context.Context, *CreateRagMetadataRequest) (*RagMetadata, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRagMetadata not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) BatchCreateRagMetadata(context.Context, *BatchCreateRagMetadataRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateRagMetadata not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) UpdateRagMetadata(context.Context, *UpdateRagMetadataRequest) (*RagMetadata, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRagMetadata not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) GetRagMetadata(context.Context, *GetRagMetadataRequest) (*RagMetadata, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRagMetadata not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) ListRagMetadata(context.Context, *ListRagMetadataRequest) (*ListRagMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRagMetadata not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) DeleteRagMetadata(context.Context, *DeleteRagMetadataRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRagMetadata not implemented")
+}
+func (UnimplementedVertexRagDataServiceServer) BatchDeleteRagMetadata(context.Context, *BatchDeleteRagMetadataRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteRagMetadata not implemented")
 }
 
 // UnsafeVertexRagDataServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -493,6 +715,240 @@ func _VertexRagDataService_GetRagEngineConfig_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VertexRagDataService_CreateRagDataSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRagDataSchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).CreateRagDataSchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_CreateRagDataSchema_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).CreateRagDataSchema(ctx, req.(*CreateRagDataSchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_BatchCreateRagDataSchemas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchCreateRagDataSchemasRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).BatchCreateRagDataSchemas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_BatchCreateRagDataSchemas_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).BatchCreateRagDataSchemas(ctx, req.(*BatchCreateRagDataSchemasRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_GetRagDataSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRagDataSchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).GetRagDataSchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_GetRagDataSchema_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).GetRagDataSchema(ctx, req.(*GetRagDataSchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_ListRagDataSchemas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRagDataSchemasRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).ListRagDataSchemas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_ListRagDataSchemas_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).ListRagDataSchemas(ctx, req.(*ListRagDataSchemasRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_DeleteRagDataSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRagDataSchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).DeleteRagDataSchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_DeleteRagDataSchema_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).DeleteRagDataSchema(ctx, req.(*DeleteRagDataSchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_BatchDeleteRagDataSchemas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchDeleteRagDataSchemasRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).BatchDeleteRagDataSchemas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_BatchDeleteRagDataSchemas_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).BatchDeleteRagDataSchemas(ctx, req.(*BatchDeleteRagDataSchemasRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_CreateRagMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRagMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).CreateRagMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_CreateRagMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).CreateRagMetadata(ctx, req.(*CreateRagMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_BatchCreateRagMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchCreateRagMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).BatchCreateRagMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_BatchCreateRagMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).BatchCreateRagMetadata(ctx, req.(*BatchCreateRagMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_UpdateRagMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRagMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).UpdateRagMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_UpdateRagMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).UpdateRagMetadata(ctx, req.(*UpdateRagMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_GetRagMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRagMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).GetRagMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_GetRagMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).GetRagMetadata(ctx, req.(*GetRagMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_ListRagMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRagMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).ListRagMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_ListRagMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).ListRagMetadata(ctx, req.(*ListRagMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_DeleteRagMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRagMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).DeleteRagMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_DeleteRagMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).DeleteRagMetadata(ctx, req.(*DeleteRagMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VertexRagDataService_BatchDeleteRagMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchDeleteRagMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VertexRagDataServiceServer).BatchDeleteRagMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VertexRagDataService_BatchDeleteRagMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VertexRagDataServiceServer).BatchDeleteRagMetadata(ctx, req.(*BatchDeleteRagMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VertexRagDataService_ServiceDesc is the grpc.ServiceDesc for VertexRagDataService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -547,6 +1003,58 @@ var VertexRagDataService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRagEngineConfig",
 			Handler:    _VertexRagDataService_GetRagEngineConfig_Handler,
+		},
+		{
+			MethodName: "CreateRagDataSchema",
+			Handler:    _VertexRagDataService_CreateRagDataSchema_Handler,
+		},
+		{
+			MethodName: "BatchCreateRagDataSchemas",
+			Handler:    _VertexRagDataService_BatchCreateRagDataSchemas_Handler,
+		},
+		{
+			MethodName: "GetRagDataSchema",
+			Handler:    _VertexRagDataService_GetRagDataSchema_Handler,
+		},
+		{
+			MethodName: "ListRagDataSchemas",
+			Handler:    _VertexRagDataService_ListRagDataSchemas_Handler,
+		},
+		{
+			MethodName: "DeleteRagDataSchema",
+			Handler:    _VertexRagDataService_DeleteRagDataSchema_Handler,
+		},
+		{
+			MethodName: "BatchDeleteRagDataSchemas",
+			Handler:    _VertexRagDataService_BatchDeleteRagDataSchemas_Handler,
+		},
+		{
+			MethodName: "CreateRagMetadata",
+			Handler:    _VertexRagDataService_CreateRagMetadata_Handler,
+		},
+		{
+			MethodName: "BatchCreateRagMetadata",
+			Handler:    _VertexRagDataService_BatchCreateRagMetadata_Handler,
+		},
+		{
+			MethodName: "UpdateRagMetadata",
+			Handler:    _VertexRagDataService_UpdateRagMetadata_Handler,
+		},
+		{
+			MethodName: "GetRagMetadata",
+			Handler:    _VertexRagDataService_GetRagMetadata_Handler,
+		},
+		{
+			MethodName: "ListRagMetadata",
+			Handler:    _VertexRagDataService_ListRagMetadata_Handler,
+		},
+		{
+			MethodName: "DeleteRagMetadata",
+			Handler:    _VertexRagDataService_DeleteRagMetadata_Handler,
+		},
+		{
+			MethodName: "BatchDeleteRagMetadata",
+			Handler:    _VertexRagDataService_BatchDeleteRagMetadata_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

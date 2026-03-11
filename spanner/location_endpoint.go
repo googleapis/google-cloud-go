@@ -16,7 +16,10 @@ limitations under the License.
 
 package spanner
 
-import "sync"
+import (
+	"context"
+	"sync"
+)
 
 // channelEndpoint represents a routable server endpoint.
 type channelEndpoint interface {
@@ -26,7 +29,9 @@ type channelEndpoint interface {
 
 // channelEndpointCache caches endpoints by server address.
 type channelEndpointCache interface {
-	Get(address string) channelEndpoint
+	Get(ctx context.Context, address string) channelEndpoint
+	ClientFor(ep channelEndpoint) spannerClient
+	Close() error
 }
 
 type passthroughChannelEndpoint struct {
@@ -50,7 +55,7 @@ func newPassthroughChannelEndpointCache() *passthroughChannelEndpointCache {
 	return &passthroughChannelEndpointCache{endpoints: make(map[string]*passthroughChannelEndpoint)}
 }
 
-func (c *passthroughChannelEndpointCache) Get(address string) channelEndpoint {
+func (c *passthroughChannelEndpointCache) Get(_ context.Context, address string) channelEndpoint {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if endpoint, ok := c.endpoints[address]; ok {
@@ -59,4 +64,12 @@ func (c *passthroughChannelEndpointCache) Get(address string) channelEndpoint {
 	endpoint := &passthroughChannelEndpoint{address: address}
 	c.endpoints[address] = endpoint
 	return endpoint
+}
+
+func (c *passthroughChannelEndpointCache) ClientFor(_ channelEndpoint) spannerClient {
+	return nil
+}
+
+func (c *passthroughChannelEndpointCache) Close() error {
+	return nil
 }

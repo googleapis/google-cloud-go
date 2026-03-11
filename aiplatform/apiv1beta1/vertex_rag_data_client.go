@@ -46,28 +46,41 @@ var newVertexRagDataClientHook clientHook
 
 // VertexRagDataCallOptions contains the retry settings for each method of VertexRagDataClient.
 type VertexRagDataCallOptions struct {
-	CreateRagCorpus       []gax.CallOption
-	UpdateRagCorpus       []gax.CallOption
-	GetRagCorpus          []gax.CallOption
-	ListRagCorpora        []gax.CallOption
-	DeleteRagCorpus       []gax.CallOption
-	UploadRagFile         []gax.CallOption
-	ImportRagFiles        []gax.CallOption
-	GetRagFile            []gax.CallOption
-	ListRagFiles          []gax.CallOption
-	DeleteRagFile         []gax.CallOption
-	UpdateRagEngineConfig []gax.CallOption
-	GetRagEngineConfig    []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	SetIamPolicy          []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	CancelOperation       []gax.CallOption
-	DeleteOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
-	WaitOperation         []gax.CallOption
+	CreateRagCorpus           []gax.CallOption
+	UpdateRagCorpus           []gax.CallOption
+	GetRagCorpus              []gax.CallOption
+	ListRagCorpora            []gax.CallOption
+	DeleteRagCorpus           []gax.CallOption
+	UploadRagFile             []gax.CallOption
+	ImportRagFiles            []gax.CallOption
+	GetRagFile                []gax.CallOption
+	ListRagFiles              []gax.CallOption
+	DeleteRagFile             []gax.CallOption
+	UpdateRagEngineConfig     []gax.CallOption
+	GetRagEngineConfig        []gax.CallOption
+	CreateRagDataSchema       []gax.CallOption
+	BatchCreateRagDataSchemas []gax.CallOption
+	GetRagDataSchema          []gax.CallOption
+	ListRagDataSchemas        []gax.CallOption
+	DeleteRagDataSchema       []gax.CallOption
+	BatchDeleteRagDataSchemas []gax.CallOption
+	CreateRagMetadata         []gax.CallOption
+	BatchCreateRagMetadata    []gax.CallOption
+	UpdateRagMetadata         []gax.CallOption
+	GetRagMetadata            []gax.CallOption
+	ListRagMetadata           []gax.CallOption
+	DeleteRagMetadata         []gax.CallOption
+	BatchDeleteRagMetadata    []gax.CallOption
+	GetLocation               []gax.CallOption
+	ListLocations             []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	CancelOperation           []gax.CallOption
+	DeleteOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
+	WaitOperation             []gax.CallOption
 }
 
 func defaultVertexRagDataGRPCClientOptions() []option.ClientOption {
@@ -87,55 +100,81 @@ func defaultVertexRagDataGRPCClientOptions() []option.ClientOption {
 
 func defaultVertexRagDataCallOptions() *VertexRagDataCallOptions {
 	return &VertexRagDataCallOptions{
-		CreateRagCorpus:       []gax.CallOption{},
-		UpdateRagCorpus:       []gax.CallOption{},
-		GetRagCorpus:          []gax.CallOption{},
-		ListRagCorpora:        []gax.CallOption{},
-		DeleteRagCorpus:       []gax.CallOption{},
-		UploadRagFile:         []gax.CallOption{},
-		ImportRagFiles:        []gax.CallOption{},
-		GetRagFile:            []gax.CallOption{},
-		ListRagFiles:          []gax.CallOption{},
-		DeleteRagFile:         []gax.CallOption{},
-		UpdateRagEngineConfig: []gax.CallOption{},
-		GetRagEngineConfig:    []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		CreateRagCorpus:           []gax.CallOption{},
+		UpdateRagCorpus:           []gax.CallOption{},
+		GetRagCorpus:              []gax.CallOption{},
+		ListRagCorpora:            []gax.CallOption{},
+		DeleteRagCorpus:           []gax.CallOption{},
+		UploadRagFile:             []gax.CallOption{},
+		ImportRagFiles:            []gax.CallOption{},
+		GetRagFile:                []gax.CallOption{},
+		ListRagFiles:              []gax.CallOption{},
+		DeleteRagFile:             []gax.CallOption{},
+		UpdateRagEngineConfig:     []gax.CallOption{},
+		GetRagEngineConfig:        []gax.CallOption{},
+		CreateRagDataSchema:       []gax.CallOption{},
+		BatchCreateRagDataSchemas: []gax.CallOption{},
+		GetRagDataSchema:          []gax.CallOption{},
+		ListRagDataSchemas:        []gax.CallOption{},
+		DeleteRagDataSchema:       []gax.CallOption{},
+		BatchDeleteRagDataSchemas: []gax.CallOption{},
+		CreateRagMetadata:         []gax.CallOption{},
+		BatchCreateRagMetadata:    []gax.CallOption{},
+		UpdateRagMetadata:         []gax.CallOption{},
+		GetRagMetadata:            []gax.CallOption{},
+		ListRagMetadata:           []gax.CallOption{},
+		DeleteRagMetadata:         []gax.CallOption{},
+		BatchDeleteRagMetadata:    []gax.CallOption{},
+		GetLocation:               []gax.CallOption{},
+		ListLocations:             []gax.CallOption{},
+		GetIamPolicy:              []gax.CallOption{},
+		SetIamPolicy:              []gax.CallOption{},
+		TestIamPermissions:        []gax.CallOption{},
+		CancelOperation:           []gax.CallOption{},
+		DeleteOperation:           []gax.CallOption{},
+		GetOperation:              []gax.CallOption{},
+		ListOperations:            []gax.CallOption{},
+		WaitOperation:             []gax.CallOption{},
 	}
 }
 
 func defaultVertexRagDataRESTCallOptions() *VertexRagDataCallOptions {
 	return &VertexRagDataCallOptions{
-		CreateRagCorpus:       []gax.CallOption{},
-		UpdateRagCorpus:       []gax.CallOption{},
-		GetRagCorpus:          []gax.CallOption{},
-		ListRagCorpora:        []gax.CallOption{},
-		DeleteRagCorpus:       []gax.CallOption{},
-		UploadRagFile:         []gax.CallOption{},
-		ImportRagFiles:        []gax.CallOption{},
-		GetRagFile:            []gax.CallOption{},
-		ListRagFiles:          []gax.CallOption{},
-		DeleteRagFile:         []gax.CallOption{},
-		UpdateRagEngineConfig: []gax.CallOption{},
-		GetRagEngineConfig:    []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		CreateRagCorpus:           []gax.CallOption{},
+		UpdateRagCorpus:           []gax.CallOption{},
+		GetRagCorpus:              []gax.CallOption{},
+		ListRagCorpora:            []gax.CallOption{},
+		DeleteRagCorpus:           []gax.CallOption{},
+		UploadRagFile:             []gax.CallOption{},
+		ImportRagFiles:            []gax.CallOption{},
+		GetRagFile:                []gax.CallOption{},
+		ListRagFiles:              []gax.CallOption{},
+		DeleteRagFile:             []gax.CallOption{},
+		UpdateRagEngineConfig:     []gax.CallOption{},
+		GetRagEngineConfig:        []gax.CallOption{},
+		CreateRagDataSchema:       []gax.CallOption{},
+		BatchCreateRagDataSchemas: []gax.CallOption{},
+		GetRagDataSchema:          []gax.CallOption{},
+		ListRagDataSchemas:        []gax.CallOption{},
+		DeleteRagDataSchema:       []gax.CallOption{},
+		BatchDeleteRagDataSchemas: []gax.CallOption{},
+		CreateRagMetadata:         []gax.CallOption{},
+		BatchCreateRagMetadata:    []gax.CallOption{},
+		UpdateRagMetadata:         []gax.CallOption{},
+		GetRagMetadata:            []gax.CallOption{},
+		ListRagMetadata:           []gax.CallOption{},
+		DeleteRagMetadata:         []gax.CallOption{},
+		BatchDeleteRagMetadata:    []gax.CallOption{},
+		GetLocation:               []gax.CallOption{},
+		ListLocations:             []gax.CallOption{},
+		GetIamPolicy:              []gax.CallOption{},
+		SetIamPolicy:              []gax.CallOption{},
+		TestIamPermissions:        []gax.CallOption{},
+		CancelOperation:           []gax.CallOption{},
+		DeleteOperation:           []gax.CallOption{},
+		GetOperation:              []gax.CallOption{},
+		ListOperations:            []gax.CallOption{},
+		WaitOperation:             []gax.CallOption{},
 	}
 }
 
@@ -162,6 +201,23 @@ type internalVertexRagDataClient interface {
 	UpdateRagEngineConfig(context.Context, *aiplatformpb.UpdateRagEngineConfigRequest, ...gax.CallOption) (*UpdateRagEngineConfigOperation, error)
 	UpdateRagEngineConfigOperation(name string) *UpdateRagEngineConfigOperation
 	GetRagEngineConfig(context.Context, *aiplatformpb.GetRagEngineConfigRequest, ...gax.CallOption) (*aiplatformpb.RagEngineConfig, error)
+	CreateRagDataSchema(context.Context, *aiplatformpb.CreateRagDataSchemaRequest, ...gax.CallOption) (*aiplatformpb.RagDataSchema, error)
+	BatchCreateRagDataSchemas(context.Context, *aiplatformpb.BatchCreateRagDataSchemasRequest, ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error)
+	BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation
+	GetRagDataSchema(context.Context, *aiplatformpb.GetRagDataSchemaRequest, ...gax.CallOption) (*aiplatformpb.RagDataSchema, error)
+	ListRagDataSchemas(context.Context, *aiplatformpb.ListRagDataSchemasRequest, ...gax.CallOption) *RagDataSchemaIterator
+	DeleteRagDataSchema(context.Context, *aiplatformpb.DeleteRagDataSchemaRequest, ...gax.CallOption) error
+	BatchDeleteRagDataSchemas(context.Context, *aiplatformpb.BatchDeleteRagDataSchemasRequest, ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error)
+	BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation
+	CreateRagMetadata(context.Context, *aiplatformpb.CreateRagMetadataRequest, ...gax.CallOption) (*aiplatformpb.RagMetadata, error)
+	BatchCreateRagMetadata(context.Context, *aiplatformpb.BatchCreateRagMetadataRequest, ...gax.CallOption) (*BatchCreateRagMetadataOperation, error)
+	BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation
+	UpdateRagMetadata(context.Context, *aiplatformpb.UpdateRagMetadataRequest, ...gax.CallOption) (*aiplatformpb.RagMetadata, error)
+	GetRagMetadata(context.Context, *aiplatformpb.GetRagMetadataRequest, ...gax.CallOption) (*aiplatformpb.RagMetadata, error)
+	ListRagMetadata(context.Context, *aiplatformpb.ListRagMetadataRequest, ...gax.CallOption) *RagMetadataIterator
+	DeleteRagMetadata(context.Context, *aiplatformpb.DeleteRagMetadataRequest, ...gax.CallOption) error
+	BatchDeleteRagMetadata(context.Context, *aiplatformpb.BatchDeleteRagMetadataRequest, ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error)
+	BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -308,6 +364,95 @@ func (c *VertexRagDataClient) UpdateRagEngineConfigOperation(name string) *Updat
 // GetRagEngineConfig gets a RagEngineConfig.
 func (c *VertexRagDataClient) GetRagEngineConfig(ctx context.Context, req *aiplatformpb.GetRagEngineConfigRequest, opts ...gax.CallOption) (*aiplatformpb.RagEngineConfig, error) {
 	return c.internalClient.GetRagEngineConfig(ctx, req, opts...)
+}
+
+// CreateRagDataSchema creates a RagDataSchema.
+func (c *VertexRagDataClient) CreateRagDataSchema(ctx context.Context, req *aiplatformpb.CreateRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	return c.internalClient.CreateRagDataSchema(ctx, req, opts...)
+}
+
+// BatchCreateRagDataSchemas batch Create one or more RagDataSchemas
+func (c *VertexRagDataClient) BatchCreateRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchCreateRagDataSchemasRequest, opts ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error) {
+	return c.internalClient.BatchCreateRagDataSchemas(ctx, req, opts...)
+}
+
+// BatchCreateRagDataSchemasOperation returns a new BatchCreateRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchCreateRagDataSchemasOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation {
+	return c.internalClient.BatchCreateRagDataSchemasOperation(name)
+}
+
+// GetRagDataSchema gets a RagDataSchema.
+func (c *VertexRagDataClient) GetRagDataSchema(ctx context.Context, req *aiplatformpb.GetRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	return c.internalClient.GetRagDataSchema(ctx, req, opts...)
+}
+
+// ListRagDataSchemas lists RagDataSchemas in a Location.
+func (c *VertexRagDataClient) ListRagDataSchemas(ctx context.Context, req *aiplatformpb.ListRagDataSchemasRequest, opts ...gax.CallOption) *RagDataSchemaIterator {
+	return c.internalClient.ListRagDataSchemas(ctx, req, opts...)
+}
+
+// DeleteRagDataSchema deletes a RagDataSchema.
+func (c *VertexRagDataClient) DeleteRagDataSchema(ctx context.Context, req *aiplatformpb.DeleteRagDataSchemaRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteRagDataSchema(ctx, req, opts...)
+}
+
+// BatchDeleteRagDataSchemas batch Deletes one or more RagDataSchemas
+func (c *VertexRagDataClient) BatchDeleteRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchDeleteRagDataSchemasRequest, opts ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error) {
+	return c.internalClient.BatchDeleteRagDataSchemas(ctx, req, opts...)
+}
+
+// BatchDeleteRagDataSchemasOperation returns a new BatchDeleteRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagDataSchemasOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation {
+	return c.internalClient.BatchDeleteRagDataSchemasOperation(name)
+}
+
+// CreateRagMetadata creates a RagMetadata.
+func (c *VertexRagDataClient) CreateRagMetadata(ctx context.Context, req *aiplatformpb.CreateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	return c.internalClient.CreateRagMetadata(ctx, req, opts...)
+}
+
+// BatchCreateRagMetadata batch Create one or more RagMetadatas
+func (c *VertexRagDataClient) BatchCreateRagMetadata(ctx context.Context, req *aiplatformpb.BatchCreateRagMetadataRequest, opts ...gax.CallOption) (*BatchCreateRagMetadataOperation, error) {
+	return c.internalClient.BatchCreateRagMetadata(ctx, req, opts...)
+}
+
+// BatchCreateRagMetadataOperation returns a new BatchCreateRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchCreateRagMetadataOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation {
+	return c.internalClient.BatchCreateRagMetadataOperation(name)
+}
+
+// UpdateRagMetadata updates a RagMetadata.
+func (c *VertexRagDataClient) UpdateRagMetadata(ctx context.Context, req *aiplatformpb.UpdateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	return c.internalClient.UpdateRagMetadata(ctx, req, opts...)
+}
+
+// GetRagMetadata gets a RagMetadata.
+func (c *VertexRagDataClient) GetRagMetadata(ctx context.Context, req *aiplatformpb.GetRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	return c.internalClient.GetRagMetadata(ctx, req, opts...)
+}
+
+// ListRagMetadata lists RagMetadata in a RagFile.
+func (c *VertexRagDataClient) ListRagMetadata(ctx context.Context, req *aiplatformpb.ListRagMetadataRequest, opts ...gax.CallOption) *RagMetadataIterator {
+	return c.internalClient.ListRagMetadata(ctx, req, opts...)
+}
+
+// DeleteRagMetadata deletes a RagMetadata.
+func (c *VertexRagDataClient) DeleteRagMetadata(ctx context.Context, req *aiplatformpb.DeleteRagMetadataRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteRagMetadata(ctx, req, opts...)
+}
+
+// BatchDeleteRagMetadata batch Deletes one or more RagMetadata.
+func (c *VertexRagDataClient) BatchDeleteRagMetadata(ctx context.Context, req *aiplatformpb.BatchDeleteRagMetadataRequest, opts ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error) {
+	return c.internalClient.BatchDeleteRagMetadata(ctx, req, opts...)
+}
+
+// BatchDeleteRagMetadataOperation returns a new BatchDeleteRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagMetadataOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation {
+	return c.internalClient.BatchDeleteRagMetadataOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -846,6 +991,296 @@ func (c *vertexRagDataGRPCClient) GetRagEngineConfig(ctx context.Context, req *a
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) CreateRagDataSchema(ctx context.Context, req *aiplatformpb.CreateRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRagDataSchema[0:len((*c.CallOptions).CreateRagDataSchema):len((*c.CallOptions).CreateRagDataSchema)], opts...)
+	var resp *aiplatformpb.RagDataSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.CreateRagDataSchema, req, settings.GRPC, c.logger, "CreateRagDataSchema")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) BatchCreateRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchCreateRagDataSchemasRequest, opts ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCreateRagDataSchemas[0:len((*c.CallOptions).BatchCreateRagDataSchemas):len((*c.CallOptions).BatchCreateRagDataSchemas)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchCreateRagDataSchemas, req, settings.GRPC, c.logger, "BatchCreateRagDataSchemas")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCreateRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) GetRagDataSchema(ctx context.Context, req *aiplatformpb.GetRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetRagDataSchema[0:len((*c.CallOptions).GetRagDataSchema):len((*c.CallOptions).GetRagDataSchema)], opts...)
+	var resp *aiplatformpb.RagDataSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.GetRagDataSchema, req, settings.GRPC, c.logger, "GetRagDataSchema")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) ListRagDataSchemas(ctx context.Context, req *aiplatformpb.ListRagDataSchemasRequest, opts ...gax.CallOption) *RagDataSchemaIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListRagDataSchemas[0:len((*c.CallOptions).ListRagDataSchemas):len((*c.CallOptions).ListRagDataSchemas)], opts...)
+	it := &RagDataSchemaIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagDataSchemasRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagDataSchema, string, error) {
+		resp := &aiplatformpb.ListRagDataSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.vertexRagDataClient.ListRagDataSchemas, req, settings.GRPC, c.logger, "ListRagDataSchemas")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRagDataSchemas(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *vertexRagDataGRPCClient) DeleteRagDataSchema(ctx context.Context, req *aiplatformpb.DeleteRagDataSchemaRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteRagDataSchema[0:len((*c.CallOptions).DeleteRagDataSchema):len((*c.CallOptions).DeleteRagDataSchema)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.vertexRagDataClient.DeleteRagDataSchema, req, settings.GRPC, c.logger, "DeleteRagDataSchema")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *vertexRagDataGRPCClient) BatchDeleteRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchDeleteRagDataSchemasRequest, opts ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchDeleteRagDataSchemas[0:len((*c.CallOptions).BatchDeleteRagDataSchemas):len((*c.CallOptions).BatchDeleteRagDataSchemas)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchDeleteRagDataSchemas, req, settings.GRPC, c.logger, "BatchDeleteRagDataSchemas")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeleteRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) CreateRagMetadata(ctx context.Context, req *aiplatformpb.CreateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRagMetadata[0:len((*c.CallOptions).CreateRagMetadata):len((*c.CallOptions).CreateRagMetadata)], opts...)
+	var resp *aiplatformpb.RagMetadata
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.CreateRagMetadata, req, settings.GRPC, c.logger, "CreateRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) BatchCreateRagMetadata(ctx context.Context, req *aiplatformpb.BatchCreateRagMetadataRequest, opts ...gax.CallOption) (*BatchCreateRagMetadataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCreateRagMetadata[0:len((*c.CallOptions).BatchCreateRagMetadata):len((*c.CallOptions).BatchCreateRagMetadata)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchCreateRagMetadata, req, settings.GRPC, c.logger, "BatchCreateRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCreateRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) UpdateRagMetadata(ctx context.Context, req *aiplatformpb.UpdateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rag_metadata.name", url.QueryEscape(req.GetRagMetadata().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRagMetadata[0:len((*c.CallOptions).UpdateRagMetadata):len((*c.CallOptions).UpdateRagMetadata)], opts...)
+	var resp *aiplatformpb.RagMetadata
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.UpdateRagMetadata, req, settings.GRPC, c.logger, "UpdateRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) GetRagMetadata(ctx context.Context, req *aiplatformpb.GetRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetRagMetadata[0:len((*c.CallOptions).GetRagMetadata):len((*c.CallOptions).GetRagMetadata)], opts...)
+	var resp *aiplatformpb.RagMetadata
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.GetRagMetadata, req, settings.GRPC, c.logger, "GetRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) ListRagMetadata(ctx context.Context, req *aiplatformpb.ListRagMetadataRequest, opts ...gax.CallOption) *RagMetadataIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListRagMetadata[0:len((*c.CallOptions).ListRagMetadata):len((*c.CallOptions).ListRagMetadata)], opts...)
+	it := &RagMetadataIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagMetadataRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagMetadata, string, error) {
+		resp := &aiplatformpb.ListRagMetadataResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.vertexRagDataClient.ListRagMetadata, req, settings.GRPC, c.logger, "ListRagMetadata")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRagMetadata(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *vertexRagDataGRPCClient) DeleteRagMetadata(ctx context.Context, req *aiplatformpb.DeleteRagMetadataRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteRagMetadata[0:len((*c.CallOptions).DeleteRagMetadata):len((*c.CallOptions).DeleteRagMetadata)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.vertexRagDataClient.DeleteRagMetadata, req, settings.GRPC, c.logger, "DeleteRagMetadata")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *vertexRagDataGRPCClient) BatchDeleteRagMetadata(ctx context.Context, req *aiplatformpb.BatchDeleteRagMetadataRequest, opts ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchDeleteRagMetadata[0:len((*c.CallOptions).BatchDeleteRagMetadata):len((*c.CallOptions).BatchDeleteRagMetadata)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchDeleteRagMetadata, req, settings.GRPC, c.logger, "BatchDeleteRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeleteRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *vertexRagDataGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1792,6 +2227,745 @@ func (c *vertexRagDataRESTClient) GetRagEngineConfig(ctx context.Context, req *a
 	return resp, nil
 }
 
+// CreateRagDataSchema creates a RagDataSchema.
+func (c *vertexRagDataRESTClient) CreateRagDataSchema(ctx context.Context, req *aiplatformpb.CreateRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRagDataSchema()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.RagDataSchemaId != nil {
+		params.Add("ragDataSchemaId", fmt.Sprintf("%v", req.GetRagDataSchemaId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRagDataSchema[0:len((*c.CallOptions).CreateRagDataSchema):len((*c.CallOptions).CreateRagDataSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagDataSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRagDataSchema")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchCreateRagDataSchemas batch Create one or more RagDataSchemas
+func (c *vertexRagDataRESTClient) BatchCreateRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchCreateRagDataSchemasRequest, opts ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateRagDataSchemas")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchCreateRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetRagDataSchema gets a RagDataSchema.
+func (c *vertexRagDataRESTClient) GetRagDataSchema(ctx context.Context, req *aiplatformpb.GetRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetRagDataSchema[0:len((*c.CallOptions).GetRagDataSchema):len((*c.CallOptions).GetRagDataSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagDataSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRagDataSchema")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRagDataSchemas lists RagDataSchemas in a Location.
+func (c *vertexRagDataRESTClient) ListRagDataSchemas(ctx context.Context, req *aiplatformpb.ListRagDataSchemasRequest, opts ...gax.CallOption) *RagDataSchemaIterator {
+	it := &RagDataSchemaIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagDataSchemasRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagDataSchema, string, error) {
+		resp := &aiplatformpb.ListRagDataSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRagDataSchemas")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRagDataSchemas(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteRagDataSchema deletes a RagDataSchema.
+func (c *vertexRagDataRESTClient) DeleteRagDataSchema(ctx context.Context, req *aiplatformpb.DeleteRagDataSchemaRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRagDataSchema")
+		return err
+	}, opts...)
+}
+
+// BatchDeleteRagDataSchemas batch Deletes one or more RagDataSchemas
+func (c *vertexRagDataRESTClient) BatchDeleteRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchDeleteRagDataSchemasRequest, opts ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteRagDataSchemas")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchDeleteRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateRagMetadata creates a RagMetadata.
+func (c *vertexRagDataRESTClient) CreateRagMetadata(ctx context.Context, req *aiplatformpb.CreateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRagMetadata()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.RagMetadataId != nil {
+		params.Add("ragMetadataId", fmt.Sprintf("%v", req.GetRagMetadataId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRagMetadata[0:len((*c.CallOptions).CreateRagMetadata):len((*c.CallOptions).CreateRagMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagMetadata{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRagMetadata")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchCreateRagMetadata batch Create one or more RagMetadatas
+func (c *vertexRagDataRESTClient) BatchCreateRagMetadata(ctx context.Context, req *aiplatformpb.BatchCreateRagMetadataRequest, opts ...gax.CallOption) (*BatchCreateRagMetadataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateRagMetadata")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchCreateRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateRagMetadata updates a RagMetadata.
+func (c *vertexRagDataRESTClient) UpdateRagMetadata(ctx context.Context, req *aiplatformpb.UpdateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRagMetadata()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRagMetadata().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rag_metadata.name", url.QueryEscape(req.GetRagMetadata().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRagMetadata[0:len((*c.CallOptions).UpdateRagMetadata):len((*c.CallOptions).UpdateRagMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagMetadata{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRagMetadata")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetRagMetadata gets a RagMetadata.
+func (c *vertexRagDataRESTClient) GetRagMetadata(ctx context.Context, req *aiplatformpb.GetRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetRagMetadata[0:len((*c.CallOptions).GetRagMetadata):len((*c.CallOptions).GetRagMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagMetadata{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRagMetadata")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRagMetadata lists RagMetadata in a RagFile.
+func (c *vertexRagDataRESTClient) ListRagMetadata(ctx context.Context, req *aiplatformpb.ListRagMetadataRequest, opts ...gax.CallOption) *RagMetadataIterator {
+	it := &RagMetadataIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagMetadataRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagMetadata, string, error) {
+		resp := &aiplatformpb.ListRagMetadataResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRagMetadata")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRagMetadata(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteRagMetadata deletes a RagMetadata.
+func (c *vertexRagDataRESTClient) DeleteRagMetadata(ctx context.Context, req *aiplatformpb.DeleteRagMetadataRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRagMetadata")
+		return err
+	}, opts...)
+}
+
+// BatchDeleteRagMetadata batch Deletes one or more RagMetadata.
+func (c *vertexRagDataRESTClient) BatchDeleteRagMetadata(ctx context.Context, req *aiplatformpb.BatchDeleteRagMetadataRequest, opts ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteRagMetadata")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchDeleteRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *vertexRagDataRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2361,6 +3535,78 @@ func (c *vertexRagDataRESTClient) WaitOperation(ctx context.Context, req *longru
 		return nil, e
 	}
 	return resp, nil
+}
+
+// BatchCreateRagDataSchemasOperation returns a new BatchCreateRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchCreateRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation {
+	return &BatchCreateRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchCreateRagDataSchemasOperation returns a new BatchCreateRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchCreateRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchCreateRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BatchCreateRagMetadataOperation returns a new BatchCreateRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchCreateRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation {
+	return &BatchCreateRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchCreateRagMetadataOperation returns a new BatchCreateRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchCreateRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchCreateRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BatchDeleteRagDataSchemasOperation returns a new BatchDeleteRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation {
+	return &BatchDeleteRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeleteRagDataSchemasOperation returns a new BatchDeleteRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchDeleteRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BatchDeleteRagMetadataOperation returns a new BatchDeleteRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation {
+	return &BatchDeleteRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeleteRagMetadataOperation returns a new BatchDeleteRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchDeleteRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateRagCorpusOperation returns a new CreateRagCorpusOperation from a given name.

@@ -53,11 +53,12 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 	case <-w.donec:
 		return 0, w.streamResult
 	case w.writesChan <- cmd:
+		md5Provided := w.attrs != nil && w.attrs.MD5 != nil
 		// Update fullObjectChecksum on every write and send it on finalWrite if not disabled.
 		// Skip checksum calculation if user configures MD5 or CRC32C themselves.
 		if !w.disableAutoChecksum &&
 			!w.sendCRC32C &&
-			w.attrs.MD5 == nil {
+			!md5Provided {
 			w.fullObjectChecksum = crc32.Update(w.fullObjectChecksum, crc32cTable, p)
 		}
 		// write command successfully delivered to sender. We no longer own cmd.

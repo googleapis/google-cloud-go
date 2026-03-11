@@ -359,7 +359,19 @@ func (it *RagCorpusIterator) All() iter.Seq2[*aiplatformpb.RagCorpus, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *RagDataSchemaIterator) All() iter.Seq2[*aiplatformpb.RagDataSchema, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *RagFileIterator) All() iter.Seq2[*aiplatformpb.RagFile, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RagMetadataIterator) All() iter.Seq2[*aiplatformpb.RagMetadata, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

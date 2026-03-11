@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"reflect"
 	"runtime"
 	"strings"
 	"sync"
@@ -26,39 +25,15 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
-	gax "github.com/googleapis/gax-go/v2"
 )
 
-func TestPartCleanupStrategy_String(t *testing.T) {
-	tests := []struct {
-		strategy partCleanupStrategy
-		want     string
-	}{
-		{cleanupAlways, "always"},
-		{cleanupOnSuccess, "on_success"},
-		{cleanupNever, "never"},
-		{partCleanupStrategy(99), "PartCleanupStrategy(99)"},
-		{partCleanupStrategy(-1), "PartCleanupStrategy(-1)"},
-	}
-
-	for _, tt := range tests {
-		t.Run(fmt.Sprintf("Strategy_%d", tt.strategy), func(t *testing.T) {
-			if got := tt.strategy.String(); got != tt.want {
-				t.Errorf("PartCleanupStrategy.String() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
-	strategy := &defaultNamingStrategy{}
+func TestNewPartName(t *testing.T) {
 	bucket := "my-bucket"
-	prefix := "gcs-go-sdk-pcu-tmp/"
+	prefix := "gcs-go-sdk-pu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 
-	partName := strategy.newPartName(bucket, prefix, finalName, partNumber)
+	partName := newPartName(bucket, prefix, finalName, partNumber)
 
 	if !strings.HasPrefix(partName, prefix) {
 		t.Errorf("NewPartName() should start with the prefix %q, but got %q", prefix, partName)
@@ -84,11 +59,8 @@ func TestDefaultNamingStrategy_NewPartName(t *testing.T) {
 }
 
 func TestParallelUploadConfig_defaults(t *testing.T) {
-
-	// For the "all defaults" test case.
+	// Calculate the expected dynamic worker count based on the machine's CPU
 	expectedWorkers := min(baseWorkers+(runtime.NumCPU()/2), maxWorkers)
-	defaultMinSizeVal := int64(defaultMinSize)
-	userMinSizeVal := int64(0)
 
 	tests := []struct {
 		name string
@@ -99,55 +71,29 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			name: "all defaults",
 			in:   &parallelUploadConfig{},
 			want: &parallelUploadConfig{
-				minSize:         &defaultMinSizeVal,
-				partSize:        defaultPartSize,
-				numWorkers:      expectedWorkers,
-				bufferPoolSize:  expectedWorkers + 1,
-				tmpObjectPrefix: defaultTmpObjectPrefix,
-				retryOptions: []RetryOption{
-					WithMaxAttempts(defaultMaxRetries),
-					WithBackoff(gax.Backoff{
-						Initial: defaultBaseDelay,
-						Max:     defaultMaxDelay,
-					}),
-				},
-				cleanupStrategy: cleanupAlways,
-				namingStrategy:  &defaultNamingStrategy{},
+				partSize:       defaultPartSize,
+				maxConcurrency: expectedWorkers,
 			},
 		},
 		{
 			name: "user-provided values are respected",
 			in: &parallelUploadConfig{
-				minSize:         &userMinSizeVal,
-				partSize:        1024,
-				numWorkers:      10,
-				bufferPoolSize:  12,
-				tmpObjectPrefix: "my-prefix/",
-				retryOptions: []RetryOption{
-					WithMaxAttempts(5),
-					WithBackoff(gax.Backoff{
-						Initial: 200 * time.Millisecond,
-						Max:     10 * time.Second,
-					}),
-				},
-				cleanupStrategy: cleanupOnSuccess,
-				namingStrategy:  &testNamingStrategy{},
+				partSize:       10 * 1024 * 1024, // 10 MiB
+				maxConcurrency: 10,
 			},
 			want: &parallelUploadConfig{
-				minSize:         &userMinSizeVal,
-				partSize:        1024,
-				numWorkers:      10,
-				bufferPoolSize:  12,
-				tmpObjectPrefix: "my-prefix/",
-				retryOptions: []RetryOption{
-					WithMaxAttempts(5),
-					WithBackoff(gax.Backoff{
-						Initial: 200 * time.Millisecond,
-						Max:     10 * time.Second,
-					}),
-				},
-				cleanupStrategy: cleanupOnSuccess,
-				namingStrategy:  &testNamingStrategy{},
+				partSize:       10 * 1024 * 1024,
+				maxConcurrency: 10,
+			},
+		},
+		{
+			name: "partSize below minimum is adjusted",
+			in: &parallelUploadConfig{
+				partSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
+			},
+			want: &parallelUploadConfig{
+				partSize:       minPartSize,
+				maxConcurrency: expectedWorkers,
 			},
 		},
 	}
@@ -156,12 +102,21 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := tt.in
 			cfg.defaults()
-			if diff := cmp.Diff(tt.want, cfg,
-				cmp.AllowUnexported(parallelUploadConfig{}, defaultNamingStrategy{}, testNamingStrategy{}, withMaxAttempts{}, withBackoff{}),
-				cmpopts.IgnoreUnexported(gax.Backoff{}, ObjectAttrs{})); diff != "" {
+			if diff := cmp.Diff(tt.want, cfg, cmp.AllowUnexported(parallelUploadConfig{})); diff != "" {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestNewPCUSettings(t *testing.T) {
+	maxConcurrency := 8
+	settings := newPCUSettings(maxConcurrency)
+
+	// Verify derived values
+	wantBufferPoolSize := maxConcurrency + 1
+	if settings.bufferPoolSize != wantBufferPoolSize {
+		t.Errorf("bufferPoolSize = %d; want %d", settings.bufferPoolSize, wantBufferPoolSize)
 	}
 }
 
@@ -436,117 +391,17 @@ func TestPCUWorker_UploadChannelClose(t *testing.T) {
 	}
 }
 
-func TestDefaultNamingStrategy_NewPartName_Uniqueness(t *testing.T) {
-	strategy := &defaultNamingStrategy{}
+func TestNewPartName_Uniqueness(t *testing.T) {
 	bucket := "my-bucket"
-	prefix := "gcs-go-sdk-pcu-tmp/"
+	prefix := "gcs-go-sdk-pu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 
-	name1 := strategy.newPartName(bucket, prefix, finalName, partNumber)
-	name2 := strategy.newPartName(bucket, prefix, finalName, partNumber)
+	name1 := newPartName(bucket, prefix, finalName, partNumber)
+	name2 := newPartName(bucket, prefix, finalName, partNumber)
 
 	if name1 == name2 {
 		t.Errorf("NewPartName() returned the same name twice: %q", name1)
-	}
-}
-
-func TestSetPartMetadata(t *testing.T) {
-	testCases := []struct {
-		name             string
-		initialMetadata  map[string]string
-		decorator        partMetadataDecorator
-		task             uploadTask
-		finalObjectName  string
-		expectedMetadata map[string]string
-	}{
-		{
-			name:            "Nil initial metadata, no decorator",
-			initialMetadata: nil,
-			decorator:       nil,
-			task:            uploadTask{partNumber: 1},
-			finalObjectName: "final-object",
-			expectedMetadata: map[string]string{
-				pcuPartNumberMetadataKey:  "1",
-				pcuFinalObjectMetadataKey: "final-object",
-			},
-		},
-		{
-			name: "Existing metadata, no decorator",
-			initialMetadata: map[string]string{
-				"initial-key": "initial-value",
-			},
-			decorator:       nil,
-			task:            uploadTask{partNumber: 2},
-			finalObjectName: "final-object",
-			expectedMetadata: map[string]string{
-				"initial-key":             "initial-value",
-				pcuPartNumberMetadataKey:  "2",
-				pcuFinalObjectMetadataKey: "final-object",
-			},
-		},
-		{
-			name:            "Nil initial metadata, with decorator",
-			initialMetadata: nil,
-			decorator: &testMetadataDecorator{
-				metadataToSet: map[string]string{"decorated-key": "decorated-value"},
-			},
-			task:            uploadTask{partNumber: 3},
-			finalObjectName: "final-object",
-			expectedMetadata: map[string]string{
-				"decorated-key":           "decorated-value",
-				pcuPartNumberMetadataKey:  "3",
-				pcuFinalObjectMetadataKey: "final-object",
-			},
-		},
-		{
-			name: "Existing metadata, with decorator that overwrites",
-			initialMetadata: map[string]string{
-				"initial-key":            "initial-value",
-				pcuPartNumberMetadataKey: "should-be-overwritten",
-			},
-			decorator: &testMetadataDecorator{
-				metadataToSet: map[string]string{
-					"decorated-key":           "decorated-value",
-					pcuFinalObjectMetadataKey: "overwritten-by-decorator",
-				},
-			},
-			task:            uploadTask{partNumber: 4},
-			finalObjectName: "final-object-base",
-			expectedMetadata: map[string]string{
-				"initial-key":             "initial-value",
-				"decorated-key":           "decorated-value",
-				pcuPartNumberMetadataKey:  "4",                        // Overwrites initial.
-				pcuFinalObjectMetadataKey: "overwritten-by-decorator", // Overwritten by decorator.
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Setup.
-			sourceWriter := &Writer{
-				ObjectAttrs: ObjectAttrs{
-					Metadata: tc.initialMetadata,
-				},
-				o: &ObjectHandle{bucket: "my-bucket", object: tc.finalObjectName},
-			}
-			partWriter := &Writer{}
-			state := &pcuState{
-				w: sourceWriter,
-				config: &parallelUploadConfig{
-					metadataDecorator: tc.decorator,
-				},
-			}
-
-			// Execute.
-			setPartMetadata(partWriter, state, tc.task)
-
-			// Verify.
-			if !reflect.DeepEqual(partWriter.ObjectAttrs.Metadata, tc.expectedMetadata) {
-				t.Errorf("Metadata mismatch:\ngot:  %v\nwant: %v", partWriter.ObjectAttrs.Metadata, tc.expectedMetadata)
-			}
-		})
 	}
 }
 
@@ -837,9 +692,7 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				w: &Writer{
 					o: &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b"},
 				},
-				config: &parallelUploadConfig{
-					namingStrategy: &defaultNamingStrategy{},
-				},
+				config: &parallelUploadConfig{},
 			}
 
 			state.composeFn = func(ctx context.Context, c *Composer) (*ObjectAttrs, error) {
@@ -932,9 +785,7 @@ func TestPCUState_ComposePartsIntegrity(t *testing.T) {
 						c:      &Client{},
 					},
 				},
-				config: &parallelUploadConfig{
-					namingStrategy: &defaultNamingStrategy{},
-				},
+				config: &parallelUploadConfig{},
 			}
 
 			// Capture data from the final compose call.
@@ -969,7 +820,6 @@ func TestPCUState_ComposePartsIntegrity(t *testing.T) {
 func TestPCUState_DoCleanup(t *testing.T) {
 	testCases := []struct {
 		name              string
-		strategy          partCleanupStrategy
 		firstErr          error
 		partsToCreate     int
 		interimsToCreate  int
@@ -977,19 +827,7 @@ func TestPCUState_DoCleanup(t *testing.T) {
 		expectDeleteCalls int
 	}{
 		{
-			name:          "CleanupNever should do nothing",
-			strategy:      cleanupNever,
-			partsToCreate: 2,
-		},
-		{
-			name:          "CleanupOnSuccess with error should do nothing",
-			strategy:      cleanupOnSuccess,
-			firstErr:      errors.New("upload failed"),
-			partsToCreate: 2,
-		},
-		{
 			name:              "CleanupAlways should clean up all",
-			strategy:          cleanupAlways,
 			firstErr:          errors.New("upload failed"),
 			partsToCreate:     2,
 			interimsToCreate:  1,
@@ -997,7 +835,6 @@ func TestPCUState_DoCleanup(t *testing.T) {
 		},
 		{
 			name:             "CleanupAlways with failing deletes",
-			strategy:         cleanupAlways,
 			partsToCreate:    2,
 			interimsToCreate: 2,
 			failDeletesFor: map[string]bool{
@@ -1018,7 +855,7 @@ func TestPCUState_DoCleanup(t *testing.T) {
 			state := &pcuState{
 				ctx:             pCtx,
 				cancel:          cancel,
-				config:          &parallelUploadConfig{cleanupStrategy: tc.strategy, numWorkers: 4},
+				config:          &parallelUploadConfig{maxConcurrency: 4},
 				firstErr:        tc.firstErr,
 				partMap:         make(map[int]*ObjectHandle),
 				intermediateMap: make(map[string]*ObjectHandle),
@@ -1139,22 +976,5 @@ func TestPCUState_Close(t *testing.T) {
 				t.Errorf("cleanup logic was not executed")
 			}
 		})
-	}
-}
-
-// testNamingStrategy is a mock implementation of PartNamingStrategy for testing.
-type testNamingStrategy struct{}
-
-func (t *testNamingStrategy) newPartName(bucket, prefix, finalName string, partNumber int) string {
-	return "test-part"
-}
-
-type testMetadataDecorator struct {
-	metadataToSet map[string]string
-}
-
-func (m *testMetadataDecorator) Decorate(attrs *ObjectAttrs) {
-	for k, v := range m.metadataToSet {
-		attrs.Metadata[k] = v
 	}
 }

@@ -1417,7 +1417,7 @@ func (c *evaluationGRPCClient) RunEvaluation(ctx context.Context, req *cespb.Run
 }
 
 func (c *evaluationGRPCClient) UploadEvaluationAudio(ctx context.Context, req *cespb.UploadEvaluationAudioRequest, opts ...gax.CallOption) (*cespb.UploadEvaluationAudioResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "app", url.QueryEscape(req.GetApp()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -2340,7 +2340,7 @@ func (c *evaluationRESTClient) UploadEvaluationAudio(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1beta/%v:uploadEvaluationAudio", req.GetApp())
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:uploadEvaluationAudio", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -2348,7 +2348,7 @@ func (c *evaluationRESTClient) UploadEvaluationAudio(ctx context.Context, req *c
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "app", url.QueryEscape(req.GetApp()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")

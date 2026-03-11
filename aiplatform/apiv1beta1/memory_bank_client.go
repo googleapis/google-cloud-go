@@ -912,6 +912,9 @@ func (c *memoryBankRESTClient) CreateMemory(ctx context.Context, req *aiplatform
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetMemoryId() != "" {
+		params.Add("memoryId", fmt.Sprintf("%v", req.GetMemoryId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
