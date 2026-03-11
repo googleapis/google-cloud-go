@@ -171,9 +171,12 @@ type SearchPartnerLinksRequest struct {
 	// When paginating, all other parameters provided to `SearchPartnerLinks`
 	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Optional. A [filter string](//google.aip.dev/160). All fields need to be on
-	// the left hand side of each condition (for example: `partner_link_id =
-	// 123456789`).
+	// Optional. A [filter string](https://google.aip.dev/160). All fields need to
+	// be on the left hand side of each condition (for example: `partner_link_id =
+	// 123456789`). Fields must be specified using either all [camel
+	// case](https://en.wikipedia.org/wiki/Camel_case) or all [snake
+	// case](https://en.wikipedia.org/wiki/Snake_case). Don't use a combination of
+	// camel case and snake case.
 	//
 	// Supported operations:
 	//
@@ -190,8 +193,8 @@ type SearchPartnerLinksRequest struct {
 	// - `partner_account.account_id`
 	//
 	// Example:
-	// `owning_account.account_type = "GOOGLE_ADS" OR partner_account.account_id =
-	// 987654321`
+	// `owning_account.account_type = "GOOGLE_ADS" AND partner_account.account_id
+	// = 987654321`
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

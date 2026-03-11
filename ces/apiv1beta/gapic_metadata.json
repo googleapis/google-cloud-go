@@ -165,6 +165,11 @@
                 "GetOperation"
               ]
             },
+            "GetSecuritySettings": {
+              "methods": [
+                "GetSecuritySettings"
+              ]
+            },
             "GetTool": {
               "methods": [
                 "GetTool"
@@ -268,6 +273,11 @@
             "UpdateGuardrail": {
               "methods": [
                 "UpdateGuardrail"
+              ]
+            },
+            "UpdateSecuritySettings": {
+              "methods": [
+                "UpdateSecuritySettings"
               ]
             },
             "UpdateTool": {
@@ -440,6 +450,11 @@
                 "GetOperation"
               ]
             },
+            "GetSecuritySettings": {
+              "methods": [
+                "GetSecuritySettings"
+              ]
+            },
             "GetTool": {
               "methods": [
                 "GetTool"
@@ -543,6 +558,11 @@
             "UpdateGuardrail": {
               "methods": [
                 "UpdateGuardrail"
+              ]
+            },
+            "UpdateSecuritySettings": {
+              "methods": [
+                "UpdateSecuritySettings"
               ]
             },
             "UpdateTool": {

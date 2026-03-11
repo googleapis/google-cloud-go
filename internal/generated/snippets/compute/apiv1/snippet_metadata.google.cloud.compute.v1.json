@@ -23334,6 +23334,328 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionCompositeHealthChecks_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all CompositeHealthCheck resources (all\nregional) available to the specified project.\n\nTo prevent failure, it is recommended that you set the\n`returnPartialSuccess` parameter to `true`.",
+      "file": "RegionCompositeHealthChecksClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionCompositeHealthChecksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CompositeHealthChecksScopedListPairIterator",
+        "client": {
+          "shortName": "RegionCompositeHealthChecksClient",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks.AggregatedList",
+          "service": {
+            "shortName": "RegionCompositeHealthChecks",
+            "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionCompositeHealthChecks_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified CompositeHealthCheck in the given region",
+      "file": "RegionCompositeHealthChecksClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionCompositeHealthCheckRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionCompositeHealthChecksClient",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks.Delete",
+          "service": {
+            "shortName": "RegionCompositeHealthChecks",
+            "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionCompositeHealthChecks_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified CompositeHealthCheck resource in the given region.",
+      "file": "RegionCompositeHealthChecksClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionCompositeHealthCheckRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.CompositeHealthCheck",
+        "client": {
+          "shortName": "RegionCompositeHealthChecksClient",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks.Get",
+          "service": {
+            "shortName": "RegionCompositeHealthChecks",
+            "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionCompositeHealthChecks_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert create a CompositeHealthCheck in the specified project in the given region\nusing the parameters that are included in the request.",
+      "file": "RegionCompositeHealthChecksClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionCompositeHealthCheckRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionCompositeHealthChecksClient",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks.Insert",
+          "service": {
+            "shortName": "RegionCompositeHealthChecks",
+            "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionCompositeHealthChecks_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the CompositeHealthChecks for a project in the given region.",
+      "file": "RegionCompositeHealthChecksClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionCompositeHealthChecksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CompositeHealthCheckIterator",
+        "client": {
+          "shortName": "RegionCompositeHealthChecksClient",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks.List",
+          "service": {
+            "shortName": "RegionCompositeHealthChecks",
+            "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionCompositeHealthChecks_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch updates the specified regional CompositeHealthCheck resource\nwith the data included in the request.  This method supportsPATCH\nsemantics and uses theJSON merge\npatch format and processing rules.",
+      "file": "RegionCompositeHealthChecksClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRegionCompositeHealthCheckRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionCompositeHealthChecksClient",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks.Patch",
+          "service": {
+            "shortName": "RegionCompositeHealthChecks",
+            "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionCompositeHealthChecks_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionCompositeHealthChecksClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionCompositeHealthCheckRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionCompositeHealthChecksClient",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecksClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks.TestIamPermissions",
+          "service": {
+            "shortName": "RegionCompositeHealthChecks",
+            "fullName": "google.cloud.compute.v1.RegionCompositeHealthChecks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionDiskTypes_Get_sync",
       "title": "compute Get Sample",
       "description": "Get returns the specified regional disk type.",
@@ -24530,6 +24852,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionHealthCheckServices_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all HealthCheckService resources,\nregional and global, available to the specified project.\n\nTo prevent failure, it is recommended that you set the\n`returnPartialSuccess` parameter to `true`.",
+      "file": "RegionHealthCheckServicesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.RegionHealthCheckServicesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionHealthCheckServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthCheckServicesScopedListPairIterator",
+        "client": {
+          "shortName": "RegionHealthCheckServicesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthCheckServicesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.RegionHealthCheckServices.AggregatedList",
+          "service": {
+            "shortName": "RegionHealthCheckServices",
+            "fullName": "google.cloud.compute.v1.RegionHealthCheckServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionHealthCheckServices_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified regional HealthCheckService.",
@@ -25123,6 +25491,328 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthSources_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all HealthSource resources (all\nregional) available to the specified project.\n\nTo prevent failure, Google recommends that you set the\n`returnPartialSuccess` parameter to `true`.",
+      "file": "RegionHealthSourcesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionHealthSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthSourcesScopedListPairIterator",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.RegionHealthSources.AggregatedList",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthSources_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified HealthSource in the given region",
+      "file": "RegionHealthSourcesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.RegionHealthSources.Delete",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthSources_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified HealthSource resource in the given region.",
+      "file": "RegionHealthSourcesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.HealthSource",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.RegionHealthSources.Get",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthSources_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert create a HealthSource in the specified project in the given region\nusing the parameters that are included in the request.",
+      "file": "RegionHealthSourcesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.RegionHealthSources.Insert",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthSources_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the HealthSources for a project in the given region.",
+      "file": "RegionHealthSourcesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionHealthSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HealthSourceIterator",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionHealthSources.List",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthSources_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch updates the specified regional HealthSource resource\nwith the data included in the request.  This method supportsPATCH\nsemantics and uses theJSON merge\npatch format and processing rules.",
+      "file": "RegionHealthSourcesClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.RegionHealthSources.Patch",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionHealthSources_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionHealthSourcesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionHealthSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionHealthSourcesClient",
+          "fullName": "google.cloud.compute.v1.RegionHealthSourcesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionHealthSources.TestIamPermissions",
+          "service": {
+            "shortName": "RegionHealthSources",
+            "fullName": "google.cloud.compute.v1.RegionHealthSources"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -28118,6 +28808,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionNotificationEndpoints_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all NotificationEndpoint resources,\nregional and global, available to the specified project.",
+      "file": "RegionNotificationEndpointsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.RegionNotificationEndpointsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListRegionNotificationEndpointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NotificationEndpointsScopedListPairIterator",
+        "client": {
+          "shortName": "RegionNotificationEndpointsClient",
+          "fullName": "google.cloud.compute.v1.RegionNotificationEndpointsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.RegionNotificationEndpoints.AggregatedList",
+          "service": {
+            "shortName": "RegionNotificationEndpoints",
+            "fullName": "google.cloud.compute.v1.RegionNotificationEndpoints"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionNotificationEndpoints_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified NotificationEndpoint in the given region",
@@ -30970,6 +31706,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_ReservationSlots_GetVersion_sync",
+      "title": "compute GetVersion Sample",
+      "description": "GetVersion allows customers to get SBOM versions of a reservation slot.",
+      "file": "ReservationSlotsClient/GetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVersion",
+        "fullName": "google.cloud.compute.v1.ReservationSlotsClient.GetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetVersionReservationSlotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSlotsClient",
+          "fullName": "google.cloud.compute.v1.ReservationSlotsClient"
+        },
+        "method": {
+          "shortName": "GetVersion",
+          "fullName": "google.cloud.compute.v1.ReservationSlots.GetVersion",
+          "service": {
+            "shortName": "ReservationSlots",
+            "fullName": "google.cloud.compute.v1.ReservationSlots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_ReservationSlots_List_sync",
       "title": "compute List Sample",
       "description": "List retrieves a list of reservation slots under a single reservation.",
@@ -31149,6 +31931,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_ReservationSubBlocks_GetVersion_sync",
+      "title": "compute GetVersion Sample",
+      "description": "GetVersion allows customers to get SBOM versions of a reservation subBlock.",
+      "file": "ReservationSubBlocksClient/GetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVersion",
+        "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient.GetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetVersionReservationSubBlockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ReservationSubBlocksClient",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocksClient"
+        },
+        "method": {
+          "shortName": "GetVersion",
+          "fullName": "google.cloud.compute.v1.ReservationSubBlocks.GetVersion",
+          "service": {
+            "shortName": "ReservationSubBlocks",
+            "fullName": "google.cloud.compute.v1.ReservationSubBlocks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]

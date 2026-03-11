@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,11 +41,11 @@ type SpeedReadingInterval_Speed int32
 const (
 	// Default value. This value is unused.
 	SpeedReadingInterval_SPEED_UNSPECIFIED SpeedReadingInterval_Speed = 0
-	// Normal speed, no slowdown is detected.
+	// Normal speed, no traffic delays.
 	SpeedReadingInterval_NORMAL SpeedReadingInterval_Speed = 1
-	// Slowdown detected, but no traffic jam formed.
+	// Slowdown detected, medium amount of traffic.
 	SpeedReadingInterval_SLOW SpeedReadingInterval_Speed = 2
-	// Traffic jam detected.
+	// Traffic delays.
 	SpeedReadingInterval_TRAFFIC_JAM SpeedReadingInterval_Speed = 3
 )
 
@@ -105,6 +105,8 @@ type SpeedReadingInterval struct {
 	StartPolylinePointIndex *int32 `protobuf:"varint,1,opt,name=start_polyline_point_index,json=startPolylinePointIndex,proto3,oneof" json:"start_polyline_point_index,omitempty"`
 	// The ending index of this interval in the polyline.
 	EndPolylinePointIndex *int32 `protobuf:"varint,2,opt,name=end_polyline_point_index,json=endPolylinePointIndex,proto3,oneof" json:"end_polyline_point_index,omitempty"`
+	// The type of speed in this interval.
+	//
 	// Types that are assignable to SpeedType:
 	//
 	//	*SpeedReadingInterval_Speed_

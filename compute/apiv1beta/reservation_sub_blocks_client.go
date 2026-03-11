@@ -43,6 +43,7 @@ var newReservationSubBlocksClientHook clientHook
 type ReservationSubBlocksCallOptions struct {
 	Get                []gax.CallOption
 	GetIamPolicy       []gax.CallOption
+	GetVersion         []gax.CallOption
 	List               []gax.CallOption
 	PerformMaintenance []gax.CallOption
 	ReportFaulty       []gax.CallOption
@@ -75,6 +76,9 @@ func defaultReservationSubBlocksRESTCallOptions() *ReservationSubBlocksCallOptio
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
 			}),
+		},
+		GetVersion: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		List: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -110,6 +114,7 @@ type internalReservationSubBlocksClient interface {
 	Connection() *grpc.ClientConn
 	Get(context.Context, *computepb.GetReservationSubBlockRequest, ...gax.CallOption) (*computepb.ReservationSubBlocksGetResponse, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyReservationSubBlockRequest, ...gax.CallOption) (*computepb.Policy, error)
+	GetVersion(context.Context, *computepb.GetVersionReservationSubBlockRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListReservationSubBlocksRequest, ...gax.CallOption) *ReservationSubBlockIterator
 	PerformMaintenance(context.Context, *computepb.PerformMaintenanceReservationSubBlockRequest, ...gax.CallOption) (*Operation, error)
 	ReportFaulty(context.Context, *computepb.ReportFaultyReservationSubBlockRequest, ...gax.CallOption) (*Operation, error)
@@ -161,6 +166,11 @@ func (c *ReservationSubBlocksClient) Get(ctx context.Context, req *computepb.Get
 // policy or resource exists.
 func (c *ReservationSubBlocksClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyReservationSubBlockRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// GetVersion allows customers to get SBOM versions of a reservation subBlock.
+func (c *ReservationSubBlocksClient) GetVersion(ctx context.Context, req *computepb.GetVersionReservationSubBlockRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.GetVersion(ctx, req, opts...)
 }
 
 // List retrieves a list of reservation subBlocks under a single reservation.
@@ -385,6 +395,73 @@ func (c *reservationSubBlocksRESTClient) GetIamPolicy(ctx context.Context, req *
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetVersion allows customers to get SBOM versions of a reservation subBlock.
+func (c *reservationSubBlocksRESTClient) GetVersion(ctx context.Context, req *computepb.GetVersionReservationSubBlockRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetReservationSubBlocksGetVersionRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/%v/reservationSubBlocks/%v/getVersion", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSubBlock())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "parent_name", url.QueryEscape(req.GetParentName()), "reservation_sub_block", url.QueryEscape(req.GetReservationSubBlock()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }
 
 // List retrieves a list of reservation subBlocks under a single reservation.

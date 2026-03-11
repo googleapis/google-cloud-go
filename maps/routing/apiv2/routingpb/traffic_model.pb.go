@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,10 +35,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Specifies the assumptions to use when calculating time in traffic. This
-// setting affects the value returned in the `duration` field in the
-// response, which contains the predicted time in traffic based on historical
-// averages.
+// This field specifies one of the following assumptions to use when calculating
+// travel time in traffic conditions, shown in the enums below. Depending on the
+// enum chosen, the `duration` field of the TrafficModel response will vary. The
+// value contains the predicted time to destination in traffic, based on
+// historical averages. `TrafficModel` is only available for requests that have
+// set [`RoutingPreference`][google.maps.routing.v2.RoutingPreference] to
+// `TRAFFIC_AWARE_OPTIMAL` and
+// [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode] to `DRIVE`.
 type TrafficModel int32
 
 const (
