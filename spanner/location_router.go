@@ -17,8 +17,10 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
 	"os"
 	"strconv"
+	"sync"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 )
@@ -26,7 +28,12 @@ import (
 const experimentalLocationAPIEnvVar = "GOOGLE_SPANNER_EXPERIMENTAL_LOCATION_API"
 
 type locationRouter struct {
-	finder *channelFinder
+	finder        *channelFinder
+	endpointCache channelEndpointCache
+
+	affinityMu                      sync.RWMutex
+	transactionAffinity             map[string]channelEndpoint
+	readOnlyTransactionPreferLeader map[string]bool
 }
 
 func isExperimentalLocationAPIEnabled() bool {
@@ -34,29 +41,53 @@ func isExperimentalLocationAPIEnabled() bool {
 	return enabled
 }
 
-func newLocationRouter() *locationRouter {
-	return &locationRouter{finder: newChannelFinder(nil)}
+func newLocationRouter(endpointCache channelEndpointCache) *locationRouter {
+	if endpointCache == nil {
+		endpointCache = newPassthroughChannelEndpointCache()
+	}
+	return &locationRouter{
+		finder:                          newChannelFinder(endpointCache),
+		endpointCache:                   endpointCache,
+		transactionAffinity:             make(map[string]channelEndpoint),
+		readOnlyTransactionPreferLeader: make(map[string]bool),
+	}
 }
 
-func (r *locationRouter) prepareReadRequest(req *sppb.ReadRequest) {
+func (r *locationRouter) prepareReadRequest(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
 	if r == nil || req == nil {
-		return
+		return nil
 	}
-	r.finder.findServerReadWithTransaction(req)
+	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
+		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
+			return r.finder.findServerRead(ctx, req, preferLeader)
+		}
+		if ep := r.getTransactionAffinity(txID); ep != nil {
+			return ep
+		}
+	}
+	return r.finder.findServerReadWithTransaction(ctx, req)
 }
 
-func (r *locationRouter) prepareExecuteSQLRequest(req *sppb.ExecuteSqlRequest) {
+func (r *locationRouter) prepareExecuteSQLRequest(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
 	if r == nil || req == nil {
-		return
+		return nil
 	}
-	r.finder.findServerExecuteSQLWithTransaction(req)
+	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
+		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
+			return r.finder.findServerExecuteSQL(ctx, req, preferLeader)
+		}
+		if ep := r.getTransactionAffinity(txID); ep != nil {
+			return ep
+		}
+	}
+	return r.finder.findServerExecuteSQLWithTransaction(ctx, req)
 }
 
-func (r *locationRouter) prepareBeginTransactionRequest(req *sppb.BeginTransactionRequest) {
+func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
 	if r == nil || req == nil {
-		return
+		return nil
 	}
-	r.finder.findServerBeginTransaction(req)
+	return r.finder.findServerBeginTransaction(ctx, req)
 }
 
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {
@@ -71,4 +102,73 @@ func (r *locationRouter) observeResultSet(rs *sppb.ResultSet) {
 		return
 	}
 	r.finder.update(rs.GetCacheUpdate())
+}
+
+func (r *locationRouter) setTransactionAffinity(txID string, ep channelEndpoint) {
+	if r == nil || txID == "" || ep == nil {
+		return
+	}
+	r.affinityMu.Lock()
+	defer r.affinityMu.Unlock()
+	r.transactionAffinity[txID] = ep
+}
+
+func (r *locationRouter) trackReadOnlyTransaction(txID string, preferLeader bool) {
+	if r == nil || txID == "" {
+		return
+	}
+	r.affinityMu.Lock()
+	defer r.affinityMu.Unlock()
+	r.readOnlyTransactionPreferLeader[txID] = preferLeader
+}
+
+func (r *locationRouter) getReadOnlyTransactionPreferLeader(txID string) (bool, bool) {
+	if r == nil || txID == "" {
+		return false, false
+	}
+	r.affinityMu.RLock()
+	defer r.affinityMu.RUnlock()
+	preferLeader, ok := r.readOnlyTransactionPreferLeader[txID]
+	return preferLeader, ok
+}
+
+func (r *locationRouter) isReadOnlyTransaction(txID string) bool {
+	_, ok := r.getReadOnlyTransactionPreferLeader(txID)
+	return ok
+}
+
+func (r *locationRouter) getTransactionAffinity(txID string) channelEndpoint {
+	if r == nil || txID == "" {
+		return nil
+	}
+	r.affinityMu.RLock()
+	defer r.affinityMu.RUnlock()
+	return r.transactionAffinity[txID]
+}
+
+func (r *locationRouter) clearTransactionAffinity(txID string) {
+	if r == nil || txID == "" {
+		return
+	}
+	r.affinityMu.Lock()
+	defer r.affinityMu.Unlock()
+	delete(r.transactionAffinity, txID)
+	delete(r.readOnlyTransactionPreferLeader, txID)
+}
+
+func (r *locationRouter) Close() error {
+	if r == nil || r.endpointCache == nil {
+		return nil
+	}
+	return r.endpointCache.Close()
+}
+
+func transactionIDFromSelector(selector *sppb.TransactionSelector) string {
+	if selector == nil {
+		return ""
+	}
+	if id := selector.GetId(); len(id) > 0 {
+		return string(id)
+	}
+	return ""
 }

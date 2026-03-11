@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"bytes"
+	"context"
 	"hash/crc32"
 	"math/rand"
 	"sort"
@@ -129,7 +130,7 @@ func (c *keyRangeCache) addRanges(cacheUpdate *sppb.CacheUpdate) {
 	}
 }
 
-func (c *keyRangeCache) fillRoutingHint(preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
+func (c *keyRangeCache) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
 	if hint == nil || len(hint.GetKey()) == 0 {
 		return nil
 	}
@@ -149,7 +150,7 @@ func (c *keyRangeCache) fillRoutingHint(preferLeader bool, mode rangeMode, direc
 	hint.Key = append(hint.Key[:0], targetRange.startKey...)
 	hint.LimitKey = append(hint.LimitKey[:0], targetRange.limitKey...)
 
-	return targetRange.group.fillRoutingHint(c.endpointCache, preferLeader, directedReadOptions, hint)
+	return targetRange.group.fillRoutingHint(ctx, c.endpointCache, preferLeader, directedReadOptions, hint)
 }
 
 func (c *keyRangeCache) clear() {
@@ -506,12 +507,12 @@ func (t *cachedTablet) shouldSkip(hint *sppb.RoutingHint) bool {
 	return false
 }
 
-func (t *cachedTablet) pick(endpointCache channelEndpointCache, hint *sppb.RoutingHint) channelEndpoint {
+func (t *cachedTablet) pick(ctx context.Context, endpointCache channelEndpointCache, hint *sppb.RoutingHint) channelEndpoint {
 	if hint != nil {
 		hint.TabletUid = t.tabletUID
 	}
 	if t.endpoint == nil && t.serverAddress != "" {
-		t.endpoint = endpointCache.Get(t.serverAddress)
+		t.endpoint = endpointCache.Get(ctx, t.serverAddress)
 	}
 	return t.endpoint
 }
@@ -575,9 +576,8 @@ func (g *cachedGroup) leaderLocked() *cachedTablet {
 	return g.tablets[g.leaderIdx]
 }
 
-func (g *cachedGroup) fillRoutingHint(endpointCache channelEndpointCache, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
+func (g *cachedGroup) fillRoutingHint(ctx context.Context, endpointCache channelEndpointCache, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
 	g.mu.Lock()
-	defer g.mu.Unlock()
 
 	if directedReadOptions == nil {
 		directedReadOptions = &sppb.DirectedReadOptions{}
@@ -586,7 +586,27 @@ func (g *cachedGroup) fillRoutingHint(endpointCache channelEndpointCache, prefer
 
 	leader := g.leaderLocked()
 	if preferLeader && !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkip(hint) {
-		return leader.pick(endpointCache, hint)
+		if leader.endpoint != nil || leader.serverAddress == "" {
+			endpoint := leader.pick(ctx, endpointCache, hint)
+			g.mu.Unlock()
+			return endpoint
+		}
+		if hint != nil {
+			hint.TabletUid = leader.tabletUID
+		}
+		serverAddress := leader.serverAddress
+		g.mu.Unlock()
+		endpoint := endpointCache.Get(ctx, serverAddress)
+		g.mu.Lock()
+		if leader.endpoint == nil && leader.serverAddress == serverAddress {
+			leader.endpoint = endpoint
+		}
+		if hint != nil {
+			hint.TabletUid = leader.tabletUID
+		}
+		result := leader.endpoint
+		g.mu.Unlock()
+		return result
 	}
 	for _, tablet := range g.tablets {
 		if !tablet.matches(directedReadOptions) {
@@ -595,7 +615,28 @@ func (g *cachedGroup) fillRoutingHint(endpointCache channelEndpointCache, prefer
 		if tablet.shouldSkip(hint) {
 			continue
 		}
-		return tablet.pick(endpointCache, hint)
+		if tablet.endpoint != nil || tablet.serverAddress == "" {
+			endpoint := tablet.pick(ctx, endpointCache, hint)
+			g.mu.Unlock()
+			return endpoint
+		}
+		if hint != nil {
+			hint.TabletUid = tablet.tabletUID
+		}
+		serverAddress := tablet.serverAddress
+		g.mu.Unlock()
+		endpoint := endpointCache.Get(ctx, serverAddress)
+		g.mu.Lock()
+		if tablet.endpoint == nil && tablet.serverAddress == serverAddress {
+			tablet.endpoint = endpoint
+		}
+		if hint != nil {
+			hint.TabletUid = tablet.tabletUID
+		}
+		result := tablet.endpoint
+		g.mu.Unlock()
+		return result
 	}
+	g.mu.Unlock()
 	return nil
 }

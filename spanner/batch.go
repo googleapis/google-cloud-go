@@ -311,9 +311,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				DataBoostEnabled:    p.rreq.DataBoostEnabled,
 				DirectedReadOptions: p.rreq.DirectedReadOptions,
 			}
-			if t.locationRouter != nil {
-				t.locationRouter.prepareReadRequest(req)
-			}
 			client, err := client.StreamingRead(ctx, req, opts...)
 			if err != nil {
 				return client, err
@@ -344,9 +341,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				DataBoostEnabled:    p.qreq.DataBoostEnabled,
 				DirectedReadOptions: p.qreq.DirectedReadOptions,
 			}
-			if t.locationRouter != nil {
-				t.locationRouter.prepareExecuteSQLRequest(req)
-			}
 			client, err := client.ExecuteStreamingSql(ctx, req, opts...)
 			if err != nil {
 				return client, err
@@ -376,12 +370,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		nil,
 		t.setTimestamp,
 		t.release,
-		client.(*grpcSpannerClient),
-		func(prs *sppb.PartialResultSet) {
-			if t.locationRouter != nil {
-				t.locationRouter.observePartialResultSet(prs)
-			}
-		},
+		asGRPCSpannerClient(client),
 	)
 }
 

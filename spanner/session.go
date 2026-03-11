@@ -242,6 +242,10 @@ type sessionManager struct {
 	mayGetMultiplexedSession        chan bool
 	multiplexedSessionCreationError error
 
+	// locationRouter is set when the experimental location API is enabled.
+	// It is used to wrap round-robin clients with location-aware routing.
+	locationRouter *locationRouter
+
 	// SessionPoolConfig is kept for backward compatibility.
 	SessionPoolConfig
 
@@ -446,7 +450,11 @@ var errInvalidSession = spannerErrorf(codes.InvalidArgument, "invalid session")
 func (p *sessionManager) newSessionHandle(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s}
 	p.mu.Lock()
-	sh.client = p.getRoundRobinClient()
+	client := p.getRoundRobinClient()
+	if p.locationRouter != nil && p.locationRouter.endpointCache != nil {
+		client = newLocationAwareSpannerClient(client, p.locationRouter, p.locationRouter.endpointCache)
+	}
+	sh.client = client
 	p.mu.Unlock()
 	return sh
 }
