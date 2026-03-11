@@ -310,6 +310,11 @@ func (it *messageIterator) receive() ([]*Message, error) {
 		return nil, it.fail(err)
 	}
 
+	// recvMessages above handles empty server pings.
+	if len(rmsgs) == 0 {
+		return nil, nil
+	}
+
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
 
 	now := time.Now()
@@ -317,6 +322,7 @@ func (it *messageIterator) receive() ([]*Message, error) {
 	if err != nil {
 		return nil, it.fail(err)
 	}
+
 	// We received some messages. Remember them so we can keep them alive. Also,
 	// do a receipt mod-ack when streaming.
 	maxExt := time.Now().Add(it.po.maxExtension)

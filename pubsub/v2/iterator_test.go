@@ -807,7 +807,7 @@ func TestStreamingPullKeepAlive_ServerShutdown(t *testing.T) {
 	serverMonitorInterval = 1 * time.Second
 
 	c, srv := newFake(t)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 
 	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
