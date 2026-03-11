@@ -135,9 +135,7 @@ func (s *pullStream) openWithRetry() (pb.Subscriber_StreamingPullClient, context
 	for {
 		recordStat(s.ctx, StreamOpenCount, 1)
 		s.openCount.Add(1)
-		s.sendMu.Lock()
 		spc, close, err := s.open()
-		s.sendMu.Unlock()
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(s.ctx, StreamRetryCount, 1)
