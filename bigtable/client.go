@@ -152,7 +152,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// Create the feature flags metadata with direct access enabled
 	// setting feature flags for direct access is good
 	// as CFE/GFE will call RLS with gslb target type
-	// only TD calls the RLS with grpc target type and we evaluate the directAccess option after that.
+	// only TD calls the RLS with grpc target type
+	// and we evaluate the directAccess option after that.
 	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, true)
 
 	var connPool gtransport.ConnPool
