@@ -8786,14 +8786,17 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 				it := client.Bucket(bucket).Objects(ctx, &Query{Prefix: tmpObjectPrefix})
 				count := 0
 				for {
-					_, err := it.Next()
+					attrsObj, err := it.Next()
 					if err == iterator.Done {
 						break
 					}
 					if err != nil {
 						t.Fatalf("iterator.Next: %v", err)
 					}
-					count++
+					// Only count temporary chunks belonging to THIS specific test object to avoid test flakes
+					if strings.Contains(attrsObj.Name, objName) {
+						count++
+					}
 				}
 				// Cleanup might take some time, but we expect 0 if it's synchronously deleting everything,
 				// or we should retry a bit. PCU close does wg.Wait() on doCleanup(), so they should be gone.
