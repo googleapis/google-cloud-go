@@ -345,7 +345,7 @@ func (e *connEntry) calculateConnLoad() int32 {
 			load += artificialLoadIfError // Apply the artificial penalty weight
 		} else {
 			// restore to zero
-			e.penaltyExpiry.Store(0)
+			e.penaltyExpiry.CompareAndSwap(expiry, 0)
 		}
 	}
 	return load
