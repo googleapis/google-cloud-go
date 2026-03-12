@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.119.0
+    version: 1.120.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/cloud/aiplatform/v1
@@ -1362,7 +1362,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/cloud/ces/v1beta
@@ -1730,7 +1730,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.56.0
+    version: 1.57.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/cloud/compute/v1
@@ -2115,7 +2115,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/ads/datamanager/v1
@@ -2831,7 +2831,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.7.0
+    version: 0.8.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -3576,7 +3576,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.28.0
+    version: 1.29.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/maps/addressvalidation/v1
@@ -3969,7 +3969,7 @@ libraries:
       - internal/generated/snippets/netapp/
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
-    version: 1.20.0
+    version: 1.21.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/cloud/networkconnectivity/v1
@@ -5419,7 +5419,7 @@ libraries:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.4.0
+    version: 1.5.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/shopping/css/v1
@@ -6239,7 +6239,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.4.0
+    version: 0.5.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/cloud/vectorsearch/v1beta

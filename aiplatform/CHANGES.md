@@ -1,6 +1,22 @@
 # Changes
 
 
+## [1.120.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.120.0) (2026-03-12)
+
+### Features
+
+* Add custom memory id field to create memory v1beta1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add custom session id field to create session v1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add custom session id field to create session v1beta1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add raw_event field to event proto v1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add raw_event field to event proto v1beta1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* RagMetadata and RagDataSchema concepts and Batch API definitions added for Preview ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* upgrade protobuf from v25.7 to v31.0 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* Updated comments for `rag_file_metadata_config` across ImportRagFilesRequest and UploadRagFileRequest ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
 ## [1.119.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.119.0) (2026-03-05)
 
 ### Features

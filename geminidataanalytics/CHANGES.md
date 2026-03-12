@@ -1,5 +1,16 @@
 # Changes
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.8.0) (2026-03-12)
+
+### Features
+
+* add `ParameterizedSecureViewParameters` message and field for PSV support ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* add `ThinkingMode` enum and field to control agent thinking mode ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* update field comments for `generated_looker_query` in `DataMessage` ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.7.0) (2026-02-05)
 
 ### Features

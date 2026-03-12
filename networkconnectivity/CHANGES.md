@@ -1,5 +1,11 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkconnectivity%2Fv1.21.0) (2026-03-12)
+
+### Features
+
+* add new clients (#14019) ([c5336ad](https://github.com/googleapis/google-cloud-go/commit/c5336ad27811a0b0f7eab486bd80d74c48b91aed))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkconnectivity%2Fv1.20.0) (2026-01-22)
 
 ### Features

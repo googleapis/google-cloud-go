@@ -1,5 +1,19 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.5.0) (2026-03-12)
+
+### Features
+
+* upgrade protobuf from v25.7 to v31.0 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Bug Fixes
+
+* Removed field DenseScannParams from SearchHint ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* Changed default values for max_replica_count for AutoScaling ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.4.0) (2026-03-05)
 
 ### Features

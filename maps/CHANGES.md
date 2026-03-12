@@ -2,6 +2,17 @@
 
 
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.29.0) (2026-03-12)
+
+### Features
+
+* add a new Waypoint source to accept a token that identifies a Navigation Point obtained from the `SearchDestinations` method of the Geocoding API ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* upgrade protobuf from v25.7 to v31.0 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* regenerated documentation for fields ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.28.0) (2026-02-19)
 
 ### Features

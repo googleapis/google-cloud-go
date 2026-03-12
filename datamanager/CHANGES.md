@@ -1,5 +1,21 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/datamanager%2Fv0.3.0) (2026-03-12)
+
+### Features
+
+* deprecate INVALID_COUNTRY_CODE and add MEMBERSHIP_DURATION_TOO_LONG to the ErrorReason enum ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Bug Fixes
+
+* feat: update advertiser_identifier_count in PairIdInfo to be optional ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* update match_rate_percentage in PairIdInfo to be required ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* update publisher_name in PairIdInfo to be required ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* update filter field documentation to clarify case requirements and improve examples ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/datamanager%2Fv0.2.0) (2026-02-26)
 
 ### Features

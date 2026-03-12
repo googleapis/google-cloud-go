@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.5.0) (2026-03-12)
+
+### Features
+
+* add more values in DestintionEnum ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* upgrade protobuf from v25.7 to v31.0 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* A comment for message `DestintionEnum` is changed ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.4.0) (2025-12-04)
 
 ### Features
