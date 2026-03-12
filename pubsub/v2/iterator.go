@@ -103,6 +103,7 @@ type messageIterator struct {
 	pingMu             sync.RWMutex
 	lastServerResponse time.Time
 	lastClientPing     time.Time
+	serverTimeout      time.Duration
 
 	// This mutex guards the structs related to lease extension.
 	mu          sync.Mutex
@@ -196,6 +197,7 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		pendingReceipts:     map[string]*AckResult{},
 		lastServerResponse:  time.Now(),
 		lastClientPing:      time.UnixMicro(0),
+		serverTimeout:       serverPingTimeoutDuration,
 	}
 	it.wg.Add(1)
 	go it.streamKeepAliveHandler()
@@ -911,9 +913,9 @@ func (it *messageIterator) streamKeepAliveHandler() {
 
 		select {
 		case <-it.pingTicker.C:
-			it.pingStream()
+			go it.pingStream()
 		case <-it.serverMonitorTicker.C:
-			it.checkServer()
+			go it.checkServer()
 		}
 	}
 }
@@ -931,7 +933,7 @@ func (it *messageIterator) checkServer() {
 	}
 
 	// if the lastPing happened within the timeout, we pass this check.
-	if time.Since(lastPing) < serverPingTimeoutDuration {
+	if time.Since(lastPing) < it.serverTimeout {
 		return
 	}
 
