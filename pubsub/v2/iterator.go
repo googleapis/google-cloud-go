@@ -911,9 +911,9 @@ func (it *messageIterator) streamKeepAliveHandler() {
 
 		select {
 		case <-it.pingTicker.C:
-			go it.pingStream()
+			it.pingStream()
 		case <-it.serverMonitorTicker.C:
-			go it.checkServer()
+			it.checkServer()
 		}
 	}
 }
