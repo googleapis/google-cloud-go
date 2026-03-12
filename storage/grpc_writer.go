@@ -1104,14 +1104,12 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 
 		<-sendDone
 		<-recvDone
-		// Prefer recvErr since that's where RPC errors are delivered
-		if recvErr != nil {
+		// Prefer recvErr since that's where RPC errors are delivered.
+		// An EOF from Recv is not an error, so in that case we check sendErr.
+		if recvErr != nil && recvErr != io.EOF {
 			s.streamErr = recvErr
 		} else if sendErr != nil {
 			s.streamErr = sendErr
-		}
-		if s.streamErr == io.EOF {
-			s.streamErr = nil
 		}
 		close(cs.completions)
 	}()
@@ -1258,14 +1256,12 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 
 		<-sendDone
 		<-recvDone
-		// Prefer recvErr since that's where RPC errors are delivered
-		if recvErr != nil {
+		// Prefer recvErr since that's where RPC errors are delivered.
+		// An EOF from Recv is not an error, so in that case we check sendErr.
+		if recvErr != nil && recvErr != io.EOF {
 			s.streamErr = recvErr
 		} else if sendErr != nil {
 			s.streamErr = sendErr
-		}
-		if s.streamErr == io.EOF {
-			s.streamErr = nil
 		}
 		close(cs.completions)
 	}()
@@ -1388,14 +1384,12 @@ func (s *gRPCAppendBidiWriteBufferSender) handleStream(stream storagepb.Storage_
 
 	<-sendDone
 	<-recvDone
-	// Prefer recvErr since that's where RPC errors are delivered
-	if recvErr != nil {
+	// Prefer recvErr since that's where RPC errors are delivered.
+	// An EOF from Recv is not an error, so in that case we check sendErr.
+	if recvErr != nil && recvErr != io.EOF {
 		s.streamErr = recvErr
 	} else if sendErr != nil {
 		s.streamErr = sendErr
-	}
-	if s.streamErr == io.EOF {
-		s.streamErr = nil
 	}
 	close(cs.completions)
 }
