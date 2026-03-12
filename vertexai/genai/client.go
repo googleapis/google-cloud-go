@@ -32,14 +32,33 @@ import (
 	"cloud.google.com/go/vertexai/internal"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/genai"
 )
+
+type clientAgentEngines struct {
+	AgentEngines
+	Memories  *clientMemories
+	Sessions  *clientSessions
+	Sandboxes *Sandboxes
+}
+
+type clientMemories struct {
+	Memories
+	Revisions *MemoryRevisions
+}
+
+type clientSessions struct {
+	Sessions
+	Events *SessionEvents
+}
 
 // A Client is a Google Vertex AI client.
 type Client struct {
-	pc        *aiplatform.PredictionClient
-	cc        *cacheClient
-	projectID string
-	location  string
+	pc           *aiplatform.PredictionClient
+	cc           *cacheClient
+	projectID    string
+	location     string
+	AgentEngines *clientAgentEngines
 }
 
 // NewClient creates a new Google Vertex AI client.
@@ -438,4 +457,26 @@ func float32pToInt32p(x *float32) *int32 {
 	}
 	i := int32(*x)
 	return &i
+}
+
+// NewGenAIClient creates a new Google Vertex AI client and configures the the GenAI components.
+func NewGenAIClient(ctx context.Context, cc *genai.ClientConfig) (*Client, error) {
+	ac, err := genai.NewInternalAPIClient(ctx, cc)
+	if err != nil {
+		return nil, err
+	}
+	return &Client{
+		AgentEngines: &clientAgentEngines{
+			AgentEngines: AgentEngines{apiClient: ac},
+			Memories: &clientMemories{
+				Memories:  Memories{apiClient: ac},
+				Revisions: &MemoryRevisions{apiClient: ac},
+			},
+			Sessions: &clientSessions{
+				Sessions: Sessions{apiClient: ac},
+				Events:   &SessionEvents{apiClient: ac},
+			},
+			Sandboxes: &Sandboxes{apiClient: ac},
+		},
+	}, nil
 }
