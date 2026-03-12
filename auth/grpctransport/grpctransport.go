@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
@@ -55,6 +54,30 @@ const (
 
 	quotaProjectHeaderKey = "X-goog-user-project"
 )
+
+// codeToStr is a reversal of the `strToCode` map in
+// https://github.com/grpc/grpc-go/blob/master/codes/codes.go
+// The gRPC specification has exactly 17 status codes, defined
+// as a contiguous block of integers from 0 to 16.
+var codeToStr = [...]string{
+	"OK",                  // codes.OK = 0
+	"CANCELED",            // codes.Canceled = 1
+	"UNKNOWN",             // codes.Unknown = 2
+	"INVALID_ARGUMENT",    // codes.InvalidArgument = 3
+	"DEADLINE_EXCEEDED",   // codes.DeadlineExceeded = 4
+	"NOT_FOUND",           // codes.NotFound = 5
+	"ALREADY_EXISTS",      // codes.AlreadyExists = 6
+	"PERMISSION_DENIED",   // codes.PermissionDenied = 7
+	"RESOURCE_EXHAUSTED",  // codes.ResourceExhausted = 8
+	"FAILED_PRECONDITION", // codes.FailedPrecondition = 9
+	"ABORTED",             // codes.Aborted = 10
+	"OUT_OF_RANGE",        // codes.OutOfRange = 11
+	"UNIMPLEMENTED",       // codes.Unimplemented = 12
+	"INTERNAL",            // codes.Internal = 13
+	"UNAVAILABLE",         // codes.Unavailable = 14
+	"DATA_LOSS",           // codes.DataLoss = 15
+	"UNAUTHENTICATED",     // codes.Unauthenticated = 16
+}
 
 var (
 	// Set at init time by dial_socketopt.go. If nil, socketopt is not supported.
@@ -500,21 +523,33 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 
 	var attrs []attribute.KeyValue
 	if end.Error != nil {
-		// Extract status code and message
-		st, _ := status.FromError(end.Error)
+		st, ok := status.FromError(end.Error)
+		statusCodeStr := codeToCanonicalStr(st.Code())
+
 		var errorType string
-		switch st.Code() {
-		case codes.DeadlineExceeded:
+		// 1. Check for specific local transport breakdowns by interrogating the
+		// entire error chain. This catches both raw context errors and those
+		// wrapped by the gRPC library.
+		if errors.Is(end.Error, context.DeadlineExceeded) {
 			errorType = "CLIENT_TIMEOUT"
-		case codes.Canceled:
+		} else if errors.Is(end.Error, context.Canceled) {
 			errorType = "CLIENT_CANCELLED"
-		default:
-			errorType = strings.ToUpper(st.Code().String())
+		} else if !ok || st.Code() == codes.Unknown || st.Code() == codes.Internal {
+			// 2. If the error isn't a context breakdown and the gRPC framework
+			// doesn't "understand" it (returning ok=false or a generic catch-all
+			// bucket like Unknown/Internal), we "pack" the actual Go error type
+			// name into error.type for high-fidelity debugging (e.g., "*net.OpError").
+			errorType = fmt.Sprintf("%T", end.Error)
+		} else {
+			// 3. Otherwise, it is a well-understood gRPC protocol error (e.g.,
+			// PERMISSION_DENIED) likely returned by the server.
+			errorType = statusCodeStr
 		}
+
 		attrs = []attribute.KeyValue{
 			attribute.String("error.type", errorType),
 			attribute.String("status.message", st.Message()),
-			attribute.String("rpc.response.status_code", strings.ToUpper(st.Code().String())),
+			attribute.String("rpc.response.status_code", statusCodeStr),
 			attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),
 		}
 	} else {
@@ -524,4 +559,15 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	}
 	span.SetAttributes(attrs...)
 	h.Handler.HandleRPC(ctx, s)
+}
+
+// codeToCanonicalStr returns the canonical name for each of the 17 gRPC
+// status codes defined in https://github.com/grpc/grpc-go/blob/master/codes/codes.go.
+// For any codes.Code that converts to an out-of-bounds int,
+// it returns "UNKNOWN".
+func codeToCanonicalStr(code codes.Code) string {
+	if int(code) >= 0 && int(code) < len(codeToStr) {
+		return codeToStr[code]
+	}
+	return "UNKNOWN"
 }

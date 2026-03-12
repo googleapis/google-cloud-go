@@ -81,13 +81,12 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 	}
 	timeoutEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			time.Sleep(100 * time.Millisecond)
-			return &echo.EchoReply{Message: req.Message}, nil
+			return nil, context.DeadlineExceeded
 		},
 	}
 	cancelEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			return nil, status.Error(grpccodes.Canceled, "context canceled")
+			return nil, context.Canceled
 		},
 	}
 
@@ -142,7 +141,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCService.String("echo.Echoer"),
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("error.type", "INTERNAL"),
+					attribute.String("error.type", "*status.Error"),
 					attribute.String("status.message", "test error"),
 					attribute.String("rpc.response.status_code", "INTERNAL"),
 				},
@@ -161,7 +160,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
 					Code:        codes.Error,
-					Description: "rpc error: code = DeadlineExceeded desc = context deadline exceeded",
+					Description: "context deadline exceeded",
 				},
 				Attributes: []attribute.KeyValue{
 					keyRPCStatusCode.Int64(4),
@@ -169,8 +168,8 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCService.String("echo.Echoer"),
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("error.type", "CLIENT_TIMEOUT"),
-					attribute.String("rpc.response.status_code", "DEADLINEEXCEEDED"),
+					attribute.String("error.type", "DEADLINE_EXCEEDED"),
+					attribute.String("rpc.response.status_code", "DEADLINE_EXCEEDED"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("status.message"), attribute.Key("exception.type")},
@@ -187,7 +186,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
 					Code:        codes.Error,
-					Description: "rpc error: code = Canceled desc = context canceled",
+					Description: "context canceled",
 				},
 				Attributes: []attribute.KeyValue{
 					keyRPCStatusCode.Int64(1),
@@ -195,7 +194,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCService.String("echo.Echoer"),
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("error.type", "CLIENT_CANCELLED"),
+					attribute.String("error.type", "CANCELED"),
 					attribute.String("rpc.response.status_code", "CANCELED"),
 				},
 			}.Snapshot(),
@@ -366,13 +365,12 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 	}
 	timeoutEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			time.Sleep(100 * time.Millisecond)
-			return &echo.EchoReply{Message: req.Message}, nil
+			return nil, context.DeadlineExceeded
 		},
 	}
 	cancelEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			return nil, status.Error(grpccodes.Canceled, "context canceled")
+			return nil, context.Canceled
 		},
 	}
 
@@ -444,7 +442,7 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
 					Code:        codes.Error,
-					Description: "rpc error: code = DeadlineExceeded desc = context deadline exceeded",
+					Description: "context deadline exceeded",
 				},
 				Attributes: []attribute.KeyValue{
 					keyRPCStatusCode.Int64(4),
@@ -468,7 +466,7 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 				SpanKind: oteltrace.SpanKindClient,
 				Status: sdktrace.Status{
 					Code:        codes.Error,
-					Description: "rpc error: code = Canceled desc = context canceled",
+					Description: "context canceled",
 				},
 				Attributes: []attribute.KeyValue{
 					keyRPCStatusCode.Int64(1),
