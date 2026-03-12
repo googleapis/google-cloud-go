@@ -81,12 +81,14 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 	}
 	timeoutEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			return nil, context.DeadlineExceeded
+			time.Sleep(100 * time.Millisecond)
+			return &echo.EchoReply{Message: req.Message}, nil
 		},
 	}
 	cancelEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			return nil, context.Canceled
+			time.Sleep(100 * time.Millisecond)
+			return &echo.EchoReply{Message: req.Message}, nil
 		},
 	}
 
@@ -168,7 +170,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCService.String("echo.Echoer"),
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("error.type", "DEADLINE_EXCEEDED"),
+					attribute.String("error.type", "CLIENT_TIMEOUT"),
 					attribute.String("rpc.response.status_code", "DEADLINE_EXCEEDED"),
 				},
 			}.Snapshot(),
@@ -194,7 +196,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					keyRPCService.String("echo.Echoer"),
 					keyRPCSystem.String(valRPCSystemGRPC),
 					keyServerAddr.String(valLocalhost),
-					attribute.String("error.type", "CANCELED"),
+					attribute.String("error.type", "CLIENT_CANCELLED"),
 					attribute.String("rpc.response.status_code", "CANCELED"),
 				},
 			}.Snapshot(),
@@ -281,6 +283,9 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 			if tt.errorType == "timeout" {
 				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
 				defer cancel()
+			} else if tt.errorType == "cancel" {
+				ctx, cancel = context.WithCancel(ctx)
+				time.AfterFunc(10*time.Millisecond, cancel)
 			}
 
 			for k, v := range tt.telemetryCtxValues {
@@ -365,12 +370,14 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 	}
 	timeoutEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			return nil, context.DeadlineExceeded
+			time.Sleep(100 * time.Millisecond)
+			return &echo.EchoReply{Message: req.Message}, nil
 		},
 	}
 	cancelEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			return nil, context.Canceled
+			time.Sleep(100 * time.Millisecond)
+			return &echo.EchoReply{Message: req.Message}, nil
 		},
 	}
 
@@ -547,6 +554,9 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 			if tt.errorType == "timeout" {
 				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
 				defer cancel()
+			} else if tt.errorType == "cancel" {
+				ctx, cancel = context.WithCancel(ctx)
+				time.AfterFunc(10*time.Millisecond, cancel)
 			}
 
 			for k, v := range tt.telemetryCtxValues {

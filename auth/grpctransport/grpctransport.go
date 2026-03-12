@@ -524,32 +524,35 @@ func (h *otelHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	var attrs []attribute.KeyValue
 	if end.Error != nil {
 		st, ok := status.FromError(end.Error)
-		statusCodeStr := codeToCanonicalStr(st.Code())
+		rpcStatusCode := codeToCanonicalStr(st.Code())
 
 		var errorType string
-		// 1. Check for specific local transport breakdowns by interrogating the
-		// entire error chain. This catches both raw context errors and those
-		// wrapped by the gRPC library.
-		if errors.Is(end.Error, context.DeadlineExceeded) {
+		// 1. Check if the local context expired or was cancelled. This is the only
+		// reliable way to distinguish a local client timeout from a server timeout
+		// because gRPC does not wrap context errors in its status.Error types.
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 			errorType = "CLIENT_TIMEOUT"
-		} else if errors.Is(end.Error, context.Canceled) {
+		} else if errors.Is(ctx.Err(), context.Canceled) {
 			errorType = "CLIENT_CANCELLED"
 		} else if !ok || st.Code() == codes.Unknown || st.Code() == codes.Internal {
 			// 2. If the error isn't a context breakdown and the gRPC framework
 			// doesn't "understand" it (returning ok=false or a generic catch-all
 			// bucket like Unknown/Internal), we "pack" the actual Go error type
-			// name into error.type for high-fidelity debugging (e.g., "*net.OpError").
+			// name into error.type (e.g., "*net.OpError"). This is per the error.type
+			// [spec](https://opentelemetry.io/docs/specs/semconv/registry/attributes/error/#error-type).
+			// "When error.type is set to a type (e.g., an exception type), its canonical
+			// class name identifying the type within the artifact SHOULD be used."
 			errorType = fmt.Sprintf("%T", end.Error)
 		} else {
 			// 3. Otherwise, it is a well-understood gRPC protocol error (e.g.,
 			// PERMISSION_DENIED) likely returned by the server.
-			errorType = statusCodeStr
+			errorType = rpcStatusCode
 		}
 
 		attrs = []attribute.KeyValue{
 			attribute.String("error.type", errorType),
 			attribute.String("status.message", st.Message()),
-			attribute.String("rpc.response.status_code", statusCodeStr),
+			attribute.String("rpc.response.status_code", rpcStatusCode),
 			attribute.String("exception.type", fmt.Sprintf("%T", end.Error)),
 		}
 	} else {
