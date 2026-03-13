@@ -402,7 +402,7 @@ func TestGRPCWriter_Deadlock(t *testing.T) {
 		// requests could block forever if the consumer closes early.
 		close(recvDone)
 	}()
-	
+
 	// sendDone should be closed immediately.
 	select {
 	case <-sendDone:
