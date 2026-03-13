@@ -303,7 +303,7 @@ func TestGRPCWriterErrorHandling(t *testing.T) {
 	// select on `sendDone` and `recvDone`. We want to test that the
 	// logic introduced correctly handles the combination of io.EOF
 	// from Recv (recvErr) and a generic error from Send (sendErr).
-	// Because those variables are inside the function scopes, it's simpler
+	// Because those variables are inside the function scopes, it is simpler.
 	// to test the logic exactly as it is written in those methods.
 
 	// As this is deeply embedded in the unexported types, we verify the logic
@@ -366,7 +366,7 @@ func TestGRPCWriterErrorHandling(t *testing.T) {
 }
 
 // TestGRPCWriter_Deadlock simulates a deadlock scenario if Recv and Send channels
-// were not isolated in gRPCOneshotBidiWriteBufferSender as reported in #14166
+// were not isolated in gRPCOneshotBidiWriteBufferSender.
 func TestGRPCWriter_Deadlock(t *testing.T) {
 	// A timeout means a deadlock likely occurred.
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -411,7 +411,7 @@ func TestGRPCWriter_Deadlock(t *testing.T) {
 		close(recvDone)
 	}()
 
-	// Since we decoupled the send loop with select { case <-recvDone: return nil },
+	// The send loop is decoupled with select { case <-recvDone: return nil }.
 	// sendDone should be closed immediately.
 
 	select {
