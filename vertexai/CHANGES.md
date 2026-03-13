@@ -1,5 +1,11 @@
 # Changes
 
+## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.16.0) (2026-03-13)
+
+### Features
+
+* Support AgentEngine for Agent Development Kit (#14168) ([e56381c](https://github.com/googleapis/google-cloud-go/commit/e56381ca7200c924ea54127a5d918dba548e3188))
+
 ## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.14.0...vertexai/v0.15.0) (2025-06-25)
 
 

@@ -6274,7 +6274,7 @@ libraries:
       - ^vectorsearch/apiv1/vectorsearchpb/.*$
     tag_format: '{id}/v{version}'
   - id: vertexai
-    version: 0.15.0
+    version: 0.16.0
     last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
     apis: []
     source_roots:
