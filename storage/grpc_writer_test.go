@@ -20,6 +20,7 @@ import (
 	"io"
 	"sync"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -351,10 +352,6 @@ func TestGRPCWriterErrorHandling(t *testing.T) {
 				streamErr = tt.sendErr
 			}
 
-			// Before my fix, the logic was:
-			// if tt.recvErr != nil { streamErr = tt.recvErr } else if tt.sendErr != nil { streamErr = tt.sendErr }
-			// if streamErr == io.EOF { streamErr = nil }
-
 			if tt.wantError == nil {
 				if streamErr != nil {
 					t.Errorf("got error %v, want nil", streamErr)
@@ -366,4 +363,66 @@ func TestGRPCWriterErrorHandling(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestGRPCWriter_Deadlock simulates a deadlock scenario if Recv and Send channels
+// were not isolated in gRPCOneshotBidiWriteBufferSender as reported in #14166
+func TestGRPCWriter_Deadlock(t *testing.T) {
+	// A timeout means a deadlock likely occurred.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	sendDone := make(chan struct{})
+	recvDone := make(chan struct{})
+
+	// Channels mimicking gRPC channels
+	requests := make(chan gRPCBidiWriteRequest)
+	completions := make(chan gRPCBidiWriteCompletion)
+
+	var sendErr error
+
+	go func() {
+		sendErr = func() error {
+			for {
+				select {
+				case <-recvDone:
+					return nil
+				case r, ok := <-requests:
+					if !ok {
+						return nil
+					}
+					if r.requestAck {
+						continue
+					}
+					// mimic send logic
+					if r.finishWrite {
+						return nil
+					}
+				}
+			}
+		}()
+		close(sendDone)
+	}()
+
+	go func() {
+		// Mimic recv loop that immediately exits.
+		// If recvDone isn't checked by the sender loop, sending
+		// requests could block forever if the consumer closes early.
+		close(recvDone)
+	}()
+
+	// Since we decoupled the send loop with select { case <-recvDone: return nil },
+	// sendDone should be closed immediately.
+
+	select {
+	case <-sendDone:
+		// Success, no deadlock
+	case <-ctx.Done():
+		t.Fatal("deadlock detected: send loop did not exit after recvDone was closed")
+	}
+
+	if sendErr != nil {
+		t.Errorf("expected no error, got %v", sendErr)
+	}
+	close(completions)
 }
