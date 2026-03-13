@@ -218,6 +218,7 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 	w.mu.Lock()
 	werr := w.err
 	closed := w.closed
+	pcu := w.pcu
 	w.mu.Unlock()
 	if werr != nil {
 		return 0, werr
@@ -226,8 +227,17 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		return 0, fmt.Errorf("storage: Writer is closed")
 	}
 
-	if w.pcu != nil {
-		return w.pcu.write(p)
+	if pcu != nil {
+		n, err = pcu.write(p)
+		if err != nil {
+			w.mu.Lock()
+			werr := w.err
+			w.mu.Unlock()
+			if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
+				return n, werr
+			}
+		}
+		return n, err
 	}
 	if w.opened {
 		n, err = w.iw.Write(p)
@@ -252,8 +262,18 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 			w.mu.Unlock()
 			return 0, err
 		}
+		pcu = w.pcu
 		w.mu.Unlock()
-		return w.pcu.write(p)
+		n, err = pcu.write(p)
+		if err != nil {
+			w.mu.Lock()
+			werr := w.err
+			w.mu.Unlock()
+			if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
+				return n, werr
+			}
+		}
+		return n, err
 	}
 
 	if err := w.openWriter(); err != nil {
@@ -323,6 +343,7 @@ func (w *Writer) Flush() (int64, error) {
 func (w *Writer) Close() error {
 	w.mu.Lock()
 	closed := w.closed
+	pcu := w.pcu
 	w.mu.Unlock()
 
 	if closed {
@@ -331,7 +352,7 @@ func (w *Writer) Close() error {
 		return w.err
 	}
 
-	if w.pcu != nil || (!w.opened && w.EnableParallelUpload) {
+	if pcu != nil || (!w.opened && w.EnableParallelUpload) {
 		w.mu.Lock()
 		if w.pcu == nil {
 			if err := w.initPCU(w.ctx); err != nil {
@@ -339,13 +360,14 @@ func (w *Writer) Close() error {
 				return err
 			}
 		}
+		pcu = w.pcu
 		w.mu.Unlock()
 
-		err := w.pcu.close()
+		err := pcu.close()
 		w.mu.Lock()
 		defer w.mu.Unlock()
 		w.closed = true
-		if err != nil {
+		if w.err == nil && err != nil {
 			w.err = err
 		}
 		endSpan(w.ctx, w.err)

@@ -1019,101 +1019,59 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 	}
 
 	go func() {
-		var sendErr, recvErr error
-		sendDone := make(chan struct{})
-		recvDone := make(chan struct{})
+		firstSend := true
+		for r := range cs.requests {
+			if r.requestAck {
+				cs.requestAcks <- struct{}{}
+				continue
+			}
 
-		go func() {
-			sendErr = func() error {
-				firstSend := true
-				for {
-					select {
-					case <-recvDone:
-						// Because `requests` is not connected to the gRPC machinery, we
-						// have to check for asynchronous termination on the receive side.
-						return nil
-					case r, ok := <-cs.requests:
-						if !ok {
-							stream.CloseSend()
-							return nil
-						}
-						if r.requestAck {
-							cs.requestAcks <- struct{}{}
-							continue
-						}
+			var bufChecksum *uint32
+			if !s.disableAutoChecksum {
+				bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
+			}
+			objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
+				sendCRC32C:          s.sendCRC32C,
+				objectAttrs:         s.objectAttrs,
+				fullObjectChecksum:  s.fullObjectChecksum,
+				disableAutoChecksum: s.disableAutoChecksum,
+				finishWrite:         r.finishWrite,
+			})
+			req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
 
-						var bufChecksum *uint32
-						if !s.disableAutoChecksum {
-							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
-						}
-						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
-							sendCRC32C:          s.sendCRC32C,
-							objectAttrs:         s.objectAttrs,
-							fullObjectChecksum:  s.fullObjectChecksum,
-							disableAutoChecksum: s.disableAutoChecksum,
-							finishWrite:         r.finishWrite,
-						})
-						req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
+			if firstSend {
+				proto.Merge(req, s.firstMessage)
+				firstSend = false
+			}
 
-						if firstSend {
-							proto.Merge(req, s.firstMessage)
-							firstSend = false
-						}
-
-						if err := stream.Send(req); err != nil {
-							return err
-						}
-
-						if r.finishWrite {
-							stream.CloseSend()
-							return nil
-						}
-
-						// Oneshot uploads assume all flushes succeed
-						if r.flush {
-							select {
-							case cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}:
-							case <-stream.Context().Done():
-								return stream.Context().Err()
-							}
-						}
-					}
+			if err := stream.Send(req); err != nil {
+				_, s.streamErr = drainInboundStream(stream)
+				if err != io.EOF {
+					s.streamErr = err
 				}
-			}()
-			close(sendDone)
-		}()
+				close(cs.completions)
+				return
+			}
 
-		go func() {
-			recvErr = func() error {
-				for {
-					resp, err := stream.Recv()
-					if err != nil {
-						return err
-					}
-					if c := completion(resp); c != nil {
-						select {
-						case cs.completions <- *c:
-						case <-stream.Context().Done():
-							return stream.Context().Err()
-						}
-					}
+			if r.finishWrite {
+				stream.CloseSend()
+				// Oneshot uploads only read from the response stream on completion or
+				// failure
+				obj, err := drainInboundStream(stream)
+				if obj == nil || err != io.EOF {
+					s.streamErr = err
+				} else {
+					cs.completions <- gRPCBidiWriteCompletion{flushOffset: obj.GetSize(), resource: obj}
 				}
-			}()
-			close(recvDone)
-		}()
+				close(cs.completions)
+				return
+			}
 
-		<-sendDone
-		<-recvDone
-		// Prefer recvErr since that's where RPC errors are delivered
-		if recvErr != nil {
-			s.streamErr = recvErr
-		} else if sendErr != nil {
-			s.streamErr = sendErr
+			// Oneshot uploads assume all flushes succeed
+			if r.flush {
+				cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}
+			}
 		}
-		if s.streamErr == io.EOF {
-			s.streamErr = nil
-		}
-		close(cs.completions)
 	}()
 }
 
@@ -1245,11 +1203,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						return err
 					}
 					if c := completion(resp); c != nil {
-						select {
-						case cs.completions <- *c:
-						case <-stream.Context().Done():
-							return stream.Context().Err()
-						}
+						cs.completions <- *c
 					}
 				}
 			}()
@@ -1375,11 +1329,7 @@ func (s *gRPCAppendBidiWriteBufferSender) handleStream(stream storagepb.Storage_
 				s.maybeUpdateFirstMessage(resp)
 
 				if c := completion(resp); c != nil {
-					select {
-					case cs.completions <- *c:
-					case <-stream.Context().Done():
-						return stream.Context().Err()
-					}
+					cs.completions <- *c
 				}
 			}
 		}()
