@@ -555,7 +555,7 @@ libraries:
       - internal/generated/snippets/apps/
     tag_format: '{id}/v{version}'
   - id: area120
-    version: 0.9.7
+    version: 0.10.0
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/area120/tables/v1alpha1
