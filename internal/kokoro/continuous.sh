@@ -117,7 +117,7 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
-  if [[ $PWD == *"/internal/generated/"* ]]; then
+  if [[ $PWD == *"/internal/generated"* ]]; then
     # always tidy generated snippets
     go mod tidy
   fi
