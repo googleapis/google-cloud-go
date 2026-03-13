@@ -298,17 +298,11 @@ func filterDataRequests(reqs []gRPCBidiWriteRequest) []gRPCBidiWriteRequest {
 	return dataReqs
 }
 
+// Test the logic correctly handles the combination of io.EOF
+// from Recv (recvErr) and a generic error from Send (sendErr).
 func TestGRPCWriterErrorHandling(t *testing.T) {
-	// The gRPC buffer senders handle logic by spinning off goroutines that
-	// select on `sendDone` and `recvDone`. We want to test that the
-	// logic introduced correctly handles the combination of io.EOF
-	// from Recv (recvErr) and a generic error from Send (sendErr).
-	// Because those variables are inside the function scopes, it is simpler.
-	// to test the logic exactly as it is written in those methods.
-
 	// As this is deeply embedded in the unexported types, we verify the logic
 	// by simulating the exact error assignment sequence.
-
 	tests := []struct {
 		name      string
 		recvErr   error
@@ -319,25 +313,25 @@ func TestGRPCWriterErrorHandling(t *testing.T) {
 			name:      "recvErr is io.EOF, sendErr is nil",
 			recvErr:   io.EOF,
 			sendErr:   nil,
-			wantError: nil, // Because it doesn't match the new first branch, and second branch is nil
+			wantError: nil,
 		},
 		{
 			name:      "recvErr is io.EOF, sendErr is an error",
 			recvErr:   io.EOF,
 			sendErr:   errors.New("send error"),
-			wantError: errors.New("send error"), // Send error takes precedence
+			wantError: errors.New("send error"), // Send error takes precedence.
 		},
 		{
 			name:      "recvErr is an error, sendErr is nil",
 			recvErr:   errors.New("recv error"),
 			sendErr:   nil,
-			wantError: errors.New("recv error"), // Recv error takes precedence
+			wantError: errors.New("recv error"), // Recv error takes precedence.
 		},
 		{
 			name:      "recvErr is an error, sendErr is an error",
 			recvErr:   errors.New("recv error"),
 			sendErr:   errors.New("send error"),
-			wantError: errors.New("recv error"), // Recv error takes precedence
+			wantError: errors.New("recv error"), // Recv error takes precedence.
 		},
 	}
 
@@ -345,7 +339,6 @@ func TestGRPCWriterErrorHandling(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var streamErr error
 
-			// Exact logic from the codebase
 			if tt.recvErr != nil && tt.recvErr != io.EOF {
 				streamErr = tt.recvErr
 			} else if tt.sendErr != nil {
@@ -375,7 +368,6 @@ func TestGRPCWriter_Deadlock(t *testing.T) {
 	sendDone := make(chan struct{})
 	recvDone := make(chan struct{})
 
-	// Channels mimicking gRPC channels
 	requests := make(chan gRPCBidiWriteRequest)
 	completions := make(chan gRPCBidiWriteCompletion)
 
@@ -410,13 +402,11 @@ func TestGRPCWriter_Deadlock(t *testing.T) {
 		// requests could block forever if the consumer closes early.
 		close(recvDone)
 	}()
-
-	// The send loop is decoupled with select { case <-recvDone: return nil }.
+	
 	// sendDone should be closed immediately.
-
 	select {
 	case <-sendDone:
-		// Success, no deadlock
+		// Success, no deadlock.
 	case <-ctx.Done():
 		t.Fatal("deadlock detected: send loop did not exit after recvDone was closed")
 	}
