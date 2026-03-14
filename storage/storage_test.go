@@ -1468,7 +1468,7 @@ func TestRetryer(t *testing.T) {
 	}
 }
 
-// Test WithErrorFuncWithContext that uses RetryContext parameters
+// Test WithErrorFuncWithContext that uses RetryContext parameters.
 func TestWithErrorFuncWithContext(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
@@ -1531,7 +1531,7 @@ func TestWithErrorFuncWithContext(t *testing.T) {
 				t.Fatal("shouldRetry function not set")
 			}
 
-			// Test the shouldRetry function with a mock RetryContext
+			// Test the shouldRetry function with a mock RetryContext.
 			retryCtx := &RetryContext{
 				Attempt:      tc.expectAttempt,
 				InvocationID: "test-invocation-123",
@@ -1540,18 +1540,18 @@ func TestWithErrorFuncWithContext(t *testing.T) {
 				Object:       "test-object",
 			}
 
-			// Call the shouldRetry function (simulating an error scenario)
+			// Call the shouldRetry function (simulating an error scenario).
 			testErr := errors.New("test error")
 			result := o.retry.shouldRetry(testErr, retryCtx)
 
-			// For these tests, we just verify the function can access the context
-			// The actual retry logic is tested in invoke_test.go
+			// For these tests, we just verify the function can access the context.
+			// The actual retry logic is tested in invoke_test.go.
 			_ = result
 		})
 	}
 }
 
-// Test ObjectHandle and BucketHandle Retryer methods with WithErrorFuncWithContext
+// Test ObjectHandle and BucketHandle Retryer methods with WithErrorFuncWithContext.
 func TestRetryerWithContext(t *testing.T) {
 	t.Parallel()
 
@@ -1613,7 +1613,7 @@ func TestRetryerWithContext(t *testing.T) {
 	}
 }
 
-// Test Client.SetRetry with WithErrorFuncWithContext
+// Test Client.SetRetry with WithErrorFuncWithContext.
 func TestClientSetRetryWithContext(t *testing.T) {
 	t.Parallel()
 

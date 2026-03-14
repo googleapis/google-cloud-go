@@ -2637,9 +2637,11 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 // This option can be used to retry on a different set of errors than the
 // default. Users can use the default ShouldRetry function inside their custom
 // function if they only want to make minor modifications to default behavior.
-// RetryContext can be used to improve observability by logging InvocationID to 
+// RetryContext can be used to improve observability by logging InvocationID to
 // correlate retries of the same operation together, or to implement more complex
 // retry logic such as conditional retries based on the operation type or attempt.
+// Note: the retryCtx may be nil for some unimplemented methods so always a good
+// practice to defensively check for nil before accessing its fields.
 func WithErrorFuncWithContext(shouldRetry func(err error, retryCtx *RetryContext) bool) RetryOption {
 	return &withErrorFuncWithContext{
 		shouldRetry: shouldRetry,
@@ -2661,7 +2663,6 @@ type retryConfig struct {
 	maxAttempts *int
 	// maxRetryDuration, if set, specifies a deadline after which the request
 	// will no longer be retried. A value of 0 allows infinite retries.
-	// maxRetryDuration can be set via WithMaxRetryDuration or Writer.ChunkRetryDeadline.
 	maxRetryDuration time.Duration
 }
 
