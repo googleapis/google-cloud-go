@@ -22,40 +22,6 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
-func waitForSessionsOperation(tt testing.TB, name string, done bool, c *Client) any {
-	tt.Helper()
-	var res any
-	for !done {
-		tt.Logf("Waiting for operation to complete: [%s]\n", name)
-		time.Sleep(5 * time.Second)
-		op, err := c.AgentEngines.Sessions.getSessionOperation(tt.Context(), name, nil)
-		if err != nil {
-			tt.Fatalf("getAgentOperation failed, err: %v", err)
-		}
-		done = op.Done
-		res = op
-	}
-	return res
-}
-
-func createAgentEngineSessionAndWait(tt testing.TB, client *Client, name string, s *Session) *Session {
-	tt.Helper()
-	config := &CreateAgentEngineSessionConfig{
-		DisplayName:  s.DisplayName,
-		SessionState: s.SessionState,
-		TTL:          s.TTL,
-		Labels:       s.Labels,
-	}
-	createOp, err := client.AgentEngines.Sessions.create(tt.Context(), name, s.UserID, config)
-	if err != nil {
-		tt.Fatalf("create() failed unexpectedly: %v", err)
-	}
-	if !createOp.Done {
-		createOp = waitForSessionsOperation(tt, createOp.Name, createOp.Done, client).(*AgentEngineSessionOperation)
-	}
-	return createOp.Response
-}
-
 func TestAgentEngineSessions(t *testing.T) {
 	if *mode != apiMode {
 		t.Skipf("Skipping %s. We only tun these in the api mode.", t.Name())
@@ -71,7 +37,7 @@ func TestAgentEngineSessions(t *testing.T) {
 			TTL:          24 * time.Hour,
 			UserID:       "test-user-123",
 		}
-		got := createAgentEngineSessionAndWait(tt, client, re.Name, want)
+		got := createAgentEngineSessionAndWait(tt, client, re, want)
 		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(Session{}, "Name")); diff != "" {
 			tt.Errorf("create() had diff (-got +want): %v", diff)
 		}

@@ -15,88 +15,14 @@
 package genai
 
 import (
-	"flag"
 	"fmt"
-	"strings"
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genai"
 )
-
-const (
-	apiMode  = "api"  // API mode runs the tests in any environment where the tests can hit the actual service.
-	unitMode = "unit" // Unit mode runs the test in the github actions using the mocked service (this is the default).
-)
-
-var mode = flag.String("mode", unitMode, "Test mode")
-
-func waitForAgentEngineOperation(tb testing.TB, name string, done bool, c *Client) any {
-	tb.Helper()
-	var res any
-	for !done {
-		tb.Logf("Waiting for operation to complete: [%s]\n", name)
-		time.Sleep(5 * time.Second)
-		op, err := c.AgentEngines.getAgentOperation(tb.Context(), name, nil)
-		if err != nil {
-			tb.Fatalf("getAgentOperation failed, err: %v", err)
-		}
-		done = op.Done
-		res = op
-	}
-	return res
-}
-
-func newTestClient(tb testing.TB) *Client {
-	tb.Helper()
-	client, err := NewGenAIClient(tb.Context(), &genai.ClientConfig{
-		Backend: genai.BackendVertexAI,
-	})
-	if err != nil {
-		tb.Fatal(err)
-	}
-	return client
-}
-
-func getResourceNameFromOperation(operationName string) string {
-	i := strings.Index(operationName, "/operations/")
-	return operationName[:i]
-}
-
-func createAgentEngineAndWait(t testing.TB, tt testing.TB, client *Client, config *CreateAgentEngineConfig) *ReasoningEngine {
-	tt.Helper()
-	if config == nil {
-		config = &CreateAgentEngineConfig{
-			DisplayName: tt.Name(),
-			Description: "You can remove this agent engine if it is older than 10 minutes. It must be an orphan AE.",
-		}
-	}
-	if config.DisplayName == "" {
-		config.DisplayName = tt.Name()
-	}
-	if config.Description == "" {
-		config.Description = "You can remove this agent engine if it is older than 10 minutes. It must be an orphan AE."
-	}
-	createOp, err := client.AgentEngines.create(tt.Context(), config)
-	if err != nil {
-		tt.Fatalf("create() failed unexpectedly: %v", err)
-	}
-	tt.Cleanup(cleanupAgentEngine(t, client, getResourceNameFromOperation(createOp.Name)))
-	createOp = waitForAgentEngineOperation(tt, createOp.Name, createOp.Done, client).(*AgentEngineOperation)
-	return createOp.Response
-}
-
-func cleanupAgentEngine(t testing.TB, client *Client, name string) func() {
-	return func() {
-		t.Logf("Cleaning up AgentEngine: %s", name)
-		deleteOp, err := client.AgentEngines.delete(t.Context(), name, genai.Ptr(true), nil)
-		if err != nil {
-			t.Logf("cleanup() failed, err: %v", err)
-		} else {
-			waitForAgentEngineOperation(t, deleteOp.Name, deleteOp.Done, client)
-		}
-	}
-}
 
 func TestAgentEngines(t *testing.T) {
 	if *mode != apiMode {
@@ -163,13 +89,14 @@ func TestAgentEngines(t *testing.T) {
 		ctx := tt.Context()
 		client := newTestClient(t)
 		re := createAgentEngineAndWait(t, tt, client, nil)
-
 		deleteOp, err := client.AgentEngines.delete(t.Context(), re.Name, nil, nil)
 		if err != nil {
 			tt.Fatalf("delete() failed unexpectedly: %v", err)
 		}
-		waitForAgentEngineOperation(t, deleteOp.Name, deleteOp.Done, client)
-
+		operation := func() (*AgentEngineOperation, error) {
+			return client.AgentEngines.getAgentOperation(tt.Context(), deleteOp.Name, nil)
+		}
+		waitForOperation(t, operation)
 		got, err := client.AgentEngines.get(ctx, re.Name, nil)
 		if err == nil {
 			t.Errorf("delete() didn't remove the reasoning engine, want error(NOT_FOUND), got: %v", got)
@@ -179,11 +106,23 @@ func TestAgentEngines(t *testing.T) {
 	t.Run("Get", func(tt *testing.T) {
 		ctx := tt.Context()
 		client := newTestClient(tt)
-		re := createAgentEngineAndWait(t, tt, client, nil)
-		_, err := client.AgentEngines.get(ctx, re.Name, nil)
+		want := &ReasoningEngine{
+			DisplayName: tt.Name(),
+			Description: "You can remove this agent engine if it is older than 10 minutes. It must be an orphan AE.",
+		}
+		config := &CreateAgentEngineConfig{
+			DisplayName: want.DisplayName,
+			Description: want.Description,
+		}
+		re := createAgentEngineAndWait(t, tt, client, config)
+		got, err := client.AgentEngines.get(ctx, re.Name, nil)
 		if err != nil {
 			tt.Errorf("get() failed unexpectedly: %v", err)
 		}
+		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(ReasoningEngine{}, "CreateTime", "Spec", "UpdateTime", "Name")); diff != "" {
+			tt.Errorf("create() and get() had diff (-got +want): %v", diff)
+		}
+
 	})
 
 	t.Run("List", func(tt *testing.T) {
@@ -210,11 +149,10 @@ func TestAgentEngines(t *testing.T) {
 		if err != nil {
 			tt.Fatalf("update() failed unexpectedly: %v", err)
 		}
-		waitForAgentEngineOperation(tt, op.Name, op.Done, client)
-		updated, err := client.AgentEngines.get(ctx, re.Name, nil)
-		if err != nil {
-			tt.Errorf("get() failed unexpectedly: %v", err)
+		operation := func() (*AgentEngineOperation, error) {
+			return client.AgentEngines.getAgentOperation(tt.Context(), op.Name, nil)
 		}
+		updated := waitForOperation(tt, operation).Response
 		if got := updated.DisplayName; got != want {
 			tt.Errorf("update() returned DisplayName %v, want %v", got, want)
 		}

@@ -23,39 +23,6 @@ import (
 	"google.golang.org/genai"
 )
 
-func waitForMemoryOperation(tb testing.TB, name string, done bool, c *Client) any {
-	tb.Helper()
-	var res any
-	for !done {
-		tb.Logf("Waiting for operation to complete: [%s]\n", name)
-		time.Sleep(5 * time.Second)
-		op, err := c.AgentEngines.Memories.getMemoryOperation(tb.Context(), name, nil)
-		if err != nil {
-			tb.Fatalf("getAgentOperation failed, err: %v", err)
-		}
-		done = op.Done
-		res = op
-	}
-	return res
-}
-
-func createAgentEngineMemoryAndWait(tt testing.TB, client *Client, name string, m *Memory) *Memory {
-	tt.Helper()
-	config := &AgentEngineMemoryConfig{
-		DisplayName: m.DisplayName,
-		Description: m.Description,
-		Metadata:    m.Metadata,
-	}
-	createOp, err := client.AgentEngines.Memories.create(tt.Context(), name, m.Fact, m.Scope, config)
-	if err != nil {
-		tt.Fatalf("create() failed unexpectedly: %v", err)
-	}
-	if !createOp.Done {
-		waitForMemoryOperation(tt, createOp.Name, createOp.Done, client)
-	}
-	return createOp.Response
-}
-
 func TestAgentEngineMemories(t *testing.T) {
 	if *mode != apiMode {
 		t.Skipf("Skipping %s. We only tun these in the api mode.", t.Name())
@@ -80,7 +47,7 @@ func TestAgentEngineMemories(t *testing.T) {
 				"my_timestamp_key": {TimestampValue: timestamp},
 			},
 		}
-		response := createAgentEngineMemoryAndWait(tt, client, re.Name, want)
+		response := createAgentEngineMemoryAndWait(tt, client, re, want)
 		got, err := client.AgentEngines.Memories.Get(tt.Context(), response.Name, nil)
 		if err != nil {
 			tt.Fatalf("get() failed unexpectedly: %v", err)

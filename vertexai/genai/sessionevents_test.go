@@ -23,17 +23,6 @@ import (
 	"google.golang.org/genai"
 )
 
-func createAgentEngineSessionEventAndWait(tt testing.TB, client *Client, name string, se *SessionEvent) {
-	tt.Helper()
-	config := &AppendAgentEngineSessionEventConfig{
-		Content: se.Content,
-	}
-	_, err := client.AgentEngines.Sessions.Events.Append(tt.Context(), name, se.Author, se.InvocationID, se.Timestamp, config)
-	if err != nil {
-		tt.Fatalf("append() failed unexpectedly: %v", err)
-	}
-}
-
 func TestAgentEngineSessionEvents(t *testing.T) {
 	if *mode != apiMode {
 		t.Skipf("Skipping %s. We only tun these in the api mode.", t.Name())
@@ -50,7 +39,7 @@ func TestAgentEngineSessionEvents(t *testing.T) {
 			TTL:          24 * time.Hour,
 			UserID:       "test-user-123",
 		}
-		session = createAgentEngineSessionAndWait(tt, client, re.Name, session)
+		session = createAgentEngineSessionAndWait(tt, client, re, session)
 		timestamp, err := time.Parse(time.RFC3339Nano, "2026-03-10T15:30:45.0Z")
 		if err != nil {
 			tt.Fatalf("Error parsing time, err: %v", err)
@@ -66,7 +55,7 @@ func TestAgentEngineSessionEvents(t *testing.T) {
 				}},
 			},
 		}
-		createAgentEngineSessionEventAndWait(tt, client, session.Name, want)
+		createAgentEngineSessionEvent(tt, client, session, want)
 
 		got, err := client.AgentEngines.Sessions.Events.list(tt.Context(), session.Name, nil)
 		if err != nil {
