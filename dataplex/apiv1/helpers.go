@@ -54,6 +54,9 @@ func getVersionClient() string {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/cloud-platform",
+		"https://www.googleapis.com/auth/cloud-platform.read-only",
+		"https://www.googleapis.com/auth/dataplex.read-write",
+		"https://www.googleapis.com/auth/dataplex.readonly",
 	}
 }
 

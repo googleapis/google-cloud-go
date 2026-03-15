@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ type GetCssProductRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the CSS product to retrieve.
+	// Format: `accounts/{account}/cssProducts/{css_product}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

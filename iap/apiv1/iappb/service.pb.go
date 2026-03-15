@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1105,6 +1105,15 @@ type OAuthSettings struct {
 	// Note: IAP does not verify that the id token's hd claim matches this value
 	// since access behavior is managed by IAM policies.
 	LoginHint *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=login_hint,json=loginHint,proto3" json:"login_hint,omitempty"`
+	// Optional. OAuth 2.0 client ID used in the OAuth flow.
+	// This allows for client sharing. The risks of client sharing
+	// are outlined here:
+	// https://cloud.google.com/iap/docs/sharing-oauth-clients#risks.
+	ClientId *wrapperspb.StringValue `protobuf:"bytes,3,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	// Optional. Input only. OAuth secret paired with client ID.
+	ClientSecret *wrapperspb.StringValue `protobuf:"bytes,4,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
+	// Output only. OAuth secret SHA256 paired with client ID.
+	ClientSecretSha256 *wrapperspb.StringValue `protobuf:"bytes,6,opt,name=client_secret_sha256,json=clientSecretSha256,proto3" json:"client_secret_sha256,omitempty"`
 	// Optional. List of client ids allowed to use IAP programmatically.
 	ProgrammaticClients []string `protobuf:"bytes,5,rep,name=programmatic_clients,json=programmaticClients,proto3" json:"programmatic_clients,omitempty"`
 }
@@ -1142,6 +1151,27 @@ func (*OAuthSettings) Descriptor() ([]byte, []int) {
 func (x *OAuthSettings) GetLoginHint() *wrapperspb.StringValue {
 	if x != nil {
 		return x.LoginHint
+	}
+	return nil
+}
+
+func (x *OAuthSettings) GetClientId() *wrapperspb.StringValue {
+	if x != nil {
+		return x.ClientId
+	}
+	return nil
+}
+
+func (x *OAuthSettings) GetClientSecret() *wrapperspb.StringValue {
+	if x != nil {
+		return x.ClientSecret
+	}
+	return nil
+}
+
+func (x *OAuthSettings) GetClientSecretSha256() *wrapperspb.StringValue {
+	if x != nil {
+		return x.ClientSecretSha256
 	}
 	return nil
 }
@@ -2657,12 +2687,26 @@ var file_google_cloud_iap_v1_service_proto_rawDesc = []byte{
 	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x56, 0x61,
 	0x6c, 0x75, 0x65, 0x52, 0x10, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x48, 0x74, 0x74, 0x70, 0x4f, 0x70,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x84, 0x01, 0x0a, 0x0d, 0x4f, 0x41, 0x75, 0x74, 0x68, 0x53,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0xe4, 0x02, 0x0a, 0x0d, 0x4f, 0x41, 0x75, 0x74, 0x68, 0x53,
 	0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x3b, 0x0a, 0x0a, 0x6c, 0x6f, 0x67, 0x69, 0x6e,
 	0x5f, 0x68, 0x69, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74,
 	0x72, 0x69, 0x6e, 0x67, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x09, 0x6c, 0x6f, 0x67, 0x69, 0x6e,
-	0x48, 0x69, 0x6e, 0x74, 0x12, 0x36, 0x0a, 0x14, 0x70, 0x72, 0x6f, 0x67, 0x72, 0x61, 0x6d, 0x6d,
+	0x48, 0x69, 0x6e, 0x74, 0x12, 0x3e, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69,
+	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
+	0x56, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x08, 0x63, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x49, 0x64, 0x12, 0x49, 0x0a, 0x0d, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x73,
+	0x65, 0x63, 0x72, 0x65, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74,
+	0x72, 0x69, 0x6e, 0x67, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x06, 0xe0, 0x41, 0x04, 0xe0, 0x41,
+	0x01, 0x52, 0x0c, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x12,
+	0x53, 0x0a, 0x14, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74,
+	0x5f, 0x73, 0x68, 0x61, 0x32, 0x35, 0x36, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x03,
+	0x52, 0x12, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x53, 0x68,
+	0x61, 0x32, 0x35, 0x36, 0x12, 0x36, 0x0a, 0x14, 0x70, 0x72, 0x6f, 0x67, 0x72, 0x61, 0x6d, 0x6d,
 	0x61, 0x74, 0x69, 0x63, 0x5f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x05, 0x20, 0x03,
 	0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x13, 0x70, 0x72, 0x6f, 0x67, 0x72, 0x61, 0x6d,
 	0x6d, 0x61, 0x74, 0x69, 0x63, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x22, 0x79, 0x0a, 0x19,
@@ -3207,66 +3251,69 @@ var file_google_cloud_iap_v1_service_proto_depIdxs = []int32{
 	41, // 15: google.cloud.iap.v1.GcipSettings.login_page_uri:type_name -> google.protobuf.StringValue
 	42, // 16: google.cloud.iap.v1.CorsSettings.allow_http_options:type_name -> google.protobuf.BoolValue
 	41, // 17: google.cloud.iap.v1.OAuthSettings.login_hint:type_name -> google.protobuf.StringValue
-	19, // 18: google.cloud.iap.v1.WorkforceIdentitySettings.oauth2:type_name -> google.cloud.iap.v1.OAuth2
-	1,  // 19: google.cloud.iap.v1.ReauthSettings.method:type_name -> google.cloud.iap.v1.ReauthSettings.Method
-	43, // 20: google.cloud.iap.v1.ReauthSettings.max_age:type_name -> google.protobuf.Duration
-	2,  // 21: google.cloud.iap.v1.ReauthSettings.policy_type:type_name -> google.cloud.iap.v1.ReauthSettings.PolicyType
-	23, // 22: google.cloud.iap.v1.ApplicationSettings.csm_settings:type_name -> google.cloud.iap.v1.CsmSettings
-	24, // 23: google.cloud.iap.v1.ApplicationSettings.access_denied_page_settings:type_name -> google.cloud.iap.v1.AccessDeniedPageSettings
-	41, // 24: google.cloud.iap.v1.ApplicationSettings.cookie_domain:type_name -> google.protobuf.StringValue
-	25, // 25: google.cloud.iap.v1.ApplicationSettings.attribute_propagation_settings:type_name -> google.cloud.iap.v1.AttributePropagationSettings
-	41, // 26: google.cloud.iap.v1.CsmSettings.rctoken_aud:type_name -> google.protobuf.StringValue
-	41, // 27: google.cloud.iap.v1.AccessDeniedPageSettings.access_denied_page_uri:type_name -> google.protobuf.StringValue
-	42, // 28: google.cloud.iap.v1.AccessDeniedPageSettings.generate_troubleshooting_uri:type_name -> google.protobuf.BoolValue
-	42, // 29: google.cloud.iap.v1.AccessDeniedPageSettings.remediation_token_generation_enabled:type_name -> google.protobuf.BoolValue
-	3,  // 30: google.cloud.iap.v1.AttributePropagationSettings.output_credentials:type_name -> google.cloud.iap.v1.AttributePropagationSettings.OutputCredentials
-	38, // 31: google.cloud.iap.v1.ListBrandsResponse.brands:type_name -> google.cloud.iap.v1.Brand
-	38, // 32: google.cloud.iap.v1.CreateBrandRequest.brand:type_name -> google.cloud.iap.v1.Brand
-	39, // 33: google.cloud.iap.v1.ListIdentityAwareProxyClientsResponse.identity_aware_proxy_clients:type_name -> google.cloud.iap.v1.IdentityAwareProxyClient
-	39, // 34: google.cloud.iap.v1.CreateIdentityAwareProxyClientRequest.identity_aware_proxy_client:type_name -> google.cloud.iap.v1.IdentityAwareProxyClient
-	44, // 35: google.cloud.iap.v1.IdentityAwareProxyAdminService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	45, // 36: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	46, // 37: google.cloud.iap.v1.IdentityAwareProxyAdminService.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	11, // 38: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIapSettings:input_type -> google.cloud.iap.v1.GetIapSettingsRequest
-	12, // 39: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateIapSettings:input_type -> google.cloud.iap.v1.UpdateIapSettingsRequest
-	26, // 40: google.cloud.iap.v1.IdentityAwareProxyAdminService.ValidateIapAttributeExpression:input_type -> google.cloud.iap.v1.ValidateIapAttributeExpressionRequest
-	4,  // 41: google.cloud.iap.v1.IdentityAwareProxyAdminService.ListTunnelDestGroups:input_type -> google.cloud.iap.v1.ListTunnelDestGroupsRequest
-	6,  // 42: google.cloud.iap.v1.IdentityAwareProxyAdminService.CreateTunnelDestGroup:input_type -> google.cloud.iap.v1.CreateTunnelDestGroupRequest
-	7,  // 43: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetTunnelDestGroup:input_type -> google.cloud.iap.v1.GetTunnelDestGroupRequest
-	8,  // 44: google.cloud.iap.v1.IdentityAwareProxyAdminService.DeleteTunnelDestGroup:input_type -> google.cloud.iap.v1.DeleteTunnelDestGroupRequest
-	9,  // 45: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateTunnelDestGroup:input_type -> google.cloud.iap.v1.UpdateTunnelDestGroupRequest
-	28, // 46: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListBrands:input_type -> google.cloud.iap.v1.ListBrandsRequest
-	30, // 47: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateBrand:input_type -> google.cloud.iap.v1.CreateBrandRequest
-	31, // 48: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetBrand:input_type -> google.cloud.iap.v1.GetBrandRequest
-	34, // 49: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateIdentityAwareProxyClient:input_type -> google.cloud.iap.v1.CreateIdentityAwareProxyClientRequest
-	32, // 50: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListIdentityAwareProxyClients:input_type -> google.cloud.iap.v1.ListIdentityAwareProxyClientsRequest
-	35, // 51: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetIdentityAwareProxyClient:input_type -> google.cloud.iap.v1.GetIdentityAwareProxyClientRequest
-	36, // 52: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ResetIdentityAwareProxyClientSecret:input_type -> google.cloud.iap.v1.ResetIdentityAwareProxyClientSecretRequest
-	37, // 53: google.cloud.iap.v1.IdentityAwareProxyOAuthService.DeleteIdentityAwareProxyClient:input_type -> google.cloud.iap.v1.DeleteIdentityAwareProxyClientRequest
-	47, // 54: google.cloud.iap.v1.IdentityAwareProxyAdminService.SetIamPolicy:output_type -> google.iam.v1.Policy
-	47, // 55: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIamPolicy:output_type -> google.iam.v1.Policy
-	48, // 56: google.cloud.iap.v1.IdentityAwareProxyAdminService.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	13, // 57: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIapSettings:output_type -> google.cloud.iap.v1.IapSettings
-	13, // 58: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateIapSettings:output_type -> google.cloud.iap.v1.IapSettings
-	27, // 59: google.cloud.iap.v1.IdentityAwareProxyAdminService.ValidateIapAttributeExpression:output_type -> google.cloud.iap.v1.ValidateIapAttributeExpressionResponse
-	5,  // 60: google.cloud.iap.v1.IdentityAwareProxyAdminService.ListTunnelDestGroups:output_type -> google.cloud.iap.v1.ListTunnelDestGroupsResponse
-	10, // 61: google.cloud.iap.v1.IdentityAwareProxyAdminService.CreateTunnelDestGroup:output_type -> google.cloud.iap.v1.TunnelDestGroup
-	10, // 62: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetTunnelDestGroup:output_type -> google.cloud.iap.v1.TunnelDestGroup
-	49, // 63: google.cloud.iap.v1.IdentityAwareProxyAdminService.DeleteTunnelDestGroup:output_type -> google.protobuf.Empty
-	10, // 64: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateTunnelDestGroup:output_type -> google.cloud.iap.v1.TunnelDestGroup
-	29, // 65: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListBrands:output_type -> google.cloud.iap.v1.ListBrandsResponse
-	38, // 66: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateBrand:output_type -> google.cloud.iap.v1.Brand
-	38, // 67: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetBrand:output_type -> google.cloud.iap.v1.Brand
-	39, // 68: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateIdentityAwareProxyClient:output_type -> google.cloud.iap.v1.IdentityAwareProxyClient
-	33, // 69: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListIdentityAwareProxyClients:output_type -> google.cloud.iap.v1.ListIdentityAwareProxyClientsResponse
-	39, // 70: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetIdentityAwareProxyClient:output_type -> google.cloud.iap.v1.IdentityAwareProxyClient
-	39, // 71: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ResetIdentityAwareProxyClientSecret:output_type -> google.cloud.iap.v1.IdentityAwareProxyClient
-	49, // 72: google.cloud.iap.v1.IdentityAwareProxyOAuthService.DeleteIdentityAwareProxyClient:output_type -> google.protobuf.Empty
-	54, // [54:73] is the sub-list for method output_type
-	35, // [35:54] is the sub-list for method input_type
-	35, // [35:35] is the sub-list for extension type_name
-	35, // [35:35] is the sub-list for extension extendee
-	0,  // [0:35] is the sub-list for field type_name
+	41, // 18: google.cloud.iap.v1.OAuthSettings.client_id:type_name -> google.protobuf.StringValue
+	41, // 19: google.cloud.iap.v1.OAuthSettings.client_secret:type_name -> google.protobuf.StringValue
+	41, // 20: google.cloud.iap.v1.OAuthSettings.client_secret_sha256:type_name -> google.protobuf.StringValue
+	19, // 21: google.cloud.iap.v1.WorkforceIdentitySettings.oauth2:type_name -> google.cloud.iap.v1.OAuth2
+	1,  // 22: google.cloud.iap.v1.ReauthSettings.method:type_name -> google.cloud.iap.v1.ReauthSettings.Method
+	43, // 23: google.cloud.iap.v1.ReauthSettings.max_age:type_name -> google.protobuf.Duration
+	2,  // 24: google.cloud.iap.v1.ReauthSettings.policy_type:type_name -> google.cloud.iap.v1.ReauthSettings.PolicyType
+	23, // 25: google.cloud.iap.v1.ApplicationSettings.csm_settings:type_name -> google.cloud.iap.v1.CsmSettings
+	24, // 26: google.cloud.iap.v1.ApplicationSettings.access_denied_page_settings:type_name -> google.cloud.iap.v1.AccessDeniedPageSettings
+	41, // 27: google.cloud.iap.v1.ApplicationSettings.cookie_domain:type_name -> google.protobuf.StringValue
+	25, // 28: google.cloud.iap.v1.ApplicationSettings.attribute_propagation_settings:type_name -> google.cloud.iap.v1.AttributePropagationSettings
+	41, // 29: google.cloud.iap.v1.CsmSettings.rctoken_aud:type_name -> google.protobuf.StringValue
+	41, // 30: google.cloud.iap.v1.AccessDeniedPageSettings.access_denied_page_uri:type_name -> google.protobuf.StringValue
+	42, // 31: google.cloud.iap.v1.AccessDeniedPageSettings.generate_troubleshooting_uri:type_name -> google.protobuf.BoolValue
+	42, // 32: google.cloud.iap.v1.AccessDeniedPageSettings.remediation_token_generation_enabled:type_name -> google.protobuf.BoolValue
+	3,  // 33: google.cloud.iap.v1.AttributePropagationSettings.output_credentials:type_name -> google.cloud.iap.v1.AttributePropagationSettings.OutputCredentials
+	38, // 34: google.cloud.iap.v1.ListBrandsResponse.brands:type_name -> google.cloud.iap.v1.Brand
+	38, // 35: google.cloud.iap.v1.CreateBrandRequest.brand:type_name -> google.cloud.iap.v1.Brand
+	39, // 36: google.cloud.iap.v1.ListIdentityAwareProxyClientsResponse.identity_aware_proxy_clients:type_name -> google.cloud.iap.v1.IdentityAwareProxyClient
+	39, // 37: google.cloud.iap.v1.CreateIdentityAwareProxyClientRequest.identity_aware_proxy_client:type_name -> google.cloud.iap.v1.IdentityAwareProxyClient
+	44, // 38: google.cloud.iap.v1.IdentityAwareProxyAdminService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	45, // 39: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	46, // 40: google.cloud.iap.v1.IdentityAwareProxyAdminService.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	11, // 41: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIapSettings:input_type -> google.cloud.iap.v1.GetIapSettingsRequest
+	12, // 42: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateIapSettings:input_type -> google.cloud.iap.v1.UpdateIapSettingsRequest
+	26, // 43: google.cloud.iap.v1.IdentityAwareProxyAdminService.ValidateIapAttributeExpression:input_type -> google.cloud.iap.v1.ValidateIapAttributeExpressionRequest
+	4,  // 44: google.cloud.iap.v1.IdentityAwareProxyAdminService.ListTunnelDestGroups:input_type -> google.cloud.iap.v1.ListTunnelDestGroupsRequest
+	6,  // 45: google.cloud.iap.v1.IdentityAwareProxyAdminService.CreateTunnelDestGroup:input_type -> google.cloud.iap.v1.CreateTunnelDestGroupRequest
+	7,  // 46: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetTunnelDestGroup:input_type -> google.cloud.iap.v1.GetTunnelDestGroupRequest
+	8,  // 47: google.cloud.iap.v1.IdentityAwareProxyAdminService.DeleteTunnelDestGroup:input_type -> google.cloud.iap.v1.DeleteTunnelDestGroupRequest
+	9,  // 48: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateTunnelDestGroup:input_type -> google.cloud.iap.v1.UpdateTunnelDestGroupRequest
+	28, // 49: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListBrands:input_type -> google.cloud.iap.v1.ListBrandsRequest
+	30, // 50: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateBrand:input_type -> google.cloud.iap.v1.CreateBrandRequest
+	31, // 51: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetBrand:input_type -> google.cloud.iap.v1.GetBrandRequest
+	34, // 52: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateIdentityAwareProxyClient:input_type -> google.cloud.iap.v1.CreateIdentityAwareProxyClientRequest
+	32, // 53: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListIdentityAwareProxyClients:input_type -> google.cloud.iap.v1.ListIdentityAwareProxyClientsRequest
+	35, // 54: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetIdentityAwareProxyClient:input_type -> google.cloud.iap.v1.GetIdentityAwareProxyClientRequest
+	36, // 55: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ResetIdentityAwareProxyClientSecret:input_type -> google.cloud.iap.v1.ResetIdentityAwareProxyClientSecretRequest
+	37, // 56: google.cloud.iap.v1.IdentityAwareProxyOAuthService.DeleteIdentityAwareProxyClient:input_type -> google.cloud.iap.v1.DeleteIdentityAwareProxyClientRequest
+	47, // 57: google.cloud.iap.v1.IdentityAwareProxyAdminService.SetIamPolicy:output_type -> google.iam.v1.Policy
+	47, // 58: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIamPolicy:output_type -> google.iam.v1.Policy
+	48, // 59: google.cloud.iap.v1.IdentityAwareProxyAdminService.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	13, // 60: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIapSettings:output_type -> google.cloud.iap.v1.IapSettings
+	13, // 61: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateIapSettings:output_type -> google.cloud.iap.v1.IapSettings
+	27, // 62: google.cloud.iap.v1.IdentityAwareProxyAdminService.ValidateIapAttributeExpression:output_type -> google.cloud.iap.v1.ValidateIapAttributeExpressionResponse
+	5,  // 63: google.cloud.iap.v1.IdentityAwareProxyAdminService.ListTunnelDestGroups:output_type -> google.cloud.iap.v1.ListTunnelDestGroupsResponse
+	10, // 64: google.cloud.iap.v1.IdentityAwareProxyAdminService.CreateTunnelDestGroup:output_type -> google.cloud.iap.v1.TunnelDestGroup
+	10, // 65: google.cloud.iap.v1.IdentityAwareProxyAdminService.GetTunnelDestGroup:output_type -> google.cloud.iap.v1.TunnelDestGroup
+	49, // 66: google.cloud.iap.v1.IdentityAwareProxyAdminService.DeleteTunnelDestGroup:output_type -> google.protobuf.Empty
+	10, // 67: google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateTunnelDestGroup:output_type -> google.cloud.iap.v1.TunnelDestGroup
+	29, // 68: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListBrands:output_type -> google.cloud.iap.v1.ListBrandsResponse
+	38, // 69: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateBrand:output_type -> google.cloud.iap.v1.Brand
+	38, // 70: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetBrand:output_type -> google.cloud.iap.v1.Brand
+	39, // 71: google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateIdentityAwareProxyClient:output_type -> google.cloud.iap.v1.IdentityAwareProxyClient
+	33, // 72: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListIdentityAwareProxyClients:output_type -> google.cloud.iap.v1.ListIdentityAwareProxyClientsResponse
+	39, // 73: google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetIdentityAwareProxyClient:output_type -> google.cloud.iap.v1.IdentityAwareProxyClient
+	39, // 74: google.cloud.iap.v1.IdentityAwareProxyOAuthService.ResetIdentityAwareProxyClientSecret:output_type -> google.cloud.iap.v1.IdentityAwareProxyClient
+	49, // 75: google.cloud.iap.v1.IdentityAwareProxyOAuthService.DeleteIdentityAwareProxyClient:output_type -> google.protobuf.Empty
+	57, // [57:76] is the sub-list for method output_type
+	38, // [38:57] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_iap_v1_service_proto_init() }

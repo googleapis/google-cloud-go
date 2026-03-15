@@ -27,6 +27,7 @@ import (
 	"time"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
@@ -47,41 +48,52 @@ var newCatalogClientHook clientHook
 
 // CatalogCallOptions contains the retry settings for each method of CatalogClient.
 type CatalogCallOptions struct {
-	CreateEntryType   []gax.CallOption
-	UpdateEntryType   []gax.CallOption
-	DeleteEntryType   []gax.CallOption
-	ListEntryTypes    []gax.CallOption
-	GetEntryType      []gax.CallOption
-	CreateAspectType  []gax.CallOption
-	UpdateAspectType  []gax.CallOption
-	DeleteAspectType  []gax.CallOption
-	ListAspectTypes   []gax.CallOption
-	GetAspectType     []gax.CallOption
-	CreateEntryGroup  []gax.CallOption
-	UpdateEntryGroup  []gax.CallOption
-	DeleteEntryGroup  []gax.CallOption
-	ListEntryGroups   []gax.CallOption
-	GetEntryGroup     []gax.CallOption
-	CreateEntry       []gax.CallOption
-	UpdateEntry       []gax.CallOption
-	DeleteEntry       []gax.CallOption
-	ListEntries       []gax.CallOption
-	GetEntry          []gax.CallOption
-	LookupEntry       []gax.CallOption
-	SearchEntries     []gax.CallOption
-	CreateMetadataJob []gax.CallOption
-	GetMetadataJob    []gax.CallOption
-	ListMetadataJobs  []gax.CallOption
-	CancelMetadataJob []gax.CallOption
-	CreateEntryLink   []gax.CallOption
-	DeleteEntryLink   []gax.CallOption
-	GetEntryLink      []gax.CallOption
-	GetLocation       []gax.CallOption
-	ListLocations     []gax.CallOption
-	CancelOperation   []gax.CallOption
-	DeleteOperation   []gax.CallOption
-	GetOperation      []gax.CallOption
-	ListOperations    []gax.CallOption
+	CreateEntryType    []gax.CallOption
+	UpdateEntryType    []gax.CallOption
+	DeleteEntryType    []gax.CallOption
+	ListEntryTypes     []gax.CallOption
+	GetEntryType       []gax.CallOption
+	CreateAspectType   []gax.CallOption
+	UpdateAspectType   []gax.CallOption
+	DeleteAspectType   []gax.CallOption
+	ListAspectTypes    []gax.CallOption
+	GetAspectType      []gax.CallOption
+	CreateEntryGroup   []gax.CallOption
+	UpdateEntryGroup   []gax.CallOption
+	DeleteEntryGroup   []gax.CallOption
+	ListEntryGroups    []gax.CallOption
+	GetEntryGroup      []gax.CallOption
+	CreateEntry        []gax.CallOption
+	UpdateEntry        []gax.CallOption
+	DeleteEntry        []gax.CallOption
+	ListEntries        []gax.CallOption
+	GetEntry           []gax.CallOption
+	LookupEntry        []gax.CallOption
+	SearchEntries      []gax.CallOption
+	CreateMetadataJob  []gax.CallOption
+	GetMetadataJob     []gax.CallOption
+	ListMetadataJobs   []gax.CallOption
+	CancelMetadataJob  []gax.CallOption
+	CreateEntryLink    []gax.CallOption
+	UpdateEntryLink    []gax.CallOption
+	DeleteEntryLink    []gax.CallOption
+	LookupEntryLinks   []gax.CallOption
+	LookupContext      []gax.CallOption
+	GetEntryLink       []gax.CallOption
+	CreateMetadataFeed []gax.CallOption
+	GetMetadataFeed    []gax.CallOption
+	ListMetadataFeeds  []gax.CallOption
+	DeleteMetadataFeed []gax.CallOption
+	UpdateMetadataFeed []gax.CallOption
+	GetLocation        []gax.CallOption
+	ListLocations      []gax.CallOption
+	GetIamPolicy       []gax.CallOption
+	SetIamPolicy       []gax.CallOption
+	TestIamPermissions []gax.CallOption
+	CancelOperation    []gax.CallOption
+	DeleteOperation    []gax.CallOption
+	GetOperation       []gax.CallOption
+	ListOperations     []gax.CallOption
 }
 
 func defaultCatalogGRPCClientOptions() []option.ClientOption {
@@ -277,19 +289,30 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 				})
 			}),
 		},
-		CreateMetadataJob: []gax.CallOption{},
-		GetMetadataJob:    []gax.CallOption{},
-		ListMetadataJobs:  []gax.CallOption{},
-		CancelMetadataJob: []gax.CallOption{},
-		CreateEntryLink:   []gax.CallOption{},
-		DeleteEntryLink:   []gax.CallOption{},
-		GetEntryLink:      []gax.CallOption{},
-		GetLocation:       []gax.CallOption{},
-		ListLocations:     []gax.CallOption{},
-		CancelOperation:   []gax.CallOption{},
-		DeleteOperation:   []gax.CallOption{},
-		GetOperation:      []gax.CallOption{},
-		ListOperations:    []gax.CallOption{},
+		CreateMetadataJob:  []gax.CallOption{},
+		GetMetadataJob:     []gax.CallOption{},
+		ListMetadataJobs:   []gax.CallOption{},
+		CancelMetadataJob:  []gax.CallOption{},
+		CreateEntryLink:    []gax.CallOption{},
+		UpdateEntryLink:    []gax.CallOption{},
+		DeleteEntryLink:    []gax.CallOption{},
+		LookupEntryLinks:   []gax.CallOption{},
+		LookupContext:      []gax.CallOption{},
+		GetEntryLink:       []gax.CallOption{},
+		CreateMetadataFeed: []gax.CallOption{},
+		GetMetadataFeed:    []gax.CallOption{},
+		ListMetadataFeeds:  []gax.CallOption{},
+		DeleteMetadataFeed: []gax.CallOption{},
+		UpdateMetadataFeed: []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -460,19 +483,30 @@ func defaultCatalogRESTCallOptions() *CatalogCallOptions {
 					http.StatusTooManyRequests)
 			}),
 		},
-		CreateMetadataJob: []gax.CallOption{},
-		GetMetadataJob:    []gax.CallOption{},
-		ListMetadataJobs:  []gax.CallOption{},
-		CancelMetadataJob: []gax.CallOption{},
-		CreateEntryLink:   []gax.CallOption{},
-		DeleteEntryLink:   []gax.CallOption{},
-		GetEntryLink:      []gax.CallOption{},
-		GetLocation:       []gax.CallOption{},
-		ListLocations:     []gax.CallOption{},
-		CancelOperation:   []gax.CallOption{},
-		DeleteOperation:   []gax.CallOption{},
-		GetOperation:      []gax.CallOption{},
-		ListOperations:    []gax.CallOption{},
+		CreateMetadataJob:  []gax.CallOption{},
+		GetMetadataJob:     []gax.CallOption{},
+		ListMetadataJobs:   []gax.CallOption{},
+		CancelMetadataJob:  []gax.CallOption{},
+		CreateEntryLink:    []gax.CallOption{},
+		UpdateEntryLink:    []gax.CallOption{},
+		DeleteEntryLink:    []gax.CallOption{},
+		LookupEntryLinks:   []gax.CallOption{},
+		LookupContext:      []gax.CallOption{},
+		GetEntryLink:       []gax.CallOption{},
+		CreateMetadataFeed: []gax.CallOption{},
+		GetMetadataFeed:    []gax.CallOption{},
+		ListMetadataFeeds:  []gax.CallOption{},
+		DeleteMetadataFeed: []gax.CallOption{},
+		UpdateMetadataFeed: []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -518,10 +552,24 @@ type internalCatalogClient interface {
 	ListMetadataJobs(context.Context, *dataplexpb.ListMetadataJobsRequest, ...gax.CallOption) *MetadataJobIterator
 	CancelMetadataJob(context.Context, *dataplexpb.CancelMetadataJobRequest, ...gax.CallOption) error
 	CreateEntryLink(context.Context, *dataplexpb.CreateEntryLinkRequest, ...gax.CallOption) (*dataplexpb.EntryLink, error)
+	UpdateEntryLink(context.Context, *dataplexpb.UpdateEntryLinkRequest, ...gax.CallOption) (*dataplexpb.EntryLink, error)
 	DeleteEntryLink(context.Context, *dataplexpb.DeleteEntryLinkRequest, ...gax.CallOption) (*dataplexpb.EntryLink, error)
+	LookupEntryLinks(context.Context, *dataplexpb.LookupEntryLinksRequest, ...gax.CallOption) *EntryLinkIterator
+	LookupContext(context.Context, *dataplexpb.LookupContextRequest, ...gax.CallOption) (*dataplexpb.LookupContextResponse, error)
 	GetEntryLink(context.Context, *dataplexpb.GetEntryLinkRequest, ...gax.CallOption) (*dataplexpb.EntryLink, error)
+	CreateMetadataFeed(context.Context, *dataplexpb.CreateMetadataFeedRequest, ...gax.CallOption) (*CreateMetadataFeedOperation, error)
+	CreateMetadataFeedOperation(name string) *CreateMetadataFeedOperation
+	GetMetadataFeed(context.Context, *dataplexpb.GetMetadataFeedRequest, ...gax.CallOption) (*dataplexpb.MetadataFeed, error)
+	ListMetadataFeeds(context.Context, *dataplexpb.ListMetadataFeedsRequest, ...gax.CallOption) *MetadataFeedIterator
+	DeleteMetadataFeed(context.Context, *dataplexpb.DeleteMetadataFeedRequest, ...gax.CallOption) (*DeleteMetadataFeedOperation, error)
+	DeleteMetadataFeedOperation(name string) *DeleteMetadataFeedOperation
+	UpdateMetadataFeed(context.Context, *dataplexpb.UpdateMetadataFeedRequest, ...gax.CallOption) (*UpdateMetadataFeedOperation, error)
+	UpdateMetadataFeedOperation(name string) *UpdateMetadataFeedOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -717,31 +765,16 @@ func (c *CatalogClient) DeleteEntry(ctx context.Context, req *dataplexpb.DeleteE
 }
 
 // ListEntries lists Entries within an EntryGroup.
-// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-// Metastore metadata that is stored in Dataplex Universal Catalog is
-// changing. For more information, see Changes to metadata stored in
-// Dataplex Universal
-// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *CatalogClient) ListEntries(ctx context.Context, req *dataplexpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	return c.internalClient.ListEntries(ctx, req, opts...)
 }
 
 // GetEntry gets an Entry.
-// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-// Metastore metadata that is stored in Dataplex Universal Catalog is
-// changing. For more information, see Changes to metadata stored in
-// Dataplex Universal
-// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *CatalogClient) GetEntry(ctx context.Context, req *dataplexpb.GetEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	return c.internalClient.GetEntry(ctx, req, opts...)
 }
 
 // LookupEntry looks up an entry by name using the permission on the source system.
-// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-// Metastore metadata that is stored in Dataplex Universal Catalog is
-// changing. For more information, see Changes to metadata stored in
-// Dataplex Universal
-// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *CatalogClient) LookupEntry(ctx context.Context, req *dataplexpb.LookupEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	return c.internalClient.LookupEntry(ctx, req, opts...)
 }
@@ -788,14 +821,72 @@ func (c *CatalogClient) CreateEntryLink(ctx context.Context, req *dataplexpb.Cre
 	return c.internalClient.CreateEntryLink(ctx, req, opts...)
 }
 
+// UpdateEntryLink updates an Entry Link.
+func (c *CatalogClient) UpdateEntryLink(ctx context.Context, req *dataplexpb.UpdateEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	return c.internalClient.UpdateEntryLink(ctx, req, opts...)
+}
+
 // DeleteEntryLink deletes an Entry Link.
 func (c *CatalogClient) DeleteEntryLink(ctx context.Context, req *dataplexpb.DeleteEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
 	return c.internalClient.DeleteEntryLink(ctx, req, opts...)
 }
 
+// LookupEntryLinks looks up Entry Links referencing the specified Entry.
+func (c *CatalogClient) LookupEntryLinks(ctx context.Context, req *dataplexpb.LookupEntryLinksRequest, opts ...gax.CallOption) *EntryLinkIterator {
+	return c.internalClient.LookupEntryLinks(ctx, req, opts...)
+}
+
+// LookupContext looks up LLM Context for the specified resources.
+func (c *CatalogClient) LookupContext(ctx context.Context, req *dataplexpb.LookupContextRequest, opts ...gax.CallOption) (*dataplexpb.LookupContextResponse, error) {
+	return c.internalClient.LookupContext(ctx, req, opts...)
+}
+
 // GetEntryLink gets an Entry Link.
 func (c *CatalogClient) GetEntryLink(ctx context.Context, req *dataplexpb.GetEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
 	return c.internalClient.GetEntryLink(ctx, req, opts...)
+}
+
+// CreateMetadataFeed creates a MetadataFeed.
+func (c *CatalogClient) CreateMetadataFeed(ctx context.Context, req *dataplexpb.CreateMetadataFeedRequest, opts ...gax.CallOption) (*CreateMetadataFeedOperation, error) {
+	return c.internalClient.CreateMetadataFeed(ctx, req, opts...)
+}
+
+// CreateMetadataFeedOperation returns a new CreateMetadataFeedOperation from a given name.
+// The name must be that of a previously created CreateMetadataFeedOperation, possibly from a different process.
+func (c *CatalogClient) CreateMetadataFeedOperation(name string) *CreateMetadataFeedOperation {
+	return c.internalClient.CreateMetadataFeedOperation(name)
+}
+
+// GetMetadataFeed gets a MetadataFeed.
+func (c *CatalogClient) GetMetadataFeed(ctx context.Context, req *dataplexpb.GetMetadataFeedRequest, opts ...gax.CallOption) (*dataplexpb.MetadataFeed, error) {
+	return c.internalClient.GetMetadataFeed(ctx, req, opts...)
+}
+
+// ListMetadataFeeds retrieve a list of MetadataFeeds.
+func (c *CatalogClient) ListMetadataFeeds(ctx context.Context, req *dataplexpb.ListMetadataFeedsRequest, opts ...gax.CallOption) *MetadataFeedIterator {
+	return c.internalClient.ListMetadataFeeds(ctx, req, opts...)
+}
+
+// DeleteMetadataFeed deletes a MetadataFeed.
+func (c *CatalogClient) DeleteMetadataFeed(ctx context.Context, req *dataplexpb.DeleteMetadataFeedRequest, opts ...gax.CallOption) (*DeleteMetadataFeedOperation, error) {
+	return c.internalClient.DeleteMetadataFeed(ctx, req, opts...)
+}
+
+// DeleteMetadataFeedOperation returns a new DeleteMetadataFeedOperation from a given name.
+// The name must be that of a previously created DeleteMetadataFeedOperation, possibly from a different process.
+func (c *CatalogClient) DeleteMetadataFeedOperation(name string) *DeleteMetadataFeedOperation {
+	return c.internalClient.DeleteMetadataFeedOperation(name)
+}
+
+// UpdateMetadataFeed updates a MetadataFeed.
+func (c *CatalogClient) UpdateMetadataFeed(ctx context.Context, req *dataplexpb.UpdateMetadataFeedRequest, opts ...gax.CallOption) (*UpdateMetadataFeedOperation, error) {
+	return c.internalClient.UpdateMetadataFeed(ctx, req, opts...)
+}
+
+// UpdateMetadataFeedOperation returns a new UpdateMetadataFeedOperation from a given name.
+// The name must be that of a previously created UpdateMetadataFeedOperation, possibly from a different process.
+func (c *CatalogClient) UpdateMetadataFeedOperation(name string) *UpdateMetadataFeedOperation {
+	return c.internalClient.UpdateMetadataFeedOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -804,8 +895,42 @@ func (c *CatalogClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *CatalogClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *CatalogClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *CatalogClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *CatalogClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -848,6 +973,8 @@ type catalogGRPCClient struct {
 
 	operationsClient longrunningpb.OperationsClient
 
+	iamPolicyClient iampb.IAMPolicyClient
+
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
@@ -886,6 +1013,7 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		CallOptions:      &client.CallOptions,
 		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -1696,6 +1824,24 @@ func (c *catalogGRPCClient) CreateEntryLink(ctx context.Context, req *dataplexpb
 	return resp, nil
 }
 
+func (c *catalogGRPCClient) UpdateEntryLink(ctx context.Context, req *dataplexpb.UpdateEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entry_link.name", url.QueryEscape(req.GetEntryLink().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateEntryLink[0:len((*c.CallOptions).UpdateEntryLink):len((*c.CallOptions).UpdateEntryLink)], opts...)
+	var resp *dataplexpb.EntryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateEntryLink, req, settings.GRPC, c.logger, "UpdateEntryLink")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *catalogGRPCClient) DeleteEntryLink(ctx context.Context, req *dataplexpb.DeleteEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1706,6 +1852,70 @@ func (c *catalogGRPCClient) DeleteEntryLink(ctx context.Context, req *dataplexpb
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.catalogClient.DeleteEntryLink, req, settings.GRPC, c.logger, "DeleteEntryLink")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) LookupEntryLinks(ctx context.Context, req *dataplexpb.LookupEntryLinksRequest, opts ...gax.CallOption) *EntryLinkIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).LookupEntryLinks[0:len((*c.CallOptions).LookupEntryLinks):len((*c.CallOptions).LookupEntryLinks)], opts...)
+	it := &EntryLinkIterator{}
+	req = proto.Clone(req).(*dataplexpb.LookupEntryLinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryLink, string, error) {
+		resp := &dataplexpb.LookupEntryLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.catalogClient.LookupEntryLinks, req, settings.GRPC, c.logger, "LookupEntryLinks")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntryLinks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *catalogGRPCClient) LookupContext(ctx context.Context, req *dataplexpb.LookupContextRequest, opts ...gax.CallOption) (*dataplexpb.LookupContextResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).LookupContext[0:len((*c.CallOptions).LookupContext):len((*c.CallOptions).LookupContext)], opts...)
+	var resp *dataplexpb.LookupContextResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.LookupContext, req, settings.GRPC, c.logger, "LookupContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1730,6 +1940,130 @@ func (c *catalogGRPCClient) GetEntryLink(ctx context.Context, req *dataplexpb.Ge
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *catalogGRPCClient) CreateMetadataFeed(ctx context.Context, req *dataplexpb.CreateMetadataFeedRequest, opts ...gax.CallOption) (*CreateMetadataFeedOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateMetadataFeed[0:len((*c.CallOptions).CreateMetadataFeed):len((*c.CallOptions).CreateMetadataFeed)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.CreateMetadataFeed, req, settings.GRPC, c.logger, "CreateMetadataFeed")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateMetadataFeedOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *catalogGRPCClient) GetMetadataFeed(ctx context.Context, req *dataplexpb.GetMetadataFeedRequest, opts ...gax.CallOption) (*dataplexpb.MetadataFeed, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetMetadataFeed[0:len((*c.CallOptions).GetMetadataFeed):len((*c.CallOptions).GetMetadataFeed)], opts...)
+	var resp *dataplexpb.MetadataFeed
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.GetMetadataFeed, req, settings.GRPC, c.logger, "GetMetadataFeed")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) ListMetadataFeeds(ctx context.Context, req *dataplexpb.ListMetadataFeedsRequest, opts ...gax.CallOption) *MetadataFeedIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListMetadataFeeds[0:len((*c.CallOptions).ListMetadataFeeds):len((*c.CallOptions).ListMetadataFeeds)], opts...)
+	it := &MetadataFeedIterator{}
+	req = proto.Clone(req).(*dataplexpb.ListMetadataFeedsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.MetadataFeed, string, error) {
+		resp := &dataplexpb.ListMetadataFeedsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.catalogClient.ListMetadataFeeds, req, settings.GRPC, c.logger, "ListMetadataFeeds")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMetadataFeeds(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *catalogGRPCClient) DeleteMetadataFeed(ctx context.Context, req *dataplexpb.DeleteMetadataFeedRequest, opts ...gax.CallOption) (*DeleteMetadataFeedOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteMetadataFeed[0:len((*c.CallOptions).DeleteMetadataFeed):len((*c.CallOptions).DeleteMetadataFeed)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.DeleteMetadataFeed, req, settings.GRPC, c.logger, "DeleteMetadataFeed")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteMetadataFeedOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *catalogGRPCClient) UpdateMetadataFeed(ctx context.Context, req *dataplexpb.UpdateMetadataFeedRequest, opts ...gax.CallOption) (*UpdateMetadataFeedOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "metadata_feed.name", url.QueryEscape(req.GetMetadataFeed().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateMetadataFeed[0:len((*c.CallOptions).UpdateMetadataFeed):len((*c.CallOptions).UpdateMetadataFeed)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateMetadataFeed, req, settings.GRPC, c.logger, "UpdateMetadataFeed")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateMetadataFeedOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *catalogGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1794,6 +2128,60 @@ func (c *catalogGRPCClient) ListLocations(ctx context.Context, req *locationpb.L
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *catalogGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *catalogGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -3044,11 +3432,6 @@ func (c *catalogRESTClient) DeleteEntry(ctx context.Context, req *dataplexpb.Del
 }
 
 // ListEntries lists Entries within an EntryGroup.
-// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-// Metastore metadata that is stored in Dataplex Universal Catalog is
-// changing. For more information, see Changes to metadata stored in
-// Dataplex Universal
-// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *catalogRESTClient) ListEntries(ctx context.Context, req *dataplexpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	it := &EntryIterator{}
 	req = proto.Clone(req).(*dataplexpb.ListEntriesRequest)
@@ -3130,11 +3513,6 @@ func (c *catalogRESTClient) ListEntries(ctx context.Context, req *dataplexpb.Lis
 }
 
 // GetEntry gets an Entry.
-// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-// Metastore metadata that is stored in Dataplex Universal Catalog is
-// changing. For more information, see Changes to metadata stored in
-// Dataplex Universal
-// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *catalogRESTClient) GetEntry(ctx context.Context, req *dataplexpb.GetEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3198,11 +3576,6 @@ func (c *catalogRESTClient) GetEntry(ctx context.Context, req *dataplexpb.GetEnt
 }
 
 // LookupEntry looks up an entry by name using the permission on the source system.
-// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-// Metastore metadata that is stored in Dataplex Universal Catalog is
-// changing. For more information, see Changes to metadata stored in
-// Dataplex Universal
-// Catalog (at https://cloud.google.com/dataplex/docs/metadata-changes).
 func (c *catalogRESTClient) LookupEntry(ctx context.Context, req *dataplexpb.LookupEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3659,6 +4032,71 @@ func (c *catalogRESTClient) CreateEntryLink(ctx context.Context, req *dataplexpb
 	return resp, nil
 }
 
+// UpdateEntryLink updates an Entry Link.
+func (c *catalogRESTClient) UpdateEntryLink(ctx context.Context, req *dataplexpb.UpdateEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEntryLink()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEntryLink().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if items := req.GetAspectKeys(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("aspectKeys", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entry_link.name", url.QueryEscape(req.GetEntryLink().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateEntryLink[0:len((*c.CallOptions).UpdateEntryLink):len((*c.CallOptions).UpdateEntryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.EntryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEntryLink")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // DeleteEntryLink deletes an Entry Link.
 func (c *catalogRESTClient) DeleteEntryLink(ctx context.Context, req *dataplexpb.DeleteEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -3693,6 +4131,149 @@ func (c *catalogRESTClient) DeleteEntryLink(ctx context.Context, req *dataplexpb
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEntryLink")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// LookupEntryLinks looks up Entry Links referencing the specified Entry.
+func (c *catalogRESTClient) LookupEntryLinks(ctx context.Context, req *dataplexpb.LookupEntryLinksRequest, opts ...gax.CallOption) *EntryLinkIterator {
+	it := &EntryLinkIterator{}
+	req = proto.Clone(req).(*dataplexpb.LookupEntryLinksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryLink, string, error) {
+		resp := &dataplexpb.LookupEntryLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:lookupEntryLinks", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("entry", fmt.Sprintf("%v", req.GetEntry()))
+		if items := req.GetEntryLinkTypes(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("entryLinkTypes", fmt.Sprintf("%v", item))
+			}
+		}
+		if req.GetEntryMode() != 0 {
+			params.Add("entryMode", fmt.Sprintf("%v", req.GetEntryMode()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "LookupEntryLinks")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntryLinks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// LookupContext looks up LLM Context for the specified resources.
+func (c *catalogRESTClient) LookupContext(ctx context.Context, req *dataplexpb.LookupContextRequest, opts ...gax.CallOption) (*dataplexpb.LookupContextResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupContext", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).LookupContext[0:len((*c.CallOptions).LookupContext):len((*c.CallOptions).LookupContext)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.LookupContextResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LookupContext")
 		if err != nil {
 			return err
 		}
@@ -3759,6 +4340,329 @@ func (c *catalogRESTClient) GetEntryLink(ctx context.Context, req *dataplexpb.Ge
 	return resp, nil
 }
 
+// CreateMetadataFeed creates a MetadataFeed.
+func (c *catalogRESTClient) CreateMetadataFeed(ctx context.Context, req *dataplexpb.CreateMetadataFeedRequest, opts ...gax.CallOption) (*CreateMetadataFeedOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetMetadataFeed()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/metadataFeeds", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetMetadataFeedId() != "" {
+		params.Add("metadataFeedId", fmt.Sprintf("%v", req.GetMetadataFeedId()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMetadataFeed")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateMetadataFeedOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetMetadataFeed gets a MetadataFeed.
+func (c *catalogRESTClient) GetMetadataFeed(ctx context.Context, req *dataplexpb.GetMetadataFeedRequest, opts ...gax.CallOption) (*dataplexpb.MetadataFeed, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetMetadataFeed[0:len((*c.CallOptions).GetMetadataFeed):len((*c.CallOptions).GetMetadataFeed)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.MetadataFeed{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMetadataFeed")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListMetadataFeeds retrieve a list of MetadataFeeds.
+func (c *catalogRESTClient) ListMetadataFeeds(ctx context.Context, req *dataplexpb.ListMetadataFeedsRequest, opts ...gax.CallOption) *MetadataFeedIterator {
+	it := &MetadataFeedIterator{}
+	req = proto.Clone(req).(*dataplexpb.ListMetadataFeedsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.MetadataFeed, string, error) {
+		resp := &dataplexpb.ListMetadataFeedsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/metadataFeeds", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMetadataFeeds")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetMetadataFeeds(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteMetadataFeed deletes a MetadataFeed.
+func (c *catalogRESTClient) DeleteMetadataFeed(ctx context.Context, req *dataplexpb.DeleteMetadataFeedRequest, opts ...gax.CallOption) (*DeleteMetadataFeedOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMetadataFeed")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteMetadataFeedOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateMetadataFeed updates a MetadataFeed.
+func (c *catalogRESTClient) UpdateMetadataFeed(ctx context.Context, req *dataplexpb.UpdateMetadataFeedRequest, opts ...gax.CallOption) (*UpdateMetadataFeedOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetMetadataFeed()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMetadataFeed().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "metadata_feed.name", url.QueryEscape(req.GetMetadataFeed().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMetadataFeed")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateMetadataFeedOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *catalogRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -3810,6 +4714,14 @@ func (c *catalogRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *catalogRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -3888,6 +4800,182 @@ func (c *catalogRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *catalogRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *catalogRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *catalogRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -4154,6 +5242,24 @@ func (c *catalogRESTClient) CreateEntryTypeOperation(name string) *CreateEntryTy
 	}
 }
 
+// CreateMetadataFeedOperation returns a new CreateMetadataFeedOperation from a given name.
+// The name must be that of a previously created CreateMetadataFeedOperation, possibly from a different process.
+func (c *catalogGRPCClient) CreateMetadataFeedOperation(name string) *CreateMetadataFeedOperation {
+	return &CreateMetadataFeedOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateMetadataFeedOperation returns a new CreateMetadataFeedOperation from a given name.
+// The name must be that of a previously created CreateMetadataFeedOperation, possibly from a different process.
+func (c *catalogRESTClient) CreateMetadataFeedOperation(name string) *CreateMetadataFeedOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateMetadataFeedOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateMetadataJobOperation returns a new CreateMetadataJobOperation from a given name.
 // The name must be that of a previously created CreateMetadataJobOperation, possibly from a different process.
 func (c *catalogGRPCClient) CreateMetadataJobOperation(name string) *CreateMetadataJobOperation {
@@ -4226,6 +5332,24 @@ func (c *catalogRESTClient) DeleteEntryTypeOperation(name string) *DeleteEntryTy
 	}
 }
 
+// DeleteMetadataFeedOperation returns a new DeleteMetadataFeedOperation from a given name.
+// The name must be that of a previously created DeleteMetadataFeedOperation, possibly from a different process.
+func (c *catalogGRPCClient) DeleteMetadataFeedOperation(name string) *DeleteMetadataFeedOperation {
+	return &DeleteMetadataFeedOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteMetadataFeedOperation returns a new DeleteMetadataFeedOperation from a given name.
+// The name must be that of a previously created DeleteMetadataFeedOperation, possibly from a different process.
+func (c *catalogRESTClient) DeleteMetadataFeedOperation(name string) *DeleteMetadataFeedOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteMetadataFeedOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateAspectTypeOperation returns a new UpdateAspectTypeOperation from a given name.
 // The name must be that of a previously created UpdateAspectTypeOperation, possibly from a different process.
 func (c *catalogGRPCClient) UpdateAspectTypeOperation(name string) *UpdateAspectTypeOperation {
@@ -4275,6 +5399,24 @@ func (c *catalogGRPCClient) UpdateEntryTypeOperation(name string) *UpdateEntryTy
 func (c *catalogRESTClient) UpdateEntryTypeOperation(name string) *UpdateEntryTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEntryTypeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateMetadataFeedOperation returns a new UpdateMetadataFeedOperation from a given name.
+// The name must be that of a previously created UpdateMetadataFeedOperation, possibly from a different process.
+func (c *catalogGRPCClient) UpdateMetadataFeedOperation(name string) *UpdateMetadataFeedOperation {
+	return &UpdateMetadataFeedOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateMetadataFeedOperation returns a new UpdateMetadataFeedOperation from a given name.
+// The name must be that of a previously created UpdateMetadataFeedOperation, possibly from a different process.
+func (c *catalogRESTClient) UpdateMetadataFeedOperation(name string) *UpdateMetadataFeedOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateMetadataFeedOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
