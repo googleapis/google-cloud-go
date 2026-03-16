@@ -61,12 +61,10 @@ func createAgentEngineSandboxRequestParametersToVertex(fromObject map[string]any
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = createAgentEngineSandboxConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = createAgentEngineSandboxConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -78,11 +76,6 @@ func deleteAgentEngineSandboxRequestParametersToVertex(fromObject map[string]any
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
 	if fromName != nil {
 		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
-	}
-
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -101,11 +94,6 @@ func executeCodeAgentEngineSandboxRequestParametersToVertex(fromObject map[strin
 		genai.InternalSetValueByPath(toObject, []string{"inputs"}, fromInputs)
 	}
 
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
-	}
-
 	return toObject, nil
 }
 
@@ -117,11 +105,6 @@ func getAgentEngineSandboxOperationParametersToVertex(fromObject map[string]any,
 		genai.InternalSetValueByPath(toObject, []string{"_url", "operationName"}, fromOperationName)
 	}
 
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
-	}
-
 	return toObject, nil
 }
 
@@ -131,11 +114,6 @@ func getAgentEngineSandboxRequestParametersToVertex(fromObject map[string]any, p
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
 	if fromName != nil {
 		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
-	}
-
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -172,12 +150,10 @@ func listAgentEngineSandboxesRequestParametersToVertex(fromObject map[string]any
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = listAgentEngineSandboxesConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = listAgentEngineSandboxesConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil

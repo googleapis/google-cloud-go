@@ -82,12 +82,10 @@ func appendAgentEngineSessionEventRequestParametersToVertex(fromObject map[strin
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = appendAgentEngineSessionEventConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = appendAgentEngineSessionEventConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -124,12 +122,10 @@ func listAgentEngineSessionEventsRequestParametersToVertex(fromObject map[string
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = listAgentEngineSessionEventsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = listAgentEngineSessionEventsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil

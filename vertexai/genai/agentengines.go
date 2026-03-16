@@ -101,12 +101,10 @@ func createAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = createAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = createAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -125,11 +123,6 @@ func deleteAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 		genai.InternalSetValueByPath(toObject, []string{"force"}, fromForce)
 	}
 
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
-	}
-
 	return toObject, nil
 }
 
@@ -141,11 +134,6 @@ func getAgentEngineOperationParametersToVertex(fromObject map[string]any, parent
 		genai.InternalSetValueByPath(toObject, []string{"_url", "operationName"}, fromOperationName)
 	}
 
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
-	}
-
 	return toObject, nil
 }
 
@@ -155,11 +143,6 @@ func getAgentEngineRequestParametersToVertex(fromObject map[string]any, parentOb
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
 	if fromName != nil {
 		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
-	}
-
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -191,12 +174,10 @@ func listAgentEngineRequestParametersToVertex(fromObject map[string]any, parentO
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = listAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = listAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -233,12 +214,10 @@ func queryAgentEngineRequestParametersToVertex(fromObject map[string]any, parent
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = queryAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = queryAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -330,12 +309,10 @@ func updateAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = updateAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = updateAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil

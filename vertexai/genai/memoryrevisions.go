@@ -33,11 +33,6 @@ func getAgentEngineMemoryRevisionRequestParametersToVertex(fromObject map[string
 		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
 	}
 
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
-	}
-
 	return toObject, nil
 }
 
@@ -72,12 +67,10 @@ func listAgentEngineMemoryRevisionsRequestParametersToVertex(fromObject map[stri
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = listAgentEngineMemoryRevisionsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = listAgentEngineMemoryRevisionsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
-
-		genai.InternalSetValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
