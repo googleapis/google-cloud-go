@@ -339,11 +339,7 @@ func TestGRPCWriterErrorHandling(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var streamErr error
 
-			if tt.recvErr != nil && tt.recvErr != io.EOF {
-				streamErr = tt.recvErr
-			} else if tt.sendErr != nil {
-				streamErr = tt.sendErr
-			}
+			streamErr = pickStreamError(tt.recvErr, tt.sendErr)
 
 			if tt.wantError == nil {
 				if streamErr != nil {
