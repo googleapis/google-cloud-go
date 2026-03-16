@@ -537,7 +537,7 @@ func TestInvokeWithRetryContext(t *testing.T) {
 			var lastInvocationID string
 			callCounter := 0
 
-			// Custom shouldRetry function that captures RetryContext
+			// Custom shouldRetry function that captures RetryContext.
 			customRetry := &retryConfig{
 				policy: RetryAlways,
 				shouldRetry: func(err error, retryCtx *RetryContext) bool {
@@ -546,7 +546,7 @@ func TestInvokeWithRetryContext(t *testing.T) {
 						return false
 					}
 
-					// Capture the context for verification
+					// Capture the context for verification.
 					capturedContexts = append(capturedContexts, &RetryContext{
 						Attempt:      retryCtx.Attempt,
 						InvocationID: retryCtx.InvocationID,
@@ -555,13 +555,13 @@ func TestInvokeWithRetryContext(t *testing.T) {
 						Object:       retryCtx.Object,
 					})
 
-					// Remember the invocation ID from the first call
+					// Remember the invocation ID from the first call.
 					if len(capturedContexts) == 1 {
 						lastInvocationID = retryCtx.InvocationID
 					}
 
-					// Retry if we haven't reached the retry limit
-					// retryCtx.Attempt is the current attempt that just failed
+					// Retry if we haven't reached the retry limit.
+					// retryCtx.Attempt is the current attempt that just failed.
 					return retryCtx.Attempt <= test.retryAttempts
 				},
 				backoff: &gax.Backoff{Initial: time.Millisecond},
@@ -569,14 +569,14 @@ func TestInvokeWithRetryContext(t *testing.T) {
 
 			call := func(ctx context.Context) error {
 				callCounter++
-				// Fail for the first retryAttempts calls, succeed on call retryAttempts+1
+				// Fail for the first retryAttempts calls, succeed on call retryAttempts+1.
 				if callCounter <= test.retryAttempts {
 					return test.errorToReturn
 				}
 				return nil
 			}
 
-			// Run with the operation metadata
+			// Run with the operation metadata.
 			err := run(ctx, call, customRetry, true,
 				withOperation(test.operation),
 				withBucket(test.bucket),
@@ -586,8 +586,8 @@ func TestInvokeWithRetryContext(t *testing.T) {
 				s.Fatalf("expected nil error after retries, got: %v", err)
 			}
 
-			// Verify we got the expected number of retry contexts
-			// shouldRetry is called once per failed attempt
+			// Verify we got the expected number of retry contexts.
+			// shouldRetry is called once per failed attempt.
 			expectedCalls := test.retryAttempts
 			if len(capturedContexts) != expectedCalls {
 				s.Errorf("expected %d retry contexts, got %d", expectedCalls, len(capturedContexts))
@@ -597,12 +597,12 @@ func TestInvokeWithRetryContext(t *testing.T) {
 			for i, retryCtx := range capturedContexts {
 				expectedAttempt := i + 1
 
-				// Check attempt number
+				// Check attempt number.
 				if retryCtx.Attempt != expectedAttempt {
 					s.Errorf("attempt %d: expected Attempt=%d, got %d", i, expectedAttempt, retryCtx.Attempt)
 				}
 
-				// Check invocation ID is consistent
+				// Check invocation ID is consistent.
 				if retryCtx.InvocationID == "" {
 					s.Errorf("attempt %d: InvocationID should not be empty", i)
 				}
@@ -610,17 +610,17 @@ func TestInvokeWithRetryContext(t *testing.T) {
 					s.Errorf("attempt %d: InvocationID changed, expected %s, got %s", i, lastInvocationID, retryCtx.InvocationID)
 				}
 
-				// Check operation name
+				// Check operation name.
 				if retryCtx.Operation != test.operation {
 					s.Errorf("attempt %d: expected Operation=%q, got %q", i, test.operation, retryCtx.Operation)
 				}
 
-				// Check bucket name
+				// Check bucket name.
 				if retryCtx.Bucket != test.bucket {
 					s.Errorf("attempt %d: expected Bucket=%q, got %q", i, test.bucket, retryCtx.Bucket)
 				}
 
-				// Check object name
+				// Check object name.
 				if retryCtx.Object != test.object {
 					s.Errorf("attempt %d: expected Object=%q, got %q", i, test.object, retryCtx.Object)
 				}
@@ -647,7 +647,7 @@ func TestInvokeWithRetryContextWithoutRunOptions(t *testing.T) {
 				Bucket:       retryCtx.Bucket,
 				Object:       retryCtx.Object,
 			}
-			return false // Don't retry
+			return false // Don't retry.
 		},
 		backoff: &gax.Backoff{Initial: time.Millisecond},
 	}
@@ -656,15 +656,15 @@ func TestInvokeWithRetryContextWithoutRunOptions(t *testing.T) {
 		return &googleapi.Error{Code: 429}
 	}
 
-	// Run without any metadata options
+	// Run without any metadata options.
 	_ = run(ctx, call, customRetry, true)
 
-	// Verify context was captured
+	// Verify context was captured.
 	if capturedContext == nil {
 		t.Fatal("RetryContext was not passed to shouldRetry function")
 	}
 
-	// Verify basic fields are set
+	// Verify basic fields are set.
 	if capturedContext.Attempt != 1 {
 		t.Errorf("expected Attempt=1, got %d", capturedContext.Attempt)
 	}
@@ -673,7 +673,7 @@ func TestInvokeWithRetryContextWithoutRunOptions(t *testing.T) {
 		t.Error("InvocationID should not be empty")
 	}
 
-	// Verify metadata fields are empty when not provided
+	// Verify metadata fields are empty when not provided.
 	if capturedContext.Operation != "" {
 		t.Errorf("expected empty Operation, got %q", capturedContext.Operation)
 	}

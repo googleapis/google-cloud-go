@@ -59,6 +59,7 @@ func (r *retryConfig) runShouldRetry(err error, retryCtx *RetryContext) bool {
 	if r == nil || r.shouldRetry == nil {
 		return ShouldRetry(err)
 	}
+
 	return r.shouldRetry(err, retryCtx)
 }
 
@@ -90,6 +91,9 @@ func withObject(object string) runOption {
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
+// TODO: consider replacing the functional option (runOption) pattern with a
+// hardcoded struct based approach if parameter related changes requires for all
+// the callers. Ref: http://shortn/_ciY2iWLh2J
 func run(ctx context.Context, call func(ctx context.Context) error, retry *retryConfig, isIdempotent bool, opts ...runOption) error {
 	options := &runOptions{}
 	for _, opt := range opts {

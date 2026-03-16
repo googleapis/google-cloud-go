@@ -1114,9 +1114,9 @@ func ExampleWithErrorFunc() {
 	}
 	defer client.Close()
 
-	// Basic retry logic using the legacy signature
+	// Basic retry logic using the legacy signature.
 	customRetry := func(err error) bool {
-		// Only retry on specific errors
+		// Only retry on specific errors.
 		return storage.ShouldRetry(err)
 	}
 
@@ -1126,7 +1126,7 @@ func ExampleWithErrorFunc() {
 		storage.WithPolicy(storage.RetryAlways),
 	)
 
-	// Operations on this object will use the custom retry logic
+	// Operations on this object will use the custom retry logic.
 	_, err = obj.Attrs(ctx)
 	if err != nil {
 		// TODO: handle error.
@@ -1141,19 +1141,19 @@ func ExampleWithErrorFuncWithContext() {
 	}
 	defer client.Close()
 
-	// Advanced retry logic with full retry context
+	// Advanced retry logic with full retry context.
 	// This provides comprehensive context including operation, bucket, and object information.
 	customRetryWithContext := func(err error, retryCtx *storage.RetryContext) bool {
 		// Log the retry attempt and operation context
 		log.Printf("Retry decision for %s (bucket=%s, object=%s), invocation=%s, attempt=%d: %v",
 			retryCtx.Operation, retryCtx.Bucket, retryCtx.Object, retryCtx.InvocationID, retryCtx.Attempt, err)
 
-		// Don't retry after 3 attempts
+		// Don't retry after 3 attempts.
 		if retryCtx.Attempt > 3 {
 			return false
 		}
 
-		// Use the default ShouldRetry logic for other cases
+		// Use the default ShouldRetry logic for other cases.
 		return storage.ShouldRetry(err)
 	}
 
@@ -1163,7 +1163,7 @@ func ExampleWithErrorFuncWithContext() {
 		storage.WithPolicy(storage.RetryAlways),
 	)
 
-	// Operations on this object will use the custom retry logic
+	// Operations on this object will use the custom retry logic.
 	_, err = obj.Attrs(ctx)
 	if err != nil {
 		// TODO: handle error.

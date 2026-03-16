@@ -2613,8 +2613,9 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 }
 
 // WithErrorFuncWithContext allows users to pass a custom function to the retryer
-// with access to comprehensive retry context. Errors will be retried if and only
-// if `shouldRetry(err, retryCtx)` returns true.
+// with access to comprehensive retry context. This option is currently experimental
+// and subject to change. Errors will be retried if and only if `shouldRetry(err, retryCtx)`
+// returns true.
 //
 // The RetryContext provides:
 // - Attempt: current attempt number (1-based)
