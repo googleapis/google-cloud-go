@@ -240,7 +240,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	return w, nil
 }
 
-// gRPCWriter is a wrapper around the the gRPC client-stream API that manages
+// gRPCWriter is a wrapper around the gRPC client-stream API that manages
 // sending chunks of data provided by the user over the stream.
 type gRPCWriter struct {
 	preRunCtx context.Context
@@ -992,22 +992,6 @@ func (w *gRPCWriter) newGRPCOneshotBidiWriteBufferSender() *gRPCOneshotBidiWrite
 
 func (s *gRPCOneshotBidiWriteBufferSender) err() error { return s.streamErr }
 
-// drainInboundStream calls stream.Recv() repeatedly until an error is returned.
-// It returns the last Resource received on the stream, or nil if no Resource
-// was returned. drainInboundStream always returns a non-nil error. io.EOF
-// indicates all messages were successfully read.
-func drainInboundStream(stream storagepb.Storage_BidiWriteObjectClient) (object *storagepb.Object, err error) {
-	for err == nil {
-		var resp *storagepb.BidiWriteObjectResponse
-		resp, err = stream.Recv()
-		// GetResource() returns nil on a nil response
-		if resp.GetResource() != nil {
-			object = resp.GetResource()
-		}
-	}
-	return object, err
-}
-
 func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
 	s.streamErr = nil
 	ctx = gRPCWriteRequestParams{bucket: s.bucket}.apply(ctx)
@@ -1069,7 +1053,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 							return nil
 						}
 
-						// Oneshot uploads assume all flushes succeed
+						// Oneshot uploads assume all flushes succeed.
 						if r.flush {
 							select {
 							case cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}:
@@ -1104,8 +1088,6 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 
 		<-sendDone
 		<-recvDone
-		// Prefer recvErr since that's where RPC errors are delivered.
-		// An EOF from Recv is not an error, so in that case we check sendErr.
 		s.streamErr = pickStreamError(recvErr, sendErr)
 		close(cs.completions)
 	}()
@@ -1252,8 +1234,6 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 
 		<-sendDone
 		<-recvDone
-		// Prefer recvErr since that's where RPC errors are delivered.
-		// An EOF from Recv is not an error, so in that case we check sendErr.
 		s.streamErr = pickStreamError(recvErr, sendErr)
 		close(cs.completions)
 	}()
@@ -1376,8 +1356,6 @@ func (s *gRPCAppendBidiWriteBufferSender) handleStream(stream storagepb.Storage_
 
 	<-sendDone
 	<-recvDone
-	// Prefer recvErr since that's where RPC errors are delivered.
-	// An EOF from Recv is not an error, so in that case we check sendErr.
 	s.streamErr = pickStreamError(recvErr, sendErr)
 	close(cs.completions)
 }
