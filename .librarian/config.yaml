@@ -20,8 +20,6 @@ global_files_allowlist:
 libraries:
   - id: "auth"
     release_blocked: true
-  - id: "auditmanager"
-    release_blocked: true
   - id: "auth/oauth2adapt"
     release_blocked: true
   - id: "bigtable"
