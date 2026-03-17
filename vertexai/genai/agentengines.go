@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -322,7 +323,7 @@ type AgentEngines struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m AgentEngines) create(ctx context.Context, config *CreateAgentEngineConfig) (*AgentEngineOperation, error) {
+func (m AgentEngines) create(ctx context.Context, config *types.CreateAgentEngineConfig) (*types.AgentEngineOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"config": config}
@@ -337,7 +338,7 @@ func (m AgentEngines) create(ctx context.Context, config *CreateAgentEngineConfi
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineOperation)
+	var response = new(types.AgentEngineOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -398,7 +399,7 @@ func (m AgentEngines) create(ctx context.Context, config *CreateAgentEngineConfi
 	return response, nil
 }
 
-func (m AgentEngines) delete(ctx context.Context, name string, force *bool, config *DeleteAgentEngineConfig) (*DeleteAgentEngineOperation, error) {
+func (m AgentEngines) delete(ctx context.Context, name string, force *bool, config *types.DeleteAgentEngineConfig) (*types.DeleteAgentEngineOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "force": force, "config": config}
@@ -413,7 +414,7 @@ func (m AgentEngines) delete(ctx context.Context, name string, force *bool, conf
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(DeleteAgentEngineOperation)
+	var response = new(types.DeleteAgentEngineOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -474,7 +475,7 @@ func (m AgentEngines) delete(ctx context.Context, name string, force *bool, conf
 	return response, nil
 }
 
-func (m AgentEngines) get(ctx context.Context, name string, config *GetAgentEngineConfig) (*ReasoningEngine, error) {
+func (m AgentEngines) get(ctx context.Context, name string, config *types.GetAgentEngineConfig) (*types.ReasoningEngine, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -489,7 +490,7 @@ func (m AgentEngines) get(ctx context.Context, name string, config *GetAgentEngi
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ReasoningEngine)
+	var response = new(types.ReasoningEngine)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -550,7 +551,7 @@ func (m AgentEngines) get(ctx context.Context, name string, config *GetAgentEngi
 	return response, nil
 }
 
-func (m AgentEngines) list(ctx context.Context, config *ListAgentEngineConfig) (*ListReasoningEnginesResponse, error) {
+func (m AgentEngines) list(ctx context.Context, config *types.ListAgentEngineConfig) (*types.ListReasoningEnginesResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"config": config}
@@ -565,7 +566,7 @@ func (m AgentEngines) list(ctx context.Context, config *ListAgentEngineConfig) (
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ListReasoningEnginesResponse)
+	var response = new(types.ListReasoningEnginesResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -626,7 +627,7 @@ func (m AgentEngines) list(ctx context.Context, config *ListAgentEngineConfig) (
 	return response, nil
 }
 
-func (m AgentEngines) getAgentOperation(ctx context.Context, operationName string, config *GetAgentEngineOperationConfig) (*AgentEngineOperation, error) {
+func (m AgentEngines) getAgentOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"operationName": operationName, "config": config}
@@ -641,7 +642,7 @@ func (m AgentEngines) getAgentOperation(ctx context.Context, operationName strin
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineOperation)
+	var response = new(types.AgentEngineOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -702,7 +703,7 @@ func (m AgentEngines) getAgentOperation(ctx context.Context, operationName strin
 	return response, nil
 }
 
-func (m AgentEngines) query(ctx context.Context, name string, config *QueryAgentEngineConfig) (*QueryReasoningEngineResponse, error) {
+func (m AgentEngines) query(ctx context.Context, name string, config *types.QueryAgentEngineConfig) (*types.QueryReasoningEngineResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -717,7 +718,7 @@ func (m AgentEngines) query(ctx context.Context, name string, config *QueryAgent
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(QueryReasoningEngineResponse)
+	var response = new(types.QueryReasoningEngineResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -778,7 +779,7 @@ func (m AgentEngines) query(ctx context.Context, name string, config *QueryAgent
 	return response, nil
 }
 
-func (m AgentEngines) update(ctx context.Context, name string, config *UpdateAgentEngineConfig) (*AgentEngineOperation, error) {
+func (m AgentEngines) update(ctx context.Context, name string, config *types.UpdateAgentEngineConfig) (*types.AgentEngineOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -793,7 +794,7 @@ func (m AgentEngines) update(ctx context.Context, name string, config *UpdateAge
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineOperation)
+	var response = new(types.AgentEngineOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {

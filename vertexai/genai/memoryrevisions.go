@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -80,7 +81,7 @@ type MemoryRevisions struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m MemoryRevisions) Get(ctx context.Context, name string, config *GetAgentEngineMemoryRevisionConfig) (*MemoryRevision, error) {
+func (m MemoryRevisions) Get(ctx context.Context, name string, config *types.GetAgentEngineMemoryRevisionConfig) (*types.MemoryRevision, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -95,7 +96,7 @@ func (m MemoryRevisions) Get(ctx context.Context, name string, config *GetAgentE
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(MemoryRevision)
+	var response = new(types.MemoryRevision)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -156,7 +157,7 @@ func (m MemoryRevisions) Get(ctx context.Context, name string, config *GetAgentE
 	return response, nil
 }
 
-func (m MemoryRevisions) list(ctx context.Context, name string, config *ListAgentEngineMemoryRevisionsConfig) (*ListAgentEngineMemoryRevisionsResponse, error) {
+func (m MemoryRevisions) list(ctx context.Context, name string, config *types.ListAgentEngineMemoryRevisionsConfig) (*types.ListAgentEngineMemoryRevisionsResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -171,7 +172,7 @@ func (m MemoryRevisions) list(ctx context.Context, name string, config *ListAgen
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ListAgentEngineMemoryRevisionsResponse)
+	var response = new(types.ListAgentEngineMemoryRevisionsResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {

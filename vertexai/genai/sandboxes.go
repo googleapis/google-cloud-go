@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -163,7 +164,7 @@ type Sandboxes struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m Sandboxes) create(ctx context.Context, name string, spec *SandboxEnvironmentSpec, config *CreateAgentEngineSandboxConfig) (*AgentEngineSandboxOperation, error) {
+func (m Sandboxes) create(ctx context.Context, name string, spec *types.SandboxEnvironmentSpec, config *types.CreateAgentEngineSandboxConfig) (*types.AgentEngineSandboxOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "spec": spec, "config": config}
@@ -178,7 +179,7 @@ func (m Sandboxes) create(ctx context.Context, name string, spec *SandboxEnviron
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineSandboxOperation)
+	var response = new(types.AgentEngineSandboxOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -239,7 +240,7 @@ func (m Sandboxes) create(ctx context.Context, name string, spec *SandboxEnviron
 	return response, nil
 }
 
-func (m Sandboxes) delete(ctx context.Context, name string, config *DeleteAgentEngineSandboxConfig) (*DeleteAgentEngineSandboxOperation, error) {
+func (m Sandboxes) delete(ctx context.Context, name string, config *types.DeleteAgentEngineSandboxConfig) (*types.DeleteAgentEngineSandboxOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -254,7 +255,7 @@ func (m Sandboxes) delete(ctx context.Context, name string, config *DeleteAgentE
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(DeleteAgentEngineSandboxOperation)
+	var response = new(types.DeleteAgentEngineSandboxOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -315,7 +316,7 @@ func (m Sandboxes) delete(ctx context.Context, name string, config *DeleteAgentE
 	return response, nil
 }
 
-func (m Sandboxes) executeCode(ctx context.Context, name string, inputs []*Chunk, config *ExecuteCodeAgentEngineSandboxConfig) (*ExecuteSandboxEnvironmentResponse, error) {
+func (m Sandboxes) executeCode(ctx context.Context, name string, inputs []*types.Chunk, config *types.ExecuteCodeAgentEngineSandboxConfig) (*types.ExecuteSandboxEnvironmentResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "inputs": inputs, "config": config}
@@ -330,7 +331,7 @@ func (m Sandboxes) executeCode(ctx context.Context, name string, inputs []*Chunk
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ExecuteSandboxEnvironmentResponse)
+	var response = new(types.ExecuteSandboxEnvironmentResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -391,7 +392,7 @@ func (m Sandboxes) executeCode(ctx context.Context, name string, inputs []*Chunk
 	return response, nil
 }
 
-func (m Sandboxes) get(ctx context.Context, name string, config *GetAgentEngineSandboxConfig) (*SandboxEnvironment, error) {
+func (m Sandboxes) get(ctx context.Context, name string, config *types.GetAgentEngineSandboxConfig) (*types.SandboxEnvironment, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -406,7 +407,7 @@ func (m Sandboxes) get(ctx context.Context, name string, config *GetAgentEngineS
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(SandboxEnvironment)
+	var response = new(types.SandboxEnvironment)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -467,7 +468,7 @@ func (m Sandboxes) get(ctx context.Context, name string, config *GetAgentEngineS
 	return response, nil
 }
 
-func (m Sandboxes) list(ctx context.Context, name string, config *ListAgentEngineSandboxesConfig) (*ListAgentEngineSandboxesResponse, error) {
+func (m Sandboxes) list(ctx context.Context, name string, config *types.ListAgentEngineSandboxesConfig) (*types.ListAgentEngineSandboxesResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -482,7 +483,7 @@ func (m Sandboxes) list(ctx context.Context, name string, config *ListAgentEngin
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ListAgentEngineSandboxesResponse)
+	var response = new(types.ListAgentEngineSandboxesResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -543,7 +544,7 @@ func (m Sandboxes) list(ctx context.Context, name string, config *ListAgentEngin
 	return response, nil
 }
 
-func (m Sandboxes) getSandboxOperation(ctx context.Context, operationName string, config *GetAgentEngineOperationConfig) (*AgentEngineSandboxOperation, error) {
+func (m Sandboxes) getSandboxOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineSandboxOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"operationName": operationName, "config": config}
@@ -558,7 +559,7 @@ func (m Sandboxes) getSandboxOperation(ctx context.Context, operationName string
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineSandboxOperation)
+	var response = new(types.AgentEngineSandboxOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {

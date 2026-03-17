@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -455,7 +456,7 @@ type Memories struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m Memories) create(ctx context.Context, name string, fact string, scope map[string]string, config *AgentEngineMemoryConfig) (*AgentEngineMemoryOperation, error) {
+func (m Memories) create(ctx context.Context, name string, fact string, scope map[string]string, config *types.AgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "fact": fact, "scope": scope, "config": config}
@@ -470,7 +471,7 @@ func (m Memories) create(ctx context.Context, name string, fact string, scope ma
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineMemoryOperation)
+	var response = new(types.AgentEngineMemoryOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -531,7 +532,7 @@ func (m Memories) create(ctx context.Context, name string, fact string, scope ma
 	return response, nil
 }
 
-func (m Memories) Delete(ctx context.Context, name string, config *DeleteAgentEngineMemoryConfig) (*DeleteAgentEngineMemoryOperation, error) {
+func (m Memories) Delete(ctx context.Context, name string, config *types.DeleteAgentEngineMemoryConfig) (*types.DeleteAgentEngineMemoryOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -546,7 +547,7 @@ func (m Memories) Delete(ctx context.Context, name string, config *DeleteAgentEn
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(DeleteAgentEngineMemoryOperation)
+	var response = new(types.DeleteAgentEngineMemoryOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -607,7 +608,7 @@ func (m Memories) Delete(ctx context.Context, name string, config *DeleteAgentEn
 	return response, nil
 }
 
-func (m Memories) generate(ctx context.Context, name string, vertexSessionSource *GenerateMemoriesRequestVertexSessionSource, directContentsSource *GenerateMemoriesRequestDirectContentsSource, directMemoriesSource *GenerateMemoriesRequestDirectMemoriesSource, scope *map[string]string, config *GenerateAgentEngineMemoriesConfig) (*AgentEngineGenerateMemoriesOperation, error) {
+func (m Memories) generate(ctx context.Context, name string, vertexSessionSource *types.GenerateMemoriesRequestVertexSessionSource, directContentsSource *types.GenerateMemoriesRequestDirectContentsSource, directMemoriesSource *types.GenerateMemoriesRequestDirectMemoriesSource, scope *map[string]string, config *types.GenerateAgentEngineMemoriesConfig) (*types.AgentEngineGenerateMemoriesOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "vertexSessionSource": vertexSessionSource, "directContentsSource": directContentsSource, "directMemoriesSource": directMemoriesSource, "scope": scope, "config": config}
@@ -622,7 +623,7 @@ func (m Memories) generate(ctx context.Context, name string, vertexSessionSource
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineGenerateMemoriesOperation)
+	var response = new(types.AgentEngineGenerateMemoriesOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -683,7 +684,7 @@ func (m Memories) generate(ctx context.Context, name string, vertexSessionSource
 	return response, nil
 }
 
-func (m Memories) Get(ctx context.Context, name string, config *GetAgentEngineMemoryConfig) (*Memory, error) {
+func (m Memories) Get(ctx context.Context, name string, config *types.GetAgentEngineMemoryConfig) (*types.Memory, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -698,7 +699,7 @@ func (m Memories) Get(ctx context.Context, name string, config *GetAgentEngineMe
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(Memory)
+	var response = new(types.Memory)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -759,7 +760,7 @@ func (m Memories) Get(ctx context.Context, name string, config *GetAgentEngineMe
 	return response, nil
 }
 
-func (m Memories) list(ctx context.Context, name string, config *ListAgentEngineMemoryConfig) (*ListReasoningEnginesMemoriesResponse, error) {
+func (m Memories) list(ctx context.Context, name string, config *types.ListAgentEngineMemoryConfig) (*types.ListReasoningEnginesMemoriesResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -774,7 +775,7 @@ func (m Memories) list(ctx context.Context, name string, config *ListAgentEngine
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ListReasoningEnginesMemoriesResponse)
+	var response = new(types.ListReasoningEnginesMemoriesResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -835,7 +836,7 @@ func (m Memories) list(ctx context.Context, name string, config *ListAgentEngine
 	return response, nil
 }
 
-func (m Memories) getMemoryOperation(ctx context.Context, operationName string, config *GetAgentEngineOperationConfig) (*AgentEngineMemoryOperation, error) {
+func (m Memories) getMemoryOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineMemoryOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"operationName": operationName, "config": config}
@@ -850,7 +851,7 @@ func (m Memories) getMemoryOperation(ctx context.Context, operationName string, 
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineMemoryOperation)
+	var response = new(types.AgentEngineMemoryOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -911,7 +912,7 @@ func (m Memories) getMemoryOperation(ctx context.Context, operationName string, 
 	return response, nil
 }
 
-func (m Memories) getGenerateMemoriesOperation(ctx context.Context, operationName string, config *GetAgentEngineOperationConfig) (*AgentEngineGenerateMemoriesOperation, error) {
+func (m Memories) getGenerateMemoriesOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineGenerateMemoriesOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"operationName": operationName, "config": config}
@@ -926,7 +927,7 @@ func (m Memories) getGenerateMemoriesOperation(ctx context.Context, operationNam
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineGenerateMemoriesOperation)
+	var response = new(types.AgentEngineGenerateMemoriesOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -987,7 +988,7 @@ func (m Memories) getGenerateMemoriesOperation(ctx context.Context, operationNam
 	return response, nil
 }
 
-func (m Memories) retrieve(ctx context.Context, name string, scope map[string]string, similaritySearchParams *RetrieveMemoriesRequestSimilaritySearchParams, simpleRetrievalParams *RetrieveMemoriesRequestSimpleRetrievalParams, config *RetrieveAgentEngineMemoriesConfig) (*RetrieveMemoriesResponse, error) {
+func (m Memories) retrieve(ctx context.Context, name string, scope map[string]string, similaritySearchParams *types.RetrieveMemoriesRequestSimilaritySearchParams, simpleRetrievalParams *types.RetrieveMemoriesRequestSimpleRetrievalParams, config *types.RetrieveAgentEngineMemoriesConfig) (*types.RetrieveMemoriesResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "scope": scope, "similaritySearchParams": similaritySearchParams, "simpleRetrievalParams": simpleRetrievalParams, "config": config}
@@ -1002,7 +1003,7 @@ func (m Memories) retrieve(ctx context.Context, name string, scope map[string]st
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(RetrieveMemoriesResponse)
+	var response = new(types.RetrieveMemoriesResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -1063,7 +1064,7 @@ func (m Memories) retrieve(ctx context.Context, name string, scope map[string]st
 	return response, nil
 }
 
-func (m Memories) rollback(ctx context.Context, name string, targetRevisionId string, config *RollbackAgentEngineMemoryConfig) (*AgentEngineRollbackMemoryOperation, error) {
+func (m Memories) rollback(ctx context.Context, name string, targetRevisionId string, config *types.RollbackAgentEngineMemoryConfig) (*types.AgentEngineRollbackMemoryOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "targetRevisionId": targetRevisionId, "config": config}
@@ -1078,7 +1079,7 @@ func (m Memories) rollback(ctx context.Context, name string, targetRevisionId st
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineRollbackMemoryOperation)
+	var response = new(types.AgentEngineRollbackMemoryOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -1139,7 +1140,7 @@ func (m Memories) rollback(ctx context.Context, name string, targetRevisionId st
 	return response, nil
 }
 
-func (m Memories) update(ctx context.Context, name string, fact *string, scope *map[string]string, config *UpdateAgentEngineMemoryConfig) (*AgentEngineMemoryOperation, error) {
+func (m Memories) update(ctx context.Context, name string, fact *string, scope *map[string]string, config *types.UpdateAgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "fact": fact, "scope": scope, "config": config}
@@ -1154,7 +1155,7 @@ func (m Memories) update(ctx context.Context, name string, fact *string, scope *
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineMemoryOperation)
+	var response = new(types.AgentEngineMemoryOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -1215,7 +1216,7 @@ func (m Memories) update(ctx context.Context, name string, fact *string, scope *
 	return response, nil
 }
 
-func (m Memories) purge(ctx context.Context, name string, filter *string, filterGroups []*MemoryConjunctionFilter, force *bool, config *PurgeAgentEngineMemoriesConfig) (*AgentEnginePurgeMemoriesOperation, error) {
+func (m Memories) purge(ctx context.Context, name string, filter *string, filterGroups []*types.MemoryConjunctionFilter, force *bool, config *types.PurgeAgentEngineMemoriesConfig) (*types.AgentEnginePurgeMemoriesOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "filter": filter, "filterGroups": filterGroups, "force": force, "config": config}
@@ -1230,7 +1231,7 @@ func (m Memories) purge(ctx context.Context, name string, filter *string, filter
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEnginePurgeMemoriesOperation)
+	var response = new(types.AgentEnginePurgeMemoriesOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {

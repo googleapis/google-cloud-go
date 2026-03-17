@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -33,12 +34,12 @@ func TestAgentEngineMemoryRevisions(t *testing.T) {
 		if err != nil {
 			tt.Fatalf("Error parsing time, err: %v", err)
 		}
-		want := &Memory{
+		want := &types.Memory{
 			DisplayName: "TestAgentEngineMemory",
 			Description: "Description",
 			Fact:        "memory_fact",
 			Scope:       map[string]string{"scope_sample": "123"},
-			Metadata: map[string]*MemoryMetadataValue{
+			Metadata: map[string]*types.MemoryMetadataValue{
 				"my_string_key":    {StringValue: "my_string_value"},
 				"my_double_key":    {DoubleValue: genai.Ptr(123.456)},
 				"my_boolean_key":   {BoolValue: genai.Ptr(true)},

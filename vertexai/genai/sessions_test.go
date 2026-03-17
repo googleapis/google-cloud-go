@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
@@ -30,7 +31,7 @@ func TestAgentEngineSessions(t *testing.T) {
 	t.Run("Create", func(tt *testing.T) {
 		client := newTestClient(tt)
 		re := createAgentEngineAndWait(t, tt, client, nil)
-		want := &Session{
+		want := &types.Session{
 			DisplayName:  tt.Name(),
 			SessionState: map[string]any{"foo": "bar"},
 			Labels:       map[string]string{"label_key": "label_value"},
@@ -38,7 +39,7 @@ func TestAgentEngineSessions(t *testing.T) {
 			UserID:       "test-user-123",
 		}
 		got := createAgentEngineSessionAndWait(tt, client, re, want)
-		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(Session{}, "Name")); diff != "" {
+		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(types.Session{}, "Name")); diff != "" {
 			tt.Errorf("create() had diff (-got +want): %v", diff)
 		}
 	})

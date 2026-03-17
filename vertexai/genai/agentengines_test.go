@@ -19,6 +19,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genai"
@@ -35,27 +36,27 @@ func TestAgentEngines(t *testing.T) {
 		p := client.AgentEngines.apiClient.ClientConfig().Project
 		model := fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/gemini-2.0-flash-001", p, l)
 		embeddingModel := fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/text-embedding-005", p, l)
-		request := &CreateAgentEngineConfig{
-			ContextSpec: &ReasoningEngineContextSpec{
-				MemoryBankConfig: &ReasoningEngineContextSpecMemoryBankConfig{
-					GenerationConfig: &ReasoningEngineContextSpecMemoryBankConfigGenerationConfig{
+		request := &types.CreateAgentEngineConfig{
+			ContextSpec: &types.ReasoningEngineContextSpec{
+				MemoryBankConfig: &types.ReasoningEngineContextSpecMemoryBankConfig{
+					GenerationConfig: &types.ReasoningEngineContextSpecMemoryBankConfigGenerationConfig{
 						Model: model,
 					},
-					SimilaritySearchConfig: &ReasoningEngineContextSpecMemoryBankConfigSimilaritySearchConfig{
+					SimilaritySearchConfig: &types.ReasoningEngineContextSpecMemoryBankConfigSimilaritySearchConfig{
 						EmbeddingModel: embeddingModel,
 					},
-					TTLConfig: &ReasoningEngineContextSpecMemoryBankConfigTTLConfig{
+					TTLConfig: &types.ReasoningEngineContextSpecMemoryBankConfigTTLConfig{
 						DefaultTTL: 120 * time.Second,
 					},
-					CustomizationConfigs: []*MemoryBankCustomizationConfig{{
-						MemoryTopics: []*MemoryBankCustomizationConfigMemoryTopic{{
-							ManagedMemoryTopic: &MemoryBankCustomizationConfigMemoryTopicManagedMemoryTopic{
-								ManagedTopicEnum: ManagedTopicEnumUserPreferences,
+					CustomizationConfigs: []*types.MemoryBankCustomizationConfig{{
+						MemoryTopics: []*types.MemoryBankCustomizationConfigMemoryTopic{{
+							ManagedMemoryTopic: &types.MemoryBankCustomizationConfigMemoryTopicManagedMemoryTopic{
+								ManagedTopicEnum: types.ManagedTopicEnumUserPreferences,
 							},
 						}},
-						GenerateMemoriesExamples: []*MemoryBankCustomizationConfigGenerateMemoriesExample{{
-							ConversationSource: &MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSource{
-								Events: []*MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSourceEvent{{
+						GenerateMemoriesExamples: []*types.MemoryBankCustomizationConfigGenerateMemoriesExample{{
+							ConversationSource: &types.MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSource{
+								Events: []*types.MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSourceEvent{{
 									Content: &genai.Content{
 										Role: "user",
 										Parts: []*genai.Part{{
@@ -64,10 +65,10 @@ func TestAgentEngines(t *testing.T) {
 									},
 								}},
 							},
-							GeneratedMemories: []*MemoryBankCustomizationConfigGenerateMemoriesExampleGeneratedMemory{{
+							GeneratedMemories: []*types.MemoryBankCustomizationConfigGenerateMemoriesExampleGeneratedMemory{{
 								Fact: "I like to say hello.",
-								Topics: []*MemoryTopicID{{
-									ManagedMemoryTopic: ManagedTopicEnumUserPreferences,
+								Topics: []*types.MemoryTopicID{{
+									ManagedMemoryTopic: types.ManagedTopicEnumUserPreferences,
 								}},
 							}},
 						}},
@@ -93,7 +94,7 @@ func TestAgentEngines(t *testing.T) {
 		if err != nil {
 			tt.Fatalf("delete() failed unexpectedly: %v", err)
 		}
-		operation := func() (*AgentEngineOperation, error) {
+		operation := func() (*types.AgentEngineOperation, error) {
 			return client.AgentEngines.getAgentOperation(tt.Context(), deleteOp.Name, nil)
 		}
 		waitForOperation(t, operation)
@@ -106,11 +107,11 @@ func TestAgentEngines(t *testing.T) {
 	t.Run("Get", func(tt *testing.T) {
 		ctx := tt.Context()
 		client := newTestClient(tt)
-		want := &ReasoningEngine{
+		want := &types.ReasoningEngine{
 			DisplayName: tt.Name(),
 			Description: "You can remove this agent engine if it is older than 10 minutes. It must be an orphan AE.",
 		}
-		config := &CreateAgentEngineConfig{
+		config := &types.CreateAgentEngineConfig{
 			DisplayName: want.DisplayName,
 			Description: want.Description,
 		}
@@ -119,7 +120,7 @@ func TestAgentEngines(t *testing.T) {
 		if err != nil {
 			tt.Errorf("get() failed unexpectedly: %v", err)
 		}
-		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(ReasoningEngine{}, "CreateTime", "Spec", "UpdateTime", "Name")); diff != "" {
+		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(types.ReasoningEngine{}, "CreateTime", "Spec", "UpdateTime", "Name")); diff != "" {
 			tt.Errorf("create() and get() had diff (-got +want): %v", diff)
 		}
 
@@ -129,7 +130,7 @@ func TestAgentEngines(t *testing.T) {
 		ctx := tt.Context()
 		client := newTestClient(tt)
 		createAgentEngineAndWait(t, tt, client, nil)
-		list, err := client.AgentEngines.list(ctx, &ListAgentEngineConfig{PageSize: 2})
+		list, err := client.AgentEngines.list(ctx, &types.ListAgentEngineConfig{PageSize: 2})
 		if err != nil {
 			tt.Fatalf("list() failed unexpectedly: %v", err)
 		}
@@ -143,13 +144,13 @@ func TestAgentEngines(t *testing.T) {
 		client := newTestClient(tt)
 		re := createAgentEngineAndWait(t, tt, client, nil)
 		want := fmt.Sprintf("Updated(%s)", re.DisplayName)
-		op, err := client.AgentEngines.update(ctx, re.Name, &UpdateAgentEngineConfig{
+		op, err := client.AgentEngines.update(ctx, re.Name, &types.UpdateAgentEngineConfig{
 			DisplayName: want,
 		})
 		if err != nil {
 			tt.Fatalf("update() failed unexpectedly: %v", err)
 		}
-		operation := func() (*AgentEngineOperation, error) {
+		operation := func() (*types.AgentEngineOperation, error) {
 			return client.AgentEngines.getAgentOperation(tt.Context(), op.Name, nil)
 		}
 		updated := waitForOperation(tt, operation).Response

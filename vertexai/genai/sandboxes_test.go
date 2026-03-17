@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
@@ -31,21 +32,21 @@ func TestAgentEngineSandboxes(t *testing.T) {
 		client := newTestClient(tt)
 		re := createAgentEngineAndWait(t, tt, client, nil)
 
-		want := &SandboxEnvironment{
-			Spec: &SandboxEnvironmentSpec{
-				CodeExecutionEnvironment: &SandboxEnvironmentSpecCodeExecutionEnvironment{
-					MachineConfig: MachineConfigVcpu4Ram4gib,
+		want := &types.SandboxEnvironment{
+			Spec: &types.SandboxEnvironmentSpec{
+				CodeExecutionEnvironment: &types.SandboxEnvironmentSpecCodeExecutionEnvironment{
+					MachineConfig: types.MachineConfigVcpu4Ram4gib,
 				},
 			},
 			DisplayName: tt.Name(),
 			TTL:         time.Hour,
 		}
-		config := &CreateAgentEngineSandboxConfig{
+		config := &types.CreateAgentEngineSandboxConfig{
 			DisplayName: want.DisplayName,
 			TTL:         want.TTL,
 		}
 		got := createAgentEngineSandboxesAndWait(tt, client, re, want.Spec, config)
-		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(SandboxEnvironment{}, "Name", "ExpireTime", "TTL")); diff != "" {
+		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(types.SandboxEnvironment{}, "Name", "ExpireTime", "TTL")); diff != "" {
 			tt.Errorf("create() had diff (-got +want): %v", diff)
 		}
 	})

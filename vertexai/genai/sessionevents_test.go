@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genai"
@@ -32,7 +33,7 @@ func TestAgentEngineSessionEvents(t *testing.T) {
 		client := newTestClient(tt)
 		re := createAgentEngineAndWait(t, tt, client, nil)
 
-		session := &Session{
+		session := &types.Session{
 			DisplayName:  tt.Name(),
 			SessionState: map[string]any{"foo": "bar"},
 			Labels:       map[string]string{"label_key": "label_value"},
@@ -44,11 +45,11 @@ func TestAgentEngineSessionEvents(t *testing.T) {
 		if err != nil {
 			tt.Fatalf("Error parsing time, err: %v", err)
 		}
-		want := &SessionEvent{
+		want := &types.SessionEvent{
 			Author:       tt.Name(),
 			InvocationID: "test-invocation-id",
 			Timestamp:    timestamp,
-			Actions:      &EventActions{},
+			Actions:      &types.EventActions{},
 			Content: &genai.Content{
 				Parts: []*genai.Part{{
 					Text: "Hello World",
@@ -61,7 +62,7 @@ func TestAgentEngineSessionEvents(t *testing.T) {
 		if err != nil {
 			tt.Fatalf("list() failed unexpectedly: %v", err)
 		}
-		if diff := cmp.Diff(got.SessionEvents, []*SessionEvent{want}, cmpopts.IgnoreFields(SessionEvent{}, "Name")); diff != "" {
+		if diff := cmp.Diff(got.SessionEvents, []*types.SessionEvent{want}, cmpopts.IgnoreFields(types.SessionEvent{}, "Name")); diff != "" {
 			tt.Errorf("list() had diff (-got +want): %v", diff)
 		}
 	})

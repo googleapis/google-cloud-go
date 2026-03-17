@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genai"
@@ -35,12 +36,12 @@ func TestAgentEngineMemories(t *testing.T) {
 		if err != nil {
 			tt.Fatalf("Error parsing time, err: %v", err)
 		}
-		want := &Memory{
+		want := &types.Memory{
 			DisplayName: "TestAgentEngineMemory",
 			Description: "Description",
 			Fact:        "memory_fact",
 			Scope:       map[string]string{"scope_sample": "123"},
-			Metadata: map[string]*MemoryMetadataValue{
+			Metadata: map[string]*types.MemoryMetadataValue{
 				"my_string_key":    {StringValue: "my_string_value"},
 				"my_double_key":    {DoubleValue: genai.Ptr(123.456)},
 				"my_boolean_key":   {BoolValue: genai.Ptr(true)},
@@ -52,7 +53,7 @@ func TestAgentEngineMemories(t *testing.T) {
 		if err != nil {
 			tt.Fatalf("get() failed unexpectedly: %v", err)
 		}
-		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(Memory{}, "CreateTime", "ExpireTime", "UpdateTime", "Name")); diff != "" {
+		if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(types.Memory{}, "CreateTime", "ExpireTime", "UpdateTime", "Name")); diff != "" {
 			tt.Errorf("create() and get() had diff (-got +want): %v", diff)
 		}
 	})

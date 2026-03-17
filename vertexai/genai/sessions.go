@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -217,7 +218,7 @@ type Sessions struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m Sessions) create(ctx context.Context, name string, userId string, config *CreateAgentEngineSessionConfig) (*AgentEngineSessionOperation, error) {
+func (m Sessions) create(ctx context.Context, name string, userId string, config *types.CreateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "userId": userId, "config": config}
@@ -232,7 +233,7 @@ func (m Sessions) create(ctx context.Context, name string, userId string, config
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineSessionOperation)
+	var response = new(types.AgentEngineSessionOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -293,7 +294,7 @@ func (m Sessions) create(ctx context.Context, name string, userId string, config
 	return response, nil
 }
 
-func (m Sessions) Delete(ctx context.Context, name string, config *DeleteAgentEngineSessionConfig) (*DeleteAgentEngineSessionOperation, error) {
+func (m Sessions) Delete(ctx context.Context, name string, config *types.DeleteAgentEngineSessionConfig) (*types.DeleteAgentEngineSessionOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -308,7 +309,7 @@ func (m Sessions) Delete(ctx context.Context, name string, config *DeleteAgentEn
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(DeleteAgentEngineSessionOperation)
+	var response = new(types.DeleteAgentEngineSessionOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -369,7 +370,7 @@ func (m Sessions) Delete(ctx context.Context, name string, config *DeleteAgentEn
 	return response, nil
 }
 
-func (m Sessions) Get(ctx context.Context, name string, config *GetAgentEngineSessionConfig) (*Session, error) {
+func (m Sessions) Get(ctx context.Context, name string, config *types.GetAgentEngineSessionConfig) (*types.Session, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -384,7 +385,7 @@ func (m Sessions) Get(ctx context.Context, name string, config *GetAgentEngineSe
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(Session)
+	var response = new(types.Session)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -445,7 +446,7 @@ func (m Sessions) Get(ctx context.Context, name string, config *GetAgentEngineSe
 	return response, nil
 }
 
-func (m Sessions) list(ctx context.Context, name string, config *ListAgentEngineSessionsConfig) (*ListReasoningEnginesSessionsResponse, error) {
+func (m Sessions) list(ctx context.Context, name string, config *types.ListAgentEngineSessionsConfig) (*types.ListReasoningEnginesSessionsResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -460,7 +461,7 @@ func (m Sessions) list(ctx context.Context, name string, config *ListAgentEngine
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ListReasoningEnginesSessionsResponse)
+	var response = new(types.ListReasoningEnginesSessionsResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -521,7 +522,7 @@ func (m Sessions) list(ctx context.Context, name string, config *ListAgentEngine
 	return response, nil
 }
 
-func (m Sessions) getSessionOperation(ctx context.Context, operationName string, config *GetAgentEngineOperationConfig) (*AgentEngineSessionOperation, error) {
+func (m Sessions) getSessionOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineSessionOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"operationName": operationName, "config": config}
@@ -536,7 +537,7 @@ func (m Sessions) getSessionOperation(ctx context.Context, operationName string,
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineSessionOperation)
+	var response = new(types.AgentEngineSessionOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -597,7 +598,7 @@ func (m Sessions) getSessionOperation(ctx context.Context, operationName string,
 	return response, nil
 }
 
-func (m Sessions) update(ctx context.Context, name string, config *UpdateAgentEngineSessionConfig) (*AgentEngineSessionOperation, error) {
+func (m Sessions) update(ctx context.Context, name string, config *types.UpdateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -612,7 +613,7 @@ func (m Sessions) update(ctx context.Context, name string, config *UpdateAgentEn
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AgentEngineSessionOperation)
+	var response = new(types.AgentEngineSessionOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {

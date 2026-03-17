@@ -23,6 +23,7 @@ import (
 	"reflect"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -135,7 +136,7 @@ type SessionEvents struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m SessionEvents) Append(ctx context.Context, name string, author string, invocationId string, timestamp time.Time, config *AppendAgentEngineSessionEventConfig) (*AppendAgentEngineSessionEventResponse, error) {
+func (m SessionEvents) Append(ctx context.Context, name string, author string, invocationId string, timestamp time.Time, config *types.AppendAgentEngineSessionEventConfig) (*types.AppendAgentEngineSessionEventResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "author": author, "invocationId": invocationId, "timestamp": timestamp, "config": config}
@@ -150,7 +151,7 @@ func (m SessionEvents) Append(ctx context.Context, name string, author string, i
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(AppendAgentEngineSessionEventResponse)
+	var response = new(types.AppendAgentEngineSessionEventResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
@@ -211,7 +212,7 @@ func (m SessionEvents) Append(ctx context.Context, name string, author string, i
 	return response, nil
 }
 
-func (m SessionEvents) list(ctx context.Context, name string, config *ListAgentEngineSessionEventsConfig) (*ListAgentEngineSessionEventsResponse, error) {
+func (m SessionEvents) list(ctx context.Context, name string, config *types.ListAgentEngineSessionEventsConfig) (*types.ListAgentEngineSessionEventsResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -226,7 +227,7 @@ func (m SessionEvents) list(ctx context.Context, name string, config *ListAgentE
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(ListAgentEngineSessionEventsResponse)
+	var response = new(types.ListAgentEngineSessionEventsResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {

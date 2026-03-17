@@ -21,6 +21,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai/types"
 	"google.golang.org/genai"
 )
 
@@ -47,10 +48,10 @@ func getResourceNameFromOperation(operationName string) string {
 	return operationName[:i]
 }
 
-func createAgentEngineAndWait(t testing.TB, tt testing.TB, client *Client, config *CreateAgentEngineConfig) *ReasoningEngine {
+func createAgentEngineAndWait(t testing.TB, tt testing.TB, client *Client, config *types.CreateAgentEngineConfig) *types.ReasoningEngine {
 	tt.Helper()
 	if config == nil {
-		config = &CreateAgentEngineConfig{}
+		config = &types.CreateAgentEngineConfig{}
 	}
 	if config.DisplayName == "" {
 		config.DisplayName = tt.Name()
@@ -64,7 +65,7 @@ func createAgentEngineAndWait(t testing.TB, tt testing.TB, client *Client, confi
 	}
 	reasoningEngineName := getResourceNameFromOperation(createOp.Name)
 	tt.Cleanup(cleanupAgentEngine(t, client, reasoningEngineName))
-	operation := func() (*AgentEngineOperation, error) {
+	operation := func() (*types.AgentEngineOperation, error) {
 		return client.AgentEngines.getAgentOperation(tt.Context(), createOp.Name, nil)
 	}
 	createOp = waitForOperation(t, operation)
@@ -78,7 +79,7 @@ func cleanupAgentEngine(t testing.TB, client *Client, name string) func() {
 		if err != nil {
 			t.Logf("cleanup() failed, err: %v", err)
 		} else {
-			operation := func() (*AgentEngineOperation, error) {
+			operation := func() (*types.AgentEngineOperation, error) {
 				return client.AgentEngines.getAgentOperation(t.Context(), deleteOp.Name, nil)
 			}
 			waitForOperation(t, operation)
@@ -86,9 +87,9 @@ func cleanupAgentEngine(t testing.TB, client *Client, name string) func() {
 	}
 }
 
-func createAgentEngineMemoryAndWait(tt testing.TB, client *Client, re *ReasoningEngine, m *Memory) *Memory {
+func createAgentEngineMemoryAndWait(tt testing.TB, client *Client, re *types.ReasoningEngine, m *types.Memory) *types.Memory {
 	tt.Helper()
-	config := &AgentEngineMemoryConfig{
+	config := &types.AgentEngineMemoryConfig{
 		DisplayName: m.DisplayName,
 		Description: m.Description,
 		Metadata:    m.Metadata,
@@ -98,7 +99,7 @@ func createAgentEngineMemoryAndWait(tt testing.TB, client *Client, re *Reasoning
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	if !createOp.Done {
-		operation := func() (*AgentEngineMemoryOperation, error) {
+		operation := func() (*types.AgentEngineMemoryOperation, error) {
 			return client.AgentEngines.Memories.getMemoryOperation(tt.Context(), createOp.Name, nil)
 		}
 		waitForOperation(tt, operation)
@@ -106,14 +107,20 @@ func createAgentEngineMemoryAndWait(tt testing.TB, client *Client, re *Reasoning
 	return createOp.Response
 }
 
-func createAgentEngineSandboxesAndWait(tt testing.TB, client *Client, re *ReasoningEngine, spec *SandboxEnvironmentSpec, config *CreateAgentEngineSandboxConfig) *SandboxEnvironment {
+func createAgentEngineSandboxesAndWait(
+	tt testing.TB,
+	client *Client,
+	re *types.ReasoningEngine,
+	spec *types.SandboxEnvironmentSpec,
+	config *types.CreateAgentEngineSandboxConfig,
+) *types.SandboxEnvironment {
 	tt.Helper()
 	createOp, err := client.AgentEngines.Sandboxes.create(tt.Context(), re.Name, spec, config)
 	if err != nil {
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	if !createOp.Done {
-		operation := func() (*AgentEngineSandboxOperation, error) {
+		operation := func() (*types.AgentEngineSandboxOperation, error) {
 			return client.AgentEngines.Sandboxes.getSandboxOperation(tt.Context(), createOp.Name, nil)
 		}
 		createOp = waitForOperation(tt, operation)
@@ -121,9 +128,9 @@ func createAgentEngineSandboxesAndWait(tt testing.TB, client *Client, re *Reason
 	return createOp.Response
 }
 
-func createAgentEngineSessionEvent(tt testing.TB, client *Client, s *Session, se *SessionEvent) {
+func createAgentEngineSessionEvent(tt testing.TB, client *Client, s *types.Session, se *types.SessionEvent) {
 	tt.Helper()
-	config := &AppendAgentEngineSessionEventConfig{
+	config := &types.AppendAgentEngineSessionEventConfig{
 		Content: se.Content,
 	}
 	_, err := client.AgentEngines.Sessions.Events.Append(tt.Context(), s.Name, se.Author, se.InvocationID, se.Timestamp, config)
@@ -132,9 +139,9 @@ func createAgentEngineSessionEvent(tt testing.TB, client *Client, s *Session, se
 	}
 }
 
-func createAgentEngineSessionAndWait(tt testing.TB, client *Client, re *ReasoningEngine, s *Session) *Session {
+func createAgentEngineSessionAndWait(tt testing.TB, client *Client, re *types.ReasoningEngine, s *types.Session) *types.Session {
 	tt.Helper()
-	config := &CreateAgentEngineSessionConfig{
+	config := &types.CreateAgentEngineSessionConfig{
 		DisplayName:  s.DisplayName,
 		SessionState: s.SessionState,
 		TTL:          s.TTL,
@@ -145,7 +152,7 @@ func createAgentEngineSessionAndWait(tt testing.TB, client *Client, re *Reasonin
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	if !createOp.Done {
-		operation := func() (*AgentEngineSessionOperation, error) {
+		operation := func() (*types.AgentEngineSessionOperation, error) {
 			return client.AgentEngines.Sessions.getSessionOperation(tt.Context(), createOp.Name, nil)
 		}
 		createOp = waitForOperation(tt, operation)
